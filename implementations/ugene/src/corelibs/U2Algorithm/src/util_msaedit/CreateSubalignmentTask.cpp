@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CreateSubalignmentTask.h"
+
 #include <QApplication>
 #include <QClipboard>
 #include <QMimeData>
@@ -41,15 +43,11 @@
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/UserApplicationsSettings.h>
 
-
-#include "CreateSubalignmentTask.h"
-
-namespace U2{
+namespace U2 {
 
 CreateSubalignmentTask::CreateSubalignmentTask(MultipleSequenceAlignmentObject *maObj, const CreateSubalignmentSettings &settings)
     : DocumentProviderTask(tr("Create sub-alignment: %1").arg(maObj->getDocument()->getName()), TaskFlags_NR_FOSCOE),
-    origMAObj(maObj), resultMAObj(NULL), cfg(settings)
-{
+      origMAObj(maObj), resultMAObj(NULL), cfg(settings) {
     origDoc = maObj->getDocument();
     createCopy = cfg.url != origDoc->getURL() || cfg.url.isEmpty();
 }
@@ -58,7 +56,7 @@ void CreateSubalignmentTask::prepare() {
     DocumentFormatRegistry *dfr = AppContext::getDocumentFormatRegistry();
     DocumentFormat *dfd = dfr->getFormatById(cfg.formatIdToSave);
 
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(cfg.url));
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(cfg.url));
     if (createCopy) {
         QVariantMap hints = origDoc->getGHintsMap();
         if (hints.value(DocumentReadingMode_SequenceAsAlignmentHint, false).toBool()) {
@@ -75,7 +73,7 @@ void CreateSubalignmentTask::prepare() {
         resultDocument->addObject(resultMAObj);
         GObjectUtils::updateRelationsURL(resultMAObj, origDoc->getURL(), cfg.url);
         QList<GObjectRelation> phyTreeRelations = resultMAObj->findRelatedObjectsByRole(ObjectRole_PhylogeneticTree);
-        foreach(GObjectRelation phyTreeRel, phyTreeRelations) {
+        foreach (GObjectRelation phyTreeRel, phyTreeRelations) {
             resultMAObj->removeObjectRelation(phyTreeRel);
         }
     } else {
@@ -97,4 +95,4 @@ void CreateSubalignmentTask::prepare() {
     }
 }
 
-}
+}    // namespace U2

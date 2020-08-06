@@ -20,37 +20,38 @@
  */
 
 #include "ExportMSA2MSADialogFiller.h"
-#include <primitives/GTWidget.h>
+#include <primitives/GTComboBox.h>
 #include <primitives/GTLineEdit.h>
 #include <primitives/GTRadioButton.h>
-#include <primitives/GTComboBox.h>
+#include <primitives/GTWidget.h>
 
-#include <QDir>
 #include <QApplication>
-#include <QDialogButtonBox>
-#include <QPushButton>
 #include <QComboBox>
+#include <QDialogButtonBox>
+#include <QDir>
+#include <QPushButton>
 
 namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::ExportToSequenceFormatFiller"
 
-ExportMSA2MSADialogFiller::ExportMSA2MSADialogFiller(HI::GUITestOpStatus &_os, int _formatVal, QString _path) : Filler(_os, "U2__ExportMSA2MSADialog"),
-    formatVal(_formatVal),
-    path(_path){}
+ExportMSA2MSADialogFiller::ExportMSA2MSADialogFiller(HI::GUITestOpStatus &_os, int _formatVal, QString _path)
+    : Filler(_os, "U2__ExportMSA2MSADialog"),
+      formatVal(_formatVal),
+      path(_path) {
+}
 
 #define GT_METHOD_NAME "commonScenario"
-void ExportMSA2MSADialogFiller::commonScenario()
-{
+void ExportMSA2MSADialogFiller::commonScenario() {
     QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog != NULL, "dialog not found");
 
-    if(!path.isEmpty()){
-        QLineEdit* fileNameEdit = dialog->findChild<QLineEdit*>("fileNameEdit");
-        GTLineEdit::setText(os, fileNameEdit,path);
+    if (!path.isEmpty()) {
+        QLineEdit *fileNameEdit = dialog->findChild<QLineEdit *>("fileNameEdit");
+        GTLineEdit::setText(os, fileNameEdit, path);
     }
-    if(formatVal>=0){
-        QComboBox* formatCombo = dialog->findChild<QComboBox*>("formatCombo");
+    if (formatVal >= 0) {
+        QComboBox *formatCombo = dialog->findChild<QComboBox *>("formatCombo");
         GTComboBox::setCurrentIndex(os, formatCombo, formatVal);
     }
 
@@ -59,4 +60,4 @@ void ExportMSA2MSADialogFiller::commonScenario()
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

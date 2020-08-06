@@ -1,5 +1,5 @@
 # CMake build is not officially supported by UGENE and
-# can only be used for developement (for example to enable CLion IDE integration)
+# can only be used for development (for example to enable CLion IDE integration)
 #
 # For CLion developers:
 #   * add Qt5_DIR variable to File->Settings->Build,Execution,Deployment->CMake pointing to valid QT dir.
@@ -10,8 +10,8 @@ project(ugene)
 
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 
-set(UGENE_VERSION 33.0-dev)
-set(UGENE_VER_MAJOR 33)
+set(UGENE_VERSION 35.0-dev)
+set(UGENE_VER_MAJOR 35)
 set(UGENE_VER_MINOR 0)
 
 set(UGENE_MIN_VERSION_SQLITE 1.25.0)
@@ -29,18 +29,24 @@ add_definitions(
         -DQT_FATAL_ASSERT
 )
 
-set (CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 11)
 
 # Set a default build type for single-configuration
 # CMake generators if no build type is set.
-if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+if (NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
-endif(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+endif (NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D_DEBUG")
 
+# Warning levels
+if (CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wreorder")
+endif ()
+
 # 3rd party libs
+add_subdirectory(src/libs_3rdparty/QSpec)
 add_subdirectory(src/libs_3rdparty/breakpad)
 add_subdirectory(src/libs_3rdparty/samtools)
 add_subdirectory(src/libs_3rdparty/sqlite3)

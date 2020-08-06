@@ -22,10 +22,11 @@
 #ifndef _U2_WEIGHTMATRIX_PLUGIN_H_
 #define _U2_WEIGHTMATRIX_PLUGIN_H_
 
-#include <U2Core/PluginModel.h>
-#include <U2Gui/ObjectViewModel.h>
-
 #include <QMenu>
+
+#include <U2Core/PluginModel.h>
+
+#include <U2Gui/ObjectViewModel.h>
 
 namespace U2 {
 
@@ -41,26 +42,26 @@ protected slots:
     void sl_build();
 
 private:
-    WeightMatrixADVContext*                  ctxADV;
+    WeightMatrixADVContext *ctxADV;
 };
 
-class WeightMatrixADVContext: public GObjectViewWindowContext {
+class WeightMatrixADVContext : public GObjectViewWindowContext {
     Q_OBJECT
 public:
-    WeightMatrixADVContext(QObject* p);
+    WeightMatrixADVContext(QObject *p);
 
 protected slots:
     void sl_search();
 
 protected:
-    virtual void initViewContext(GObjectView* view);
+    virtual void initViewContext(GObjectView *view);
 };
 
 class WeightMatrixAlgorithmTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

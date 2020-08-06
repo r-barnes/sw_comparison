@@ -20,69 +20,70 @@
  */
 
 #include "GUICrazyUserTest.h"
-#include "GTRandomGUIActionFactory.h"
+#include <base_dialogs/GTFileDialog.h>
 #include <drivers/GTKeyboardDriver.h>
 #include <primitives/GTWidget.h>
-#include <base_dialogs/GTFileDialog.h>
-#include "GTRandomGUIActionFactory.h"
 
 #include <QApplication>
+
 #include <U2Core/U2SafePoints.h>
+
+#include "GTRandomGUIActionFactory.h"
 
 namespace U2 {
 
 namespace GUITest_crazy_user {
 
 void GTCrazyUserMonitor::checkActiveWidget() {
-    QWidget* widget = QApplication::activePopupWidget();
-    if (NULL == widget || 0 == qrand()%20) {
+    QWidget *widget = QApplication::activePopupWidget();
+    if (NULL == widget || 0 == qrand() % 20) {
         widget = QApplication::activeModalWidget();
         if (NULL == widget) {
             widget = QApplication::activeWindow();
         }
     }
-    SAFE_POINT(NULL != widget, "",);
+    SAFE_POINT(NULL != widget, "", );
 
     U2OpStatus2Log os;
 
-    GTCrazyUserMonitor* monitor = new GTCrazyUserMonitor();
+    GTCrazyUserMonitor *monitor = new GTCrazyUserMonitor();
 
-    QList<GTAbstractGUIAction*> actionList = formGUIActions(widget);
+    QList<GTAbstractGUIAction *> actionList = formGUIActions(widget);
     bool actionListEmpty = actionList.isEmpty();
     SAFE_POINT(false == actionListEmpty, "", );
 
     qSort(actionList.begin(), actionList.end(), GTAbstractGUIAction::lessThan);
     uiLog.trace("sorted actionList:");
-    foreach (GTAbstractGUIAction* a, actionList) {
+    foreach (GTAbstractGUIAction *a, actionList) {
         uiLog.trace(QString("Action for %1 with priority %2").arg(a->objectClassName()).arg(a->getPriority()));
     }
 
-    GTAbstractGUIAction* action = NULL;
+    GTAbstractGUIAction *action = NULL;
     if (GTAbstractGUIAction::Priority_High == actionList.first()->getPriority()) {
         action = actionList.first();
     } else {
-        int randListId = randInt(0, actionList.size()-1);
+        int randListId = randInt(0, actionList.size() - 1);
         uiLog.trace(QString("actionList.size(): %1, randListId = %2").arg(actionList.size()).arg(randListId));
 
         action = actionList.at(randListId);
     }
 
-    SAFE_POINT(NULL != action, "",);
+    SAFE_POINT(NULL != action, "", );
     action->run();
 
     qDeleteAll(actionList);
     monitor->deleteLater();
 }
 
-QList<GTAbstractGUIAction*> GTCrazyUserMonitor::formGUIActions(QWidget* widget) const {
-    QList<GTAbstractGUIAction*> actionList;
+QList<GTAbstractGUIAction *> GTCrazyUserMonitor::formGUIActions(QWidget *widget) const {
+    QList<GTAbstractGUIAction *> actionList;
     SAFE_POINT(NULL != widget, "", actionList);
 
-    QObjectList objectList = widget->findChildren<QObject*>();
+    QObjectList objectList = widget->findChildren<QObject *>();
     objectList.append(widget);
 
-    foreach(QObject* o, objectList) {
-        GTAbstractGUIAction* guiAction = GTRandomGUIActionFactory::create(o);
+    foreach (QObject *o, objectList) {
+        GTAbstractGUIAction *guiAction = GTRandomGUIActionFactory::create(o);
         if (NULL != guiAction) {
             actionList.append(guiAction);
         }
@@ -104,10 +105,10 @@ GUI_TEST_CLASS_DEFINITION(simple_crazy_user) {
     }
 
     QEventLoop loop;
-    QTimer::singleShot(time*1000, &loop, SLOT(quit()));
+    QTimer::singleShot(time * 1000, &loop, SLOT(quit()));
     loop.exec();
 }
 
-}
+}    // namespace GUITest_crazy_user
 
-}
+}    // namespace U2

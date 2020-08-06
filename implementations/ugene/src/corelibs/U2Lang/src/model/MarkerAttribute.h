@@ -23,26 +23,26 @@
 #include <U2Lang/Marker.h>
 
 #ifndef _MARKER_ATTRIBUTE_H_
-#define _MARKER_ATTRIBUTE_H_
+#    define _MARKER_ATTRIBUTE_H_
 
 namespace U2 {
 
 class U2LANG_EXPORT MarkerAttribute : public Attribute {
 public:
-    MarkerAttribute(const Descriptor& d, const DataTypePtr type, bool required = false, const QVariant & defaultValue = QVariant());
-    virtual void setAttributeValue(const QVariant & newVal);
+    MarkerAttribute(const Descriptor &d, const DataTypePtr type, bool required = false, const QVariant &defaultValue = QVariant());
+    virtual void setAttributeValue(const QVariant &newVal);
     virtual const QVariant &getAttributePureValue() const;
     virtual bool isDefaultValue() const;
     virtual Attribute *clone();
     virtual AttributeGroup getGroup();
 
-    QList<Marker*> & getMarkers();
+    QList<Marker *> &getMarkers();
     bool contains(const QString &markerId) const;
 
 private:
-    QList<Marker*> markers;
+    QList<Marker *> markers;
 };
 
-} //U2
+}    // namespace U2
 
-#endif // _MARKER_ATTRIBUTE_H_
+#endif    // _MARKER_ATTRIBUTE_H_

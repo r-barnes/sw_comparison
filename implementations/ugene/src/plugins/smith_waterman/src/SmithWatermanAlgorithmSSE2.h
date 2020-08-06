@@ -21,12 +21,12 @@
 
 #ifdef SW2_BUILD_WITH_SSE2
 
-#ifndef _SMITHWATERMANALGORITHM_SSE2_H
-#define _SMITHWATERMANALGORITHM_SSE2_H
+#    ifndef _SMITHWATERMANALGORITHM_SSE2_H
+#        define _SMITHWATERMANALGORITHM_SSE2_H
 
-#include "SmithWatermanAlgorithm.h"
+#        include <emmintrin.h>
 
-#include <emmintrin.h>
+#        include "SmithWatermanAlgorithm.h"
 
 namespace U2 {
 
@@ -34,14 +34,15 @@ class SmithWatermanAlgorithmSSE2 : public SmithWatermanAlgorithm {
 public:
     typedef qint16 ScoreType;
 
-    virtual void launch(const SMatrix& substitutionMatrix, const QByteArray & _patternSeq,
-        const QByteArray & _searchSeq, int _gapOpen, int _gapExtension, int _minScore,
-        SmithWatermanSettings::SWResultView resultView);
+    virtual void launch(const SMatrix &substitutionMatrix, const QByteArray &_patternSeq, const QByteArray &_searchSeq, int _gapOpen, int _gapExtension, int _minScore, SmithWatermanSettings::SWResultView resultView);
 
-    static quint64 estimateNeededRamAmount(const QByteArray & _patternSeq,
-        const QByteArray & _searchSeq, const qint32 gapOpen, const qint32 gapExtension,
-        const quint32 minScore, const quint32 maxScore,
-        const SmithWatermanSettings::SWResultView resultView);
+    static quint64 estimateNeededRamAmount(const QByteArray &_patternSeq,
+                                           const QByteArray &_searchSeq,
+                                           const qint32 gapOpen,
+                                           const qint32 gapExtension,
+                                           const quint32 minScore,
+                                           const quint32 maxScore,
+                                           const SmithWatermanSettings::SWResultView resultView);
 
 private:
     static const int nElementsInVec = 8;
@@ -50,12 +51,10 @@ private:
     void calculateMatrixForAnnotationsResultWithShort();
     void calculateMatrixForMultipleAlignmentResultWithInt();
     void calculateMatrixForAnnotationsResultWithInt();
-    int calculateMatrixSSE2(unsigned queryLength, unsigned char *dbSeq, unsigned dbLength,
-        unsigned short gapOpenOrig, unsigned short gapExtend);
+    int calculateMatrixSSE2(unsigned queryLength, unsigned char *dbSeq, unsigned dbLength, unsigned short gapOpenOrig, unsigned short gapExtend);
 };
 
+}    // namespace U2
 
-} // namespace
-
-#endif
-#endif //SW2_BUILD_WITH_SSE2
+#    endif
+#endif    //SW2_BUILD_WITH_SSE2

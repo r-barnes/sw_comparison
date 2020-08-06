@@ -22,12 +22,12 @@
 #ifndef _U2_FIND_ENZYMES_TASK_H_
 #define _U2_FIND_ENZYMES_TASK_H_
 
+#include <QMutex>
+
 #include <U2Core/Task.h>
 #include <U2Core/U2Region.h>
 
 #include "FindAlgorithm.h"
-
-#include <QMutex>
 
 namespace U2 {
 
@@ -36,56 +36,58 @@ class DNATranslation;
 class U2ALGORITHM_EXPORT FindAlgorithmTaskSettings : public FindAlgorithmSettings {
 public:
     FindAlgorithmTaskSettings()
-        : searchIsCircular(false), countTask(true) {}
-    FindAlgorithmTaskSettings(const FindAlgorithmSettings& f)
-            : FindAlgorithmSettings(f), searchIsCircular(false), countTask(true) {}
+        : searchIsCircular(false), countTask(true) {
+    }
+    FindAlgorithmTaskSettings(const FindAlgorithmSettings &f)
+        : FindAlgorithmSettings(f), searchIsCircular(false), countTask(true) {
+    }
 
-    QByteArray  sequence;
-    bool        searchIsCircular;
-    QString     name;
-    bool        countTask;
+    QByteArray sequence;
+    bool searchIsCircular;
+    QString name;
+    bool countTask;
 };
 
 class U2ALGORITHM_EXPORT FindAlgorithmTask : public Task, public FindAlgorithmResultsListener {
     Q_OBJECT
 public:
-    FindAlgorithmTask(const FindAlgorithmTaskSettings& s);
+    FindAlgorithmTask(const FindAlgorithmTaskSettings &s);
 
     virtual void run();
-    virtual void onResult(const FindAlgorithmResult& r);
+    virtual void onResult(const FindAlgorithmResult &r);
 
     QList<FindAlgorithmResult> popResults();
 
-    const FindAlgorithmTaskSettings& getSettings() const {return config;}
+    const FindAlgorithmTaskSettings &getSettings() const {
+        return config;
+    }
 
 private:
     FindAlgorithmTaskSettings config;
-
-    bool    complementRun;
-
     QList<FindAlgorithmResult> newResults;
     QMutex lock;
 };
 
-
 class Document;
 
-class U2ALGORITHM_EXPORT LoadPatternsFileTask: public Task{
+class U2ALGORITHM_EXPORT LoadPatternsFileTask : public Task {
     Q_OBJECT
 public:
     LoadPatternsFileTask(const QString &_filePath, const QString &annotationName = QString());
-    QList<QPair<QString, QString> > getNamesPatterns(){return namesPatterns;}
+    QList<QPair<QString, QString>> getNamesPatterns() {
+        return namesPatterns;
+    }
     void run();
 
 private:
     Document *getDocumentFromFilePath();
 
     QString filePath;
-    QList<QPair<QString, QString> > namesPatterns;
+    QList<QPair<QString, QString>> namesPatterns;
     bool isRawSequence;
     QString annotationName;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

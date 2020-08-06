@@ -29,27 +29,27 @@ using namespace HI;
 
 class DownloadRemoteFileDialogFiller : public Filler {
 public:
-    enum ActionType {                           // An appropriate action data:
-        SetResourceIds,                         // QStringList with IDs
-        SetDatabase,                            // QString with exact database name
-        EnterSaveToDirectoryPath,               // QString with path
-        SelectSaveToDirectoryPath,              // QString with path
-        SetOutputFormat,                        // QString with format
-        SetForceSequenceDownload,               // bool value
-        CheckDatabase,                          // QString with expected database name
-        CheckDatabasesCount,                    // int with expected databases count
-        CheckOutputFormatVisibility,            // bool expected state (is visible)
-        CheckOutputFormat,                      // QString with expected format name
-        CheckForceSequenceDownloadVisibility,   // bool expected state (is visible)
-        CheckForceSequenceDownload,             // bool expected state (is checked)
-        ClickOk,                                // ignored
-        ClickCancel                             // ignored
+    enum ActionType {    // An appropriate action data:
+        SetResourceIds,    // QStringList with IDs
+        SetDatabase,    // QString with exact database name
+        EnterSaveToDirectoryPath,    // QString with path
+        SelectSaveToDirectoryPath,    // QString with path
+        SetOutputFormat,    // QString with format
+        SetForceSequenceDownload,    // bool value
+        CheckDatabase,    // QString with expected database name
+        CheckDatabasesCount,    // int with expected databases count
+        CheckOutputFormatVisibility,    // bool expected state (is visible)
+        CheckOutputFormat,    // QString with expected format name
+        CheckForceSequenceDownloadVisibility,    // bool expected state (is visible)
+        CheckForceSequenceDownload,    // bool expected state (is checked)
+        ClickOk,    // ignored
+        ClickCancel    // ignored
     };
 
     typedef QPair<ActionType, QVariant> Action;
 
     DownloadRemoteFileDialogFiller(HI::GUITestOpStatus &os, const QList<Action> &actions);
-    DownloadRemoteFileDialogFiller(HI::GUITestOpStatus &os, CustomScenario* c);
+    DownloadRemoteFileDialogFiller(HI::GUITestOpStatus &os, CustomScenario *c);
 
     void commonScenario();
 
@@ -76,9 +76,8 @@ private:
 // Use DownloadRemoteFileDialogFiller instead
 class RemoteDBDialogFillerDeprecated : public Filler {
 public:
-    RemoteDBDialogFillerDeprecated(HI::GUITestOpStatus &_os, const QString _resID, int _DBItemNum, bool addToProject = true, bool forceGetSequence = true, bool _pressCancel = false, const QString _saveDirPath = QString(),
-                         GTGlobals::UseMethod _useMethod = GTGlobals::UseMouse, int _outFormatVal = -1)
-        :Filler(_os, "DownloadRemoteFileDialog"),
+    RemoteDBDialogFillerDeprecated(HI::GUITestOpStatus &_os, const QString _resID, int _DBItemNum, bool addToProject = true, bool forceGetSequence = true, bool _pressCancel = false, const QString _saveDirPath = QString(), GTGlobals::UseMethod _useMethod = GTGlobals::UseMouse, int _outFormatVal = -1)
+        : Filler(_os, "DownloadRemoteFileDialog"),
           resID(_resID),
           DBItemNum(_DBItemNum),
           addToProject(addToProject),
@@ -86,8 +85,10 @@ public:
           pressCancel(_pressCancel),
           saveDirPath(_saveDirPath),
           useMethod(_useMethod),
-          outFormatVal(_outFormatVal){}
+          outFormatVal(_outFormatVal) {
+    }
     virtual void commonScenario();
+
 private:
     QString resID;
     int DBItemNum;
@@ -99,8 +100,8 @@ private:
     int outFormatVal;
 };
 
-}   // namespace U2
+}    // namespace U2
 
 Q_DECLARE_METATYPE(QList<U2::DownloadRemoteFileDialogFiller::Action>)
 
-#endif // _U2_GT_RUNNABLES_DOWNLOAD_REMOTE_FILE_DIALOG_FILLER_H_
+#endif    // _U2_GT_RUNNABLES_DOWNLOAD_REMOTE_FILE_DIALOG_FILLER_H_

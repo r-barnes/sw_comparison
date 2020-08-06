@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "SeqPasterWidgetController.h"
+
 #include <QMessageBox>
 
 #include <U2Core/AppContext.h>
@@ -29,14 +31,12 @@
 
 #include <U2Formats/FastaFormat.h>
 
-#include "SeqPasterWidgetController.h"
 #include "ui_SeqPasterWidget.h"
 
-namespace U2{
+namespace U2 {
 
-SeqPasterWidgetController::SeqPasterWidgetController( QWidget *p, const QByteArray& initText, bool needWarning ):
-QWidget(p), preferred(0), additionalWarning(needWarning), allowFastaFormatMode(false)
-{
+SeqPasterWidgetController::SeqPasterWidgetController(QWidget *p, const QByteArray &initText, bool needWarning)
+    : QWidget(p), preferred(0), additionalWarning(needWarning), allowFastaFormatMode(false) {
     ui = new Ui_SeqPasterWidget;
     //TODO: add not null project checking
     ui->setupUi(this);
@@ -46,37 +46,37 @@ QWidget(p), preferred(0), additionalWarning(needWarning), allowFastaFormatMode(f
         ui->sequenceEdit->setPlainText(initText);
     }
 
-    QList<const DNAAlphabet*> alps = AppContext::getDNAAlphabetRegistry()->getRegisteredAlphabets();
-    foreach(const DNAAlphabet *a, alps){
+    QList<const DNAAlphabet *> alps = AppContext::getDNAAlphabetRegistry()->getRegisteredAlphabets();
+    foreach (const DNAAlphabet *a, alps) {
         ui->alphabetBox->addItem(a->getName(), a->getId());
     }
-    connect(ui->alphabetBox, SIGNAL(currentIndexChanged(const QString&)), SLOT(sl_currentIndexChanged(const QString&)));
+    connect(ui->alphabetBox, SIGNAL(currentIndexChanged(const QString &)), SLOT(sl_currentIndexChanged(const QString &)));
 }
-QByteArray SeqPasterWidgetController::getNormSequence(const DNAAlphabet * alph, const QByteArray & seq, bool replace, QChar replaceChar) {
+QByteArray SeqPasterWidgetController::getNormSequence(const DNAAlphabet *alph, const QByteArray &seq, bool replace, QChar replaceChar) {
     assert(alph != NULL);
     QByteArray ret;
-    if(alph->getId() == BaseDNAAlphabetIds::RAW()){
-        foreach(QChar c, seq){
+    if (alph->getId() == BaseDNAAlphabetIds::RAW()) {
+        foreach (QChar c, seq) {
             QChar::Category cat = c.category();
-            if((cat != QChar::Separator_Space) &&
-                (cat != QChar::Other_Control)){
-                    ret.append(c);
+            if ((cat != QChar::Separator_Space) &&
+                (cat != QChar::Other_Control)) {
+                ret.append(c);
             }
         }
-    }else{
+    } else {
         QByteArray alphabetSymbols = alph->getAlphabetChars(true);
-        for(int i = 0; i < seq.size(); i++){
+        for (int i = 0; i < seq.size(); i++) {
             QChar c = seq.at(i);
-            if(alphabetSymbols.indexOf(c) > -1){
+            if (alphabetSymbols.indexOf(c) > -1) {
                 ret.append(c);
-            }else{
-                if (replace){
+            } else {
+                if (replace) {
                     ret.append(replaceChar);
                 }
             }
         }
     }
-    if(!alph->isCaseSensitive()){
+    if (!alph->isCaseSensitive()) {
         ret = ret.toUpper();
     }
     return ret;
@@ -84,7 +84,7 @@ QByteArray SeqPasterWidgetController::getNormSequence(const DNAAlphabet * alph, 
 
 typedef QPair<QString, QString> StrStrPair;
 
-QString SeqPasterWidgetController::validate(){
+QString SeqPasterWidgetController::validate() {
     QString data = ui->sequenceEdit->document()->toPlainText();
     CHECK(!data.isEmpty(), tr("Input sequence is empty"));
 
@@ -108,13 +108,13 @@ QList<DNASequence> SeqPasterWidgetController::getSequences() const {
     return resultSequences;
 }
 
-void SeqPasterWidgetController::sl_currentIndexChanged( const QString& newText){
+void SeqPasterWidgetController::sl_currentIndexChanged(const QString &newText) {
     DNAAlphabetRegistry *r = AppContext::getDNAAlphabetRegistry();
-    if((r->findById(BaseDNAAlphabetIds::RAW()))->getName() == newText){
+    if ((r->findById(BaseDNAAlphabetIds::RAW()))->getName() == newText) {
         ui->skipRB->setDisabled(true);
         ui->replaceRB->setDisabled(true);
         ui->symbolToReplaceEdit->setDisabled(true);
-    }else{
+    } else {
         ui->skipRB->setEnabled(true);
         ui->replaceRB->setEnabled(true);
         ui->symbolToReplaceEdit->setEnabled(true);
@@ -166,29 +166,28 @@ bool SeqPasterWidgetController::isFastaFormat(const QString &data) {
     return FormatDetection_Matched == fastaFormat->checkRawData(data.toLatin1()).score;
 }
 
-void SeqPasterWidgetController::disableCustomSettings(){
+void SeqPasterWidgetController::disableCustomSettings() {
     ui->groupBox->setChecked(false);
     ui->groupBox->setDisabled(true);
     ui->groupBox->hide();
     //ui->groupBox->hide();
 }
 
-void SeqPasterWidgetController::setPreferredAlphabet( const DNAAlphabet *alp ){
+void SeqPasterWidgetController::setPreferredAlphabet(const DNAAlphabet *alp) {
     preferred = alp;
 }
 
-SeqPasterWidgetController::~SeqPasterWidgetController()
-{
+SeqPasterWidgetController::~SeqPasterWidgetController() {
     delete ui;
 }
 
-void SeqPasterWidgetController::selectText(){
+void SeqPasterWidgetController::selectText() {
     ui->sequenceEdit->selectAll();
     ui->sequenceEdit->setFocus(Qt::OtherFocusReason);
 }
 
-void SeqPasterWidgetController::setEventFilter( QObject* evFilter ){
-    if (evFilter == NULL){
+void SeqPasterWidgetController::setEventFilter(QObject *evFilter) {
+    if (evFilter == NULL) {
         return;
     }
     ui->sequenceEdit->installEventFilter(evFilter);
@@ -198,5 +197,4 @@ void SeqPasterWidgetController::allowFastaFormat(bool allow) {
     allowFastaFormatMode = allow;
 }
 
-
-}//ns
+}    // namespace U2

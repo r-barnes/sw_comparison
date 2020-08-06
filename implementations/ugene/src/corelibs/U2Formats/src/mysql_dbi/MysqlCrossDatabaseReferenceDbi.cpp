@@ -19,21 +19,21 @@
  * MA 02110-1301, USA.
  */
 
+#include "MysqlCrossDatabaseReferenceDbi.h"
+
 #include <U2Core/U2SafePoints.h>
 
-#include "MysqlCrossDatabaseReferenceDbi.h"
 #include "MysqlObjectDbi.h"
 #include "util/MysqlHelpers.h"
 
 namespace U2 {
 
-MysqlCrossDatabaseReferenceDbi::MysqlCrossDatabaseReferenceDbi(MysqlDbi* dbi) :
-    U2CrossDatabaseReferenceDbi(dbi),
-    MysqlChildDbiCommon(dbi)
-{
+MysqlCrossDatabaseReferenceDbi::MysqlCrossDatabaseReferenceDbi(MysqlDbi *dbi)
+    : U2CrossDatabaseReferenceDbi(dbi),
+      MysqlChildDbiCommon(dbi) {
 }
 
-void MysqlCrossDatabaseReferenceDbi::initSqlSchema(U2OpStatus& os) {
+void MysqlCrossDatabaseReferenceDbi::initSqlSchema(U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -44,11 +44,13 @@ void MysqlCrossDatabaseReferenceDbi::initSqlSchema(U2OpStatus& os) {
     // version - remove object version
     U2SqlQuery("CREATE TABLE CrossDatabaseReference (object BIGINT, factory LONGTEXT NOT NULL, dbi TEXT NOT NULL, "
                "rid BLOB NOT NULL, version INTEGER NOT NULL, "
-               " FOREIGN KEY(object) REFERENCES Object(id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8", db, os).execute();
+               " FOREIGN KEY(object) REFERENCES Object(id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8",
+               db,
+               os)
+        .execute();
 }
 
-
-void MysqlCrossDatabaseReferenceDbi::createCrossReference(U2CrossDatabaseReference& reference, const QString& folder, U2OpStatus& os) {
+void MysqlCrossDatabaseReferenceDbi::createCrossReference(U2CrossDatabaseReference &reference, const QString &folder, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -75,14 +77,14 @@ void MysqlCrossDatabaseReferenceDbi::removeCrossReferenceData(const U2DataId &re
     q.execute();
 }
 
-U2CrossDatabaseReference MysqlCrossDatabaseReferenceDbi::getCrossReference(const U2DataId& objectId, U2OpStatus& os) {
+U2CrossDatabaseReference MysqlCrossDatabaseReferenceDbi::getCrossReference(const U2DataId &objectId, U2OpStatus &os) {
     U2CrossDatabaseReference res(objectId, dbi->getDbiId(), 0);
 
     static const QString queryString = "SELECT r.factory, r.dbi, r.rid, r.version, o.name, o.version FROM CrossDatabaseReference AS r, Object AS o WHERE o.id = :id AND r.object = o.id";
     U2SqlQuery q(queryString, db, os);
     q.bindDataId(":id", objectId);
-    if (q.step())  {
-        res.dataRef.dbiRef.dbiFactoryId= q.getString(0);
+    if (q.step()) {
+        res.dataRef.dbiRef.dbiFactoryId = q.getString(0);
         res.dataRef.dbiRef.dbiId = q.getString(1);
         res.dataRef.entityId = q.getBlob(2);
         res.dataRef.version = q.getInt64(3);
@@ -94,7 +96,7 @@ U2CrossDatabaseReference MysqlCrossDatabaseReferenceDbi::getCrossReference(const
     return res;
 }
 
-void MysqlCrossDatabaseReferenceDbi::updateCrossReference(const U2CrossDatabaseReference& reference, U2OpStatus& os) {
+void MysqlCrossDatabaseReferenceDbi::updateCrossReference(const U2CrossDatabaseReference &reference, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -108,4 +110,4 @@ void MysqlCrossDatabaseReferenceDbi::updateCrossReference(const U2CrossDatabaseR
     q.execute();
 }
 
-}   // namespace U2
+}    // namespace U2

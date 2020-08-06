@@ -27,17 +27,19 @@
 namespace U2 {
 using namespace HI;
 
-class GraphLabelsSelectDialogFiller: public Filler
-{
+class GraphLabelsSelectDialogFiller : public Filler {
 public:
-    GraphLabelsSelectDialogFiller(HI::GUITestOpStatus &os, int _windowSize = -1, bool _selectedAreaCheck = false): Filler(os, "GraphLabelsSelectDialog"),
-        windowSize(_windowSize), selectedAreaCheck(_selectedAreaCheck){}
+    GraphLabelsSelectDialogFiller(HI::GUITestOpStatus &os, int _windowSize = -1, bool _selectedAreaCheck = false)
+        : Filler(os, "GraphLabelsSelectDialog"),
+          windowSize(_windowSize), selectedAreaCheck(_selectedAreaCheck) {
+    }
     virtual void commonScenario();
+
 private:
     int windowSize;
     bool selectedAreaCheck;
 };
 
-}
+}    // namespace U2
 
-#endif // GRAPHLABELSSELECTDIALOGFILLER_H
+#endif    // GRAPHLABELSSELECTDIALOGFILLER_H

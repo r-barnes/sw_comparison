@@ -22,12 +22,12 @@
 #ifndef _U2_MSA_HIGHLIGHTING_TAB_H_
 #define _U2_MSA_HIGHLIGHTING_TAB_H_
 
-#include "MsaHighlightingSavableTab.h"
-#include "MsaSchemeComboBoxController.h"
-
 #include <QWidget>
 
 #include <U2Gui/U2SavableWidget.h>
+
+#include "MsaHighlightingSavableTab.h"
+#include "MsaSchemeComboBoxController.h"
 
 class QCheckBox;
 class QComboBox;
@@ -47,11 +47,10 @@ class MsaHighlightingSchemeFactory;
 class MsaColorSchemeRegistry;
 class MsaHighlightingSchemeRegistry;
 
-class U2VIEW_EXPORT MSAHighlightingTab : public QWidget
-{
+class U2VIEW_EXPORT MSAHighlightingTab : public QWidget {
     Q_OBJECT
 public:
-    MSAHighlightingTab(MSAEditor* msa);
+    MSAHighlightingTab(MSAEditor *msa);
 
 signals:
     void si_colorSchemeChanged();
@@ -67,8 +66,8 @@ private slots:
     void sl_refreshSchemes();
 
 private:
-    QWidget* createColorGroup();
-    QWidget* createHighlightingGroup();
+    QWidget *createColorGroup();
+    QWidget *createHighlightingGroup();
 
     MSAEditor *msa;
     MaEditorSequenceArea *seqArea;
@@ -78,9 +77,9 @@ private:
     QCheckBox *useDots;
     QToolButton *exportHighlightning;
 
-    QLabel* colorThresholdLabel;
-    QSlider* colorThresholdSlider;
-    QDoubleSpinBox* colorSpinBox;
+    QLabel *colorThresholdLabel;
+    QSlider *colorThresholdSlider;
+    QDoubleSpinBox *colorSpinBox;
 
     QLabel *thresholdLabel;
     QSlider *highlightingThresholdSlider;
@@ -91,6 +90,6 @@ private:
     MsaHighlightingSavableTab savableTab;
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

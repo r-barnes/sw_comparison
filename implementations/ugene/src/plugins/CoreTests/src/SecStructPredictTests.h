@@ -24,7 +24,6 @@
 
 #include <U2Test/XMLTestUtils.h>
 
-
 namespace U2 {
 
 class SecStructPredictTask;
@@ -36,13 +35,13 @@ public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_SecStructPredictAlgorithm, "test-sec-struct-predict-algorithm");
     void prepare();
     Task::ReportResult report();
+
 private:
-    SecStructPredictTask* task;
+    SecStructPredictTask *task;
     QString algName;
     QString inputSeq;
     QString outputSeq;
 };
-
 
 class GTest_SecStructPredictTask : public XmlTest {
     Q_OBJECT
@@ -51,21 +50,20 @@ public:
     void prepare();
     void cleanup();
     Task::ReportResult report();
+
 private:
     bool contextAdded;
-    SecStructPredictTask* task;
-    AnnotationTableObject* aObj;
+    SecStructPredictTask *task;
+    AnnotationTableObject *aObj;
     QString seqName;
     QString algName;
     QString resultsTableContextName;
 };
 
-
 class SecStructPredictTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-} //namespace
+}    // namespace U2
 #endif
-

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "RunFileSystem.h"
+
 #include <QFileInfo>
 
 #include <U2Core/U2OpStatusUtils.h>
@@ -28,23 +30,17 @@
 #include <U2Lang/BaseAttributes.h>
 #include <U2Lang/SchemaConfig.h>
 
-#include "RunFileSystem.h"
-
 namespace U2 {
 
 /************************************************************************/
 /* FSItem */
 /************************************************************************/
 FSItem::FSItem()
-: parentItem(NULL), dir(false)
-{
-
+    : parentItem(NULL), dir(false) {
 }
 
 FSItem::FSItem(const QString &name, bool isDirectory, FSItem *parent)
-: parentItem(parent), itemName(name), dir(isDirectory)
-{
-
+    : parentItem(parent), itemName(name), dir(isDirectory) {
 }
 
 FSItem::~FSItem() {
@@ -59,16 +55,16 @@ QString FSItem::name() const {
     return itemName;
 }
 
-QVector<FSItem*> FSItem::children() const {
-    SAFE_POINT(isDir(), "Files can not have children", QVector<FSItem*>());
+QVector<FSItem *> FSItem::children() const {
+    SAFE_POINT(isDir(), "Files can not have children", QVector<FSItem *>());
     return items;
 }
 
-FSItem * FSItem::parent() const {
+FSItem *FSItem::parent() const {
     return parentItem;
 }
 
-FSItem * FSItem::child(int pos) const {
+FSItem *FSItem::child(int pos) const {
     SAFE_POINT(isDir(), "Files can not have children", NULL);
     if (pos >= items.size() || pos < 0) {
         return NULL;
@@ -78,7 +74,7 @@ FSItem * FSItem::child(int pos) const {
 
 int FSItem::row() const {
     CHECK(NULL != parentItem, 0);
-    return parentItem->items.indexOf(const_cast<FSItem*>(this));
+    return parentItem->items.indexOf(const_cast<FSItem *>(this));
 }
 
 bool FSItem::contains(const QString &name) const {
@@ -101,7 +97,7 @@ void FSItem::addChild(FSItem *item) {
 
 int FSItem::posToInsert(FSItem *item) const {
     int pos = 0;
-    while (pos<items.size()) {
+    while (pos < items.size()) {
         FSItem *i = items[pos];
         if (i->isDir() && !item->isDir()) {
             pos++;
@@ -129,7 +125,7 @@ void FSItem::removeChild(const QString &name, U2OpStatus &os) {
     items.remove(items.indexOf(item));
 }
 
-FSItem * FSItem::getItem(const QVector<FSItem*> &items, const QString &name) {
+FSItem *FSItem::getItem(const QVector<FSItem *> &items, const QString &name) {
     foreach (FSItem *item, items) {
         if (item->name() == name) {
             return item;
@@ -149,8 +145,7 @@ void FSItem::noChildren() {
 /* RunFileSystem */
 /************************************************************************/
 RunFileSystem::RunFileSystem(QObject *parent)
-: QObject(parent)
-{
+    : QObject(parent) {
     root = new FSItem(tr("Workflow-run output"), true);
 }
 
@@ -221,11 +216,11 @@ void RunFileSystem::reset() {
     root->items.clear();
 }
 
-FSItem * RunFileSystem::getRoot() {
+FSItem *RunFileSystem::getRoot() {
     return root;
 }
 
-FSItem * RunFileSystem::find(const QStringList &path, bool &found) {
+FSItem *RunFileSystem::find(const QStringList &path, bool &found) {
     found = true;
     FSItem *current = root;
     foreach (const QString &name, path) {
@@ -244,7 +239,7 @@ FSItem * RunFileSystem::find(const QStringList &path, bool &found) {
     return current;
 }
 
-FSItem * RunFileSystem::createPath(const QStringList &path, U2OpStatus &os) {
+FSItem *RunFileSystem::createPath(const QStringList &path, U2OpStatus &os) {
     FSItem *current = root;
     QString pathStr = root->name();
     foreach (const QString &dirName, path) {
@@ -288,7 +283,7 @@ void RunFileSystem::test(const QString &file) {
 
 QStringList RunFileSystem::test(FSItem &root) {
     QStringList result;
-    for (QVector<FSItem*>::Iterator i=root.items.begin(); i!=root.items.end(); i++) {
+    for (QVector<FSItem *>::Iterator i = root.items.begin(); i != root.items.end(); i++) {
         if ((*i)->isDir()) {
             QStringList mid = test(*(*i));
             if (mid.isEmpty()) {
@@ -308,9 +303,9 @@ QStringList RunFileSystem::test(FSItem &root) {
 /************************************************************************/
 /* RFSUtils */
 /************************************************************************/
-void RFSUtils::initRFS(RunFileSystem &rfs, const QList<Workflow::Actor*> &actors, SchemaConfig *cfg) {
+void RFSUtils::initRFS(RunFileSystem &rfs, const QList<Workflow::Actor *> &actors, SchemaConfig *cfg) {
     rfs.reset();
-    { // add report dir
+    {    // add report dir
         U2OpStatus2Log os;
         rfs.addItem("report", true, os);
     }
@@ -368,4 +363,4 @@ bool RFSUtils::isCorrectUrl(const QString &url) {
     return true;
 }
 
-} // U2
+}    // namespace U2

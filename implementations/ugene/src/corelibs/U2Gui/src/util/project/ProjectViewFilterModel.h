@@ -52,7 +52,7 @@ public:
     int columnCount(const QModelIndex &parent) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
     QVariant data(const QModelIndex &index, int role) const;
-    QMimeData * mimeData(const QModelIndexList &indexes) const;
+    QMimeData *mimeData(const QModelIndexList &indexes) const;
     QStringList mimeTypes() const;
 
     QModelIndex mapToSource(const QModelIndex &proxyIndex) const;
@@ -65,7 +65,7 @@ signals:
     void si_filteringFinished();
 
 private slots:
-    void sl_objectsFiltered(const QString &groupName, const QList<QPointer<GObject> > &objs);
+    void sl_objectsFiltered(const QString &groupName, const QList<QPointer<GObject>> &objs);
     void sl_rowsAboutToBeRemoved(const QModelIndex &parent, int first, int last);
     void sl_dataChanged(const QModelIndex &before, const QModelIndex &after);
 
@@ -76,9 +76,9 @@ private:
     };
 
     static ItemType getType(const QModelIndex &index);
-    static QObject * toQObject(const QModelIndex &index);
-    static FilteredProjectGroup * toGroup(const QModelIndex &index);
-    static WrappedObject * toObject(const QModelIndex &index);
+    static QObject *toQObject(const QModelIndex &index);
+    static FilteredProjectGroup *toGroup(const QModelIndex &index);
+    static WrappedObject *toObject(const QModelIndex &index);
 
     void addFilteredObject(const QString &filterGroupName, GObject *obj);
 
@@ -91,7 +91,7 @@ private:
 
     bool hasFilterGroup(const QString &name) const;
     void addFilterGroup(const QString &name);
-    FilteredProjectGroup * findFilterGroup(const QString &groupName) const;
+    FilteredProjectGroup *findFilterGroup(const QString &groupName) const;
     void clearFilterGroups();
 
     ProjectTreeControllerModeSettings settings;
@@ -100,6 +100,6 @@ private:
     QList<FilteredProjectGroup *> filterGroups;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_PROJECT_VIEW_FILTER_MODEL_H_
+#endif    // _U2_PROJECT_VIEW_FILTER_MODEL_H_

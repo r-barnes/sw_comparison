@@ -24,9 +24,9 @@
 
 #include <QPointer>
 
-#include <U2Gui/JavaScriptAgent.h>
-
 #include <U2Lang/WorkflowMonitor.h>
+
+#include "webview/JavaScriptAgent.h"
 
 namespace U2 {
 
@@ -39,14 +39,14 @@ class DashboardJsAgent : public JavaScriptAgent {
     Q_PROPERTY(bool showHint READ getShowHint CONSTANT)
 
 public:
-    DashboardJsAgent(Dashboard* parent);
+    DashboardJsAgent(Dashboard *parent);
 
     const QString &getId() const;
 
     Q_INVOKABLE QString getWorkersParamsInfo();
 
 public slots:
-    void sl_onJsError(const QString& errorMessage);
+    void sl_onJsError(const QString &errorMessage);
 
     void openUrl(const QString &url);
     void openByOS(const QString &url);
@@ -60,11 +60,12 @@ public slots:
 signals:
     void si_progressChanged(int progress);
     void si_taskStateChanged(QString state);
-    void si_newProblem(QString problem);                        //workaround for Qt5.4 and Qt5.5, sould be simple QJsonObject. More info see https://bugreports.qt.io/browse/QTBUG-48198
-    void si_workerStatsInfoChanged(QString info);               //workaround for Qt5.4 and Qt5.5, sould be simple QJsonObject. More info see https://bugreports.qt.io/browse/QTBUG-48198
-    void si_workerStatsUpdate(QString workersStatisticsInfo);   //workaround for Qt5.4, sould be simple QJsonArray.
-    void si_onLogChanged(QString logEntry);                     //workaround for Qt5.4 and Qt5.5, sould be simple QJsonObject. More info see https://bugreports.qt.io/browse/QTBUG-48198
-    void si_newOutputFile(QString fileInfo);                    //workaround for Qt5.4 and Qt5.5, sould be simple QJsonObject. More info see https://bugreports.qt.io/browse/QTBUG-48198
+    void si_newProblem(QString problem);    //workaround for Qt5.4 and Qt5.5, sould be simple QJsonObject. More info see https://bugreports.qt.io/browse/QTBUG-48198
+    void si_workerStatsInfoChanged(QString info);    //workaround for Qt5.4 and Qt5.5, sould be simple QJsonObject. More info see https://bugreports.qt.io/browse/QTBUG-48198
+    void si_workerStatsUpdate(QString workersStatisticsInfo);    //workaround for Qt5.4, sould be simple QJsonArray.
+    void si_onLogChanged(QString logEntry);    //workaround for Qt5.4 and Qt5.5, sould be simple QJsonObject. More info see https://bugreports.qt.io/browse/QTBUG-48198
+    void si_newOutputFile(QString fileInfo);    //workaround for Qt5.4 and Qt5.5, sould be simple QJsonObject. More info see https://bugreports.qt.io/browse/QTBUG-48198
+    void si_switchTab(QString tabId);    //workaround for Qt5.4 and Qt5.5, sould be simple QJsonObject. More info see https://bugreports.qt.io/browse/QTBUG-48198
     void si_createOutputWidget();
 
 private:
@@ -77,6 +78,6 @@ private:
     static const QString ID;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_DASHBOARD_JS_AGENT_H_
+#endif    // _U2_DASHBOARD_JS_AGENT_H_

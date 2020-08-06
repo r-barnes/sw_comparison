@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportSequenceTask.h"
+
 #include <QFileInfo>
 
 #include <U2Core/AnnotationTableObject.h>
@@ -29,22 +31,21 @@
 #include <U2Core/DNATranslation.h>
 #include <U2Core/DNATranslationImpl.h>
 #include <U2Core/DocumentModel.h>
+#include <U2Core/GObjectRelationRoles.h>
 #include <U2Core/IOAdapter.h>
 #include <U2Core/IOAdapterUtils.h>
-#include <U2Core/GObjectRelationRoles.h>
 #include <U2Core/L10n.h>
 #include <U2Core/SequenceUtils.h>
 #include <U2Core/TextUtils.h>
 #include <U2Core/U2AlphabetUtils.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2OpStatusUtils.h>
-#include <U2Core/U2SequenceUtils.h>
 #include <U2Core/U2SafePoints.h>
+#include <U2Core/U2SequenceUtils.h>
 
 #include "ExportUtils.h"
-#include "ExportSequenceTask.h"
 
-static const qint64 MAX_CHUNK_LENGTH = 4194305; // (4 MiB + 1) chunk. Remainder of the division by 3 is 2.
+static const qint64 MAX_CHUNK_LENGTH = 4194305;    // (4 MiB + 1) chunk. Remainder of the division by 3 is 2.
 
 static QMutex seqRefGuard(QMutex::NonRecursive);
 
@@ -53,21 +54,18 @@ namespace U2 {
 QMap<U2EntityRef, int> ExportSequenceItem::sequencesRefCounts = QMap<U2EntityRef, int>();
 
 ExportSequenceItem::ExportSequenceItem()
-    : circular(false), alphabet(NULL), length(0), complTT(NULL), aminoTT(NULL), backTT(NULL)
-{
-
+    : circular(false), alphabet(NULL), length(0), complTT(NULL), aminoTT(NULL), backTT(NULL) {
 }
 
 ExportSequenceItem::ExportSequenceItem(const ExportSequenceItem &other)
     : seqRef(other.seqRef), name(other.name), circular(other.circular), alphabet(other.alphabet), length(other.length),
-    annotations(other.annotations), complTT(other.complTT), aminoTT(other.aminoTT), backTT(other.backTT)
-{
+      annotations(other.annotations), complTT(other.complTT), aminoTT(other.aminoTT), backTT(other.backTT) {
     if (ownsSeq()) {
         incrementSeqRefCount();
     }
 }
 
-ExportSequenceItem & ExportSequenceItem::operator =(const ExportSequenceItem &other) {
+ExportSequenceItem &ExportSequenceItem::operator=(const ExportSequenceItem &other) {
     seqRef = other.seqRef;
     name = other.name;
     circular = other.circular;
@@ -84,7 +82,7 @@ ExportSequenceItem & ExportSequenceItem::operator =(const ExportSequenceItem &ot
     return *this;
 }
 
-bool ExportSequenceItem::operator==(const ExportSequenceItem& other) const {
+bool ExportSequenceItem::operator==(const ExportSequenceItem &other) const {
     return seqRef == other.seqRef &&
            name == other.name &&
            circular == other.circular &&
@@ -151,7 +149,7 @@ void ExportSequenceItem::setOwnershipOverSeq(const U2Sequence &seq, const U2DbiR
     startSeqOwnership();
 }
 
-U2SequenceObject * ExportSequenceItem::takeOwnedSeq() {
+U2SequenceObject *ExportSequenceItem::takeOwnedSeq() {
     stopSeqOwnership();
     return new U2SequenceObject(name, seqRef);
 }
@@ -177,21 +175,21 @@ void ExportSequenceItem::setSequenceInfo(U2SequenceObject *seqObj) {
 }
 
 ExportSequenceTaskSettings::ExportSequenceTaskSettings()
-                          : merge(false),
-                            mergeGap(0),
-                            strand(TriState_Yes),
-                            allAminoFrames(false),
-                            mostProbable(true),
-                            saveAnnotations(false),
-                            formatId(BaseDocumentFormats::FASTA),
-                            sequenceLength(0) {}
+    : merge(false),
+      mergeGap(0),
+      strand(TriState_Yes),
+      allAminoFrames(false),
+      mostProbable(true),
+      saveAnnotations(false),
+      formatId(BaseDocumentFormats::FASTA),
+      sequenceLength(0) {
+}
 
 //////////////////////////////////////////////////////////////////////////
 //ExportSequenceTask
 
 ExportSequenceTask::ExportSequenceTask(const ExportSequenceTaskSettings &s)
-    : DocumentProviderTask("", TaskFlag_None), config(s)
-{
+    : DocumentProviderTask("", TaskFlag_None), config(s) {
     setTaskName(tr("Export sequence to '%1'").arg(QFileInfo(s.fileName).fileName()));
     setVerboseLogMode(true);
 }
@@ -212,7 +210,7 @@ ExportSequenceItem toRevComplement(ExportSequenceItem &ei, const U2DbiRef &resul
     CHECK_EXT(NULL != ei.complTT, os.setError(ExportSequenceTask::tr("Complement translation not found")), complEi);
 
     U2SequenceImporter importer(QVariantMap(), true);
-    importer.startSequence(os, resultDbiRef, U2ObjectDbi::ROOT_FOLDER, ei.name +"|rev-compl", ei.circular);
+    importer.startSequence(os, resultDbiRef, U2ObjectDbi::ROOT_FOLDER, ei.name + "|rev-compl", ei.circular);
     CHECK_OP(os, complEi);
 
     // translate
@@ -294,7 +292,7 @@ QList<ExportSequenceItem> toAmino(ExportSequenceItem &ei, bool allFrames, const 
         const U2Sequence frameSeq = frameImporters[frameNumber].finalizeSequence(os);
         CHECK_OP(os, res);
 
-        if (0 == frameSeq.length) { // no translation was produced
+        if (0 == frameSeq.length) {    // no translation was produced
             coreLog.info(ExportSequenceTask::tr("The \"%1\" translation is empty due to small source sequence length").arg(frameSeq.visualName));
             continue;
         }
@@ -398,8 +396,7 @@ void saveExportItems2Doc(const QList<ExportSequenceItem> &items, const QString &
     QSet<QString> usedNames;
     int itemCount = 0;
     foreach (ExportSequenceItem ri, items) {
-        U2SequenceObject *seqObj = ri.ownsSeq() ? ri.takeOwnedSeq()
-            : qobject_cast<U2SequenceObject *>(U2SequenceObject(ri.name, ri.seqRef).clone(doc->getDbiRef(), os, hints));
+        U2SequenceObject *seqObj = ri.ownsSeq() ? ri.takeOwnedSeq() : qobject_cast<U2SequenceObject *>(U2SequenceObject(ri.name, ri.seqRef).clone(doc->getDbiRef(), os, hints));
         CHECK_OP(os, );
         seqObj->moveToThread(doc->thread());
 
@@ -428,9 +425,7 @@ void saveExportItems2Doc(const QList<ExportSequenceItem> &items, const QString &
     }
 }
 
-QList<ExportSequenceItem> getTranslatedItems(QList<ExportSequenceItem> &items, bool allAminoFrames, bool mostProbableTranslation,
-    const U2DbiRef &resDbiRef, U2OpStatus &os)
-{
+QList<ExportSequenceItem> getTranslatedItems(QList<ExportSequenceItem> &items, bool allAminoFrames, bool mostProbableTranslation, const U2DbiRef &resDbiRef, U2OpStatus &os) {
     // translate to amino or back-translate if needed
     QList<ExportSequenceItem> result;
     for (int i = 0, n = items.size(); i < n; ++i) {
@@ -447,7 +442,7 @@ QList<ExportSequenceItem> getTranslatedItems(QList<ExportSequenceItem> &items, b
     return result;
 }
 
-}
+}    // namespace
 
 void ExportSequenceTask::run() {
     DocumentFormatRegistry *r = AppContext::getDocumentFormatRegistry();
@@ -508,20 +503,17 @@ ExportSequenceItem ExportSequenceTask::mergedCircularItem(const ExportSequenceIt
 // Export sequence under annotations
 
 ExportSequenceAItem::ExportSequenceAItem()
-    : aminoTT(NULL), complTT(NULL)
-{
-
+    : aminoTT(NULL), complTT(NULL) {
 }
 
 ExportAnnotationSequenceTask::ExportAnnotationSequenceTask(const ExportAnnotationSequenceTaskSettings &s)
-    : DocumentProviderTask(tr("Export annotations"), TaskFlags_NR_FOSE_COSC), config(s), exportSubTask(NULL)
-{
+    : DocumentProviderTask(tr("Export annotations"), TaskFlags_NR_FOSE_COSC), config(s), exportSubTask(NULL) {
     extractSubTask = new ExportAnnotationSequenceSubTask(config);
     addSubTask(extractSubTask);
 }
 
-QList<Task*> ExportAnnotationSequenceTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> res;
+QList<Task *> ExportAnnotationSequenceTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> res;
     CHECK(!isCanceled(), res);
 
     if (subTask == extractSubTask && !extractSubTask->hasError()) {
@@ -535,9 +527,7 @@ QList<Task*> ExportAnnotationSequenceTask::onSubTaskFinished(Task* subTask) {
 }
 
 ExportAnnotationSequenceSubTask::ExportAnnotationSequenceSubTask(ExportAnnotationSequenceTaskSettings &s)
-    : Task(tr("Extract annotation regions"), TaskFlag_None), config(s)
-{
-
+    : Task(tr("Extract annotation regions"), TaskFlag_None), config(s) {
 }
 
 namespace {
@@ -550,16 +540,14 @@ int totalAnnotationCount(const ExportAnnotationSequenceTaskSettings &config) {
     return result;
 }
 
-}
+}    // namespace
 
-U2Sequence ExportAnnotationSequenceSubTask::importAnnotatedSeq2Dbi(const SharedAnnotationData &ad, const ExportSequenceAItem &ei, const U2DbiRef &resultDbiRef,
-    QVector<U2Region> &resultRegions, U2OpStatus &os)
-{
+U2Sequence ExportAnnotationSequenceSubTask::importAnnotatedSeq2Dbi(const SharedAnnotationData &ad, const ExportSequenceAItem &ei, const U2DbiRef &resultDbiRef, QVector<U2Region> &resultRegions, U2OpStatus &os) {
     U2SequenceImporter importer(QVariantMap(), true);
     importer.startSequence(os, resultDbiRef, U2ObjectDbi::ROOT_FOLDER, ad->name, false);
     CHECK_OP(os, U2Sequence());
 
-    foreach(const U2Region &annotatedRegion, ad->location->regions) {
+    foreach (const U2Region &annotatedRegion, ad->location->regions) {
         qint64 currentRegionLength = 0;
         for (qint64 pos = annotatedRegion.startPos; pos < annotatedRegion.endPos(); pos += MAX_CHUNK_LENGTH) {
             const qint64 currentChunkSize = qMin(MAX_CHUNK_LENGTH, annotatedRegion.endPos() - pos);
@@ -627,5 +615,4 @@ void ExportAnnotationSequenceSubTask::run() {
     }
 }
 
-}//namespace
-
+}    // namespace U2

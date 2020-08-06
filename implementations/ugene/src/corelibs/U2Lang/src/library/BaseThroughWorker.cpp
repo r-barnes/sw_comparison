@@ -19,24 +19,21 @@
 * MA 02110-1301, USA.
 */
 
-#include <U2Core/U2OpStatusUtils.h>
-
 #include "BaseThroughWorker.h"
+
+#include <U2Core/U2OpStatusUtils.h>
 
 namespace U2 {
 namespace LocalWorkflow {
 
 BaseThroughWorker::BaseThroughWorker(Actor *a, const QString &inPortId, const QString &outPortId)
-: BaseOneOneWorker(a, /* autoTransitBus= */true, inPortId, outPortId)
-{
-
+    : BaseOneOneWorker(a, /* autoTransitBus= */ true, inPortId, outPortId) {
 }
 
 void BaseThroughWorker::cleanup() {
-
 }
 
-Task * BaseThroughWorker::processNextInputMessage() {
+Task *BaseThroughWorker::processNextInputMessage() {
     const Message message = getMessageAndSetupScriptValues(input);
     U2OpStatusImpl os;
     Task *task = createTask(message, os);
@@ -46,7 +43,7 @@ Task * BaseThroughWorker::processNextInputMessage() {
     return task;
 }
 
-Task * BaseThroughWorker::onInputEnded() {
+Task *BaseThroughWorker::onInputEnded() {
     return NULL;
 }
 
@@ -54,5 +51,5 @@ Message BaseThroughWorker::composeMessage(const QVariantMap &data) {
     return Message(output->getBusType(), data);
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

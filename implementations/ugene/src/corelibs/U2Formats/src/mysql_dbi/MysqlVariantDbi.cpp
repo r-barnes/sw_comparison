@@ -19,11 +19,12 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SqlHelpers.h>
+#include "MysqlVariantDbi.h"
+
 #include <U2Core/U2SafePoints.h>
+#include <U2Core/U2SqlHelpers.h>
 
 #include "MysqlObjectDbi.h"
-#include "MysqlVariantDbi.h"
 #include "util/MysqlHelpers.h"
 
 namespace U2 {
@@ -32,13 +33,13 @@ namespace U2 {
 /* Support classes */
 /********************************************************************/
 
-class MysqlVariantLoader: public MysqlRSLoader<U2Variant> {
+class MysqlVariantLoader : public MysqlRSLoader<U2Variant> {
 public:
-    U2Variant load(U2SqlQuery* q) {
+    U2Variant load(U2SqlQuery *q) {
         U2Variant res;
         res.id = q->getDataId(0, U2Type::VariantType);
         res.startPos = q->getInt64(1);
-        res.endPos =  q->getInt64(2);
+        res.endPos = q->getInt64(2);
         res.refData = q->getBlob(3);
         res.obsData = q->getBlob(4);
         res.publicId = q->getString(5);
@@ -49,12 +50,12 @@ public:
 };
 
 class SimpleVariantTrackLoader : public MysqlRSLoader<U2VariantTrack> {
-    U2VariantTrack load(U2SqlQuery* q) {
+    U2VariantTrack load(U2SqlQuery *q) {
         U2VariantTrack track;
         SAFE_POINT(NULL != q, "Query pointer is NULL", track);
 
         track.id = q->getDataId(0, U2Type::VariantTrack);
-        track.sequence = q->getDataId(1,U2Type::Sequence);
+        track.sequence = q->getDataId(1, U2Type::Sequence);
         track.sequenceName = q->getString(2);
         track.trackType = (VariantTrackType)q->getInt32(3);
         track.fileHeader = q->getString(4);
@@ -65,10 +66,11 @@ class SimpleVariantTrackLoader : public MysqlRSLoader<U2VariantTrack> {
 
 class SimpleVariantTrackFilter : public MysqlRSFilter<U2VariantTrack> {
 public:
-    SimpleVariantTrackFilter(VariantTrackType trackType) :
-        trackType(trackType) {}
+    SimpleVariantTrackFilter(VariantTrackType trackType)
+        : trackType(trackType) {
+    }
 
-    bool filter(const U2VariantTrack& track) {
+    bool filter(const U2VariantTrack &track) {
         return (trackType == TrackType_All || trackType == track.trackType);
     }
 
@@ -76,25 +78,26 @@ private:
     VariantTrackType trackType;
 };
 
-
 /********************************************************************/
 /* MysqlVariantDbi */
 /********************************************************************/
 
-MysqlVariantDbi::MysqlVariantDbi(MysqlDbi* dbi) :
-    U2VariantDbi(dbi),
-    MysqlChildDbiCommon(dbi)
-{
+MysqlVariantDbi::MysqlVariantDbi(MysqlDbi *dbi)
+    : U2VariantDbi(dbi),
+      MysqlChildDbiCommon(dbi) {
 }
 
-void MysqlVariantDbi::initSqlSchema(U2OpStatus& os) {
+void MysqlVariantDbi::initSqlSchema(U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
     // Variant track object
     U2SqlQuery(" CREATE TABLE VariantTrack (object BIGINT PRIMARY KEY, sequence BIGINT, sequenceName TEXT NOT NULL,"
-        " trackType INTEGER DEFAULT 1, fileHeader LONGTEXT,"
-        " FOREIGN KEY(object) REFERENCES Object(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8", db, os).execute();
+               " trackType INTEGER DEFAULT 1, fileHeader LONGTEXT,"
+               " FOREIGN KEY(object) REFERENCES Object(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8",
+               db,
+               os)
+        .execute();
 
     // Variant element
     // track - Variant track object id
@@ -106,18 +109,21 @@ void MysqlVariantDbi::initSqlSchema(U2OpStatus& os) {
     // publicId - identifier visible for user
     // additionalInfo - added for vcf4 support
     U2SqlQuery("CREATE TABLE Variant(id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT, track BIGINT, startPos BIGINT, endPos BIGINT, "
-        " refData BLOB NOT NULL, obsData BLOB NOT NULL, publicId TEXT NOT NULL, additionalInfo TEXT,"
-        " FOREIGN KEY(track) REFERENCES VariantTrack(object) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8", db, os).execute();
+               " refData BLOB NOT NULL, obsData BLOB NOT NULL, publicId TEXT NOT NULL, additionalInfo TEXT,"
+               " FOREIGN KEY(track) REFERENCES VariantTrack(object) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8",
+               db,
+               os)
+        .execute();
 }
 
-U2DbiIterator<U2VariantTrack>* MysqlVariantDbi::getVariantTracks(VariantTrackType trackType, U2OpStatus& os) {
+U2DbiIterator<U2VariantTrack> *MysqlVariantDbi::getVariantTracks(VariantTrackType trackType, U2OpStatus &os) {
     static const QString queryString = "SELECT object, sequence, sequenceName, trackType, fileHeader FROM VariantTrack";
     QSharedPointer<U2SqlQuery> q(new U2SqlQuery(queryString, db, os));
 
     return new MysqlRSIterator<U2VariantTrack>(q, new SimpleVariantTrackLoader(), new SimpleVariantTrackFilter(trackType), U2VariantTrack(), os);
 }
 
-U2DbiIterator<U2VariantTrack>* MysqlVariantDbi::getVariantTracks(const U2DataId& seqId, U2OpStatus& os) {
+U2DbiIterator<U2VariantTrack> *MysqlVariantDbi::getVariantTracks(const U2DataId &seqId, U2OpStatus &os) {
     static const QString queryString = "SELECT object, sequence, sequenceName, trackType, fileHeader FROM VariantTrack WHERE sequence = :sequence";
     QSharedPointer<U2SqlQuery> q(new U2SqlQuery(queryString, db, os));
     q->bindDataId(":sequence", seqId);
@@ -125,7 +131,7 @@ U2DbiIterator<U2VariantTrack>* MysqlVariantDbi::getVariantTracks(const U2DataId&
     return new MysqlRSIterator<U2VariantTrack>(q, new SimpleVariantTrackLoader(), NULL, U2VariantTrack(), os);
 }
 
-U2DbiIterator<U2VariantTrack>* MysqlVariantDbi::getVariantTracks( const U2DataId& seqId, VariantTrackType trackType, U2OpStatus& os ) {
+U2DbiIterator<U2VariantTrack> *MysqlVariantDbi::getVariantTracks(const U2DataId &seqId, VariantTrackType trackType, U2OpStatus &os) {
     if (trackType == TrackType_All) {
         return getVariantTracks(seqId, os);
     }
@@ -137,7 +143,7 @@ U2DbiIterator<U2VariantTrack>* MysqlVariantDbi::getVariantTracks( const U2DataId
     return new MysqlRSIterator<U2VariantTrack>(q, new SimpleVariantTrackLoader(), new SimpleVariantTrackFilter(trackType), U2VariantTrack(), os);
 }
 
-U2VariantTrack MysqlVariantDbi::getVariantTrack(const U2DataId& variantTrackId, U2OpStatus& os) {
+U2VariantTrack MysqlVariantDbi::getVariantTrack(const U2DataId &variantTrackId, U2OpStatus &os) {
     U2VariantTrack res;
     DBI_TYPE_CHECK(variantTrackId, U2Type::VariantTrack, os, res);
     MysqlTransaction t(db, os);
@@ -155,7 +161,8 @@ U2VariantTrack MysqlVariantDbi::getVariantTrack(const U2DataId& variantTrackId, 
         res.sequenceName = q.getString(1);
         int trackType = q.getInt32(2);
         CHECK_EXT(TrackType_FIRST <= trackType && trackType <= TrackType_LAST,
-                  os.setError(U2DbiL10n::tr("Invalid variant track type: %1").arg(trackType)), res);
+                  os.setError(U2DbiL10n::tr("Invalid variant track type: %1").arg(trackType)),
+                  res);
         res.trackType = static_cast<VariantTrackType>(trackType);
         res.fileHeader = q.getString(3);
         q.ensureDone();
@@ -164,7 +171,7 @@ U2VariantTrack MysqlVariantDbi::getVariantTrack(const U2DataId& variantTrackId, 
     return res;
 }
 
-U2VariantTrack MysqlVariantDbi::getVariantTrackofVariant( const U2DataId& variantId, U2OpStatus& os ){
+U2VariantTrack MysqlVariantDbi::getVariantTrackofVariant(const U2DataId &variantId, U2OpStatus &os) {
     U2VariantTrack res;
     DBI_TYPE_CHECK(variantId, U2Type::VariantType, os, res);
     MysqlTransaction t(db, os);
@@ -182,13 +189,13 @@ U2VariantTrack MysqlVariantDbi::getVariantTrackofVariant( const U2DataId& varian
     return res;
 }
 
-void MysqlVariantDbi::addVariantsToTrack(const U2VariantTrack& track, U2DbiIterator<U2Variant>* it, U2OpStatus& os) {
+void MysqlVariantDbi::addVariantsToTrack(const U2VariantTrack &track, U2DbiIterator<U2Variant> *it, U2OpStatus &os) {
     CHECK_EXT(!track.sequenceName.isEmpty(), os.setError(U2DbiL10n::tr("Sequence name is not set")), );
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
     static const QString queryString = "INSERT INTO Variant(track, startPos, endPos, refData, obsData, publicId, additionalInfo) "
-            "VALUES(:track, :startPos, :endPos, :refData, :obsData, :publicId, :additionalInfo)";
+                                       "VALUES(:track, :startPos, :endPos, :refData, :obsData, :publicId, :additionalInfo)";
     U2SqlQuery q(queryString, db, os);
 
     while (it->hasNext()) {
@@ -206,7 +213,7 @@ void MysqlVariantDbi::addVariantsToTrack(const U2VariantTrack& track, U2DbiItera
     }
 }
 
-void MysqlVariantDbi::createVariationsIndex( U2OpStatus& os ) {
+void MysqlVariantDbi::createVariationsIndex(U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -215,18 +222,18 @@ void MysqlVariantDbi::createVariationsIndex( U2OpStatus& os ) {
     U2SqlQuery("CREATE INDEX IF NOT EXISTS VariantIndexstartPos ON Variant(startPos)", db, os).execute();
 }
 
-void MysqlVariantDbi::createVariantTrack(U2VariantTrack& track, VariantTrackType trackType, const QString& folder, U2OpStatus& os) {
+void MysqlVariantDbi::createVariantTrack(U2VariantTrack &track, VariantTrackType trackType, const QString &folder, U2OpStatus &os) {
     CHECK_EXT(!track.sequenceName.isEmpty(), os.setError(U2DbiL10n::tr("Sequence name is not set")), );
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
     dbi->getMysqlObjectDbi()->createObject(track, folder, U2DbiObjectRank_TopLevel, os);
-    CHECK_OP(os,);
+    CHECK_OP(os, );
 
     track.trackType = trackType;
 
     static const QString queryString = "INSERT INTO VariantTrack(object, sequence, sequenceName, trackType, fileHeader) "
-            "VALUES(:object, :sequence, :sequenceName, :trackType, :fileHeader)";
+                                       "VALUES(:object, :sequence, :sequenceName, :trackType, :fileHeader)";
     U2SqlQuery q(queryString, db, os);
     q.bindDataId(":object", track.id);
     q.bindDataId(":sequence", track.sequence);
@@ -236,7 +243,7 @@ void MysqlVariantDbi::createVariantTrack(U2VariantTrack& track, VariantTrackType
     q.execute();
 }
 
-void MysqlVariantDbi::updateVariantTrack(U2VariantTrack &track, U2OpStatus& os) {
+void MysqlVariantDbi::updateVariantTrack(U2VariantTrack &track, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -256,9 +263,9 @@ void MysqlVariantDbi::updateVariantTrack(U2VariantTrack &track, U2OpStatus& os) 
     MysqlObjectDbi::incrementVersion(track.id, db, os);
 }
 
-U2DbiIterator<U2Variant>* MysqlVariantDbi::getVariants(const U2DataId& trackId, const U2Region& region, U2OpStatus& os) {
+U2DbiIterator<U2Variant> *MysqlVariantDbi::getVariants(const U2DataId &trackId, const U2Region &region, U2OpStatus &os) {
     if (region == U2_REGION_MAX) {
-        static QString wholeRegionString ("SELECT id, startPos, endPos, refData, obsData, publicId, additionalInfo FROM Variant WHERE track = :track ORDER BY startPos");
+        static QString wholeRegionString("SELECT id, startPos, endPos, refData, obsData, publicId, additionalInfo FROM Variant WHERE track = :track ORDER BY startPos");
         QSharedPointer<U2SqlQuery> q(new U2SqlQuery(wholeRegionString, db, os));
         q->bindDataId(":track", trackId);
 
@@ -266,7 +273,7 @@ U2DbiIterator<U2Variant>* MysqlVariantDbi::getVariants(const U2DataId& trackId, 
     }
 
     static const QString localRegionString = "SELECT id, startPos, endPos, refData, obsData, publicId, additionalInfo FROM Variant "
-            "WHERE track = :track AND startPos >= :regionStart AND startPos < :regionEnd";
+                                             "WHERE track = :track AND startPos >= :regionStart AND startPos < :regionEnd";
     QSharedPointer<U2SqlQuery> q(new U2SqlQuery(localRegionString, db, os));
     q->bindDataId(":track", trackId);
     q->bindInt64(":regionStart", region.startPos);
@@ -275,11 +282,11 @@ U2DbiIterator<U2Variant>* MysqlVariantDbi::getVariants(const U2DataId& trackId, 
     return new MysqlRSIterator<U2Variant>(q, new MysqlVariantLoader(), NULL, U2Variant(), os);
 }
 
-U2DbiIterator<U2Variant>* MysqlVariantDbi::getVariantsRange(const U2DataId& track, int offset, int limit, U2OpStatus& os ) {
+U2DbiIterator<U2Variant> *MysqlVariantDbi::getVariantsRange(const U2DataId &track, int offset, int limit, U2OpStatus &os) {
     CHECK_OP(os, NULL);
 
     static const QString queryString = "SELECT id, startPos, endPos, refData, obsData, publicId, additionalInfo FROM Variant "
-            "WHERE track = :track LIMIT :limit OFFSET :offset";
+                                       "WHERE track = :track LIMIT :limit OFFSET :offset";
     QSharedPointer<U2SqlQuery> q(new U2SqlQuery(queryString, db, os));
     q->bindDataId(":track", track);
     q->bindInt64(":limit", limit);
@@ -288,7 +295,7 @@ U2DbiIterator<U2Variant>* MysqlVariantDbi::getVariantsRange(const U2DataId& trac
     return new MysqlRSIterator<U2Variant>(q, new MysqlVariantLoader(), NULL, U2Variant(), os);
 }
 
-int MysqlVariantDbi::getVariantCount( const U2DataId& trackId, U2OpStatus& os ) {
+int MysqlVariantDbi::getVariantCount(const U2DataId &trackId, U2OpStatus &os) {
     static const QString sueryString = "SELECT COUNT(*) FROM Variant WHERE track = :track";
     U2SqlQuery q(sueryString, db, os);
     q.bindDataId(":track", trackId);
@@ -299,7 +306,7 @@ int MysqlVariantDbi::getVariantCount( const U2DataId& trackId, U2OpStatus& os ) 
     return q.getInt32(0);
 }
 
-void MysqlVariantDbi::removeTrack(const U2DataId& trackId, U2OpStatus& os) {
+void MysqlVariantDbi::removeTrack(const U2DataId &trackId, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -307,7 +314,7 @@ void MysqlVariantDbi::removeTrack(const U2DataId& trackId, U2OpStatus& os) {
     U2SqlQuery variantQuery(variantString, db, os);
     variantQuery.bindDataId(":track", trackId);
     variantQuery.execute();
-    CHECK_OP(os,);
+    CHECK_OP(os, );
 
     static const QString trackString = "DELETE FROM VariantTrack WHERE object = :object";
     U2SqlQuery trackQuery(trackString, db, os);
@@ -315,7 +322,7 @@ void MysqlVariantDbi::removeTrack(const U2DataId& trackId, U2OpStatus& os) {
     trackQuery.execute();
 }
 
-void MysqlVariantDbi::updateVariantPublicId( const U2DataId& track, const U2DataId& variant, const QString& newId, U2OpStatus& os ) {
+void MysqlVariantDbi::updateVariantPublicId(const U2DataId &track, const U2DataId &variant, const QString &newId, U2OpStatus &os) {
     DBI_TYPE_CHECK(track, U2Type::VariantTrack, os, );
     DBI_TYPE_CHECK(variant, U2Type::VariantType, os, );
     CHECK_EXT(!newId.isEmpty(), os.setError(U2DbiL10n::tr("New variant public ID is empty")), );
@@ -331,7 +338,7 @@ void MysqlVariantDbi::updateVariantPublicId( const U2DataId& track, const U2Data
     qv.execute();
 }
 
-void MysqlVariantDbi::updateTrackIDofVariant( const U2DataId& variant, const U2DataId& newTrackId, U2OpStatus& os ) {
+void MysqlVariantDbi::updateTrackIDofVariant(const U2DataId &variant, const U2DataId &newTrackId, U2OpStatus &os) {
     DBI_TYPE_CHECK(newTrackId, U2Type::VariantTrack, os, );
     DBI_TYPE_CHECK(variant, U2Type::VariantType, os, );
     CHECK_EXT(!newTrackId.isEmpty(), os.setError(U2DbiL10n::tr("New variant track ID is empty")), );
@@ -346,4 +353,4 @@ void MysqlVariantDbi::updateTrackIDofVariant( const U2DataId& variant, const U2D
     qv.execute();
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -19,23 +19,23 @@
  * MA 02110-1301, USA.
  */
 
+#include "DatasetValidator.h"
+
 #include <U2Core/U2SafePoints.h>
 
-#include <U2Lang/Dataset.h>
 #include <U2Lang/Attribute.h>
 #include <U2Lang/BaseAttributes.h>
-
-#include "DatasetValidator.h"
+#include <U2Lang/Dataset.h>
 
 namespace U2 {
 namespace Workflow {
 
-bool DatasetValidator::validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &/*options*/) const {
+bool DatasetValidator::validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> & /*options*/) const {
     // If parameter is incorrect, return true and skip validation: it is only a warning
     Attribute *urlAttr = actor->getParameter(BaseAttributes::URL_IN_ATTRIBUTE().getId());
     SAFE_POINT(urlAttr != NULL, "Attribute is NULL", true);
 
-    QList<Dataset> sets = urlAttr->getAttributeValueWithoutScript< QList<Dataset> >();
+    QList<Dataset> sets = urlAttr->getAttributeValueWithoutScript<QList<Dataset>>();
     QScopedPointer<DatasetFilesIterator> filesIt(new DatasetFilesIterator(sets));
 
     QSet<QString> fileSet;
@@ -52,5 +52,5 @@ bool DatasetValidator::validate(const Actor *actor, NotificationsList &notificat
     return true;
 }
 
-}   // namespace Workflow
-}   // namespace U2
+}    // namespace Workflow
+}    // namespace U2

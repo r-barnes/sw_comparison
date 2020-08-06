@@ -19,10 +19,10 @@
  * MA 02110-1301, USA.
  */
 
+#include "ActorScriptValidator.h"
+
 #include <U2Lang/HRSchemaSerializer.h>
 #include <U2Lang/WorkflowUtils.h>
-
-#include "ActorScriptValidator.h"
 
 namespace U2 {
 using namespace WorkflowSerialize;
@@ -42,8 +42,8 @@ bool ActorScriptValidator::validate(const Actor *actor, NotificationsList &notif
     engine.evaluate(options[Constants::V_SCRIPT]);
     if (engine.hasUncaughtException()) {
         coreLog.error(QObject::tr("Exception during script execution! Line: %1, error: %2")
-            .arg(engine.uncaughtExceptionLineNumber())
-            .arg(engine.uncaughtException().toString()));
+                          .arg(engine.uncaughtExceptionLineNumber())
+                          .arg(engine.uncaughtException().toString()));
         return true;
     }
 
@@ -55,9 +55,7 @@ bool ActorScriptValidator::validate(const Actor *actor, NotificationsList &notif
 /* ValidationContext */
 /************************************************************************/
 ValidationContext::ValidationContext(QScriptEngine &engine, const Actor *actor)
-: engine(engine), actor(actor)
-{
-
+    : engine(engine), actor(actor) {
 }
 
 QScriptValue ValidationContext::attributeValue(const QString &attrId) {
@@ -70,8 +68,8 @@ QScriptValue ValidationContext::attributeValue(const QString &attrId) {
     QVariant value = attr->getAttributePureValue();
     if (value.type() == QVariant::Bool) {
         return QScriptValue(value.toBool());
-    } else if (value.canConvert< QList<Dataset> >()) {
-        return WorkflowUtils::datasetsToScript(value.value< QList<Dataset> >(), engine);
+    } else if (value.canConvert<QList<Dataset>>()) {
+        return WorkflowUtils::datasetsToScript(value.value<QList<Dataset>>(), engine);
     }
     return engine.newVariant(value);
 }
@@ -99,5 +97,5 @@ bool ValidationContext::hasErrors() const {
     return !errors.isEmpty();
 }
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

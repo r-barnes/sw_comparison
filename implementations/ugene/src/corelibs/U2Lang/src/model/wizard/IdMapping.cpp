@@ -24,13 +24,10 @@
 namespace U2 {
 
 IdMapping::IdMapping(const QString &_srcId, const QString &_dstId)
-: srcId(_srcId), dstId(_dstId)
-{
-
+    : srcId(_srcId), dstId(_dstId) {
 }
 
 IdMapping::~IdMapping() {
-
 }
 
 QString IdMapping::getSrcId() const {
@@ -45,4 +42,4 @@ void IdMapping::invertMapping() {
     qSwap<QString>(srcId, dstId);
 }
 
-} // U2
+}    // namespace U2

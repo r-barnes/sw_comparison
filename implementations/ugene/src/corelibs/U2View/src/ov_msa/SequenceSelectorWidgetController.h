@@ -22,18 +22,18 @@
 #ifndef _U2_SEQUENCE_SELECT_WIDGET_CONTROLLER
 #define _U2_SEQUENCE_SELECT_WIDGET_CONTROLLER
 
-#include "ui_SequenceSelectorWidget.h"
+#include <U2Gui/SuggestCompleter.h>
 
 #include <U2View/MSAEditor.h>
 
-#include <U2Gui/SuggestCompleter.h>
+#include "ui_SequenceSelectorWidget.h"
 
 namespace U2 {
 
-class SequenceSelectorWidgetController : public QWidget, Ui_SequenceSelectorWidget{
+class SequenceSelectorWidgetController : public QWidget, Ui_SequenceSelectorWidget {
     Q_OBJECT
 public:
-    SequenceSelectorWidgetController(MSAEditor* _msa);
+    SequenceSelectorWidgetController(MSAEditor *_msa);
     ~SequenceSelectorWidgetController();
 
     QString text() const;
@@ -46,7 +46,7 @@ signals:
 
 private slots:
     void sl_seqLineEditEditingFinished();
-    void sl_seqLineEditEditingFinished(const MultipleAlignment & , const MaModificationInfo&);
+    void sl_seqLineEditEditingFinished(const MultipleAlignment &, const MaModificationInfo &);
     void sl_addSeqClicked();
     void sl_deleteSeqClicked();
     void sl_setDefaultLineEditValue();
@@ -54,13 +54,13 @@ private slots:
 private:
     void updateCompleter();
 
-    MSAEditor* msa;
+    MSAEditor *msa;
     MSACompletionFiller *filler;
     BaseCompleter *completer;
     QString defaultSeqName;
     qint64 seqId;
 };
 
-};
+};    // namespace U2
 
 #endif

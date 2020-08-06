@@ -31,11 +31,12 @@ class DiamondClassifyPrompter : public PrompterBase<DiamondClassifyPrompter> {
     Q_OBJECT
 public:
     DiamondClassifyPrompter(Actor *actor);
+
 private:
     QString composeRichDoc();
 };
 
-}   // namespace LocalWorkflow
-}   // namespace u2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_DIAMOND_CLASSIFY_PROMPTER_H_
+#endif    // _U2_DIAMOND_CLASSIFY_PROMPTER_H_

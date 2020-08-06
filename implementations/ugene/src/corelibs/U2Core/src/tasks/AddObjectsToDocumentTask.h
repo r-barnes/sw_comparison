@@ -32,15 +32,16 @@ class GObject;
 class U2CORE_EXPORT AddObjectsToDocumentTask : public Task {
     Q_OBJECT
 public:
-    AddObjectsToDocumentTask (QList<GObject*> &_objects, Document *_doc);
+    AddObjectsToDocumentTask(QList<GObject *> &_objects, Document *_doc);
     void prepare();
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
+
 private:
-    QList<GObject*> objects;
+    QList<GObject *> objects;
     Document *doc;
-    QList<GObject*> clones;
+    QList<GObject *> clones;
 };
 
-}// namespace
+}    // namespace U2
 
 #endif

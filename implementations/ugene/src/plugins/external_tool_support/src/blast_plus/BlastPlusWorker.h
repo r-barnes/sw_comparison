@@ -24,6 +24,7 @@
 
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
+
 #include "BlastPlusSupportCommonTask.h"
 
 namespace U2 {
@@ -35,7 +36,8 @@ namespace LocalWorkflow {
 class BlastPlusPrompter : public PrompterBase<BlastPlusPrompter> {
     Q_OBJECT
 public:
-    BlastPlusPrompter(Actor* p = 0);
+    BlastPlusPrompter(Actor *p = 0);
+
 protected:
     QString composeRichDoc();
 };
@@ -43,10 +45,10 @@ protected:
 class BlastPlusWorker : public BaseWorker {
     Q_OBJECT
 public:
-    BlastPlusWorker(Actor* a);
+    BlastPlusWorker(Actor *a);
 
     virtual void init();
-    virtual Task* tick();
+    virtual Task *tick();
     virtual void cleanup();
 
 private slots:
@@ -54,9 +56,8 @@ private slots:
 
 protected:
     IntegralBus *input, *output;
-    QString resultName,transId;
-    BlastTaskSettings   cfg;
-
+    QString resultName, transId;
+    BlastTaskSettings cfg;
 };
 
 class BlastPlusWorkerFactory : public DomainFactory {
@@ -67,8 +68,12 @@ public:
     static QString getHitsDescription();
 
     static void init();
-    BlastPlusWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual Worker* createWorker(Actor* a) {return new BlastPlusWorker(a);}
+    BlastPlusWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual Worker *createWorker(Actor *a) {
+        return new BlastPlusWorker(a);
+    }
 };
 
 class ToolsValidator : public ActorValidator {
@@ -76,10 +81,10 @@ public:
     virtual bool validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &options) const;
 
 private:
-    ExternalTool * getTool(const QString &program) const;
+    ExternalTool *getTool(const QString &program) const;
 };
 
-} // Workflow namespace
-} // U2 namespace
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

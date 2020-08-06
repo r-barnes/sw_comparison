@@ -20,6 +20,11 @@
  */
 
 #include "GTTestsMetaPhlAn2.h"
+#include <GTUtilsTaskTreeView.h>
+#include <base_dialogs/MessageBoxFiller.h>
+#include <primitives/GTLineEdit.h>
+#include <primitives/GTMenu.h>
+#include <primitives/GTWidget.h>
 
 #include <QApplication>
 #include <QDir>
@@ -27,22 +32,14 @@
 #include <QTableWidget>
 #include <QTreeWidget>
 
-#include <base_dialogs/MessageBoxFiller.h>
-
-#include <primitives/GTLineEdit.h>
-#include <primitives/GTMenu.h>
-#include <primitives/GTWidget.h>
-
-#include <GTUtilsTaskTreeView.h>
-#include "GTUtilsWorkflowDesigner.h"
-
-#include "runnables/ugene/corelibs/U2Gui/AppSettingsDialogFiller.h"
-
 #include <U2Core/AppContext.h>
 #include <U2Core/AppResources.h>
 #include <U2Core/AppSettings.h>
 
 #include "U2Test/UGUITest.h"
+
+#include "GTUtilsWorkflowDesigner.h"
+#include "runnables/ugene/corelibs/U2Gui/AppSettingsDialogFiller.h"
 
 namespace U2 {
 
@@ -61,12 +58,10 @@ const QString PATH_PYTHON_WITHOUT_NUMPY = "/opt/share/virogenesis-dev/test_exter
 const QString PATH_PYTHON_WITHOUT_BIO = "/opt/share/virogenesis-dev/test_external_tools/python_without_bio/bin";
 const QString NAME_PYTHON = "python2.7";
 
-void checkExternalToolValid(GUITestOpStatus &os, const QString& toolName, const bool shouldBeValid) {
+void checkExternalToolValid(GUITestOpStatus &os, const QString &toolName, const bool shouldBeValid) {
     const bool isToolValid = AppSettingsDialogFiller::isExternalToolValid(os, toolName);
     if (isToolValid != shouldBeValid) {
-        os.setError(QString("%1 %2 valid, but %3 be").arg(toolName)
-                                                     .arg(shouldBeValid ? "isn't" : "is")
-                                                     .arg(shouldBeValid ? "should" : "shoudn't"));
+        os.setError(QString("%1 %2 valid, but %3 be").arg(toolName).arg(shouldBeValid ? "isn't" : "is").arg(shouldBeValid ? "should" : "shoudn't"));
     }
 }
 
@@ -76,15 +71,13 @@ void checkUtilScript(GUITestOpStatus &os, const bool shouldBeValid) {
     QString utilNativeSeparators = QDir::toNativeSeparators(UTIL_SCRIPT);
     bool isValid = !AppSettingsDialogFiller::isToolDescriptionContainsString(os, ET_METAPHLAN, "MetaPhlAn2 script \"utils/read_fastx.py\" is not present!");
     if (isValid != shouldBeValid) {
-        os.setError(QString("Unitl script %1 %2 exist, but %3 be").arg(utilNativeSeparators)
-                                                                  .arg(shouldBeValid ? "doesn't" : "does")
-                                                                  .arg(shouldBeValid ? "should" : "shoudn't"));
+        os.setError(QString("Unitl script %1 %2 exist, but %3 be").arg(utilNativeSeparators).arg(shouldBeValid ? "doesn't" : "does").arg(shouldBeValid ? "should" : "shoudn't"));
     }
 }
 
-void checkDependedTools(GUITestOpStatus &os, const QString& tool, const QStringList& toolList) {
+void checkDependedTools(GUITestOpStatus &os, const QString &tool, const QStringList &toolList) {
     QStringList absentTools;
-    foreach(const QString& str, toolList) {
+    foreach (const QString &str, toolList) {
         bool isOk = AppSettingsDialogFiller::isToolDescriptionContainsString(os, tool, str);
         if (!isOk) {
             absentTools << str;
@@ -95,7 +88,7 @@ void checkDependedTools(GUITestOpStatus &os, const QString& tool, const QStringL
         QString error;
         bool isSingleToolAbsent = absentTools.size() == 1;
         error += QString("%1 tool should be depended on the following %2: ").arg(tool).arg(isSingleToolAbsent ? "tool" : "tools");
-        foreach(const QString& t, absentTools) {
+        foreach (const QString &t, absentTools) {
             error += QString("%1 ,").arg(t);
         }
         error = error.left(error.size() - 1);
@@ -117,7 +110,7 @@ QString getMetaphlan2WithoutScriptPath() {
 
 GUI_TEST_CLASS_DEFINITION(test_0001) {
     class Custom : public CustomScenario {
-        void run(HI::GUITestOpStatus &os){
+        void run(HI::GUITestOpStatus &os) {
             QWidget *dialog = QApplication::activeModalWidget();
             CHECK_SET_ERR(dialog != NULL, "AppSettingsDialogFiller isn't found");
 
@@ -152,14 +145,16 @@ GUI_TEST_CLASS_DEFINITION(test_0001) {
 
     //1. Open "UGENE Application Settings", select "External Tools" tab.
     GTUtilsDialog::waitForDialog(os, new AppSettingsDialogFiller(os, new Custom()));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Settings" << "Preferences...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Settings"
+                                                << "Preferences...",
+                              GTGlobals::UseMouse);
 
     CHECK_SET_ERR(!os.hasError(), os.getError());
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0002) {
     class Custom : public CustomScenario {
-        void run(HI::GUITestOpStatus &os){
+        void run(HI::GUITestOpStatus &os) {
             QWidget *dialog = QApplication::activeModalWidget();
             CHECK_SET_ERR(dialog != NULL, "AppSettingsDialogFiller isn't found");
 
@@ -193,14 +188,16 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
 
     //1. Open "UGENE Application Settings", select "External Tools" tab.
     GTUtilsDialog::waitForDialog(os, new AppSettingsDialogFiller(os, new Custom()));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Settings" << "Preferences...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Settings"
+                                                << "Preferences...",
+                              GTGlobals::UseMouse);
 
     CHECK_SET_ERR(!os.hasError(), os.getError());
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0003) {
     class Custom : public CustomScenario {
-        void run(HI::GUITestOpStatus &os){
+        void run(HI::GUITestOpStatus &os) {
             QWidget *dialog = QApplication::activeModalWidget();
             CHECK_SET_ERR(dialog != NULL, "AppSettingsDialogFiller isn't found");
 
@@ -234,14 +231,16 @@ GUI_TEST_CLASS_DEFINITION(test_0003) {
 
     //1. Open "UGENE Application Settings", select "External Tools" tab.
     GTUtilsDialog::waitForDialog(os, new AppSettingsDialogFiller(os, new Custom()));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Settings" << "Preferences...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Settings"
+                                                << "Preferences...",
+                              GTGlobals::UseMouse);
 
     CHECK_SET_ERR(!os.hasError(), os.getError());
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0004) {
     class Custom : public CustomScenario {
-        void run(HI::GUITestOpStatus &os){
+        void run(HI::GUITestOpStatus &os) {
             QWidget *dialog = QApplication::activeModalWidget();
             CHECK_SET_ERR(dialog != NULL, "AppSettingsDialogFiller isn't found");
 
@@ -275,14 +274,16 @@ GUI_TEST_CLASS_DEFINITION(test_0004) {
 
     //1. Open "UGENE Application Settings", select "External Tools" tab.
     GTUtilsDialog::waitForDialog(os, new AppSettingsDialogFiller(os, new Custom()));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Settings" << "Preferences...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Settings"
+                                                << "Preferences...",
+                              GTGlobals::UseMouse);
 
     CHECK_SET_ERR(!os.hasError(), os.getError());
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0005) {
     class Custom : public CustomScenario {
-        void run(HI::GUITestOpStatus &os){
+        void run(HI::GUITestOpStatus &os) {
             QWidget *dialog = QApplication::activeModalWidget();
             CHECK_SET_ERR(dialog != NULL, "AppSettingsDialogFiller isn't found");
 
@@ -313,14 +314,16 @@ GUI_TEST_CLASS_DEFINITION(test_0005) {
 
     //1. Open "UGENE Application Settings", select "External Tools" tab.
     GTUtilsDialog::waitForDialog(os, new AppSettingsDialogFiller(os, new Custom()));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Settings" << "Preferences...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Settings"
+                                                << "Preferences...",
+                              GTGlobals::UseMouse);
 
     CHECK_SET_ERR(!os.hasError(), os.getError());
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0006) {
     class Custom : public CustomScenario {
-        void run(HI::GUITestOpStatus &os){
+        void run(HI::GUITestOpStatus &os) {
             QWidget *dialog = QApplication::activeModalWidget();
             CHECK_SET_ERR(dialog != NULL, "AppSettingsDialogFiller isn't found");
 
@@ -351,14 +354,16 @@ GUI_TEST_CLASS_DEFINITION(test_0006) {
 
     //1. Open "UGENE Application Settings", select "External Tools" tab.
     GTUtilsDialog::waitForDialog(os, new AppSettingsDialogFiller(os, new Custom()));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Settings" << "Preferences...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Settings"
+                                                << "Preferences...",
+                              GTGlobals::UseMouse);
 
     CHECK_SET_ERR(!os.hasError(), os.getError());
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0007) {
     class Custom : public CustomScenario {
-        void run(HI::GUITestOpStatus &os){
+        void run(HI::GUITestOpStatus &os) {
             QWidget *dialog = QApplication::activeModalWidget();
             CHECK_SET_ERR(dialog != NULL, "AppSettingsDialogFiller isn't found");
 
@@ -389,7 +394,9 @@ GUI_TEST_CLASS_DEFINITION(test_0007) {
 
     //1. Open "UGENE Application Settings", select "External Tools" tab.
     GTUtilsDialog::waitForDialog(os, new AppSettingsDialogFiller(os, new Custom()));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Settings" << "Preferences...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Settings"
+                                                << "Preferences...",
+                              GTGlobals::UseMouse);
 
     CHECK_SET_ERR(!os.hasError(), os.getError());
 }
@@ -399,8 +406,8 @@ GUI_TEST_CLASS_DEFINITION(test_0008) {
     // 2. Provide a valid MetaPhlAn2 executable, remove python executable.
     // 3. Apply settings.
     class Custom : public CustomScenario {
-        void run(HI::GUITestOpStatus& os) {
-            QWidget* dialog = QApplication::activeModalWidget();
+        void run(HI::GUITestOpStatus &os) {
+            QWidget *dialog = QApplication::activeModalWidget();
             CHECK_SET_ERR(dialog != NULL, "AppSettingsDialogFiller isn't found");
 
             AppSettingsDialogFiller::openTab(os, AppSettingsDialogFiller::ExternalTools);
@@ -412,7 +419,9 @@ GUI_TEST_CLASS_DEFINITION(test_0008) {
     };
 
     GTUtilsDialog::waitForDialog(os, new AppSettingsDialogFiller(os, new Custom()));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Settings" << "Preferences...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Settings"
+                                                << "Preferences...",
+                              GTGlobals::UseMouse);
 
     // 4. Open the Workflow Designer.
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
@@ -430,7 +439,7 @@ GUI_TEST_CLASS_DEFINITION(test_0008) {
     CHECK_SET_ERR(expectedErrorCount == errors.size(), QString("There are too many errors: expected %1, got %2").arg(expectedErrorCount).arg(errors.size()));
 }
 
-} // namespace GUITest_common_scenarios_mg_metaphlan2_external_tool
+}    // namespace GUITest_common_scenarios_mg_metaphlan2_external_tool
 
 namespace GUITest_common_scenarios_mg_metaphlan2_workflow_designer_element {
 
@@ -444,31 +453,29 @@ static const QString NORMALIZE_BY_METAGENOME_SIZE = "Normalize by metagenome siz
 static const QString BOWTIE2_OUTPUT_FILE = "Bowtie2 output file";
 static const QString OUTPUT_FILE = "Output file";
 
-static const QStringList INPUT_DATA_VALUES = { "SE reads or contigs",
-                                               "PE reads" };
+static const QStringList INPUT_DATA_VALUES = {"SE reads or contigs",
+                                              "PE reads"};
 
-static const QStringList ANALYSIS_TYPE_VALUES = { "Relative abundance",
-                                                  "Relative abundance with reads statistics",
-                                                  "Reads mapping",
-                                                  "Clade profiles",
-                                                  "Marker abundance table",
-                                                  "Marker presence table" };
+static const QStringList ANALYSIS_TYPE_VALUES = {"Relative abundance",
+                                                 "Relative abundance with reads statistics",
+                                                 "Reads mapping",
+                                                 "Clade profiles",
+                                                 "Marker abundance table",
+                                                 "Marker presence table"};
 
-static const QStringList TAX_LEVEL_VALUES = { "All",
-                                              "Kingdoms",
-                                              "Phyla",
-                                              "Classes",
-                                              "Orders",
-                                              "Families",
-                                              "Genera",
-                                              "Species" };
+static const QStringList TAX_LEVEL_VALUES = {"All",
+                                             "Kingdoms",
+                                             "Phyla",
+                                             "Classes",
+                                             "Orders",
+                                             "Families",
+                                             "Genera",
+                                             "Species"};
 
-static const QStringList NORMALIZE_BY_METAGENOME_SIZE_VALUES = { "Skip",
-                                                                 "Normalize" };
-
+static const QStringList NORMALIZE_BY_METAGENOME_SIZE_VALUES = {"Skip",
+                                                                "Normalize"};
 
 static const QString DEFAULT_OUTPUT_VALUE = "Auto";
-
 
 GUI_TEST_CLASS_DEFINITION(test_0001) {
     //1. Open WD
@@ -486,25 +493,24 @@ GUI_TEST_CLASS_DEFINITION(test_0001) {
     QStringList currentParameters = GTUtilsWorkflowDesigner::getAllParameters(os);
     CHECK_SET_ERR(currentParameters.size() == 7,
                   QString("Unexpected number of default parameters, expected: 7, current: %1")
-                          .arg(currentParameters.size()));
-    QStringList defaultParameters = { INPUT_DATA, DATABASE, NUMBER_OF_THREADS,
-                                      ANALYSIS_TYPE, TAX_LEVEL, BOWTIE2_OUTPUT_FILE, OUTPUT_FILE };
-    foreach(const QString& par, defaultParameters) {
+                      .arg(currentParameters.size()));
+    QStringList defaultParameters = {INPUT_DATA, DATABASE, NUMBER_OF_THREADS, ANALYSIS_TYPE, TAX_LEVEL, BOWTIE2_OUTPUT_FILE, OUTPUT_FILE};
+    foreach (const QString &par, defaultParameters) {
         CHECK_SET_ERR(currentParameters.contains(par), QString("The default parameter \"%1\" is missed").arg(par));
     }
 
-    {//4. Check "Input data"
+    {    //4. Check "Input data"
         //Expected: current "Input data" value is "SE reads or contigs", input table has one line
         QString inputDataValue = GTUtilsWorkflowDesigner::getParameter(os, INPUT_DATA);
         CHECK_SET_ERR(inputDataValue == INPUT_DATA_VALUES.first(),
                       QString("Unexpected \"Input data\" value, expected: SE reads or contigs, current: %1")
-                              .arg(inputDataValue));
+                          .arg(inputDataValue));
 
-        QTableWidget* inputTable = GTUtilsWorkflowDesigner::getInputPortsTable(os, 0);
+        QTableWidget *inputTable = GTUtilsWorkflowDesigner::getInputPortsTable(os, 0);
         int row = inputTable->rowCount();
         CHECK_SET_ERR(row == 1,
                       QString("Unexpected \"Input data\" row count, expected: 1, current: %1")
-                              .arg(row));
+                          .arg(row));
 
         //5. Set "Input data" value on "PE reads"
         GTUtilsWorkflowDesigner::setParameter(os,
@@ -517,60 +523,60 @@ GUI_TEST_CLASS_DEFINITION(test_0001) {
         row = inputTable->rowCount();
         CHECK_SET_ERR(row == 2,
                       QString("Unexpected \"Input data\" row count, expected: 2, current: %1")
-                              .arg(row));
+                          .arg(row));
     }
 
-    {//7. Check "Database"
+    {    //7. Check "Database"
         //Expected: database path ends with 'data/ngs_classification/metaphlan2/mpa_v20_m200'
         QString databasePath = QDir::toNativeSeparators(GTUtilsWorkflowDesigner::getParameter(os, DATABASE));
         QString expectedEnd = QDir::toNativeSeparators("data/ngs_classification/metaphlan2/mpa_v20_m200");
         CHECK_SET_ERR(databasePath.endsWith(expectedEnd),
                       QString("Unexpected database path end: %1")
-                              .arg(databasePath.right(expectedEnd.size())));
+                          .arg(databasePath.right(expectedEnd.size())));
     }
 
-    {//8. Check "Number of Threads"
+    {    //8. Check "Number of Threads"
         //Expected: expected optimal for the current OS threads num
         int threads = GTUtilsWorkflowDesigner::getParameter(os, NUMBER_OF_THREADS).toInt();
         int expectedThreads = AppContext::getAppSettings()->getAppResourcePool()->getIdealThreadCount();
         CHECK_SET_ERR(threads == expectedThreads,
                       QString("Unexpected threads num, expected: %1, current: %2")
-                              .arg(expectedThreads)
-                              .arg(threads));
+                          .arg(expectedThreads)
+                          .arg(threads));
     }
 
-    {//9. Check "Analysis type"
+    {    //9. Check "Analysis type"
         //Expected: Analysis type default value is "Relative abundance"
         QString analysisTypeDefault = GTUtilsWorkflowDesigner::getParameter(os, ANALYSIS_TYPE);
         CHECK_SET_ERR(analysisTypeDefault == ANALYSIS_TYPE_VALUES.first(),
                       QString("Unexpected Analysis type default value, expected: %1, current: %2")
-                              .arg(ANALYSIS_TYPE_VALUES.first())
-                              .arg(analysisTypeDefault));
+                          .arg(ANALYSIS_TYPE_VALUES.first())
+                          .arg(analysisTypeDefault));
     }
 
-    {//10. Check "Tax level"
+    {    //10. Check "Tax level"
         //Expected: Tax level default value is "All"
         QString taxLevelDefault = GTUtilsWorkflowDesigner::getParameter(os, TAX_LEVEL);
         CHECK_SET_ERR(taxLevelDefault == TAX_LEVEL_VALUES.first(),
                       QString("Unexpected Tax level default value, expected: %1, current: %2")
-                              .arg(TAX_LEVEL_VALUES.first())
-                              .arg(taxLevelDefault));
+                          .arg(TAX_LEVEL_VALUES.first())
+                          .arg(taxLevelDefault));
     }
 
-    {//11. Check "Bowtie2 output file"
+    {    //11. Check "Bowtie2 output file"
         //Expected: Bowtie2 output file value is "Auto"
         QString bowtie2OutputFileDefault = GTUtilsWorkflowDesigner::getParameter(os, BOWTIE2_OUTPUT_FILE);
         CHECK_SET_ERR(bowtie2OutputFileDefault == DEFAULT_OUTPUT_VALUE,
                       QString("Unexpected Bowtie2 output file default value, expected: Auto, current: %1")
-                              .arg(bowtie2OutputFileDefault));
+                          .arg(bowtie2OutputFileDefault));
     }
 
-    {//12. Check "Output file"
+    {    //12. Check "Output file"
         //Expected: Output file value is "Auto"
         QString outputFileDefault = GTUtilsWorkflowDesigner::getParameter(os, OUTPUT_FILE);
         CHECK_SET_ERR(outputFileDefault == DEFAULT_OUTPUT_VALUE,
                       QString("Unexpected Bowtie2 output file default value, expected: Auto, current: %1")
-                              .arg(outputFileDefault));
+                          .arg(outputFileDefault));
     }
 }
 
@@ -590,14 +596,14 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
         //Clade profiles, Marker abundance table, Marker presence table
         QStringList analysisTypeValues = GTUtilsWorkflowDesigner::getComboBoxParameterValues(os, ANALYSIS_TYPE);
         CHECK_SET_ERR(analysisTypeValues.size() == ANALYSIS_TYPE_VALUES.size(),
-            QString("Unexpected \"Analysis type\" values size, expected: %1, current: %2")
-            .arg(ANALYSIS_TYPE_VALUES.size())
-            .arg(analysisTypeValues.size()));
+                      QString("Unexpected \"Analysis type\" values size, expected: %1, current: %2")
+                          .arg(ANALYSIS_TYPE_VALUES.size())
+                          .arg(analysisTypeValues.size()));
 
-        foreach(const QString& value, ANALYSIS_TYPE_VALUES) {
+        foreach (const QString &value, ANALYSIS_TYPE_VALUES) {
             CHECK_SET_ERR(analysisTypeValues.contains(value),
-                QString("Analysis type doesn't contain %1 value, but should be")
-                .arg(value));
+                          QString("Analysis type doesn't contain %1 value, but should be")
+                              .arg(value));
         }
     }
 
@@ -606,14 +612,14 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
         //All, Kingdoms, Phyla, Classes, Orders, Families, Genera, Species
         QStringList taxLevelValues = GTUtilsWorkflowDesigner::getComboBoxParameterValues(os, TAX_LEVEL);
         CHECK_SET_ERR(taxLevelValues.size() == TAX_LEVEL_VALUES.size(),
-            QString("Unexpected \"Tax level\" values size, expected: %1, current: %2")
-            .arg(TAX_LEVEL_VALUES.size())
-            .arg(taxLevelValues.size()));
+                      QString("Unexpected \"Tax level\" values size, expected: %1, current: %2")
+                          .arg(TAX_LEVEL_VALUES.size())
+                          .arg(taxLevelValues.size()));
 
-        foreach(const QString& value, TAX_LEVEL_VALUES) {
+        foreach (const QString &value, TAX_LEVEL_VALUES) {
             CHECK_SET_ERR(taxLevelValues.contains(value),
-                QString("Tax level doesn't contain %1 value, but should be")
-                .arg(value));
+                          QString("Tax level doesn't contain %1 value, but should be")
+                              .arg(value));
         }
     }
 
@@ -628,14 +634,14 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
         //Skip, Normalize
         QStringList normalizeValues = GTUtilsWorkflowDesigner::getComboBoxParameterValues(os, NORMALIZE_BY_METAGENOME_SIZE);
         CHECK_SET_ERR(normalizeValues.size() == NORMALIZE_BY_METAGENOME_SIZE_VALUES.size(),
-            QString("Unexpected \"Normalize by metagenome size\" values size, expected: %1, current: %2")
-                    .arg(NORMALIZE_BY_METAGENOME_SIZE_VALUES.size())
-                    .arg(normalizeValues.size()));
+                      QString("Unexpected \"Normalize by metagenome size\" values size, expected: %1, current: %2")
+                          .arg(NORMALIZE_BY_METAGENOME_SIZE_VALUES.size())
+                          .arg(normalizeValues.size()));
 
-        foreach(const QString& value, NORMALIZE_BY_METAGENOME_SIZE_VALUES) {
+        foreach (const QString &value, NORMALIZE_BY_METAGENOME_SIZE_VALUES) {
             CHECK_SET_ERR(normalizeValues.contains(value),
-                QString("Normalize by metagenome size doesn't contain %1 value, but should be")
-                .arg(value));
+                          QString("Normalize by metagenome size doesn't contain %1 value, but should be")
+                              .arg(value));
         }
     }
 
@@ -644,14 +650,14 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
         //SE reads or contigs, PE reads
         QStringList inputDataValues = GTUtilsWorkflowDesigner::getComboBoxParameterValues(os, INPUT_DATA);
         CHECK_SET_ERR(inputDataValues.size() == INPUT_DATA_VALUES.size(),
-            QString("Unexpected \"Input data\" values size, expected: %1, current: %2")
-                    .arg(INPUT_DATA_VALUES.size())
-                    .arg(inputDataValues.size()));
+                      QString("Unexpected \"Input data\" values size, expected: %1, current: %2")
+                          .arg(INPUT_DATA_VALUES.size())
+                          .arg(inputDataValues.size()));
 
-        foreach(const QString& value, INPUT_DATA_VALUES) {
+        foreach (const QString &value, INPUT_DATA_VALUES) {
             CHECK_SET_ERR(inputDataValues.contains(value),
-                QString("Input data doesn't contain %1 value, but should be")
-                        .arg(value));
+                          QString("Input data doesn't contain %1 value, but should be")
+                              .arg(value));
         }
     }
 }
@@ -676,7 +682,7 @@ GUI_TEST_CLASS_DEFINITION(test_0003) {
     QString databaseValue = GTUtilsWorkflowDesigner::getParameter(os, DATABASE);
     CHECK_SET_ERR(databaseValue == "Required",
                   QString("Unexpected Database value, expected: \"Required\", current: \"%1\"")
-                          .arg(databaseValue));
+                      .arg(databaseValue));
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0004) {
@@ -714,7 +720,7 @@ GUI_TEST_CLASS_DEFINITION(test_0004) {
     allParameters = GTUtilsWorkflowDesigner::getAllParameters(os);
     CHECK_SET_ERR(allParameters.size() == 6,
                   QString("Unexpected parameters number, expected: 6, current: %1")
-                          .arg(allParameters.size()));
+                      .arg(allParameters.size()));
 
     //6. Set "Analysis type" value to "Reads mapping"
     GTUtilsWorkflowDesigner::setParameter(os, ANALYSIS_TYPE, ANALYSIS_TYPE_VALUES[3], GTUtilsWorkflowDesigner::comboValue);
@@ -726,7 +732,7 @@ GUI_TEST_CLASS_DEFINITION(test_0004) {
     allParameters = GTUtilsWorkflowDesigner::getAllParameters(os);
     CHECK_SET_ERR(allParameters.size() == 6,
                   QString("Unexpected parameters number, expected: 6, current: %1")
-                          .arg(allParameters.size()));
+                      .arg(allParameters.size()));
 
     //7. Set "Analysis type" value to "Marker abundance table"
     GTUtilsWorkflowDesigner::setParameter(os, ANALYSIS_TYPE, ANALYSIS_TYPE_VALUES[4], GTUtilsWorkflowDesigner::comboValue);
@@ -749,6 +755,6 @@ GUI_TEST_CLASS_DEFINITION(test_0004) {
     CHECK_SET_ERR(allParameters.contains(PRESENCE_THRESHOLD), "Presence threshold parameter isn't represented");
 }
 
-}
+}    // namespace GUITest_common_scenarios_mg_metaphlan2_workflow_designer_element
 
-} // namespace U2
+}    // namespace U2

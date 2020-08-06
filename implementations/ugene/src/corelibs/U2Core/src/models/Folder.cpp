@@ -19,42 +19,36 @@
  * MA 02110-1301, USA.
  */
 
+#include "Folder.h"
+
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "Folder.h"
 
 namespace U2 {
 
 Folder::Folder()
-: QObject()
-{
-
+    : QObject() {
 }
 
 Folder::Folder(Document *doc, const QString &folderPath)
-: QObject(), doc(doc), folderPath(folderPath)
-{
-
+    : QObject(), doc(doc), folderPath(folderPath) {
 }
 
 Folder::Folder(const Folder &other)
-: QObject(), doc(other.doc), folderPath(other.folderPath)
-{
-
+    : QObject(), doc(other.doc), folderPath(other.folderPath) {
 }
 
-Folder & Folder::operator=(const Folder &other) {
+Folder &Folder::operator=(const Folder &other) {
     doc = other.doc;
     folderPath = other.folderPath;
     return *this;
 }
 
-Document * Folder::getDocument() const {
+Document *Folder::getDocument() const {
     return doc.data();
 }
 
-const QString & Folder::getFolderPath() const {
+const QString &Folder::getFolderPath() const {
     return folderPath;
 }
 
@@ -71,7 +65,7 @@ void Folder::setFolderPath(const QString &newPath) {
     folderPath = newPath;
 }
 
-bool Folder::operator ==(const Folder &other) const {
+bool Folder::operator==(const Folder &other) const {
     return other.getDocument() == doc && other.getFolderPath() == folderPath;
 }
 
@@ -92,7 +86,7 @@ QString Folder::createPath(const QString &parentFolder, const QString &folderNam
 
 QString Folder::getFolderParentPath(const QString &path) {
     QString name = getFolderName(path);
-    CHECK(!name.isEmpty() , "");
+    CHECK(!name.isEmpty(), "");
 
     QString result = path.left(path.size() - name.size());
     if (U2ObjectDbi::ROOT_FOLDER != result) {
@@ -133,9 +127,7 @@ bool Folder::folderNameLessThan(const QString &first, const QString &second) {
 const QString FolderMimeData::MIME_TYPE("application/x-ugene-folder-mime");
 
 FolderMimeData::FolderMimeData(const Folder &folder)
-: QMimeData(), folder(folder)
-{
-
+    : QMimeData(), folder(folder) {
 }
 
 bool FolderMimeData::hasFormat(const QString &mimeType) const {
@@ -146,4 +138,4 @@ QStringList FolderMimeData::formats() const {
     return QStringList(MIME_TYPE);
 }
 
-} // U2
+}    // namespace U2

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ReverseComplementWorker.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/DNASequence.h>
@@ -39,7 +41,6 @@
 #include <U2Lang/WorkflowEnv.h>
 
 #include "CoreLib.h"
-#include "ReverseComplementWorker.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -54,12 +55,10 @@ enum OpType {
 };
 
 void RCWorkerFactory::init() {
-    QList<PortDescriptor*> p;
-    QList<Attribute*> attrs;
-    Descriptor ind(BasePorts::IN_SEQ_PORT_ID(), RCWorker::tr("Input sequence"),
-        RCWorker::tr("The sequence to be complemented"));
-    Descriptor outd(BasePorts::OUT_SEQ_PORT_ID(), RCWorker::tr("Output sequence"),
-        RCWorker::tr("Reverse-complement sequence"));
+    QList<PortDescriptor *> p;
+    QList<Attribute *> attrs;
+    Descriptor ind(BasePorts::IN_SEQ_PORT_ID(), RCWorker::tr("Input sequence"), RCWorker::tr("The sequence to be complemented"));
+    Descriptor outd(BasePorts::OUT_SEQ_PORT_ID(), RCWorker::tr("Output sequence"), RCWorker::tr("Reverse-complement sequence"));
 
     QMap<Descriptor, DataTypePtr> inM;
     inM[BaseSlots::DNA_SEQUENCE_SLOT()] = BaseTypes::DNA_SEQUENCE_TYPE();
@@ -68,16 +67,13 @@ void RCWorkerFactory::init() {
     //outM[BaseSlots::DNA_SEQUENCE_SLOT()] = BaseTypes::DNA_SEQUENCE_TYPE();
     p << new PortDescriptor(outd, DataTypePtr(new MapDataType("rc.outpur.sequence", inM)), false, true);
 
-    Descriptor opType(OP_TYPE,RCWorker::tr("Operation type"),
-        RCWorker::tr("Select what to do with sequence."));
-    attrs << new Attribute(opType, BaseTypes::STRING_TYPE(),true,"reverse-complement");
+    Descriptor opType(OP_TYPE, RCWorker::tr("Operation type"), RCWorker::tr("Select what to do with sequence."));
+    attrs << new Attribute(opType, BaseTypes::STRING_TYPE(), true, "reverse-complement");
 
-    Descriptor desc(ACTOR_ID, RCWorker::tr("Reverse Complement"),
-        RCWorker::tr("Converts input sequence into its reverse, complement or reverse-complement counterpart")
-        );
-    ActorPrototype* proto = new IntegralBusActorPrototype(desc, p, attrs);
+    Descriptor desc(ACTOR_ID, RCWorker::tr("Reverse Complement"), RCWorker::tr("Converts input sequence into its reverse, complement or reverse-complement counterpart"));
+    ActorPrototype *proto = new IntegralBusActorPrototype(desc, p, attrs);
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     QVariantMap m;
     m["Reverse Complement"] = "reverse-complement";
     m["Reverse"] = "nocompl";
@@ -88,14 +84,14 @@ void RCWorkerFactory::init() {
     proto->setEditor(new DelegateEditor(delegates));
     WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_CONVERTERS(), proto);
 
-    DomainFactory* localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
+    DomainFactory *localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
     localDomain->registerEntry(new RCWorkerFactory());
 }
 
 QString RCWorkerPrompter::composeRichDoc() {
-    IntegralBusPort* input = qobject_cast<IntegralBusPort*>(target->getPort(BasePorts::IN_SEQ_PORT_ID()));
-    Actor* producer = input->getProducer(BaseSlots::DNA_SEQUENCE_SLOT().getId());
-    QString unsetStr = "<font color='red'>"+tr("unset")+"</font>";
+    IntegralBusPort *input = qobject_cast<IntegralBusPort *>(target->getPort(BasePorts::IN_SEQ_PORT_ID()));
+    Actor *producer = input->getProducer(BaseSlots::DNA_SEQUENCE_SLOT().getId());
+    QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
     QString producerName = tr(" from <u>%1</u>").arg(producer ? producer->getLabel() : unsetStr);
     QString type = getRequiredParam(OP_TYPE);
     QString op = type == "norev" ? "complement" : type == "nocompl" ? "reverse" : "reverse-complement";
@@ -110,7 +106,7 @@ void RCWorker::init() {
     output = ports.value(BasePorts::OUT_SEQ_PORT_ID());
 }
 
-Task* RCWorker::tick() {
+Task *RCWorker::tick() {
     if (input->hasMessage()) {
         Message inputMessage = getMessageAndSetupScriptValues(input);
         if (inputMessage.isEmpty()) {
@@ -126,41 +122,41 @@ Task* RCWorker::tick() {
         U2OpStatusImpl os;
         DNASequence seq = seqObj->getWholeSequence(os);
         CHECK_OP(os, new FailTask(os.getError()));
-        if(seq.isNull()) {
+        if (seq.isNull()) {
             return new FailTask(tr("Null sequence supplied to FindWorker: %1").arg(seq.getName()));
         }
 
         QString type = actor->getParameter(OP_TYPE)->getAttributeValue<QString>(context);
 
         DNATranslation *complTT;
-        if(!seq.alphabet->isNucleic()) {
+        if (!seq.alphabet->isNucleic()) {
             coreLog.info(tr("Can't complement amino sequence"));
             if (input->isEnded()) {
                 output->setEnded();
             }
             return NULL;
         }
-        if(type == "reverse-complement") {
+        if (type == "reverse-complement") {
             complTT = AppContext::getDNATranslationRegistry()->lookupComplementTranslation(seq.alphabet);
-            if(complTT == NULL) {
+            if (complTT == NULL) {
                 coreLog.info(tr("Can't find complement translation"));
                 if (input->isEnded()) {
                     output->setEnded();
                 }
                 return NULL;
             }
-            complTT->translate(seq.seq.data(),seq.seq.size(), seq.seq.data(), seq.seq.size());
+            complTT->translate(seq.seq.data(), seq.seq.size(), seq.seq.data(), seq.seq.size());
             TextUtils::reverse(seq.seq.data(), seq.seq.size());
-        } else if(type == "norev") {
+        } else if (type == "norev") {
             complTT = AppContext::getDNATranslationRegistry()->lookupComplementTranslation(seq.alphabet);
-            if(complTT == NULL) {
+            if (complTT == NULL) {
                 coreLog.info(tr("Can't find complement translation"));
                 if (input->isEnded()) {
                     output->setEnded();
                 }
                 return NULL;
             }
-            complTT->translate(seq.seq.data(),seq.seq.size(), seq.seq.data(), seq.seq.size());
+            complTT->translate(seq.seq.data(), seq.seq.size(), seq.seq.data(), seq.seq.size());
         } else {
             TextUtils::reverse(seq.seq.data(), seq.seq.size());
         }
@@ -180,5 +176,5 @@ Task* RCWorker::tick() {
     return NULL;
 }
 
-}
-}
+}    // namespace LocalWorkflow
+}    // namespace U2

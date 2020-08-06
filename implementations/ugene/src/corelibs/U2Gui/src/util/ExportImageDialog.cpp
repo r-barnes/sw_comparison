@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportImageDialog.h"
+
 #include <QImageWriter>
 #include <QMessageBox>
 #include <QPushButton>
@@ -33,7 +35,6 @@
 #include <U2Gui/LastUsedDirHelper.h>
 #include <U2Gui/SaveDocumentController.h>
 
-#include "ExportImageDialog.h"
 #include "imageExport/WidgetScreenshotExportTask.h"
 #include "ui_ExportImageDialog.h"
 
@@ -51,8 +52,7 @@ ExportImageDialog::ExportImageDialog(QWidget *screenShotWidget,
       scalingPolicy(scalingPolicy),
       filename(file),
       origFilename(file),
-      source(invoSource)
-{
+      source(invoSource) {
     exportController = new WidgetScreenshotImageExportController(screenShotWidget);
     init();
 }
@@ -67,9 +67,8 @@ ExportImageDialog::ExportImageDialog(ImageExportController *factory,
       scalingPolicy(scalingPolicy),
       filename(file),
       origFilename(file),
-      source(invoSource)
-{
-    SAFE_POINT( exportController != NULL, tr("Image export task factory is NULL"), );
+      source(invoSource) {
+    SAFE_POINT(exportController != NULL, tr("Image export task factory is NULL"), );
     init();
 }
 
@@ -113,11 +112,8 @@ void ExportImageDialog::accept() {
     lod.url = filename;
     ioLog.info(tr("Saving image to '%1'...").arg(filename));
 
-    ImageExportTaskSettings settings(filename, format,
-                                     QSize(getWidth(), getHeight()),
-                                     (hasQuality() ? getQuality() : -1),
-                                     ui->dpiSpinBox->value());
-    Task* task = exportController->getTaskInstance(settings);
+    ImageExportTaskSettings settings(filename, format, QSize(getWidth(), getHeight()), (hasQuality() ? getQuality() : -1), ui->dpiSpinBox->value());
+    Task *task = exportController->getTaskInstance(settings);
     AppContext::getTaskScheduler()->registerTopLevelTask(task);
 
     QDialog::accept();
@@ -126,10 +122,10 @@ void ExportImageDialog::accept() {
 void ExportImageDialog::sl_onFormatsBoxItemChanged(const QString &format) {
     setSizeControlsEnabled(!isVectorGraphicFormat(format));
 
-    const bool areQualityWidgetsVisible = isLossyFormat( format );
-    ui->qualityLabel->setVisible( areQualityWidgetsVisible );
-    ui->qualityHorizontalSlider->setVisible( areQualityWidgetsVisible );
-    ui->qualitySpinBox->setVisible( areQualityWidgetsVisible );
+    const bool areQualityWidgetsVisible = isLossyFormat(format);
+    ui->qualityLabel->setVisible(areQualityWidgetsVisible);
+    ui->qualityHorizontalSlider->setVisible(areQualityWidgetsVisible);
+    ui->qualitySpinBox->setVisible(areQualityWidgetsVisible);
 }
 
 void ExportImageDialog::sl_showMessage(const QString &message) {
@@ -153,31 +149,31 @@ void ExportImageDialog::init() {
 
     switch (source) {
     case WD:
-        new HelpButton(this, ui->buttonBox, "24740110");
+        new HelpButton(this, ui->buttonBox, "46500286");
         break;
     case CircularView:
-        new HelpButton(this, ui->buttonBox, "24742405");
+        new HelpButton(this, ui->buttonBox, "46499867");
         break;
     case MSA:
-        new HelpButton(this, ui->buttonBox, "24742478");
+        new HelpButton(this, ui->buttonBox, "46500043");
         break;
     case SequenceView:
-        new HelpButton(this, ui->buttonBox, "24742366");
+        new HelpButton(this, ui->buttonBox, "46499798");
         break;
     case AssemblyView:
-        new HelpButton(this, ui->buttonBox, "24742515");
+        new HelpButton(this, ui->buttonBox, "46500197");
         break;
     case PHYTreeView:
-        new HelpButton(this, ui->buttonBox, "24742543");
+        new HelpButton(this, ui->buttonBox, "46500101");
         break;
     case DotPlot:
-        new HelpButton(this, ui->buttonBox, "24742436");
+        new HelpButton(this, ui->buttonBox, "46499959");
         break;
     case MolView:
-        new HelpButton(this, ui->buttonBox, "24742419");
+        new HelpButton(this, ui->buttonBox, "46499903");
         break;
     default:
-        FAIL("Can't find help Id",);
+        FAIL("Can't find help Id", );
         break;
     }
 
@@ -200,8 +196,8 @@ void ExportImageDialog::init() {
 
     setSizeControlsEnabled(!isVectorGraphicFormat(saveController->getFormatIdToSave()));
 
-    connect(ui->formatsBox, SIGNAL(currentIndexChanged(const QString&)), exportController, SLOT(sl_onFormatChanged(const QString&)));
-    connect(ui->formatsBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(sl_onFormatsBoxItemChanged(const QString&)));
+    connect(ui->formatsBox, SIGNAL(currentIndexChanged(const QString &)), exportController, SLOT(sl_onFormatChanged(const QString &)));
+    connect(ui->formatsBox, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(sl_onFormatsBoxItemChanged(const QString &)));
 
     connect(exportController, SIGNAL(si_disableExport(bool)), SLOT(sl_disableExport(bool)));
     connect(exportController, SIGNAL(si_showMessage(QString)), SLOT(sl_showMessage(QString)));
@@ -211,7 +207,7 @@ void ExportImageDialog::init() {
         sl_showMessage(exportController->getDisableMessage());
     }
 
-    QWidget* settingsWidget = exportController->getSettingsWidget();
+    QWidget *settingsWidget = exportController->getSettingsWidget();
     if (settingsWidget == NULL) {
         ui->settingsGroupBox->hide();
     } else {
@@ -220,7 +216,7 @@ void ExportImageDialog::init() {
     sl_onFormatsBoxItemChanged(defaultFormat);
 }
 
-void ExportImageDialog::initSaveController(const QString& defaultFormat) {
+void ExportImageDialog::initSaveController(const QString &defaultFormat) {
     LastUsedDirHelper dirHelper(IMAGE_DIR, GUrlUtils::getDefaultDataPath());
 
     SaveDocumentControllerConfig config;
@@ -292,9 +288,8 @@ QStringList ExportImageDialog::getSvgAndPdfFormats() {
     return result;
 }
 
-bool ExportImageDialog::isVectorGraphicFormat( const QString &formatName ) {
-    return ( ImageExportTaskSettings::SVG_FORMAT == formatName ) || ( ImageExportTaskSettings::PS_FORMAT == formatName )
-        || ( ImageExportTaskSettings::PDF_FORMAT == formatName );
+bool ExportImageDialog::isVectorGraphicFormat(const QString &formatName) {
+    return (ImageExportTaskSettings::SVG_FORMAT == formatName) || (ImageExportTaskSettings::PS_FORMAT == formatName) || (ImageExportTaskSettings::PDF_FORMAT == formatName);
 }
 
 bool ExportImageDialog::isLossyFormat(const QString &formatName) {
@@ -302,5 +297,4 @@ bool ExportImageDialog::isLossyFormat(const QString &formatName) {
     return lcFormat == "jpeg" || lcFormat == "jpg";
 }
 
-} // namespace
-
+}    // namespace U2

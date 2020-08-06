@@ -27,8 +27,8 @@
 
 #include "MysqlMultiTableAssemblyAdapter.h"
 #include "MysqlSingleTableAssemblyAdapter.h"
-#include "mysql_dbi/MysqlDbi.h"
 #include "mysql_dbi/MysqlAssemblyDbi.h"
+#include "mysql_dbi/MysqlDbi.h"
 #include "mysql_dbi/MysqlObjectDbi.h"
 #include "util/AssemblyPackAlgorithm.h"
 
@@ -40,11 +40,11 @@ namespace U2 {
 
 namespace {
 
-QVector<U2Region> toRange(const QVector<int>& startPos) {
+QVector<U2Region> toRange(const QVector<int> &startPos) {
     QVector<U2Region> res;
 
     int prev = 0;
-    foreach (int pos, startPos){
+    foreach (int pos, startPos) {
         res << U2Region(prev, pos - prev);
         prev = pos;
     }
@@ -52,14 +52,14 @@ QVector<U2Region> toRange(const QVector<int>& startPos) {
     return res;
 }
 
-U2DataId addTable2Id(const U2DataId& id, const QByteArray& idExtra) {
+U2DataId addTable2Id(const U2DataId &id, const QByteArray &idExtra) {
     SAFE_POINT(U2DbiUtils::toDbExtra(id).isEmpty(), "Extra field of the input U2DataId is not empty", U2DataId());
     const quint64 dbiId = U2DbiUtils::toDbiId(id);
     const U2DataId res = U2DbiUtils::toU2DataId(dbiId, U2Type::AssemblyRead, idExtra);
     return res;
 }
 
-void ensureGridSize(QVector <QVector < QList<U2AssemblyRead> > >& grid, int rowPos, int nElens) {
+void ensureGridSize(QVector<QVector<QList<U2AssemblyRead>>> &grid, int rowPos, int nElens) {
     int oldRows = grid.size();
     if (oldRows > rowPos) {
         return;
@@ -72,38 +72,35 @@ void ensureGridSize(QVector <QVector < QList<U2AssemblyRead> > >& grid, int rowP
     }
 }
 
-}   // unnamed namespace
-
+}    // unnamed namespace
 
 /****************************************************************/
 /* MysqlMtaSingleTableAdapter */
 /****************************************************************/
 
-MysqlMtaSingleTableAdapter::MysqlMtaSingleTableAdapter(MysqlSingleTableAssemblyAdapter* adapter,
+MysqlMtaSingleTableAdapter::MysqlMtaSingleTableAdapter(MysqlSingleTableAssemblyAdapter *adapter,
                                                        int rowPos,
                                                        int elenPos,
-                                                       const QByteArray &extra) :
-    singleTableAdapter(adapter),
-    rowPos(rowPos),
-    elenPos(elenPos),
-    idExtra(extra)
-{
+                                                       const QByteArray &extra)
+    : singleTableAdapter(adapter),
+      rowPos(rowPos),
+      elenPos(elenPos),
+      idExtra(extra) {
 }
 
 /****************************************************************/
 /* MysqlMultiTableAssemblyAdapter */
 /****************************************************************/
 
-MysqlMultiTableAssemblyAdapter::MysqlMultiTableAssemblyAdapter(MysqlDbi* dbi,
-                                                               const U2DataId& assemblyId,
-                                                               const AssemblyCompressor* compressor,
+MysqlMultiTableAssemblyAdapter::MysqlMultiTableAssemblyAdapter(MysqlDbi *dbi,
+                                                               const U2DataId &assemblyId,
+                                                               const AssemblyCompressor *compressor,
                                                                MysqlDbRef *db,
-                                                               U2OpStatus& os) :
-    MysqlAssemblyAdapter(assemblyId, compressor, db),
-    dbi(dbi),
-    version(-1),
-    rowsPerRange(DEFAULT_ROWS_PER_TABLE)
-{
+                                                               U2OpStatus &os)
+    : MysqlAssemblyAdapter(assemblyId, compressor, db),
+      dbi(dbi),
+      version(-1),
+      rowsPerRange(DEFAULT_ROWS_PER_TABLE) {
     syncTables(os);
 }
 
@@ -111,14 +108,14 @@ MysqlMultiTableAssemblyAdapter::~MysqlMultiTableAssemblyAdapter() {
     clearTableAdaptersInfo();
 }
 
-qint64 MysqlMultiTableAssemblyAdapter::countReads(const U2Region& r, U2OpStatus& os) {
+qint64 MysqlMultiTableAssemblyAdapter::countReads(const U2Region &r, U2OpStatus &os) {
     bool all = (r == U2_REGION_MAX);
     qint64 sum = 0;
 
     // use more sensitive algorithm for smaller regions with low amount of reads
     // and not-very sensitive for huge regions with a lot of reads
     int nReadsToUseNotPreciseAlgorithms = 1000 / (r.length + 1);
-    foreach(MysqlMtaSingleTableAdapter* a, adapters) {
+    foreach (MysqlMtaSingleTableAdapter *a, adapters) {
         int n = a->singleTableAdapter->countReads(r, os);
         if (n != 0 && !all && n < nReadsToUseNotPreciseAlgorithms) {
             n = a->singleTableAdapter->countReadsPrecise(r, os);
@@ -130,15 +127,15 @@ qint64 MysqlMultiTableAssemblyAdapter::countReads(const U2Region& r, U2OpStatus&
     return sum;
 }
 
-qint64 MysqlMultiTableAssemblyAdapter::getMaxPackedRow(const U2Region& r, U2OpStatus& os) {
+qint64 MysqlMultiTableAssemblyAdapter::getMaxPackedRow(const U2Region &r, U2OpStatus &os) {
     qint64 max = 0;
 
     // process only hi row adapters
     int nRows = adaptersGrid.size();
     for (int rowPos = nRows; --rowPos >= 0 && max == 0;) {
-        QVector<MysqlMtaSingleTableAdapter*> elenAdapters = adaptersGrid.at(rowPos);
+        QVector<MysqlMtaSingleTableAdapter *> elenAdapters = adaptersGrid.at(rowPos);
         for (int elenPos = 0, nElens = elenAdapters.size(); elenPos < nElens; elenPos++) {
-            MysqlMtaSingleTableAdapter* a = elenAdapters.at(elenPos);
+            MysqlMtaSingleTableAdapter *a = elenAdapters.at(elenPos);
             if (a == NULL) {
                 continue;
             }
@@ -153,11 +150,11 @@ qint64 MysqlMultiTableAssemblyAdapter::getMaxPackedRow(const U2Region& r, U2OpSt
     return max;
 }
 
-qint64 MysqlMultiTableAssemblyAdapter::getMaxEndPos(U2OpStatus& os) {
+qint64 MysqlMultiTableAssemblyAdapter::getMaxEndPos(U2OpStatus &os) {
     //TODO: optimize by using gstart + maxReadLen for first n-1 tables
     qint64 max = 0;
 
-    foreach(MysqlMtaSingleTableAdapter* a, adapters) {
+    foreach (MysqlMtaSingleTableAdapter *a, adapters) {
         qint64 n = a->singleTableAdapter->getMaxEndPos(os);
         CHECK_OP(os, max);
         max = qMax(max, n);
@@ -166,10 +163,10 @@ qint64 MysqlMultiTableAssemblyAdapter::getMaxEndPos(U2OpStatus& os) {
     return max;
 }
 
-U2DbiIterator<U2AssemblyRead>* MysqlMultiTableAssemblyAdapter::getReads(const U2Region& r, U2OpStatus& os, bool sortedHint) {
-    QVector< U2DbiIterator<U2AssemblyRead>* > iterators;
+U2DbiIterator<U2AssemblyRead> *MysqlMultiTableAssemblyAdapter::getReads(const U2Region &r, U2OpStatus &os, bool sortedHint) {
+    QVector<U2DbiIterator<U2AssemblyRead> *> iterators;
 
-    foreach (MysqlMtaSingleTableAdapter* a, adapters) {
+    foreach (MysqlMtaSingleTableAdapter *a, adapters) {
         iterators << a->singleTableAdapter->getReads(r, os, sortedHint);
         CHECK_OP_EXT(os, qDeleteAll(iterators), NULL);
     }
@@ -177,12 +174,12 @@ U2DbiIterator<U2AssemblyRead>* MysqlMultiTableAssemblyAdapter::getReads(const U2
     return new MysqlMtaReadsIterator(iterators, idExtras, sortedHint);
 }
 
-U2DbiIterator<U2AssemblyRead>* MysqlMultiTableAssemblyAdapter::getReadsByRow(const U2Region& r, qint64 minRow, qint64 maxRow, U2OpStatus& os) {
-    QVector< U2DbiIterator<U2AssemblyRead>* > iterators;
+U2DbiIterator<U2AssemblyRead> *MysqlMultiTableAssemblyAdapter::getReadsByRow(const U2Region &r, qint64 minRow, qint64 maxRow, U2OpStatus &os) {
+    QVector<U2DbiIterator<U2AssemblyRead> *> iterators;
     QVector<QByteArray> selectedIdExtras;
     U2Region targetRowRange(minRow, maxRow - minRow);
 
-    foreach (MysqlMtaSingleTableAdapter* a, adapters) {
+    foreach (MysqlMtaSingleTableAdapter *a, adapters) {
         const U2Region rowRegion(a->rowPos * rowsPerRange, rowsPerRange);
         if (!rowRegion.intersects(targetRowRange)) {
             continue;
@@ -196,10 +193,10 @@ U2DbiIterator<U2AssemblyRead>* MysqlMultiTableAssemblyAdapter::getReadsByRow(con
     return new MysqlMtaReadsIterator(iterators, selectedIdExtras, false);
 }
 
-U2DbiIterator<U2AssemblyRead>* MysqlMultiTableAssemblyAdapter::getReadsByName(const QByteArray& name, U2OpStatus& os) {
-    QVector< U2DbiIterator<U2AssemblyRead>* > iterators;
+U2DbiIterator<U2AssemblyRead> *MysqlMultiTableAssemblyAdapter::getReadsByName(const QByteArray &name, U2OpStatus &os) {
+    QVector<U2DbiIterator<U2AssemblyRead> *> iterators;
 
-    foreach(MysqlMtaSingleTableAdapter* a, adapters) {
+    foreach (MysqlMtaSingleTableAdapter *a, adapters) {
         iterators << a->singleTableAdapter->getReadsByName(name, os);
         CHECK_OP_EXT(os, qDeleteAll(iterators), NULL);
     }
@@ -207,7 +204,7 @@ U2DbiIterator<U2AssemblyRead>* MysqlMultiTableAssemblyAdapter::getReadsByName(co
     return new MysqlMtaReadsIterator(iterators, idExtras, false);
 }
 
-void MysqlMultiTableAssemblyAdapter::addReads(U2DbiIterator<U2AssemblyRead>* it, U2AssemblyReadsImportInfo& ii, U2OpStatus& os) {
+void MysqlMultiTableAssemblyAdapter::addReads(U2DbiIterator<U2AssemblyRead> *it, U2AssemblyReadsImportInfo &ii, U2OpStatus &os) {
     bool empty = adaptersGrid.isEmpty();
     if (empty) {
         // TODO: fetch some reads for analysis. By now not needed, since regions are hard-coded anyway
@@ -219,7 +216,7 @@ void MysqlMultiTableAssemblyAdapter::addReads(U2DbiIterator<U2AssemblyRead>* it,
     qint64 prevLeftmostPos = -1;
     PackAlgorithmContext packContext;
 
-    QVector <QVector < QList<U2AssemblyRead> > > readsGrid; //reads sorted by range
+    QVector<QVector<QList<U2AssemblyRead>>> readsGrid;    //reads sorted by range
     bool lastIteration = false;
     qint64 readsInGrid = 0;
 
@@ -247,13 +244,13 @@ void MysqlMultiTableAssemblyAdapter::addReads(U2DbiIterator<U2AssemblyRead>* it,
         if (lastIteration || readsInGrid > N_READS_TO_FLUSH_TOTAL) {
             for (int rowPos = 0; rowPos < nRows && !os.isCoR(); rowPos++) {
                 for (int elenPos = 0; elenPos < nElens && !os.isCoR(); elenPos++) {
-                    QList<U2AssemblyRead>& rangeReads = readsGrid[rowPos][elenPos];
+                    QList<U2AssemblyRead> &rangeReads = readsGrid[rowPos][elenPos];
                     int nRangeReads = rangeReads.size();
                     if (nRangeReads == 0 || (!lastIteration && nRangeReads < N_READS_TO_FLUSH_PER_RANGE)) {
                         continue;
                     }
 
-                    MysqlMtaSingleTableAdapter* adapter = getAdapterByRowAndElenRange(rowPos, elenPos, true, os);
+                    MysqlMtaSingleTableAdapter *adapter = getAdapterByRowAndElenRange(rowPos, elenPos, true, os);
                     U2AssemblyReadsImportInfo rangeReadsImportInfo(&ii);
                     // pass the same coverage info through all adapters to accumulate coverage
                     rangeReadsImportInfo.coverageInfo = ii.coverageInfo;
@@ -279,17 +276,17 @@ void MysqlMultiTableAssemblyAdapter::addReads(U2DbiIterator<U2AssemblyRead>* it,
     }
 }
 
-void MysqlMultiTableAssemblyAdapter::removeReads(const QList<U2DataId>& readIds, U2OpStatus& os) {
+void MysqlMultiTableAssemblyAdapter::removeReads(const QList<U2DataId> &readIds, U2OpStatus &os) {
     int nReads = readIds.size();
 
-    QHash<MysqlMtaSingleTableAdapter*, QList<U2DataId> > readsByAdapter;
+    QHash<MysqlMtaSingleTableAdapter *, QList<U2DataId>> readsByAdapter;
     for (int i = 0; i < nReads; i++) {
-        const U2DataId& readId = readIds[i];
+        const U2DataId &readId = readIds[i];
         int rowPos = getRowRangePosById(readId);
         int elenPos = getElenRangePosById(readId);
-        MysqlMtaSingleTableAdapter* a = getAdapterByRowAndElenRange(rowPos, elenPos, false, os);
+        MysqlMtaSingleTableAdapter *a = getAdapterByRowAndElenRange(rowPos, elenPos, false, os);
 
-        SAFE_POINT(a != NULL, QString("No table adapter was found. row: %1, elen: %2").arg(rowPos).arg(elenPos),);
+        SAFE_POINT(a != NULL, QString("No table adapter was found. row: %1, elen: %2").arg(rowPos).arg(elenPos), );
 
         if (!readsByAdapter.contains(a)) {
             readsByAdapter[a] = QList<U2DataId>();
@@ -297,16 +294,16 @@ void MysqlMultiTableAssemblyAdapter::removeReads(const QList<U2DataId>& readIds,
         readsByAdapter[a].append(readId);
     }
 
-    foreach(MysqlMtaSingleTableAdapter* a, readsByAdapter.keys()) {
-        QList<U2DataId>& rangeReadIds = readsByAdapter[a];
+    foreach (MysqlMtaSingleTableAdapter *a, readsByAdapter.keys()) {
+        QList<U2DataId> &rangeReadIds = readsByAdapter[a];
         a->singleTableAdapter->removeReads(rangeReadIds, os);
         //TODO: remove adapters for empty tables. And tables as well
     }
 }
 
 void MysqlMultiTableAssemblyAdapter::dropReadsTables(U2OpStatus &os) {
-    foreach (QVector<MysqlMtaSingleTableAdapter*> adaptersVector, adaptersGrid) {
-        foreach (MysqlMtaSingleTableAdapter* adapter, adaptersVector) {
+    foreach (QVector<MysqlMtaSingleTableAdapter *> adaptersVector, adaptersGrid) {
+        foreach (MysqlMtaSingleTableAdapter *adapter, adaptersVector) {
             if (NULL != adapter) {
                 adapter->singleTableAdapter->dropReadsTables(os);
             }
@@ -314,7 +311,7 @@ void MysqlMultiTableAssemblyAdapter::dropReadsTables(U2OpStatus &os) {
     }
 }
 
-void MysqlMultiTableAssemblyAdapter::pack(U2AssemblyPackStat& stat, U2OpStatus& os) {
+void MysqlMultiTableAssemblyAdapter::pack(U2AssemblyPackStat &stat, U2OpStatus &os) {
     MysqlMultiTablePackAlgorithmAdapter packAdapter(this);
 
     AssemblyPackAlgorithm::pack(packAdapter, stat, os);
@@ -324,20 +321,20 @@ void MysqlMultiTableAssemblyAdapter::pack(U2AssemblyPackStat& stat, U2OpStatus& 
     quint64 t0 = GTimer::currentTimeMicros();
     packAdapter.migrateAll(os);
     CHECK_OP(os, );
-    perfLog.trace(QString("Assembly: table migration pack time: %1 seconds").arg((GTimer::currentTimeMicros() - t0) / float(1000*1000)));
+    perfLog.trace(QString("Assembly: table migration pack time: %1 seconds").arg((GTimer::currentTimeMicros() - t0) / float(1000 * 1000)));
 
     t0 = GTimer::currentTimeMicros();
     // if new tables created during the pack algorithm -> create indexes
     createReadsIndexes(os);
     CHECK_OP(os, );
-    perfLog.trace(QString("Assembly: re-indexing pack time: %1 seconds").arg((GTimer::currentTimeMicros() - t0) / float(1000*1000)));
+    perfLog.trace(QString("Assembly: re-indexing pack time: %1 seconds").arg((GTimer::currentTimeMicros() - t0) / float(1000 * 1000)));
 
     flushTables(os);
 }
 
-void MysqlMultiTableAssemblyAdapter::calculateCoverage(const U2Region& region, U2AssemblyCoverageStat& coverage, U2OpStatus& os) {
+void MysqlMultiTableAssemblyAdapter::calculateCoverage(const U2Region &region, U2AssemblyCoverageStat &coverage, U2OpStatus &os) {
     for (int i = 0; i < adapters.size(); ++i) {
-        MysqlMtaSingleTableAdapter * a = adapters.at(i);
+        MysqlMtaSingleTableAdapter *a = adapters.at(i);
         a->singleTableAdapter->calculateCoverage(region, coverage, os);
         CHECK_OP(os, );
 
@@ -345,8 +342,8 @@ void MysqlMultiTableAssemblyAdapter::calculateCoverage(const U2Region& region, U
     }
 }
 
-void MysqlMultiTableAssemblyAdapter::createReadsIndexes(U2OpStatus& os) {
-    foreach(MysqlMtaSingleTableAdapter* a, adapters) {
+void MysqlMultiTableAssemblyAdapter::createReadsIndexes(U2OpStatus &os) {
+    foreach (MysqlMtaSingleTableAdapter *a, adapters) {
         a->singleTableAdapter->createReadsIndexes(os);
         CHECK_OP(os, );
     }
@@ -355,7 +352,7 @@ void MysqlMultiTableAssemblyAdapter::createReadsIndexes(U2OpStatus& os) {
 int MysqlMultiTableAssemblyAdapter::getElenRangePosByLength(qint64 readLength) const {
     int nElenRanges = elenRanges.size();
     for (int i = 0; i < nElenRanges; i++) {
-        const U2Region& r = elenRanges[i];
+        const U2Region &r = elenRanges[i];
         if (r.contains(readLength)) {
             return i;
         }
@@ -364,12 +361,12 @@ int MysqlMultiTableAssemblyAdapter::getElenRangePosByLength(qint64 readLength) c
     FAIL(QString("Read length does not fit any range: %1, number of ranges: %2").arg(readLength).arg(nElenRanges), nElenRanges - 1);
 }
 
-int MysqlMultiTableAssemblyAdapter::getElenRangePosById(const U2DataId& id) const {
+int MysqlMultiTableAssemblyAdapter::getElenRangePosById(const U2DataId &id) const {
     QByteArray extra = U2DbiUtils::toDbExtra(id);
 
     SAFE_POINT(extra.size() == 4, QString("Illegal assembly read ID extra part. HEX: %1").arg(extra.toHex().constData()), -1);
 
-    const qint16* data = (const qint16*)extra.constData();
+    const qint16 *data = (const qint16 *)extra.constData();
     return int(data[1]);
 }
 
@@ -381,12 +378,12 @@ int MysqlMultiTableAssemblyAdapter::getRowRangePosByRow(quint64 row) const {
     return row / rowsPerRange;
 }
 
-int MysqlMultiTableAssemblyAdapter::getRowRangePosById(const U2DataId& id) const {
+int MysqlMultiTableAssemblyAdapter::getRowRangePosById(const U2DataId &id) const {
     QByteArray extra = U2DbiUtils::toDbExtra(id);
 
     SAFE_POINT(extra.size() == 4, QString("Extra part size of assembly read ID is not correct. HEX(Extra): %1").arg(extra.toHex().constData()), -1);
 
-    const qint16* data = (const qint16*)extra.constData();
+    const qint16 *data = (const qint16 *)extra.constData();
     return int(data[0]);
 }
 
@@ -394,18 +391,18 @@ int MysqlMultiTableAssemblyAdapter::getRowsPerRange() const {
     return rowsPerRange;
 }
 
-const QVector<MysqlMtaSingleTableAdapter*>& MysqlMultiTableAssemblyAdapter::getAdapters() const {
+const QVector<MysqlMtaSingleTableAdapter *> &MysqlMultiTableAssemblyAdapter::getAdapters() const {
     return adapters;
 }
-const QVector<QByteArray>& MysqlMultiTableAssemblyAdapter::getIdExtrasPerRange() const {
+const QVector<QByteArray> &MysqlMultiTableAssemblyAdapter::getIdExtrasPerRange() const {
     return idExtras;
 }
 
-MysqlDbRef* MysqlMultiTableAssemblyAdapter::getDbRef() const {
+MysqlDbRef *MysqlMultiTableAssemblyAdapter::getDbRef() const {
     return dbi->getDbRef();
 }
 
-MysqlMtaSingleTableAdapter* MysqlMultiTableAssemblyAdapter::getAdapterByRowAndElenRange(int rowPos, int elenPos, bool createIfNotExits, U2OpStatus& os) {
+MysqlMtaSingleTableAdapter *MysqlMultiTableAssemblyAdapter::getAdapterByRowAndElenRange(int rowPos, int elenPos, bool createIfNotExits, U2OpStatus &os) {
     int nElens = elenRanges.size();
     SAFE_POINT(elenPos < nElens, "Out of range", NULL);
     if (rowPos >= adaptersGrid.size()) {
@@ -418,9 +415,9 @@ MysqlMtaSingleTableAdapter* MysqlMultiTableAssemblyAdapter::getAdapterByRowAndEl
         }
     }
 
-    QVector<MysqlMtaSingleTableAdapter*> elenAdapters = adaptersGrid.at(rowPos);
+    QVector<MysqlMtaSingleTableAdapter *> elenAdapters = adaptersGrid.at(rowPos);
     SAFE_POINT(elenAdapters.size() == nElens, "Invalid adapters array", NULL);
-    MysqlMtaSingleTableAdapter* adapter = elenAdapters.at(elenPos);
+    MysqlMtaSingleTableAdapter *adapter = elenAdapters.at(elenPos);
     if (adapter == NULL && createIfNotExits) {
         adapter = createAdapter(rowPos, elenPos, os);
     }
@@ -438,13 +435,13 @@ QString MysqlMultiTableAssemblyAdapter::getTableSuffix(int rowPos, int elenPos) 
 
 QByteArray MysqlMultiTableAssemblyAdapter::getIdExtra(int rowPos, int elenPos) {
     QByteArray res(4, 0);
-    qint16* data = (qint16*)res.data();
+    qint16 *data = (qint16 *)res.data();
     data[0] = (qint16)rowPos;
     data[1] = (qint16)elenPos;
     return res;
 }
 
-void MysqlMultiTableAssemblyAdapter::syncTables(U2OpStatus& os) {
+void MysqlMultiTableAssemblyAdapter::syncTables(U2OpStatus &os) {
     qint64 versionInDb = dbi->getObjectDbi()->getObjectVersion(assemblyId, os);
     CHECK_OP(os, );
 
@@ -462,22 +459,22 @@ void MysqlMultiTableAssemblyAdapter::syncTables(U2OpStatus& os) {
     }
 }
 
-void MysqlMultiTableAssemblyAdapter::initTables(const QList<U2AssemblyRead>& reads, U2OpStatus& os) {
+void MysqlMultiTableAssemblyAdapter::initTables(const QList<U2AssemblyRead> &reads, U2OpStatus &os) {
     SAFE_POINT(elenRanges.isEmpty(), "Effective ranges are already initialized", );
 
     const int nReads = reads.size();
     // TODO
     if (false && nReads > 1000) {
-//        // get reads distribution first
-//        QVector<int> distribution(nReads / 10, 0);
-//        int* data = distribution.data();
-//        foreach(const U2AssemblyRead& read, reads) {
-//            int elen = read->readSequence.size() + U2AssemblyUtils::getCigarExtraLength(read->cigar);
-//            int idx = elen / 10;
-//            data[idx]++;
-//        }
-//        // derive regions
-//        // TODO:
+        //        // get reads distribution first
+        //        QVector<int> distribution(nReads / 10, 0);
+        //        int* data = distribution.data();
+        //        foreach(const U2AssemblyRead& read, reads) {
+        //            int elen = read->readSequence.size() + U2AssemblyUtils::getCigarExtraLength(read->cigar);
+        //            int idx = elen / 10;
+        //            data[idx]++;
+        //        }
+        //        // derive regions
+        //        // TODO:
     } else {
         QVector<int> starts;
         starts << 50 << 100 << 200 << 400 << 800 << 4 * 1000 << 25 * 1000 << 100 * 1000 << 500 * 1000 << 2 * 1000 * 1000;
@@ -488,7 +485,7 @@ void MysqlMultiTableAssemblyAdapter::initTables(const QList<U2AssemblyRead>& rea
     flushTables(os);
 }
 
-void MysqlMultiTableAssemblyAdapter::rereadTables(const QByteArray& idata, U2OpStatus& os) {
+void MysqlMultiTableAssemblyAdapter::rereadTables(const QByteArray &idata, U2OpStatus &os) {
     QWriteLocker wl(&tablesSyncLock);
 
     clearTableAdaptersInfo();
@@ -511,7 +508,7 @@ void MysqlMultiTableAssemblyAdapter::rereadTables(const QByteArray& idata, U2OpS
     const QList<QByteArray> elenTokens = elenData.split(',');
     U2Region prev(-1, 1);
     bool parseOk = true;
-    foreach(const QByteArray& elenTok, elenTokens) {
+    foreach (const QByteArray &elenTok, elenTokens) {
         int start = elenTok.toInt(&parseOk);
         if (!parseOk || start < prev.endPos()) {
             os.setError(U2DbiL10n::tr("Failed to parse range: %1, full: %2").arg(elenTok.constData()).arg(elenData.constData()));
@@ -557,7 +554,7 @@ void MysqlMultiTableAssemblyAdapter::rereadTables(const QByteArray& idata, U2OpS
     }
 }
 
-void MysqlMultiTableAssemblyAdapter::flushTables(U2OpStatus& os) {
+void MysqlMultiTableAssemblyAdapter::flushTables(U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -591,23 +588,23 @@ void MysqlMultiTableAssemblyAdapter::clearTableAdaptersInfo() {
     elenRanges.clear();
 }
 
-MysqlMtaSingleTableAdapter* MysqlMultiTableAssemblyAdapter::createAdapter(int rowPos, int elenPos, U2OpStatus& os) {
+MysqlMtaSingleTableAdapter *MysqlMultiTableAssemblyAdapter::createAdapter(int rowPos, int elenPos, U2OpStatus &os) {
     SAFE_POINT(0 <= rowPos && rowPos < adaptersGrid.size(), "Out of range", NULL);
     SAFE_POINT(0 <= elenPos && elenPos < adaptersGrid.at(rowPos).size(), "Out of range", NULL);
     SAFE_POINT(NULL == adaptersGrid.at(rowPos).at(elenPos), "Adapter is already created", NULL);
 
     const QString suffix = getTableSuffix(rowPos, elenPos);
-    const U2Region& elenRange = elenRanges.at(elenPos);
+    const U2Region &elenRange = elenRanges.at(elenPos);
     const QByteArray idExtra = getIdExtra(rowPos, elenPos);
 
-    MysqlSingleTableAssemblyAdapter* sa = new MysqlSingleTableAssemblyAdapter(dbi, assemblyId, 'M', suffix, compressor, db, os);
+    MysqlSingleTableAssemblyAdapter *sa = new MysqlSingleTableAssemblyAdapter(dbi, assemblyId, 'M', suffix, compressor, db, os);
     sa->enableRangeTableMode(elenRange.startPos, elenRange.endPos());
 
-    MysqlMtaSingleTableAdapter* ma = new MysqlMtaSingleTableAdapter(sa, rowPos, elenPos, idExtra);
+    MysqlMtaSingleTableAdapter *ma = new MysqlMtaSingleTableAdapter(sa, rowPos, elenPos, idExtra);
 
     adapters << ma;
     idExtras << idExtra;
-    adaptersGrid[rowPos][elenPos] =  ma;
+    adaptersGrid[rowPos][elenPos] = ma;
 
     return ma;
 }
@@ -617,47 +614,42 @@ void MysqlMultiTableAssemblyAdapter::initAdaptersGrid(int nRows, int nElens) {
 
     adaptersGrid.resize(nRows);
     for (int i = 0; i < nRows; i++) {
-        adaptersGrid[i] = QVector<MysqlMtaSingleTableAdapter*>(nElens, NULL);
+        adaptersGrid[i] = QVector<MysqlMtaSingleTableAdapter *>(nElens, NULL);
     }
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 // MysqlReadTableMigrationData
 
-MysqlReadTableMigrationData::MysqlReadTableMigrationData() :
-    readId(-1),
-    oldTable(NULL),
-    newProw(-1)
-{
+MysqlReadTableMigrationData::MysqlReadTableMigrationData()
+    : readId(-1),
+      oldTable(NULL),
+      newProw(-1) {
 }
 
-MysqlReadTableMigrationData::MysqlReadTableMigrationData(qint64 oldId, MysqlMtaSingleTableAdapter* oldT, int newP) :
-    readId(oldId),
-    oldTable(oldT),
-    newProw(newP)
-{
+MysqlReadTableMigrationData::MysqlReadTableMigrationData(qint64 oldId, MysqlMtaSingleTableAdapter *oldT, int newP)
+    : readId(oldId),
+      oldTable(oldT),
+      newProw(newP) {
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 // pack adapter
 
-MysqlMultiTablePackAlgorithmAdapter::MysqlMultiTablePackAlgorithmAdapter(MysqlMultiTableAssemblyAdapter* ma) :
-    multiTableAdapter(ma)
-{
-    MysqlDbRef* db = multiTableAdapter->getDbRef();
+MysqlMultiTablePackAlgorithmAdapter::MysqlMultiTablePackAlgorithmAdapter(MysqlMultiTableAssemblyAdapter *ma)
+    : multiTableAdapter(ma) {
+    MysqlDbRef *db = multiTableAdapter->getDbRef();
     int nElens = multiTableAdapter->getNumberOfElenRanges();
     ensureGridSize(nElens);
 
-    foreach (MysqlMtaSingleTableAdapter* a, multiTableAdapter->getAdapters()) {
-        MysqlSingleTablePackAlgorithmAdapter* sa = new MysqlSingleTablePackAlgorithmAdapter(db, a->singleTableAdapter->getReadsTableName());
+    foreach (MysqlMtaSingleTableAdapter *a, multiTableAdapter->getAdapters()) {
+        MysqlSingleTablePackAlgorithmAdapter *sa = new MysqlSingleTablePackAlgorithmAdapter(db, a->singleTableAdapter->getReadsTableName());
         packAdapters << sa;
         if (packAdaptersGrid.size() <= a->rowPos) {
             packAdaptersGrid.resize(a->rowPos + 1);
         }
 
-        if(packAdaptersGrid[a->rowPos].size() <= a->elenPos) {
+        if (packAdaptersGrid[a->rowPos].size() <= a->elenPos) {
             packAdaptersGrid[a->rowPos].resize(a->elenPos + 1);
         }
 
@@ -669,21 +661,21 @@ MysqlMultiTablePackAlgorithmAdapter::~MysqlMultiTablePackAlgorithmAdapter() {
     qDeleteAll(packAdapters);
 }
 
-U2DbiIterator<PackAlgorithmData>* MysqlMultiTablePackAlgorithmAdapter::selectAllReads(U2OpStatus& os) {
-    QVector< U2DbiIterator<PackAlgorithmData>* > iterators;
-    foreach (MysqlSingleTablePackAlgorithmAdapter* a, packAdapters) {
+U2DbiIterator<PackAlgorithmData> *MysqlMultiTablePackAlgorithmAdapter::selectAllReads(U2OpStatus &os) {
+    QVector<U2DbiIterator<PackAlgorithmData> *> iterators;
+    foreach (MysqlSingleTablePackAlgorithmAdapter *a, packAdapters) {
         iterators << a->selectAllReads(os);
     }
 
     return new MysqlMTAPackAlgorithmDataIterator(iterators, multiTableAdapter->getIdExtrasPerRange());
 }
 
-void MysqlMultiTablePackAlgorithmAdapter::assignProw(const U2DataId& readId, qint64 prow, U2OpStatus& os) {
+void MysqlMultiTablePackAlgorithmAdapter::assignProw(const U2DataId &readId, qint64 prow, U2OpStatus &os) {
     int elenPos = multiTableAdapter->getElenRangePosById(readId);
     int oldRowPos = multiTableAdapter->getRowRangePosById(readId);
     int newRowPos = multiTableAdapter->getRowRangePosByRow(prow);
 
-    MysqlSingleTablePackAlgorithmAdapter* sa = NULL;
+    MysqlSingleTablePackAlgorithmAdapter *sa = NULL;
     if (newRowPos == oldRowPos) {
         sa = packAdaptersGrid[oldRowPos][elenPos];
         sa->assignProw(readId, prow, os);
@@ -692,11 +684,11 @@ void MysqlMultiTablePackAlgorithmAdapter::assignProw(const U2DataId& readId, qin
     ensureGridSize(newRowPos + 1);
 
     sa = packAdaptersGrid[newRowPos][elenPos];
-    MysqlMtaSingleTableAdapter* oldA = multiTableAdapter->getAdapterByRowAndElenRange(oldRowPos, elenPos, false, os);
-    MysqlMtaSingleTableAdapter* newA = multiTableAdapter->getAdapterByRowAndElenRange(newRowPos, elenPos, true, os);
+    MysqlMtaSingleTableAdapter *oldA = multiTableAdapter->getAdapterByRowAndElenRange(oldRowPos, elenPos, false, os);
+    MysqlMtaSingleTableAdapter *newA = multiTableAdapter->getAdapterByRowAndElenRange(newRowPos, elenPos, true, os);
 
-    SAFE_POINT(oldA != NULL, QString("Can't find reads table adapter: row: %1, elen: %2").arg(oldRowPos).arg(elenPos) ,);
-    SAFE_POINT(newA != NULL, QString("Can't find reads table adapter: row: %1, elen: %2").arg(newRowPos).arg(elenPos) ,);
+    SAFE_POINT(oldA != NULL, QString("Can't find reads table adapter: row: %1, elen: %2").arg(oldRowPos).arg(elenPos), );
+    SAFE_POINT(newA != NULL, QString("Can't find reads table adapter: row: %1, elen: %2").arg(newRowPos).arg(elenPos), );
     SAFE_POINT_OP(os, );
 
     if (sa == NULL) {
@@ -705,22 +697,22 @@ void MysqlMultiTablePackAlgorithmAdapter::assignProw(const U2DataId& readId, qin
         packAdaptersGrid[newRowPos][elenPos] = sa;
     }
 
-    QVector<MysqlReadTableMigrationData>& newTableData = migrations[newA];
+    QVector<MysqlReadTableMigrationData> &newTableData = migrations[newA];
     newTableData.append(MysqlReadTableMigrationData(U2DbiUtils::toDbiId(readId), oldA, prow));
     //TODO: add mem check here!
 }
 
 void MysqlMultiTablePackAlgorithmAdapter::releaseDbResources() {
-    foreach (MysqlSingleTablePackAlgorithmAdapter* a, packAdapters) {
+    foreach (MysqlSingleTablePackAlgorithmAdapter *a, packAdapters) {
         a->releaseDbResources();
     }
 }
 
-void MysqlMultiTablePackAlgorithmAdapter::migrateAll(U2OpStatus& os) {
+void MysqlMultiTablePackAlgorithmAdapter::migrateAll(U2OpStatus &os) {
     qint64 nReadsToMigrate = 0;
-    foreach (MysqlMtaSingleTableAdapter* newTable, migrations.keys()) {
-        const QVector<MysqlReadTableMigrationData>& data = migrations[newTable];
-        nReadsToMigrate+=data.size();
+    foreach (MysqlMtaSingleTableAdapter *newTable, migrations.keys()) {
+        const QVector<MysqlReadTableMigrationData> &data = migrations[newTable];
+        nReadsToMigrate += data.size();
     }
 
     if (nReadsToMigrate == 0) {
@@ -734,7 +726,7 @@ void MysqlMultiTablePackAlgorithmAdapter::migrateAll(U2OpStatus& os) {
 
     if (migrationPercent > MAX_PERCENT_TO_REINDEX) {
         perfLog.trace("Assembly: dropping old indexes first");
-        foreach (MysqlMtaSingleTableAdapter* adapter, multiTableAdapter->getAdapters()) {
+        foreach (MysqlMtaSingleTableAdapter *adapter, multiTableAdapter->getAdapters()) {
             adapter->singleTableAdapter->dropReadsIndexes(os);
         }
         perfLog.trace("Assembly: indexes are dropped");
@@ -742,8 +734,8 @@ void MysqlMultiTablePackAlgorithmAdapter::migrateAll(U2OpStatus& os) {
 
     SAFE_POINT_OP(os, );
     int nMigrated = 0;
-    foreach (MysqlMtaSingleTableAdapter* newTable, migrations.keys()) {
-        const QVector<MysqlReadTableMigrationData>& data = migrations[newTable];
+    foreach (MysqlMtaSingleTableAdapter *newTable, migrations.keys()) {
+        const QVector<MysqlReadTableMigrationData> &data = migrations[newTable];
         migrate(newTable, data, nMigrated, nReadsToMigrate, os);
         nMigrated += data.size();
     }
@@ -761,27 +753,26 @@ void MysqlMultiTablePackAlgorithmAdapter::ensureGridSize(int nRows) {
     }
 }
 
-void MysqlMultiTablePackAlgorithmAdapter::migrate(MysqlMtaSingleTableAdapter* newA, const QVector<MysqlReadTableMigrationData>& data, qint64 migratedBefore, qint64 totalMigrationCount, U2OpStatus& os) {
+void MysqlMultiTablePackAlgorithmAdapter::migrate(MysqlMtaSingleTableAdapter *newA, const QVector<MysqlReadTableMigrationData> &data, qint64 migratedBefore, qint64 totalMigrationCount, U2OpStatus &os) {
     //delete reads from old tables, and insert into new one
-    QHash<MysqlMtaSingleTableAdapter*, QVector<MysqlReadTableMigrationData> > readsByOldTable;
-    foreach (const MysqlReadTableMigrationData& d, data) {
+    QHash<MysqlMtaSingleTableAdapter *, QVector<MysqlReadTableMigrationData>> readsByOldTable;
+    foreach (const MysqlReadTableMigrationData &d, data) {
         readsByOldTable[d.oldTable].append(d);
     }
 
-    MysqlDbRef* db = multiTableAdapter->getDbRef();
+    MysqlDbRef *db = multiTableAdapter->getDbRef();
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
-    foreach (MysqlMtaSingleTableAdapter* oldA, readsByOldTable.keys()) {
-
-        const QVector<MysqlReadTableMigrationData>& migData = readsByOldTable[oldA];
+    foreach (MysqlMtaSingleTableAdapter *oldA, readsByOldTable.keys()) {
+        const QVector<MysqlReadTableMigrationData> &migData = readsByOldTable[oldA];
         if (migData.isEmpty()) {
             continue;
         }
 
         QString oldTable = oldA->singleTableAdapter->getReadsTableName();
         QString newTable = newA->singleTableAdapter->getReadsTableName();
-        QString idsTable = "tmp_mig_" + oldTable; //TODO
+        QString idsTable = "tmp_mig_" + oldTable;    //TODO
 
 #ifdef _DEBUG
         qint64 nOldReads1 = U2SqlQuery("SELECT COUNT(*) FROM " + oldTable, db, os).selectInt64();
@@ -794,14 +785,14 @@ void MysqlMultiTablePackAlgorithmAdapter::migrate(MysqlMtaSingleTableAdapter* ne
         perfLog.trace(QString("Assembly: running reads migration from %1 to %2 number of reads: %3").arg(oldTable).arg(newTable).arg(migData.size()));
         quint64 t0 = GTimer::currentTimeMicros();
 
-        { //nested block is needed to ensure all queries are finalized
+        {    //nested block is needed to ensure all queries are finalized
 
             static const QString tempTableQuery = "CREATE TEMPORARY TABLE %1(id INTEGER PRIMARY KEY, prow INTEGER NOT NULL)";
             U2SqlQuery(tempTableQuery.arg(idsTable), db, os).execute();
             CHECK_OP(os, );
 
             static const QString insertQuery = "INSERT INTO %1(id, prow) VALUES(:id, :prow)";
-            foreach(const MysqlReadTableMigrationData& d, migData) {
+            foreach (const MysqlReadTableMigrationData &d, migData) {
                 U2SqlQuery insertIds(insertQuery.arg(idsTable), db, os);
                 insertIds.bindInt64(":id", d.readId);
                 insertIds.bindInt32(":prow", d.newProw);
@@ -814,22 +805,25 @@ void MysqlMultiTablePackAlgorithmAdapter::migrate(MysqlMtaSingleTableAdapter* ne
 
             if (!os.isCoR()) {
                 static const QString insertString = "INSERT INTO %1(prow, name, gstart, elen, flags, mq, data) "
-                        "SELECT %3.prow, name, gstart, elen, flags, mq, data FROM %2, %3 WHERE %2.id = %3.id";
+                                                    "SELECT %3.prow, name, gstart, elen, flags, mq, data FROM %2, %3 WHERE %2.id = %3.id";
                 U2SqlQuery(insertString.arg(newTable).arg(oldTable).arg(idsTable), db, os).execute();
 
-                static const QString deleteString ="DELETE A.* FROM %1 AS A INNER JOIN %2 AS B ON A.id = B.id";
+                static const QString deleteString = "DELETE A.* FROM %1 AS A INNER JOIN %2 AS B ON A.id = B.id";
                 U2SqlQuery(deleteString.arg(oldTable).arg(idsTable), db, os).execute();
             }
-
         }
-        U2OpStatusImpl osStub; // using stub here -> this operation must be performed even if any of internal queries failed
+        U2OpStatusImpl osStub;    // using stub here -> this operation must be performed even if any of internal queries failed
         static const QString dropTableString = "DROP TABLE IF EXISTS %1";
         U2SqlQuery(dropTableString.arg(idsTable), db, osStub).execute();
 
         qint64 nMigrated = migratedBefore + migData.size();
         perfLog.trace(QString("Assembly: reads migration from %1 to %2 finished, time %3 seconds, progress: %4/%5 (%6%)")
-            .arg(oldTable).arg(newTable).arg((GTimer::currentTimeMicros() - t0)/float(1000*1000))
-            .arg(nMigrated).arg(totalMigrationCount).arg(100*nMigrated/totalMigrationCount));
+                          .arg(oldTable)
+                          .arg(newTable)
+                          .arg((GTimer::currentTimeMicros() - t0) / float(1000 * 1000))
+                          .arg(nMigrated)
+                          .arg(totalMigrationCount)
+                          .arg(100 * nMigrated / totalMigrationCount));
 
 #ifdef _DEBUG
         qint64 nOldReads2 = U2SqlQuery("SELECT COUNT(*) FROM " + oldTable, db, os).selectInt64();
@@ -840,13 +834,11 @@ void MysqlMultiTablePackAlgorithmAdapter::migrate(MysqlMtaSingleTableAdapter* ne
     }
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 // MTAReadsIterator
 
-MysqlMtaReadsIterator::MysqlMtaReadsIterator(QVector< U2DbiIterator<U2AssemblyRead>* >& i, const QVector<QByteArray>& ie, bool sorted)
-: iterators (i), currentRange(0), idExtras(ie), sortedHint(sorted)
-{
+MysqlMtaReadsIterator::MysqlMtaReadsIterator(QVector<U2DbiIterator<U2AssemblyRead> *> &i, const QVector<QByteArray> &ie, bool sorted)
+    : iterators(i), currentRange(0), idExtras(ie), sortedHint(sorted) {
 }
 
 MysqlMtaReadsIterator::~MysqlMtaReadsIterator() {
@@ -866,13 +858,13 @@ bool MysqlMtaReadsIterator::hasNext() {
         bool res = currentRange < iterators.size();
         if (res) {
             do {
-                U2DbiIterator<U2AssemblyRead>* it = iterators[currentRange];
+                U2DbiIterator<U2AssemblyRead> *it = iterators[currentRange];
                 res = it->hasNext();
                 if (res) {
                     break;
                 }
                 currentRange++;
-            }  while (currentRange < iterators.size());
+            } while (currentRange < iterators.size());
         }
         return res;
     }
@@ -897,18 +889,18 @@ U2AssemblyRead MysqlMtaReadsIterator::next() {
             res = minIt->next();
             SAFE_POINT(NULL != res.data(), "NULL assembly read", res);
             int currentIt = iterators.indexOf(minIt);
-            const QByteArray& idExtra = idExtras.at(currentIt);
+            const QByteArray &idExtra = idExtras.at(currentIt);
             res->id = addTable2Id(res->id, idExtra);
         }
         return res;
     } else {
         if (currentRange < iterators.size()) {
             do {
-                U2DbiIterator<U2AssemblyRead>* it = iterators[currentRange];
+                U2DbiIterator<U2AssemblyRead> *it = iterators[currentRange];
                 if (it->hasNext()) {
                     res = it->next();
                     SAFE_POINT(NULL != res.data(), "NULL assembly read", res);
-                    const QByteArray& idExtra = idExtras.at(currentRange);
+                    const QByteArray &idExtra = idExtras.at(currentRange);
                     res->id = addTable2Id(res->id, idExtra);
                     break;
                 }
@@ -938,18 +930,18 @@ U2AssemblyRead MysqlMtaReadsIterator::peek() {
             res = minIt->next();
             SAFE_POINT(NULL != res.data(), "NULL assembly read", res);
             int currentIt = iterators.indexOf(minIt);
-            const QByteArray& idExtra = idExtras.at(currentIt);
+            const QByteArray &idExtra = idExtras.at(currentIt);
             res->id = addTable2Id(res->id, idExtra);
         }
         return res;
     } else {
         if (currentRange < iterators.size()) {
             do {
-                U2DbiIterator<U2AssemblyRead>* it = iterators[currentRange];
+                U2DbiIterator<U2AssemblyRead> *it = iterators[currentRange];
                 if (it->hasNext()) {
                     res = it->peek();
                     SAFE_POINT(NULL != res.data(), "NULL assembly read", res);
-                    const QByteArray& idExtra = idExtras.at(currentRange);
+                    const QByteArray &idExtra = idExtras.at(currentRange);
                     res->id = addTable2Id(res->id, idExtra);
                     break;
                 }
@@ -963,9 +955,8 @@ U2AssemblyRead MysqlMtaReadsIterator::peek() {
 //////////////////////////////////////////////////////////////////////////
 // MTAPackAlgorithmDataIterator
 
-MysqlMTAPackAlgorithmDataIterator::MysqlMTAPackAlgorithmDataIterator(QVector< U2DbiIterator<PackAlgorithmData>* >& i, const QVector<QByteArray>& ie)
-:  iterators (i), idExtras(ie)
-{
+MysqlMTAPackAlgorithmDataIterator::MysqlMTAPackAlgorithmDataIterator(QVector<U2DbiIterator<PackAlgorithmData> *> &i, const QVector<QByteArray> &ie)
+    : iterators(i), idExtras(ie) {
     fetchNextData();
 }
 
@@ -991,7 +982,7 @@ void MysqlMTAPackAlgorithmDataIterator::fetchNextData() {
     PackAlgorithmData bestCandidate;
     int bestRange = 0;
     for (int i = 0; i < iterators.size(); i++) {
-        U2DbiIterator<PackAlgorithmData>* it = iterators[i];
+        U2DbiIterator<PackAlgorithmData> *it = iterators[i];
         if (!it->hasNext()) {
             continue;
         }
@@ -1004,9 +995,9 @@ void MysqlMTAPackAlgorithmDataIterator::fetchNextData() {
     nextData = bestCandidate;
     if (!nextData.readId.isEmpty()) {
         iterators[bestRange]->next();
-        const QByteArray& idExtra = idExtras.at(bestRange);
+        const QByteArray &idExtra = idExtras.at(bestRange);
         nextData.readId = addTable2Id(nextData.readId, idExtra);
     }
 }
 
-}   // namespace U2
+}    // namespace U2

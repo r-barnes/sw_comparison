@@ -19,9 +19,10 @@
  * MA 02110-1301, USA.
  */
 
+#include "BlastPlusSupportCommonTask.h"
+
 #include <QCoreApplication>
 #include <QDir>
-
 #include <QDomDocument>
 
 #include <U2Core/AppContext.h>
@@ -45,25 +46,22 @@
 
 #include "BlastNPlusSupportTask.h"
 #include "BlastPPlusSupportTask.h"
+#include "BlastPlusSupport.h"
 #include "BlastXPlusSupportTask.h"
+#include "RPSBlastSupportTask.h"
 #include "TBlastNPlusSupportTask.h"
 #include "TBlastXPlusSupportTask.h"
-#include "RPSBlastSupportTask.h"
-
-#include "BlastPlusSupport.h"
-#include "BlastPlusSupportCommonTask.h"
 
 namespace U2 {
 
-BlastPlusSupportCommonTask::BlastPlusSupportCommonTask(const BlastTaskSettings& _settings) :
-        ExternalToolSupportTask("Run NCBI Blast+ task", TaskFlags_NR_FOSCOE | TaskFlag_ReportingIsSupported),
-        settings(_settings)
-{
+BlastPlusSupportCommonTask::BlastPlusSupportCommonTask(const BlastTaskSettings &_settings)
+    : ExternalToolSupportTask("Run NCBI Blast+ task", TaskFlags_NR_FOSCOE | TaskFlag_ReportingIsSupported),
+      settings(_settings) {
     GCOUNTER(cvar, tvar, "BlastPlusSupportCommonTask");
-    blastPlusTask=NULL;
-    tmpDoc=NULL;
-    saveTemporaryDocumentTask=NULL;
-    sequenceObject=NULL;
+    blastPlusTask = NULL;
+    tmpDoc = NULL;
+    saveTemporaryDocumentTask = NULL;
+    sequenceObject = NULL;
     circularization = new U2PseudoCircularization(this, settings.isSequenceCircular, settings.querySequence);
     addTaskResource(TaskResourceUsage(RESOURCE_THREAD, settings.numberOfProcessors));
     if (NULL != settings.querySequenceObject) {
@@ -71,8 +69,8 @@ BlastPlusSupportCommonTask::BlastPlusSupportCommonTask(const BlastTaskSettings& 
     }
 }
 
-void BlastPlusSupportCommonTask::prepare(){
-    if(settings.databaseNameAndPath.contains(" ")){
+void BlastPlusSupportCommonTask::prepare() {
+    if (settings.databaseNameAndPath.contains(" ")) {
         stateInfo.setError("Database path have space(s). Try select any other folder without spaces.");
         return;
     }
@@ -81,11 +79,11 @@ void BlastPlusSupportCommonTask::prepare(){
 
     QString tmpDirPath = getAcceptableTempDir();
     CHECK_EXT(!tmpDirPath.isEmpty(), setError(tr("The task uses a temporary folder to process the data. The folder path is required not to have spaces. "
-        "Please set up an appropriate path for the \"Temporary files\" parameter on the \"Directories\" tab of the UGENE Application Settings.")), );
+                                                 "Please set up an appropriate path for the \"Temporary files\" parameter on the \"Directories\" tab of the UGENE Application Settings.")), );
 
     QDir tmpDir(tmpDirPath);
-    if(tmpDir.exists()) {
-        foreach(const QString& file, tmpDir.entryList()) {
+    if (tmpDir.exists()) {
+        foreach (const QString &file, tmpDir.entryList()) {
             tmpDir.remove(file);
         }
         if (!tmpDir.rmdir(tmpDir.absolutePath())) {
@@ -93,36 +91,36 @@ void BlastPlusSupportCommonTask::prepare(){
             return;
         }
     }
-    if(!tmpDir.mkpath(tmpDirPath)) {
+    if (!tmpDir.mkpath(tmpDirPath)) {
         stateInfo.setError(tr("Can not create folder for temporary files."));
         return;
     }
     //Create ncbi.ini for windows or .ncbirc for unix like systems
     //See issue UGENE-791 (https://ugene.net/tracker/browse/UGENE-791)
 #ifdef Q_OS_UNIX
-    QString iniNCBIFile=tmpDir.absolutePath()+QString("/.ncbirc");
+    QString iniNCBIFile = tmpDir.absolutePath() + QString("/.ncbirc");
 #else
-    QString iniNCBIFile=tmpDir.absolutePath()+QString("\\ncbi.ini");
+    QString iniNCBIFile = tmpDir.absolutePath() + QString("\\ncbi.ini");
 #endif
-    if(!QFileInfo(iniNCBIFile).exists()){
+    if (!QFileInfo(iniNCBIFile).exists()) {
         QFile file(iniNCBIFile);
-        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
             algoLog.details(tr("Can not create fake NCBI ini file"));
-        }else{
+        } else {
             file.close();
         }
     }
     url = tmpDirPath + "tmp.fa";
-    if (url.contains(" ")){
+    if (url.contains(" ")) {
         stateInfo.setError("Temporary folder path have space(s). Try select any other folder without spaces.");
         return;
     }
-    DocumentFormat* df = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::FASTA);
+    DocumentFormat *df = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::FASTA);
     tmpDoc = df->createNewLoadedDocument(IOAdapterUtils::get(BaseIOAdapters::LOCAL_FILE), GUrl(url), stateInfo);
-    CHECK_OP(stateInfo,);
+    CHECK_OP(stateInfo, );
 
     U2EntityRef seqRef = U2SequenceUtils::import(stateInfo, tmpDoc->getDbiRef(), DNASequence(settings.querySequence, settings.alphabet));
-    CHECK_OP(stateInfo,);
+    CHECK_OP(stateInfo, );
     sequenceObject = new U2SequenceObject("input sequence", seqRef);
     tmpDoc->addObject(sequenceObject);
 
@@ -133,9 +131,9 @@ void BlastPlusSupportCommonTask::prepare(){
 
 QString BlastPlusSupportCommonTask::getAcceptableTempDir() const {
     QString tmpDirName = "BlastPlus_" + QString::number(this->getTaskId()) + "_" +
-        QDate::currentDate().toString("dd.MM.yyyy") + "_" +
-        QTime::currentTime().toString("hh.mm.ss.zzz") + "_" +
-        QString::number(QCoreApplication::applicationPid()) + "/";
+                         QDate::currentDate().toString("dd.MM.yyyy") + "_" +
+                         QTime::currentTime().toString("hh.mm.ss.zzz") + "_" +
+                         QString::number(QCoreApplication::applicationPid()) + "/";
 
     QString tmpDirPath = AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath(BlastPlusSupport::BLASTPLUS_TMP_DIR);
     if (!GUrlUtils::containSpaces(tmpDirPath)) {
@@ -144,43 +142,42 @@ QString BlastPlusSupportCommonTask::getAcceptableTempDir() const {
     return QString();
 }
 
-QList<Task*> BlastPlusSupportCommonTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> res;
-    if(subTask->hasError()) {
+QList<Task *> BlastPlusSupportCommonTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> res;
+    if (subTask->hasError()) {
         stateInfo.setError(subTask->getError());
         return res;
     }
-    if(hasError() || isCanceled()) {
+    if (hasError() || isCanceled()) {
         return res;
     }
-    if(subTask==saveTemporaryDocumentTask){
-        delete tmpDoc;//sequenceObject also deleted at this place
-        blastPlusTask=createBlastPlusTask();
+    if (subTask == saveTemporaryDocumentTask) {
+        delete tmpDoc;    //sequenceObject also deleted at this place
+        blastPlusTask = createBlastPlusTask();
         blastPlusTask->setSubtaskProgressWeight(95);
         res.append(blastPlusTask);
-    }
-    else if(subTask==blastPlusTask){
-        if(settings.outputType == 5 || settings.outputType == 6){
-            if(!QFileInfo(settings.outputOriginalFile).exists()){
+    } else if (subTask == blastPlusTask) {
+        if (settings.outputType == 5 || settings.outputType == 6) {
+            if (!QFileInfo(settings.outputOriginalFile).exists()) {
                 QString curToolId = toolIdByProgram(settings.programName);
-                if(AppContext::getExternalToolRegistry()->getById(curToolId)->isValid()){
+                if (AppContext::getExternalToolRegistry()->getById(curToolId)->isValid()) {
                     stateInfo.setError(tr("Output file not found"));
-                }else{
+                } else {
                     stateInfo.setError(tr("Output file not found. May be %1 tool path '%2' not valid?")
-                                       .arg(AppContext::getExternalToolRegistry()->getById(curToolId)->getName())
-                                       .arg(AppContext::getExternalToolRegistry()->getById(curToolId)->getPath()));
+                                           .arg(AppContext::getExternalToolRegistry()->getById(curToolId)->getName())
+                                           .arg(AppContext::getExternalToolRegistry()->getById(curToolId)->getPath()));
                 }
                 return res;
             }
-            if(settings.outputType == 5){
+            if (settings.outputType == 5) {
                 parseXMLResult();
-            }else if(settings.outputType == 6){
+            } else if (settings.outputType == 6) {
                 parseTabularResult();
             }
-            if((!result.isEmpty())&&(settings.needCreateAnnotations)) {
-                if(!settings.outputResFile.isEmpty()) {
-                    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
-                    DocumentFormat* df = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::PLAIN_GENBANK);
+            if ((!result.isEmpty()) && (settings.needCreateAnnotations)) {
+                if (!settings.outputResFile.isEmpty()) {
+                    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
+                    DocumentFormat *df = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::PLAIN_GENBANK);
                     Document *d = df->createNewLoadedDocument(iof, settings.outputResFile, stateInfo);
                     CHECK_OP(stateInfo, res);
                     d->addObject(settings.aobj);
@@ -201,17 +198,17 @@ QList<Task*> BlastPlusSupportCommonTask::onSubTaskFinished(Task* subTask) {
     }
     return res;
 }
-Task::ReportResult BlastPlusSupportCommonTask::report(){
-    if(url.isEmpty()) {
+Task::ReportResult BlastPlusSupportCommonTask::report() {
+    if (url.isEmpty()) {
         return ReportResult_Finished;
     }
 
     //Remove subdir for temporary files, that created in prepare
     QDir tmpDir(QFileInfo(url).absoluteDir());
-    foreach(QString file, tmpDir.entryList(QDir::Files|QDir::Hidden)){
+    foreach (QString file, tmpDir.entryList(QDir::Files | QDir::Hidden)) {
         tmpDir.remove(file);
     }
-    if(!tmpDir.rmdir(tmpDir.absolutePath())){
+    if (!tmpDir.rmdir(tmpDir.absolutePath())) {
         stateInfo.setError(tr("Can not remove folder for temporary files."));
         emit si_stateChanged();
     }
@@ -233,44 +230,44 @@ BlastTaskSettings BlastPlusSupportCommonTask::getSettings() const {
 }
 void BlastPlusSupportCommonTask::parseTabularResult() {
     QFile file(settings.outputOriginalFile);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         stateInfo.setError("Can't open output file");
         return;
     }
-    while(!file.atEnd()){
+    while (!file.atEnd()) {
         QByteArray line = file.readLine();
-        if (line.startsWith("#")){//skip comment
+        if (line.startsWith("#")) {    //skip comment
             continue;
         }
         parseTabularLine(line);
     }
     file.close();
 }
-void BlastPlusSupportCommonTask::parseTabularLine(const QByteArray &line){
+void BlastPlusSupportCommonTask::parseTabularLine(const QByteArray &line) {
     SharedAnnotationData ad(new AnnotationData);
     bool isOk;
-    int from = -1,to = -1,align_len = -1,gaps = -1, hitFrom = -1,hitTo = -1;
+    int from = -1, to = -1, align_len = -1, gaps = -1, hitFrom = -1, hitTo = -1;
     //Fields: Query id (0), Subject id(1), % identity(2), alignment length(3), mismatches(4), gap openings(5), q. start(6), q. end(7), s. start(8), s. end(9), e-value(10), bit score(11)
-    QList<QByteArray> elements=line.split('\t');
-    if(elements.size()!=12){
+    QList<QByteArray> elements = line.split('\t');
+    if (elements.size() != 12) {
         stateInfo.setError(tr("Incorrect number of fields in line: %1").arg(elements.size()));
         return;
     }
     from = elements.at(6).toInt(&isOk);
-    if(!isOk) {
+    if (!isOk) {
         stateInfo.setError(tr("Can't get location"));
         return;
     }
     to = elements.at(7).toInt(&isOk);
-    if(!isOk) {
+    if (!isOk) {
         stateInfo.setError(tr("Can't get location"));
         return;
     }
-    if(from != -1 && to != -1) {
-        if(from <= to){
+    if (from != -1 && to != -1) {
+        if (from <= to) {
             ad->location->regions << U2Region(from - 1, to - from + 1);
-        }else{
-            ad->location->regions << U2Region(to-1, from - to + 1);
+        } else {
+            ad->location->regions << U2Region(to - 1, from - to + 1);
         }
         circularization->uncircularizeLocation(ad->location);
         CHECK(!ad->location->regions.isEmpty(), );
@@ -280,24 +277,24 @@ void BlastPlusSupportCommonTask::parseTabularLine(const QByteArray &line){
     }
 
     hitFrom = elements.at(8).toInt(&isOk);
-    if(!isOk) {
+    if (!isOk) {
         stateInfo.setError(tr("Can't get hit location"));
         return;
     }
     hitTo = elements.at(9).toInt(&isOk);
-    if(!isOk) {
+    if (!isOk) {
         stateInfo.setError(tr("Can't get hit location"));
         return;
     }
-    if(hitFrom != -1 && hitTo != -1) {
-        if(hitFrom <= hitTo){
+    if (hitFrom != -1 && hitTo != -1) {
+        if (hitFrom <= hitTo) {
             ad->setStrand(U2Strand::Direct);
-            ad->qualifiers.push_back(U2Qualifier("source_frame","direct"));
+            ad->qualifiers.push_back(U2Qualifier("source_frame", "direct"));
             ad->qualifiers.push_back(U2Qualifier("hit-from", QString::number(hitFrom)));
             ad->qualifiers.push_back(U2Qualifier("hit-to", QString::number(hitTo)));
-        }else{
+        } else {
             ad->setStrand(U2Strand::Complementary);
-            ad->qualifiers.push_back(U2Qualifier("source_frame","complement"));
+            ad->qualifiers.push_back(U2Qualifier("source_frame", "complement"));
             ad->qualifiers.push_back(U2Qualifier("hit-to", QString::number(hitFrom)));
             ad->qualifiers.push_back(U2Qualifier("hit-from", QString::number(hitTo)));
         }
@@ -305,48 +302,48 @@ void BlastPlusSupportCommonTask::parseTabularLine(const QByteArray &line){
         stateInfo.setError(tr("Can't evaluate hit location"));
         return;
     }
-    QString elem=QString(elements.at(11));
-    if(elem.endsWith('\n')){
-        elem.resize(elem.size()-1);//remove \n symbol
+    QString elem = QString(elements.at(11));
+    if (elem.endsWith('\n')) {
+        elem.resize(elem.size() - 1);    //remove \n symbol
     }
     double bitScore = elem.toDouble(&isOk);
-    if (isOk){
+    if (isOk) {
         ad->qualifiers.push_back(U2Qualifier("bit-score", QString::number(bitScore)));
     }
 
     align_len = elements.at(3).toInt(&isOk);
-    if(!isOk) {
+    if (!isOk) {
         stateInfo.setError(tr("Can't get align length"));
         return;
     }
     gaps = elements.at(4).toInt(&isOk);
-    if(!isOk) {
+    if (!isOk) {
         stateInfo.setError(tr("Can't get gaps"));
         return;
     }
     float identitiesPercent = elements.at(2).toFloat(&isOk);
-    if(!isOk) {
+    if (!isOk) {
         stateInfo.setError(tr("Can't get identity"));
         return;
     }
-    if(align_len != -1) {
-        if(gaps != -1) {
+    if (align_len != -1) {
+        if (gaps != -1) {
             float percent = (float)gaps / (float)align_len * 100;
-            QString str = QString::number(gaps) + "/" + QString::number(align_len) + " (" + QString::number(percent,'g',4) + "%)";
+            QString str = QString::number(gaps) + "/" + QString::number(align_len) + " (" + QString::number(percent, 'g', 4) + "%)";
             ad->qualifiers.push_back(U2Qualifier("gaps", str));
         }
-        if(identitiesPercent != -1) {
+        if (identitiesPercent != -1) {
             //float percent = (float)identities / (float)align_len * 100;
-            int identities=(float)align_len*identitiesPercent/100.;
-            QString str = QString::number(identities) + '/' + QString::number(align_len) + " (" + QString::number(identitiesPercent,'g',4) + "%)";
+            int identities = (float)align_len * identitiesPercent / 100.;
+            QString str = QString::number(identities) + '/' + QString::number(align_len) + " (" + QString::number(identitiesPercent, 'g', 4) + "%)";
             ad->qualifiers.push_back(U2Qualifier("identities", str));
         }
     }
-    if(!elements.at(10).isEmpty()) {
+    if (!elements.at(10).isEmpty()) {
         ad->qualifiers.push_back(U2Qualifier("E-value", elements.at(10)));
     }
 
-    ad->qualifiers.push_back(U2Qualifier("id",elements.at(1)));
+    ad->qualifiers.push_back(U2Qualifier("id", elements.at(1)));
     ad->name = "blast result";
     result.append(ad);
 }
@@ -354,7 +351,7 @@ void BlastPlusSupportCommonTask::parseTabularLine(const QByteArray &line){
 void BlastPlusSupportCommonTask::parseXMLResult() {
     QDomDocument xmlDoc;
     QFile file(settings.outputOriginalFile);
-    if (!file.open(QIODevice::ReadOnly)){
+    if (!file.open(QIODevice::ReadOnly)) {
         stateInfo.setError(tr("Can't open output file"));
         return;
     }
@@ -366,13 +363,13 @@ void BlastPlusSupportCommonTask::parseXMLResult() {
     file.close();
 
     QDomNodeList hits = xmlDoc.elementsByTagName("Hit");
-    for(int i = 0; i<hits.count();i++) {
+    for (int i = 0; i < hits.count(); i++) {
         parseXMLHit(hits.at(i));
     }
 }
 
 void BlastPlusSupportCommonTask::parseXMLHit(const QDomNode &xml) {
-    QString id,def,accession;
+    QString id, def, accession;
 
     QDomElement tmp = xml.lastChildElement("Hit_id");
     id = tmp.text();
@@ -382,60 +379,60 @@ void BlastPlusSupportCommonTask::parseXMLHit(const QDomNode &xml) {
     accession = tmp.text();
 
     QDomNodeList nodes = xml.childNodes();
-    for(int i = 0; i < nodes.count(); i++) {
-        if(nodes.at(i).isElement()) {
-            if(nodes.at(i).toElement().tagName()=="Hit_hsps") {
+    for (int i = 0; i < nodes.count(); i++) {
+        if (nodes.at(i).isElement()) {
+            if (nodes.at(i).toElement().tagName() == "Hit_hsps") {
                 QDomNodeList hsps = nodes.at(i).childNodes();
-                for(int j = 0;j<hsps.count();j++)
-                    if(hsps.at(j).toElement().tagName()=="Hsp")
-                        parseXMLHsp(hsps.at(j),id,def,accession);
+                for (int j = 0; j < hsps.count(); j++)
+                    if (hsps.at(j).toElement().tagName() == "Hsp")
+                        parseXMLHsp(hsps.at(j), id, def, accession);
             }
         }
     }
 }
 
-void BlastPlusSupportCommonTask::parseXMLHsp(const QDomNode &xml,const QString &id, const QString &def, const QString &accession) {
+void BlastPlusSupportCommonTask::parseXMLHsp(const QDomNode &xml, const QString &id, const QString &def, const QString &accession) {
     SharedAnnotationData ad(new AnnotationData);
     bool isOk;
-    int from = -1,to = -1,align_len = -1,gaps = -1,identities = -1;
+    int from = -1, to = -1, align_len = -1, gaps = -1, identities = -1;
 
     QDomElement elem = xml.lastChildElement("Hsp_bit-score");
-    if(!elem.isNull()) {
+    if (!elem.isNull()) {
         ad->qualifiers.push_back(U2Qualifier("bit-score", elem.text()));
     }
 
     elem = xml.lastChildElement("Hsp_score");
-    if(!elem.isNull()) {
+    if (!elem.isNull()) {
         ad->qualifiers.push_back(U2Qualifier("score", elem.text()));
     }
 
     elem = xml.lastChildElement("Hsp_evalue");
-    if(!elem.isNull()) {
+    if (!elem.isNull()) {
         ad->qualifiers.push_back(U2Qualifier("E-value", elem.text()));
     }
 
     elem = xml.lastChildElement("Hsp_query-from");
     QString fr = elem.text();
     from = elem.text().toInt(&isOk);
-    if(!isOk) {
+    if (!isOk) {
         stateInfo.setError(tr("Can't get location"));
         return;
     }
 
     elem = xml.lastChildElement("Hsp_query-to");
     to = elem.text().toInt(&isOk);
-    if(!isOk) {
+    if (!isOk) {
         stateInfo.setError(tr("Can't get location"));
         return;
     }
 
     elem = xml.lastChildElement("Hsp_hit-from");
-    if(!elem.isNull()) {
+    if (!elem.isNull()) {
         ad->qualifiers.push_back(U2Qualifier("hit-from", elem.text()));
     }
 
     elem = xml.lastChildElement("Hsp_hit-to");
-    if(!elem.isNull()) {
+    if (!elem.isNull()) {
         ad->qualifiers.push_back(U2Qualifier("hit-to", elem.text()));
     }
 
@@ -460,19 +457,19 @@ void BlastPlusSupportCommonTask::parseXMLHsp(const QDomNode &xml,const QString &
 
     QString frame_txt = (frame < 0) ? "complement" : "direct";
     ad->qualifiers.push_back(U2Qualifier("source_frame", frame_txt));
-    ad->setStrand(frame < 0 ? U2Strand::Complementary: U2Strand::Direct);
+    ad->setStrand(frame < 0 ? U2Strand::Complementary : U2Strand::Direct);
 
     elem = xml.lastChildElement("Hsp_identity");
     identities = elem.text().toInt(&isOk);
-    if(!isOk) {
+    if (!isOk) {
         stateInfo.setError(tr("Can't get identity"));
         return;
     }
 
     elem = xml.lastChildElement("Hsp_gaps");
-    if(!elem.isNull()) {
+    if (!elem.isNull()) {
         gaps = elem.text().toInt(&isOk);
-        if(!isOk) {
+        if (!isOk) {
             stateInfo.setError(tr("Can't get gaps"));
             return;
         }
@@ -480,24 +477,24 @@ void BlastPlusSupportCommonTask::parseXMLHsp(const QDomNode &xml,const QString &
 
     elem = xml.lastChildElement("Hsp_align-len");
     align_len = elem.text().toInt(&isOk);
-    if(!isOk) {
+    if (!isOk) {
         stateInfo.setError(tr("Can't get align length"));
         return;
     }
     //at new blast+ not need check strand
-    ad->location->regions << U2Region(from-1, to - from + 1);
+    ad->location->regions << U2Region(from - 1, to - from + 1);
     circularization->uncircularizeLocation(ad->location);
-    CHECK(!ad->location->regions.isEmpty(),);
+    CHECK(!ad->location->regions.isEmpty(), );
 
-    if(align_len != -1) {
-        if(gaps != -1) {
+    if (align_len != -1) {
+        if (gaps != -1) {
             float percent = (float)gaps / (float)align_len * 100.;
-            QString str = QString::number(gaps) + "/" + QString::number(align_len) + " (" + QString::number(percent,'g',4) + "%)";
+            QString str = QString::number(gaps) + "/" + QString::number(align_len) + " (" + QString::number(percent, 'g', 4) + "%)";
             ad->qualifiers.push_back(U2Qualifier("gaps", str));
         }
-        if(identities != -1) {
+        if (identities != -1) {
             float percent = (float)identities / (float)align_len * 100.;
-            QString str = QString::number(identities) + '/' + QString::number(align_len) + " (" + QString::number(percent,'g',4) + "%)";
+            QString str = QString::number(identities) + '/' + QString::number(align_len) + " (" + QString::number(percent, 'g', 4) + "%)";
             ad->qualifiers.push_back(U2Qualifier("identities", str));
             ad->qualifiers.push_back(U2Qualifier("identity_percent", QString::number(percent)));
         }
@@ -527,7 +524,7 @@ void BlastPlusSupportCommonTask::parseXMLHsp(const QDomNode &xml,const QString &
             } else {
                 if (qSeq.at(i) == '-') {
                     cigarChar = 'D';
-                } else if (hSeq.at(i) == '-')  {
+                } else if (hSeq.at(i) == '-') {
                     cigarChar = 'I';
                 } else {
                     cigarChar = 'X';
@@ -549,12 +546,11 @@ void BlastPlusSupportCommonTask::parseXMLHsp(const QDomNode &xml,const QString &
 
         ad->qualifiers.append(U2Qualifier("subj_seq", hSeq));
         ad->qualifiers.append(U2Qualifier("cigar", cigar));
-
     }
 
-    ad->qualifiers.push_back(U2Qualifier("id",id));
-    ad->qualifiers.push_back(U2Qualifier("def",def));
-    ad->qualifiers.push_back(U2Qualifier("accession",accession));
+    ad->qualifiers.push_back(U2Qualifier("id", id));
+    ad->qualifiers.push_back(U2Qualifier("def", def));
+    ad->qualifiers.push_back(U2Qualifier("accession", accession));
     U1AnnotationUtils::addDescriptionQualifier(ad, settings.annDescription);
     ad->name = "blast result";
     result.append(ad);
@@ -562,51 +558,50 @@ void BlastPlusSupportCommonTask::parseXMLHsp(const QDomNode &xml,const QString &
 
 ///////////////////////////////////////
 //BlastPlusSupportMultiTask
-BlastPlusSupportMultiTask::BlastPlusSupportMultiTask(QList<BlastTaskSettings>& _settingsList, QString& _url):
-        Task("Run NCBI BlastAll multitask", TaskFlags_NR_FOSCOE | TaskFlag_ReportingIsSupported),
-        settingsList(_settingsList), doc(NULL), url(_url)
-{
+BlastPlusSupportMultiTask::BlastPlusSupportMultiTask(QList<BlastTaskSettings> &_settingsList, QString &_url)
+    : Task("Run NCBI BlastAll multitask", TaskFlags_NR_FOSCOE | TaskFlag_ReportingIsSupported),
+      settingsList(_settingsList), doc(NULL), url(_url) {
 }
-void BlastPlusSupportMultiTask::prepare(){
+void BlastPlusSupportMultiTask::prepare() {
     //create document
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
-    DocumentFormat* df = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::PLAIN_GENBANK);
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
+    DocumentFormat *df = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::PLAIN_GENBANK);
     //url=settingsList[0].outputResFile;
     doc = df->createNewLoadedDocument(iof, url, stateInfo);
-    CHECK_OP(stateInfo,);
+    CHECK_OP(stateInfo, );
 
-    foreach(BlastTaskSettings settings, settingsList){
-        settings.needCreateAnnotations=false;
-        Task * t=NULL;
-        if(settings.programName == "blastn"){
+    foreach (BlastTaskSettings settings, settingsList) {
+        settings.needCreateAnnotations = false;
+        Task *t = NULL;
+        if (settings.programName == "blastn") {
             t = new BlastNPlusSupportTask(settings);
-        }else if(settings.programName == "blastp" || settings.programName == "gpu-blastp"){
+        } else if (settings.programName == "blastp" || settings.programName == "gpu-blastp") {
             t = new BlastPPlusSupportTask(settings);
-        }else if(settings.programName == "blastx"){
+        } else if (settings.programName == "blastx") {
             t = new BlastXPlusSupportTask(settings);
-        }else if(settings.programName == "tblastn"){
+        } else if (settings.programName == "tblastn") {
             t = new TBlastNPlusSupportTask(settings);
-        }else if(settings.programName == "tblastx"){
+        } else if (settings.programName == "tblastx") {
             t = new TBlastXPlusSupportTask(settings);
-        }else if(settings.programName == "rpsblast"){
+        } else if (settings.programName == "rpsblast") {
             t = new RPSBlastSupportTask(settings);
         }
         addSubTask(t);
     }
 }
-QList<Task*> BlastPlusSupportMultiTask::onSubTaskFinished(Task *subTask){
-    QList<Task*> res;
-    if(subTask->hasError()) {
+QList<Task *> BlastPlusSupportMultiTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> res;
+    if (subTask->hasError()) {
         stateInfo.setError(subTask->getError());
         return res;
     }
-    if(hasError() || isCanceled()) {
+    if (hasError() || isCanceled()) {
         return res;
     }
-    BlastPlusSupportCommonTask* s=qobject_cast<BlastPlusSupportCommonTask*>(subTask);
-    if(s != NULL){
-        BlastTaskSettings settings=s->getSettings();
-        assert(settings.aobj!=NULL);
+    BlastPlusSupportCommonTask *s = qobject_cast<BlastPlusSupportCommonTask *>(subTask);
+    if (s != NULL) {
+        BlastTaskSettings settings = s->getSettings();
+        assert(settings.aobj != NULL);
         QList<SharedAnnotationData> result = s->getResultedAnnotations();
         if (!result.isEmpty()) {
             doc->addObject(settings.aobj);
@@ -620,11 +615,11 @@ QList<Task*> BlastPlusSupportMultiTask::onSubTaskFinished(Task *subTask){
     return res;
 }
 
-Task::ReportResult BlastPlusSupportMultiTask::report(){
-    if(!hasError()){
-        if(doc->getObjects().length() > 0){
+Task::ReportResult BlastPlusSupportMultiTask::report() {
+    if (!hasError()) {
+        if (doc->getObjects().length() > 0) {
             AppContext::getProject()->addDocument(doc);
-        }else{
+        } else {
             setReportingEnabled(true);
         }
     }
@@ -634,26 +629,26 @@ Task::ReportResult BlastPlusSupportMultiTask::report(){
 QString BlastPlusSupportMultiTask::generateReport() const {
     QString res;
 
-    res+="<table>";
-    res+="<tr><td width=200><b>" + tr("Source file") + "</b></td><td>" + settingsList.at(0).queryFile + "</td></tr>";
-    res+="<tr><td width=200><b>" + tr("Used database") + "</b></td><td>" + settingsList.at(0).databaseNameAndPath + "</td></tr>";
-    res+="<tr></tr>";
-    res+="<tr><td width=200><b>" + tr("No any results found") + "</b></td><td></td></tr>";
-    res+="</table>";
+    res += "<table>";
+    res += "<tr><td width=200><b>" + tr("Source file") + "</b></td><td>" + settingsList.at(0).queryFile + "</td></tr>";
+    res += "<tr><td width=200><b>" + tr("Used database") + "</b></td><td>" + settingsList.at(0).databaseNameAndPath + "</td></tr>";
+    res += "<tr></tr>";
+    res += "<tr><td width=200><b>" + tr("No any results found") + "</b></td><td></td></tr>";
+    res += "</table>";
     return res;
 }
 
 QString BlastPlusSupportCommonTask::toolIdByProgram(const QString &program) {
     QString result;
-    if("blastn" == program){
+    if ("blastn" == program) {
         result = BlastPlusSupport::ET_BLASTN_ID;
-    } else if ("blastp" == program){
+    } else if ("blastp" == program) {
         result = BlastPlusSupport::ET_BLASTP_ID;
-    } else if ("blastx" == program){
+    } else if ("blastx" == program) {
         result = BlastPlusSupport::ET_BLASTX_ID;
-    } else if ("tblastn" == program){
+    } else if ("tblastn" == program) {
         result = BlastPlusSupport::ET_TBLASTN_ID;
-    } else if ("tblastx" == program){
+    } else if ("tblastx" == program) {
         result = BlastPlusSupport::ET_TBLASTX_ID;
     } else if ("rpsblast" == program) {
         result = BlastPlusSupport::ET_RPSBLAST_ID;
@@ -661,4 +656,4 @@ QString BlastPlusSupportCommonTask::toolIdByProgram(const QString &program) {
     return result;
 }
 
-}//namespace
+}    // namespace U2

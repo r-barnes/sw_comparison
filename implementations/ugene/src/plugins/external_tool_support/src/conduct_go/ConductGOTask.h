@@ -37,14 +37,14 @@ class SaveDocumentTask;
 class ConductGOTask : public ExternalToolSupportTask {
     Q_OBJECT
 public:
-    ConductGOTask(const ConductGOSettings& settings);
+    ConductGOTask(const ConductGOSettings &settings);
     virtual ~ConductGOTask();
 
     virtual void prepare();
     virtual void run();
     virtual void cleanup();
 
-    const ConductGOSettings & getSettings() const ;
+    const ConductGOSettings &getSettings() const;
     QStringList getResultFileNames() const;
 
 private:
@@ -61,6 +61,6 @@ private:
     bool copyFile(const QString &src, const QString &dst);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_CONDUCT_GO_TASK_
+#endif    // _U2_CONDUCT_GO_TASK_

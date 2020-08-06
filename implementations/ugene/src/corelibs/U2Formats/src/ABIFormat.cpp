@@ -47,26 +47,28 @@
 
 namespace U2 {
 
-ABIFormat::ABIFormat(QObject* p) : DocumentFormat(p, BaseDocumentFormats::ABIF, DocumentFormatFlag_SupportStreaming, QStringList() << "ab1" << "abi" << "abif")
-{
+ABIFormat::ABIFormat(QObject *p)
+    : DocumentFormat(p, BaseDocumentFormats::ABIF, DocumentFormatFlag_SupportStreaming, QStringList() << "ab1"
+                                                                                                      << "abi"
+                                                                                                      << "abif") {
     formatName = tr("ABIF");
     formatDescription = tr("A chromatogram file format");
-    supportedObjectTypes+=GObjectTypes::SEQUENCE;
-    supportedObjectTypes+=GObjectTypes::CHROMATOGRAM;
+    supportedObjectTypes += GObjectTypes::SEQUENCE;
+    supportedObjectTypes += GObjectTypes::CHROMATOGRAM;
 }
 
-FormatCheckResult ABIFormat::checkRawData(const QByteArray& rawData, const GUrl&) const {
-    const char* data = rawData.constData();
+FormatCheckResult ABIFormat::checkRawData(const QByteArray &rawData, const GUrl &) const {
+    const char *data = rawData.constData();
     int size = rawData.size();
 
-    if (size <= 4 || data[0]!='A' || data[1]!='B' || data[2]!='I' || data[3]!='F') {
+    if (size <= 4 || data[0] != 'A' || data[1] != 'B' || data[2] != 'I' || data[3] != 'F') {
         /*
         * Maybe we've got a file in MacBinary format in which case
         * we'll have an extra offset 128 bytes to add.
         */
         data += 128;
         size -= 128;
-        if (size <= 4 || data[0]!='A' || data[1]!='B' || data[2]!='I' || data[3]!='F') {
+        if (size <= 4 || data[0] != 'A' || data[1] != 'B' || data[2] != 'I' || data[3] != 'F') {
             return FormatDetection_NotMatched;
         }
     }
@@ -74,11 +76,11 @@ FormatCheckResult ABIFormat::checkRawData(const QByteArray& rawData, const GUrl&
     return hasBinaryBlocks ? FormatDetection_Matched : FormatDetection_NotMatched;
 }
 
-Document* ABIFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os) {
+Document *ABIFormat::loadDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os) {
     QByteArray readBuff;
     QByteArray block(BUFF_SIZE, 0);
     quint64 len = 0;
-    while ((len=io->readBlock(block.data(),BUFF_SIZE)) > 0) {
+    while ((len = io->readBlock(block.data(), BUFF_SIZE)) > 0) {
         readBuff.append(QByteArray(block.data(), len));
         CHECK_EXT(readBuff.size() <= CHECK_MB, os.setError(L10N::errorFileTooLarge(io->getURL())), NULL);
     }
@@ -87,14 +89,13 @@ Document* ABIFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const Q
     sf.head = readBuff.constData();
     sf.pos = 0;
     sf.size = readBuff.size();
-    Document* doc = parseABI(dbiRef, &sf, io, fs, os);
+    Document *doc = parseABI(dbiRef, &sf, io, fs, os);
     CHECK_OP(os, NULL)
     CHECK_EXT(doc != NULL, os.setError(tr("Not a valid ABIF file: %1").arg(io->toString())), NULL);
     return doc;
 }
 
-DNASequence *ABIFormat::loadSequence(IOAdapter *io, U2OpStatus &os)
-{
+DNASequence *ABIFormat::loadSequence(IOAdapter *io, U2OpStatus &os) {
     if (io->isEof()) {
         return NULL;
     }
@@ -103,7 +104,7 @@ DNASequence *ABIFormat::loadSequence(IOAdapter *io, U2OpStatus &os)
     QByteArray readBuff;
     QByteArray block(BUFF_SIZE, 0);
     quint64 len = 0;
-    while ((len=io->readBlock(block.data(),BUFF_SIZE)) > 0) {
+    while ((len = io->readBlock(block.data(), BUFF_SIZE)) > 0) {
         readBuff.append(QByteArray(block.data(), len));
         CHECK_EXT(readBuff.size() <= CHECK_MB, os.setError(L10N::errorFileTooLarge(io->getURL())), NULL);
     }
@@ -113,7 +114,7 @@ DNASequence *ABIFormat::loadSequence(IOAdapter *io, U2OpStatus &os)
     sf.pos = 0;
     sf.size = readBuff.size();
 
-    DNASequence* seq = new DNASequence();
+    DNASequence *seq = new DNASequence();
     DNAChromatogram cd;
 
     if (!loadABIObjects(&sf, (*seq), cd)) {
@@ -121,7 +122,6 @@ DNASequence *ABIFormat::loadSequence(IOAdapter *io, U2OpStatus &os)
     }
 
     return seq;
-
 }
 
 /*
@@ -149,7 +149,7 @@ DNASequence *ABIFormat::loadSequence(IOAdapter *io, U2OpStatus &os)
 /*
 * The ABI magic number - "ABIF"
 */
-#define ABI_MAGIC    ((int) ((((('A'<<8)+'B')<<8)+'I')<<8)+'F')
+#define ABI_MAGIC ((int)((((('A' << 8) + 'B') << 8) + 'I') << 8) + 'F')
 
 /*
 * The index is located towards the end of the ABI trace file.
@@ -163,35 +163,35 @@ DNASequence *ABIFormat::loadSequence(IOAdapter *io, U2OpStatus &os)
 * Here are some labels we will be looking for, four chars packed
 * into an int_4
 */
-#define LABEL(a) ((int) ((((((a)[0]<<8)+(a)[1])<<8)+(a)[2])<<8)+(a)[3])
-#define DataEntryLabel    LABEL("DATA")
-#define BaseEntryLabel    LABEL("PBAS")
+#define LABEL(a) ((int)((((((a)[0] << 8) + (a)[1]) << 8) + (a)[2]) << 8) + (a)[3])
+#define DataEntryLabel LABEL("DATA")
+#define BaseEntryLabel LABEL("PBAS")
 #define BasePosEntryLabel LABEL("PLOC")
 #define SpacingEntryLabel LABEL("SPAC")
-#define SignalEntryLabel  LABEL("S/N%")
-#define FWO_Label         LABEL("FWO_")
-#define MCHNLabel         LABEL("MCHN")
-#define PDMFLabel         LABEL("PDMF")
-#define SMPLLabel         LABEL("SMPL")
-#define PPOSLabel         LABEL("PPOS")
-#define CMNTLabel         LABEL("CMNT")
-#define GelNameLabel      LABEL("GELN")
-#define LANELabel         LABEL("LANE")
-#define RUNDLabel         LABEL("RUND")
-#define RUNTLabel         LABEL("RUNT")
-#define MTXFLabel         LABEL("MTXF")
-#define SPACLabel         LABEL("SPAC")
-#define SVERLabel         LABEL("SVER")
-#define MODLLabel         LABEL("MODL")
-#define BaseConfLabel     LABEL("PCON")
+#define SignalEntryLabel LABEL("S/N%")
+#define FWO_Label LABEL("FWO_")
+#define MCHNLabel LABEL("MCHN")
+#define PDMFLabel LABEL("PDMF")
+#define SMPLLabel LABEL("SMPL")
+#define PPOSLabel LABEL("PPOS")
+#define CMNTLabel LABEL("CMNT")
+#define GelNameLabel LABEL("GELN")
+#define LANELabel LABEL("LANE")
+#define RUNDLabel LABEL("RUND")
+#define RUNTLabel LABEL("RUNT")
+#define MTXFLabel LABEL("MTXF")
+#define SPACLabel LABEL("SPAC")
+#define SVERLabel LABEL("SVER")
+#define MODLLabel LABEL("MODL")
+#define BaseConfLabel LABEL("PCON")
 
-#define baseIndex(B) ((B)=='C'?0:(B)=='A'?1:(B)=='G'?2:3)
+#define baseIndex(B) ((B) == 'C' ? 0 : (B) == 'A' ? 1 : (B) == 'G' ? 2 : 3)
 
 /*
 * Gets the offset of the ABI index.
 * Returns -1 for failure, 0 for success.
 */
-static int getABIIndexOffset(SeekableBuf* fp, uint *indexO) {
+static int getABIIndexOffset(SeekableBuf *fp, uint *indexO) {
     uint magic = 0;
 
     /*
@@ -219,15 +219,15 @@ static int getABIIndexOffset(SeekableBuf* fp, uint *indexO) {
 * from the `count'th entry labelled `label'.
 * The result is 0 for failure, or index offset for success.
 */
-int getABIIndexEntryLW(SeekableBuf* fp, int indexO, uint label, uint count, int lw, uint *val) {
-    int entryNum=-1;
+int getABIIndexEntryLW(SeekableBuf *fp, int indexO, uint label, uint count, int lw, uint *val) {
+    int entryNum = -1;
     int i;
     uint entryLabel, entryLw1;
 
     do {
         entryNum++;
 
-        if (SeekBuf(fp, indexO+(entryNum*IndexEntryLength), 0) != 0)
+        if (SeekBuf(fp, indexO + (entryNum * IndexEntryLength), 0) != 0)
             return 0;
 
         if (!be_read_int_4(fp, &entryLabel))
@@ -237,12 +237,12 @@ int getABIIndexEntryLW(SeekableBuf* fp, int indexO, uint label, uint count, int 
             return 0;
     } while (!(entryLabel == label && entryLw1 == count));
 
-    for(i=2; i<=lw; i++) {
+    for (i = 2; i <= lw; i++) {
         if (!be_read_int_4(fp, val))
             return 0;
     }
 
-    return indexO+(entryNum*IndexEntryLength);
+    return indexO + (entryNum * IndexEntryLength);
 }
 
 /*
@@ -251,15 +251,15 @@ int getABIIndexEntryLW(SeekableBuf* fp, int indexO, uint label, uint count, int 
 * from the `count'th entry labelled `label'.
 * The result is 0 for failure, or index offset for success.
 */
-int getABIIndexEntrySW(SeekableBuf* fp, int indexO, uint label, uint count, int sw, ushort *val) {
-    int entryNum=-1;
+int getABIIndexEntrySW(SeekableBuf *fp, int indexO, uint label, uint count, int sw, ushort *val) {
+    int entryNum = -1;
     int i;
     uint entryLabel, entryLw1;
 
     do {
         entryNum++;
 
-        if (SeekBuf(fp, indexO+(entryNum*IndexEntryLength), 0) != 0)
+        if (SeekBuf(fp, indexO + (entryNum * IndexEntryLength), 0) != 0)
             return 0;
 
         if (!be_read_int_4(fp, &entryLabel))
@@ -269,12 +269,12 @@ int getABIIndexEntrySW(SeekableBuf* fp, int indexO, uint label, uint count, int 
             return 0;
     } while (!(entryLabel == label && entryLw1 == count));
 
-    for(i=4; i<=sw; i++) {
+    for (i = 4; i <= sw; i++) {
         if (!be_read_int_2(fp, val))
             return 0;
     }
 
-    return indexO+(entryNum*IndexEntryLength);
+    return indexO + (entryNum * IndexEntryLength);
 }
 
 /*
@@ -365,7 +365,7 @@ int getABIint1(SeekableBuf *fp, int indexO, uint label, uint count, uchar *data,
         len = len2 = max_data_len;
     }
 
-    fp->read((char*)data, len2);
+    fp->read((char *)data, len2);
 
     return len;
 }
@@ -382,14 +382,14 @@ int getABIint2(SeekableBuf *fp, int indexO, uint label, uint count, ushort *data
     int len, l2;
     int i;
 
-    len = getABIint1(fp, indexO, label, count, (uchar *)data, max_data_len*2);
+    len = getABIint1(fp, indexO, label, count, (uchar *)data, max_data_len * 2);
     if (-1 == len)
         return -1;
 
     len /= 2;
     l2 = qMin(len, max_data_len);
     for (i = 0; i < l2; i++) {
-        data[i] = be_int2((uchar*)(data+i));
+        data[i] = be_int2((uchar *)(data + i));
     }
 
     return len;
@@ -407,14 +407,14 @@ int getABIint4(SeekableBuf *fp, int indexO, uint label, uint count, uint *data, 
     int len, l2;
     int i;
 
-    len = getABIint1(fp, indexO, label, count, (uchar *)data, max_data_len*4);
+    len = getABIint1(fp, indexO, label, count, (uchar *)data, max_data_len * 4);
     if (-1 == len)
         return -1;
 
     len /= 4;
     l2 = qMin(len, max_data_len);
     for (i = 0; i < l2; i++) {
-        data[i] = be_int4((uchar*)(data+i));
+        data[i] = be_int4((uchar *)(data + i));
     }
 
     return len;
@@ -424,11 +424,12 @@ static void replace_nl(char *string) {
     char *cp;
 
     for (cp = string; *cp; cp++) {
-        if (*cp == '\n') *cp = ' ';
+        if (*cp == '\n')
+            *cp = ' ';
     }
 }
 
-Document* ABIFormat::parseABI(const U2DbiRef& dbiRef, SeekableBuf* fp, IOAdapter* io, const QVariantMap& fs, U2OpStatus& os) {
+Document *ABIFormat::parseABI(const U2DbiRef &dbiRef, SeekableBuf *fp, IOAdapter *io, const QVariantMap &fs, U2OpStatus &os) {
     DbiOperationsBlock opBlock(dbiRef, os);
     CHECK_OP(os, NULL);
     Q_UNUSED(opBlock);
@@ -442,7 +443,7 @@ Document* ABIFormat::parseABI(const U2DbiRef& dbiRef, SeekableBuf* fp, IOAdapter
         dna.setName("Sequence");
     }
 
-    QList<GObject*> objects;
+    QList<GObject *> objects;
     QVariantMap hints;
     QString folder = fs.value(DBI_FOLDER_HINT, U2ObjectDbi::ROOT_FOLDER).toString();
     hints.insert(DBI_FOLDER_HINT, folder);
@@ -452,10 +453,10 @@ Document* ABIFormat::parseABI(const U2DbiRef& dbiRef, SeekableBuf* fp, IOAdapter
     }
     U2EntityRef ref = U2SequenceUtils::import(os, dbiRef, folder, dna, dna.alphabet->getId());
     CHECK_OP(os, NULL);
-    U2SequenceObject* seqObj = new U2SequenceObject(dna.getName(), ref);
+    U2SequenceObject *seqObj = new U2SequenceObject(dna.getName(), ref);
     objects.append(seqObj);
 
-    DNAChromatogramObject* chromObj = DNAChromatogramObject::createInstance(cd, "Chromatogram", dbiRef, os, hints);
+    DNAChromatogramObject *chromObj = DNAChromatogramObject::createInstance(cd, "Chromatogram", dbiRef, os, hints);
     CHECK_OP(os, NULL);
     objects.append(chromObj);
 
@@ -464,29 +465,28 @@ Document* ABIFormat::parseABI(const U2DbiRef& dbiRef, SeekableBuf* fp, IOAdapter
     CHECK_OP(os, NULL);
     objects.append(textObj);
 
-    Document* doc = new Document(this, io->getFactory(), io->getURL(), dbiRef, objects, fs);
+    Document *doc = new Document(this, io->getFactory(), io->getURL(), dbiRef, objects, fs);
     chromObj->addObjectRelation(GObjectRelation(GObjectReference(seqObj), ObjectRole_Sequence));
     return doc;
 }
 
-bool ABIFormat::loadABIObjects(SeekableBuf* fp, DNASequence &dna, DNAChromatogram &cd)
-{
+bool ABIFormat::loadABIObjects(SeekableBuf *fp, DNASequence &dna, DNAChromatogram &cd) {
     uint numPoints, numBases;
     uint signalO;
     int no_bases = 0;
     int sections = READ_ALL;
 
-    uint fwo_;     /* base -> lane mapping */
-    uint indexO;   /* File offset where the index is */
-    uint baseO;    /* File offset where the bases are stored */
-    uint dataCO;   /* File offset where the C trace is stored */
-    uint dataAO;   /* File offset where the A trace is stored */
-    uint dataGO;   /* File offset where the G trace is stored */
-    uint dataTO;   /* File offset where the T trace is stored */
-    uint offset;   /* Generic offset */
-    uint offset2;  /* Generic offset */
-    uint offset3;  /* Generic offset */
-    uint offset4;  /* Generic offset */
+    uint fwo_; /* base -> lane mapping */
+    uint indexO; /* File offset where the index is */
+    uint baseO; /* File offset where the bases are stored */
+    uint dataCO; /* File offset where the C trace is stored */
+    uint dataAO; /* File offset where the A trace is stored */
+    uint dataGO; /* File offset where the G trace is stored */
+    uint dataTO; /* File offset where the T trace is stored */
+    uint offset; /* Generic offset */
+    uint offset2; /* Generic offset */
+    uint offset3; /* Generic offset */
+    uint offset4; /* Generic offset */
 
     /* DATA block numbers for traces, in order of FWO_ */
     int DataCount[4] = {9, 10, 11, 12};
@@ -501,37 +501,36 @@ bool ABIFormat::loadABIObjects(SeekableBuf* fp, DNASequence &dna, DNAChromatogra
         return false;
 
     /* Get the number of points */
-    if (!getABIIndexEntryLW(fp,indexO,DataEntryLabel,DataCount[0], 3,&numPoints))
+    if (!getABIIndexEntryLW(fp, indexO, DataEntryLabel, DataCount[0], 3, &numPoints))
         return false;
 
     /* Get the number of bases */
-    if (!getABIIndexEntryLW(fp,indexO,BaseEntryLabel,1,3,&numBases)) {
+    if (!getABIIndexEntryLW(fp, indexO, BaseEntryLabel, 1, 3, &numBases)) {
         no_bases = 1;
         numBases = 0;
     }
-
 
     /* Allocate the sequence */
     /* Allocate space for the bases - 1 extra for the ->base field so
     * that we can treat it as a NULL terminated string.
     */
     if (sections & READ_BASES) {
-        cd.prob_A.resize(numBases+1);
-        cd.prob_C.resize(numBases+1);
-        cd.prob_G.resize(numBases+1);
-        cd.prob_T.resize(numBases+1);
-        cd.baseCalls.resize(numBases+1);
+        cd.prob_A.resize(numBases + 1);
+        cd.prob_C.resize(numBases + 1);
+        cd.prob_G.resize(numBases + 1);
+        cd.prob_T.resize(numBases + 1);
+        cd.baseCalls.resize(numBases + 1);
     }
 
     if (sections & READ_SAMPLES) {
-        cd.A.resize(numPoints+1);
-        cd.C.resize(numPoints+1);
-        cd.G.resize(numPoints+1);
-        cd.T.resize(numPoints+1);
+        cd.A.resize(numPoints + 1);
+        cd.C.resize(numPoints + 1);
+        cd.G.resize(numPoints + 1);
+        cd.T.resize(numPoints + 1);
     }
 
     /* Get the Filter Wheel Order (FWO_) field ... */
-    if (!getABIIndexEntryLW(fp,indexO,FWO_Label,1,5,&fwo_)) {
+    if (!getABIIndexEntryLW(fp, indexO, FWO_Label, 1, 5, &fwo_)) {
         /* Guess at CAGT */
         fwo_ = 0x43414754;
     }
@@ -549,22 +548,13 @@ bool ABIFormat::loadABIObjects(SeekableBuf* fp, DNASequence &dna, DNAChromatogra
         dataxO[3] = &dataTO;
 
         /*Get the positions of the four traces */
-        if (!(getABIIndexEntryLW(fp, indexO, DataEntryLabel,
-            DataCount[0], 5,
-            dataxO[baseIndex((char)(fwo_>>24&255))]) &&
-            getABIIndexEntryLW(fp, indexO, DataEntryLabel,
-            DataCount[1], 5,
-            dataxO[baseIndex((char)(fwo_>>16&255))]) &&
-            getABIIndexEntryLW(fp, indexO, DataEntryLabel,
-            DataCount[2], 5,
-            dataxO[baseIndex((char)(fwo_>>8&255))]) &&
-            getABIIndexEntryLW(fp, indexO, DataEntryLabel,
-            DataCount[3], 5,
-            dataxO[baseIndex((char)(fwo_&255))]))) {
-                return false;
+        if (!(getABIIndexEntryLW(fp, indexO, DataEntryLabel, DataCount[0], 5, dataxO[baseIndex((char)(fwo_ >> 24 & 255))]) &&
+              getABIIndexEntryLW(fp, indexO, DataEntryLabel, DataCount[1], 5, dataxO[baseIndex((char)(fwo_ >> 16 & 255))]) &&
+              getABIIndexEntryLW(fp, indexO, DataEntryLabel, DataCount[2], 5, dataxO[baseIndex((char)(fwo_ >> 8 & 255))]) &&
+              getABIIndexEntryLW(fp, indexO, DataEntryLabel, DataCount[3], 5, dataxO[baseIndex((char)(fwo_ & 255))]))) {
+            return false;
         }
     }
-
 
     /*************************************************************
     * Read the traces and bases information
@@ -572,19 +562,23 @@ bool ABIFormat::loadABIObjects(SeekableBuf* fp, DNASequence &dna, DNAChromatogra
 
     if (sections & READ_SAMPLES) {
         /* Read in the C trace */
-        if (SeekBuf(fp, dataCO, 0) == -1) return false;
+        if (SeekBuf(fp, dataCO, 0) == -1)
+            return false;
         getABIint2(fp, 0, 0, 0, cd.C.data(), numPoints);
 
         /* Read in the A trace */
-        if (SeekBuf(fp, dataAO, 0) == -1) return false;
+        if (SeekBuf(fp, dataAO, 0) == -1)
+            return false;
         getABIint2(fp, 0, 0, 0, cd.A.data(), numPoints);
 
         /* Read in the G trace */
-        if (SeekBuf(fp, dataGO, 0) == -1) return false;
+        if (SeekBuf(fp, dataGO, 0) == -1)
+            return false;
         getABIint2(fp, 0, 0, 0, cd.G.data(), numPoints);
 
         /* Read in the T trace */
-        if (SeekBuf(fp, dataTO, 0) == -1) return false;
+        if (SeekBuf(fp, dataTO, 0) == -1)
+            return false;
         getABIint2(fp, 0, 0, 0, cd.T.data(), numPoints);
 
         /* Compute highest trace peak */
@@ -606,69 +600,68 @@ bool ABIFormat::loadABIObjects(SeekableBuf* fp, DNASequence &dna, DNAChromatogra
 
     /* Read in base confidence values */
     {
-    QVector<uchar> conf(numBases);
-    int res = getABIint1(fp, indexO, BaseConfLabel, 2, conf.data(), numBases);
+        QVector<uchar> conf(numBases);
+        int res = getABIint1(fp, indexO, BaseConfLabel, 2, conf.data(), numBases);
 
-    /* Read in the bases */
-    if (!(getABIIndexEntryLW(fp, indexO, BaseEntryLabel, 1, 5, &baseO) && (SeekBuf(fp, baseO, 0) == 0) )) {
-        return false;
-    }
+        /* Read in the bases */
+        if (!(getABIIndexEntryLW(fp, indexO, BaseEntryLabel, 1, 5, &baseO) && (SeekBuf(fp, baseO, 0) == 0))) {
+            return false;
+        }
 
-    sequence = QByteArray(numBases, 0);
-    if (!fp->read(sequence.data(), numBases)) {
-        return false;
-    }
+        sequence = QByteArray(numBases, 0);
+        if (!fp->read(sequence.data(), numBases)) {
+            return false;
+        }
 
-    QByteArray qualCodes(numBases, 0);
+        QByteArray qualCodes(numBases, 0);
 
-    if (res != -1 ) {
-        for (uint i = 0; i < numBases; i++) {
-            qualCodes[i] = DNAQuality::encode(conf[i],DNAQualityType_Sanger);
-            switch(sequence[i]) {
-            case 'A':
-            case 'a':
-                cd.prob_A[i] = conf[i];
-                cd.prob_C[i] = 0;
-                cd.prob_G[i] = 0;
-                cd.prob_T[i] = 0;
-                break;
+        if (res != -1) {
+            for (uint i = 0; i < numBases; i++) {
+                qualCodes[i] = DNAQuality::encode(conf[i], DNAQualityType_Sanger);
+                switch (sequence[i]) {
+                case 'A':
+                case 'a':
+                    cd.prob_A[i] = conf[i];
+                    cd.prob_C[i] = 0;
+                    cd.prob_G[i] = 0;
+                    cd.prob_T[i] = 0;
+                    break;
 
-            case 'C':
-            case 'c':
-                cd.prob_A[i] = 0;
-                cd.prob_C[i] = conf[i];
-                cd.prob_G[i] = 0;
-                cd.prob_T[i] = 0;
-                break;
+                case 'C':
+                case 'c':
+                    cd.prob_A[i] = 0;
+                    cd.prob_C[i] = conf[i];
+                    cd.prob_G[i] = 0;
+                    cd.prob_T[i] = 0;
+                    break;
 
-            case 'G':
-            case 'g':
-                cd.prob_A[i] = 0;
-                cd.prob_C[i] = 0;
-                cd.prob_G[i] = conf[i];
-                cd.prob_T[i] = 0;
-                break;
+                case 'G':
+                case 'g':
+                    cd.prob_A[i] = 0;
+                    cd.prob_C[i] = 0;
+                    cd.prob_G[i] = conf[i];
+                    cd.prob_T[i] = 0;
+                    break;
 
-            case 'T':
-            case 't':
-                cd.prob_A[i] = 0;
-                cd.prob_C[i] = 0;
-                cd.prob_G[i] = 0;
-                cd.prob_T[i] = conf[i];
-                break;
+                case 'T':
+                case 't':
+                    cd.prob_A[i] = 0;
+                    cd.prob_C[i] = 0;
+                    cd.prob_G[i] = 0;
+                    cd.prob_T[i] = conf[i];
+                    break;
 
-            default:
-                cd.prob_A[i] = 0;
-                cd.prob_C[i] = 0;
-                cd.prob_G[i] = 0;
-                cd.prob_T[i] = 0;
-                break;
+                default:
+                    cd.prob_A[i] = 0;
+                    cd.prob_C[i] = 0;
+                    cd.prob_G[i] = 0;
+                    cd.prob_T[i] = 0;
+                    break;
+                }
             }
         }
-    }
 
-    quality.setQualCodes(qualCodes);
-
+        quality.setQualCodes(qualCodes);
     }
 
     /* Read in the base positions */
@@ -680,8 +673,8 @@ bool ABIFormat::loadABIObjects(SeekableBuf* fp, DNASequence &dna, DNAChromatogra
     * Check for corrupted traces where the bases are positioned on sample
     * coordinates which do not exist. Witnessed on some MegaBACE files.
     */
-    if (cd.baseCalls[numBases-1] > numPoints) {
-        int n = cd.baseCalls[numBases-1]+1;
+    if (cd.baseCalls[numBases - 1] > numPoints) {
+        int n = cd.baseCalls[numBases - 1] + 1;
         cd.A.resize(n);
         cd.C.resize(n);
         cd.G.resize(n);
@@ -707,13 +700,12 @@ skip_bases:
             char *commstrp = commstr;
             char *p;
             do {
-                if ((p = strchr(commstrp, '\n'))){
+                if ((p = strchr(commstrp, '\n'))) {
                     *p++ = 0;
                 }
                 sequenceComment.append(QString("ABI Comment: %1\n").arg(commstrp));
-            } while((commstrp = p));
+            } while ((commstrp = p));
         }
-
 
         /* Get Sample Name Offset */
         if (-1 != getABIString(fp, indexO, SMPLLabel, 1, buffer)) {
@@ -728,52 +720,45 @@ skip_bases:
         }
 
         /* Get Signal Strength Offset */
-        if (getABIIndexEntryLW(fp, indexO, SignalEntryLabel, 1, 5,
-            &signalO)) {
-                short C,A,G,T;
-                short *base[4];
-                base[0] = &C;
-                base[1] = &A;
-                base[2] = &G;
-                base[3] = &T;
+        if (getABIIndexEntryLW(fp, indexO, SignalEntryLabel, 1, 5, &signalO)) {
+            short C, A, G, T;
+            short *base[4];
+            base[0] = &C;
+            base[1] = &A;
+            base[2] = &G;
+            base[3] = &T;
 
-                if (SeekBuf(fp, signalO, 0) != -1 &&
-                    be_read_int_2(fp, (ushort *)
-                    base[baseIndex((char)(fwo_>>24&255))]) &&
-                    be_read_int_2(fp, (ushort *)
-                    base[baseIndex((char)(fwo_>>16&255))]) &&
-                    be_read_int_2(fp, (ushort *)
-                    base[baseIndex((char)(fwo_>>8&255))]) &&
-                    be_read_int_2(fp, (ushort *)
-                    base[baseIndex((char)(fwo_&255))]))
-                {
-                    sequenceComment.append(QString("SIGN=A=%1,C=%2,G=%3,T=%4\n").arg(A).arg(C).arg(G).arg(T));
-                }
+            if (SeekBuf(fp, signalO, 0) != -1 &&
+                be_read_int_2(fp, (ushort *)base[baseIndex((char)(fwo_ >> 24 & 255))]) &&
+                be_read_int_2(fp, (ushort *)base[baseIndex((char)(fwo_ >> 16 & 255))]) &&
+                be_read_int_2(fp, (ushort *)base[baseIndex((char)(fwo_ >> 8 & 255))]) &&
+                be_read_int_2(fp, (ushort *)base[baseIndex((char)(fwo_ & 255))])) {
+                sequenceComment.append(QString("SIGN=A=%1,C=%2,G=%3,T=%4\n").arg(A).arg(C).arg(G).arg(T));
+            }
         }
 
         /* Get the spacing.. it's a float but don't worry yet */
         float fspacing = 0;
         if (-1 != getABIint4(fp, indexO, SpacingEntryLabel, 1, (uint *)&spacing, 1)) {
             fspacing = int_to_float(spacing);
-            sequenceComment.append(QString("SPAC=%1\n").arg(fspacing)); //-6.2f",
+            sequenceComment.append(QString("SPAC=%1\n").arg(fspacing));    //-6.2f",
         }
         /* Correction for when spacing is negative. Why does this happen? */
         if (fspacing <= 0) {
             if (numBases > 1) {
                 if (sections & READ_BASES)
-                    fspacing = (float)(cd.baseCalls[numBases-1] - cd.baseCalls[0]) / (float) (numBases-1);
+                    fspacing = (float)(cd.baseCalls[numBases - 1] - cd.baseCalls[0]) / (float)(numBases - 1);
                 else
-                    fspacing = (float) numPoints / (float) numBases;
+                    fspacing = (float)numPoints / (float)numBases;
             } else {
                 fspacing = 1;
             }
         }
 
-
         /* Get primer position */
         if (getABIIndexEntryLW(fp, indexO, PPOSLabel, 1, 5, (uint *)&i4)) {
-                /* ppos stores in MBShort of pointer */
-            sequenceComment.append(QString("PRIM=%1\n").arg(i4>>16));
+            /* ppos stores in MBShort of pointer */
+            sequenceComment.append(QString("PRIM=%1\n").arg(i4 >> 16));
         }
 
         /* RUND/RUNT */
@@ -781,64 +766,69 @@ skip_bases:
             getABIIndexEntryLW(fp, indexO, RUNDLabel, 2, 5, &offset2) &&
             getABIIndexEntryLW(fp, indexO, RUNTLabel, 1, 5, &offset3) &&
             getABIIndexEntryLW(fp, indexO, RUNTLabel, 2, 5, &offset4)) {
-                //char buffer[1025];
-                char buffer_s[1025];
-                char buffer_e[1025];
-                struct tm t;
-                uint rund_s, rund_e, runt_s, runt_e;
+            //char buffer[1025];
+            char buffer_s[1025];
+            char buffer_e[1025];
+            struct tm t;
+            uint rund_s, rund_e, runt_s, runt_e;
 
-                rund_s = offset;
-                rund_e = offset2;
-                runt_s = offset3;
-                runt_e = offset4;
+            rund_s = offset;
+            rund_e = offset2;
+            runt_s = offset3;
+            runt_e = offset4;
 
-//                 sprintf(buffer, "%04d%02d%02d.%02d%02d%02d - %04d%02d%02d.%02d%02d%02d",
-//                     rund_s >> 16, (rund_s >> 8) & 0xff, rund_s & 0xff,
-//                     runt_s >> 24, (runt_s >> 16) & 0xff, (runt_s >> 8) & 0xff,
-//                     rund_e >> 16, (rund_e >> 8) & 0xff, rund_e & 0xff,
-//                     runt_e >> 24, (runt_e >> 16) & 0xff, (runt_e >> 8) & 0xff);
-                QString buffer = QString("%1%2%3.%4%5%6 - %7%8%9.%10%11%12")
-                    .arg((rund_s >> 16), 4,10,QLatin1Char('0')).arg((rund_s >> 8) & 0xff, 2,10,QLatin1Char('0'))
-                    .arg((rund_s & 0xff), 2,10,QLatin1Char('0')).arg(runt_s >> 24, 2,10,QLatin1Char('0'))
-                    .arg((runt_s >> 16) & 0xff, 2,10,QLatin1Char('0')).arg((runt_s >> 8) & 0xff, 2,10,QLatin1Char('0'))
-                    .arg(rund_e >> 16, 4,10,QLatin1Char('0')).arg((rund_e >> 8) & 0xff, 2,10,QLatin1Char('0'))
-                    .arg(rund_e & 0xff, 2,10,QLatin1Char('0')).arg(runt_e >> 24, 2,10,QLatin1Char('0'))
-                    .arg((runt_e >> 16) & 0xff, 2,10,QLatin1Char('0')).arg((runt_e >> 8) & 0xff, 2,10,QLatin1Char('0'));
+            //                 sprintf(buffer, "%04d%02d%02d.%02d%02d%02d - %04d%02d%02d.%02d%02d%02d",
+            //                     rund_s >> 16, (rund_s >> 8) & 0xff, rund_s & 0xff,
+            //                     runt_s >> 24, (runt_s >> 16) & 0xff, (runt_s >> 8) & 0xff,
+            //                     rund_e >> 16, (rund_e >> 8) & 0xff, rund_e & 0xff,
+            //                     runt_e >> 24, (runt_e >> 16) & 0xff, (runt_e >> 8) & 0xff);
+            QString buffer = QString("%1%2%3.%4%5%6 - %7%8%9.%10%11%12")
+                                 .arg((rund_s >> 16), 4, 10, QLatin1Char('0'))
+                                 .arg((rund_s >> 8) & 0xff, 2, 10, QLatin1Char('0'))
+                                 .arg((rund_s & 0xff), 2, 10, QLatin1Char('0'))
+                                 .arg(runt_s >> 24, 2, 10, QLatin1Char('0'))
+                                 .arg((runt_s >> 16) & 0xff, 2, 10, QLatin1Char('0'))
+                                 .arg((runt_s >> 8) & 0xff, 2, 10, QLatin1Char('0'))
+                                 .arg(rund_e >> 16, 4, 10, QLatin1Char('0'))
+                                 .arg((rund_e >> 8) & 0xff, 2, 10, QLatin1Char('0'))
+                                 .arg(rund_e & 0xff, 2, 10, QLatin1Char('0'))
+                                 .arg(runt_e >> 24, 2, 10, QLatin1Char('0'))
+                                 .arg((runt_e >> 16) & 0xff, 2, 10, QLatin1Char('0'))
+                                 .arg((runt_e >> 8) & 0xff, 2, 10, QLatin1Char('0'));
 
-                memset(&t, 0, sizeof(t));
-                t.tm_mday = rund_s & 0xff;
-                t.tm_mon = ((rund_s >> 8) & 0xff) - 1;
-                t.tm_year = (rund_s >> 16) - 1900;
-                t.tm_hour = runt_s >> 24;
-                t.tm_min = (runt_s >> 16) & 0xff;
-                t.tm_sec = (runt_s >> 8) & 0xff;
-                t.tm_isdst = -1;
-                /*
+            memset(&t, 0, sizeof(t));
+            t.tm_mday = rund_s & 0xff;
+            t.tm_mon = ((rund_s >> 8) & 0xff) - 1;
+            t.tm_year = (rund_s >> 16) - 1900;
+            t.tm_hour = runt_s >> 24;
+            t.tm_min = (runt_s >> 16) & 0xff;
+            t.tm_sec = (runt_s >> 8) & 0xff;
+            t.tm_isdst = -1;
+            /*
                 * Convert struct tm to time_t. We ignore the time_t value, but
                 * the conversion process will update the tm_wday element of
                 * struct tm.
                 */
-                mktime(&t);
-                strftime(buffer_s, 1024, "%a %d %b %H:%M:%S %Y", &t);
+            mktime(&t);
+            strftime(buffer_s, 1024, "%a %d %b %H:%M:%S %Y", &t);
 
-                t.tm_mday = rund_e & 0xff;
-                t.tm_mon = ((rund_e >> 8) & 0xff) - 1;
-                t.tm_year = (rund_e >> 16) - 1900;
-                t.tm_hour = runt_e >> 24;
-                t.tm_min = (runt_e >> 16) & 0xff;
-                t.tm_sec = (runt_e >> 8) & 0xff;
-                t.tm_isdst = -1;
-                /*
+            t.tm_mday = rund_e & 0xff;
+            t.tm_mon = ((rund_e >> 8) & 0xff) - 1;
+            t.tm_year = (rund_e >> 16) - 1900;
+            t.tm_hour = runt_e >> 24;
+            t.tm_min = (runt_e >> 16) & 0xff;
+            t.tm_sec = (runt_e >> 8) & 0xff;
+            t.tm_isdst = -1;
+            /*
                 * Convert struct tm to time_t. We ignore the time_t value, but
                 * the conversion process will update the tm_wday element of
                 * struct tm.
                 */
-                mktime(&t);
-                strftime(buffer_e, 1024, "%a %d %b %H:%M:%S %Y", &t);
+            mktime(&t);
+            strftime(buffer_e, 1024, "%a %d %b %H:%M:%S %Y", &t);
 
-                sequenceComment.append(QString("DATE=%1 to %2\nRUND=%3\n").arg(buffer_s).arg(buffer_e).arg(buffer));
+            sequenceComment.append(QString("DATE=%1 to %2\nRUND=%3\n").arg(buffer_s).arg(buffer_e).arg(buffer));
         }
-
 
         /* Get Dye Primer Offset */
         if (-1 != getABIString(fp, indexO, PDMFLabel, 1, buffer)) {
@@ -901,7 +891,6 @@ skip_bases:
     dna.quality = quality;
 
     return true;
-
 }
 
-}//namespace
+}    // namespace U2

@@ -22,11 +22,10 @@
 #ifndef _U2_WIDGET_WITH_LOCAL_TOOLBAR_H_
 #define _U2_WIDGET_WITH_LOCAL_TOOLBAR_H_
 
-#include <U2Core/global.h>
-
 #include <QToolButton>
 #include <QWidget>
 
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -35,22 +34,22 @@ class LocalToolbar;
 class U2GUI_EXPORT WidgetWithLocalToolbar : public QWidget {
     Q_OBJECT
 public:
-    WidgetWithLocalToolbar(QWidget* p = 0);
+    WidgetWithLocalToolbar(QWidget *p = 0);
 
-    void setContentLayout(QLayout* l);
+    void setContentLayout(QLayout *l);
 
-    QToolButton* addActionToLocalToolbar(QAction* action);
+    QToolButton *addActionToLocalToolbar(QAction *action);
 
-    void setLocalToolBarObjectName(const QString& name);
+    void setLocalToolBarObjectName(const QString &name);
 
 protected:
     void setLocalToolbarVisible(bool visible);
-    QWidget*                contentWidget;
+    QWidget *contentWidget;
 
 private:
-    LocalToolbar*   toolBar;
+    LocalToolbar *toolBar;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_WIDGET_WITH_LOCAL_TOOLBAR_H_
+#endif    // _U2_WIDGET_WITH_LOCAL_TOOLBAR_H_

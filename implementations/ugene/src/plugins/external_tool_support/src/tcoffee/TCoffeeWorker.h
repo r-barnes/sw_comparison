@@ -24,6 +24,7 @@
 
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
+
 #include "TCoffeeSupportTask.h"
 
 namespace U2 {
@@ -33,7 +34,8 @@ namespace LocalWorkflow {
 class TCoffeePrompter : public PrompterBase<TCoffeePrompter> {
     Q_OBJECT
 public:
-    TCoffeePrompter(Actor* p = 0);
+    TCoffeePrompter(Actor *p = 0);
+
 protected:
     QString composeRichDoc();
 };
@@ -41,10 +43,10 @@ protected:
 class TCoffeeWorker : public BaseWorker {
     Q_OBJECT
 public:
-    TCoffeeWorker(Actor* a);
+    TCoffeeWorker(Actor *a);
 
     virtual void init();
-    virtual Task* tick();
+    virtual Task *tick();
     virtual void cleanup();
 
 private slots:
@@ -52,20 +54,23 @@ private slots:
 
 protected:
     IntegralBus *input, *output;
-    QString resultName,transId;
+    QString resultName, transId;
     TCoffeeSupportTaskSettings cfg;
-
 };
 
 class TCoffeeWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
     static void init();
-    TCoffeeWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual Worker* createWorker(Actor* a) {return new TCoffeeWorker(a);}
+    TCoffeeWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual Worker *createWorker(Actor *a) {
+        return new TCoffeeWorker(a);
+    }
 };
 
-} // Workflow namespace
-} // U2 namespace
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

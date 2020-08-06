@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DNASequenceObject.h"
+
 #include <QApplication>
 
 #include <U2Core/AppContext.h>
@@ -34,25 +36,25 @@
 #include <U2Core/U2SequenceDbi.h>
 #include <U2Core/U2SequenceUtils.h>
 
-#include "DNASequenceObject.h"
 #include "GObjectTypes.h"
 
 namespace U2 {
 
 #define NO_LENGTH_CONSTRAINT -1
-U2SequenceObjectConstraints::U2SequenceObjectConstraints(QObject* p)
-    : GObjectConstraints(GObjectTypes::SEQUENCE, p), sequenceSize(NO_LENGTH_CONSTRAINT) {}
+U2SequenceObjectConstraints::U2SequenceObjectConstraints(QObject *p)
+    : GObjectConstraints(GObjectTypes::SEQUENCE, p), sequenceSize(NO_LENGTH_CONSTRAINT) {
+}
 
 //////////////////////////////////////////////////////////////////////////
 // U2SequenceObject
 
-U2SequenceObject::U2SequenceObject(const QString& name, const U2EntityRef& seqRef, const QVariantMap& hintsMap)
+U2SequenceObject::U2SequenceObject(const QString &name, const U2EntityRef &seqRef, const QVariantMap &hintsMap)
     : GObject(GObjectTypes::SEQUENCE, name, hintsMap), cachedAlphabet(NULL), cachedLength(-1), cachedCircular(TriState_Unknown) {
     entityRef = seqRef;
 }
 
-bool U2SequenceObject::checkConstraints(const GObjectConstraints* c) const {
-    const U2SequenceObjectConstraints* dnac = qobject_cast<const U2SequenceObjectConstraints*>(c);
+bool U2SequenceObject::checkConstraints(const GObjectConstraints *c) const {
+    const U2SequenceObjectConstraints *dnac = qobject_cast<const U2SequenceObjectConstraints *>(c);
     SAFE_POINT(dnac != NULL, "Not a U2SequenceObjectConstraints!", false);
 
     if (dnac->sequenceSize != NO_LENGTH_CONSTRAINT) {
@@ -62,7 +64,7 @@ bool U2SequenceObject::checkConstraints(const GObjectConstraints* c) const {
         }
     }
     if (dnac->alphabetType != DNAAlphabet_RAW) {
-        const DNAAlphabet* dalphabet = getAlphabet();
+        const DNAAlphabet *dalphabet = getAlphabet();
         SAFE_POINT(dalphabet != NULL, "U2SequenceObject::no alphabet", false);
         DNAAlphabetType aType = dalphabet->getType();
         if (dnac->alphabetType != aType) {
@@ -71,7 +73,6 @@ bool U2SequenceObject::checkConstraints(const GObjectConstraints* c) const {
     }
     return true;
 }
-
 
 qint64 U2SequenceObject::getSequenceLength() const {
     if (cachedLength == -1) {
@@ -95,13 +96,13 @@ QString U2SequenceObject::getSequenceName() const {
         seq = con.dbi->getSequenceDbi()->getSequenceObject(entityRef.entityId, os); \
         CHECK_OP(os, DNASequence()); \
         seqGet = true; \
-        }
+    }
 
-DNASequence U2SequenceObject::getSequence(const U2Region &region, U2OpStatus& os) const {
+DNASequence U2SequenceObject::getSequence(const U2Region &region, U2OpStatus &os) const {
     U2Sequence seq;
     bool seqGet = false;
 
-    const DNAAlphabet* alpha = cachedAlphabet;
+    const DNAAlphabet *alpha = cachedAlphabet;
     if (!cachedAlphabet) {
         FETCH_SEQUENCE(seqGet, seq, entityRef);
         cachedAlphabet = alpha = U2AlphabetUtils::getById(seq.alphabet);
@@ -125,11 +126,11 @@ DNASequence U2SequenceObject::getSequence(const U2Region &region, U2OpStatus& os
     return res;
 }
 
-DNASequence U2SequenceObject::getWholeSequence(U2OpStatus& os) const {
+DNASequence U2SequenceObject::getWholeSequence(U2OpStatus &os) const {
     return getSequence(U2_REGION_MAX, os);
 }
 
-QByteArray U2SequenceObject::getWholeSequenceData(U2OpStatus& os) const {
+QByteArray U2SequenceObject::getWholeSequenceData(U2OpStatus &os) const {
     return getSequenceData(U2_REGION_MAX, os);
 }
 
@@ -140,14 +141,14 @@ bool U2SequenceObject::isCircular() const {
     return cachedCircular == TriState_Yes;
 }
 
-const DNAAlphabet* U2SequenceObject::getAlphabet() const {
+const DNAAlphabet *U2SequenceObject::getAlphabet() const {
     if (cachedAlphabet == NULL) {
         updateCachedValues();
     }
     return cachedAlphabet;
 }
 
-void U2SequenceObject::setWholeSequence(const DNASequence& seq) {
+void U2SequenceObject::setWholeSequence(const DNASequence &seq) {
     U2OpStatus2Log os;
     DbiConnection con(entityRef.dbiRef, os);
     CHECK_OP(os, );
@@ -163,14 +164,14 @@ void U2SequenceObject::setWholeSequence(const DNASequence& seq) {
     emit si_sequenceChanged();
 }
 
-QByteArray U2SequenceObject::getSequenceData(const U2Region& r) const {
+QByteArray U2SequenceObject::getSequenceData(const U2Region &r) const {
     U2OpStatus2Log os;
     const QByteArray res = getSequenceData(r, os);
     SAFE_POINT_OP(os, QByteArray());
     return res;
 }
 
-QByteArray U2SequenceObject::getSequenceData(const U2Region& r, U2OpStatus& os) const {
+QByteArray U2SequenceObject::getSequenceData(const U2Region &r, U2OpStatus &os) const {
     if (!cachedLastAccessedRegion.first.contains(r)) {
         DbiConnection con(entityRef.dbiRef, os);
         CHECK_OP(os, QByteArray());
@@ -198,14 +199,14 @@ bool U2SequenceObject::isValidDbiObject(U2OpStatus &os) {
     return true;
 }
 
-void U2SequenceObject::replaceRegion(const U2Region& region, const DNASequence& seq, U2OpStatus& os) {
+void U2SequenceObject::replaceRegion(const U2Region &region, const DNASequence &seq, U2OpStatus &os) {
     replaceRegion(entityRef.entityId, region, seq, os);
 }
 
 void U2SequenceObject::replaceRegion(const U2DataId &masterId, const U2Region &region, const DNASequence &seq, U2OpStatus &os) {
     // seq.alphabet == NULL - for tests.
     CHECK_EXT(seq.alphabet == getAlphabet() || seq.seq.isEmpty() || seq.alphabet == NULL,
-        os.setError(tr("Modified sequence & region have different alphabet")), );
+              os.setError(tr("Modified sequence & region have different alphabet")), );
 
     DbiConnection con(entityRef.dbiRef, os);
     CHECK_OP(os, );
@@ -223,7 +224,7 @@ void U2SequenceObject::removeRegion(U2OpStatus &os, const U2Region &region) {
     replaceRegion(region, DNASequence(), os);
 }
 
-GObject * U2SequenceObject::clone(const U2DbiRef &dbiRef, U2OpStatus &os, const QVariantMap &hints) const {
+GObject *U2SequenceObject::clone(const U2DbiRef &dbiRef, U2OpStatus &os, const QVariantMap &hints) const {
     DbiOperationsBlock opBlock(dbiRef, os);
     Q_UNUSED(opBlock);
     CHECK_OP(os, NULL);
@@ -240,7 +241,7 @@ GObject * U2SequenceObject::clone(const U2DbiRef &dbiRef, U2OpStatus &os, const 
     U2Sequence seq = U2SequenceUtils::copySequence(entityRef, dbiRef, dstFolder, os);
     CHECK_OP(os, NULL);
 
-    U2SequenceObject* res = new U2SequenceObject(seq.visualName, U2EntityRef(dbiRef, seq.id), gHints.getMap());
+    U2SequenceObject *res = new U2SequenceObject(seq.visualName, U2EntityRef(dbiRef, seq.id), gHints.getMap());
 
     U2AttributeUtils::copyObjectAttributes(entityRef.entityId, seq.id, srcCon.dbi->getAttributeDbi(), dstCon.dbi->getAttributeDbi(), os);
     CHECK_OP(os, NULL);
@@ -266,7 +267,7 @@ void U2SequenceObject::setCircular(bool isCircular) {
     emit si_sequenceCircularStateChanged();
 }
 
-void U2SequenceObject::setQuality(const DNAQuality& q) {
+void U2SequenceObject::setQuality(const DNAQuality &q) {
     U2SequenceUtils::setQuality(entityRef, q);
 }
 
@@ -288,7 +289,7 @@ DNAQuality U2SequenceObject::getQuality() const {
     return res;
 }
 
-void U2SequenceObject::setSequenceInfo(const QVariantMap& info) {
+void U2SequenceObject::setSequenceInfo(const QVariantMap &info) {
     U2OpStatus2Log os;
     U2SequenceUtils::setSequenceInfo(os, entityRef, info);
     CHECK_OP(os, );
@@ -302,11 +303,11 @@ QVariantMap U2SequenceObject::getSequenceInfo() const {
     return variantMap;
 }
 
-QString U2SequenceObject::getStringAttribute(const QString& seqAttr) const {
+QString U2SequenceObject::getStringAttribute(const QString &seqAttr) const {
     return getSequenceInfo().value(seqAttr).toString();
 }
 
-void U2SequenceObject::setStringAttribute(const QString& newStringAttributeValue, const QString& type) {
+void U2SequenceObject::setStringAttribute(const QString &newStringAttributeValue, const QString &type) {
     U2OpStatus2Log os;
     DbiConnection con(entityRef.dbiRef, os);
     CHECK_OP(os, );
@@ -321,11 +322,11 @@ void U2SequenceObject::setStringAttribute(const QString& newStringAttributeValue
     CHECK_OP(os, );
 }
 
-qint64 U2SequenceObject::getIntegerAttribute(const QString& seqAttr) const {
+qint64 U2SequenceObject::getIntegerAttribute(const QString &seqAttr) const {
     return getSequenceInfo().value(seqAttr).toInt();
 }
 
-void U2SequenceObject::setIntegerAttribute(int newIntegerAttributeValue, const QString& type) {
+void U2SequenceObject::setIntegerAttribute(int newIntegerAttributeValue, const QString &type) {
     U2OpStatus2Log os;
     DbiConnection con(entityRef.dbiRef, os);
     CHECK_OP(os, );
@@ -340,11 +341,11 @@ void U2SequenceObject::setIntegerAttribute(int newIntegerAttributeValue, const Q
     CHECK_OP(os, );
 }
 
-double U2SequenceObject::getRealAttribute(const QString& seqAttr) const {
+double U2SequenceObject::getRealAttribute(const QString &seqAttr) const {
     return getSequenceInfo().value(seqAttr).toReal();
 }
 
-void U2SequenceObject::setRealAttribute(double newRealAttributeValue, const QString& type) {
+void U2SequenceObject::setRealAttribute(double newRealAttributeValue, const QString &type) {
     U2OpStatus2Log os;
     DbiConnection con(entityRef.dbiRef, os);
     CHECK_OP(os, );
@@ -359,11 +360,11 @@ void U2SequenceObject::setRealAttribute(double newRealAttributeValue, const QStr
     CHECK_OP(os, );
 }
 
-QByteArray U2SequenceObject::getByteArrayAttribute(const QString& seqAttr) const {
+QByteArray U2SequenceObject::getByteArrayAttribute(const QString &seqAttr) const {
     return getSequenceInfo().value(seqAttr).toByteArray();
 }
 
-void U2SequenceObject::setByteArrayAttribute(const QByteArray& newByteArrayAttributeValue, const QString& type) {
+void U2SequenceObject::setByteArrayAttribute(const QByteArray &newByteArrayAttributeValue, const QString &type) {
     U2OpStatus2Log os;
     DbiConnection con(entityRef.dbiRef, os);
     CHECK_OP(os, );
@@ -405,4 +406,4 @@ void U2SequenceObject::setGObjectName(const QString &newName) {
     cachedName = GObject::getGObjectName();
 }
 
-} //namespace
+}    // namespace U2

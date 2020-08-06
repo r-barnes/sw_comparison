@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CreateAnnotationNormalWidget.h"
+
 #include <QMenu>
 
 #include <U2Core/Counter.h>
@@ -27,13 +29,10 @@
 #include <U2Gui/SaveDocumentController.h>
 #include <U2Gui/ShowHideSubgroupWidget.h>
 
-#include "CreateAnnotationNormalWidget.h"
-
 namespace U2 {
 
-CreateAnnotationNormalWidget::CreateAnnotationNormalWidget(QWidget *parent) :
-    CreateAnnotationWidget(parent)
-{
+CreateAnnotationNormalWidget::CreateAnnotationNormalWidget(QWidget *parent)
+    : CreateAnnotationWidget(parent) {
     setupUi(this);
     initLayout();
     init();
@@ -243,4 +242,4 @@ void CreateAnnotationNormalWidget::connectSignals() {
     connect(chbUsePatternNames, SIGNAL(stateChanged(int)), SIGNAL(si_usePatternNamesStateChanged()));
 }
 
-}   // namespace U2
+}    // namespace U2

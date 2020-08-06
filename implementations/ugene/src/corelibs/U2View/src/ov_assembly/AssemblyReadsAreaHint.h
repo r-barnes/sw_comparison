@@ -22,8 +22,8 @@
 #ifndef __U2_ASSEMBLY_READS_AREA_HINT_H__
 #define __U2_ASSEMBLY_READS_AREA_HINT_H__
 
-#include <QLabel>
 #include <QFrame>
+#include <QLabel>
 
 #include <U2Core/U2Assembly.h>
 
@@ -35,21 +35,21 @@ class AssemblyReadsAreaHint : public QFrame {
 public:
     static const QPoint OFFSET_FROM_CURSOR;
     static const int LETTER_MAX_COUNT = 60;
-    static QString getReadDataAsString(const U2AssemblyRead & r);
+    static QString getReadDataAsString(const U2AssemblyRead &r);
 
 public:
-    AssemblyReadsAreaHint(QWidget * p);
+    AssemblyReadsAreaHint(QWidget *p);
     void setData(U2AssemblyRead r, QList<U2AssemblyRead> mates);
 
 protected:
     virtual bool eventFilter(QObject *, QEvent *);
-    virtual void leaveEvent(QEvent * e);
-    virtual void mouseMoveEvent(QMouseEvent * e);
+    virtual void leaveEvent(QEvent *e);
+    virtual void mouseMoveEvent(QMouseEvent *e);
 
-    QLabel * label;
+    QLabel *label;
 
-}; // AssemblyReadsAreaHint
+};    // AssemblyReadsAreaHint
 
-} // U2
+}    // namespace U2
 
-#endif // __U2_ASSEMBLY_READS_AREA_HINT_H__
+#endif    // __U2_ASSEMBLY_READS_AREA_HINT_H__

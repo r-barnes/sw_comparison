@@ -34,12 +34,14 @@ namespace LocalWorkflow {
 class GetFileListPrompter : public PrompterBase<GetFileListPrompter> {
     Q_OBJECT
 public:
-    GetFileListPrompter(Actor *p = NULL) : PrompterBase<GetFileListPrompter>(p) {}
+    GetFileListPrompter(Actor *p = NULL)
+        : PrompterBase<GetFileListPrompter>(p) {
+    }
 
 protected:
     QString composeRichDoc();
 
-}; // GetFileListPrompter
+};    // GetFileListPrompter
 
 class GetFileListWorker : public BaseWorker {
     Q_OBJECT
@@ -47,7 +49,7 @@ public:
     GetFileListWorker(Actor *p);
 
     virtual void init();
-    virtual Task * tick();
+    virtual Task *tick();
     virtual void cleanup();
 
 private:
@@ -56,19 +58,21 @@ private:
 
 private:
     QString getNextUrl();
-}; // GetFileListWorker
+};    // GetFileListWorker
 
 class GetFileListWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
 
-    GetFileListWorkerFactory() : DomainFactory(ACTOR_ID) {}
+    GetFileListWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
     static void init();
     virtual Worker *createWorker(Actor *a);
 
-}; // GetFileListWorkerFactory
+};    // GetFileListWorkerFactory
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _GET_FILE_LIST_WORKER_
+#endif    // _GET_FILE_LIST_WORKER_

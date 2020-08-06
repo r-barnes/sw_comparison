@@ -22,10 +22,10 @@
 #ifndef _U2_GOBJECT_COMBOBOX_CONTROLLER_H_
 #define _U2_GOBJECT_COMBOBOX_CONTROLLER_H_
 
+#include <QComboBox>
+
 #include <U2Core/DocumentModel.h>
 #include <U2Core/GObjectReference.h>
-
-#include <QComboBox>
 
 namespace U2 {
 
@@ -38,50 +38,52 @@ public:
         uof = UOF_LoadedOnly;
     }
 
-    GObjectType             typeFilter;
-    GObjectRelation         relationFilter;
-    bool                    onlyWritable;
-    UnloadedObjectFilter    uof;
+    GObjectType typeFilter;
+    GObjectRelation relationFilter;
+    bool onlyWritable;
+    UnloadedObjectFilter uof;
 };
 
 class U2GUI_EXPORT GObjectComboBoxController : public QObject {
     Q_OBJECT
 public:
-    GObjectComboBoxController(QObject* p, const GObjectComboBoxControllerConstraints& c, QComboBox* combo);
+    GObjectComboBoxController(QObject *p, const GObjectComboBoxControllerConstraints &c, QComboBox *combo);
 
-    bool setSelectedObject(GObject* obj) {return setSelectedObject(GObjectReference(obj));}
-    bool setSelectedObject(const GObjectReference& ref);
+    bool setSelectedObject(GObject *obj) {
+        return setSelectedObject(GObjectReference(obj));
+    }
+    bool setSelectedObject(const GObjectReference &ref);
 
     GObjectReference getSelectedObjectReference() const;
-    GObject* getSelectedObject() const;
+    GObject *getSelectedObject() const;
 
-    void updateConstrains(const GObjectComboBoxControllerConstraints& c);
+    void updateConstrains(const GObjectComboBoxControllerConstraints &c);
 
 signals:
     void si_comboBoxChanged();
 
 private slots:
-    void sl_onDocumentAdded(Document* d);
-    void sl_onDocumentRemoved(Document* d);
-    void sl_onObjectAdded(GObject* o);
-    void sl_onObjectRemoved(GObject* o);
+    void sl_onDocumentAdded(Document *d);
+    void sl_onDocumentRemoved(Document *d);
+    void sl_onObjectAdded(GObject *o);
+    void sl_onObjectRemoved(GObject *o);
     void sl_lockedStateChanged();
 
 private:
     void updateCombo();
     void connectDocument(Document *document);
-    void addObject(GObject*);
-    void removeObject(const GObjectReference& ref);
-    void addDocumentObjects(Document* d);
-    void removeDocumentObjects(Document* d);
-    QString itemText(GObject* o);
+    void addObject(GObject *);
+    void removeObject(const GObjectReference &ref);
+    void addDocumentObjects(Document *d);
+    void removeDocumentObjects(Document *d);
+    QString itemText(GObject *o);
 
     GObjectComboBoxControllerConstraints settings;
-    QComboBox*          combo;
-    QIcon               objectIcon;
-    QIcon               unloadedObjectIcon;
+    QComboBox *combo;
+    QIcon objectIcon;
+    QIcon unloadedObjectIcon;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

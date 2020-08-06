@@ -23,6 +23,7 @@
 #define _U2_BLAST_DB_CMD_SUPPORT_H
 
 #include <U2Core/ExternalToolRegistry.h>
+
 #include "utils/ExternalToolSupportAction.h"
 
 namespace U2 {
@@ -30,7 +31,7 @@ namespace U2 {
 class BlastDbCmdSupport : public ExternalTool {
     Q_OBJECT
 public:
-    BlastDbCmdSupport(const QString& path = "");
+    BlastDbCmdSupport(const QString &path = "");
 
     static const QString ET_BLASTDBCMD;
     static const QString ET_BLASTDBCMD_ID;
@@ -38,5 +39,5 @@ public slots:
     void sl_runWithExtFileSpecify();
 };
 
-}//namespace
-#endif // _U2_BLAST_DB_CMD_SUPPORT_H
+}    // namespace U2
+#endif    // _U2_BLAST_DB_CMD_SUPPORT_H

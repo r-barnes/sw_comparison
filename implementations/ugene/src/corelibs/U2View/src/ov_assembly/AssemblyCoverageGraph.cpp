@@ -20,17 +20,18 @@
  */
 
 #include "AssemblyCoverageGraph.h"
-#include "AssemblyBrowser.h"
+
+#include <QMouseEvent>
+#include <QPainter>
 
 #include <U2Core/U2SafePoints.h>
-#include <QPainter>
-#include <QMouseEvent>
 
+#include "AssemblyBrowser.h"
 
 namespace U2 {
 
-AssemblyCoverageGraph::AssemblyCoverageGraph(AssemblyBrowserUi * ui_) :
-QWidget(ui_), ui(ui_), browser(ui_->getWindow()), model(ui_->getModel()), canceled(false) {
+AssemblyCoverageGraph::AssemblyCoverageGraph(AssemblyBrowserUi *ui_)
+    : QWidget(ui_), ui(ui_), browser(ui_->getWindow()), model(ui_->getModel()), canceled(false) {
     setFixedHeight(FIXED_HEIGHT);
     connectSlots();
     doRedraw();
@@ -44,8 +45,8 @@ void AssemblyCoverageGraph::connectSlots() {
 }
 
 void AssemblyCoverageGraph::drawAll() {
-    if(!model->isEmpty()) {
-        if(cachedView.size() != size()) {
+    if (!model->isEmpty()) {
+        if (cachedView.size() != size()) {
             cachedView = QPixmap(size() * devicePixelRatio());
             cachedView.setDevicePixelRatio(devicePixelRatio());
             redraw = true;
@@ -54,18 +55,18 @@ void AssemblyCoverageGraph::drawAll() {
             cachedView.fill(Qt::transparent);
             QPainter p(&cachedView);
 
-            if(browser->areCellsVisible()) {
+            if (browser->areCellsVisible()) {
                 U2Region visibleRegion = browser->getVisibleBasesRegion();
-                if(!coverageTaskRunner.isIdle() || canceled) {
-                    if(browser->intersectsLocalCoverageCache(visibleRegion)) {
+                if (!coverageTaskRunner.isIdle() || canceled) {
+                    if (browser->intersectsLocalCoverageCache(visibleRegion)) {
                         CoverageInfo ci = browser->extractFromLocalCoverageCache(visibleRegion);
                         drawGraph(p, ci, 128);
                     }
                     QString message = coverageTaskRunner.isIdle() ? tr("Coverage calculation canceled") : tr("Calculating coverage...");
                     p.drawText(rect(), Qt::AlignCenter, message);
-                } else if(lastResult.region == visibleRegion) {
+                } else if (lastResult.region == visibleRegion) {
                     drawGraph(p, lastResult);
-                } else if(browser->isInLocalCoverageCache(visibleRegion)) {
+                } else if (browser->isInLocalCoverageCache(visibleRegion)) {
                     lastResult = browser->extractFromLocalCoverageCache(visibleRegion);
                     drawGraph(p, lastResult);
                 } else {
@@ -78,33 +79,33 @@ void AssemblyCoverageGraph::drawAll() {
     }
 }
 
-void AssemblyCoverageGraph::drawGraph(QPainter & p, const CoverageInfo &ci, int alpha) {
+void AssemblyCoverageGraph::drawGraph(QPainter &p, const CoverageInfo &ci, int alpha) {
     int cellWidth = browser->getCellWidth();
     int visibleBases = browser->basesVisible();
-    const U2AssemblyCoverageStat & coverageInfo = ci.coverageInfo;
+    const U2AssemblyCoverageStat &coverageInfo = ci.coverageInfo;
     qint32 maxCoverage = ci.maxCoverage;
 
-    SAFE_POINT(visibleBases == coverageInfo.size(), "in AssemblyCoverageGraph::drawGraph: incorrect coverageInfo size",)
-    CHECK(maxCoverage > 0,);
+    SAFE_POINT(visibleBases == coverageInfo.size(), "in AssemblyCoverageGraph::drawGraph: incorrect coverageInfo size", )
+    CHECK(maxCoverage > 0, );
 
     //draw coverage for each visible column
-    double readsPerYPixel = double(maxCoverage)/height();
-    for(int ibase = 0; ibase < visibleBases; ++ibase) {
+    double readsPerYPixel = double(maxCoverage) / height();
+    for (int ibase = 0; ibase < visibleBases; ++ibase) {
         int columnPixels = qint64(double(coverageInfo[ibase]) / readsPerYPixel + 0.5);
         double grayCoeffD = double(coverageInfo[ibase]) / maxCoverage;
         QColor color = ui->getCoverageColor(grayCoeffD);
         color.setAlpha(alpha);
-        p.fillRect(ibase*cellWidth, height()-columnPixels, cellWidth, height(), color);
+        p.fillRect(ibase * cellWidth, height() - columnPixels, cellWidth, height(), color);
     }
     redraw = false;
 }
 
-void AssemblyCoverageGraph::paintEvent(QPaintEvent * e) {
+void AssemblyCoverageGraph::paintEvent(QPaintEvent *e) {
     drawAll();
     QWidget::paintEvent(e);
 }
 
-void AssemblyCoverageGraph::mouseMoveEvent(QMouseEvent * e) {
+void AssemblyCoverageGraph::mouseMoveEvent(QMouseEvent *e) {
     emit si_mouseMovedToPos(e->pos());
     QWidget::mouseMoveEvent(e);
 }
@@ -114,13 +115,12 @@ void AssemblyCoverageGraph::doRedraw() {
     update();
 }
 
-void AssemblyCoverageGraph::sl_launchCoverageCalculation()
-{
-    if(browser->areCellsVisible()) {
+void AssemblyCoverageGraph::sl_launchCoverageCalculation() {
+    if (browser->areCellsVisible()) {
         U2Region visibleRegion = browser->getVisibleBasesRegion();
         previousRegion = visibleRegion;
 
-        if(browser->isInLocalCoverageCache(visibleRegion)) {
+        if (browser->isInLocalCoverageCache(visibleRegion)) {
             lastResult = browser->extractFromLocalCoverageCache(visibleRegion);
             coverageTaskRunner.cancel();
         } else {
@@ -137,8 +137,8 @@ void AssemblyCoverageGraph::sl_launchCoverageCalculation()
 }
 
 void AssemblyCoverageGraph::sl_coverageReady() {
-    if(coverageTaskRunner.isIdle()) {
-        if(coverageTaskRunner.isSuccessful()) {
+    if (coverageTaskRunner.isIdle()) {
+        if (coverageTaskRunner.isSuccessful()) {
             browser->setLocalCoverageCache(coverageTaskRunner.getResult());
             lastResult = coverageTaskRunner.getResult();
             canceled = false;
@@ -150,11 +150,11 @@ void AssemblyCoverageGraph::sl_coverageReady() {
 }
 
 void AssemblyCoverageGraph::sl_onOffsetsChanged() {
-    if(browser->areCellsVisible()) {
-        if(previousRegion != browser->getVisibleBasesRegion()) {
+    if (browser->areCellsVisible()) {
+        if (previousRegion != browser->getVisibleBasesRegion()) {
             sl_launchCoverageCalculation();
         }
     }
 }
 
-} //ns
+}    // namespace U2

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "TabixSupportTask.h"
+
 #include <QFile>
 
 #include <U2Core/AppContext.h>
@@ -28,25 +30,23 @@
 #include <U2Core/UserApplicationsSettings.h>
 
 #include "TabixSupport.h"
-#include "TabixSupportTask.h"
 
 namespace U2 {
 
 // TabixSupportTask
-TabixSupportTask::TabixSupportTask(const GUrl& fileUrl, const GUrl& outputUrl)
+TabixSupportTask::TabixSupportTask(const GUrl &fileUrl, const GUrl &outputUrl)
     : ExternalToolSupportTask(tr("Generate index with Tabix task"), TaskFlags_NR_FOSE_COSC),
       fileUrl(fileUrl),
       bgzfUrl(outputUrl),
       bgzipTask(NULL),
       copyTask(NULL),
-      tabixTask(NULL)
-{
+      tabixTask(NULL) {
 }
 
 void TabixSupportTask::prepare() {
     algoLog.details(tr("Tabix indexing started"));
 
-    if ( BgzipTask::checkBgzf( fileUrl )) {
+    if (BgzipTask::checkBgzf(fileUrl)) {
         algoLog.info(tr("Input file '%1' is already bgzipped").arg(fileUrl.getURLString()));
 
         copyTask = new CopyFileTask(fileUrl.getURLString(), bgzfUrl.getURLString());
@@ -64,8 +64,8 @@ void TabixSupportTask::prepare() {
     addSubTask(bgzipTask);
 }
 
-QList<Task*> TabixSupportTask::onSubTaskFinished(Task *subTask) {
-    QList<Task*> res;
+QList<Task *> TabixSupportTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> res;
 
     if (hasError() || isCanceled()) {
         return res;
@@ -83,7 +83,7 @@ QList<Task*> TabixSupportTask::onSubTaskFinished(Task *subTask) {
     return res;
 }
 
-const GUrl& TabixSupportTask::getOutputBgzf() const {
+const GUrl &TabixSupportTask::getOutputBgzf() const {
     return bgzfUrl;
 }
 
@@ -100,4 +100,4 @@ void TabixSupportTask::initTabixTask() {
     setListenerForTask(tabixTask);
 }
 
-}   // namespace U2
+}    // namespace U2

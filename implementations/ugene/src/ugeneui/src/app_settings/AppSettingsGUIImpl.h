@@ -29,30 +29,33 @@ namespace U2 {
 class AppSettingsGUIImpl : public AppSettingsGUI {
     Q_OBJECT
 public:
-    AppSettingsGUIImpl(QObject* p = NULL);
+    AppSettingsGUIImpl(QObject *p = NULL);
 
     ~AppSettingsGUIImpl();
-    
-    virtual bool registerPage(AppSettingsGUIPageController* page, const QString& beforePage = QString());
 
-    virtual bool unregisterPage(AppSettingsGUIPageController* page);
+    virtual bool registerPage(AppSettingsGUIPageController *page, const QString &beforePage = QString());
 
-    virtual void showSettingsDialog(const QString& pageId = QString()) const;
+    virtual bool unregisterPage(AppSettingsGUIPageController *page);
 
-    AppSettingsGUIPageController* findPageById(const QString& pageId) const;
-    
-    virtual QList<AppSettingsGUIPageController*> getRegisteredPages() const  {return pages;}
+    virtual void showSettingsDialog(const QString &pageId = QString()) const;
+
+    AppSettingsGUIPageController *findPageById(const QString &pageId) const;
+
+    virtual QList<AppSettingsGUIPageController *> getRegisteredPages() const {
+        return pages;
+    }
 
 private slots:
-    void sl_showSettingsDialog() {showSettingsDialog();}
+    void sl_showSettingsDialog() {
+        showSettingsDialog();
+    }
 
 private:
     void registerBuiltinPages();
 
-    QList<AppSettingsGUIPageController*>      pages;
-
+    QList<AppSettingsGUIPageController *> pages;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

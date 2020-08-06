@@ -40,34 +40,37 @@ class QueryPalette : public QTreeWidget {
     Q_OBJECT
 public:
     static const QString MIME_TYPE;
-    QueryPalette(QWidget* parent=NULL);
+    QueryPalette(QWidget *parent = NULL);
 
     QVariant saveState() const;
-    void restoreState(const QVariant&);
+    void restoreState(const QVariant &);
     void resetSelection();
 signals:
-    void processSelected(QDActorPrototype*);
+    void processSelected(QDActorPrototype *);
+
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void leaveEvent(QEvent *);
 private slots:
-    void sl_selectProcess(bool checked=false);
+    void sl_selectProcess(bool checked = false);
+
 private:
     void setContent();
-    QAction* createItemAction(QDActorPrototype* item);
-    QAction* createItemAction(const QString& constraintId);
+    QAction *createItemAction(QDActorPrototype *item);
+    QAction *createItemAction(const QString &constraintId);
+
 private:
-    QTreeWidgetItem* overItem;
-    QAction* currentAction;
-    QPoint  dragStartPosition;
+    QTreeWidgetItem *overItem;
+    QAction *currentAction;
+    QPoint dragStartPosition;
     //  < category id, item ids > ids r used as display names
-    QMap< QString, QList<QString> > categoryMap;
-    QMap<QAction*, QTreeWidgetItem*> actionMap;
+    QMap<QString, QList<QString>> categoryMap;
+    QMap<QAction *, QTreeWidgetItem *> actionMap;
     friend class PaletteDelegate;
 };
 
-}//namespace
+}    // namespace U2
 
 Q_DECLARE_METATYPE(QAction *)
 

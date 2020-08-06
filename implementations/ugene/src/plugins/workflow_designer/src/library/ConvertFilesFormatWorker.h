@@ -22,9 +22,10 @@
 #ifndef _U2_CONVERT_FILES_FORMAT_WORKER_H_
 #define _U2_CONVERT_FILES_FORMAT_WORKER_H_
 
+#include <U2Core/GUrl.h>
+
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
-#include <U2Core/GUrl.h>
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -35,17 +36,20 @@ typedef PrompterBase<ConvertFilesFormatPrompter> ConvertFilesFormatBase;
 class ConvertFilesFormatPrompter : public ConvertFilesFormatBase {
     Q_OBJECT
 public:
-    ConvertFilesFormatPrompter(Actor* p = 0) : ConvertFilesFormatBase(p) {}
+    ConvertFilesFormatPrompter(Actor *p = 0)
+        : ConvertFilesFormatBase(p) {
+    }
+
 protected:
     QString composeRichDoc();
-}; //ConvertFilesFormatPrompter
+};    //ConvertFilesFormatPrompter
 
-class ConvertFilesFormatWorker: public BaseWorker {
+class ConvertFilesFormatWorker : public BaseWorker {
     Q_OBJECT
 public:
     ConvertFilesFormatWorker(Actor *a);
     void init();
-    Task * tick();
+    Task *tick();
     void cleanup();
 
 private:
@@ -56,27 +60,31 @@ private:
     QStringList excludedFormats;
 
 public slots:
-    void sl_taskFinished( Task *task );
+    void sl_taskFinished(Task *task);
 
 private:
     bool ensureFileExists(const QString &url);
     QString takeUrl();
     QString detectFormat(const QString &url);
-    QString createWorkingDir(const QString& fileUrl);
+    QString createWorkingDir(const QString &fileUrl);
     void sendResult(const QString &url);
-    Task * getConvertTask(const QString &detectedFormat, const QString &url);
-}; //ConvertFilesFormatWorker
+    Task *getConvertTask(const QString &detectedFormat, const QString &url);
+};    //ConvertFilesFormatWorker
 
 class ConvertFilesFormatWorkerFactory : public DomainFactory {
     static const QString ACTOR_ID;
+
 public:
     static void init();
-    ConvertFilesFormatWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    Worker* createWorker(Actor* a) { return new ConvertFilesFormatWorker(a); }
-}; //ConvertFilesFormatWorkerFactory
+    ConvertFilesFormatWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    Worker *createWorker(Actor *a) {
+        return new ConvertFilesFormatWorker(a);
+    }
+};    //ConvertFilesFormatWorkerFactory
 
-
-} //LocalWorkflow
-} //U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

@@ -19,14 +19,14 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-#include <QDir>
-
-#include <primitives/GTComboBox.h>
 #include <base_dialogs/GTFileDialog.h>
+#include <primitives/GTComboBox.h>
 #include <primitives/GTLineEdit.h>
 #include <primitives/GTSpinBox.h>
 #include <primitives/GTWidget.h>
+
+#include <QApplication>
+#include <QDir>
 
 #include "SpadesGenomeAssemblyDialogFiller.h"
 
@@ -34,14 +34,14 @@ namespace U2 {
 
 #define GT_CLASS_NAME "SpadesGenomeAssemblyDialogFiller"
 #define GT_METHOD_NAME "commonScenario"
-void SpadesGenomeAssemblyDialogFiller::commonScenario(){
-    QWidget* dialog = QApplication::activeModalWidget();
+void SpadesGenomeAssemblyDialogFiller::commonScenario() {
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
     GTUtilsDialog::waitForDialog(os, new GTFileDialogUtils(os, output, GTGlobals::UseMouse, GTFileDialogUtils::Choose));
     GTWidget::click(os, GTWidget::findWidget(os, "setResultDirNameButton", dialog));
 
-    QComboBox* libraryComboBox = GTWidget::findExactWidget<QComboBox*>(os, "libraryComboBox", dialog);
+    QComboBox *libraryComboBox = GTWidget::findExactWidget<QComboBox *>(os, "libraryComboBox", dialog);
     GTComboBox::setIndexWithText(os, libraryComboBox, library);
 
     foreach (QString s, leftReads) {
@@ -56,16 +56,16 @@ void SpadesGenomeAssemblyDialogFiller::commonScenario(){
 
     QComboBox *combo;
     if (!datasetType.isEmpty()) {
-        combo = GTWidget::findExactWidget<QComboBox*>(os, "typeCombo", dialog);
+        combo = GTWidget::findExactWidget<QComboBox *>(os, "typeCombo", dialog);
         GTComboBox::setIndexWithText(os, combo, datasetType);
     }
 
     if (!runningMode.isEmpty()) {
-        combo = GTWidget::findExactWidget<QComboBox*>(os, "modeCombo", dialog);
+        combo = GTWidget::findExactWidget<QComboBox *>(os, "modeCombo", dialog);
         GTComboBox::setIndexWithText(os, combo, runningMode);
     }
 
-    QLineEdit* lineEdit = GTWidget::findExactWidget<QLineEdit*>(os, "kmerEdit", dialog);
+    QLineEdit *lineEdit = GTWidget::findExactWidget<QLineEdit *>(os, "kmerEdit", dialog);
     if (!kmerSizes.isEmpty()) {
         GTLineEdit::setText(os, lineEdit, kmerSizes);
     }
@@ -83,4 +83,4 @@ void SpadesGenomeAssemblyDialogFiller::commonScenario(){
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

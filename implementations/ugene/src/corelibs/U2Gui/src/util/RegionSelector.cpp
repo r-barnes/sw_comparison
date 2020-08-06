@@ -37,10 +37,10 @@
 #include <QVBoxLayout>
 
 #include <U2Core/L10n.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/GUIUtils.h>
-#include <U2Core/QObjectScopedPointer.h>
 
 #include "RegionSelector.h"
 
@@ -51,16 +51,12 @@ const QString RegionSelector::WHOLE_SEQUENCE = QApplication::translate("RegionSe
 const QString RegionSelector::SELECTED_REGION = QApplication::translate("RegionSelector", "Selected region");
 const QString RegionSelector::CUSTOM_REGION = QApplication::translate("RegionSelector", "Custom region");
 
-RegionSelector::RegionSelector(QWidget* p, qint64 len, bool isVertical,
-                               DNASequenceSelection* selection,
-                               bool isCircularSelectionAvailable,
-                               QList<RegionPreset> presetRegions) :
-    QWidget(p),
-    maxLen(len),
-    startEdit(NULL),
-    endEdit(NULL),
-    isVertical(isVertical)
-{
+RegionSelector::RegionSelector(QWidget *p, qint64 len, bool isVertical, DNASequenceSelection *selection, bool isCircularSelectionAvailable, QList<RegionPreset> presetRegions)
+    : QWidget(p),
+      maxLen(len),
+      startEdit(NULL),
+      endEdit(NULL),
+      isVertical(isVertical) {
     initLayout();
 
     RegionSelectorGui gui(startEdit, endEdit, comboBox);
@@ -77,7 +73,7 @@ bool RegionSelector::isWholeSequenceSelected() const {
     return controller->getPresetName() == RegionSelectorSettings::WHOLE_SEQUENCE;
 }
 
-void RegionSelector::setCustomRegion(const U2Region& value) {
+void RegionSelector::setCustomRegion(const U2Region &value) {
     controller->setRegion(value);
 }
 
@@ -107,7 +103,7 @@ void RegionSelector::showErrorMessage() {
 }
 
 void RegionSelector::initLayout() {
-    int w = qMax(((int)log10((double)maxLen))*10, 50);
+    int w = qMax(((int)log10((double)maxLen)) * 10, 50);
 
     comboBox = new QComboBox(this);
 
@@ -122,10 +118,10 @@ void RegionSelector::initLayout() {
     endEdit->setAlignment(Qt::AlignRight);
 
     if (isVertical) {
-        QGroupBox* gb = new QGroupBox(this);
+        QGroupBox *gb = new QGroupBox(this);
         gb->setTitle(tr("Region"));
 
-        QGridLayout* l = new QGridLayout(gb);
+        QGridLayout *l = new QGridLayout(gb);
         l->setSizeConstraint(QLayout::SetMinAndMaxSize);
         gb->setLayout(l);
 
@@ -135,17 +131,17 @@ void RegionSelector::initLayout() {
         l->addWidget(endEdit, 1, 2);
         l->addWidget(new QLabel(" ", gb), 2, 0);
 
-        QVBoxLayout* rootLayout = new QVBoxLayout(this);
+        QVBoxLayout *rootLayout = new QVBoxLayout(this);
         rootLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
         rootLayout->setMargin(0);
         setLayout(rootLayout);
         rootLayout->addWidget(gb);
     } else {
-        QHBoxLayout* l = new QHBoxLayout(this);
+        QHBoxLayout *l = new QHBoxLayout(this);
         l->setMargin(0);
         setLayout(l);
 
-        QLabel* rangeLabel = new QLabel(tr("Region"), this);
+        QLabel *rangeLabel = new QLabel(tr("Region"), this);
         rangeLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
         l->addWidget(rangeLabel);
@@ -164,28 +160,28 @@ void RegionSelector::initLayout() {
 ///////////////////////////////////////
 //! RegionLineEdit
 //! only for empty field highlight
-void RegionLineEdit::focusOutEvent ( QFocusEvent * event) {
+void RegionLineEdit::focusOutEvent(QFocusEvent *event) {
     bool ok = false;
     text().toInt(&ok);
     if (!ok) {
         QPalette p = palette();
-        p.setColor(QPalette::Base, QColor(255,200,200));//pink color
+        p.setColor(QPalette::Base, QColor(255, 200, 200));    //pink color
         setPalette(p);
     }
     QLineEdit::focusOutEvent(event);
 }
-void RegionLineEdit::contextMenuEvent(QContextMenuEvent *event){
-        QMenu *menu = createStandardContextMenu();
-        QAction* setDefaultValue=new QAction(actionName,this);
-        connect(setDefaultValue,SIGNAL(triggered()),this,SLOT(sl_onSetMinMaxValue()));
-        menu->insertSeparator(menu->actions().first());
-        menu->insertAction(menu->actions().first(),setDefaultValue);
-        menu->exec(event->globalPos());
-        delete menu;
+void RegionLineEdit::contextMenuEvent(QContextMenuEvent *event) {
+    QMenu *menu = createStandardContextMenu();
+    QAction *setDefaultValue = new QAction(actionName, this);
+    connect(setDefaultValue, SIGNAL(triggered()), this, SLOT(sl_onSetMinMaxValue()));
+    menu->insertSeparator(menu->actions().first());
+    menu->insertAction(menu->actions().first(), setDefaultValue);
+    menu->exec(event->globalPos());
+    delete menu;
 }
-void RegionLineEdit::sl_onSetMinMaxValue(){
+void RegionLineEdit::sl_onSetMinMaxValue() {
     setText(QString::number(defaultValue));
     emit textEdited(QString::number(defaultValue));
 }
 
-} //namespace
+}    // namespace U2

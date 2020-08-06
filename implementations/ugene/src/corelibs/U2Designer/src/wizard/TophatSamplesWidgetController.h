@@ -39,7 +39,7 @@ class TophatSamplesWidgetController : public WidgetController {
 public:
     TophatSamplesWidgetController(WizardController *wc, TophatSamplesWidget *tsw);
 
-    virtual QWidget * createGUI(U2OpStatus &os);
+    virtual QWidget *createGUI(U2OpStatus &os);
 
     void renameSample(int pos, const QString &newName, U2OpStatus &os);
     bool removeSample(int pos, QStringList &insertToFirst, QList<TophatSample> &append);
@@ -49,7 +49,8 @@ public:
     bool canShowWarning() const;
 
 private:
-    enum RangeType {INCLUSIVE, EXCLUSIVE};
+    enum RangeType { INCLUSIVE,
+                     EXCLUSIVE };
     void checkRange(int pos, RangeType rangeType, U2OpStatus &os) const;
     void checkDatasetRange(int samplePos, int datasetPos, RangeType rangeType, U2OpStatus &os) const;
     void initSamplesMap();
@@ -74,16 +75,17 @@ public:
 private:
     void init(const QList<TophatSample> &samples);
     void appendSample(const TophatSample &sample);
-    QWidget * initSample(const QString &sampleName, const QStringList &datasets);
-    QListWidget * getListWidget(int pos) const;
-    QScrollArea * createScrollArea();
-    QToolButton * createButton(QWidget *parent, const QString &icon) const;
-    QVBoxLayout * createControlButtonsLayout();
-    QVBoxLayout * createControlButtons();
-    enum Direction {UP, DOWN};
+    QWidget *initSample(const QString &sampleName, const QStringList &datasets);
+    QListWidget *getListWidget(int pos) const;
+    QScrollArea *createScrollArea();
+    QToolButton *createButton(QWidget *parent, const QString &icon) const;
+    QVBoxLayout *createControlButtonsLayout();
+    QVBoxLayout *createControlButtons();
+    enum Direction { UP,
+                     DOWN };
     void findSelectedDataset(int &samplePos, int &datasetPos) const;
     bool isBorderCase(QListWidget *list, int datasetPos, Direction direction) const;
-    void getNewPositions(QListWidget *oldList, int oldSamplePos, int oldDatasetPos, Direction direction, int &newSamplePos, int &newDatasetPos, QListWidget * &newList) const;
+    void getNewPositions(QListWidget *oldList, int oldSamplePos, int oldDatasetPos, Direction direction, int &newSamplePos, int &newDatasetPos, QListWidget *&newList) const;
     void selectSample(int pos);
     void move(Direction direction);
     void updateArrows();
@@ -97,13 +99,13 @@ private slots:
 
 private:
     TophatSamplesWidgetController *ctrl;
-    QList<QWidget*> order;
+    QList<QWidget *> order;
     QScrollArea *scrollArea;
     QVBoxLayout *listLayout;
     QToolButton *upButton;
     QToolButton *downButton;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_TOPHATSAMPLESWIDGETCONTROLLER_H_
+#endif    // _U2_TOPHATSAMPLESWIDGETCONTROLLER_H_

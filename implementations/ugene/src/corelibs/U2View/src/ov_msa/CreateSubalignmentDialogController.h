@@ -22,20 +22,20 @@
 #ifndef _U2_CREATE_SUBALIGNIMENT_DIALOG_CONTROLLER_H_
 #define _U2_CREATE_SUBALIGNIMENT_DIALOG_CONTROLLER_H_
 
-#include "ui_CreateSubalignmentDialog.h"
-
 #include <U2Core/MultipleSequenceAlignmentObject.h>
 #include <U2Core/Task.h>
 #include <U2Core/U2Region.h>
 
-namespace U2{
+#include "ui_CreateSubalignmentDialog.h"
+
+namespace U2 {
 
 class SaveDocumentController;
 
 class U2VIEW_EXPORT CreateSubalignmentDialogController : public QDialog, private Ui_CreateSubalignmentDialog {
     Q_OBJECT
 public:
-    CreateSubalignmentDialogController( MultipleSequenceAlignmentObject *_mobj, const QRect& selection, QWidget *p = NULL);
+    CreateSubalignmentDialogController(MultipleSequenceAlignmentObject *_mobj, const QRect &selection, QWidget *p = NULL);
 
     void accept();
 
@@ -43,8 +43,9 @@ public:
     QString getSavePath();
     DocumentFormatId getFormatId();
     U2Region getRegion();
-    const QList<qint64>& getSelectedRowIds() const { return selectedRowIds;}
-
+    const QList<qint64> &getSelectedRowIds() const {
+        return selectedRowIds;
+    }
 
 private slots:
     void sl_allButtonClicked();
@@ -59,9 +60,8 @@ private:
     MultipleSequenceAlignmentObject *mobj;
     U2Region window;
     QList<qint64> selectedRowIds;
-    SaveDocumentController* saveController;
+    SaveDocumentController *saveController;
 };
-
 
 class CreateSubalignmentTask;
 class CreateSubalignmentSettings;
@@ -69,16 +69,13 @@ class CreateSubalignmentSettings;
 class U2VIEW_EXPORT CreateSubalignmentAndOpenViewTask : public Task {
     Q_OBJECT
 public:
-    CreateSubalignmentAndOpenViewTask(MultipleSequenceAlignmentObject* mobj, const CreateSubalignmentSettings& settings);
-    QList<Task*> onSubTaskFinished(Task* subTask);
-private:
-    CreateSubalignmentTask* csTask;
+    CreateSubalignmentAndOpenViewTask(MultipleSequenceAlignmentObject *mobj, const CreateSubalignmentSettings &settings);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
+private:
+    CreateSubalignmentTask *csTask;
 };
 
-
-
-
-}
+}    // namespace U2
 
 #endif

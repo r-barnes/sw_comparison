@@ -20,18 +20,17 @@
  */
 
 #include "MaEditorOverviewArea.h"
-#include "MaGraphOverview.h"
-
-#include "ov_msa/view_rendering/MaEditorWgt.h"
 
 #include <QVBoxLayout>
 
+#include "MaGraphOverview.h"
+#include "ov_msa/view_rendering/MaEditorWgt.h"
+
 namespace U2 {
 
-MaEditorOverviewArea::MaEditorOverviewArea(MaEditorWgt *ui, const QString& objectName)
+MaEditorOverviewArea::MaEditorOverviewArea(MaEditorWgt *ui, const QString &objectName)
     : QWidget(ui),
-      isWidgetResizable(false)
-{
+      isWidgetResizable(false) {
     setObjectName(objectName);
 
     layout = new QVBoxLayout();
@@ -44,7 +43,6 @@ MaEditorOverviewArea::MaEditorOverviewArea(MaEditorWgt *ui, const QString& objec
 }
 
 void MaEditorOverviewArea::cancelRendering() {
-
 }
 
 bool MaEditorOverviewArea::isResizable() const {
@@ -59,4 +57,4 @@ void MaEditorOverviewArea::addOverview(QWidget *overviewWgt) {
     layout->addWidget(overviewWgt);
 }
 
-}   // namespace U2
+}    // namespace U2

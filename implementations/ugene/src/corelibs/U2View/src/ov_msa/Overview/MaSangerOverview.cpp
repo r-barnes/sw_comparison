@@ -19,19 +19,20 @@
  * MA 02110-1301, USA.
  */
 
+#include "MaSangerOverview.h"
+
 #include <QHBoxLayout>
-#include <QPainter>
 #include <QPaintEvent>
+#include <QPainter>
 
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/GraphUtils.h>
 
-#include "MaSangerOverview.h"
+#include "ov_msa/MaCollapseModel.h"
 #include "ov_msa/McaEditor.h"
 #include "ov_msa/McaReferenceCharController.h"
-#include "ov_msa/MaCollapseModel.h"
 #include "ov_msa/helpers/BaseWidthController.h"
 #include "ov_msa/helpers/RowHeightController.h"
 #include "ov_msa/helpers/ScrollController.h"
@@ -51,8 +52,7 @@ MaSangerOverview::MaSangerOverview(MaEditorWgt *ui)
     : MaOverview(ui),
       vScrollBar(new QScrollBar(Qt::Vertical, this)),
       renderArea(new QWidget(this)),
-      completeRedraw(true)
-{
+      completeRedraw(true) {
     QHBoxLayout *mainLayout = new QHBoxLayout();
     mainLayout->setSpacing(0);
     mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -255,7 +255,7 @@ void MaSangerOverview::drawReads() {
     QPainter painter(&cachedReadsView);
     painter.fillRect(cachedReadsView.rect(), Qt::white);
 
-    MultipleChromatogramAlignmentObject const * const mcaObject = getEditor()->getMaObject();
+    MultipleChromatogramAlignmentObject const *const mcaObject = getEditor()->getMaObject();
     SAFE_POINT(NULL != mcaObject, tr("Incorrect multiple chromatogram alignment object"), );
     const MultipleChromatogramAlignment mca = mcaObject->getMultipleAlignment();
     const int rowsCount = editor->getUI()->getCollapseModel()->getViewRowCount();
@@ -266,7 +266,7 @@ void MaSangerOverview::drawReads() {
 
     for (int rowNumber = 0; rowNumber < rowsCount; rowNumber++) {
         const MultipleChromatogramAlignmentRow row = mca->getMcaRow(
-                ui->getCollapseModel()->getMaRowIndexByViewRowIndex(rowNumber));
+            ui->getCollapseModel()->getMaRowIndexByViewRowIndex(rowNumber));
         const U2Region coreRegion = row->getCoreRegion();
         const U2Region positionRegion = editor->getUI()->getBaseWidthController()->getBasesGlobalRange(coreRegion);
 
@@ -291,8 +291,8 @@ void MaSangerOverview::drawReads() {
 
 void MaSangerOverview::moveVisibleRange(QPoint pos) {
     QRect newVisibleRange(cachedVisibleRange);
-    const int newPosX = qBound((cachedVisibleRange.width() - 1) / 2, pos.x(), width() - (cachedVisibleRange.width() - 1 ) / 2);
-    const int newPosY = qBound(getReferenceHeight() + (cachedVisibleRange.height() - 1) / 2, pos.y(), height() - (cachedVisibleRange.height() - 1 ) / 2);
+    const int newPosX = qBound((cachedVisibleRange.width() - 1) / 2, pos.x(), width() - (cachedVisibleRange.width() - 1) / 2);
+    const int newPosY = qBound(getReferenceHeight() + (cachedVisibleRange.height() - 1) / 2, pos.y(), height() - (cachedVisibleRange.height() - 1) / 2);
     const QPoint newPos(newPosX, newPosY);
     newVisibleRange.moveCenter(newPos);
 
@@ -309,4 +309,4 @@ void MaSangerOverview::moveVisibleRange(QPoint pos) {
     ui->getScrollController()->setVScrollbarValue(newVScrollBarValue);
 }
 
-}   // namespace U2
+}    // namespace U2

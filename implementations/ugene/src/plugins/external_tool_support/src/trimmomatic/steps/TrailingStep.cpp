@@ -19,9 +19,10 @@
  * MA 02110-1301, USA.
  */
 
+#include "TrailingStep.h"
+
 #include <U2Core/U2SafePoints.h>
 
-#include "TrailingStep.h"
 #include "trimmomatic/util/QualitySettingsWidget.h"
 
 namespace U2 {
@@ -30,8 +31,7 @@ namespace LocalWorkflow {
 const QString TrailingStepFactory::ID = "TRAILING";
 
 TrailingStep::TrailingStep()
-    : TrimmomaticStep(TrailingStepFactory::ID)
-{
+    : TrimmomaticStep(TrailingStepFactory::ID) {
     name = "TRAILING";
     description = tr("<html><head></head><body>"
                      "<h4>TRAILING</h4>"
@@ -61,14 +61,12 @@ QVariantMap TrailingStep::parseState(const QString &command) const {
 }
 
 TrailingStepFactory::TrailingStepFactory()
-    : TrimmomaticStepFactory(ID)
-{
-
+    : TrimmomaticStepFactory(ID) {
 }
 
 TrailingStep *TrailingStepFactory::createStep() const {
     return new TrailingStep();
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

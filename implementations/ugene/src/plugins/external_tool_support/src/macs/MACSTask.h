@@ -47,7 +47,7 @@ public:
     virtual void run();
     virtual void cleanup();
 
-    const MACSSettings & getSettings();
+    const MACSSettings &getSettings();
 
     // Memory should be released by caller
     QList<AnnotationTableObject *> getPeaks() const;
@@ -79,14 +79,14 @@ public:
     MACSLogParser();
 
     int getProgress();
-    void parseOutput(const QString& partOfLog);
-    void parseErrOutput(const QString& partOfLog);
+    void parseOutput(const QString &partOfLog);
+    void parseErrOutput(const QString &partOfLog);
 
 private:
     QString lastErrLine;
-    int     progress;
+    int progress;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_MACS_SUPPORT_TASK_
+#endif    // _U2_MACS_SUPPORT_TASK_

@@ -65,8 +65,8 @@ GUI_TEST_CLASS_DECLARATION(test_0036)
 GUI_TEST_CLASS_DECLARATION(test_0037)
 
 #undef GUI_TEST_SUITE
-} // namespace U2
+}    // namespace GUITest_Assembly_browser
 
-} //namespace
+}    // namespace U2
 
-#endif // GTTESTSMSAEDITOR_H
+#endif    // GTTESTSMSAEDITOR_H

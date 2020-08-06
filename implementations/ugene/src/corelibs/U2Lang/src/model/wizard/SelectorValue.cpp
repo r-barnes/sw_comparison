@@ -19,19 +19,17 @@
  * MA 02110-1301, USA.
  */
 
+#include "SelectorValue.h"
+
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Lang/ActorPrototypeRegistry.h>
 #include <U2Lang/WorkflowEnv.h>
 
-#include "SelectorValue.h"
-
 namespace U2 {
 
 SelectorValue::SelectorValue(const QString &_value, const QString &_replaceProtoId)
-: value(_value), replaceProtoId(_replaceProtoId)
-{
-
+    : value(_value), replaceProtoId(_replaceProtoId) {
 }
 
 void SelectorValue::addPortMapping(const PortMapping &value) {
@@ -42,19 +40,19 @@ void SelectorValue::setName(const QString &value) {
     name = value;
 }
 
-const QString & SelectorValue::getValue() const {
+const QString &SelectorValue::getValue() const {
     return value;
 }
 
-const QString & SelectorValue::getProtoId() const {
+const QString &SelectorValue::getProtoId() const {
     return replaceProtoId;
 }
 
-const QString & SelectorValue::getName() const {
+const QString &SelectorValue::getName() const {
     return name;
 }
 
-const QList<PortMapping> & SelectorValue::getMappings() const {
+const QList<PortMapping> &SelectorValue::getMappings() const {
     return portList;
 }
 
@@ -65,7 +63,7 @@ void SelectorValue::validate(Actor *actor, U2OpStatus &os) const {
         return;
     }
 
-    if (proto->getId() == actor->getProto()->getId()) { // no mapping
+    if (proto->getId() == actor->getProto()->getId()) {    // no mapping
         return;
     }
 
@@ -89,7 +87,7 @@ void SelectorValue::validate(Actor *actor, U2OpStatus &os) const {
     CHECK_OP(os, );
 }
 
-Port * SelectorValue::validateSrcPort(const PortMapping &mapping, Actor *actor, U2OpStatus &os) const {
+Port *SelectorValue::validateSrcPort(const PortMapping &mapping, Actor *actor, U2OpStatus &os) const {
     Port *result = actor->getPort(mapping.getSrcId());
     if (NULL == result) {
         os.setError(QObject::tr("The actor does not contain a port with this id: %1").arg(mapping.getSrcId()));
@@ -97,8 +95,9 @@ Port * SelectorValue::validateSrcPort(const PortMapping &mapping, Actor *actor, 
     return result;
 }
 
-PortDescriptor * SelectorValue::validateDstPort(const PortMapping &mapping,
-    const QList<PortDescriptor*> &descs, U2OpStatus &os) const {
+PortDescriptor *SelectorValue::validateDstPort(const PortMapping &mapping,
+                                               const QList<PortDescriptor *> &descs,
+                                               U2OpStatus &os) const {
     PortDescriptor *result = NULL;
     foreach (PortDescriptor *desc, descs) {
         if (desc->getId() == mapping.getDstId()) {
@@ -112,23 +111,25 @@ PortDescriptor * SelectorValue::validateDstPort(const PortMapping &mapping,
 }
 
 void SelectorValue::validateDuplicates(const PortMapping &mapping,
-    const QSet<QString> &srcIdSet, U2OpStatus &os) const {
+                                       const QSet<QString> &srcIdSet,
+                                       U2OpStatus &os) const {
     if (srcIdSet.contains(mapping.getSrcId())) {
         os.setError(QObject::tr("Duplicated mapping of a port: %1").arg(mapping.getSrcId()));
     }
 }
 
-void SelectorValue::validateMappingsCount(const QList<Port*> &srcPorts, U2OpStatus &os) const {
+void SelectorValue::validateMappingsCount(const QList<Port *> &srcPorts, U2OpStatus &os) const {
     if (portList.count() < srcPorts.count()) {
         os.setError(QObject::tr("Not all ports are mapped"));
     }
 }
 
-void SelectorValue::validatePortsCount(const QList<Port*> &src,
-    const QList<PortDescriptor*> &dst, U2OpStatus &os) const {
+void SelectorValue::validatePortsCount(const QList<Port *> &src,
+                                       const QList<PortDescriptor *> &dst,
+                                       U2OpStatus &os) const {
     if (src.count() != dst.count()) {
         os.setError(QObject::tr("The actor can not be mapped with a proto: %1. Ports count is different").arg(replaceProtoId));
     }
 }
 
-} // U2
+}    // namespace U2

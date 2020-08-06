@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ImportPrimersFromFileTask.h"
+
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/DocumentModel.h>
@@ -27,17 +29,15 @@
 #include <U2Core/U2SafePoints.h>
 
 #include "ImportPrimerFromObjectTask.h"
-#include "ImportPrimersFromFileTask.h"
 #include "PrimerStatistics.h"
 
 namespace U2 {
 
-ImportPrimersFromFileTask::ImportPrimersFromFileTask(const QString &filePath) :
-    Task(tr("Import primers from local file: %1").arg(filePath),
-         TaskFlags(TaskFlag_NoRun | TaskFlag_CancelOnSubtaskCancel | TaskFlag_ReportingIsEnabled | TaskFlag_ReportingIsSupported)),
-    filePath(filePath),
-    loadTask(NULL)
-{
+ImportPrimersFromFileTask::ImportPrimersFromFileTask(const QString &filePath)
+    : Task(tr("Import primers from local file: %1").arg(filePath),
+           TaskFlags(TaskFlag_NoRun | TaskFlag_CancelOnSubtaskCancel | TaskFlag_ReportingIsEnabled | TaskFlag_ReportingIsSupported)),
+      filePath(filePath),
+      loadTask(NULL) {
     SAFE_POINT_EXT(!filePath.isEmpty(), setError("File path is empty"), );
 }
 
@@ -91,10 +91,9 @@ QString ImportPrimersFromFileTask::generateReport() const {
     }
 
     return report.arg(Theme::successColorLabelHtmlStr())
-                 .arg(tr("success")) +
-                     " (" + "primers imported: " + QString::number(primersImported) +
-                     (tasksWithError > 0 ? "; sequences were not converted: " + QString::number(tasksWithError) : "")
-                     + ")";
+               .arg(tr("success")) +
+           " (" + "primers imported: " + QString::number(primersImported) +
+           (tasksWithError > 0 ? "; sequences were not converted: " + QString::number(tasksWithError) : "") + ")";
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -319,8 +319,8 @@ void ADVClipboard::updateActions() {
     }
 
     auto setActionsEnabled =
-        [](QList<QAction*> copyActions, const bool setEnabled) {
-        foreach(QAction * action, copyActions) {
+        [](QList<QAction *> copyActions, const bool setEnabled) {
+            foreach (QAction *action, copyActions) {
                 action->setEnabled(setEnabled);
             }
         };
@@ -329,30 +329,29 @@ void ADVClipboard::updateActions() {
            QAction *copyComplement,
            QAction *copyTranslation,
            QAction *copyComplementTranslation,
-           const bool setShortcuted)
-    {
-        copy->setShortcut(setShortcuted ? QKeySequence(Qt::CTRL | Qt::Key_C) : QKeySequence());
-        copyComplement->setShortcut(setShortcuted ? QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_C) : QKeySequence());
-        copyTranslation->setShortcut(setShortcuted ? QKeySequence(Qt::CTRL | Qt::Key_T) : QKeySequence());
-        copyComplementTranslation->setShortcut(setShortcuted ? QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_T) : QKeySequence());
-    };
+           const bool setShortcuted) {
+            copy->setShortcut(setShortcuted ? QKeySequence(Qt::CTRL | Qt::Key_C) : QKeySequence());
+            copyComplement->setShortcut(setShortcuted ? QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_C) : QKeySequence());
+            copyTranslation->setShortcut(setShortcuted ? QKeySequence(Qt::CTRL | Qt::Key_T) : QKeySequence());
+            copyComplementTranslation->setShortcut(setShortcuted ? QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_T) : QKeySequence());
+        };
     auto setActionsEnabledAndShortcuted =
         [&setActionsEnabled, &setActionsShortcuted](QAction *copy,
                                                     QAction *copyComplement,
                                                     QAction *copyTranslation,
                                                     QAction *copyComplementTranslation,
                                                     const bool setEnabledAndShortcuted) {
-        setActionsEnabled(QList<QAction *>() = {copy, copyComplement, copyTranslation, copyComplementTranslation}, setEnabledAndShortcuted);
-        setActionsShortcuted(copy, copyComplement, copyTranslation, copyComplementTranslation, setEnabledAndShortcuted);
-    };
+            setActionsEnabled(QList<QAction *>() = {copy, copyComplement, copyTranslation, copyComplementTranslation}, setEnabledAndShortcuted);
+            setActionsShortcuted(copy, copyComplement, copyTranslation, copyComplementTranslation, setEnabledAndShortcuted);
+        };
 
     const bool selectionIsNotEmpty = !sel->getSelectedRegions().isEmpty();
     const bool hasAnnotationSelection = !ctx->getAnnotationsSelection()->isEmpty();
     if (!selectionIsNotEmpty && !hasAnnotationSelection) {
-        setActionsEnabled(QList<QAction *>() = { copySequenceAction,
+        setActionsEnabled(QList<QAction *>() = {copySequenceAction,
                                                 copyComplementSequenceAction,
-                                                 copyTranslationAction,
-                                                 copyComplementTranslationAction },
+                                                copyTranslationAction,
+                                                copyComplementTranslationAction},
                           false);
         setActionsShortcuted(copySequenceAction,
                              copyComplementSequenceAction,
@@ -392,10 +391,10 @@ void ADVClipboard::updateActions() {
                                        copyTranslationAction,
                                        copyComplementTranslationAction,
                                        true);
-        setActionsEnabled(QList<QAction *>() = { copyAnnotationSequenceAction,
-                                                 copyComplementAnnotationSequenceAction,
-                                                 copyAnnotationSequenceTranslationAction,
-                                                 copyComplementAnnotationSequenceTranslationAction },
+        setActionsEnabled(QList<QAction *>() = {copyAnnotationSequenceAction,
+                                                copyComplementAnnotationSequenceAction,
+                                                copyAnnotationSequenceTranslationAction,
+                                                copyComplementAnnotationSequenceTranslationAction},
                           true);
         setActionsShortcuted(copyAnnotationSequenceAction,
                              copyComplementAnnotationSequenceAction,

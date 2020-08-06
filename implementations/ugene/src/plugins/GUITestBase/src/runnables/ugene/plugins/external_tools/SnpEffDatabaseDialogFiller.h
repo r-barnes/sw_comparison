@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-
 #ifndef _U2_SNPEFF_DATABASE_DIALOG_FILLER_H_
 #define _U2_SNPEFF_DATABASE_DIALOG_FILLER_H_
 
@@ -30,7 +29,7 @@ using namespace HI;
 
 class SnpEffDatabaseDialogFiller : public Filler {
 public:
-    SnpEffDatabaseDialogFiller(HI::GUITestOpStatus &os, const QString& dbName, bool dbShouldBeFound = true);
+    SnpEffDatabaseDialogFiller(HI::GUITestOpStatus &os, const QString &dbName, bool dbShouldBeFound = true);
     void commonScenario();
 
 private:
@@ -38,5 +37,5 @@ private:
     bool dbShouldBeFound;
 };
 
-} // namespace U2
-#endif // _U2_SNPEFF_DATABASE_DIALOG_FILLER_H_
+}    // namespace U2
+#endif    // _U2_SNPEFF_DATABASE_DIALOG_FILLER_H_

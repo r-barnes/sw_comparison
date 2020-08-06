@@ -25,9 +25,8 @@
 #include <U2Core/AnnotationData.h>
 #include <U2Core/U2Region.h>
 
-#include "FindPatternWidgetSavableTab.h"
-
 #include "FindPatternTask.h"
+#include "FindPatternWidgetSavableTab.h"
 #include "ui_FindPatternForm.h"
 
 namespace U2 {
@@ -56,7 +55,7 @@ enum MessageFlag {
     PatternAlphabetDoNotMatch,
     PatternsWithBadAlphabetInFile,
     PatternsWithBadRegionInFile,
-    UseMultiplePatternsTip,
+    PleaseInputAtLeastOneSearchPatternTip,
     AnnotationNotValidName,
     AnnotationNotValidFastaParsedName,
     NoPatternToSearch,
@@ -65,30 +64,27 @@ enum MessageFlag {
     SequenceIsTooBig
 };
 
-
 /**
  * A workaround to listen to enter in the pattern field and
  * make a correct (almost) tab order.
  */
-class FindPatternEventFilter : public QObject
-{
+class FindPatternEventFilter : public QObject {
     Q_OBJECT
 public:
-    FindPatternEventFilter(QObject* parent);
+    FindPatternEventFilter(QObject *parent);
 
 signals:
     void si_enterPressed();
     void si_shiftEnterPressed();
 
 protected:
-    bool eventFilter(QObject* obj, QEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event);
 };
 
-class FindPatternWidget : public QWidget, private Ui_FindPatternForm
-{
+class FindPatternWidget : public QWidget, private Ui_FindPatternForm {
     Q_OBJECT
 public:
-    FindPatternWidget(AnnotatedDNAView*);
+    FindPatternWidget(AnnotatedDNAView *);
     int getTargetSequenceLength() const;
 
 private slots:
@@ -105,14 +101,14 @@ private slots:
     void sl_findPatternTaskStateChanged();
 
     /** Another sequence has been selected */
-    void sl_onFocusChanged(ADVSequenceWidget*, ADVSequenceWidget*);
+    void sl_onFocusChanged(ADVSequenceWidget *, ADVSequenceWidget *);
 
     /** A sequence part was added, removed or replaced */
     void sl_onSequenceModified();
 
     void sl_onSelectedRegionChanged();
 
-    void sl_onAnotationNameEdited();
+    void sl_onAnnotationNameEdited();
 
     void sl_activateNewSearch(bool forcedSearch = true);
     void sl_toggleExtendedAlphabet();
@@ -123,6 +119,7 @@ private slots:
     void sl_onEnterPressed();
     void sl_onShiftEnterPressed();
     void sl_usePatternNamesCbClicked();
+
 private:
     void initLayout();
     void initAlgorithmLayout();
@@ -134,7 +131,7 @@ private:
     void initMaxResultLenContainer();
     void updateLayout();
     void connectSlots();
-    int getMaxError(const QString& pattern) const;
+    int getMaxError(const QString &pattern) const;
     void showCurrentResult() const;
     bool isSearchPatternsDifferent(const QList<NamePattern> &newPatterns) const;
     void stopCurrentSearchTask();
@@ -143,14 +140,14 @@ private:
     QList<NamePattern> updateNamePatterns();
     void showCurrentResultAndStopProgress(const int current, const int total);
     void startProgressAnimation();
-
+    void updatePatternSourceControlsUiState();
     /**
      * Enables or disables the Search button depending on
      * the Pattern field value (it should be not empty and not too long)
      * and on the validity of the region.
      */
     void checkState();
-    bool checkPatternRegion(const QString& pattern);
+    bool checkPatternRegion(const QString &pattern);
 
     /**
      * The "Match" spin is disabled if this is an amino acid sequence or
@@ -159,39 +156,32 @@ private:
     void enableDisableMatchSpin();
 
     /** Allows showing of several error messages. */
-    void showHideMessage(bool show, MessageFlag messageFlag, const QString& additionalMsg = QString());
+    void showHideMessage(bool show, MessageFlag messageFlag, const QString &additionalMsg = QString());
 
     /** Checks pattern alphabet and sets error message if needed. Returns false on error or true if no error found */
     bool verifyPatternAlphabet();
-    bool checkAlphabet(const QString& pattern);
+    bool checkAlphabet(const QString &pattern);
     void showTooLongSequenceError();
 
     void setRegionToWholeSequence();
 
-    U2Region getCompleteSearchRegion(bool& regionIsCorrect, qint64 maxLen) const;
+    U2Region getCompleteSearchRegion(bool &isRegionCorrect, qint64 maxLen) const;
 
-    void initFindPatternTask(const QList< QPair<QString, QString> >& patterns);
+    void initFindPatternTask(const QList<QPair<QString, QString>> &patterns);
 
     /** Checks if there are several patterns in textPattern which are separated by new line symbol,
     parse them out and returns with their names (if they're exist). */
-    QList <QPair<QString, QString> > getPatternsFromTextPatternField(U2OpStatus &os) const;
-
-    /** Checks whether the input string is uppercased or not. */
-    static bool hasWrongChars(const QString &input);
+    QList<QPair<QString, QString>> getPatternsFromTextPatternField(U2OpStatus &os) const;
 
     void setCorrectPatternsString();
 
-    void changeColorOfMessageText(const QString &colorName);
-    QString currentColorOfMessageText() const;
-
     void updatePatternText(int previousAlgorithm);
 
-    void validateCheckBoxSize(QCheckBox* checkBox, int requiredWidth);
     void updateAnnotationsWidget();
 
-    AnnotatedDNAView* annotatedDnaView;
-    CreateAnnotationWidgetController* annotController;
-    bool annotModelPrepared;
+    AnnotatedDNAView *annotatedDnaView;
+    CreateAnnotationWidgetController *annotController;
+    bool annotationModelIsPrepared;
 
     bool isAminoSequenceSelected;
     bool regionIsCorrect;
@@ -202,29 +192,24 @@ private:
     QList<MessageFlag> messageFlags;
 
     /** Widgets in the Algorithm group */
-    QHBoxLayout* layoutMismatch;
-    QVBoxLayout* layoutRegExpLen;
-    QHBoxLayout* layoutRegExpInfo;
+    QHBoxLayout *layoutMismatch;
+    QVBoxLayout *layoutRegExpLen;
 
-    QLabel* lblMatch;
-    QSpinBox* spinMatch;
+    QLabel *lblMatch;
+    QSpinBox *spinMatch;
     QWidget *useAmbiguousBasesContainer;
-    QCheckBox* useAmbiguousBasesBox;
+    QCheckBox *useAmbiguousBasesBox;
 
     QWidget *useMaxResultLenContainer;
-    QCheckBox* boxUseMaxResultLen;
-    QSpinBox* boxMaxResultLen;
+    QCheckBox *boxUseMaxResultLen;
+    QSpinBox *boxMaxResultLen;
 
-    QWidget* annotsWidget;
+    QWidget *annotationsWidget;
 
     DNASequenceSelection *currentSelection;
 
     static const int DEFAULT_RESULTS_NUM_LIMIT;
     static const int DEFAULT_REGEXP_RESULT_LENGTH_LIMIT;
-
-    static const QString NEW_LINE_SYMBOL;
-    static const QString STYLESHEET_COLOR_DEFINITION;
-    static const QString STYLESHEET_DEFINITIONS_SEPARATOR;
 
     static const int REG_EXP_MIN_RESULT_LEN;
     static const int REG_EXP_MAX_RESULT_LEN;
@@ -243,6 +228,6 @@ private:
     FindPatternWidgetSavableTab savableWidget;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_FIND_PATTERN_WIDGET_H_
+#endif    // _U2_FIND_PATTERN_WIDGET_H_

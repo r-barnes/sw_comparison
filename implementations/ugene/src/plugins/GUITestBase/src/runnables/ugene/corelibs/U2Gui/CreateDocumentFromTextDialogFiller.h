@@ -27,59 +27,67 @@
 namespace U2 {
 using namespace HI;
 
-    class CreateDocumentFiller : public Filler {
-    public:
-        enum documentFormat {FASTA, Genbank};
-        enum documentAlphabet {StandardDNA, StandardRNA, ExtendedDNA, ExtendedRNA, StandardAmino, AllSymbols};
+class CreateDocumentFiller : public Filler {
+public:
+    enum documentFormat { FASTA,
+                          Genbank };
+    enum documentAlphabet { StandardDNA,
+                            StandardRNA,
+                            ExtendedDNA,
+                            ExtendedRNA,
+                            StandardAmino,
+                            AllSymbols };
 
-        CreateDocumentFiller(HI::GUITestOpStatus &_os, const QString &_pasteDataHere, bool customSettings, documentAlphabet _alphabet, bool skipUnknownSymbols,
-                             bool replaceUnknownSymbols, const QString symbol, const QString &_documentLocation,
-                             documentFormat _format, const QString &_sequenceName, bool saveFile, GTGlobals::UseMethod method = GTGlobals::UseMouse);
-        CreateDocumentFiller(HI::GUITestOpStatus &os, CustomScenario *scenario);
-        void commonScenario();
-    private:
+    CreateDocumentFiller(HI::GUITestOpStatus &_os, const QString &_pasteDataHere, bool customSettings, documentAlphabet _alphabet, bool skipUnknownSymbols, bool replaceUnknownSymbols, const QString symbol, const QString &_documentLocation, documentFormat _format, const QString &_sequenceName, bool saveFile, GTGlobals::UseMethod method = GTGlobals::UseMouse);
+    CreateDocumentFiller(HI::GUITestOpStatus &os, CustomScenario *scenario);
+    void commonScenario();
 
-        QString pasteDataHere;
-        bool customSettings;
-        documentAlphabet alphabet;
-        bool skipUnknownSymbols;
-        bool replaceUnknownSymbols;
-        QString symbol;
-        QMap<documentAlphabet, QString> comboBoxAlphabetItems;
-        QString documentLocation;
-        documentFormat format;
-        QMap<documentFormat, QString> comboBoxItems;
-        QString sequenceName;
-        bool saveFile;
-        GTGlobals::UseMethod useMethod;
-    };
+private:
+    QString pasteDataHere;
+    bool customSettings;
+    documentAlphabet alphabet;
+    bool skipUnknownSymbols;
+    bool replaceUnknownSymbols;
+    QString symbol;
+    QMap<documentAlphabet, QString> comboBoxAlphabetItems;
+    QString documentLocation;
+    documentFormat format;
+    QMap<documentFormat, QString> comboBoxItems;
+    QString sequenceName;
+    bool saveFile;
+    GTGlobals::UseMethod useMethod;
+};
 
-    class CancelCreateDocumentFiller : public Filler {
-    public:
-        enum documentFormat {FASTA, Genbank};
-        enum documentAlphabet {StandardDNA, StandardRNA, ExtendedDNA, ExtendedRNA, StandardAmino, AllSymbols};
+class CancelCreateDocumentFiller : public Filler {
+public:
+    enum documentFormat { FASTA,
+                          Genbank };
+    enum documentAlphabet { StandardDNA,
+                            StandardRNA,
+                            ExtendedDNA,
+                            ExtendedRNA,
+                            StandardAmino,
+                            AllSymbols };
 
-        CancelCreateDocumentFiller(HI::GUITestOpStatus &_os, const QString &_pasteDataHere, bool customSettings, documentAlphabet _alphabet, bool skipUnknownSymbols,
-            bool replaceUnknownSymbols, const QString symbol, const QString &_documentLocation,
-            documentFormat _format, const QString &_sequenceName, bool saveFile, GTGlobals::UseMethod method = GTGlobals::UseMouse);
-        void commonScenario();
-    private:
+    CancelCreateDocumentFiller(HI::GUITestOpStatus &_os, const QString &_pasteDataHere, bool customSettings, documentAlphabet _alphabet, bool skipUnknownSymbols, bool replaceUnknownSymbols, const QString symbol, const QString &_documentLocation, documentFormat _format, const QString &_sequenceName, bool saveFile, GTGlobals::UseMethod method = GTGlobals::UseMouse);
+    void commonScenario();
 
-        QString pasteDataHere;
-        bool customSettings;
-        documentAlphabet alphabet;
-        bool skipUnknownSymbols;
-        bool replaceUnknownSymbols;
-        QString symbol;
-        QMap<documentAlphabet, QString> comboBoxAlphabetItems;
-        QString documentLocation;
-        documentFormat format;
-        QMap<documentFormat, QString> comboBoxItems;
-        QString sequenceName;
-        bool saveFile;
-        GTGlobals::UseMethod useMethod;
-        };
+private:
+    QString pasteDataHere;
+    bool customSettings;
+    documentAlphabet alphabet;
+    bool skipUnknownSymbols;
+    bool replaceUnknownSymbols;
+    QString symbol;
+    QMap<documentAlphabet, QString> comboBoxAlphabetItems;
+    QString documentLocation;
+    documentFormat format;
+    QMap<documentFormat, QString> comboBoxItems;
+    QString sequenceName;
+    bool saveFile;
+    GTGlobals::UseMethod useMethod;
+};
 
-}
+}    // namespace U2
 
 #endif

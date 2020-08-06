@@ -22,9 +22,9 @@
 #ifndef _U2_MSA_UTIL_TASKS
 #define _U2_MSA_UTIL_TASKS
 
-#include <U2Core/global.h>
-#include <U2Core/Task.h>
 #include <U2Core/MultipleSequenceAlignmentObject.h>
+#include <U2Core/Task.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -37,17 +37,19 @@ class DNATranslation;
 class U2ALGORITHM_EXPORT TranslateMsa2AminoTask : public Task {
     Q_OBJECT
 public:
-    TranslateMsa2AminoTask(MultipleSequenceAlignmentObject* obj);
-    TranslateMsa2AminoTask(MultipleSequenceAlignmentObject* obj, const QString& trId );
-    const MultipleSequenceAlignment& getTaskResult() { return resultMA; }
+    TranslateMsa2AminoTask(MultipleSequenceAlignmentObject *obj);
+    TranslateMsa2AminoTask(MultipleSequenceAlignmentObject *obj, const QString &trId);
+    const MultipleSequenceAlignment &getTaskResult() {
+        return resultMA;
+    }
     void run();
     ReportResult report();
+
 private:
     MultipleSequenceAlignment resultMA;
-    MultipleSequenceAlignmentObject* maObj;
-    DNATranslation* translation;
+    MultipleSequenceAlignmentObject *maObj;
+    DNATranslation *translation;
 };
-
 
 /**
  Wrapper for multiple alignment task
@@ -56,14 +58,19 @@ private:
 class U2ALGORITHM_EXPORT AlignGObjectTask : public Task {
     Q_OBJECT
 public:
-    AlignGObjectTask(const QString& taskName, TaskFlags f, MultipleSequenceAlignmentObject* maobj)
-        : Task(taskName, f), obj(maobj) {}
-    virtual void setMAObject(MultipleSequenceAlignmentObject* maobj) { obj = maobj; }
-    MultipleSequenceAlignmentObject* getMAObject() { return obj; }
+    AlignGObjectTask(const QString &taskName, TaskFlags f, MultipleSequenceAlignmentObject *maobj)
+        : Task(taskName, f), obj(maobj) {
+    }
+    virtual void setMAObject(MultipleSequenceAlignmentObject *maobj) {
+        obj = maobj;
+    }
+    MultipleSequenceAlignmentObject *getMAObject() {
+        return obj;
+    }
+
 protected:
     QPointer<MultipleSequenceAlignmentObject> obj;
 };
-
 
 /**
  Multi task converts alignment object to amino representation if possible.
@@ -76,22 +83,22 @@ class U2ALGORITHM_EXPORT AlignInAminoFormTask : public Task {
     Q_OBJECT
     Q_DISABLE_COPY(AlignInAminoFormTask)
 public:
-    AlignInAminoFormTask(MultipleSequenceAlignmentObject* obj, AlignGObjectTask* alignTask, const QString& traslId);
+    AlignInAminoFormTask(MultipleSequenceAlignmentObject *obj, AlignGObjectTask *alignTask, const QString &traslId);
     ~AlignInAminoFormTask();
 
     virtual void prepare();
     virtual void run();
     virtual ReportResult report();
+
 protected:
-    AlignGObjectTask* alignTask;
+    AlignGObjectTask *alignTask;
     MultipleSequenceAlignmentObject *maObj, *clonedObj;
     QString traslId;
-    Document* tmpDoc;
-    QMap<qint64, QList<U2MsaGap> > rowsGapModel;
-    QMap<qint64, QList<U2MsaGap> > emptyGapModel;
+    Document *tmpDoc;
+    QMap<qint64, QList<U2MsaGap>> rowsGapModel;
+    QMap<qint64, QList<U2MsaGap>> emptyGapModel;
 };
 
+}    // namespace U2
 
-} // U2
-
-#endif // _U2_MSA_UTIL_TASKS
+#endif    // _U2_MSA_UTIL_TASKS

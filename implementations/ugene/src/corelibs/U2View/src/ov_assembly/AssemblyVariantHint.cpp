@@ -19,24 +19,22 @@
  * MA 02110-1301, USA.
  */
 
+#include "AssemblyVariantHint.h"
+
 #include <QVBoxLayout>
 
 #include "AssemblyVariantRow.h"
 
-#include "AssemblyVariantHint.h"
-
 namespace U2 {
 
 AssemblyVariantHint::AssemblyVariantHint(QWidget *parent)
-: AssemblyReadsAreaHint(parent)
-{
-
+    : AssemblyReadsAreaHint(parent) {
 }
 
 void AssemblyVariantHint::setData(const QList<U2Variant> &varList) {
     QString text;
     QListIterator<U2Variant> it(varList);
-    while(it.hasNext()) {
+    while (it.hasNext()) {
         const U2Variant &v = it.next();
         text += "<table cellspacing=\"0\" cellpadding=\"0\" align=\"left\" width=\"20%\">";
 
@@ -49,7 +47,7 @@ void AssemblyVariantHint::setData(const QList<U2Variant> &varList) {
         } else {
             position = position.arg(tr("Variant start position"));
         }
-        text += position.arg(v.startPos+1);
+        text += position.arg(v.startPos + 1);
         text += QString("<tr><td><b>%1:&nbsp;</b></td><td>%2</td></tr>").arg(tr("Source nucleotides")).arg(QString(v.refData));
         text += QString("<tr><td><b>%1:&nbsp;</b></td><td>%2</td></tr>").arg(tr("Variant nucleotides")).arg(QString(v.obsData));
 
@@ -64,17 +62,17 @@ void AssemblyVariantHint::setData(const QList<U2Variant> &varList) {
 }
 
 void AssemblyVariantHint::leaveEvent(QEvent *) {
-    AssemblyVariantRow *p = qobject_cast<AssemblyVariantRow*>(parent());
+    AssemblyVariantRow *p = qobject_cast<AssemblyVariantRow *>(parent());
     QPoint curInParentCoords = p->mapFromGlobal(QCursor::pos());
-    if(!p->rect().contains(curInParentCoords)) {
+    if (!p->rect().contains(curInParentCoords)) {
         p->sl_hideHint();
     }
 }
 
-void AssemblyVariantHint::mouseMoveEvent(QMouseEvent * e) {
-    AssemblyVariantRow *p = qobject_cast<AssemblyVariantRow*>(parent());
+void AssemblyVariantHint::mouseMoveEvent(QMouseEvent *e) {
+    AssemblyVariantRow *p = qobject_cast<AssemblyVariantRow *>(parent());
     p->sl_hideHint();
     QFrame::mouseMoveEvent(e);
 }
 
-} // U2
+}    // namespace U2

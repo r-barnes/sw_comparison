@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CMDLineTests.h"
+
 #include <QApplication>
 #include <QCoreApplication>
 #include <QDomElement>
@@ -32,8 +34,6 @@
 #include <U2Lang/WorkflowSettings.h>
 #include <U2Lang/WorkflowUtils.h>
 
-#include "CMDLineTests.h"
-
 namespace U2 {
 
 #define COMMON_DATA_DIR_ENV_ID "COMMON_DATA_DIR"
@@ -41,7 +41,7 @@ namespace U2 {
 #define SAMPLE_DATA_DIR_ENV_ID "SAMPLE_DATA_DIR"
 #define WORKFLOW_SAMPLES_ENV_ID "WORKFLOW_SAMPLES_DIR"
 #define WORKFLOW_OUTPUT_ENV_ID "WORKFLOW_OUTPUT_DIR"
-#define TEMP_DATA_DIR_ENV_ID   "TEMP_DATA_DIR"
+#define TEMP_DATA_DIR_ENV_ID "TEMP_DATA_DIR"
 #define CONFIG_FILE_ENV_ID "CONFIG_FILE"
 #define CONFIG_PROTOTYPE "PROTOTYPE"
 #define WORKING_DIR_ATTR "working-dir"
@@ -50,12 +50,12 @@ namespace U2 {
  * GTest_RunCMDLine
  ************************/
 #ifndef _DEBUG
-const QString GTest_RunCMDLine::UGENECL_PATH    = "/ugenecl";
+const QString GTest_RunCMDLine::UGENECL_PATH = "/ugenecl";
 #else
-const QString GTest_RunCMDLine::UGENECL_PATH    = "/ugenecld";
-#endif // _DEBUG
+const QString GTest_RunCMDLine::UGENECL_PATH = "/ugenecld";
+#endif    // _DEBUG
 
-void GTest_RunCMDLine::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_RunCMDLine::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
     customIniSet = false;
     setUgeneclPath();
@@ -76,7 +76,7 @@ void GTest_RunCMDLine::init(XMLTestFormat *tf, const QDomElement& el) {
         taskLog.trace(QString("Working dir is not defined, the foolowing dir will be used as working: %1").arg(workingDir));
     }
 
-    QString protosPath = env->getVar(COMMON_DATA_DIR_ENV_ID) + "/" +  env->getVar(CONFIG_PROTOTYPE);
+    QString protosPath = env->getVar(COMMON_DATA_DIR_ENV_ID) + "/" + env->getVar(CONFIG_PROTOTYPE);
     QDir protoDir(protosPath), userScriptsDir(WorkflowSettings::getUserDirectory());
     QStringList filters;
     filters << "*.usa";
@@ -86,29 +86,29 @@ void GTest_RunCMDLine::init(XMLTestFormat *tf, const QDomElement& el) {
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fIdest = list.at(i);
         QFileInfo fItarget(userScriptsDir.path() + "/" + fIdest.fileName());
-        if(!fItarget.exists()){
+        if (!fItarget.exists()) {
             QFile::copy(fIdest.absoluteFilePath(), fItarget.absoluteFilePath());
-        }else if(fIdest.size() != fItarget.size()){
+        } else if (fIdest.size() != fItarget.size()) {
             QFile::copy(fIdest.absoluteFilePath(), fItarget.absoluteFilePath());
         }
     }
 }
 
-void GTest_RunCMDLine::setArgs(const QDomElement & el) {
+void GTest_RunCMDLine::setArgs(const QDomElement &el) {
     QString commandLine;
     QDomNamedNodeMap map = el.attributes();
     int mapSz = map.length();
-    for( int i = 0; i < mapSz; ++i ) {
+    for (int i = 0; i < mapSz; ++i) {
         QDomNode node = map.item(i);
-        if(node.nodeName() == "message"){
+        if (node.nodeName() == "message") {
             expectedMessage = node.nodeValue();
             continue;
         }
-        if(node.nodeName() == "nomessage"){
+        if (node.nodeName() == "nomessage") {
             unexpectedMessage = node.nodeValue();
             continue;
         }
-        if(node.nodeName() == WORKING_DIR_ATTR){
+        if (node.nodeName() == WORKING_DIR_ATTR) {
             continue;
         }
         if (node.nodeName() == CMDLineCoreOptions::INI_FILE) {
@@ -116,7 +116,7 @@ void GTest_RunCMDLine::setArgs(const QDomElement & el) {
         }
 
         QString argument = "--" + node.nodeName() + "=" + getVal(node.nodeValue());
-         if( argument.startsWith("--task") ) {
+        if (argument.startsWith("--task")) {
             args.prepend(argument);
             commandLine.prepend(argument + " ");
         } else {
@@ -136,7 +136,7 @@ void GTest_RunCMDLine::setArgs(const QDomElement & el) {
     cmdLog.info(commandLine);
 }
 
-QString GTest_RunCMDLine::splitVal(const QString & val, QString prefValue, const QString & prefix, bool isTmp) {
+QString GTest_RunCMDLine::splitVal(const QString &val, QString prefValue, const QString &prefix, bool isTmp) {
     int midSize = prefValue.size();
     const QString splitter = WorkflowUtils::getDatasetSplitter(val);
     QStringList dsVals = val.split(splitter + splitter);
@@ -144,13 +144,13 @@ QString GTest_RunCMDLine::splitVal(const QString & val, QString prefValue, const
     foreach (const QString &dsVal, dsVals) {
         QStringList realVals = dsVal.split(splitter);
         QStringList dsResult;
-        foreach(QString s, realVals) {
-            if(s.startsWith(prefValue)){
+        foreach (QString s, realVals) {
+            if (s.startsWith(prefValue)) {
                 s = s.mid(midSize);
             }
             QString filename = prefix + s;
             dsResult << filename;
-            if(isTmp) {
+            if (isTmp) {
                 tmpFiles << filename;
             }
         }
@@ -159,7 +159,7 @@ QString GTest_RunCMDLine::splitVal(const QString & val, QString prefValue, const
     return result.join(";;");
 }
 
-QString GTest_RunCMDLine::getVal( const QString & val ) {
+QString GTest_RunCMDLine::getVal(const QString &val) {
     if (val.isEmpty()) {
         return val;
     }
@@ -200,12 +200,12 @@ void GTest_RunCMDLine::prepare() {
     }
 
     QString argsStr = args.join(" ");
-    coreLog.trace( "Starting UGENE with arguments: " + argsStr );
-    proc->start( ugeneclPath, args );
+    coreLog.trace("Starting UGENE with arguments: " + argsStr);
+    proc->start(ugeneclPath, args);
 }
 
 static const QString ERROR_LABEL_TRY1 = "finished with error";
-static QString getErrorMsg(const QString & str) {
+static QString getErrorMsg(const QString &str) {
     int ind = str.indexOf(ERROR_LABEL_TRY1);
     if (ind != -1) {
         return str.mid(ind + ERROR_LABEL_TRY1.size());
@@ -214,11 +214,11 @@ static QString getErrorMsg(const QString & str) {
 }
 
 Task::ReportResult GTest_RunCMDLine::report() {
-    if( hasError() || isCanceled() ) {
+    if (hasError() || isCanceled()) {
         return ReportResult_Finished;
     }
-    assert( proc != NULL );
-    if( proc->state() != QProcess::NotRunning ) {
+    assert(proc != NULL);
+    if (proc->state() != QProcess::NotRunning) {
         return ReportResult_CallMeAgain;
     }
     //QProcess::ProcessError err = proc->error();
@@ -226,15 +226,15 @@ Task::ReportResult GTest_RunCMDLine::report() {
     //QByteArray outputErr = proc->readAllStandardError();
     cmdLog.trace(output);
 
-    if(!expectedMessage.isEmpty()){
+    if (!expectedMessage.isEmpty()) {
         cmdLog.error(output);
-        if(!output.contains(expectedMessage, Qt::CaseSensitive)){
+        if (!output.contains(expectedMessage, Qt::CaseSensitive)) {
             stateInfo.setError(QString("Expected message not found in output"));
         }
         return ReportResult_Finished;
     }
-    if(!unexpectedMessage.isEmpty()){
-        if(output.contains(unexpectedMessage, Qt::CaseSensitive)){
+    if (!unexpectedMessage.isEmpty()) {
+        if (output.contains(unexpectedMessage, Qt::CaseSensitive)) {
             stateInfo.setError(QString("Unexpected message is found in output"));
         }
         return ReportResult_Finished;
@@ -258,7 +258,7 @@ Task::ReportResult GTest_RunCMDLine::report() {
 
 void GTest_RunCMDLine::cleanup() {
     if (!XMLTestUtils::parentTasksHaveError(this)) {
-        foreach(const QString & file, tmpFiles) {
+        foreach (const QString &file, tmpFiles) {
             taskLog.trace(QString("Temporary file removed: %1").arg(file));
             QFile::remove(file);
         }
@@ -275,10 +275,10 @@ void GTest_RunCMDLine::cleanup() {
 /************************
 * GTest_RunCMDLine
 ************************/
-QList<XMLTestFactory*> CMDLineTests::createTestFactories() {
-    QList<XMLTestFactory*> res;
+QList<XMLTestFactory *> CMDLineTests::createTestFactories() {
+    QList<XMLTestFactory *> res;
     res.append(GTest_RunCMDLine::createFactory());
     return res;
 }
 
-} // U2
+}    // namespace U2

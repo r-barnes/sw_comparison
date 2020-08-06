@@ -36,20 +36,20 @@ public:
     class Action {
     public:
         enum Type {
-            ADD_FILES,                  // add files with the "Add files" button
-            ADD_DIRS,                   // add dirs with the "Add folder" button
-            ADD_PROJECT_ITEMS,          // add project items with the "Add objects" button
-            SELECT_ITEMS,               // select items in the tree view
+            ADD_FILES,    // add files with the "Add files" button
+            ADD_DIRS,    // add dirs with the "Add folder" button
+            ADD_PROJECT_ITEMS,    // add project items with the "Add objects" button
+            SELECT_ITEMS,    // select items in the tree view
             EDIT_DESTINATION_FOLDER,    // edit the item's destination folder by double click to the folder column
-            EDIT_GENERAL_OPTIONS,       // edit general options with the "General options" button
-            EDIT_PRIVATE_OPTIONS,       // edit the item's private options with a "Override options" context menu item
-            RESET_PRIVATE_OPTIONS,      // reset the item's options to global with a "Reset to general options" context menu item
-            REMOVE,                     // remove the item with the "Remove" button
-            IMPORT,                     // close the dialog and start the import task with the "Import" button
-            CANCEL                      // close the dialog the "Cancel" button
+            EDIT_GENERAL_OPTIONS,    // edit general options with the "General options" button
+            EDIT_PRIVATE_OPTIONS,    // edit the item's private options with a "Override options" context menu item
+            RESET_PRIVATE_OPTIONS,    // reset the item's options to global with a "Reset to general options" context menu item
+            REMOVE,    // remove the item with the "Remove" button
+            IMPORT,    // close the dialog and start the import task with the "Import" button
+            CANCEL    // close the dialog the "Cancel" button
         };
 
-        Action(Type type, const QVariantMap& data);
+        Action(Type type, const QVariantMap &data);
         Type type;
         QVariantMap data;
 
@@ -60,33 +60,34 @@ public:
         static const QString ACTION_DATA__PROJECT_ITEMS_LIST;
     };
 
-    ImportToDatabaseDialogFiller(HI::GUITestOpStatus& os, const QList<Action>& actions);
-    ImportToDatabaseDialogFiller(HI::GUITestOpStatus &os, CustomScenario* c): Filler(os, "ImportToDatabaseDialog", c){}
+    ImportToDatabaseDialogFiller(HI::GUITestOpStatus &os, const QList<Action> &actions);
+    ImportToDatabaseDialogFiller(HI::GUITestOpStatus &os, CustomScenario *c)
+        : Filler(os, "ImportToDatabaseDialog", c) {
+    }
 
     void commonScenario();
 
-
 private:
-    void addFiles(const Action& action);
-    void addDirs(const Action& action);
-    void addProjectItems(const Action& action);
-    void selectItems(const Action& action);
-    void editDestinationFolder(const Action& action);
-    void editGeneralOptions(const Action& action);
-    void editPrivateOptions(const Action& action);
-    void resetPrivateOptions(const Action& action);
-    void remove(const Action& action);
-    void import(const Action& action);
-    void cancel(const Action& action);
+    void addFiles(const Action &action);
+    void addDirs(const Action &action);
+    void addProjectItems(const Action &action);
+    void selectItems(const Action &action);
+    void editDestinationFolder(const Action &action);
+    void editGeneralOptions(const Action &action);
+    void editPrivateOptions(const Action &action);
+    void resetPrivateOptions(const Action &action);
+    void remove(const Action &action);
+    void import(const Action &action);
+    void cancel(const Action &action);
 
-    QPoint getItemCenter(const QString& text);
-    QPoint getFolderColumnCenter(const QString& text);
-    QTreeWidgetItem *findItem(const QString& text);
+    QPoint getItemCenter(const QString &text);
+    QPoint getFolderColumnCenter(const QString &text);
+    QTreeWidgetItem *findItem(const QString &text);
 
     QPointer<QWidget> dialog;
     QList<Action> actions;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_IMPORT_TO_DATABASE_DIALOG_FILLER_H_
+#endif    // _U2_IMPORT_TO_DATABASE_DIALOG_FILLER_H_

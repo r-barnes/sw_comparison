@@ -21,23 +21,24 @@
 
 #include "SeqStatisticsWidget.h"
 
+#include <U2Algorithm/MSADistanceAlgorithmRegistry.h>
+
 #include <U2Core/AppContext.h>
 #include <U2Core/MultipleSequenceAlignmentObject.h>
 #include <U2Core/U2SafePoints.h>
-
-#include <U2Algorithm/MSADistanceAlgorithmRegistry.h>
 
 #include <U2Gui/LabelClickTransmitter.h>
 #include <U2Gui/ShowHideSubgroupWidget.h>
 #include <U2Gui/U2WidgetStateStorage.h>
 
 #include <U2View/MSAEditor.h>
+
 #include "../MsaEditorSimilarityColumn.h"
 
 namespace U2 {
 
-static inline QVBoxLayout * initLayout(QWidget * w) {
-    QVBoxLayout * layout = new QVBoxLayout;
+static inline QVBoxLayout *initLayout(QWidget *w) {
+    QVBoxLayout *layout = new QVBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(5);
 
@@ -45,22 +46,21 @@ static inline QVBoxLayout * initLayout(QWidget * w) {
     return layout;
 }
 
-SeqStatisticsWidget::SeqStatisticsWidget(MSAEditor* m)
-    : msa(m), savableTab(this, GObjectViewUtils::findViewByName(m->getName()))
-{
+SeqStatisticsWidget::SeqStatisticsWidget(MSAEditor *m)
+    : msa(m), savableTab(this, GObjectViewUtils::findViewByName(m->getName())) {
     setObjectName("SequenceStatisticsOptionsPanelTab");
     SAFE_POINT(NULL != m, QString("Invalid parameter were passed into constructor SeqStatisticsWidget"), );
 
     copySettings();
 
-    QVBoxLayout* mainLayout = initLayout(this);
+    QVBoxLayout *mainLayout = initLayout(this);
     mainLayout->setSpacing(0);
 
     distancesStatisticsGroup = new QWidget(this);
     ui.setupUi(distancesStatisticsGroup);
     new LabelClickTransmitter(ui.showDistancesColumnCheckLabel, ui.showDistancesColumnCheck);
 
-    QWidget * similarityGroup = new ShowHideSubgroupWidget("REFERENCE", tr("Distances column"), distancesStatisticsGroup, true);
+    QWidget *similarityGroup = new ShowHideSubgroupWidget("REFERENCE", tr("Distances column"), distancesStatisticsGroup, true);
     updateWidgetsSettings();
     mainLayout->addWidget(similarityGroup);
 
@@ -68,18 +68,17 @@ SeqStatisticsWidget::SeqStatisticsWidget(MSAEditor* m)
 }
 
 void SeqStatisticsWidget::copySettings() {
-    const MsaEditorAlignmentDependentWidget* similarityWidget= msa->getUI()->getSimilarityWidget();
+    const MsaEditorAlignmentDependentWidget *similarityWidget = msa->getUI()->getSimilarityWidget();
     statisticsIsShown = false;
-    if(NULL != similarityWidget) {
-        const SimilarityStatisticsSettings* s = static_cast<const SimilarityStatisticsSettings*>(similarityWidget->getSettings());
-        if(NULL != s) {
+    if (NULL != similarityWidget) {
+        const SimilarityStatisticsSettings *s = static_cast<const SimilarityStatisticsSettings *>(similarityWidget->getSettings());
+        if (NULL != s) {
             settings = new SimilarityStatisticsSettings(*s);
         } else {
             settings = new SimilarityStatisticsSettings();
         }
         statisticsIsShown = !similarityWidget->isHidden();
-    }
-    else {
+    } else {
         settings = new SimilarityStatisticsSettings();
         settings->excludeGaps = false;
         settings->autoUpdate = true;
@@ -90,9 +89,9 @@ void SeqStatisticsWidget::copySettings() {
     msaUI = settings->ui;
 }
 
-void SeqStatisticsWidget::updateWidgetsSettings(){
-    QList<MSADistanceAlgorithmFactory*> algos = AppContext::getMSADistanceAlgorithmRegistry()->getAlgorithmFactories();
-    foreach(MSADistanceAlgorithmFactory* a, algos) {
+void SeqStatisticsWidget::updateWidgetsSettings() {
+    QList<MSADistanceAlgorithmFactory *> algos = AppContext::getMSADistanceAlgorithmRegistry()->getAlgorithmFactories();
+    foreach (MSADistanceAlgorithmFactory *a, algos) {
         ui.algoComboBox->addItem(a->getName(), a->getId());
     }
     ui.algoComboBox->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
@@ -111,14 +110,14 @@ void SeqStatisticsWidget::updateWidgetsSettings(){
 }
 
 void SeqStatisticsWidget::connectSlots() {
-    connect(ui.algoComboBox,             SIGNAL(currentIndexChanged(int)),              SLOT(sl_onAlgoChanged()));
-    connect(ui.excludeGapsCheckBox,      SIGNAL(stateChanged (int)),                    SLOT(sl_onGapsChanged(int)));
-    connect(ui.countsButton,             SIGNAL(clicked(bool)),                         SLOT(sl_onUnitsChanged(bool)));
-    connect(ui.percentsButton,           SIGNAL(clicked(bool)),                         SLOT(sl_onUnitsChanged(bool)));
-    connect(ui.updateButton,             SIGNAL(pressed()),                             SLOT(sl_onUpdateClicked()));
-    connect(ui.showDistancesColumnCheck, SIGNAL(stateChanged (int)),                    SLOT(sl_onShowStatisticsChanged(int)));
-    connect(ui.autoUpdateCheck,          SIGNAL(stateChanged (int)),                    SLOT(sl_onAutoUpdateChanged(int)));
-    connect(msa,                         SIGNAL(si_referenceSeqChanged(qint64)),        SLOT(sl_onRefSeqChanged(qint64)));
+    connect(ui.algoComboBox, SIGNAL(currentIndexChanged(int)), SLOT(sl_onAlgoChanged()));
+    connect(ui.excludeGapsCheckBox, SIGNAL(stateChanged(int)), SLOT(sl_onGapsChanged(int)));
+    connect(ui.countsButton, SIGNAL(clicked(bool)), SLOT(sl_onUnitsChanged(bool)));
+    connect(ui.percentsButton, SIGNAL(clicked(bool)), SLOT(sl_onUnitsChanged(bool)));
+    connect(ui.updateButton, SIGNAL(pressed()), SLOT(sl_onUpdateClicked()));
+    connect(ui.showDistancesColumnCheck, SIGNAL(stateChanged(int)), SLOT(sl_onShowStatisticsChanged(int)));
+    connect(ui.autoUpdateCheck, SIGNAL(stateChanged(int)), SLOT(sl_onAutoUpdateChanged(int)));
+    connect(msa, SIGNAL(si_referenceSeqChanged(qint64)), SLOT(sl_onRefSeqChanged(qint64)));
 }
 
 void SeqStatisticsWidget::restoreSettings() {
@@ -131,12 +130,12 @@ void SeqStatisticsWidget::restoreSettings() {
     ui.dataState->setEnabled(!settings->autoUpdate);
 
     int index = ui.algoComboBox->findData(settings->algoId);
-    if(0 <= index) {
+    if (0 <= index) {
         ui.algoComboBox->setCurrentIndex(index);
     } else {
         settings->algoId = ui.algoComboBox->currentData().toString();
     }
-    if(!statisticsIsShown) {
+    if (!statisticsIsShown) {
         hideSimilaritySettings();
     } else {
         sl_onRefSeqChanged(msa->getReferenceRowId());
@@ -153,7 +152,7 @@ void SeqStatisticsWidget::sl_onGapsChanged(int state) {
     msaUI->setSimilaritySettings(settings);
 }
 
-void SeqStatisticsWidget::sl_onUnitsChanged( bool ) {
+void SeqStatisticsWidget::sl_onUnitsChanged(bool) {
     settings->usePercents = ui.percentsButton->isChecked();
     msaUI->setSimilaritySettings(settings);
 }
@@ -167,7 +166,7 @@ void SeqStatisticsWidget::sl_onAutoUpdateChanged(int state) {
 }
 
 void SeqStatisticsWidget::sl_onRefSeqChanged(qint64 referenceRowId) {
-    if(U2MsaRow::INVALID_ROW_ID == referenceRowId && statisticsIsShown) {
+    if (U2MsaRow::INVALID_ROW_ID == referenceRowId && statisticsIsShown) {
         ui.refSeqWarning->show();
     } else {
         ui.refSeqWarning->hide();
@@ -175,7 +174,7 @@ void SeqStatisticsWidget::sl_onRefSeqChanged(qint64 referenceRowId) {
 }
 
 void SeqStatisticsWidget::sl_onShowStatisticsChanged(int state) {
-    if(Qt::Checked == state) {
+    if (Qt::Checked == state) {
         showSimilaritySettings();
     } else {
         hideSimilaritySettings();
@@ -202,4 +201,4 @@ void SeqStatisticsWidget::showSimilaritySettings() {
     sl_onRefSeqChanged(msa->getReferenceRowId());
 }
 
-}
+}    // namespace U2

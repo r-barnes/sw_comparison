@@ -31,20 +31,21 @@ namespace LocalWorkflow {
 class ElapsedTimeUpdater : public QTimer {
     Q_OBJECT
 public:
-    ElapsedTimeUpdater(const ActorId& runningActorId, WorkflowMonitor* monitor, Task* executedTask);
+    ElapsedTimeUpdater(const ActorId &runningActorId, WorkflowMonitor *monitor, Task *executedTask);
     ~ElapsedTimeUpdater();
+
 private:
-    ActorId          runningActorId;
-    WorkflowMonitor* monitor;
-    Task*            executedTask;
-    qint64           elapsedTime;
+    ActorId runningActorId;
+    WorkflowMonitor *monitor;
+    Task *executedTask;
+    qint64 elapsedTime;
 private slots:
     void sl_updateTime();
-    void sl_taskFinished(Task*);
+    void sl_taskFinished(Task *);
 };
 
-} // LocalWorkflow
+}    // namespace LocalWorkflow
 
-} // U2
+}    // namespace U2
 
-#endif // _ELAPSED_TIME_UPDATER_H_
+#endif    // _ELAPSED_TIME_UPDATER_H_

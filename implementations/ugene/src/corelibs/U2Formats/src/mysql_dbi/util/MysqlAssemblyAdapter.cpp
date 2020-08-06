@@ -19,31 +19,30 @@
  * MA 02110-1301, USA.
  */
 
+#include "MysqlAssemblyAdapter.h"
+
 #include <U2Core/U2AssemblyUtils.h>
 
-#include "MysqlAssemblyAdapter.h"
 #include "MysqlAssemblyUtils.h"
 
 namespace U2 {
 
-MysqlAssemblyAdapter::MysqlAssemblyAdapter(const U2DataId& assemblyId,
-                                           const AssemblyCompressor* compressor,
-                                           MysqlDbRef* ref) :
-    AssemblyAdapter(assemblyId, compressor),
-    db(ref)
-{
+MysqlAssemblyAdapter::MysqlAssemblyAdapter(const U2DataId &assemblyId,
+                                           const AssemblyCompressor *compressor,
+                                           MysqlDbRef *ref)
+    : AssemblyAdapter(assemblyId, compressor),
+      db(ref) {
 }
 
-MysqlAssemblyNameFilter::MysqlAssemblyNameFilter(const QByteArray& expectedName) :
-    name (expectedName)
-{
+MysqlAssemblyNameFilter::MysqlAssemblyNameFilter(const QByteArray &expectedName)
+    : name(expectedName) {
 }
 
-bool MysqlAssemblyNameFilter::filter(const U2AssemblyRead& r) {
+bool MysqlAssemblyNameFilter::filter(const U2AssemblyRead &r) {
     return name == r->name;
 }
 
-U2AssemblyRead MysqlSimpleAssemblyReadLoader::load(U2SqlQuery* q) {
+U2AssemblyRead MysqlSimpleAssemblyReadLoader::load(U2SqlQuery *q) {
     U2AssemblyRead read(new U2AssemblyReadData());
 
     read->id = q->getDataId(0, U2Type::AssemblyRead);
@@ -75,7 +74,7 @@ U2AssemblyRead MysqlSimpleAssemblyReadLoader::load(U2SqlQuery* q) {
     return read;
 }
 
-PackAlgorithmData MysqlSimpleAssemblyReadPackedDataLoader::load(U2SqlQuery* q) {
+PackAlgorithmData MysqlSimpleAssemblyReadPackedDataLoader::load(U2SqlQuery *q) {
     PackAlgorithmData data;
     data.readId = q->getDataId(0, U2Type::AssemblyRead);
     data.leftmostPos = q->getInt64(1);
@@ -83,4 +82,4 @@ PackAlgorithmData MysqlSimpleAssemblyReadPackedDataLoader::load(U2SqlQuery* q) {
     return data;
 }
 
-}   // namespace U2
+}    // namespace U2

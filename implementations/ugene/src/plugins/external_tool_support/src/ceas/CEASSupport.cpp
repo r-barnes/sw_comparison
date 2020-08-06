@@ -20,12 +20,13 @@
  */
 
 #include "CEASSupport.h"
-#include "python/PythonSupport.h"
-#include "R/RSupport.h"
-#include "utils/ExternalToolUtils.h"
 
 #include <U2Core/AppContext.h>
 #include <U2Core/Settings.h>
+
+#include "R/RSupport.h"
+#include "python/PythonSupport.h"
+#include "utils/ExternalToolUtils.h"
 
 namespace U2 {
 
@@ -34,9 +35,8 @@ const QString CEASSupport::ET_CEAS_ID = "USUPP_CEAS";
 const QString CEASSupport::REFGENE_DIR_NAME = "refGene";
 const QString CEASSupport::REF_GENES_DATA_NAME = "Gene annotation table";
 
-CEASSupport::CEASSupport(const QString &id, const QString& name, const QString& path)
-: ExternalTool(id, name, path)
-{
+CEASSupport::CEASSupport(const QString &id, const QString &name, const QString &path)
+    : ExternalTool(id, name, path) {
     initialize();
 }
 
@@ -49,11 +49,11 @@ void CEASSupport::initialize() {
 
     toolKitName = "Cistrome";
     description = CEASSupport::tr("<i>CEAS</i> - Cis-regulatory Element Annotation System -"
-        " helps to characterize genome-wide protein-DNA interaction patterns from ChIP-chip"
-        " and ChIP-Seq of both sharp and broad binding factors."
-        " It provides statistics on ChIP enrichment at important genome features such as"
-        " specific chromosome, promoters, gene bodies, or exons, and infers genes most likely"
-        " to be regulated by a binding factor.");
+                                  " helps to characterize genome-wide protein-DNA interaction patterns from ChIP-chip"
+                                  " and ChIP-Seq of both sharp and broad binding factors."
+                                  " It provides statistics on ChIP enrichment at important genome features such as"
+                                  " specific chromosome, promoters, gene bodies, or exons, and infers genes most likely"
+                                  " to be regulated by a binding factor.");
 
     executableFileName = "ceas.py";
 
@@ -64,7 +64,7 @@ void CEASSupport::initialize() {
     validMessage = "ceas.py -- 0.9.9.7 \\(package version 1.0.2\\)";
     validationArguments << "--version";
 
-    versionRegExp=QRegExp(executableFileName + " -- (\\d+\\.\\d+\\.\\d+.\\d+) \\(package version (\\d+\\.\\d+\\.\\d+)\\)");
+    versionRegExp = QRegExp(executableFileName + " -- (\\d+\\.\\d+\\.\\d+.\\d+) \\(package version (\\d+\\.\\d+\\.\\d+)\\)");
 
     ExternalToolUtils::addDefaultCistromeDirToSettings();
     ExternalToolUtils::addCistromeDataPath(REF_GENES_DATA_NAME, REFGENE_DIR_NAME);
@@ -72,4 +72,4 @@ void CEASSupport::initialize() {
     muted = true;
 }
 
-} // U2
+}    // namespace U2

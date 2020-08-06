@@ -23,14 +23,15 @@
 #define _U2_MULTIPLE_SEQUENCE_ALIGNMENT_EXPORTER_H_
 
 #include <U2Core/MultipleSequenceAlignment.h>
-#include <U2Core/U2Msa.h>
 #include <U2Core/U2DbiUtils.h>
+#include <U2Core/U2Msa.h>
 
 namespace U2 {
 
 struct MsaRowReplacementData {
     MsaRowReplacementData(const DNASequence &_sequence, const U2MsaRow &_row)
-        : sequence(_sequence), row(_row) {}
+        : sequence(_sequence), row(_row) {
+    }
 
     DNASequence sequence;
     U2MsaRow row;
@@ -41,22 +42,20 @@ class U2CORE_EXPORT MultipleSequenceAlignmentExporter {
 public:
     MultipleSequenceAlignmentExporter();
 
-    MultipleSequenceAlignment                          getAlignment(const U2DbiRef& dbiRef, const U2DataId& msaId,
-        U2OpStatus& os) const;
-    U2Msa                               getAlignmentObject(const U2DbiRef& dbiRef, const U2DataId& msaId, U2OpStatus& os) const;
-    QList<MsaRowReplacementData> getAlignmentRows(const U2DbiRef& dbiRef, const U2DataId& msaId,
-        const QList<qint64> rowIds, U2OpStatus& os) const;
+    MultipleSequenceAlignment getAlignment(const U2DbiRef &dbiRef, const U2DataId &msaId, U2OpStatus &os) const;
+    U2Msa getAlignmentObject(const U2DbiRef &dbiRef, const U2DataId &msaId, U2OpStatus &os) const;
+    QList<MsaRowReplacementData> getAlignmentRows(const U2DbiRef &dbiRef, const U2DataId &msaId, const QList<qint64> rowIds, U2OpStatus &os) const;
 
 private:
-    QList<U2MsaRow>                     exportRows(const U2DataId&, U2OpStatus&) const;
-    QList<U2MsaRow>                     exportRows(const U2DataId&, const QList<qint64> rowIds, U2OpStatus&) const;
-    QList<DNASequence>                  exportSequencesOfRows(QList<U2MsaRow>, U2OpStatus&) const;
-    QVariantMap                         exportAlignmentInfo(const U2DataId&, U2OpStatus&) const;
-    U2Msa                               exportAlignmentObject(const U2DataId&, U2OpStatus&) const;
+    QList<U2MsaRow> exportRows(const U2DataId &, U2OpStatus &) const;
+    QList<U2MsaRow> exportRows(const U2DataId &, const QList<qint64> rowIds, U2OpStatus &) const;
+    QList<DNASequence> exportSequencesOfRows(QList<U2MsaRow>, U2OpStatus &) const;
+    QVariantMap exportAlignmentInfo(const U2DataId &, U2OpStatus &) const;
+    U2Msa exportAlignmentObject(const U2DataId &, U2OpStatus &) const;
 
-    mutable DbiConnection                       con;
+    mutable DbiConnection con;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_MULTIPLE_SEQUENCE_ALIGNMENT_EXPORTER_H_
+#endif    // _U2_MULTIPLE_SEQUENCE_ALIGNMENT_EXPORTER_H_

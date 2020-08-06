@@ -24,31 +24,32 @@
 
 #include <ui_NetworkSettingsWidget.h>
 
-#include <U2Core/NetworkConfiguration.h>
-#include <U2Gui/AppSettingsGUI.h>
-
 #include <QUrl>
 
-namespace U2 {
+#include <U2Core/NetworkConfiguration.h>
 
+#include <U2Gui/AppSettingsGUI.h>
+
+namespace U2 {
 
 class NetworkSettingsPageController : public AppSettingsGUIPageController {
     Q_OBJECT
 public:
-    NetworkSettingsPageController(QObject* p = NULL);
+    NetworkSettingsPageController(QObject *p = NULL);
 
-    virtual AppSettingsGUIPageState* getSavedState();
+    virtual AppSettingsGUIPageState *getSavedState();
 
-    virtual void saveState(AppSettingsGUIPageState* s);
+    virtual void saveState(AppSettingsGUIPageState *s);
 
-    virtual AppSettingsGUIPageWidget* createWidget(AppSettingsGUIPageState* data);
+    virtual AppSettingsGUIPageWidget *createWidget(AppSettingsGUIPageState *data);
 
-    const QString& getHelpPageId() const {return helpPageId;};
+    const QString &getHelpPageId() const {
+        return helpPageId;
+    };
 
 private:
     static const QString helpPageId;
 };
-
 
 class NetworkSettingsPageState : public AppSettingsGUIPageState {
     Q_OBJECT
@@ -59,22 +60,21 @@ public:
     bool useDefaultWebBrowser;
 };
 
-
-class NetworkSettingsPageWidget: public AppSettingsGUIPageWidget, public Ui_NetworkSettingsWidget {
+class NetworkSettingsPageWidget : public AppSettingsGUIPageWidget, public Ui_NetworkSettingsWidget {
     Q_OBJECT
 public:
     NetworkSettingsPageWidget();
 
-    virtual void setState(AppSettingsGUIPageState* state);
+    virtual void setState(AppSettingsGUIPageState *state);
 
-    virtual AppSettingsGUIPageState* getState(QString& err) const;
+    virtual AppSettingsGUIPageState *getState(QString &err) const;
 
 private slots:
-    void sl_HttpChecked( int state );
-    void sl_ExceptionsChecked( int state );
+    void sl_HttpChecked(int state);
+    void sl_ExceptionsChecked(int state);
     void sl_changeWebBrowserPathButtonClicked();
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

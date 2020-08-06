@@ -22,11 +22,11 @@
 #ifndef _U2_DNA_CHROMATOGRAM_OBJECT_UNIT_TESTS_H_
 #define _U2_DNA_CHROMATOGRAM_OBJECT_UNIT_TESTS_H_
 
-#include "core/dbi/DbiTest.h"
+#include <unittest.h>
 
 #include <U2Core/DNAChromatogram.h>
 
-#include <unittest.h>
+#include "core/dbi/DbiTest.h"
 
 namespace U2 {
 
@@ -38,9 +38,9 @@ public:
     static void shutdown();
     static U2DbiRef getDbiRef();
     static U2EntityRef getObjRef();
-    static U2ObjectDbi * getObjDbi();
-    static UdrDbi * getUdrDbi();
-    static const DNAChromatogram & getChromatogram();
+    static U2ObjectDbi *getObjDbi();
+    static UdrDbi *getUdrDbi();
+    static const DNAChromatogram &getChromatogram();
 
 private:
     static TestDbiProvider dbiProvider;
@@ -71,7 +71,7 @@ DECLARE_TEST(DNAChromatogramObjectUnitTests, clone_NullObj);
 /* remove */
 DECLARE_TEST(DNAChromatogramObjectUnitTests, remove);
 
-} // U2
+}    // namespace U2
 
 DECLARE_METATYPE(DNAChromatogramObjectUnitTests, createInstance);
 DECLARE_METATYPE(DNAChromatogramObjectUnitTests, createInstance_WrongDbi);
@@ -82,4 +82,4 @@ DECLARE_METATYPE(DNAChromatogramObjectUnitTests, clone_NullDbi);
 DECLARE_METATYPE(DNAChromatogramObjectUnitTests, clone_NullObj);
 DECLARE_METATYPE(DNAChromatogramObjectUnitTests, remove);
 
-#endif // _U2_DNA_CHROMATOGRAM_OBJECT_UNIT_TESTS_H_
+#endif    // _U2_DNA_CHROMATOGRAM_OBJECT_UNIT_TESTS_H_

@@ -22,7 +22,7 @@
 #define DISTANCEMATRIXDIALOGFILLER_H
 
 #include "utils/GTUtilsDialog.h"
-namespace U2{
+namespace U2 {
 using namespace HI;
 
 class DistanceMatrixDialogFiller : public Filler {
@@ -35,7 +35,7 @@ public:
 
     DistanceMatrixDialogFiller(HI::GUITestOpStatus &os, bool hamming = true, bool counts = true, bool excludeGaps = true);
     DistanceMatrixDialogFiller(HI::GUITestOpStatus &os, SaveFormat format, QString path);
-    DistanceMatrixDialogFiller(HI::GUITestOpStatus &os, CustomScenario* c);
+    DistanceMatrixDialogFiller(HI::GUITestOpStatus &os, CustomScenario *c);
 
     virtual void commonScenario();
 
@@ -48,6 +48,6 @@ public:
     QString path;
 };
 
-}
+}    // namespace U2
 
-#endif // DISTANCEMATRIXDIALOGFILLER_H
+#endif    // DISTANCEMATRIXDIALOGFILLER_H

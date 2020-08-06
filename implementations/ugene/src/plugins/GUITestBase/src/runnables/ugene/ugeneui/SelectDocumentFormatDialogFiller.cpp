@@ -23,16 +23,14 @@
 #include <primitives/GTWidget.h>
 
 #include <QApplication>
-#include <QPushButton>
 #include <QDialogButtonBox>
+#include <QPushButton>
 
 namespace U2 {
 using namespace HI;
 
 SelectDocumentFormatDialogFiller::SelectDocumentFormatDialogFiller(HI::GUITestOpStatus &_os, CustomScenario *scenario)
-    : Filler(_os, "DocumentFormatSelectorDialog", scenario)
-{
-
+    : Filler(_os, "DocumentFormatSelectorDialog", scenario) {
 }
 
 #define GT_CLASS_NAME "GTUtilsDialog::SelectDocumentFormatDialogFiller"
@@ -46,4 +44,4 @@ void SelectDocumentFormatDialogFiller::commonScenario() {
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

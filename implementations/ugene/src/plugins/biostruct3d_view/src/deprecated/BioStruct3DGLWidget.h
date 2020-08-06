@@ -22,24 +22,23 @@
 #ifndef _U2_OPENGL_WIDGET_H_
 #define _U2_OPENGL_WIDGET_H_
 
-#include "BioStruct3DGLRender.h"
-#include "BioStruct3DColorScheme.h"
-#include "AnaglyphRenderer.h"
-#include "MolecularSurfaceRenderer.h"
-
-#include <U2Core/Vector3D.h>
-#include <U2Core/BioStruct3DObject.h>
+#include <QAction>
+#include <QActionGroup>
+#include <QColor>
+#include <QGLWidget>
+#include <QMenu>
+#include <QSharedPointer>
+#include <QTimer>
 
 #include <U2Algorithm/MolecularSurface.h>
 
-#include <QTimer>
-#include <QSharedPointer>
-#include <QAction>
-#include <QMenu>
-#include <QActionGroup>
-#include <QColor>
+#include <U2Core/BioStruct3DObject.h>
+#include <U2Core/Vector3D.h>
 
-#include <QGLWidget>
+#include "AnaglyphRenderer.h"
+#include "BioStruct3DColorScheme.h"
+#include "BioStruct3DGLRender.h"
+#include "MolecularSurfaceRenderer.h"
 
 namespace U2 {
 
@@ -65,8 +64,8 @@ class U2SequenceObject;
 class BioStruct3DRendererContext {
 public:
     BioStruct3DRendererContext(const BioStruct3DObject *obj)
-            : obj(obj), biostruct(&obj->getBioStruct3D())
-    {}
+        : obj(obj), biostruct(&obj->getBioStruct3D()) {
+    }
 
     const BioStruct3DObject *obj;
     const BioStruct3D *biostruct;
@@ -88,10 +87,10 @@ public:
 *
 * Also it includes actions for visualization control.
 */
-class BioStruct3DGLWidget : public QGLWidget
-{
+class BioStruct3DGLWidget : public QGLWidget {
     Q_OBJECT
     static int widgetCount;
+
 public:
     // Used in PluginChecker to detect whether the GL is available
     static void tryGL();
@@ -104,24 +103,30 @@ public:
     * @param manager GlFrameManager is required for OpenGL frame manipulation
     * @param parent Parent widget
     */
-    BioStruct3DGLWidget(BioStruct3DObject* bsObj, const AnnotatedDNAView* view, GLFrameManager* manager, QWidget *parent);
+    BioStruct3DGLWidget(BioStruct3DObject *bsObj, const AnnotatedDNAView *view, GLFrameManager *manager, QWidget *parent);
 
     //! Destructor.
     ~BioStruct3DGLWidget();
 
     //! @return BioStruct3D const reference.
-    const BioStruct3D& getBioStruct3D() const { return *(contexts.first().biostruct); }
+    const BioStruct3D &getBioStruct3D() const {
+        return *(contexts.first().biostruct);
+    }
 
     //! @return BioStruct3D Protein Data Bank id.
-    const QString getPDBId() const { return contexts.first().biostruct->pdbId; }
+    const QString getPDBId() const {
+        return contexts.first().biostruct->pdbId;
+    }
 
     //! @return BioStruct3DObject name.
-    const QString getBioStruct3DObjectName() const { return contexts.first().obj->getGObjectName(); }
+    const QString getBioStruct3DObjectName() const {
+        return contexts.first().obj->getGObjectName();
+    }
 
     /*!
     * @return Menu containing display actions: renderers, color schemes etc.
     */
-    QMenu* getDisplayMenu();
+    QMenu *getDisplayMenu();
     /*!
     * Records widget active settings (part of UGENE architecture).
     * @return Current widgets settings.
@@ -131,7 +136,7 @@ public:
     * Restores widget settings with given (part of UGENE architecture).
     * @param state Widgets settings.
     */
-    void setState(const QVariantMap& state);
+    void setState(const QVariantMap &state);
     /*!
     * Restores default widget settings (viewMatrix, glRenderer, color scheme)
     */
@@ -149,7 +154,9 @@ public:
     void setBackgroundColor(QColor backgroundColor);
 
     /** @returns This widget GLFrame */
-    GLFrame *getGLFrame() { return glFrame.data(); }
+    GLFrame *getGLFrame() {
+        return glFrame.data();
+    }
 
     /** Draws scene without setting camera */
     void draw();
@@ -160,7 +167,9 @@ public:
     /** @returns scene bounding sphere radius */
     float getSceneRadius() const;
 
-    void setImageRenderingMode(bool status) { imageRenderingMode = status; }
+    void setImageRenderingMode(bool status) {
+        imageRenderingMode = status;
+    }
 
 protected:
     /*!
@@ -188,7 +197,7 @@ protected:
     /*!
     * QWidget virtual function, mouse wheel event handler.
     */
-    void wheelEvent ( QWheelEvent * event );
+    void wheelEvent(QWheelEvent *event);
     /*!
     * QWidget virtual function, executes context menu.
     */
@@ -202,7 +211,7 @@ private:
     * Sets light position.
     * @param pos New light source position. Directional light is being used.
     */
-    void setLightPosition(const Vector3D& pos);
+    void setLightPosition(const Vector3D &pos);
 
     // controller logic
     //! Creates actions for existing GLRenderers, loads default renderer.
@@ -214,7 +223,7 @@ private:
     void createStrucluralAlignmentActions();
 
     //! Creates menu for structural alignment
-    QMenu* createStructuralAlignmentMenu();
+    QMenu *createStructuralAlignmentMenu();
 
     void createActions();
     void createMenus();
@@ -259,20 +268,20 @@ private:
 
 private:
     // related sequences view
-    const AnnotatedDNAView* dnaView;
+    const AnnotatedDNAView *dnaView;
 
     QList<BioStruct3DRendererContext> contexts;
 
     // Settings common for all renderers, such as detail level
     BioStruct3DRendererSettings rendererSettings;
 
-    GLFrameManager* frameManager;
+    GLFrameManager *frameManager;
     QScopedPointer<GLFrame> glFrame;
 
     QScopedPointer<MolecularSurface> molSurface;
     QScopedPointer<MolecularSurfaceRenderer> surfaceRenderer;
 
-    MolecularSurfaceCalcTask* surfaceCalcTask;
+    MolecularSurfaceCalcTask *surfaceCalcTask;
 
     AnaglyphStatus anaglyphStatus;
     QScopedPointer<AnaglyphRenderer> anaglyph;
@@ -292,7 +301,7 @@ private:
 
     QColor backgroundColor;
     QColor selectionColor;
-    QTimer* animationTimer;
+    QTimer *animationTimer;
 
     int unselectedShadingLevel;
     // Should be true when painting an image
@@ -321,36 +330,36 @@ private:
     QMenu *displayMenu;
 
 private slots:
-     void sl_selectColorScheme(QAction* action);
-     void sl_selectGLRenderer(QAction* action);
-     void sl_updateRenderSettings(const QStringList& list);
-     void sl_acitvateSpin();
-     void sl_updateAnnimation();
-     void sl_settings();
-     void sl_exportImage();
+    void sl_selectColorScheme(QAction *action);
+    void sl_selectGLRenderer(QAction *action);
+    void sl_updateRenderSettings(const QStringList &list);
+    void sl_acitvateSpin();
+    void sl_updateAnnimation();
+    void sl_settings();
+    void sl_exportImage();
 
-     // structural alignment relalated slots
-     void sl_alignWith();
-     void sl_resetAlignment();
-     void sl_onAlignmentDone(Task*);
+    // structural alignment relalated slots
+    void sl_alignWith();
+    void sl_resetAlignment();
+    void sl_onAlignmentDone(Task *);
 
-     // slots for handling sequence selection
-     void sl_onSequenceAddedToADV(ADVSequenceObjectContext *ctx);
-     void sl_onSequenceRemovedFromADV(ADVSequenceObjectContext *ctx);
-     void sl_onSequenceSelectionChanged(LRegionsSelection* s, const QVector<U2Region>& added, const QVector<U2Region>& removed);
+    // slots for handling sequence selection
+    void sl_onSequenceAddedToADV(ADVSequenceObjectContext *ctx);
+    void sl_onSequenceRemovedFromADV(ADVSequenceObjectContext *ctx);
+    void sl_onSequenceSelectionChanged(LRegionsSelection *s, const QVector<U2Region> &added, const QVector<U2Region> &removed);
 
-     // slots for select/deselect shown models actions
-     // they affects only first biostruct
-     void sl_selectModels();
+    // slots for select/deselect shown models actions
+    // they affects only first biostruct
+    void sl_selectModels();
 
-     // slots for surface renderers
-     void sl_showSurface();
-     void sl_hideSurface();
-     void sl_selectSurfaceRenderer(QAction* surfaceRenderer);
+    // slots for surface renderers
+    void sl_showSurface();
+    void sl_hideSurface();
+    void sl_selectSurfaceRenderer(QAction *surfaceRenderer);
 
-     // used only for handling MolecularSurfaceCalcTask
-     // should be in special MolecularSurfaceProxy
-     void sl_onTaskFinished(Task* task);
+    // used only for handling MolecularSurfaceCalcTask
+    // should be in special MolecularSurfaceProxy
+    void sl_onTaskFinished(Task *task);
 
 public:
     static const QString BACKGROUND_COLOR_NAME;
@@ -367,6 +376,6 @@ public:
     static const QString ANAGLYPH_STATUS_NAME;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_OPENGL_WIDGET_H
+#endif    // _U2_OPENGL_WIDGET_H

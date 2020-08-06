@@ -30,8 +30,7 @@
 
 namespace U2 {
 
-
-class FormatSettingsGUIPageController: public AppSettingsGUIPageController {
+class FormatSettingsGUIPageController : public AppSettingsGUIPageController {
     Q_OBJECT
 public:
     FormatSettingsGUIPageController(QObject *p = NULL);
@@ -42,22 +41,24 @@ public:
 
     virtual AppSettingsGUIPageWidget *createWidget(AppSettingsGUIPageState *data);
 
-    const QString& getHelpPageId() const {return helpPageId;};
+    const QString &getHelpPageId() const {
+        return helpPageId;
+    };
 
 private:
     static const QString helpPageId;
 };
 
-
 class FormatSettingsGUIPageState : public AppSettingsGUIPageState {
     Q_OBJECT
 public:
-    FormatSettingsGUIPageState() : caseMode(NO_CASE_ANNS) {}
+    FormatSettingsGUIPageState()
+        : caseMode(NO_CASE_ANNS) {
+    }
     CaseAnnotationsMode caseMode;
 };
 
-
-class FormatSettingsGUIPageWidget: public AppSettingsGUIPageWidget, public Ui_FormatSettingsWidget {
+class FormatSettingsGUIPageWidget : public AppSettingsGUIPageWidget, public Ui_FormatSettingsWidget {
     Q_OBJECT
 public:
     FormatSettingsGUIPageWidget(FormatSettingsGUIPageController *ctrl);
@@ -70,6 +71,6 @@ private:
     QMap<CaseAnnotationsMode, QString> caseAnnsModeNames;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_FORMAT_SETTINGS_GUI_CONTROLLER_H_
+#endif    // _U2_FORMAT_SETTINGS_GUI_CONTROLLER_H_

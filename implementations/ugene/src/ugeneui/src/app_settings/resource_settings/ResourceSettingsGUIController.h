@@ -24,56 +24,58 @@
 
 #include <ui_ResourceSettingsWidget.h>
 
-#include <U2Core/NetworkConfiguration.h>
-#include <U2Gui/AppSettingsGUI.h>
-
 #include <QUrl>
+
+#include <U2Core/NetworkConfiguration.h>
+
+#include <U2Gui/AppSettingsGUI.h>
 
 namespace U2 {
 
-
-class ResourceSettingsGUIPageController: public AppSettingsGUIPageController {
+class ResourceSettingsGUIPageController : public AppSettingsGUIPageController {
     Q_OBJECT
 public:
-    ResourceSettingsGUIPageController(QObject* p = NULL);
+    ResourceSettingsGUIPageController(QObject *p = NULL);
 
-    virtual AppSettingsGUIPageState* getSavedState();
+    virtual AppSettingsGUIPageState *getSavedState();
 
-    virtual void saveState(AppSettingsGUIPageState* s);
+    virtual void saveState(AppSettingsGUIPageState *s);
 
-    virtual AppSettingsGUIPageWidget* createWidget(AppSettingsGUIPageState* data);
+    virtual AppSettingsGUIPageWidget *createWidget(AppSettingsGUIPageState *data);
 
-    const QString& getHelpPageId() const {return helpPageId;};
+    const QString &getHelpPageId() const {
+        return helpPageId;
+    };
 
 private:
     static const QString helpPageId;
 };
 
-
 class ResourceSettingsGUIPageState : public AppSettingsGUIPageState {
     Q_OBJECT
 public:
-    ResourceSettingsGUIPageState() : nCpus(0), nThreads(0), maxMem(0){}
+    ResourceSettingsGUIPageState()
+        : nCpus(0), nThreads(0), maxMem(0) {
+    }
     int nCpus;
     int nThreads;
     int maxMem;
 };
 
-
-class ResourceSettingsGUIPageWidget: public AppSettingsGUIPageWidget, public Ui_ResourceSettingsWidget {
+class ResourceSettingsGUIPageWidget : public AppSettingsGUIPageWidget, public Ui_ResourceSettingsWidget {
     Q_OBJECT
 public:
-    ResourceSettingsGUIPageWidget(ResourceSettingsGUIPageController* ctrl);
+    ResourceSettingsGUIPageWidget(ResourceSettingsGUIPageController *ctrl);
 
-    virtual void setState(AppSettingsGUIPageState* state);
+    virtual void setState(AppSettingsGUIPageState *state);
 
-    virtual AppSettingsGUIPageState* getState(QString& err) const;
+    virtual AppSettingsGUIPageState *getState(QString &err) const;
 
 private slots:
     void sl_threadsCountChanged(int n);
     void sl_cpuCountChanged(int n);
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

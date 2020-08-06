@@ -23,8 +23,8 @@
 #define _U2_PRIMER_STATISTICS_H_
 
 #include <QObject>
-#include "PrimerDimersFinder.h"
 
+#include "PrimerDimersFinder.h"
 
 namespace U2 {
 
@@ -33,10 +33,10 @@ class PrimerStatistics : public QObject {
 public:
     static bool checkPcrPrimersPair(const QByteArray &forward, const QByteArray &reverse, QString &message);
     static double getMeltingTemperature(const QByteArray &sequence);
-    static double getMeltingTemperature(const QByteArray& initialPrimer, const QByteArray& alternativePrimer);
+    static double getMeltingTemperature(const QByteArray &initialPrimer, const QByteArray &alternativePrimer);
     static double getAnnealingTemperature(const QByteArray &product, const QByteArray &forwardPrimer, const QByteArray &reversePrimer);
 
-    static bool validate(const QByteArray& primer);
+    static bool validate(const QByteArray &primer);
     static bool validate(QString primer);
 
     static QString getDoubleStringValue(double value);
@@ -44,14 +44,16 @@ public:
 
 class PrimerStatisticsCalculator {
 public:
-    enum Direction {Forward, Reverse, DoesntMatter};
+    enum Direction { Forward,
+                     Reverse,
+                     DoesntMatter };
     PrimerStatisticsCalculator(const QByteArray &sequence, Direction direction = DoesntMatter);
 
     double getGC() const;
     double getTm() const;
     int getGCClamp() const;
     int getRuns() const;
-    const DimerFinderResult& getDimersInfo() const;
+    const DimerFinderResult &getDimersInfo() const;
 
     QString getFirstError() const;
 
@@ -94,19 +96,26 @@ public:
     static const QString TmString;
     static QString toString(double value);
 
-    const PrimerStatisticsCalculator& getForwardCalculator(){return forward;}
-    const PrimerStatisticsCalculator& getReverseCalculator(){return reverse;}
+    const PrimerStatisticsCalculator &getForwardCalculator() {
+        return forward;
+    }
+    const PrimerStatisticsCalculator &getReverseCalculator() {
+        return reverse;
+    }
 
-    bool isHeteroDimers() {return dimersInfo.canBeFormed;}
+    bool isHeteroDimers() {
+        return dimersInfo.canBeFormed;
+    }
 
 private:
-    void addDimersToReport(QString& report) const;
+    void addDimersToReport(QString &report) const;
+
 private:
     DimerFinderResult dimersInfo;
     PrimerStatisticsCalculator forward;
     PrimerStatisticsCalculator reverse;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_PRIMER_STATISTICS_H_
+#endif    // _U2_PRIMER_STATISTICS_H_

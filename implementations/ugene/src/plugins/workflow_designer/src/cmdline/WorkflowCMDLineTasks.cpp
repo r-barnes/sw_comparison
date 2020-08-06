@@ -19,25 +19,26 @@
  * MA 02110-1301, USA.
  */
 
+#include "WorkflowCMDLineTasks.h"
+
 #include <QFile>
 
 #include <U2Core/AppContext.h>
+#include <U2Core/CMDLineCoreOptions.h>
+#include <U2Core/CMDLineRegistry.h>
+#include <U2Core/CMDLineUtils.h>
+#include <U2Core/Counter.h>
 #include <U2Core/L10n.h>
 #include <U2Core/Log.h>
 #include <U2Core/Settings.h>
-#include <U2Core/Counter.h>
-#include <U2Core/CMDLineRegistry.h>
-#include <U2Core/CMDLineUtils.h>
-#include <U2Core/CMDLineCoreOptions.h>
 
 #include <U2Lang/URLAttribute.h>
 #include <U2Lang/WorkflowEnv.h>
-#include <U2Lang/WorkflowUtils.h>
 #include <U2Lang/WorkflowManager.h>
 #include <U2Lang/WorkflowRunTask.h>
+#include <U2Lang/WorkflowUtils.h>
 
 #include "WorkflowDesignerPlugin.h"
-#include "WorkflowCMDLineTasks.h"
 
 #define WORKFLOW_CMDLINE_TASK_LOG_CAT "Workflow cmdline tasks"
 
@@ -51,129 +52,128 @@ WorkflowRunFromCMDLineBase::WorkflowRunFromCMDLineBase()
       schema(NULL),
       optionsStartAt(-1),
       loadTask(NULL),
-      workflowRunTask(NULL)
-{
-    GCOUNTER(cvar,tvar,"workflow_run_from_cmdline");
+      workflowRunTask(NULL) {
+    GCOUNTER(cvar, tvar, "workflow_run_from_cmdline");
 
-    CMDLineRegistry * cmdLineRegistry = AppContext::getCMDLineRegistry();
+    CMDLineRegistry *cmdLineRegistry = AppContext::getCMDLineRegistry();
 
     // try to process schema without 'task' option (it can only be the first one)
     QStringList pureValues = CMDLineRegistryUtils::getPureValues();
-    if( !pureValues.isEmpty() ) {
+    if (!pureValues.isEmpty()) {
         QString schemaName = pureValues.first();
-        processLoadSchemaTask( schemaName, 1 ); // because after program name
+        processLoadSchemaTask(schemaName, 1);    // because after program name
     }
-    if( loadTask != NULL ) {
-        addSubTask( loadTask );
+    if (loadTask != NULL) {
+        addSubTask(loadTask);
         return;
     }
 
     // process schema with 'task' option
-    int taskOptionIdx = CMDLineRegistryUtils::getParameterIndex( WorkflowDesignerPlugin::RUN_WORKFLOW );
-    if(taskOptionIdx != -1) {
-        processLoadSchemaTask( cmdLineRegistry->getParameterValue( WorkflowDesignerPlugin::RUN_WORKFLOW, taskOptionIdx ), taskOptionIdx );
+    int taskOptionIdx = CMDLineRegistryUtils::getParameterIndex(WorkflowDesignerPlugin::RUN_WORKFLOW);
+    if (taskOptionIdx != -1) {
+        processLoadSchemaTask(cmdLineRegistry->getParameterValue(WorkflowDesignerPlugin::RUN_WORKFLOW, taskOptionIdx), taskOptionIdx);
     }
-    if( loadTask == NULL ) {
-        setError( tr( "no task to run" ) );
+    if (loadTask == NULL) {
+        setError(tr("no task to run"));
         return;
     }
-    addSubTask( loadTask );
+    addSubTask(loadTask);
 }
 
-void WorkflowRunFromCMDLineBase::processLoadSchemaTask( const QString & schemaNameCandidate, int optionIdx ) {
-    loadTask = prepareLoadSchemaTask( schemaNameCandidate );
-    if( loadTask != NULL ) {
+void WorkflowRunFromCMDLineBase::processLoadSchemaTask(const QString &schemaNameCandidate, int optionIdx) {
+    loadTask = prepareLoadSchemaTask(schemaNameCandidate);
+    if (loadTask != NULL) {
         schemaName = schemaNameCandidate;
         optionsStartAt = optionIdx + 1;
     }
 }
 
-LoadWorkflowTask * WorkflowRunFromCMDLineBase::prepareLoadSchemaTask( const QString & schemaName ) {
-    QString pathToSchema = WorkflowUtils::findPathToSchemaFile( schemaName );
-    if( pathToSchema.isEmpty() ) {
-        coreLog.error( tr( "Cannot find workflow: %1" ).arg( schemaName ) );
+LoadWorkflowTask *WorkflowRunFromCMDLineBase::prepareLoadSchemaTask(const QString &schemaName) {
+    QString pathToSchema = WorkflowUtils::findPathToSchemaFile(schemaName);
+    if (pathToSchema.isEmpty()) {
+        coreLog.error(tr("Cannot find workflow: %1").arg(schemaName));
         return NULL;
     }
 
     schema = new Schema();
     schema->setDeepCopyFlag(true);
-    return new LoadWorkflowTask( schema, NULL, pathToSchema );
+    return new LoadWorkflowTask(schema, NULL, pathToSchema);
 }
 
 WorkflowRunFromCMDLineBase::~WorkflowRunFromCMDLineBase() {
     delete schema;
 }
 
-static void setSchemaCMDLineOptions( Schema * schema, int optionsStartAtIdx ) {
-    assert( schema != NULL && optionsStartAtIdx > 0 );
+static void setSchemaCMDLineOptions(Schema *schema, int optionsStartAtIdx) {
+    assert(schema != NULL && optionsStartAtIdx > 0);
 
     QList<StrStrPair> parameters = AppContext::getCMDLineRegistry()->getParameters();
     int sz = parameters.size();
-    for( int i = optionsStartAtIdx; i < sz; ++i ) {
-        const StrStrPair & param = parameters.at(i);
-        if( param.first.isEmpty() ) { // TODO: unnamed parameters not supported yet
+    for (int i = optionsStartAtIdx; i < sz; ++i) {
+        const StrStrPair &param = parameters.at(i);
+        if (param.first.isEmpty()) {    // TODO: unnamed parameters not supported yet
             continue;
         }
 
         QString paramAlias = param.first;
         QString paramName;
-        Actor * actor = WorkflowUtils::findActorByParamAlias( schema->getProcesses(), paramAlias, paramName );
-        if( actor == NULL ) {
-            assert( paramName.isEmpty() );
-            coreLog.details( WorkflowRunFromCMDLineBase::tr( "alias '%1' not set in workflow" ).arg( paramAlias ) );
+        Actor *actor = WorkflowUtils::findActorByParamAlias(schema->getProcesses(), paramAlias, paramName);
+        if (actor == NULL) {
+            assert(paramName.isEmpty());
+            coreLog.details(WorkflowRunFromCMDLineBase::tr("alias '%1' not set in workflow").arg(paramAlias));
             continue;
         }
 
-        Attribute * attr = actor->getParameter( paramName );
-        if( attr == NULL ) {
-            coreLog.error( WorkflowRunFromCMDLineBase::tr( "actor parameter '%1' not found" ).arg( paramName ) );
+        Attribute *attr = actor->getParameter(paramName);
+        if (attr == NULL) {
+            coreLog.error(WorkflowRunFromCMDLineBase::tr("actor parameter '%1' not found").arg(paramName));
             continue;
         }
 
-        DataTypeValueFactory * valueFactory = WorkflowEnv::getDataTypeValueFactoryRegistry()->
-            getById( attr->getAttributeType()->getId() );
-        if( valueFactory == NULL ) {
-            coreLog.error( WorkflowRunFromCMDLineBase::tr( "cannot parse value from '%1'" ).arg( param.second ) );
+        DataTypeValueFactory *valueFactory = WorkflowEnv::getDataTypeValueFactoryRegistry()->getById(attr->getAttributeType()->getId());
+        if (valueFactory == NULL) {
+            coreLog.error(WorkflowRunFromCMDLineBase::tr("cannot parse value from '%1'").arg(param.second));
             continue;
         }
 
         ActorId id = actor->getId();
         bool isOk;
-        QVariant value = valueFactory->getValueFromString( param.second, &isOk );
-        if(!isOk){
-            coreLog.error( WorkflowRunFromCMDLineBase::tr( "Incorrect value for '%1', null or default value passed to workflow" ).
-                arg( param.first ));
+        QVariant value = valueFactory->getValueFromString(param.second, &isOk);
+        if (!isOk) {
+            coreLog.error(WorkflowRunFromCMDLineBase::tr("Incorrect value for '%1', null or default value passed to workflow").arg(param.first));
             continue;
         }
         attr->setAttributeValue(value);
     }
 }
 
-QList<Task*> WorkflowRunFromCMDLineBase::onSubTaskFinished( Task* subTask ) {
-    assert( subTask != NULL );
-    QList<Task*> res;
+QList<Task *> WorkflowRunFromCMDLineBase::onSubTaskFinished(Task *subTask) {
+    assert(subTask != NULL);
+    QList<Task *> res;
 
     propagateSubtaskError();
-    if( hasError() || isCanceled() ) {
+    if (hasError() || isCanceled()) {
         return res;
     }
-    assert( !hasError() ); // if error, we won't be here
+    assert(!hasError());    // if error, we won't be here
 
-    if( loadTask == subTask ) {
-        Schema * schema = loadTask->getSchema();
-        assert( schema != NULL );
+    if (loadTask == subTask) {
+        Schema *schema = loadTask->getSchema();
+        assert(schema != NULL);
         remapping = loadTask->getRemapping();
 
-        setSchemaCMDLineOptions( schema, optionsStartAt );
-        if( schema->getDomain().isEmpty() ) {
+        setSchemaCMDLineOptions(schema, optionsStartAt);
+        if (schema->getDomain().isEmpty()) {
             QList<QString> domainsId = WorkflowEnv::getDomainRegistry()->getAllIds();
             assert(!domainsId.isEmpty());
-            if(!domainsId.isEmpty()) { schema->setDomain(domainsId.first()); }
+            if (!domainsId.isEmpty()) {
+                schema->setDomain(domainsId.first());
+            }
         }
 
         QStringList l;
         bool good = WorkflowUtils::validate(*schema, l);
-        if(!good) {
+        if (!good) {
             QString schemaHelpStr = QString("\n\nsee 'ugene --help=%1' for details").arg(schemaName);
             setError("\n\n" + l.join("\n\n") + schemaHelpStr);
             return res;
@@ -203,8 +203,8 @@ void WorkflowRunFromCMDLineBase::run() {
 /*******************************************
 * WorkflowRunFromCMDLineTask
 *******************************************/
-Task * WorkflowRunFromCMDLineTask::getWorkflowRunTask() const {
+Task *WorkflowRunFromCMDLineTask::getWorkflowRunTask() const {
     return new WorkflowRunTask(*schema, remapping);
 }
 
-} // U2
+}    // namespace U2

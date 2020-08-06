@@ -24,8 +24,8 @@
 
 #include <U2Core/U2Region.h>
 
-#include "../MSAEditor.h"
-#include "../MSAEditorSequenceArea.h"
+#include <U2View/MSAEditor.h>
+
 #include "FindPatternMsaWidgetSavableTab.h"
 #include "ov_msa/view_rendering/MaEditorSelection.h"
 #include "ov_sequence/find_pattern/FindPatternTask.h"
@@ -33,7 +33,7 @@
 #include "ui_FindPatternMsaForm.h"
 
 namespace U2 {
-
+class ShowHideSubgroupWidget;
 class ADVSequenceObjectContext;
 class ADVSequenceWidget;
 class AnnotatedDNAView;
@@ -42,13 +42,29 @@ class DNASequenceSelection;
 class Task;
 class U2OpStatus;
 
-class FindPatternMsaWidget : public QWidget, private Ui_FindPatternMsaForm
-{
+/** Find algorithm results with view positioning info. */
+struct FindPatternWidgetResult {
+    FindPatternWidgetResult(qint64 rowId, int viewRowIndex, const U2Region &region);
+
+    /** MA sequence row id. */
+    qint64 rowId;
+
+    /** View row index of the result. -1 if the result is not visible: the result is inside of some collapsed group. */
+    int viewRowIndex;
+
+    /** Region with gaps. */
+    U2Region region;
+};
+
+class FindPatternMsaWidget : public QWidget, private Ui_FindPatternMsaForm {
     Q_OBJECT
 public:
-    FindPatternMsaWidget(MSAEditor* msaEditor);
+    /** Creates a new widget. Activates search-in-name mode if isSearchInNamesMode is yes. Uses the last saved state if isSearchInNamesMode is Unknown. */
+    FindPatternMsaWidget(MSAEditor *msaEditor, TriState isSearchInNamesModeTriState = TriState_Unknown);
 
     int getTargetMsaLength() const;
+
+    void setSearchInNamesMode(bool flag);
 
 private slots:
     void sl_onAlgorithmChanged(int);
@@ -57,13 +73,14 @@ private slots:
     void sl_onSearchPatternChanged();
     void sl_onMaxResultChanged(int);
     void sl_findPatternTaskStateChanged();
+    void sl_searchModeChanged();
+    void sl_groupResultsButtonClicked();
 
     /** A sequence part was added, removed or replaced */
     void sl_onMsaModified();
+    void sl_msaStateChanged();
 
-    void sl_onSelectedRegionChanged(const MaEditorSelection& current, const MaEditorSelection& prev);
-    void sl_activateNewSearch(bool forcedSearch = true);
-    void sl_toggleExtendedAlphabet();
+    void sl_onSelectedRegionChanged(const MaEditorSelection &currentSelection, const MaEditorSelection &prev);
     void sl_prevButtonClicked();
     void sl_nextButtonClicked();
 
@@ -71,38 +88,10 @@ private slots:
     void sl_onShiftEnterPressed();
     void sl_collapseModelChanged();
 
+    void sl_validateStateAndStartNewSearch(bool activatedByOutsideChanges = false);
+
 private:
-    class ResultIterator {
-    public:
-        ResultIterator();
-        ResultIterator(const QMap<int, QList<U2Region> >& results, MSAEditor* msaEditor);
-
-        U2Region currentResult() const;
-        int getGlobalPos() const;
-        int getTotalCount() const;
-        int getMsaRow() const;
-        void goBegin();
-        void goEnd();
-        void goNextResult();
-        void goPrevResult();
-        void collapseModelChanged();
-
-    private:
-        void initSortedResults();
-
-        //visible index, msa rowid, regions for current msa index
-        QMap<int, QList<U2Region> > searchResults;
-        QMap<int, QMap<int, QList<U2Region> > > sortedResults;
-        MSAEditor* msaEditor;
-
-        int totalResultsCounter;
-        int globalPos; //1-based position
-
-        QMap<int, QMap<int, QList<U2Region> > >::const_iterator sortedVisibleRowsIt;
-        QMap<int, QList<U2Region> >::const_iterator msaRowsIt;
-        QList<U2Region>::const_iterator regionsIt;
-    };
-
+    void updateActions();
     void initLayout();
     void initAlgorithmLayout();
     void initRegionSelection();
@@ -110,23 +99,46 @@ private:
     void initMaxResultLenContainer();
     void updateLayout();
     void connectSlots();
-    int  getMaxError(const QString& pattern) const;
-    void showCurrentResult() const;
-    bool isSearchPatternsDifferent(const QList<NamePattern>& newPatterns) const;
+    bool checkRegion();
+    void clearResults();
+
+    /** Returns true if the alignment alphabet is Amino. */
+    bool isAmino() const;
+
+    int getMaxError(const QString &pattern) const;
+
+    /** Assigns valid viewRowIndex value to all results & resorts them based on the view position. */
+    void resortResultsByViewState();
+
+    /** Returns current visible result equal to the selection. Returns -1 if no such result found. */
+    int findCurrentResultIndexFromSelection() const;
+
+    /** Returns next or prev result index using current selection top-left position. */
+    int getNextOrPrevResultIndexFromSelection(bool isNext);
+
+    /** Updates label with current result position. */
+    void updateCurrentResultLabel();
+
+    /** Selects current search result in the MSA editor . */
+    void selectCurrentResult();
+
+    /** Returns true if current MSA editor selection region is equal to the current result. */
+    bool isResultSelected() const;
+
     void stopCurrentSearchTask();
     void correctSearchInCombo();
     void setUpTabOrder() const;
-    QList<NamePattern> updateNamePatterns();
-    void showCurrentResultAndStopProgress(const int current, const int total);
+    void showCurrentResultAndStopProgress();
     void startProgressAnimation();
 
     /**
      * Enables or disables the Search button depending on
      * the Pattern field value (it should be not empty and not too long)
      * and on the validity of the region.
+     * Return true if the search can be started.
      */
-    void checkState();
-    bool checkPatternRegion(const QString& pattern);
+    bool checkStateAndUpdateStatus();
+    bool checkPatternRegion(const QString &pattern);
 
     /**
      * The "Match" spin is disabled if this is an amino acid sequence or
@@ -135,36 +147,40 @@ private:
     void enableDisableMatchSpin();
 
     /** Allows showing of several error messages. */
-    void showHideMessage(bool show, MessageFlag messageFlag, const QString& additionalMsg = QString());
+    void showHideMessage(bool show, MessageFlag messageFlag, const QString &additionalMsg = QString());
 
     /** Checks pattern alphabet and sets error message if needed. Returns false on error or true if no error found */
     bool verifyPatternAlphabet();
-    bool checkAlphabet(const QString& pattern);
+    bool checkAlphabet(const QString &pattern);
     void showTooLongSequenceError();
+    void hideAllMessages();
 
     void setCorrectPatternsString();
     void setRegionToWholeSequence();
 
-    U2Region getCompleteSearchRegion(bool& regionIsCorrect, qint64 maxLen) const;
+    /** Performs in-main thread search in sequence names. */
+    void runSearchInSequenceNames(const QStringList &patterns);
 
-    void initFindPatternTask(const QList< QPair<QString, QString> >& patterns);
+    /**
+     * Checks current UI state and returns either valid or empty region.
+     * Sets 'isRegionIsCorrect' if the region is valid.
+     */
+    U2Region getSearchRegionFromUi(bool &isRegionIsCorrect) const;
 
-    /** Checks if there are several patterns in textPattern which are separated by new line symbol,
-    parse them out and returns with their names (if they're exist). */
-    QList <QPair<QString, QString> > getPatternsFromTextPatternField(U2OpStatus& os) const;
+    void startFindPatternInMsaTask(const QStringList &patterns);
 
-    /** Checks whether the input string is uppercased or not. */
-
-    void changeColorOfMessageText(const QString &colorName);
-    QString currentColorOfMessageText() const;
+    /**
+     * Checks if there are several patterns in textPattern which are separated by new line symbol,
+     * parses them out and returns with their names (if they're exist).
+     */
+    QStringList getPatternsFromTextPatternField(U2OpStatus &os) const;
 
     void updatePatternText(int previousAlgorithm);
 
-    void validateCheckBoxSize(QCheckBox* checkBox, int requiredWidth);
+    /** Post processes allSearchResults list after search task is finished. */
+    void postProcessAllSearchResults();
 
-    MSAEditor* msaEditor;
-    bool isAmino;
-    bool regionIsCorrect;
+    MSAEditor *msaEditor;
     int selectedAlgorithm;
     QString patternString;
     QString patternRegExp;
@@ -172,40 +188,46 @@ private:
     QList<MessageFlag> messageFlags;
 
     /** Widgets in the Algorithm group */
-    QHBoxLayout* layoutMismatch;
-    QVBoxLayout* layoutRegExpLen;
-    QHBoxLayout* layoutRegExpInfo;
+    QHBoxLayout *layoutMismatch;
+    QVBoxLayout *layoutRegExpLen;
 
-    QLabel* lblMatch;
-    QSpinBox* spinMatch;
+    QLabel *lblMatch;
+    QSpinBox *spinMatch;
 
     QWidget *useMaxResultLenContainer;
-    QCheckBox* boxUseMaxResultLen;
-    QSpinBox* boxMaxResultLen;
+    QCheckBox *boxUseMaxResultLen;
+    QSpinBox *boxMaxResultLen;
 
     static const int DEFAULT_RESULTS_NUM_LIMIT;
     static const int DEFAULT_REGEXP_RESULT_LENGTH_LIMIT;
-
-    static const QString NEW_LINE_SYMBOL;
-    static const QString STYLESHEET_COLOR_DEFINITION;
-    static const QString STYLESHEET_DEFINITIONS_SEPARATOR;
 
     static const int REG_EXP_MIN_RESULT_LEN;
     static const int REG_EXP_MAX_RESULT_LEN;
     static const int REG_EXP_MAX_RESULT_SINGLE_STEP;
 
-    QMap<int, QList<U2Region> > findPatternResults;
-    ResultIterator resultIterator;
+    /** Visible only search results. */
+    QList<FindPatternWidgetResult> visibleSearchResults;
+
+    /** All search results: both visible & hidden in collapsed groups. */
+    QList<FindPatternWidgetResult> allSearchResults;
+
+    /** Index of the currently selected result. */
+    int currentResultIndex;
+
     Task *searchTask;
-    QString previousPatternString;
     int previousMaxResult;
-    QStringList patternList;
-    QStringList nameList;
+    QStringList currentSearchPatternList;
     QMovie *progressMovie;
+    bool setSelectionToTheFirstResult;
+    bool isSearchInNamesMode;
 
     FindPatternMsaWidgetSavableTab savableWidget;
+
+    ShowHideSubgroupWidget *algorithmSubgroup;
+    ShowHideSubgroupWidget *searchInSubgroup;
+    ShowHideSubgroupWidget *otherSettingsSubgroup;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_FIND_PATTERN_WIDGET_H_
+#endif    // _U2_FIND_PATTERN_WIDGET_H_

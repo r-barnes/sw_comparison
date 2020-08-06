@@ -19,20 +19,20 @@
  * MA 02110-1301, USA.
  */
 
+#include "ImportOptionsWidget.h"
+
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/U2DbiUtils.h>
 
 #include <U2Formats/AceImporter.h>
 
-#include "ImportOptionsWidget.h"
 #include "ui_ImportOptionsWidget.h"
 
 namespace U2 {
 
-ImportOptionsWidget::ImportOptionsWidget(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui_ImportOptionsWidget)
-{
+ImportOptionsWidget::ImportOptionsWidget(QWidget *parent)
+    : QWidget(parent),
+      ui(new Ui_ImportOptionsWidget) {
     ui->setupUi(this);
 }
 
@@ -40,7 +40,7 @@ ImportOptionsWidget::~ImportOptionsWidget() {
     delete ui;
 }
 
-void ImportOptionsWidget::init(const QString& baseFolder, const ImportToDatabaseOptions& options) {
+void ImportOptionsWidget::init(const QString &baseFolder, const ImportToDatabaseOptions &options) {
     ui->leBaseFolder->setText(baseFolder);
 
     ui->cbRecursively->setChecked(options.processFoldersRecursively);
@@ -51,22 +51,22 @@ void ImportOptionsWidget::init(const QString& baseFolder, const ImportToDatabase
     ui->cbCreateSubfoldersforDocs->setChecked(options.createSubfolderForEachDocument);
 
     switch (options.multiSequencePolicy) {
-        case ImportToDatabaseOptions::SEPARATE:
-            ui->rbSeparate->setChecked(true);
-            break;
-        case ImportToDatabaseOptions::MERGE:
-            ui->rbMerge->setChecked(true);
-            ui->sbMerge->setValue(options.mergeMultiSequencePolicySeparatorSize);
-            break;
-        case ImportToDatabaseOptions::MALIGNMENT:
-            ui->rbMalignment->setChecked(true);
-            break;
+    case ImportToDatabaseOptions::SEPARATE:
+        ui->rbSeparate->setChecked(true);
+        break;
+    case ImportToDatabaseOptions::MERGE:
+        ui->rbMerge->setChecked(true);
+        ui->sbMerge->setValue(options.mergeMultiSequencePolicySeparatorSize);
+        break;
+    case ImportToDatabaseOptions::MALIGNMENT:
+        ui->rbMalignment->setChecked(true);
+        break;
     }
 
     foreach (const QString &formatId, options.preferredFormats) {
         if (BaseDocumentFormats::ACE == formatId) {
             ui->rbAceAsMalignment->setChecked(true);
-        } else  if (AceImporter::ID == formatId) {
+        } else if (AceImporter::ID == formatId) {
             ui->rbAceAsAssembly->setChecked(true);
         }
     }
@@ -104,4 +104,4 @@ ImportToDatabaseOptions ImportOptionsWidget::getOptions() const {
     return options;
 }
 
-}   // namespace U2
+}    // namespace U2

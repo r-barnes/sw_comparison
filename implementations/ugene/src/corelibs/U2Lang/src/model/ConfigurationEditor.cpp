@@ -19,17 +19,16 @@
  * MA 02110-1301, USA.
  */
 
+#include "ConfigurationEditor.h"
+
 #include <QHBoxLayout>
 
-#include <U2Core//U2SafePoints.h>
-
-#include "ConfigurationEditor.h"
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
 PropertyWidget::PropertyWidget(QWidget *parent, DelegateTags *_tags)
-    : QWidget(parent), _tags(_tags), schemaConfig(NULL)
-{
+    : QWidget(parent), _tags(_tags), schemaConfig(NULL) {
     QHBoxLayout *l = new QHBoxLayout();
     l->setContentsMargins(0, 0, 0, 0);
     l->setSpacing(0);
@@ -37,7 +36,6 @@ PropertyWidget::PropertyWidget(QWidget *parent, DelegateTags *_tags)
 }
 
 PropertyWidget::~PropertyWidget() {
-
 }
 
 void PropertyWidget::addMainWidget(QWidget *w) {
@@ -47,19 +45,17 @@ void PropertyWidget::addMainWidget(QWidget *w) {
     w->setObjectName("mainWidget");
 }
 
-QWidget * PropertyWidget::getField() {
+QWidget *PropertyWidget::getField() {
     return NULL;
 }
 
 void PropertyWidget::setRequired() {
-
 }
 
 void PropertyWidget::activate() {
-
 }
 
-const DelegateTags * PropertyWidget::tags() const {
+const DelegateTags *PropertyWidget::tags() const {
     return _tags;
 }
 
@@ -73,25 +69,23 @@ void PropertyWidget::setSchemaConfig(SchemaConfig *value) {
 }
 
 PropertyDelegate::PropertyDelegate(QObject *parent)
-: QItemDelegate(parent), schemaConfig(NULL)
-{
+    : QItemDelegate(parent), schemaConfig(NULL) {
     _tags = new DelegateTags();
     _tags->setParent(this);
 }
 
 PropertyDelegate::~PropertyDelegate() {
-
 }
 
 QVariant PropertyDelegate::getDisplayValue(const QVariant &v) const {
     return v;
 }
 
-PropertyDelegate * PropertyDelegate::clone() {
+PropertyDelegate *PropertyDelegate::clone() {
     return new PropertyDelegate(parent());
 }
 
-PropertyWidget * PropertyDelegate::createWizardWidget(U2OpStatus &os, QWidget * /*parent*/) const {
+PropertyWidget *PropertyDelegate::createWizardWidget(U2OpStatus &os, QWidget * /*parent*/) const {
     os.setError("Unsupported operation");
     return NULL;
 }
@@ -100,7 +94,7 @@ PropertyDelegate::Type PropertyDelegate::type() const {
     return NO_TYPE;
 }
 
-DelegateTags * PropertyDelegate::tags() const {
+DelegateTags *PropertyDelegate::tags() const {
     return _tags;
 }
 
@@ -113,12 +107,11 @@ const QString DelegateTags::FILTER = "filter";
 const QString DelegateTags::FORMAT = "format";
 
 DelegateTags::DelegateTags(QObject *parent)
-: QObject(parent)
-{
-
+    : QObject(parent) {
 }
 
-DelegateTags::DelegateTags(const DelegateTags &other) : QObject(NULL) {
+DelegateTags::DelegateTags(const DelegateTags &other)
+    : QObject(NULL) {
     tags = other.tags;
 }
 
@@ -148,9 +141,9 @@ QStringList DelegateTags::getStringList(const DelegateTags *tags, const QString 
     return tags->get(name).toStringList();
 }
 
-DelegateTags &DelegateTags::operator =(const DelegateTags &other) {
+DelegateTags &DelegateTags::operator=(const DelegateTags &other) {
     tags = other.tags;
     return *this;
 }
 
-} // U2
+}    // namespace U2

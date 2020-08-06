@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CheckUpdatesTask.h"
+
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QNetworkReply>
@@ -35,25 +37,22 @@
 
 #include "update/UgeneUpdater.h"
 
-#include "CheckUpdatesTask.h"
-
 namespace U2 {
 
-CheckUpdatesTask::CheckUpdatesTask(bool startUp) 
-:Task(tr("Check for updates"), TaskFlag_None)
-{
+CheckUpdatesTask::CheckUpdatesTask(bool startUp)
+    : Task(tr("Check for updates"), TaskFlag_None) {
     runOnStartup = startUp;
     setVerboseLogMode(true);
     startError = false;
 }
 
-#define SITE_URL  QString("ugene.net")
+#define SITE_URL QString("ugene.net")
 #define PAGE_NAME QString("/current_version.html")
 
 void CheckUpdatesTask::run() {
     stateInfo.setDescription(tr("Connecting to updates server"));
-    NetworkConfiguration* nc = AppContext::getAppSettings()->getNetworkConfiguration();
-    SAFE_POINT(nc != NULL, "Network configuration is null", );
+    NetworkConfiguration *nc = AppContext::getAppSettings()->getNetworkConfiguration();
+    SAFE_POINT(nc != nullptr, "Network configuration is null", );
 
     bool isProxy = nc->isProxyUsed(QNetworkProxy::HttpProxy);
     bool isException = nc->getExceptionsList().contains(SITE_URL);
@@ -61,11 +60,12 @@ void CheckUpdatesTask::run() {
     if (isProxy && !isException) {
         http.setProxy(nc->getProxy(QNetworkProxy::HttpProxy));
     }
-    QString siteVersionText = http.syncGet(QUrl("http://"+SITE_URL + PAGE_NAME));
-    if (siteVersionText.isEmpty()){
-        if(!runOnStartup){
-            stateInfo.setError(  tr("Cannot load the current version."));
-        }else{
+    // The following call blocks some UI tasks (Close project), so don't make it run long.
+    QString siteVersionText = http.syncGet(QUrl("http://" + SITE_URL + PAGE_NAME), 5000);
+    if (siteVersionText.isEmpty()) {
+        if (!runOnStartup) {
+            stateInfo.setError(tr("Cannot load the current version."));
+        } else {
             uiLog.error(tr("Cannot load the current version."));
             startError = true;
         }
@@ -74,9 +74,9 @@ void CheckUpdatesTask::run() {
     stateInfo.setDescription(QString());
 
     if (http.error() != QNetworkReply::NoError) {
-        if(!runOnStartup){
-            stateInfo.setError(  tr("Connection error while checking for updates: %1").arg(http.errorString()) );
-        }else{
+        if (!runOnStartup) {
+            stateInfo.setError(tr("Connection error while checking for updates: %1").arg(http.errorString()));
+        } else {
             uiLog.error(tr("Connection error while checking for updates: %1").arg(http.errorString()));
             startError = true;
         }
@@ -103,20 +103,20 @@ Task::ReportResult CheckUpdatesTask::report() {
     }
 
     switch (answer) {
-        case Update:
-            UgeneUpdater::getInstance()->update();
-            break;
-        case Skip:
-            UgeneUpdater::skipUpdate(siteVersion);
-            break;
-        case DoNothing:
-        default:
-            break;
+    case Update:
+        UgeneUpdater::getInstance()->update();
+        break;
+    case Skip:
+        UgeneUpdater::skipUpdate(siteVersion);
+        break;
+    case DoNothing:
+    default:
+        break;
     }
     return ReportResult_Finished;
 }
 
-void CheckUpdatesTask::sl_registerInTaskScheduler(){
+void CheckUpdatesTask::sl_registerInTaskScheduler() {
     AppContext::getTaskScheduler()->registerTopLevelTask(this);
 }
 
@@ -184,4 +184,4 @@ QString VersionMessage::getMessageText(const Version &thisVersion, const Version
     return message;
 }
 
-} //namespace
+}    // namespace U2

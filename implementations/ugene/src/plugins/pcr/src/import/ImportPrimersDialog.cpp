@@ -19,9 +19,12 @@
  * MA 02110-1301, USA.
  */
 
+#include "ImportPrimersDialog.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/FormatUtils.h>
 #include <U2Core/ProjectModel.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/Task.h>
 #include <U2Core/U2SafePoints.h>
 
@@ -30,11 +33,9 @@
 #include <U2Gui/ProjectTreeItemSelectorDialog.h>
 #include <U2Gui/ProjectUtils.h>
 #include <U2Gui/SharedConnectionsDialog.h>
-#include <U2Core/QObjectScopedPointer.h>
 #include <U2Gui/U2FileDialog.h>
 
 #include "ImportPrimerFromObjectTask.h"
-#include "ImportPrimersDialog.h"
 #include "ImportPrimersFromFileTask.h"
 #include "ImportPrimersFromFolderTask.h"
 #include "ImportPrimersMultiTask.h"
@@ -44,12 +45,11 @@ namespace U2 {
 const QString ImportPrimersDialog::LOCAL_FILES = QObject::tr("Local file(s)");
 const QString ImportPrimersDialog::SHARED_DB = QObject::tr("Shared database");
 
-ImportPrimersDialog::ImportPrimersDialog(QWidget *parent) :
-    QDialog(parent),
-    waitForConnection(false)
-{
+ImportPrimersDialog::ImportPrimersDialog(QWidget *parent)
+    : QDialog(parent),
+      waitForConnection(false) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742643");
+    new HelpButton(this, buttonBox, "46501130");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Import"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
     init();
@@ -221,4 +221,4 @@ ProjectTreeControllerModeSettings ImportPrimersDialog::prepareProjectItemsSelect
     return settings;
 }
 
-}   // namespace U2
+}    // namespace U2

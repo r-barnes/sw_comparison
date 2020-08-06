@@ -24,6 +24,7 @@
 
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
+
 #include "ClustalOSupportTask.h"
 
 namespace U2 {
@@ -33,7 +34,8 @@ namespace LocalWorkflow {
 class ClustalOPrompter : public PrompterBase<ClustalOPrompter> {
     Q_OBJECT
 public:
-    ClustalOPrompter(Actor* p = 0);
+    ClustalOPrompter(Actor *p = 0);
+
 protected:
     QString composeRichDoc();
 };
@@ -41,10 +43,10 @@ protected:
 class ClustalOWorker : public BaseWorker {
     Q_OBJECT
 public:
-    ClustalOWorker(Actor* a);
+    ClustalOWorker(Actor *a);
 
     virtual void init();
-    virtual Task* tick();
+    virtual Task *tick();
     virtual void cleanup();
 
 private slots:
@@ -52,20 +54,23 @@ private slots:
 
 protected:
     IntegralBus *input, *output;
-    QString resultName,transId;
+    QString resultName, transId;
     ClustalOSupportTaskSettings cfg;
-
 };
 
 class ClustalOWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
     static void init();
-    ClustalOWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual Worker* createWorker(Actor* a) {return new ClustalOWorker(a);}
+    ClustalOWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual Worker *createWorker(Actor *a) {
+        return new ClustalOWorker(a);
+    }
 };
 
-} // Workflow namespace
-} // U2 namespace
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

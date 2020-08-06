@@ -20,14 +20,16 @@
  */
 
 #include "GTTestsDnaAssembly.h"
-#include "GTUtilsTaskTreeView.h"
-#include "primitives/GTMenu.h"
 #include <base_dialogs/MessageBoxFiller.h>
-#include "runnables/ugene/corelibs/U2Gui/AlignShortReadsDialogFiller.h"
-#include "runnables/ugene/corelibs/U2Gui/ImportBAMFileDialogFiller.h"
+
+#include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/ToolsMenu.h>
-#include <U2Core/U2SafePoints.h>
+
+#include "GTUtilsTaskTreeView.h"
+#include "primitives/GTMenu.h"
+#include "runnables/ugene/corelibs/U2Gui/AlignShortReadsDialogFiller.h"
+#include "runnables/ugene/corelibs/U2Gui/ImportBAMFileDialogFiller.h"
 
 namespace U2 {
 namespace GUITest_dna_assembly {
@@ -46,7 +48,9 @@ GUI_TEST_CLASS_DEFINITION(test_0001) {
     GTUtilsDialog::waitForDialog(os, new MessageBoxDialogFiller(os, QMessageBox::Ok));
     CHECK_OP(os, );
 
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "NGS data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "NGS data analysis"
+                                                << "Map reads to reference...");
     CHECK_OP(os, );
 
     GTGlobals::sleep(5000);
@@ -61,7 +65,9 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
 
     GTUtilsDialog::waitForDialog(os, new AlignShortReadsFiller(os, &parameters));
     GTUtilsDialog::waitForDialog(os, new ImportBAMFileFiller(os, sandBoxDir + "GUITest_dna_assembly_test_0002.ugenedb"));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "NGS data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "NGS data analysis"
+                                                << "Map reads to reference...");
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
 }
@@ -76,7 +82,9 @@ GUI_TEST_CLASS_DEFINITION(test_0003) {
 
     GTUtilsDialog::waitForDialog(os, new AlignShortReadsFiller(os, &parameters));
     GTUtilsDialog::waitForDialog(os, new ImportBAMFileFiller(os, sandBoxDir + "GUITest_dna_assembly_test_0003.ugenedb"));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "NGS data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "NGS data analysis"
+                                                << "Map reads to reference...");
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
 }
@@ -91,7 +99,9 @@ GUI_TEST_CLASS_DEFINITION(test_0004) {
 
     GTUtilsDialog::waitForDialog(os, new AlignShortReadsFiller(os, &parameters));
     GTUtilsDialog::waitForDialog(os, new ImportBAMFileFiller(os, sandBoxDir + "GUITest_dna_assembly_test_0004.ugenedb"));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "NGS data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "NGS data analysis"
+                                                << "Map reads to reference...");
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
 }
@@ -106,7 +116,9 @@ GUI_TEST_CLASS_DEFINITION(test_0005) {
 
     GTUtilsDialog::waitForDialog(os, new AlignShortReadsFiller(os, &parameters));
     GTUtilsDialog::waitForDialog(os, new ImportBAMFileFiller(os, sandBoxDir + "GUITest_dna_assembly_test_0005.ugenedb", "", "", false, 200000));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "NGS data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "NGS data analysis"
+                                                << "Map reads to reference...");
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
 }
@@ -121,11 +133,12 @@ GUI_TEST_CLASS_DEFINITION(test_0006) {
 
     GTUtilsDialog::waitForDialog(os, new AlignShortReadsFiller(os, &parameters));
     GTUtilsDialog::waitForDialog(os, new ImportBAMFileFiller(os, sandBoxDir + "GUITest_dna_assembly_test_0006.ugenedb", "", "", false, 200000));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "NGS data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "NGS data analysis"
+                                                << "Map reads to reference...");
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
 }
 
-
-} // GUITest_dna_assembly
-} // U2
+}    // namespace GUITest_dna_assembly
+}    // namespace U2

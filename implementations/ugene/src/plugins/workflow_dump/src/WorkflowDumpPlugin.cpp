@@ -21,52 +21,50 @@
 
 #include "WorkflowDumpPlugin.h"
 
-#include <U2Lang/WorkflowEnv.h>
+#include <QtCore/QStringList>
+#include <QtGui/QMenu>
 
 #include <U2Core/AppContext.h>
-#include <U2Gui/MainWindow.h>
 #include <U2Core/Settings.h>
 
-#include <QtGui/QMenu>
-#include <QtCore/QStringList>
+#include <U2Gui/MainWindow.h>
 
 #include <U2Lang/ActorModel.h>
 #include <U2Lang/ActorPrototypeRegistry.h>
+#include <U2Lang/WorkflowEnv.h>
 
 /* TRANSLATOR U2::LocalWorkflow::WorkflowView */
 /* TRANSLATOR U2::LocalWorkflow::WorkflowDumpPlugin */
-
 
 namespace U2 {
 
 using namespace Workflow;
 
-extern "C" Q_DECL_EXPORT Plugin* U2_PLUGIN_INIT_FUNC() {
-    WorkflowDumpPlugin * plug = new WorkflowDumpPlugin();
+extern "C" Q_DECL_EXPORT Plugin *U2_PLUGIN_INIT_FUNC() {
+    WorkflowDumpPlugin *plug = new WorkflowDumpPlugin();
     return plug;
 }
 
 WorkflowDumpPlugin::WorkflowDumpPlugin()
-: Plugin(tr("Workflow Dump"), tr("Workflow Dump exports workflow data.")){
+    : Plugin(tr("Workflow Dump"), tr("Workflow Dump exports workflow data.")) {
 #ifdef WORKFLOW_DUMP
     if (AppContext::getMainWindow()) {
-        QAction* dumpAction = new QAction(tr("Dump workers"), this);
-        QMenu* tools = AppContext::getMainWindow()->getTopLevelMenu(MWMENU_TOOLS);
+        QAction *dumpAction = new QAction(tr("Dump workers"), this);
+        QMenu *tools = AppContext::getMainWindow()->getTopLevelMenu(MWMENU_TOOLS);
         tools->addAction(dumpAction);
-        connect(dumpAction,SIGNAL(triggered()),SLOT(sl_dumpWorkers()));
-
+        connect(dumpAction, SIGNAL(triggered()), SLOT(sl_dumpWorkers()));
     }
 #endif /*WORKFLOW_DUMP*/
 }
 
 class JsonWriter {
 public:
-
-    JsonWriter() : separator(":"), lenient(false), indent("    ") {
+    JsonWriter()
+        : separator(":"), lenient(false), indent("    ") {
         stack.append(EMPTY_DOCUMENT);
     }
 
-    JsonWriter& name(QString name) {
+    JsonWriter &name(QString name) {
         //if (name == null) {
         //    throw new NullPointerException("name == null");
         //}
@@ -74,34 +72,33 @@ public:
         string(name);
         return *this;
     }
-    JsonWriter& value(QString value) {
+    JsonWriter &value(QString value) {
         beforeValue(false);
         string(value);
         return *this;
     }
-    JsonWriter& boolValue(bool value) {
+    JsonWriter &boolValue(bool value) {
         beforeValue(false);
         out.append(value ? "true" : "false");
         return *this;
     }
-    JsonWriter& intValue(int value) {
+    JsonWriter &intValue(int value) {
         beforeValue(false);
         out.append(QString::number(value));
         return *this;
     }
-    JsonWriter& doubleValue(double value) {
+    JsonWriter &doubleValue(double value) {
         beforeValue(false);
         out.append(QString::number(value));
         return *this;
     }
-    JsonWriter& longValue(long value) {
+    JsonWriter &longValue(long value) {
         beforeValue(false);
         out.append(QString::number(value));
         return *this;
     }
 
-
-    JsonWriter& plainValue(QByteArray value) {
+    JsonWriter &plainValue(QByteArray value) {
         /*if (value == null) {
             return nullValue();
         }*/
@@ -110,20 +107,20 @@ public:
         return *this;
     }
 
-    JsonWriter& beginArray() {
+    JsonWriter &beginArray() {
         return open(EMPTY_ARRAY, "[");
     }
-    JsonWriter& beginObject() {
+    JsonWriter &beginObject() {
         return open(EMPTY_OBJECT, "{");
     }
-    JsonWriter& endArray() {
+    JsonWriter &endArray() {
         return close(EMPTY_ARRAY, NONEMPTY_ARRAY, "]");
     }
-    JsonWriter& endObject() {
+    JsonWriter &endObject() {
         return close(EMPTY_OBJECT, NONEMPTY_OBJECT, "}");
     }
 
-    QByteArray& getBytes() {
+    QByteArray &getBytes() {
         return out;
     }
 
@@ -147,68 +144,68 @@ private:
     void string(QString value) {
         out.append("\"");
         for (int i = 0, length = value.length(); i < length; i++) {
-          char c = value[i].toAscii();
+            char c = value[i].toAscii();
 
-          /*
+            /*
            * From RFC 4627, "All Unicode characters may be placed within the
            * quotation marks except for the characters that must be escaped:
            * quotation mark, reverse solidus, and the control characters
            * (U+0000 through U+001F)."
            */
-          switch (c) {
-          case '"':
-          case '\\':
-            out.append('\\');
-            out.append(c);
-            break;
+            switch (c) {
+            case '"':
+            case '\\':
+                out.append('\\');
+                out.append(c);
+                break;
 
-          case '\t':
-            out.append("\\t");
-            break;
+            case '\t':
+                out.append("\\t");
+                break;
 
-          case '\b':
-            out.append("\\b");
-            break;
+            case '\b':
+                out.append("\\b");
+                break;
 
-          case '\n':
-            out.append("\\n");
-            break;
+            case '\n':
+                out.append("\\n");
+                break;
 
-          case '\r':
-            out.append("\\r");
-            break;
+            case '\r':
+                out.append("\\r");
+                break;
 
-          case '\f':
-            out.append("\\f");
-            break;
+            case '\f':
+                out.append("\\f");
+                break;
 
-          case '<':
-          case '>':
-          case '&':
-          case '=':
-          case '\'':
-              out.append(c);
-            break;
+            case '<':
+            case '>':
+            case '&':
+            case '=':
+            case '\'':
+                out.append(c);
+                break;
 
-          default:
-            /*if (c <= 0x1F) {
+            default:
+                /*if (c <= 0x1F) {
               out.append(String.format("\\u%04x", (int) c));
             } else {*/
-              out.append(c);
-            //}
-            break;
-          }
+                out.append(c);
+                //}
+                break;
+            }
         }
         out.append("\"");
     }
 
-    JsonWriter& open(JsonScope empty, QString openBracket) {
+    JsonWriter &open(JsonScope empty, QString openBracket) {
         beforeValue(true);
         stack.append(empty);
         out.append(openBracket);
         return *this;
     }
-    JsonWriter& close(JsonScope empty, JsonScope nonempty, QString closeBracket) {
+    JsonWriter &close(JsonScope empty, JsonScope nonempty, QString closeBracket) {
         JsonScope context = peek();
         if (context != nonempty && context != empty) {
             throw QString("Nesting problem:");
@@ -243,9 +240,9 @@ private:
 
     void beforeName() {
         JsonScope context = peek();
-        if (context == NONEMPTY_OBJECT) { // first in object
+        if (context == NONEMPTY_OBJECT) {    // first in object
             out.append(',');
-        } else if (context != EMPTY_OBJECT) { // not in an object!
+        } else if (context != EMPTY_OBJECT) {    // not in an object!
             throw QString("Nesting problem");
         }
         newline();
@@ -254,24 +251,24 @@ private:
 
     void beforeValue(bool root) {
         switch (peek()) {
-        case EMPTY_DOCUMENT: // first in document
+        case EMPTY_DOCUMENT:    // first in document
             if (!lenient && !root) {
                 throw QString("JSON must start with an array or an object.");
             }
             replaceTop(NONEMPTY_DOCUMENT);
             break;
 
-        case EMPTY_ARRAY: // first in array
+        case EMPTY_ARRAY:    // first in array
             replaceTop(NONEMPTY_ARRAY);
             newline();
             break;
 
-        case NONEMPTY_ARRAY: // another in array
+        case NONEMPTY_ARRAY:    // another in array
             out.append(',');
             newline();
             break;
 
-        case DANGLING_NAME: // value for name
+        case DANGLING_NAME:    // value for name
             out.append(separator);
             replaceTop(NONEMPTY_OBJECT);
             break;
@@ -288,85 +285,113 @@ private:
 static QByteArray type2json(DataTypePtr type) {
     JsonWriter w;
     w.beginObject()
-        .name("id").value(type->getId())
+        .name("id")
+        .value(type->getId())
         .name("kind");
-    switch(type->kind()) {
-        case DataType::Single:
-            w.value("Single");
-            break;
-        case DataType::List:
-            w.value("List")
-             .name("type").plainValue(type2json(type->getDatatypeByDescriptor()));
-            break;
-        case DataType::Map:
-            w.value("Map").name("type").beginObject();
-            foreach(const Descriptor& desc, type->getDatatypesMap().keys()) {
-                w.name(desc.getId())
-                 .plainValue(type2json(type->getDatatypesMap()[desc]));
-            }
-            w.endObject();
-            break;
+    switch (type->kind()) {
+    case DataType::Single:
+        w.value("Single");
+        break;
+    case DataType::List:
+        w.value("List")
+            .name("type")
+            .plainValue(type2json(type->getDatatypeByDescriptor()));
+        break;
+    case DataType::Map:
+        w.value("Map").name("type").beginObject();
+        foreach (const Descriptor &desc, type->getDatatypesMap().keys()) {
+            w.name(desc.getId())
+                .plainValue(type2json(type->getDatatypesMap()[desc]));
+        }
+        w.endObject();
+        break;
     }
     w.endObject();
     return w.getBytes();
 }
 
 void WorkflowDumpPlugin::sl_dumpWorkers() {
-    const QMap<Descriptor, QList<ActorPrototype*> >& map = WorkflowEnv::getProtoRegistry()->getProtos();
+    const QMap<Descriptor, QList<ActorPrototype *>> &map = WorkflowEnv::getProtoRegistry()->getProtos();
     JsonWriter w;
     w.beginObject();
     w.name("types");
     w.beginArray();
-    foreach(const DataTypePtr desc, WorkflowEnv::getDataTypeRegistry()->getAllEntries()) {
+    foreach (const DataTypePtr desc, WorkflowEnv::getDataTypeRegistry()->getAllEntries()) {
         w.beginObject()
-            .name("id").value(desc->getId())
-            .name("name").value(desc->getDisplayName())
-            .name("desc").value(desc->getDocumentation())
-        .endObject();
+            .name("id")
+            .value(desc->getId())
+            .name("name")
+            .value(desc->getDisplayName())
+            .name("desc")
+            .value(desc->getDocumentation())
+            .endObject();
     }
     w.endArray();
     w.name("groups");
     w.beginArray();
-    foreach(const Descriptor& desc, WorkflowEnv::getProtoRegistry()->getProtos().keys()) {
+    foreach (const Descriptor &desc, WorkflowEnv::getProtoRegistry()->getProtos().keys()) {
         w.beginObject()
-            .name("id").value(desc.getId())
-            .name("name").value(desc.getDisplayName())
-            .name("desc").value(desc.getDocumentation())
-        .endObject();
+            .name("id")
+            .value(desc.getId())
+            .name("name")
+            .value(desc.getDisplayName())
+            .name("desc")
+            .value(desc.getDocumentation())
+            .endObject();
     }
     w.endArray();
     w.name("workers");
     w.beginArray();
-    foreach(const Descriptor& desc, map.keys()) {
-        foreach(const ActorPrototype* proto, map[desc]) {
+    foreach (const Descriptor &desc, map.keys()) {
+        foreach (const ActorPrototype *proto, map[desc]) {
             w.beginObject()
-                .name("group").value(desc.getId())
-                .name("id").value(proto->getId())
-                .name("name").value(proto->getDisplayName())
-                .name("desc").value(proto->getDocumentation())
-                .name("icon").value(proto->getIconPath())
-                .name("attrs").beginArray();
-            foreach(const Attribute* attr, proto->getAttributes()) {
+                .name("group")
+                .value(desc.getId())
+                .name("id")
+                .value(proto->getId())
+                .name("name")
+                .value(proto->getDisplayName())
+                .name("desc")
+                .value(proto->getDocumentation())
+                .name("icon")
+                .value(proto->getIconPath())
+                .name("attrs")
+                .beginArray();
+            foreach (const Attribute *attr, proto->getAttributes()) {
                 w.beginObject()
-                    .name("id").value(attr->getId())
-                    .name("name").value(attr->getDisplayName())
-                    .name("desc").value(attr->getDocumentation())
-                    .name("type").plainValue(type2json(attr->getAttributeType()))
-                    .name("value").value(attr->getAttributeValue<QString>())
-                    .name("required").boolValue(attr->isRequiredAttribute())
+                    .name("id")
+                    .value(attr->getId())
+                    .name("name")
+                    .value(attr->getDisplayName())
+                    .name("desc")
+                    .value(attr->getDocumentation())
+                    .name("type")
+                    .plainValue(type2json(attr->getAttributeType()))
+                    .name("value")
+                    .value(attr->getAttributeValue<QString>())
+                    .name("required")
+                    .boolValue(attr->isRequiredAttribute())
                     .endObject();
             }
             w.endArray()
-                .name("ports").beginArray();
-            foreach(const PortDescriptor* port, proto->getPortDesciptors()) {
+                .name("ports")
+                .beginArray();
+            foreach (const PortDescriptor *port, proto->getPortDesciptors()) {
                 w.beginObject()
-                    .name("id").value(port->getId())
-                    .name("name").value(port->getDisplayName())
-                    .name("desc").value(port->getDocumentation())
-                    .name("type").plainValue(type2json(port->getType()))
-                    .name("input").boolValue(port->isInput())
-                    .name("multi").boolValue(port->isMulti())
-                    .name("flags").intValue(port->getFlags())
+                    .name("id")
+                    .value(port->getId())
+                    .name("name")
+                    .value(port->getDisplayName())
+                    .name("desc")
+                    .value(port->getDocumentation())
+                    .name("type")
+                    .plainValue(type2json(port->getType()))
+                    .name("input")
+                    .boolValue(port->isInput())
+                    .name("multi")
+                    .boolValue(port->isMulti())
+                    .name("flags")
+                    .intValue(port->getFlags())
                     .endObject();
             }
             w.endArray()
@@ -376,7 +401,7 @@ void WorkflowDumpPlugin::sl_dumpWorkers() {
     w.endArray();
     w.endObject();
     QFile file("D:\\workers.dump");
-    if(file.open(QFile::WriteOnly)) {
+    if (file.open(QFile::WriteOnly)) {
         file.write(w.getBytes());
     } else {
         printf("Can't open file to write: %s", file.fileName().toAscii().constData());
@@ -384,4 +409,4 @@ void WorkflowDumpPlugin::sl_dumpWorkers() {
     file.close();
 }
 
-}//namespace
+}    // namespace U2

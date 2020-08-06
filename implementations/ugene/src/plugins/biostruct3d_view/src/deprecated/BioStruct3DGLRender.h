@@ -22,8 +22,8 @@
 #ifndef _U2_BIOSTRUCT3D_RENDERER_H_
 #define _U2_BIOSTRUCT3D_RENDERER_H_
 
-#include <QString>
 #include <QMap>
+#include <QString>
 
 namespace U2 {
 
@@ -43,13 +43,10 @@ public:
     static const QList<QString> factoriesNames();
 
     //! @return Concreete factory by name.
-    static const BioStruct3DGLRendererFactory* getFactory(const QString &name);
+    static const BioStruct3DGLRendererFactory *getFactory(const QString &name);
 
     //! @return Constructed renderer by factory name.
-    static BioStruct3DGLRenderer* createRenderer(const QString &name,   const BioStruct3D&,
-                                                                        const BioStruct3DColorScheme*,
-                                                                        const QList<int>&,
-                                                                        const BioStruct3DRendererSettings*);
+    static BioStruct3DGLRenderer *createRenderer(const QString &name, const BioStruct3D &, const BioStruct3DColorScheme *, const QList<int> &, const BioStruct3DRendererSettings *);
 
     /** Check if biostruct can be drawn with renderer */
     static bool isAvailableFor(const QString &name, const BioStruct3D &biostruct);
@@ -62,60 +59,62 @@ private:
     BioStruct3DGLRendererRegistry();
 
     //! Returns singleton instance of registry.
-    static BioStruct3DGLRendererRegistry* getInstance();
+    static BioStruct3DGLRendererRegistry *getInstance();
 
     //! Registers all render factories.
     void registerFactories();
 
 private:
-    QMap<QString, BioStruct3DGLRendererFactory*> factories;
-};  // class BioStruct3DGLRendererRegistry
-
+    QMap<QString, BioStruct3DGLRendererFactory *> factories;
+};    // class BioStruct3DGLRendererRegistry
 
 /** BioStruct3DGLRenderer abstract factory */
 class BioStruct3DGLRendererFactory {
 public:
-    BioStruct3DGLRendererFactory(const QString &_name) : name(_name) {}
+    BioStruct3DGLRendererFactory(const QString &_name)
+        : name(_name) {
+    }
 
     /** @returns Factory name */
-    const QString getName() const { return name; }
+    const QString getName() const {
+        return name;
+    }
 
     /** Check if biostruct can be drawn with renderer */
     virtual bool isAvailableFor(const BioStruct3D &biostruct) const = 0;
 
     /** @returns Contructed renderer */
-    virtual BioStruct3DGLRenderer* createInstance(const BioStruct3D&, const BioStruct3DColorScheme*, const
-                                                  QList<int> &shownModels, const BioStruct3DRendererSettings*) const = 0;
+    virtual BioStruct3DGLRenderer *createInstance(const BioStruct3D &, const BioStruct3DColorScheme *, const QList<int> &shownModels, const BioStruct3DRendererSettings *) const = 0;
 
 private:
     QString name;
-
 };
 
 /** Macro helper for factories defining */
 #define RENDERER_FACTORY(c) \
 public: \
     static const QString ID; \
-    \
-class Factory : public BioStruct3DGLRendererFactory { \
-public: \
-    Factory(const QString &name) : BioStruct3DGLRendererFactory(name) {} \
-    \
-    virtual BioStruct3DGLRenderer* createInstance(const BioStruct3D &biostruct, const BioStruct3DColorScheme *cscheme, \
-                                          const QList<int> &shownModels, const BioStruct3DRendererSettings *settings) const { \
-        return new c(biostruct, cscheme, shownModels, settings); \
-    } \
-    \
-    virtual bool isAvailableFor(const BioStruct3D &biostruct) const { \
-        return c::isAvailableFor(biostruct); \
-    } \
-};
+\
+    class Factory : public BioStruct3DGLRendererFactory { \
+    public: \
+        Factory(const QString &name) : BioStruct3DGLRendererFactory(name) { \
+        } \
+\
+        virtual BioStruct3DGLRenderer *createInstance(const BioStruct3D &biostruct, const BioStruct3DColorScheme *cscheme, const QList<int> &shownModels, const BioStruct3DRendererSettings *settings) const { \
+            return new c(biostruct, cscheme, shownModels, settings); \
+        } \
+\
+        virtual bool isAvailableFor(const BioStruct3D &biostruct) const { \
+            return c::isAvailableFor(biostruct); \
+        } \
+    };
 
 /** Settings common for all renderers */
 class BioStruct3DRendererSettings {
 public:
     BioStruct3DRendererSettings(float _detailLevel)
-            : detailLevel(_detailLevel) {}
+        : detailLevel(_detailLevel) {
+    }
 
     float detailLevel;
 };
@@ -126,7 +125,8 @@ protected:
     BioStruct3DGLRenderer(const BioStruct3D &biostruct, const BioStruct3DColorScheme *scheme, const QList<int> &shownModels, const BioStruct3DRendererSettings *settings);
 
 public:
-    virtual ~BioStruct3DGLRenderer() {}
+    virtual ~BioStruct3DGLRenderer() {
+    }
 
     /** Create and initialize all stuff.
         Can be called for full reinialization */
@@ -136,7 +136,8 @@ public:
     virtual void drawBioStruct3D() = 0;
 
     //! Used to completely update model, for ex to recreate display lists.
-    virtual void update() {}
+    virtual void update() {
+    }
 
     //! Used to update current color scheme, whenever it is changed.
     virtual void updateColorScheme() = 0;
@@ -148,35 +149,42 @@ public:
     virtual void updateSettings() = 0;
 
     //! Sets new color scheme.
-    void setColorScheme(const BioStruct3DColorScheme* s);
+    void setColorScheme(const BioStruct3DColorScheme *s);
 
     //! @returns current color scheme.
-    const BioStruct3DColorScheme *getColorScheme() const { return colorScheme; }
+    const BioStruct3DColorScheme *getColorScheme() const {
+        return colorScheme;
+    }
 
     /** @returns shown models indexes list reference.
       * indexes are just index numbers of models, NOT modelIds
       */
-    const QList<int>& getShownModelsIndexes() const { return shownModels; }
+    const QList<int> &getShownModelsIndexes() const {
+        return shownModels;
+    }
 
     /** Sets shown models models list. */
-    void setShownModelsIndexes(const QList<int> &_shownModels) { shownModels = _shownModels; }
+    void setShownModelsIndexes(const QList<int> &_shownModels) {
+        shownModels = _shownModels;
+    }
 
 public:
     /** Check if biostruct can be visualized by renderer */
-    static bool isAvailableFor(const BioStruct3D &) { return true; }
+    static bool isAvailableFor(const BioStruct3D &) {
+        return true;
+    }
 
 protected:
-    const BioStruct3D& bioStruct;
-    const BioStruct3DColorScheme* colorScheme;
+    const BioStruct3D &bioStruct;
+    const BioStruct3DColorScheme *colorScheme;
 
 protected:
     QList<int> shownModels;
 
 protected:
-    const BioStruct3DRendererSettings* settings;
+    const BioStruct3DRendererSettings *settings;
 };
 
+}    // namespace U2
 
-} //namespace
-
-#endif // _U2_BIOSTRUCT3D_RENDERER_H_
+#endif    // _U2_BIOSTRUCT3D_RENDERER_H_

@@ -44,7 +44,7 @@ public:
         ColumnRole_Info
     };
 
-    enum PositionIndexing{
+    enum PositionIndexing {
         ZeroBased = 0,
         OneBased
     };
@@ -53,21 +53,21 @@ public:
     //to
     //Variation1.1: chr1 123 G A
     //Variation1.2: chr1 123 G C
-    enum SplitAlleles{
+    enum SplitAlleles {
         Split = 0,
         NoSplit
     };
 
-    AbstractVariationFormat(QObject *p, const DocumentFormatId& id, const QStringList &fileExts, bool _isSupportHeader = false);
+    AbstractVariationFormat(QObject *p, const DocumentFormatId &id, const QStringList &fileExts, bool _isSupportHeader = false);
 
     virtual void storeDocument(Document *d, IOAdapter *io, U2OpStatus &os);
-    virtual void storeEntry(IOAdapter *io, const QMap< GObjectType, QList<GObject*> > &objectsMap, U2OpStatus &os);
+    virtual void storeEntry(IOAdapter *io, const QMap<GObjectType, QList<GObject *>> &objectsMap, U2OpStatus &os);
     virtual void storeHeader(GObject *obj, IOAdapter *io, U2OpStatus &os);
 
 protected:
     bool isSupportHeader;
 
-    QMap<int,ColumnRole> columnRoles;
+    QMap<int, ColumnRole> columnRoles;
     int maxColumnNumber;
 
     PositionIndexing indexing;
@@ -87,6 +87,6 @@ private:
     static QStringList getHeader(const VariantTrackObject *variantTrackObject, U2OpStatus &os);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_ABSTRACT_VARIATION_FORMAT_H_
+#endif    // _U2_ABSTRACT_VARIATION_FORMAT_H_

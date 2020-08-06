@@ -22,46 +22,56 @@
 #ifndef _U2_LABEL_MODEL_H_
 #define _U2_LABEL_MODEL_H_
 
-#include <U2Core/global.h>
-#include <U2Core/U2SafePoints.h>
-
+#include <QLabel>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPointer>
-#include <QLabel>
 #include <QVariant>
+
+#include <U2Core/U2SafePoints.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
 const int defaultRadius = 4;
 
-class U2VIEW_EXPORT TextLabel: public QLabel
-{
+class U2VIEW_EXPORT TextLabel : public QLabel {
     Q_OBJECT
 public:
     TextLabel(QWidget *parent = NULL);
     ~TextLabel();
+
 private:
     void mouseMoveEvent(QMouseEvent *me);
 
     void paintEvent(QPaintEvent *e);
 };
 
-class RoundHint: public QWidget
-{
+class RoundHint : public QWidget {
 public:
     RoundHint(QWidget *parent = NULL, QColor _borderColor = Qt::white, QColor _fillingColor = Qt::black);
     ~RoundHint();
 
-    void setBorderColor(QColor color){ borderColor = color;}
-    QColor getBorderColor(){ return borderColor;}
+    void setBorderColor(QColor color) {
+        borderColor = color;
+    }
+    QColor getBorderColor() {
+        return borderColor;
+    }
 
-    void setFillingColor(QColor color){fillingColor = color;}
-    QColor getFillingColor(){return fillingColor;}
+    void setFillingColor(QColor color) {
+        fillingColor = color;
+    }
+    QColor getFillingColor() {
+        return fillingColor;
+    }
 
-    void setMarkingColor(QColor color) {markedFillingColor = color;}
-    QColor getMarkingingColor(){return markedFillingColor;}
-
+    void setMarkingColor(QColor color) {
+        markedFillingColor = color;
+    }
+    QColor getMarkingingColor() {
+        return markedFillingColor;
+    }
 
     void mark();
     void unmark();
@@ -74,10 +84,9 @@ private:
     bool isMarked;
 };
 
-class GraphLabel: public QObject{
+class GraphLabel : public QObject {
     Q_OBJECT
 public:
-
     GraphLabel();
     GraphLabel(float pos, QWidget *parent = NULL, int _radius = defaultRadius);
     ~GraphLabel();
@@ -87,25 +96,37 @@ public:
     bool isHidden() const;
 
     void setCoord(const QPoint &_coord);
-    QPoint getCoord() const {return coord;}
+    QPoint getCoord() const {
+        return coord;
+    }
 
-    void setPosition(float pos) {position = pos;}
-    float getPosition() const {return position;}
+    void setPosition(float pos) {
+        position = pos;
+    }
+    float getPosition() const {
+        return position;
+    }
 
-    void setValue(float val) {value = val;}
-    float getValue() const {return value;}
+    void setValue(float val) {
+        value = val;
+    }
+    float getValue() const {
+        return value;
+    }
 
     void setHintText(const QString &_hintText);
     QString getHintText() const;
 
-    TextLabel& getTextLabel();
+    TextLabel &getTextLabel();
 
     void setHintRect(const QRect &_hintRect);
     QRect getHintRect();
 
     void setParent(QWidget *parent);
 
-    int getSize() const {return radius;}
+    int getSize() const {
+        return radius;
+    }
 
     void show();
     void hide();
@@ -120,8 +141,9 @@ public:
     GraphLabel *attachedLabel;
 signals:
     void si_onHintDeleted(GraphLabel *label);
+
 private:
-    bool eventFilter(QObject *target, QEvent* e);
+    bool eventFilter(QObject *target, QEvent *e);
     QPointer<TextLabel> text;
     QPointer<RoundHint> image;
     float position;
@@ -130,12 +152,9 @@ private:
     int radius;
 };
 
-
-
 typedef QList<GraphLabel *> Labels;
 
-class MultiLabel : public QObject
-{
+class MultiLabel : public QObject {
     Q_OBJECT
 public:
     MultiLabel();
@@ -149,12 +168,14 @@ public:
 
     void deleteAllLabels();
 
-    GraphLabel* findLabelByPosition(float xPos) const;
-    GraphLabel* at(int i) const;
+    GraphLabel *findLabelByPosition(float xPos) const;
+    GraphLabel *at(int i) const;
 
-    Labels& getLabels() {return labels;}
+    Labels &getLabels() {
+        return labels;
+    }
 
-    GraphLabel& getMovingLabel();
+    GraphLabel &getMovingLabel();
 
 private:
     Q_DISABLE_COPY(MultiLabel)
@@ -164,5 +185,5 @@ private slots:
     void sl_deleteLabel(GraphLabel *label);
 };
 
-}//namespace
+}    // namespace U2
 #endif

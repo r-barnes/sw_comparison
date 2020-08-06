@@ -19,30 +19,26 @@
  * MA 02110-1301, USA.
  */
 
+#include "AssemblyImporter.h"
+
 #include <U2Core/L10n.h>
 #include <U2Core/U2AssemblyDbi.h>
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "AssemblyImporter.h"
-
 namespace U2 {
 
-AssemblyImporter::AssemblyImporter(U2OpStatus &os) :
-    os(os),
-    objectExists(false)
-{
-
+AssemblyImporter::AssemblyImporter(U2OpStatus &os)
+    : os(os),
+      objectExists(false) {
 }
 
-AssemblyImporter::AssemblyImporter(const U2DbiRef &dbiRef, U2Assembly &assembly, U2OpStatus &os) :
-    dbiRef(dbiRef),
-    assembly(assembly),
-    os(os),
-    objectExists(true)
-{
-
+AssemblyImporter::AssemblyImporter(const U2DbiRef &dbiRef, U2Assembly &assembly, U2OpStatus &os)
+    : dbiRef(dbiRef),
+      assembly(assembly),
+      os(os),
+      objectExists(true) {
 }
 
 AssemblyImporter::~AssemblyImporter() {
@@ -134,4 +130,4 @@ void AssemblyImporter::finalizeAssembly() {
     assemblyDbi->finalizeAssemblyObject(assembly, os);
 }
 
-}   // namespace U2
+}    // namespace U2

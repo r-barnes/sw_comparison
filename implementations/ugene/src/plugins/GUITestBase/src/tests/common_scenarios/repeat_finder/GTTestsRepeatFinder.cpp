@@ -19,45 +19,49 @@
  * MA 02110-1301, USA.
  */
 
-#include <QTreeWidgetItem>
-
 #include "GTTestsRepeatFinder.h"
 #include <base_dialogs/GTFileDialog.h>
-#include "primitives/GTMenu.h"
-#include "GTUtilsDocument.h"
-#include "GTUtilsAnnotationsTreeView.h"
 #include <drivers/GTMouseDriver.h>
-#include "GTUtilsProjectTreeView.h"
 #include <primitives/GTTreeWidget.h>
-#include "GTUtilsMdi.h"
-#include "primitives/PopupChooser.h"
-#include "runnables/ugene/corelibs/U2Gui/FindRepeatsDialogFiller.h"
-#include "GTUtilsTaskTreeView.h"
+
+#include <QTreeWidgetItem>
 
 #include <U2View/ADVConstants.h>
+
+#include "GTUtilsAnnotationsTreeView.h"
+#include "GTUtilsDocument.h"
+#include "GTUtilsMdi.h"
+#include "GTUtilsProjectTreeView.h"
+#include "GTUtilsTaskTreeView.h"
+#include "primitives/GTMenu.h"
+#include "primitives/PopupChooser.h"
+#include "runnables/ugene/corelibs/U2Gui/FindRepeatsDialogFiller.h"
 
 namespace U2 {
 
 namespace GUITest_common_scenarios_repeat_finder {
 using namespace HI;
 GUI_TEST_CLASS_DEFINITION(test_0001) {
-// The Test Runs Repeat Finder then checks if the qualifier "repeat homology" exists in resulting annotations
-//
-// Steps:
-//
-// 1. Use menu {File->Open}. Open file _common_data/fasta/seq4.fa.
+    // The Test Runs Repeat Finder then checks if the qualifier "repeat homology" exists in resulting annotations
+    //
+    // Steps:
+    //
+    // 1. Use menu {File->Open}. Open file _common_data/fasta/seq4.fa.
     GTFileDialog::openFile(os, testDir + "_common_data/fasta/", "seq4.fa");
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTUtilsDocument::checkDocument(os, "seq4.fa");
 
-// 2. Run Find Repeats dialog
-    Runnable * swDialog = new FindRepeatsDialogFiller(os, testDir + "_common_data/scenarios/sandbox/");
+    // 2. Run Find Repeats dialog
+    Runnable *swDialog = new FindRepeatsDialogFiller(os, testDir + "_common_data/scenarios/sandbox/");
     GTUtilsDialog::waitForDialog(os, swDialog);
 
-    GTMenu::clickMainMenuItem(os, QStringList() << "Actions" << "Analyze" << "Find repeats...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Actions"
+                                                << "Analyze"
+                                                << "Find repeats...",
+                              GTGlobals::UseMouse);
     GTGlobals::sleep();
 
-// 3. Close sequence view, then reopen it
+    // 3. Close sequence view, then reopen it
     GTUtilsMdi::click(os, GTGlobals::Close);
     GTMouseDriver::click();
 
@@ -65,20 +69,19 @@ GUI_TEST_CLASS_DEFINITION(test_0001) {
     GTMouseDriver::doubleClick();
     GTGlobals::sleep(1000);
 
-// 4. Check that annotation have the qualifier "repeat homology"
-    QTreeWidget *treeWidget = GTUtilsAnnotationsTreeView::getTreeWidget(os);
-    CHECK_SET_ERR(treeWidget != NULL, "Tree widget is NULL");
+    // 4. Check that annotation have the qualifier "repeat homology"
+    GTUtilsAnnotationsTreeView::getTreeWidget(os);
 
     QTreeWidgetItem *annotationsRoot = GTUtilsAnnotationsTreeView::findItem(os, "repeat_unit  (0, 325)");
     GTMouseDriver::moveTo(GTTreeWidget::getItemCenter(os, annotationsRoot->child(0)));
     GTMouseDriver::doubleClick();
     GTUtilsAnnotationsTreeView::findItem(os, "repeat_identity");
 
-// 5. Close sequence view (it's needed to refresh screen since Ugene cannot close correctly on Win7 32bit)
+    // 5. Close sequence view (it's needed to refresh screen since Ugene cannot close correctly on Win7 32bit)
     GTUtilsMdi::click(os, GTGlobals::Close);
     GTMouseDriver::click();
 }
 
-} // namespace GUITest_common_scenarios_repeat_finder
+}    // namespace GUITest_common_scenarios_repeat_finder
 
-} // namespace U2
+}    // namespace U2

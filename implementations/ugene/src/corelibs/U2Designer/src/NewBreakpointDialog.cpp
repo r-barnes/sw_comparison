@@ -19,25 +19,26 @@
  * MA 02110-1301, USA.
  */
 
-#include "ui_NewBreakpointDialog.h"
 #include "NewBreakpointDialog.h"
-#include <U2Gui/HelpButton.h>
+
 #include <QPushButton>
+
+#include <U2Gui/HelpButton.h>
+
+#include "ui_NewBreakpointDialog.h"
 
 namespace U2 {
 
-NewBreakpointDialog::NewBreakpointDialog(const QStringList &elementsNames, QWidget *parent,
-    Qt::WindowFlags f) : QDialog(parent, f), ui(new Ui_NewBreakpointDialog())
-{
+NewBreakpointDialog::NewBreakpointDialog(const QStringList &elementsNames, QWidget *parent, Qt::WindowFlags f)
+    : QDialog(parent, f), ui(new Ui_NewBreakpointDialog()) {
     ui->setupUi(this);
-    new HelpButton(this, ui->buttonBox, "24740354");
+    new HelpButton(this, ui->buttonBox, "46500382");
     ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
     ui->elementCombo->addItems(elementsNames);
 
     QPushButton *okButton = ui->buttonBox->button(QDialogButtonBox::Ok);
     connect(okButton, SIGNAL(clicked()), SLOT(sl_announceNewBreakpoint()));
-
 }
 
 NewBreakpointDialog::~NewBreakpointDialog() {
@@ -48,4 +49,4 @@ void NewBreakpointDialog::sl_announceNewBreakpoint() {
     emit si_newBreakpointCreated(ui->elementCombo->currentText());
 }
 
-} // namespace U2
+}    // namespace U2

@@ -22,8 +22,8 @@
 #ifndef _U2_MSA_GRAPH_OVERVIEW_H_
 #define _U2_MSA_GRAPH_OVERVIEW_H_
 
-#include <U2Core/global.h>
 #include <U2Core/BackgroundTaskRunner.h>
+#include <U2Core/global.h>
 
 #include "MaOverview.h"
 
@@ -45,19 +45,20 @@ public:
     };
 
     MaGraphOverviewDisplaySettings()
-        : color( Qt::gray ),
+        : color(Qt::gray),
           type(Area),
-          orientation(FromBottomToTop) {}
+          orientation(FromBottomToTop) {
+    }
 
-    QColor      color;
-    GraphType   type;
+    QColor color;
+    GraphType type;
     OrientationMode orientation;
 };
 
 enum MaGraphCalculationMethod {
-    Strict,         // the most frequent nucleotide
-    Gaps,           // percent of gaps
-    Clustal,        // 0-30-60-100 groups
+    Strict,    // the most frequent nucleotide
+    Gaps,    // percent of gaps
+    Clustal,    // 0-30-60-100 groups
     Highlighting    // count only highlighted cells
 };
 
@@ -68,19 +69,30 @@ enum MaGraphCalculationMethod {
 class U2VIEW_EXPORT MaGraphOverview : public MaOverview {
     Q_OBJECT
 public:
-    MaGraphOverview(MaEditorWgt* ui);
-    bool isValid() const { return graphCalculationTaskRunner.getError().isEmpty(); }
-    QPixmap getView() { return cachedConsensus; }
+    MaGraphOverview(MaEditorWgt *ui);
+    bool isValid() const {
+        return graphCalculationTaskRunner.getError().isEmpty();
+    }
+    QPixmap getView() {
+        return cachedConsensus;
+    }
 
     const static int FIXED_HEIGHT = 70;
 
     void cancelRendering();
 
-    QColor getCurrentColor() const { return displaySettings->color; }
-    MaGraphOverviewDisplaySettings::GraphType getCurrentGraphType() const { return displaySettings->type; }
-    MaGraphOverviewDisplaySettings::OrientationMode getCurrentOrientationMode() const
-    { return displaySettings->orientation; }
-    MaGraphCalculationMethod getCurrentCalculationMethod() const { return method; }
+    QColor getCurrentColor() const {
+        return displaySettings->color;
+    }
+    MaGraphOverviewDisplaySettings::GraphType getCurrentGraphType() const {
+        return displaySettings->type;
+    }
+    MaGraphOverviewDisplaySettings::OrientationMode getCurrentOrientationMode() const {
+        return displaySettings->orientation;
+    }
+    MaGraphCalculationMethod getCurrentCalculationMethod() const {
+        return method;
+    }
 
 signals:
     void si_renderingStateChanged(bool isRendering);
@@ -102,29 +114,29 @@ public slots:
     void sl_unblockRendering(bool update);
 
 protected:
-    void paintEvent(QPaintEvent* e);
-    void resizeEvent(QResizeEvent* e);
+    void paintEvent(QPaintEvent *e);
+    void resizeEvent(QResizeEvent *e);
 
 private:
-    void drawVisibleRange(QPainter& p);
-    void drawOverview(QPainter& p);
+    void drawVisibleRange(QPainter &p);
+    void drawOverview(QPainter &p);
     void moveVisibleRange(QPoint pos);
 
-    QPixmap             cachedConsensus;
+    QPixmap cachedConsensus;
 
     bool redrawGraph;
     bool isRendering;
     bool isBlocked;
     int lastDrawnVersion;
 
-    BackgroundTaskRunner<QPolygonF>    graphCalculationTaskRunner;
+    BackgroundTaskRunner<QPolygonF> graphCalculationTaskRunner;
 
-    MaGraphOverviewDisplaySettings*    displaySettings;
-    MaGraphCalculationMethod           method;
+    MaGraphOverviewDisplaySettings *displaySettings;
+    MaGraphCalculationMethod method;
 
-    MaGraphCalculationTask*            graphCalculationTask;
+    MaGraphCalculationTask *graphCalculationTask;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_MSA_GRAPH_OVERVIEW_H_
+#endif    // _U2_MSA_GRAPH_OVERVIEW_H_

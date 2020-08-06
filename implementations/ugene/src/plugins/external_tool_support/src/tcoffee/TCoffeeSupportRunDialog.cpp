@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "TCoffeeSupportRunDialog.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 #include <QToolButton>
@@ -32,17 +34,14 @@
 #include <U2Gui/SaveDocumentController.h>
 #include <U2Gui/U2FileDialog.h>
 
-#include "TCoffeeSupportRunDialog.h"
-
 namespace U2 {
 
 ////////////////////////////////////////
 //TCoffeeSupportRunDialog
-TCoffeeSupportRunDialog::TCoffeeSupportRunDialog(TCoffeeSupportTaskSettings& _settings, QWidget* _parent) :
-    QDialog(_parent), settings(_settings)
-{
+TCoffeeSupportRunDialog::TCoffeeSupportRunDialog(TCoffeeSupportTaskSettings &_settings, QWidget *_parent)
+    : QDialog(_parent), settings(_settings) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742625");
+    new HelpButton(this, buttonBox, "46501193");
 
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Align"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -51,27 +50,26 @@ TCoffeeSupportRunDialog::TCoffeeSupportRunDialog(TCoffeeSupportTaskSettings& _se
     this->adjustSize();
 }
 
-void TCoffeeSupportRunDialog::accept(){
-    if(gapOpenCheckBox->isChecked()) {
+void TCoffeeSupportRunDialog::accept() {
+    if (gapOpenCheckBox->isChecked()) {
         settings.gapOpenPenalty = gapOpenSpinBox->value();
     }
-    if(gapExtCheckBox->isChecked()) {
+    if (gapExtCheckBox->isChecked()) {
         settings.gapExtenstionPenalty = gapExtSpinBox->value();
     }
-    if(maxNumberIterRefinementCheckBox->isChecked()){
+    if (maxNumberIterRefinementCheckBox->isChecked()) {
         settings.numIterations = maxNumberIterRefinementSpinBox->value();
     }
     QDialog::accept();
 }
 ////////////////////////////////////////
 //TCoffeeWithExtFileSpecifySupportRunDialog
-TCoffeeWithExtFileSpecifySupportRunDialog::TCoffeeWithExtFileSpecifySupportRunDialog(TCoffeeSupportTaskSettings& _settings, QWidget* _parent) :
-    QDialog(_parent),
-    settings(_settings),
-    saveController(NULL)
-{
+TCoffeeWithExtFileSpecifySupportRunDialog::TCoffeeWithExtFileSpecifySupportRunDialog(TCoffeeSupportTaskSettings &_settings, QWidget *_parent)
+    : QDialog(_parent),
+      settings(_settings),
+      saveController(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742625");
+    new HelpButton(this, buttonBox, "46501193");
 
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Align"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -83,8 +81,7 @@ TCoffeeWithExtFileSpecifySupportRunDialog::TCoffeeWithExtFileSpecifySupportRunDi
 
 void TCoffeeWithExtFileSpecifySupportRunDialog::sl_inputPathButtonClicked() {
     LastUsedDirHelper lod;
-    lod.url = U2FileDialog::getOpenFileName(this, tr("Open an alignment file"), lod.dir,
-        DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT, true));
+    lod.url = U2FileDialog::getOpenFileName(this, tr("Open an alignment file"), lod.dir, DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT, true));
     if (lod.url.isEmpty()) {
         return;
     }
@@ -105,28 +102,25 @@ void TCoffeeWithExtFileSpecifySupportRunDialog::initSaveController() {
     saveController = new SaveDocumentController(config, formats, this);
 }
 
-void TCoffeeWithExtFileSpecifySupportRunDialog::accept(){
-    if(gapOpenCheckBox->isChecked()) {
+void TCoffeeWithExtFileSpecifySupportRunDialog::accept() {
+    if (gapOpenCheckBox->isChecked()) {
         settings.gapOpenPenalty = gapOpenSpinBox->value();
     }
-    if(gapExtCheckBox->isChecked()) {
+    if (gapExtCheckBox->isChecked()) {
         settings.gapExtenstionPenalty = gapExtSpinBox->value();
     }
-    if(maxNumberIterRefinementCheckBox->isChecked()){
+    if (maxNumberIterRefinementCheckBox->isChecked()) {
         settings.numIterations = maxNumberIterRefinementSpinBox->value();
     }
-    if(inputFileLineEdit->text().isEmpty()){
-        QMessageBox::information(this, tr("Kalign with Align"),
-                                 tr("Input file is not set!") );
-    }else if(saveController->getSaveFileName().isEmpty()){
-        QMessageBox::information(this, tr("Kalign with Align"),
-                                 tr("Output file is not set!") );
-    }
-    else{
+    if (inputFileLineEdit->text().isEmpty()) {
+        QMessageBox::information(this, tr("Kalign with Align"), tr("Input file is not set!"));
+    } else if (saveController->getSaveFileName().isEmpty()) {
+        QMessageBox::information(this, tr("Kalign with Align"), tr("Output file is not set!"));
+    } else {
         settings.outputFilePath = saveController->getSaveFileName();
         settings.inputFilePath = inputFileLineEdit->text();
         QDialog::accept();
     }
 }
 
-}//namespace
+}    // namespace U2

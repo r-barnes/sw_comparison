@@ -22,22 +22,26 @@
 #ifndef _U2_SEQUENCEWALKER_TESTS_H_
 #define _U2_SEQUENCEWALKER_TESTS_H_
 
-#include <U2Test/XMLTestUtils.h>
-#include <U2Core/GObject.h>
 #include <QDomElement>
+
+#include <U2Core/GObject.h>
 #include <U2Core/SequenceWalkerTask.h>
+
+#include <U2Test/XMLTestUtils.h>
 
 namespace U2 {
 
 class GTest_SW_CheckRegion : public XmlTest, public SequenceWalkerCallback {
     Q_OBJECT
 public:
-
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_SW_CheckRegion, "sw-check-region");
 
     ReportResult report();
 
-    void onRegion(SequenceWalkerSubtask* t,TaskStateInfo& ti) {Q_UNUSED(t); Q_UNUSED(ti);}
+    void onRegion(SequenceWalkerSubtask *t, TaskStateInfo &ti) {
+        Q_UNUSED(t);
+        Q_UNUSED(ti);
+    }
 
 private:
     int chunkSize;
@@ -52,7 +56,7 @@ protected:
 
 class SequenceWalkerTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
-}//namespace
+}    // namespace U2
 #endif

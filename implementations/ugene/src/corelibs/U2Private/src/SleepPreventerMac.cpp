@@ -31,7 +31,9 @@ public:
     IOReturn doCapture() {
         CFStringRef reasonForActivity = CFSTR("New UGENE task is started");
         return IOPMAssertionCreateWithName(kIOPMAssertionTypeNoIdleSleep,
-                             kIOPMAssertionLevelOn, reasonForActivity, &assertionID);
+                                           kIOPMAssertionLevelOn,
+                                           reasonForActivity,
+                                           &assertionID);
     }
 
     IOReturn doRelease() {
@@ -74,4 +76,4 @@ void SleepPreventerMac::release() {
 
 #endif
 
-}   // namespace U2
+}    // namespace U2

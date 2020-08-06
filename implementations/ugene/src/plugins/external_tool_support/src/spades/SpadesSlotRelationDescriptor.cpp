@@ -19,16 +19,16 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Algorithm/GenomeAssemblyRegistry.h>
 #include "SpadesSlotRelationDescriptor.h"
+
+#include <U2Algorithm/GenomeAssemblyRegistry.h>
+
 #include "SpadesWorker.h"
 
 namespace U2 {
 
 SpadesSlotRelationDescriptor::SpadesSlotRelationDescriptor(const QString &portId, const QString &slotId)
-    : SlotRelationDescriptor(portId, slotId, QVariantList())
-{
-
+    : SlotRelationDescriptor(portId, slotId, QVariantList()) {
 }
 
 SpadesSlotRelationDescriptor *SpadesSlotRelationDescriptor::clone() const {
@@ -39,4 +39,4 @@ bool SpadesSlotRelationDescriptor::isSlotEnabled(const QVariant &attrValue) cons
     return !attrValue.toMap().value(portId).toString().contains(TYPE_INTERLACED);
 }
 
-}   // namespace U2
+}    // namespace U2

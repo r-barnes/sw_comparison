@@ -14,17 +14,17 @@
         <translation>Could not detect file format</translation>
     </message>
     <message>
-        <location filename="../src/CommonDbi.cpp" line="94"/>
+        <location filename="../src/CommonDbi.cpp" line="93"/>
         <source>Importing objects from %1 [%2]</source>
         <translation>Importing objects from %1 [%2]</translation>
     </message>
     <message>
-        <location filename="../src/CommonDbi.cpp" line="138"/>
+        <location filename="../src/CommonDbi.cpp" line="134"/>
         <source>The unsupported format was provided</source>
         <translation>The unsupported format was provided</translation>
     </message>
     <message>
-        <location filename="../src/UgeneContextWrapper.cpp" line="430"/>
+        <location filename="../src/UgeneContextWrapper.cpp" line="428"/>
         <source>%1-bit version of UGENE started</source>
         <translation>%1-bit version of UGENE started</translation>
     </message>
@@ -32,7 +32,7 @@
 <context>
     <name>U2::AppContextImpl</name>
     <message>
-        <location filename="../src/UgeneContextWrapper.cpp" line="168"/>
+        <location filename="../src/UgeneContextWrapper.cpp" line="166"/>
         <source>UGENE script environment initialization started</source>
         <translation>UGENE script environment initialization started</translation>
     </message>

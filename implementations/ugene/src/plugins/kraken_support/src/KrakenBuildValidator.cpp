@@ -19,13 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "KrakenBuildValidator.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DataPathRegistry.h>
 
-#include "KrakenBuildPrompter.h"
-#include "KrakenBuildValidator.h"
-#include "KrakenBuildWorkerFactory.h"
 #include "../ngs_reads_classification/src/NgsReadsClassificationUtils.h"
+#include "KrakenBuildPrompter.h"
+#include "KrakenBuildWorkerFactory.h"
 
 namespace U2 {
 namespace Workflow {
@@ -50,7 +51,8 @@ bool KrakenBuildValidator::validateMinimizerLength(const Actor *actor, Notificat
 bool KrakenBuildValidator::validateTaxonomy(const Actor *actor, NotificationsList &notificationList) const {
     U2DataPath *taxonomyDataPath = AppContext::getDataPathRegistry()->getDataPathByName(NgsReadsClassificationPlugin::TAXONOMY_DATA_ID);
     CHECK_EXT(NULL != taxonomyDataPath && taxonomyDataPath->isValid(),
-              notificationList << WorkflowNotification(tr("Taxonomy classification data from NCBI are not available."), actor->getId()), false);
+              notificationList << WorkflowNotification(tr("Taxonomy classification data from NCBI are not available."), actor->getId()),
+              false);
 
     bool isValid = true;
     const QString missingFileMessage = tr("Taxonomy classification data from NCBI are not full: file '%1' is missing.");
@@ -72,5 +74,5 @@ bool KrakenBuildValidator::validateTaxonomy(const Actor *actor, NotificationsLis
     return isValid;
 }
 
-}   // namespace Workflow
-}   // namespace U2
+}    // namespace Workflow
+}    // namespace U2

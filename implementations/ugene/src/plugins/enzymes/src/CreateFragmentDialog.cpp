@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CreateFragmentDialog.h"
+
 #include <QDir>
 #include <QMessageBox>
 #include <QPushButton>
@@ -30,8 +32,8 @@
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/DNASequenceSelection.h>
 #include <U2Core/GObjectRelationRoles.h>
-#include <U2Core/GObjectUtils.h>
 #include <U2Core/GObjectTypes.h>
+#include <U2Core/GObjectUtils.h>
 #include <U2Core/Settings.h>
 #include <U2Core/U1AnnotationUtils.h>
 #include <U2Core/U2AlphabetUtils.h>
@@ -43,15 +45,12 @@
 #include <U2View/ADVSequenceObjectContext.h>
 #include <U2View/AnnotatedDNAView.h>
 
-#include "CreateFragmentDialog.h"
-
 namespace U2 {
 
-CreateFragmentDialog::CreateFragmentDialog(ADVSequenceObjectContext* ctx, QWidget* p)
+CreateFragmentDialog::CreateFragmentDialog(ADVSequenceObjectContext *ctx, QWidget *p)
     : QDialog(p), seqCtx(ctx) {
-
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742569");
+    new HelpButton(this, buttonBox, "46501108");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -65,23 +64,20 @@ CreateFragmentDialog::CreateFragmentDialog(ADVSequenceObjectContext* ctx, QWidge
     relatedAnnotations = ctx->getAnnotationObjects(true).toList();
 
     setupAnnotationsWidget();
-
-
 }
 
-CreateFragmentDialog::CreateFragmentDialog(U2SequenceObject* obj, const U2Region& region, QWidget* p)
+CreateFragmentDialog::CreateFragmentDialog(U2SequenceObject *obj, const U2Region &region, QWidget *p)
     : QDialog(p), seqCtx(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742569");
+    new HelpButton(this, buttonBox, "46501108");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
     seqObj = obj;
 
-    QList<GObject*> aObjects = GObjectUtils::findAllObjects(UOF_LoadedOnly, GObjectTypes::ANNOTATION_TABLE);
-    QList<GObject*> related = GObjectUtils::findObjectsRelatedToObjectByRole(seqObj, GObjectTypes::ANNOTATION_TABLE,
-        ObjectRole_Sequence, aObjects, UOF_LoadedOnly);
+    QList<GObject *> aObjects = GObjectUtils::findAllObjects(UOF_LoadedOnly, GObjectTypes::ANNOTATION_TABLE);
+    QList<GObject *> related = GObjectUtils::findObjectsRelatedToObjectByRole(seqObj, GObjectTypes::ANNOTATION_TABLE, ObjectRole_Sequence, aObjects, UOF_LoadedOnly);
 
-    foreach(GObject* obj, related) {
+    foreach (GObject *obj, related) {
         AnnotationTableObject *aObj = qobject_cast<AnnotationTableObject *>(obj);
         assert(aObj != NULL);
         relatedAnnotations.append(aObj);
@@ -99,17 +95,16 @@ void CreateFragmentDialog::accept() {
 
     if (leftEndBox->isChecked()) {
         leftOverhang = lCustomOverhangEdit->text();
-        const DNAAlphabet* alph = U2AlphabetUtils::findBestAlphabet(leftOverhang.toLatin1());
+        const DNAAlphabet *alph = U2AlphabetUtils::findBestAlphabet(leftOverhang.toLatin1());
         if (!alph->isNucleic()) {
             QMessageBox::warning(this, windowTitle(), tr("Left end contains unsupported symbols!"));
             return;
         }
-
     }
 
     if (rightEndBox->isChecked()) {
         rightOverhang = rCustomOverhangEdit->text();
-        const DNAAlphabet* alph = U2AlphabetUtils::findBestAlphabet(rightOverhang.toLatin1());
+        const DNAAlphabet *alph = U2AlphabetUtils::findBestAlphabet(rightOverhang.toLatin1());
         if (!alph->isNucleic()) {
             QMessageBox::warning(this, windowTitle(), tr("Right end contains unsupported symbols!"));
             return;
@@ -135,7 +130,7 @@ void CreateFragmentDialog::accept() {
         QMessageBox::warning(this, tr("Error"), tr("Cannot create an annotation object. Please check settings"));
         return;
     }
-    const CreateAnnotationModel& m = ac->getModel();
+    const CreateAnnotationModel &m = ac->getModel();
     AnnotationTableObject *obj = m.getAnnotationObject();
     QString groupName = m.groupName;
     SAFE_POINT(!groupName.isEmpty() && obj != NULL, "Invalid annotation data!", );
@@ -186,8 +181,8 @@ void CreateFragmentDialog::setupAnnotationsWidget() {
     acm.data->name = ANNOTATION_GROUP_FRAGMENTS;
     acm.sequenceLen = seqObj->getSequenceLength();
     ac = new CreateAnnotationWidgetController(acm, this);
-    QWidget* caw = ac->getWidget();
-    QVBoxLayout* l = new QVBoxLayout();
+    QWidget *caw = ac->getWidget();
+    QVBoxLayout *l = new QVBoxLayout();
     l->setMargin(0);
     l->addWidget(caw);
     l->addStretch();
@@ -195,4 +190,4 @@ void CreateFragmentDialog::setupAnnotationsWidget() {
     annotationsWidget->setMinimumSize(caw->layout()->minimumSize());
 }
 
-} // namespace
+}    // namespace U2

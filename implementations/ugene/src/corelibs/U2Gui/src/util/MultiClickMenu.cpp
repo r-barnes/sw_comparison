@@ -19,17 +19,17 @@
  * MA 02110-1301, USA.
  */
 
+#include "MultiClickMenu.h"
+
 #include <QKeyEvent>
 #include <QMenu>
-#include <U2Core/U2SafePoints.h>
 
-#include "MultiClickMenu.h"
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
 MultiClickMenu::MultiClickMenu(QMenu *menu)
-: QObject(menu), menu(menu)
-{
+    : QObject(menu), menu(menu) {
     CHECK(NULL != menu, );
     menu->installEventFilter(this);
 }
@@ -53,11 +53,11 @@ bool MultiClickMenu::isSelectEvent(QEvent *event) {
         return true;
     }
     if (event->type() == QEvent::KeyPress) {
-        QKeyEvent *keyEvent = dynamic_cast<QKeyEvent*>(event);
+        QKeyEvent *keyEvent = dynamic_cast<QKeyEvent *>(event);
         CHECK(NULL != keyEvent, false);
         return (keyEvent->key() == Qt::Key_Enter) || (keyEvent->key() == Qt::Key_Return);
     }
     return false;
 }
 
-} // U2
+}    // namespace U2

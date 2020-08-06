@@ -24,8 +24,8 @@
 
 #include <QPointer>
 
-#include <U2Core/Task.h>
 #include <U2Core/MultipleSequenceAlignmentObject.h>
+#include <U2Core/Task.h>
 #include <U2Core/U2Type.h>
 
 namespace U2 {
@@ -39,29 +39,33 @@ class U2UseCommonUserModStep;
 class U2CORE_EXPORT AddSequenceObjectsToAlignmentTask : public Task {
     Q_OBJECT
 public:
-    AddSequenceObjectsToAlignmentTask(MultipleSequenceAlignmentObject* obj, const QList<DNASequence>& seqList, bool recheckNewSequenceAlphabetOnMismatch = false);
+    AddSequenceObjectsToAlignmentTask(MultipleSequenceAlignmentObject *obj, const QList<DNASequence> &seqList, bool recheckNewSequenceAlphabetOnMismatch = false);
 
     virtual void prepare();
     virtual void run();
     ReportResult report();
 
-    const MaModificationInfo& getMaModificationInfo() const {return mi;}
+    const MaModificationInfo &getMaModificationInfo() const {
+        return mi;
+    }
 
 protected:
     void processObjectsAndSetResultingAlphabet();
 
-    QList<DNASequence>    seqList;
-    QPointer<MultipleSequenceAlignmentObject>  maObj;
+    QList<DNASequence> seqList;
+    QPointer<MultipleSequenceAlignmentObject> maObj;
+
 protected:
     void releaseLock();
+
 private:
-    StateLock*                  stateLock;
-    const DNAAlphabet*          msaAlphabet;
-    QStringList                 errorList;
-    U2MsaDbi*                   dbi;
-    U2EntityRef                 entityRef;
-    U2UseCommonUserModStep*     modStep;
-    MaModificationInfo          mi;
+    StateLock *stateLock;
+    const DNAAlphabet *msaAlphabet;
+    QStringList errorList;
+    U2MsaDbi *dbi;
+    U2EntityRef entityRef;
+    U2UseCommonUserModStep *modStep;
+    MaModificationInfo mi;
 
     /*
      * If re-check alphabet is true and the alphabet of the new seqeuence is not the same as the alphabet of the alignment
@@ -70,7 +74,6 @@ private:
      * Example: paste symbol 'T' to amino alignment: 'T' is detected as Nucleic while it is also valid for Amino!
      */
     bool recheckNewSequenceAlphabetOnMismatch;
-
 
     static const int maxErrorListSize;
     /** Returns the max length of the rows including trailing gaps */
@@ -83,27 +86,29 @@ private:
 class U2CORE_EXPORT AddSequencesFromFilesToAlignmentTask : public AddSequenceObjectsToAlignmentTask {
     Q_OBJECT
 public:
-    AddSequencesFromFilesToAlignmentTask(MultipleSequenceAlignmentObject* obj, const QStringList& urls);
+    AddSequencesFromFilesToAlignmentTask(MultipleSequenceAlignmentObject *obj, const QStringList &urls);
 
     virtual void prepare();
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 private slots:
     void sl_onCancel();
+
 private:
-    QStringList         urlList;
-    LoadDocumentTask*   loadTask;
+    QStringList urlList;
+    LoadDocumentTask *loadTask;
 };
 
 class U2CORE_EXPORT AddSequencesFromDocumentsToAlignmentTask : public AddSequenceObjectsToAlignmentTask {
     Q_OBJECT
 public:
-    AddSequencesFromDocumentsToAlignmentTask(MultipleSequenceAlignmentObject* obj, const QList<Document*>& docs, bool recheckNewSequenceAlphabets);
+    AddSequencesFromDocumentsToAlignmentTask(MultipleSequenceAlignmentObject *obj, const QList<Document *> &docs, bool recheckNewSequenceAlphabets);
 
     virtual void prepare();
+
 private:
-    QList<Document*> docs;
+    QList<Document *> docs;
 };
 
-}// namespace
+}    // namespace U2
 
-#endif //_U2_ADD_SEQUENCES_TO_ALIGNMENT_TASK_H_
+#endif    //_U2_ADD_SEQUENCES_TO_ALIGNMENT_TASK_H_

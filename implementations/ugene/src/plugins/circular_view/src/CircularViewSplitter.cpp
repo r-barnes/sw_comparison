@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CircularViewSplitter.h"
+
 #include <QApplication>
 #include <QFileInfo>
 #include <QHBoxLayout>
@@ -33,11 +35,11 @@
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/GObject.h>
 #include <U2Core/GObjectTypes.h>
+#include <U2Core/GUrlUtils.h>
 #include <U2Core/L10n.h>
 #include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/Settings.h>
 #include <U2Core/U2SafePoints.h>
-#include <U2Core/GUrlUtils.h>
 
 #include <U2Gui/DialogUtils.h>
 #include <U2Gui/ExportImageDialog.h>
@@ -46,14 +48,12 @@
 
 #include "CircularView.h"
 #include "CircularViewImageExportTask.h"
-#include "CircularViewSplitter.h"
 #include "RestrictionMapWidget.h"
 
 namespace U2 {
 
-CircularViewSplitter::CircularViewSplitter(AnnotatedDNAView* view)
-    : ADVSplitWidget(view)
-{
+CircularViewSplitter::CircularViewSplitter(AnnotatedDNAView *view)
+    : ADVSplitWidget(view) {
     zoomInAction = new QAction(tr("Zoom In"), this);
     zoomInAction->setIcon(QIcon(":/core/images/zoom_in.png"));
     zoomInAction->setToolTip(tr("Zoom In"));
@@ -76,32 +76,32 @@ CircularViewSplitter::CircularViewSplitter(AnnotatedDNAView* view)
     toggleRestrictionMapAction->setToolTip(tr("Show/hide restriction sites map"));
     toggleRestrictionMapAction->setCheckable(true);
     toggleRestrictionMapAction->setChecked(true);
-    connect(toggleRestrictionMapAction, SIGNAL(triggered(bool)),SLOT(sl_toggleRestrictionMap(bool)));
+    connect(toggleRestrictionMapAction, SIGNAL(triggered(bool)), SLOT(sl_toggleRestrictionMap(bool)));
 
     connect(exportAction, SIGNAL(triggered()), SLOT(sl_export()));
 
     splitter = new QSplitter(Qt::Horizontal);
 
-    WidgetWithLocalToolbar* widgetWithToolBar = new WidgetWithLocalToolbar(this);
+    WidgetWithLocalToolbar *widgetWithToolBar = new WidgetWithLocalToolbar(this);
     widgetWithToolBar->setLocalToolBarObjectName("circular_view_local_toolbar");
     widgetWithToolBar->addActionToLocalToolbar(zoomInAction);
     widgetWithToolBar->addActionToLocalToolbar(zoomOutAction);
     widgetWithToolBar->addActionToLocalToolbar(fitInViewAction);
     widgetWithToolBar->addActionToLocalToolbar(exportAction);
     widgetWithToolBar->addActionToLocalToolbar(toggleRestrictionMapAction);
-    QVBoxLayout* layout = new QVBoxLayout();
+    QVBoxLayout *layout = new QVBoxLayout();
     layout->setSpacing(0);
     layout->setMargin(0);
     layout->addWidget(splitter);
     widgetWithToolBar->setContentLayout(layout);
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    setBaseSize(600,600);
+    setBaseSize(600, 600);
     setAcceptDrops(false);
 
-    QVBoxLayout* outerLayout = new QVBoxLayout(this);
+    QVBoxLayout *outerLayout = new QVBoxLayout(this);
     outerLayout->setSpacing(0);
-    outerLayout->setContentsMargins(0,0,0,0);
+    outerLayout->setContentsMargins(0, 0, 0, 0);
 
     horScroll = new QScrollBar(Qt::Horizontal, this);
     horScroll->setMinimum(0);
@@ -113,17 +113,17 @@ CircularViewSplitter::CircularViewSplitter(AnnotatedDNAView* view)
     outerLayout->insertWidget(-1, horScroll);
 }
 
-void CircularViewSplitter::updateState( const QVariantMap& m) {
+void CircularViewSplitter::updateState(const QVariantMap &m) {
     Q_UNUSED(m);
     //TODO:
 }
 
-void CircularViewSplitter::saveState( QVariantMap& m ) {
+void CircularViewSplitter::saveState(QVariantMap &m) {
     Q_UNUSED(m);
     //TODO:
 }
 
-void CircularViewSplitter::addView(CircularView* view, RestrctionMapWidget* rmapWidget) {
+void CircularViewSplitter::addView(CircularView *view, RestrctionMapWidget *rmapWidget) {
     fitInViewAction->setDisabled(true);
     connect(zoomInAction, SIGNAL(triggered()), view, SLOT(sl_zoomIn()));
     connect(zoomOutAction, SIGNAL(triggered()), view, SLOT(sl_zoomOut()));
@@ -151,23 +151,23 @@ void CircularViewSplitter::addView(CircularView* view, RestrctionMapWidget* rmap
 }
 
 void CircularViewSplitter::sl_moveSlider(int delta) {
-    delta*=-1;
+    delta *= -1;
     int oldPos = horScroll->sliderPosition();
     int step = qMin(QApplication::wheelScrollLines() * horScroll->singleStep(), horScroll->pageStep());
-    int offset = delta/120 * step;
-    if (qAbs(offset)<1) {
+    int offset = delta / 120 * step;
+    if (qAbs(offset) < 1) {
         return;
     }
     int newPos = oldPos + offset;
     horScroll->setSliderPosition(newPos);
 }
 
-void CircularViewSplitter::removeView(CircularView* view, RestrctionMapWidget* rmapWidget) {
-    SAFE_POINT( view != NULL, tr("Circular View is NULL"), );
-    QWidget* viewport = view->parentWidget();
-    SAFE_POINT( viewport != NULL, tr("Circular View viewport is NULL"), );
-    QScrollArea* scrollArea = qobject_cast<QScrollArea*>(viewport->parentWidget());
-    SAFE_POINT( scrollArea != NULL, tr("Scroll area is NULL"), );
+void CircularViewSplitter::removeView(CircularView *view, RestrctionMapWidget *rmapWidget) {
+    SAFE_POINT(view != NULL, tr("Circular View is NULL"), );
+    QWidget *viewport = view->parentWidget();
+    SAFE_POINT(viewport != NULL, tr("Circular View viewport is NULL"), );
+    QScrollArea *scrollArea = qobject_cast<QScrollArea *>(viewport->parentWidget());
+    SAFE_POINT(scrollArea != NULL, tr("Scroll area is NULL"), );
     view->setParent(NULL);
     delete scrollArea;
 
@@ -179,15 +179,23 @@ bool CircularViewSplitter::isEmpty() {
     return circularViewList.isEmpty();
 }
 
-bool noValidExtension(const QString& url) {
+bool noValidExtension(const QString &url) {
     QFileInfo fi(url);
     if (fi.suffix().isEmpty()) {
         return true;
     }
 
     QStringList validExtensions;
-    validExtensions << "png" << "bmp" << "jpg" << "jpeg" << "ppm" <<
-        "xbm" << "xpm" << "svg" << "pdf" << "ps";
+    validExtensions << "png"
+                    << "bmp"
+                    << "jpg"
+                    << "jpeg"
+                    << "ppm"
+                    << "xbm"
+                    << "xpm"
+                    << "svg"
+                    << "pdf"
+                    << "ps";
 
     if (!validExtensions.contains(fi.suffix())) {
         return true;
@@ -197,14 +205,14 @@ bool noValidExtension(const QString& url) {
 }
 
 void CircularViewSplitter::updateViews() {
-    foreach(CircularView* cv, circularViewList) {
+    foreach (CircularView *cv, circularViewList) {
         cv->redraw();
     }
 }
 
 void CircularViewSplitter::sl_export() {
-    CircularView* cvInFocus = NULL;
-    foreach(CircularView* cv, circularViewList) {
+    CircularView *cvInFocus = NULL;
+    foreach (CircularView *cv, circularViewList) {
         if (cv->hasFocus()) {
             cvInFocus = cv;
             break;
@@ -215,31 +223,29 @@ void CircularViewSplitter::sl_export() {
     }
 
     SAFE_POINT(cvInFocus->getSequenceContext() != NULL, tr("Sequence context is NULL"), );
-    U2SequenceObject* seqObj = cvInFocus->getSequenceContext()->getSequenceObject();
+    U2SequenceObject *seqObj = cvInFocus->getSequenceContext()->getSequenceObject();
     SAFE_POINT(seqObj != NULL, tr("Sequence obejct is NULL"), );
 
     CircularViewImageExportController factory(circularViewList, cvInFocus);
 
     QString fileName = GUrlUtils::fixFileName(seqObj->getSequenceName());
-    QWidget *p = (QWidget*)AppContext::getMainWindow()->getQMainWindow();
-    QObjectScopedPointer<ExportImageDialog> dialog = new ExportImageDialog(&factory, ExportImageDialog::CircularView,
-                                                                      fileName, ExportImageDialog::SupportScaling, p);
+    QWidget *p = (QWidget *)AppContext::getMainWindow()->getQMainWindow();
+    QObjectScopedPointer<ExportImageDialog> dialog = new ExportImageDialog(&factory, ExportImageDialog::CircularView, fileName, ExportImageDialog::SupportScaling, p);
     dialog->exec();
     CHECK(!dialog.isNull(), );
 }
 
 void CircularViewSplitter::sl_horSliderMoved(int newVal) {
-    foreach(CircularView* cv, circularViewList) {
+    foreach (CircularView *cv, circularViewList) {
         cv->setAngle(newVal);
     }
 }
 
 void CircularViewSplitter::adaptSize() {
-
-    QWidget* widget = parentWidget();
+    QWidget *widget = parentWidget();
 
     Q_ASSERT(widget != NULL);
-    QSplitter* parentSplitter = qobject_cast<QSplitter* > (widget);
+    QSplitter *parentSplitter = qobject_cast<QSplitter *>(widget);
 
     int index = parentSplitter->indexOf(this);
     QList<int> sizes = parentSplitter->sizes();
@@ -251,8 +257,7 @@ void CircularViewSplitter::adaptSize() {
 
     if (parentSplitter->orientation() == Qt::Horizontal) {
         splitterSize = psH;
-    }
-    else {
+    } else {
         splitterSize = psW;
     }
 
@@ -269,13 +274,12 @@ void CircularViewSplitter::adaptSize() {
         if (sizes.count() > 1) {
             midSize /= (sizes.count() - 1);
         }
-    }
-    else {
+    } else {
         midSize /= sizes.count();
         sizes[index] = midSize;
     }
 
-    for (int i=0; i<sizes.count(); i++) {
+    for (int i = 0; i < sizes.count(); i++) {
         if (i != index) {
             sizes[i] = midSize;
         }
@@ -283,23 +287,22 @@ void CircularViewSplitter::adaptSize() {
     parentSplitter->setSizes(sizes);
 }
 
-void CircularViewSplitter::sl_updateZoomInAction( bool disabled) {
+void CircularViewSplitter::sl_updateZoomInAction(bool disabled) {
     zoomInAction->setDisabled(disabled);
 }
 
-void CircularViewSplitter::sl_updateZoomOutAction( bool disabled) {
+void CircularViewSplitter::sl_updateZoomOutAction(bool disabled) {
     zoomOutAction->setDisabled(disabled);
 }
 
-void CircularViewSplitter::sl_updateFitInViewAction( bool disabled) {
+void CircularViewSplitter::sl_updateFitInViewAction(bool disabled) {
     fitInViewAction->setDisabled(disabled);
 }
 
-void CircularViewSplitter::sl_toggleRestrictionMap( bool toggle)
-{
-    foreach (QWidget* w, restrictionMapWidgets) {
+void CircularViewSplitter::sl_toggleRestrictionMap(bool toggle) {
+    foreach (QWidget *w, restrictionMapWidgets) {
         w->setVisible(toggle);
     }
 }
 
-} //namespace U2
+}    //namespace U2

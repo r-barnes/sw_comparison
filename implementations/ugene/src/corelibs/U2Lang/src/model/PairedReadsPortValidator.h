@@ -32,7 +32,7 @@ namespace Workflow {
 class U2LANG_EXPORT PairedReadsPortValidator : public PortValidator {
     Q_DECLARE_TR_FUNCTIONS(PairedReadsPortValidator)
 public:
-    PairedReadsPortValidator(const QString& inputId, const QString& inputPairedId);
+    PairedReadsPortValidator(const QString &inputId, const QString &inputPairedId);
     bool validate(const IntegralBusPort *port, NotificationsList &notificationList) const;
 
 private:
@@ -40,7 +40,7 @@ private:
     QString pairedInputSlotId;
 };
 
-}   // namespace Workflow
-}   // namespace U2
+}    // namespace Workflow
+}    // namespace U2
 
-#endif // _U2_INPUT_DATA_PORT_VALIDATOR_H_
+#endif    // _U2_INPUT_DATA_PORT_VALIDATOR_H_

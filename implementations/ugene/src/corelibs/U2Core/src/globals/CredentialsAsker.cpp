@@ -19,16 +19,15 @@
  * MA 02110-1301, USA.
  */
 
+#include "CredentialsAsker.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/PasswordStorage.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "CredentialsAsker.h"
-
 namespace U2 {
 
 CredentialsAsker::~CredentialsAsker() {
-
 }
 
 void CredentialsAsker::saveCredentials(const QString &resourceUrl, const QString &password, bool remember) {
@@ -38,4 +37,4 @@ void CredentialsAsker::saveCredentials(const QString &resourceUrl, const QString
     storage->addEntry(resourceUrl, password, remember);
 }
 
-} // namespace U2
+}    // namespace U2

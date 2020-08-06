@@ -19,9 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-#include <QVariant>
-
 #include "BaseAttributes.h"
+
+#include <QVariant>
 
 static const QString URL_LOCATION_ATTR_ID("url_location");
 static const QString URL_OUT_ATTR_ID("url-out");
@@ -48,7 +48,7 @@ const Descriptor BaseAttributes::URL_IN_ATTRIBUTE() {
 
 const Descriptor BaseAttributes::URL_OUT_ATTRIBUTE() {
     return Descriptor(URL_OUT_ATTR_ID, tr("Output file"), tr("Location of output data file. If this attribute is set,"
-        " slot \"Location\" in port will not be used."));
+                                                             " slot \"Location\" in port will not be used."));
 }
 
 const Descriptor BaseAttributes::URL_SUFFIX() {
@@ -93,12 +93,11 @@ const Descriptor BaseAttributes::DOCUMENT_FORMAT_ATTRIBUTE() {
 }
 
 const Descriptor BaseAttributes::ACCUMULATE_OBJS_ATTRIBUTE() {
-    return Descriptor(APPEND_ATTR_ID, tr("Accumulate objects"),
-        tr("Accumulate all incoming data in one file or create separate files for each input."
-        "In the latter case, an incremental numerical suffix is added to the file name."));
+    return Descriptor(APPEND_ATTR_ID, tr("Accumulate objects"), tr("Accumulate all incoming data in one file or create separate files for each input."
+                                                                   "In the latter case, an incremental numerical suffix is added to the file name."));
 }
 
-const Descriptor BaseAttributes::SPLIT_SEQ_ATTRIBUTE(){
+const Descriptor BaseAttributes::SPLIT_SEQ_ATTRIBUTE() {
     return Descriptor(SPLIT_ATTR, tr("Split sequence"), tr("Split each incoming sequence on several parts."));
 }
 
@@ -108,8 +107,8 @@ const Descriptor BaseAttributes::READ_BY_LINES_ATTRIBUTE() {
 
 const Descriptor BaseAttributes::FILE_MODE_ATTRIBUTE() {
     return Descriptor(FILE_MODE_ATTR_ID, tr("Existing file"), tr("If a target file already exists, you can specify"
-        " how it should be handled: either overwritten, renamed"
-        " or appended (if supported by file format). If Rename option is chosen existing file will be renamed."));
+                                                                 " how it should be handled: either overwritten, renamed"
+                                                                 " or appended (if supported by file format). If Rename option is chosen existing file will be renamed."));
 }
 
 const Descriptor BaseAttributes::STRAND_ATTRIBUTE() {
@@ -144,7 +143,5 @@ const QVariantMap BaseAttributes::STRAND_ATTRIBUTE_VALUES_MAP() {
     return strandMap;
 }
 
-
-
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

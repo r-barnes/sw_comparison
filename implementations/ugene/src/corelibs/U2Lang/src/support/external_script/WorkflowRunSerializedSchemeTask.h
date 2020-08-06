@@ -27,7 +27,7 @@
 namespace U2 {
 
 namespace Workflow {
-    class Schema;
+class Schema;
 }
 
 class LoadWorkflowTask;
@@ -37,32 +37,34 @@ class WorkflowRunTask;
 class U2LANG_EXPORT BaseSerializedSchemeRunner : public Task {
     Q_OBJECT
 public:
-                                BaseSerializedSchemeRunner( const QString &pathToScheme,
-                                    ScriptableScheduler *scheduler, QStringList &outputFiles );
+    BaseSerializedSchemeRunner(const QString &pathToScheme,
+                               ScriptableScheduler *scheduler,
+                               QStringList &outputFiles);
 
 protected:
-    QStringList                 &workflowResultFiles;
-    const QString               pathToScheme;
-    ScriptableScheduler *       scheduler;
+    QStringList &workflowResultFiles;
+    const QString pathToScheme;
+    ScriptableScheduler *scheduler;
 };
 
 class U2LANG_EXPORT WorkflowRunSerializedSchemeTask : public BaseSerializedSchemeRunner {
     Q_OBJECT
 public:
-                                WorkflowRunSerializedSchemeTask( const QString &pathToScheme,
-                                    ScriptableScheduler *scheduler, QStringList &outputFiles );
-                                ~WorkflowRunSerializedSchemeTask( );
-    QList<Task *>               onSubTaskFinished( Task *subTask );
-    QStringList                 getWorkflowOutputFiles( ) const;
+    WorkflowRunSerializedSchemeTask(const QString &pathToScheme,
+                                    ScriptableScheduler *scheduler,
+                                    QStringList &outputFiles);
+    ~WorkflowRunSerializedSchemeTask();
+    QList<Task *> onSubTaskFinished(Task *subTask);
+    QStringList getWorkflowOutputFiles() const;
 
 private:
-    LoadWorkflowTask *          createLoadSchemeTask( );
+    LoadWorkflowTask *createLoadSchemeTask();
 
-    Workflow::Schema *          scheme;
-    LoadWorkflowTask *          loadTask;
-    WorkflowRunTask *           runTask;
+    Workflow::Schema *scheme;
+    LoadWorkflowTask *loadTask;
+    WorkflowRunTask *runTask;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_WORKFLOW_RUN_FROM_SCRIPT_TASK_H_
+#endif    // _U2_WORKFLOW_RUN_FROM_SCRIPT_TASK_H_

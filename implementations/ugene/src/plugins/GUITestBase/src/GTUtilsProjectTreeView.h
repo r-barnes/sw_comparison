@@ -22,11 +22,11 @@
 #ifndef _U2_GUI_PROJECT_TREE_VIEW_UTILS_H_
 #define _U2_GUI_PROJECT_TREE_VIEW_UTILS_H_
 
+#include <GTGlobals.h>
+
 #include <QAbstractItemModel>
 
 #include <U2Gui/ProjectTreeController.h>
-
-#include <GTGlobals.h>
 
 class QTreeView;
 class QTreeWidget;
@@ -39,58 +39,72 @@ class GTUtilsProjectTreeView {
 public:
     // clicks on item by mouse, renames item by keyboard
     static void rename(HI::GUITestOpStatus &os, const QString &itemName, const QString &newItemName, GTGlobals::UseMethod invokeMethod = GTGlobals::UseKey);
-    static void rename(HI::GUITestOpStatus &os, const QModelIndex& itemIndex, const QString &newItemName, GTGlobals::UseMethod invokeMethod = GTGlobals::UseKey);
+    static void rename(HI::GUITestOpStatus &os, const QModelIndex &itemIndex, const QString &newItemName, GTGlobals::UseMethod invokeMethod = GTGlobals::UseKey);
 
-    static void openView(HI::GUITestOpStatus& os, GTGlobals::UseMethod method = GTGlobals::UseMouse);
-    static void toggleView(HI::GUITestOpStatus& os, GTGlobals::UseMethod method = GTGlobals::UseMouse);
+    /** Checks that project view is opened and fails if not. */
+    static void checkProjectViewIsOpened(HI::GUITestOpStatus &os);
+
+    /** Checks that project view is closed and fails if not. */
+    static void checkProjectViewIsClosed(HI::GUITestOpStatus &os);
+
+    static void openView(HI::GUITestOpStatus &os, GTGlobals::UseMethod method = GTGlobals::UseMouse);
+    static void toggleView(HI::GUITestOpStatus &os, GTGlobals::UseMethod method = GTGlobals::UseMouse);
+
+    /** Checks that tree item is expanded or fails. Waits for the item to be expanded if needed. */
+    static void checkItemIsExpanded(HI::GUITestOpStatus &os, QTreeView *treeView, const QModelIndex &itemIndex);
 
     // returns center or item's rect
     // fails if the item wasn't found
-    static QPoint getItemCenter(HI::GUITestOpStatus &os, const QModelIndex& itemIndex);
-    static QPoint getItemCenter(HI::GUITestOpStatus &os, QTreeView *treeView, const QModelIndex& itemIndex);
+    static QPoint getItemCenter(HI::GUITestOpStatus &os, const QModelIndex &itemIndex);
+    static QPoint getItemCenter(HI::GUITestOpStatus &os, QTreeView *treeView, const QModelIndex &itemIndex);
     static QPoint getItemCenter(HI::GUITestOpStatus &os, const QString &itemName);
 
-    // if item is not visible, scroll until item is not visible
+    /** Locates item in the tree by name and scrolls to the item to make it visible. */
     static void scrollTo(HI::GUITestOpStatus &os, const QString &itemName);
 
-    static void doubleClickItem(HI::GUITestOpStatus &os, const QModelIndex& itemIndex);
-    static void doubleClickItem(HI::GUITestOpStatus &os, const QString& itemName);
-    static void click(HI::GUITestOpStatus &os, const QString& itemName, Qt::MouseButton button = Qt::LeftButton);
-    static void click(HI::GUITestOpStatus &os, const QString& itemName, const QString &parentName, Qt::MouseButton button = Qt::LeftButton);
+    /** Scrolls to the item to make it visible. */
+    static void scrollToIndexAndMakeExpanded(HI::GUITestOpStatus &os, QTreeView *treeView, const QModelIndex &index);
+
+    static void doubleClickItem(HI::GUITestOpStatus &os, const QModelIndex &itemIndex);
+    static void doubleClickItem(HI::GUITestOpStatus &os, const QString &itemName);
+    static void click(HI::GUITestOpStatus &os, const QString &itemName, Qt::MouseButton button = Qt::LeftButton);
+    static void click(HI::GUITestOpStatus &os, const QString &itemName, const QString &parentName, Qt::MouseButton button = Qt::LeftButton);
 
     static void callContextMenu(HI::GUITestOpStatus &os, const QString &itemName);
     static void callContextMenu(HI::GUITestOpStatus &os, const QString &itemName, const QString &parentName);
+    static void callContextMenu(HI::GUITestOpStatus &os, const QModelIndex &itemIndex);
 
-    static QTreeView* getTreeView(HI::GUITestOpStatus &os);
-    static QModelIndex findIndex(HI::GUITestOpStatus &os, const QString &itemName, const GTGlobals::FindOptions& options = GTGlobals::FindOptions());
-    static QModelIndex findIndex(HI::GUITestOpStatus &os, QTreeView *treeView, const QString &itemName, const GTGlobals::FindOptions& options = GTGlobals::FindOptions());
-    static QModelIndex findIndex(HI::GUITestOpStatus &os, const QString &itemName, const QModelIndex& parent, const GTGlobals::FindOptions& options = GTGlobals::FindOptions());
-    static QModelIndex findIndex(HI::GUITestOpStatus &os, QTreeView *treeView, const QString &itemName, const QModelIndex& parent, const GTGlobals::FindOptions& options = GTGlobals::FindOptions());
-    static QModelIndex findIndex(HI::GUITestOpStatus &os, const QStringList &itemPath, const GTGlobals::FindOptions& options = GTGlobals::FindOptions());
-    static QModelIndexList findIndecies(HI::GUITestOpStatus &os,
+    static QTreeView *getTreeView(HI::GUITestOpStatus &os);
+    static QModelIndex findIndex(HI::GUITestOpStatus &os, const QString &itemName, const GTGlobals::FindOptions &options = GTGlobals::FindOptions());
+    static QModelIndex findIndex(HI::GUITestOpStatus &os, QTreeView *treeView, const QString &itemName, const GTGlobals::FindOptions &options = GTGlobals::FindOptions());
+    static QModelIndex findIndex(HI::GUITestOpStatus &os, const QString &itemName, const QModelIndex &parent, const GTGlobals::FindOptions &options = GTGlobals::FindOptions());
+    static QModelIndex findIndex(HI::GUITestOpStatus &os, QTreeView *treeView, const QString &itemName, const QModelIndex &parent, const GTGlobals::FindOptions &options = GTGlobals::FindOptions());
+    static QModelIndex findIndex(HI::GUITestOpStatus &os, const QStringList &itemPath, const GTGlobals::FindOptions &options = GTGlobals::FindOptions());
+    static QModelIndexList findIndeciesInProjectViewNoWait(HI::GUITestOpStatus &os,
                                         const QString &itemName,
                                         const QModelIndex &parent = QModelIndex(),
                                         int parentDepth = 0,
-                                        const GTGlobals::FindOptions& options = GTGlobals::FindOptions());
-    static QModelIndexList findIndecies(HI::GUITestOpStatus &os,
+                                        const GTGlobals::FindOptions &options = GTGlobals::FindOptions());
+    static QModelIndexList findIndeciesInTreeNoWait(HI::GUITestOpStatus &os,
                                         QTreeView *treeView,
                                         const QString &itemName,
                                         const QModelIndex &parent = QModelIndex(),
                                         int parentDepth = 0,
-                                        const GTGlobals::FindOptions& options = GTGlobals::FindOptions());
+                                        const GTGlobals::FindOptions &options = GTGlobals::FindOptions());
 
     static void filterProject(HI::GUITestOpStatus &os, const QString &searchField);
     static void filterProjectSequental(HI::GUITestOpStatus &os, const QStringList &searchField, bool waitUntilSearchEnd);
     static QModelIndexList findFilteredIndexes(HI::GUITestOpStatus &os, const QString &substring, const QModelIndex &parentIndex = QModelIndex());
-    static void checkFilteredGroup(HI::GUITestOpStatus &os, const QString &groupName, const QStringList &namesToCheck, const QStringList &alternativeNamesToCheck,
-        const QStringList &excludedNames, const QStringList& skipGroupIfContains = QStringList());
+    static void checkFilteredGroup(HI::GUITestOpStatus &os, const QString &groupName, const QStringList &namesToCheck, const QStringList &alternativeNamesToCheck, const QStringList &excludedNames, const QStringList &skipGroupIfContains = QStringList());
     static void ensureFilteringIsDisabled(HI::GUITestOpStatus &os);
 
     // returns true if the item exists, does not set error unlike findIndex method
-    static bool checkItem(HI::GUITestOpStatus &os, const QString &itemName, const GTGlobals::FindOptions& options = GTGlobals::FindOptions());
-    static bool checkItem(HI::GUITestOpStatus &os, QTreeView *treeView, const QString &itemName, const GTGlobals::FindOptions& options = GTGlobals::FindOptions());
-    static bool checkItem(HI::GUITestOpStatus &os, const QString &itemName, const QModelIndex& parent, const GTGlobals::FindOptions& options = GTGlobals::FindOptions());
-    static bool checkItem(HI::GUITestOpStatus &os, QTreeView *treeView, const QString &itemName, const QModelIndex& parent, const GTGlobals::FindOptions& options = GTGlobals::FindOptions());
+    static bool checkItem(HI::GUITestOpStatus &os, const QString &itemName, const GTGlobals::FindOptions &options = GTGlobals::FindOptions());
+    static bool checkItem(HI::GUITestOpStatus &os, QTreeView *treeView, const QString &itemName, const GTGlobals::FindOptions &options = GTGlobals::FindOptions());
+    static bool checkItem(HI::GUITestOpStatus &os, const QString &itemName, const QModelIndex &parent, const GTGlobals::FindOptions &options = GTGlobals::FindOptions());
+    static bool checkItem(HI::GUITestOpStatus &os, QTreeView *treeView, const QString &itemName, const QModelIndex &parent, const GTGlobals::FindOptions &options = GTGlobals::FindOptions());
+
+    static void checkNoItem(HI::GUITestOpStatus &os, const QString &itemName);
 
     // the method does nothing if `acceptableTypes` is an empty set
     static void checkObjectTypes(HI::GUITestOpStatus &os, const QSet<GObjectType> &acceptableTypes, const QModelIndex &parent = QModelIndex());
@@ -109,8 +123,8 @@ public:
     static bool isVisible(HI::GUITestOpStatus &os);
 
     static void dragAndDrop(HI::GUITestOpStatus &os, const QModelIndex &from, const QModelIndex &to);
-    static void dragAndDrop(HI::GUITestOpStatus &os, const QModelIndex &from, QWidget* to);
-    static void dragAndDrop(HI::GUITestOpStatus &os, const QStringList &from, QWidget* to);
+    static void dragAndDrop(HI::GUITestOpStatus &os, const QModelIndex &from, QWidget *to);
+    static void dragAndDrop(HI::GUITestOpStatus &os, const QStringList &from, QWidget *to);
     static void dragAndDropSeveralElements(HI::GUITestOpStatus &os, QModelIndexList from, QModelIndex to);
 
     static void expandProjectView(HI::GUITestOpStatus &os);
@@ -124,9 +138,9 @@ public:
 
 private:
     static void sendDragAndDrop(HI::GUITestOpStatus &os, const QPoint &enterPos, const QPoint &dropPos);
-    static void sendDragAndDrop(HI::GUITestOpStatus &os, const QPoint &enterPos, QWidget* dropWidget);
+    static void sendDragAndDrop(HI::GUITestOpStatus &os, const QPoint &enterPos, QWidget *dropWidget);
 };
 
-}   // namespace U2
+}    // namespace U2
 
 #endif

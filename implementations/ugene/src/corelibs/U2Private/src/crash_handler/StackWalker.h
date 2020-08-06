@@ -54,18 +54,17 @@
 
 #include <qglobal.h>
 
-#if defined (Q_OS_WIN)
+#if defined(Q_OS_WIN)
 
-#include <windows.h>
-#include <wtypes.h>
+#    include <windows.h>
+#    include <wtypes.h>
 
-#include <QString>
-#include <QMap>
+#    include <QMap>
+#    include <QString>
 
 namespace U2 {
 
-
-class StackWalkerInternal;  // forward
+class StackWalkerInternal;    // forward
 class StackWalker {
 public:
     enum StackWalkOptions {
@@ -102,42 +101,42 @@ public:
     };
 
     StackWalker(
-    int options = OptionsAll, // 'int' is by design, to combine the enum-flags
-    LPCSTR szSymPath = NULL,
-    DWORD dwProcessId = GetCurrentProcessId(),
-    HANDLE hProcess = GetCurrentProcess()
-    );
+        int options = OptionsAll,    // 'int' is by design, to combine the enum-flags
+        LPCSTR szSymPath = NULL,
+        DWORD dwProcessId = GetCurrentProcessId(),
+        HANDLE hProcess = GetCurrentProcess());
     StackWalker(DWORD dwProcessId, HANDLE hProcess);
     virtual ~StackWalker();
 
-    typedef bool (__stdcall *PReadProcessMemoryRoutine)(
-    HANDLE      hProcess,
-    DWORD64     qwBaseAddress,
-    PVOID       lpBuffer,
-    DWORD       nSize,
-    LPDWORD     lpNumberOfBytesRead,
-    LPVOID      pUserData  // optional data, which was passed in "ShowCallstack"
+    typedef bool(__stdcall *PReadProcessMemoryRoutine)(
+        HANDLE hProcess,
+        DWORD64 qwBaseAddress,
+        PVOID lpBuffer,
+        DWORD nSize,
+        LPDWORD lpNumberOfBytesRead,
+        LPVOID pUserData    // optional data, which was passed in "ShowCallstack"
     );
 
     BOOL LoadModules();
 
     bool ShowCallstack(
-    HANDLE hThread = GetCurrentThread(),
-    const CONTEXT *context = NULL,
-    PReadProcessMemoryRoutine readMemoryFunction = NULL,
-    LPVOID pUserData = NULL  // optional to identify some data in the 'readMemoryFunction'-callback
+        HANDLE hThread = GetCurrentThread(),
+        const CONTEXT *context = NULL,
+        PReadProcessMemoryRoutine readMemoryFunction = NULL,
+        LPVOID pUserData = NULL    // optional to identify some data in the 'readMemoryFunction'-callback
     );
 
-    QString getBuffer() const {return buffer;}
+    QString getBuffer() const {
+        return buffer;
+    }
 
 protected:
-    enum { STACKWALK_MAX_NAMELEN = 1024 }; // max name length for found symbols
+    enum { STACKWALK_MAX_NAMELEN = 1024 };    // max name length for found symbols
 
 protected:
-  // Entry for each Callstack-Entry
-    typedef struct CallstackEntry
-    {
-        DWORD64 offset;  // if 0, we have no valid entry
+    // Entry for each Callstack-Entry
+    typedef struct CallstackEntry {
+        DWORD64 offset;    // if 0, we have no valid entry
         CHAR name[STACKWALK_MAX_NAMELEN];
         CHAR undName[STACKWALK_MAX_NAMELEN];
         CHAR undFullName[STACKWALK_MAX_NAMELEN];
@@ -152,7 +151,9 @@ protected:
         CHAR loadedImageName[STACKWALK_MAX_NAMELEN];
     } CallstackEntry;
 
-    typedef enum {firstEntry, nextEntry, lastEntry} CallstackEntryType;
+    typedef enum { firstEntry,
+                   nextEntry,
+                   lastEntry } CallstackEntryType;
 
     virtual void OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUserName);
     virtual void OnLoadModule(LPCSTR img, LPCSTR mod, DWORD64 baseAddr, DWORD size, DWORD result, LPCSTR symType, LPCSTR pdbName, ULONGLONG fileVersion);
@@ -176,7 +177,7 @@ protected:
     QString stackTrace;
 };
 
-}
+}    // namespace U2
 
 #endif
 

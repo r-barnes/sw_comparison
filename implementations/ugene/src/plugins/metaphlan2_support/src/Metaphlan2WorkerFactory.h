@@ -96,7 +96,7 @@ public:
     static const QString PAIRED_END;
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_METAPHLAN2_WORKER_FACTORY_H_
+#endif    // _U2_METAPHLAN2_WORKER_FACTORY_H_

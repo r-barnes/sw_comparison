@@ -21,6 +21,7 @@
 
 #include <QTextCodec>
 #include <QTimer>
+
 #include <U2Core/AppContext.h>
 #include <U2Core/CMDLineUtils.h>
 #include <U2Core/ExternalToolRunTask.h>
@@ -28,22 +29,22 @@
 #include <U2Core/U2SafePoints.h>
 
 #if (defined(Q_OS_WIN32) || defined(Q_OS_WINCE))
-#include <Windows.h>
+#    include <Windows.h>
 #endif
 
 #ifdef Q_OS_WIN
-#include <tlhelp32.h>
+#    include <tlhelp32.h>
 #else
-#include <unistd.h>
+#    include <unistd.h>
 #endif
 
 #include "CmdlineTaskRunner.h"
 
 namespace U2 {
 
-
 CmdlineTaskConfig::CmdlineTaskConfig()
-    : logLevel(LogLevel_DETAILS), withPluginList(false) {}
+    : logLevel(LogLevel_DETAILS), withPluginList(false) {
+}
 
 /************************************************************************/
 /* CmdlineTaskRunner */
@@ -64,7 +65,7 @@ inline int getLogNameCandidate(const QString &line, QString &nameCandidate) {
     }
 
     // maybe, @line is "[time][loglevel] log"
-    int openPos = line.indexOf("[", 1); // 1 because it is needed to skip first [time] substring
+    int openPos = line.indexOf("[", 1);    // 1 because it is needed to skip first [time] substring
     if (-1 == openPos) {
         return -1;
     }
@@ -78,24 +79,29 @@ inline int getLogNameCandidate(const QString &line, QString &nameCandidate) {
 
 QString getLogLevelName(LogLevel l) {
     switch (l) {
-    case LogLevel_TRACE: return "TRACE";
-    case LogLevel_DETAILS: return "DETAILS";
-    case LogLevel_INFO: return "INFO";
-    case LogLevel_ERROR: return "ERROR";
-    default: assert(0);
+    case LogLevel_TRACE:
+        return "TRACE";
+    case LogLevel_DETAILS:
+        return "DETAILS";
+    case LogLevel_INFO:
+        return "INFO";
+    case LogLevel_ERROR:
+        return "ERROR";
+    default:
+        assert(0);
     }
     return "";
 }
 
 bool containsPrefix(const QStringList &args, const QString &prefix) {
-    foreach(const QString &arg, args) {
+    foreach (const QString &arg, args) {
         if (arg.startsWith(prefix)) {
             return true;
         }
     }
     return false;
 }
-}
+}    // namespace
 
 const QString CmdlineTaskRunner::REPORT_FILE_ARG = "ugene-write-task-report-to-file";
 
@@ -107,8 +113,8 @@ QList<long> CmdlineTaskRunner::getChildrenProcesses(qint64 processId, bool fullT
     size_t len = 255;
     char command[256] = {0};
 
-    sprintf(command,"ps -ef|awk '$3==%u {print $2}'", (unsigned)processId);
-    FILE *fp = (FILE*) popen(command, "r");
+    sprintf(command, "ps -ef|awk '$3==%u {print $2}'", (unsigned)processId);
+    FILE *fp = (FILE *)popen(command, "r");
     while (getline(&buff, &len, fp) >= 0) {
         int child_process_id = QString(buff).toInt();
         if (child_process_id != 0) {
@@ -149,7 +155,7 @@ QList<long> CmdlineTaskRunner::getChildrenProcesses(qint64 processId, bool fullT
 #endif
 
     if (fullTree && children.length() > 0) {
-        foreach(long child, children) {
+        foreach (long child, children) {
             QList<long> children2 = getChildrenProcesses(child, fullTree);
             children << children2;
         }
@@ -205,7 +211,7 @@ int CmdlineTaskRunner::killProcess(qint64 processId) {
     }
 #elif defined(Q_OS_WIN)
     DWORD dwDesiredAccess = PROCESS_TERMINATE;
-    BOOL  bInheritHandle = FALSE;
+    BOOL bInheritHandle = FALSE;
     HANDLE hProcess = OpenProcess(dwDesiredAccess, bInheritHandle, processId);
     if (hProcess != NULL) {
         result = TerminateProcess(hProcess, 1);
@@ -249,7 +255,7 @@ void CmdlineTaskRunner::prepare() {
     process->setProcessEnvironment(env);
     connect(process, SIGNAL(error(QProcess::ProcessError)), SLOT(sl_onError(QProcess::ProcessError)));
     connect(process, SIGNAL(readyReadStandardOutput()), SLOT(sl_onReadStandardOutput()));
-    connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, &CmdlineTaskRunner::sl_onFinish);
+    connect(process, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, &CmdlineTaskRunner::sl_onFinish);
 
     QString cmdlineUgenePath(CMDLineRegistryUtils::getCmdlineUgenePath());
     coreLog.details("Starting UGENE command line: " + cmdlineUgenePath + " " + args.join(" "));
@@ -280,11 +286,11 @@ Task::ReportResult CmdlineTaskRunner::report() {
     return ReportResult_Finished;
 }
 
-bool CmdlineTaskRunner::isCommandLogLine(const QString &/*logLine*/) const {
+bool CmdlineTaskRunner::isCommandLogLine(const QString & /*logLine*/) const {
     return false;
 }
 
-bool CmdlineTaskRunner::parseCommandLogWord(const QString &/*logWord*/) {
+bool CmdlineTaskRunner::parseCommandLogWord(const QString & /*logWord*/) {
     return false;
 }
 
@@ -332,7 +338,8 @@ void CmdlineTaskRunner::sl_onError(QProcess::ProcessError error) {
     switch (error) {
     case QProcess::FailedToStart:
         msg = tr("The process '%1' failed to start. Either the invoked program is missing, "
-            "or you may have insufficient permissions to invoke the program").arg(CMDLineRegistryUtils::getCmdlineUgenePath());
+                 "or you may have insufficient permissions to invoke the program")
+                  .arg(CMDLineRegistryUtils::getCmdlineUgenePath());
         break;
     case QProcess::Crashed:
         msg = tr("The process '%1' crashed some time after starting successfully").arg(CMDLineRegistryUtils::getCmdlineUgenePath());
@@ -363,9 +370,9 @@ void CmdlineTaskRunner::sl_onReadStandardOutput() {
         return;
     }
 
-    foreach(const QString &line, lines) {
+    foreach (const QString &line, lines) {
         QStringList words = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-        foreach(const QString &word, words) {
+        foreach (const QString &word, words) {
             if (word.startsWith(OUTPUT_PROGRESS_TAG)) {
                 QString numStr = word.mid(OUTPUT_PROGRESS_TAG.size());
                 bool ok = false;
@@ -382,7 +389,7 @@ void CmdlineTaskRunner::sl_onReadStandardOutput() {
 }
 
 void CmdlineTaskRunner::sl_onFinish(int exitCode, QProcess::ExitStatus exitStatus) {
-    CHECK(!hasError(), ); // !do not overwrite previous error!
+    CHECK(!hasError(), );    // !do not overwrite previous error!
 
     // On Windows, if the process was terminated with TerminateProcess() from another application,
     // this function will still return NormalExit unless the exit code is less than 0.
@@ -400,7 +407,7 @@ const int UPDATE_PROGRESS_INTERVAL = 500;
 void logError(const QString &error) {
     coreLog.info(QString("%1%2%1").arg(ERROR_KEYWORD).arg(error));
 }
-}
+}    // namespace
 
 CmdlineTask::CmdlineTask(const QString &name, TaskFlags flags)
     : Task(name, flags) {
@@ -431,4 +438,4 @@ QString CmdlineTask::getTaskError() const {
 void CmdlineTask::sl_outputProgressAndState() {
     coreLog.info(QString("%1%2").arg(OUTPUT_PROGRESS_TAG).arg(getProgress()));
 }
-} // U2
+}    // namespace U2

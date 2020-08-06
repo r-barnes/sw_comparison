@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DocumentModelTests.h"
+
 #include <QCoreApplication>
 #include <QDir>
 #include <QStringList>
@@ -44,23 +46,21 @@
 
 #include <U2Test/GTest.h>
 
-#include "DocumentModelTests.h"
-
 namespace U2 {
 
 /* TRANSLATOR U2::GTest */
 
 #define VALUE_ATTR "value"
-#define DOC_ATTR   "doc"
-#define NAME_ATTR   "name"
-#define TYPE_ATTR   "type"
+#define DOC_ATTR "doc"
+#define NAME_ATTR "name"
+#define TYPE_ATTR "type"
 
 #define READ_BUFF_SIZE 4096
 
 /*******************************
  * GTest_LoadDocument
  *******************************/
-static QString getTempDir(const GTestEnvironment* env) {
+static QString getTempDir(const GTestEnvironment *env) {
     QString result = env->getVar("TEMP_DATA_DIR");
     if (result.isEmpty()) {
         result = QCoreApplication::applicationDirPath();
@@ -68,7 +68,7 @@ static QString getTempDir(const GTestEnvironment* env) {
     return result;
 }
 
-void GTest_LoadDocument::init(XMLTestFormat*, const QDomElement& el) {
+void GTest_LoadDocument::init(XMLTestFormat *, const QDomElement &el) {
     loadTask = NULL;
     contextAdded = false;
     docContextName = el.attribute("index");
@@ -92,32 +92,32 @@ void GTest_LoadDocument::init(XMLTestFormat*, const QDomElement& el) {
         if ("msa" == seqMode) {
             hints[DocumentReadingMode_SequenceAsAlignmentHint] = true;
         } else if ("merge" == seqMode) {
-            hints[DocumentReadingMode_SequenceMergeGapSize] = 10; // just default value
+            hints[DocumentReadingMode_SequenceMergeGapSize] = 10;    // just default value
         } else if ("split" == seqMode) {
             hints[DocumentReadingMode_SequenceAsSeparateHint] = true;
         }
     }
 
     QString dir = el.attribute("dir");
-    if(dir == "temp"){
+    if (dir == "temp") {
         tempFile = true;
         url = getTempDir(env) + "/" + el.attribute("url");
-    } else{
+    } else {
         tempFile = false;
         QString commonDataDir = env->getVar("COMMON_DATA_DIR");
-        url =  commonDataDir + "/" + el.attribute("url");
+        url = commonDataDir + "/" + el.attribute("url");
     }
-    IOAdapterId         io = el.attribute("io");
-    IOAdapterFactory*   iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(io);
-    DocumentFormatId    format = el.attribute("format");
+    IOAdapterId io = el.attribute("io");
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(io);
+    DocumentFormatId format = el.attribute("format");
     if (iof == NULL) {
-        stateInfo.setError( QString("io_adapter_not_found_%1").arg(io));
+        stateInfo.setError(QString("io_adapter_not_found_%1").arg(io));
     } else if (format.isEmpty()) {
-        stateInfo.setError( QString("doc_format_is_not_specified"));
+        stateInfo.setError(QString("doc_format_is_not_specified"));
     } else {
         if (format == BaseDocumentFormats::SAM) {
             //SAM format is temporarily removed from base formats list -> create it manually
-            SAMFormat* samFormat = new SAMFormat();
+            SAMFormat *samFormat = new SAMFormat();
             loadTask = new LoadDocumentTask(samFormat, url, iof, hints);
             samFormat->setParent(loadTask);
         } else {
@@ -131,7 +131,7 @@ void GTest_LoadDocument::cleanup() {
     if (contextAdded) {
         removeContext(docContextName);
     }
-    if(!XMLTestUtils::parentTasksHaveError(this) && tempFile){
+    if (!XMLTestUtils::parentTasksHaveError(this) && tempFile) {
         taskLog.trace(QString("Temporary file removed: %1").arg(url));
         QFile::remove(url);
     }
@@ -151,18 +151,18 @@ void GTest_LoadDocument::prepare() {
         expectedMessages << expectedLogMessage2;
     }
 
-    if (!unexpectedLogMessage.isEmpty()){
+    if (!unexpectedLogMessage.isEmpty()) {
         unexpectedMessages << unexpectedLogMessage;
     }
-    if(expectedLogMessage.length()!=0 || unexpectedMessages.length()!=0){
-        needVerifyLog=true;
+    if (expectedLogMessage.length() != 0 || unexpectedMessages.length() != 0) {
+        needVerifyLog = true;
         logHelper.initMessages(expectedMessages, unexpectedMessages);
     }
 }
 
 Task::ReportResult GTest_LoadDocument::report() {
-    if (loadTask!=NULL && loadTask->hasError()) {
-        stateInfo.setError( loadTask->getError());
+    if (loadTask != NULL && loadTask->hasError()) {
+        stateInfo.setError(loadTask->getError());
     } else if (!docContextName.isEmpty()) {
         addContext(docContextName, loadTask->getDocument());
         contextAdded = true;
@@ -174,11 +174,10 @@ Task::ReportResult GTest_LoadDocument::report() {
     return ReportResult_Finished;
 }
 
-
 /*******************************
 * GTest_SaveDocument
 *******************************/
-void GTest_SaveDocument::init(XMLTestFormat* tf, const QDomElement& el) {
+void GTest_SaveDocument::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     docContextName = el.attribute(DOC_ATTR);
@@ -204,15 +203,15 @@ void GTest_SaveDocument::init(XMLTestFormat* tf, const QDomElement& el) {
 
     if (iof == NULL) {
         stateInfo.setError(QString("io_adapter_not_found_%1").arg(io));
-        return ;
+        return;
     }
 
     formatId = el.attribute("format");
 }
 
-void GTest_SaveDocument::prepare(){
+void GTest_SaveDocument::prepare() {
     //////////////////////
-    Document* doc = getContext<Document>(this, docContextName);
+    Document *doc = getContext<Document>(this, docContextName);
     if (doc == NULL) {
         stateInfo.setError(QString("document not found %1").arg(docContextName));
         return;
@@ -234,14 +233,14 @@ void GTest_SaveDocument::prepare(){
 /*******************************
 * GTest_LoadBrokenDocument
 *******************************/
-void GTest_LoadBrokenDocument::init(XMLTestFormat* tf, const QDomElement& el) {
+void GTest_LoadBrokenDocument::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
-    QString             urlAttr = el.attribute("url");
-    QString             dir = el.attribute("dir");
-    IOAdapterId         io = el.attribute("io");
-    IOAdapterFactory*   iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(io);
-    DocumentFormatId    format = el.attribute("format");
+    QString urlAttr = el.attribute("url");
+    QString dir = el.attribute("dir");
+    IOAdapterId io = el.attribute("io");
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(io);
+    DocumentFormatId format = el.attribute("format");
 
     tempFile = (dir == "temp");
 
@@ -259,7 +258,7 @@ void GTest_LoadBrokenDocument::init(XMLTestFormat* tf, const QDomElement& el) {
         if ("msa" == seqMode) {
             hints[DocumentReadingMode_SequenceAsAlignmentHint] = true;
         } else if ("merge" == seqMode) {
-            hints[DocumentReadingMode_SequenceMergeGapSize] = 10; // just default value
+            hints[DocumentReadingMode_SequenceMergeGapSize] = 10;    // just default value
         }
     }
 
@@ -268,7 +267,7 @@ void GTest_LoadBrokenDocument::init(XMLTestFormat* tf, const QDomElement& el) {
 }
 
 Task::ReportResult GTest_LoadBrokenDocument::report() {
-    Document* doc = loadTask->getDocument();
+    Document *doc = loadTask->getDocument();
     if (doc == NULL && loadTask->hasError()) {
         CHECK(!message.isEmpty(), ReportResult_Finished);
         if (loadTask->getError().contains(message)) {
@@ -292,7 +291,7 @@ void GTest_LoadBrokenDocument::cleanup() {
 /*******************************
  * GTest_ImportDocument
  *******************************/
-void GTest_ImportDocument::init(XMLTestFormat*, const QDomElement& el) {
+void GTest_ImportDocument::init(XMLTestFormat *, const QDomElement &el) {
     importTask = NULL;
     contextAdded = false;
     DocumentFormatId outFormatId = el.attribute("outFormat");
@@ -313,18 +312,18 @@ void GTest_ImportDocument::init(XMLTestFormat*, const QDomElement& el) {
     }
 
     QString dir = el.attribute("dir");
-    if(dir == "temp"){
+    if (dir == "temp") {
         tempFile = true;
         url = getTempDir(env) + "/" + el.attribute("url");
-    } else{
+    } else {
         tempFile = false;
         QString commonDataDir = env->getVar("COMMON_DATA_DIR");
-        url =  commonDataDir + "/" + el.attribute("url");
+        url = commonDataDir + "/" + el.attribute("url");
     }
 
     DocumentFormatId formatId = el.attribute("format");
     if (formatId.isEmpty()) {
-        stateInfo.setError( QString("doc_format_is_not_specified"));
+        stateInfo.setError(QString("doc_format_is_not_specified"));
         return;
     }
 
@@ -335,7 +334,7 @@ void GTest_ImportDocument::init(XMLTestFormat*, const QDomElement& el) {
     QList<FormatDetectionResult> detectionRes = DocumentUtils::detectFormat(url, conf);
     CHECK_EXT(!detectionRes.isEmpty(), setError("Format is not recognized"), );
 
-    FormatDetectionResult* bestRes = NULL;
+    FormatDetectionResult *bestRes = NULL;
     for (int i = 0; i < detectionRes.size(); ++i) {
         if (NULL != detectionRes[i].importer && detectionRes[i].importer->getFormatIds().contains(formatId)) {
             bestRes = &detectionRes[i];
@@ -385,7 +384,7 @@ void GTest_ImportDocument::prepare() {
         expectedMessages << expectedLogMessage2;
     }
 
-    if (!unexpectedLogMessage.isEmpty()){
+    if (!unexpectedLogMessage.isEmpty()) {
         unexpectedMessages << unexpectedLogMessage;
     }
     if (expectedLogMessage.length() != 0 || unexpectedMessages.length() != 0) {
@@ -411,13 +410,13 @@ Task::ReportResult GTest_ImportDocument::report() {
 /*******************************
 * GTest_ImportBrokenDocument
 *******************************/
-void GTest_ImportBrokenDocument::init(XMLTestFormat* tf, const QDomElement& el) {
+void GTest_ImportBrokenDocument::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
-    QString             urlAttr = el.attribute("url");
-    QString             outUrlAttr = getTempDir(env) + "/" + el.attribute("outUrl");
-    QString             dir = el.attribute("dir");
-    DocumentFormatId    formatId = el.attribute("format");
+    QString urlAttr = el.attribute("url");
+    QString outUrlAttr = getTempDir(env) + "/" + el.attribute("outUrl");
+    QString dir = el.attribute("dir");
+    DocumentFormatId formatId = el.attribute("format");
 
     tempFile = (dir == "temp");
 
@@ -436,7 +435,7 @@ void GTest_ImportBrokenDocument::init(XMLTestFormat* tf, const QDomElement& el) 
     QList<FormatDetectionResult> detectionRes = DocumentUtils::detectFormat(url, conf);
     CHECK_EXT(!detectionRes.isEmpty(), setError("Format is not recognized"), );
 
-    FormatDetectionResult* bestRes = NULL;
+    FormatDetectionResult *bestRes = NULL;
     for (int i = 0; i < detectionRes.size(); ++i) {
         if (NULL != detectionRes[i].importer && detectionRes[i].importer->getFormatIds().contains(formatId)) {
             bestRes = &detectionRes[i];
@@ -457,7 +456,7 @@ void GTest_ImportBrokenDocument::init(XMLTestFormat* tf, const QDomElement& el) 
 }
 
 Task::ReportResult GTest_ImportBrokenDocument::report() {
-    Document* doc = importTask->getDocument();
+    Document *doc = importTask->getDocument();
     if (doc == NULL && importTask->hasError()) {
         CHECK(!message.isEmpty(), ReportResult_Finished);
         if (importTask->getError().contains(message)) {
@@ -485,7 +484,7 @@ void GTest_ImportBrokenDocument::cleanup() {
 *GTest_DocumentFormat
 *******************************/
 
-void GTest_DocumentFormat::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_DocumentFormat::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     docUrl = el.attribute("url");
@@ -503,9 +502,8 @@ void GTest_DocumentFormat::init(XMLTestFormat *tf, const QDomElement& el) {
 }
 
 Task::ReportResult GTest_DocumentFormat::report() {
-
     QList<FormatDetectionResult> formats = DocumentUtils::detectFormat(GUrl(docUrl));
-    if(formats.isEmpty()) {
+    if (formats.isEmpty()) {
         stateInfo.setError(QString("Can't detect format for file %1").arg(docUrl));
         return ReportResult_Finished;
     }
@@ -520,7 +518,7 @@ Task::ReportResult GTest_DocumentFormat::report() {
 /*******************************
 * GTest_DocumentNumObjects
 *******************************/
-void GTest_DocumentNumObjects::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_DocumentNumObjects::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     docContextName = el.attribute(DOC_ATTR);
@@ -542,7 +540,7 @@ void GTest_DocumentNumObjects::init(XMLTestFormat *tf, const QDomElement& el) {
 }
 
 Task::ReportResult GTest_DocumentNumObjects::report() {
-    Document* doc = getContext<Document>(this, docContextName);
+    Document *doc = getContext<Document>(this, docContextName);
     if (doc == NULL) {
         stateInfo.setError(QString("document not found %1").arg(docContextName));
         return ReportResult_Finished;
@@ -557,7 +555,7 @@ Task::ReportResult GTest_DocumentNumObjects::report() {
 /*******************************
 * GTest_DocumentObjectNames
 *******************************/
-void GTest_DocumentObjectNames::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_DocumentObjectNames::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     docContextName = el.attribute(DOC_ATTR);
@@ -571,17 +569,16 @@ void GTest_DocumentObjectNames::init(XMLTestFormat *tf, const QDomElement& el) {
         failMissingValue(VALUE_ATTR);
         return;
     }
-    names =  v.split(",");
+    names = v.split(",");
 }
 
-
 Task::ReportResult GTest_DocumentObjectNames::report() {
-    Document* doc = getContext<Document>(this, docContextName);
+    Document *doc = getContext<Document>(this, docContextName);
     if (doc == NULL) {
         stateInfo.setError(QString("document not found %1").arg(docContextName));
         return ReportResult_Finished;
     }
-    const QList<GObject*>& objs = doc->getObjects();
+    const QList<GObject *> &objs = doc->getObjects();
     int namesSize = names.size();
     int objsSize = objs.size();
     if (namesSize != objsSize) {
@@ -589,12 +586,12 @@ Task::ReportResult GTest_DocumentObjectNames::report() {
         return ReportResult_Finished;
     }
     QStringList objNames;
-    foreach(GObject *ob, objs) {
+    foreach (GObject *ob, objs) {
         objNames.append(ob->getGObjectName());
     }
     qSort(objNames);
     qSort(names);
-    for(int i=0; i<names.size(); i++) {
+    for (int i = 0; i < names.size(); i++) {
         QString name = names[i];
         QString objName = objNames[i];
         if (name != objName) {
@@ -608,7 +605,7 @@ Task::ReportResult GTest_DocumentObjectNames::report() {
 /*******************************
 * GTest_DocumentObjectTypes
 *******************************/
-void GTest_DocumentObjectTypes::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_DocumentObjectTypes::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     docContextName = el.attribute(DOC_ATTR);
@@ -622,16 +619,16 @@ void GTest_DocumentObjectTypes::init(XMLTestFormat *tf, const QDomElement& el) {
         failMissingValue(VALUE_ATTR);
         return;
     }
-    types =  v.split(",");
+    types = v.split(",");
 }
 
 Task::ReportResult GTest_DocumentObjectTypes::report() {
-    const Document* doc = getContext<Document>(this, docContextName);
+    const Document *doc = getContext<Document>(this, docContextName);
     if (doc == NULL) {
         stateInfo.setError(QString("document not found %1").arg(docContextName));
         return ReportResult_Finished;
     }
-    const QList<GObject*>& objs = doc->getObjects();
+    const QList<GObject *> &objs = doc->getObjects();
     int typesSize = types.size();
     int objsSize = objs.size();
     if (typesSize != objsSize) {
@@ -639,12 +636,12 @@ Task::ReportResult GTest_DocumentObjectTypes::report() {
         return ReportResult_Finished;
     }
     QStringList objTypes;
-    foreach(GObject *ob, objs) {
+    foreach (GObject *ob, objs) {
         objTypes.append(ob->getGObjectType());
     }
     qSort(objTypes);
     qSort(types);
-    for(int i=0; i<types.size(); i++) {
+    for (int i = 0; i < types.size(); i++) {
         GObjectType type = types[i];
         GObjectType objType = objTypes[i];
         if (type != objType) {
@@ -658,7 +655,7 @@ Task::ReportResult GTest_DocumentObjectTypes::report() {
 /*******************************
 * GTest_FindGObjectByName
 *******************************/
-void GTest_FindGObjectByName::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_FindGObjectByName::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     docContextName = el.attribute(DOC_ATTR);
@@ -682,18 +679,17 @@ void GTest_FindGObjectByName::init(XMLTestFormat *tf, const QDomElement& el) {
     objContextName = el.attribute("index");
 
     result = NULL;
-
 }
 
 Task::ReportResult GTest_FindGObjectByName::report() {
-    const Document* doc = getContext<Document>(this, docContextName);
+    const Document *doc = getContext<Document>(this, docContextName);
     if (doc == NULL) {
         stateInfo.setError(QString("document not found %1").arg(docContextName));
         return ReportResult_Finished;
     }
-    const QList<GObject*>& objs = doc->getObjects();
+    const QList<GObject *> &objs = doc->getObjects();
 
-    foreach(GObject* obj, objs) {
+    foreach (GObject *obj, objs) {
         QString objectType = obj->getGObjectType();
         QString objectName = obj->getGObjectName();
         if ((objectType == type) && (objectName == objName)) {
@@ -709,15 +705,13 @@ Task::ReportResult GTest_FindGObjectByName::report() {
     return ReportResult_Finished;
 }
 
-
 void GTest_FindGObjectByName::cleanup() {
-    if (result!=NULL && !objContextName.isEmpty()) {
+    if (result != NULL && !objContextName.isEmpty()) {
         removeContext(objContextName);
     }
 
     XmlTest::cleanup();
 }
-
 
 /*******************************
  * GTest_CompareFiles
@@ -725,7 +719,7 @@ void GTest_FindGObjectByName::cleanup() {
 
 static const QString DOC1_ATTR_ID = "doc1";
 static const QString DOC2_ATTR_ID = "doc2";
-static const QString TMP_ATTR_ID  = "temp";
+static const QString TMP_ATTR_ID = "temp";
 static const QString TMP_ATTR_SPLITTER = ",";
 static const QString BY_LINES_ATTR_ID = "by_lines";
 static const QString COMMENTS_START_WITH = "comments_start_with";
@@ -734,20 +728,20 @@ static const QString COMPARE_FIRST_N_LINES = "first_n_lines";
 static const QString COMPARE_MIXED_LINES = "mixed-lines";
 static const QString COMPARE_FORCE_BUFFER_SIZE = "buffer-size";
 
-void GTest_CompareFiles::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_CompareFiles::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     // Get the attributes values
     QString tmpAttr = el.attribute(TMP_ATTR_ID);
 
     doc1Path = el.attribute(DOC1_ATTR_ID);
-    if(doc1Path.isEmpty()) {
+    if (doc1Path.isEmpty()) {
         failMissingValue(DOC1_ATTR_ID);
         return;
     }
 
     doc2Path = el.attribute(DOC2_ATTR_ID);
-    if(doc2Path.isEmpty()) {
+    if (doc2Path.isEmpty()) {
         failMissingValue(DOC2_ATTR_ID);
         return;
     }
@@ -784,14 +778,13 @@ void GTest_CompareFiles::init(XMLTestFormat *tf, const QDomElement& el) {
         doc1Path = (tmpDocNums.contains("1") ? env->getVar("TEMP_DATA_DIR") : env->getVar("COMMON_DATA_DIR")) + "/" + doc1Path;
         doc2Path = (tmpDocNums.contains("2") ? env->getVar("TEMP_DATA_DIR") : env->getVar("COMMON_DATA_DIR")) + "/" + doc2Path;
         byLines = !el.attribute(BY_LINES_ATTR_ID).isEmpty();
-        if(el.attribute(COMMENTS_START_WITH).isEmpty()){
-            commentsStartWith=QStringList();
-        }else{
-            QString commentsStartWithString=el.attribute(COMMENTS_START_WITH);
-            commentsStartWith=commentsStartWithString.split(",");
+        if (el.attribute(COMMENTS_START_WITH).isEmpty()) {
+            commentsStartWith = QStringList();
+        } else {
+            QString commentsStartWithString = el.attribute(COMMENTS_START_WITH);
+            commentsStartWith = commentsStartWithString.split(",");
         }
-    }
-    else {
+    } else {
         // Only "doc1" and "doc2" attributes are specified,
         // paths contain prefixes, e.g. "!common_data_dir!"
         XMLTestUtils::replacePrefix(env, doc1Path);
@@ -802,77 +795,85 @@ void GTest_CompareFiles::init(XMLTestFormat *tf, const QDomElement& el) {
 static const qint64 READ_LINE_MAX_SZ = 2048;
 
 Task::ReportResult GTest_CompareFiles::report() {
-    if(mixed_lines){
+    if (mixed_lines) {
         compareMixed();
         return ReportResult_Finished;
     }
 
     QFile f1(doc1Path);
-    if(!f1.open(QIODevice::ReadOnly)) {
+    if (!f1.open(QIODevice::ReadOnly)) {
         setError(QString("Cannot open file '%1'!").arg(doc1Path));
         return ReportResult_Finished;
     }
 
     QFile f2(doc2Path);
-    if(!f2.open(QIODevice::ReadOnly)) {
+    if (!f2.open(QIODevice::ReadOnly)) {
         setError(QString("Cannot open file '%1'!").arg(doc2Path));
         return ReportResult_Finished;
     }
 
     int lineNum = 0;
-    while(1) {
-        if(first_n_lines != -1 && lineNum >= first_n_lines){
+    while (1) {
+        if (first_n_lines != -1 && lineNum >= first_n_lines) {
             break;
         }
         QByteArray bytes1 = f1.readLine(READ_LINE_MAX_SZ);
         QByteArray bytes2 = f2.readLine(READ_LINE_MAX_SZ);
 
-        if(bytes1.isEmpty() || bytes2.isEmpty()) {
-            if( bytes1 != bytes2 ) {
+        if (bytes1.isEmpty() || bytes2.isEmpty()) {
+            if (bytes1 != bytes2) {
                 setError(QString("The files %1 and %2 are of different sizes!").arg(f1.fileName()).arg(f2.fileName()));
                 return ReportResult_Finished;
             }
             break;
         }
 
-        if(byLines) {
+        if (byLines) {
             bytes1 = bytes1.trimmed();
             bytes2 = bytes2.trimmed();
         }
 
-        if(line_num_only){
+        if (line_num_only) {
             //do not compare lines values
             continue;
         }
 
-        if(commentsStartWith.isEmpty()){
-            if( bytes1 != bytes2 ) {
+        if (commentsStartWith.isEmpty()) {
+            if (bytes1 != bytes2) {
                 setError(QString("The files \'%1\' and \'%2\' are not equal at line %3."
-                    "The first file contains '%4' and the second contains '%5'!").arg(f1.fileName()).arg(f2.fileName())
-                    .arg(lineNum).arg(QString(bytes1)).arg(QString(bytes2)));
+                                 "The first file contains '%4' and the second contains '%5'!")
+                             .arg(f1.fileName())
+                             .arg(f2.fileName())
+                             .arg(lineNum)
+                             .arg(QString(bytes1))
+                             .arg(QString(bytes2)));
                 return ReportResult_Finished;
             }
-        }else{
+        } else {
             foreach (QString commentStartWith, commentsStartWith) {
-                if(!bytes1.startsWith(commentStartWith.toLatin1()) && !bytes2.startsWith(commentStartWith.toLatin1())){
-                    if( bytes1 != bytes2 ) {
+                if (!bytes1.startsWith(commentStartWith.toLatin1()) && !bytes2.startsWith(commentStartWith.toLatin1())) {
+                    if (bytes1 != bytes2) {
                         setError(QString("The files %1 and %2 are not equal at line %3."
-                            "The first file contains '%4' and the second contains '%5'!")
-                            .arg(f1.fileName()).arg(f2.fileName()).arg(lineNum).arg(QString(bytes1)).arg(QString(bytes2)));
+                                         "The first file contains '%4' and the second contains '%5'!")
+                                     .arg(f1.fileName())
+                                     .arg(f2.fileName())
+                                     .arg(lineNum)
+                                     .arg(QString(bytes1))
+                                     .arg(QString(bytes2)));
                         return ReportResult_Finished;
                     }
-                }else
-                if(!(bytes1.startsWith(commentStartWith.toLatin1())&&bytes2.startsWith(commentStartWith.toLatin1()))){
+                } else if (!(bytes1.startsWith(commentStartWith.toLatin1()) && bytes2.startsWith(commentStartWith.toLatin1()))) {
                     setError(QString("The files have comments and are not equal at line %1."
-                        "The first file contains '%2' and the second contains '%3'!")
-                        .arg(lineNum).arg(QString(bytes1)).arg(QString(bytes2)));
+                                     "The first file contains '%2' and the second contains '%3'!")
+                                 .arg(lineNum)
+                                 .arg(QString(bytes1))
+                                 .arg(QString(bytes2)));
                     return ReportResult_Finished;
                 }
-
             }
         }
 
-        if(bytes1.endsWith("\n") || byLines) {
+        if (bytes1.endsWith("\n") || byLines) {
             lineNum++;
         }
     }
@@ -880,10 +881,10 @@ Task::ReportResult GTest_CompareFiles::report() {
     return ReportResult_Finished;
 }
 
-IOAdapter* GTest_CompareFiles::createIoAdapter(const QString& filePath) {
+IOAdapter *GTest_CompareFiles::createIoAdapter(const QString &filePath) {
     IOAdapterFactory *factory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(filePath));
     CHECK_EXT(NULL != factory, setError("IOAdapterFactory is NULL"), NULL);
-    IOAdapter* ioAdapter = factory->createIOAdapter();
+    IOAdapter *ioAdapter = factory->createIOAdapter();
 
     if (!ioAdapter->open(filePath, IOAdapterMode_Read)) {
         delete ioAdapter;
@@ -894,13 +895,12 @@ IOAdapter* GTest_CompareFiles::createIoAdapter(const QString& filePath) {
     return ioAdapter;
 }
 
-
-QByteArray GTest_CompareFiles::getLine(IOAdapter* io) {
+QByteArray GTest_CompareFiles::getLine(IOAdapter *io) {
     QByteArray line;
 
     const qint64 bufferSize = forceBufferSize > 0 ? forceBufferSize : READ_BUFF_SIZE;
     QByteArray readBuff(bufferSize + 1, 0);
-    char* buff = readBuff.data();
+    char *buff = readBuff.data();
     bool commentString = false;
 
     do {
@@ -911,8 +911,8 @@ QByteArray GTest_CompareFiles::getLine(IOAdapter* io) {
 
         line = (QByteArray(buff, len)).trimmed();
         commentString = false;
-        foreach(const QString& comment, commentsStartWith){
-            if (line.startsWith(comment.toLatin1())){
+        foreach (const QString &comment, commentsStartWith) {
+            if (line.startsWith(comment.toLatin1())) {
                 commentString = true;
                 break;
             }
@@ -922,13 +922,12 @@ QByteArray GTest_CompareFiles::getLine(IOAdapter* io) {
     return line;
 }
 
-
-void GTest_CompareFiles::compareMixed(){
+void GTest_CompareFiles::compareMixed() {
     QScopedPointer<IOAdapter> doc1Adapter(createIoAdapter(doc1Path));
     CHECK_OP(stateInfo, );
 
     int lineNum = 0;
-    while(!doc1Adapter->isEof()) {
+    while (!doc1Adapter->isEof()) {
         QByteArray bytes1 = getLine(doc1Adapter.data());
         lineNum++;
 
@@ -936,7 +935,7 @@ void GTest_CompareFiles::compareMixed(){
 
         QScopedPointer<IOAdapter> doc2Adapter(createIoAdapter(doc2Path));
         CHECK_OP(stateInfo, );
-        while(!doc2Adapter->isEof()){
+        while (!doc2Adapter->isEof()) {
             QByteArray bytes2 = getLine(doc2Adapter.data());
             if (bytes1 == bytes2) {
                 found = true;
@@ -945,12 +944,11 @@ void GTest_CompareFiles::compareMixed(){
         }
         doc2Adapter->close();
 
-        if(!found){
+        if (!found) {
             setError(QString("Cannot find line %1. \n%2\n in \n%3\n").arg(lineNum).arg(QString(bytes1)).arg(QString(doc2Path)));
             return;
         }
     }
-
 }
 
 /*******************************
@@ -958,24 +956,24 @@ void GTest_CompareFiles::compareMixed(){
  *******************************/
 const QByteArray GTest_Compare_VCF_Files::COMMENT_MARKER = "#";
 
-void GTest_Compare_VCF_Files::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_Compare_VCF_Files::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     QStringList tmpDocNums = el.attribute(TMP_ATTR_ID).split(TMP_ATTR_SPLITTER, QString::SkipEmptyParts);
 
     doc1Path = el.attribute(DOC1_ATTR_ID);
-    if(doc1Path.isEmpty()) {
+    if (doc1Path.isEmpty()) {
         failMissingValue(DOC1_ATTR_ID);
         return;
     }
-    doc1Path = (tmpDocNums.contains("1") ? env->getVar( "TEMP_DATA_DIR" ) : env->getVar("COMMON_DATA_DIR")) + "/" + doc1Path;
+    doc1Path = (tmpDocNums.contains("1") ? env->getVar("TEMP_DATA_DIR") : env->getVar("COMMON_DATA_DIR")) + "/" + doc1Path;
 
     doc2Path = el.attribute(DOC2_ATTR_ID);
-    if(doc2Path.isEmpty()) {
+    if (doc2Path.isEmpty()) {
         failMissingValue(DOC2_ATTR_ID);
         return;
     }
-    doc2Path = (tmpDocNums.contains("2") ? env->getVar( "TEMP_DATA_DIR" ) : env->getVar("COMMON_DATA_DIR")) + "/" + doc2Path;
+    doc2Path = (tmpDocNums.contains("2") ? env->getVar("TEMP_DATA_DIR") : env->getVar("COMMON_DATA_DIR")) + "/" + doc2Path;
 }
 
 Task::ReportResult GTest_Compare_VCF_Files::report() {
@@ -986,12 +984,12 @@ Task::ReportResult GTest_Compare_VCF_Files::report() {
     CHECK_OP(stateInfo, ReportResult_Finished);
 
     QStringList vcfList1;
-    while(!doc1Adapter->isEof()) {
+    while (!doc1Adapter->isEof()) {
         QString line = getLine(doc1Adapter.data());
         vcfList1.append(line);
     }
     QStringList vcfList2;
-    while(!doc2Adapter->isEof()) {
+    while (!doc2Adapter->isEof()) {
         QString line = getLine(doc2Adapter.data());
         vcfList2.append(line);
     }
@@ -1001,22 +999,25 @@ Task::ReportResult GTest_Compare_VCF_Files::report() {
     }
     vcfList1.sort();
     vcfList2.sort();
-    for(int i = 0; i < vcfList1.size(); i++){
-        if(vcfList1.at(i) != vcfList2.at(i)){
+    for (int i = 0; i < vcfList1.size(); i++) {
+        if (vcfList1.at(i) != vcfList2.at(i)) {
             setError(QString("The files %1 and %2 are not equal."
-                            "The first file contains '%3'' and the second contains '%4'!")
-                            .arg(doc1Path).arg(doc2Path).arg(vcfList1.at(i)).arg(vcfList2.at(i)));
-                        return ReportResult_Finished;
+                             "The first file contains '%3'' and the second contains '%4'!")
+                         .arg(doc1Path)
+                         .arg(doc2Path)
+                         .arg(vcfList1.at(i))
+                         .arg(vcfList2.at(i)));
+            return ReportResult_Finished;
         }
     }
 
     return ReportResult_Finished;
 }
 
-IOAdapter* GTest_Compare_VCF_Files::createIoAdapter(const QString& filePath) {
+IOAdapter *GTest_Compare_VCF_Files::createIoAdapter(const QString &filePath) {
     IOAdapterFactory *factory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(filePath));
     CHECK_EXT(NULL != factory, setError("IOAdapterFactory is NULL"), NULL);
-    IOAdapter* ioAdapter = factory->createIOAdapter();
+    IOAdapter *ioAdapter = factory->createIOAdapter();
 
     if (!ioAdapter->open(filePath, IOAdapterMode_Read)) {
         delete ioAdapter;
@@ -1027,11 +1028,11 @@ IOAdapter* GTest_Compare_VCF_Files::createIoAdapter(const QString& filePath) {
     return ioAdapter;
 }
 
-QString GTest_Compare_VCF_Files::getLine(IOAdapter* io) {
+QString GTest_Compare_VCF_Files::getLine(IOAdapter *io) {
     QByteArray line;
 
     QByteArray readBuff(READ_BUFF_SIZE + 1, 0);
-    char* buff = readBuff.data();
+    char *buff = readBuff.data();
 
     do {
         bool lineOk = true;
@@ -1050,71 +1051,71 @@ QString GTest_Compare_VCF_Files::getLine(IOAdapter* io) {
  *******************************/
 const int NUMDER_OF_LINES = 10;
 
-void GTest_Compare_PDF_Files::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_Compare_PDF_Files::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     QStringList tmpDocNums = el.attribute(TMP_ATTR_ID).split(TMP_ATTR_SPLITTER, QString::SkipEmptyParts);
 
     doc1Path = el.attribute(DOC1_ATTR_ID);
-    if(doc1Path.isEmpty()) {
+    if (doc1Path.isEmpty()) {
         failMissingValue(DOC1_ATTR_ID);
         return;
     }
-    doc1Path = (tmpDocNums.contains("1") ? env->getVar( "TEMP_DATA_DIR" ) : env->getVar("COMMON_DATA_DIR")) + "/" + doc1Path;
+    doc1Path = (tmpDocNums.contains("1") ? env->getVar("TEMP_DATA_DIR") : env->getVar("COMMON_DATA_DIR")) + "/" + doc1Path;
 
     doc2Path = el.attribute(DOC2_ATTR_ID);
-    if(doc2Path.isEmpty()) {
+    if (doc2Path.isEmpty()) {
         failMissingValue(DOC2_ATTR_ID);
         return;
     }
-    doc2Path = (tmpDocNums.contains("2") ? env->getVar( "TEMP_DATA_DIR" ) : env->getVar("COMMON_DATA_DIR")) + "/" + doc2Path;
+    doc2Path = (tmpDocNums.contains("2") ? env->getVar("TEMP_DATA_DIR") : env->getVar("COMMON_DATA_DIR")) + "/" + doc2Path;
 
     byLines = !el.attribute(BY_LINES_ATTR_ID).isEmpty();
 }
 
 Task::ReportResult GTest_Compare_PDF_Files::report() {
     QFile f1(doc1Path);
-    if(!f1.open(QIODevice::ReadOnly)) {
+    if (!f1.open(QIODevice::ReadOnly)) {
         setError(QString("Cannot open %1 file").arg(doc1Path));
         return ReportResult_Finished;
     }
 
     QFile f2(doc2Path);
-    if(!f2.open(QIODevice::ReadOnly)) {
+    if (!f2.open(QIODevice::ReadOnly)) {
         setError(QString("Cannot open %1 file").arg(doc2Path));
         return ReportResult_Finished;
     }
 
     int lineNum = 0;
-    int i=0;
-    while(1) {
+    int i = 0;
+    while (1) {
         QByteArray bytes1 = f1.readLine(READ_LINE_MAX_SZ);
         QByteArray bytes2 = f2.readLine(READ_LINE_MAX_SZ);
 
-        if(i<NUMDER_OF_LINES){
+        if (i < NUMDER_OF_LINES) {
             i++;
             continue;
-        }//skip first lines containing file info
+        }    //skip first lines containing file info
 
-        if(bytes1.isEmpty() || bytes2.isEmpty()) {
-            if( bytes1 != bytes2 ) {
+        if (bytes1.isEmpty() || bytes2.isEmpty()) {
+            if (bytes1 != bytes2) {
                 setError(QString("files are of different size"));
                 return ReportResult_Finished;
             }
             break;
         }
 
-        if(byLines) {
+        if (byLines) {
             bytes1 = bytes1.trimmed();
             bytes2 = bytes2.trimmed();
         }
 
-        if( bytes1 != bytes2 ) {
+        if (bytes1 != bytes2) {
             setError(QString("files are note equal at line %1. %2 and %3").arg(lineNum).arg(QString(bytes1)).arg(QString(bytes2)));
             return ReportResult_Finished;
         }
 
-        if(bytes1.endsWith("\n") || byLines) {
+        if (bytes1.endsWith("\n") || byLines) {
             lineNum++;
         }
     }
@@ -1122,13 +1123,11 @@ Task::ReportResult GTest_Compare_PDF_Files::report() {
     return ReportResult_Finished;
 }
 
-
-
 /*******************************
 * DocumentModelTests
 *******************************/
-QList<XMLTestFactory*> DocumentModelTests::createTestFactories() {
-    QList<XMLTestFactory*> res;
+QList<XMLTestFactory *> DocumentModelTests::createTestFactories() {
+    QList<XMLTestFactory *> res;
     res.append(GTest_LoadDocument::createFactory());
     res.append(GTest_LoadBrokenDocument::createFactory());
     res.append(GTest_ImportDocument::createFactory());
@@ -1145,5 +1144,4 @@ QList<XMLTestFactory*> DocumentModelTests::createTestFactories() {
     return res;
 }
 
-
-} // namespace
+}    // namespace U2

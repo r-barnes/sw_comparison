@@ -59,24 +59,25 @@ void KalignAdapter::align(const MultipleSequenceAlignment& ma, MultipleSequenceA
 namespace {
 
 void cleanupMemory(float **submatrix, unsigned int numseq, float **dm, struct alignment *aln, struct parameters *param) {
-    if (NULL != submatrix) {
-        for (int i = 32; i--;){
-            free(submatrix[i]);
-        }
-        free(submatrix);
-    }
-    if (NULL != dm) {
-        for (int i = numseq; i--;){
-            free(dm[i]);
-        }
-        free(dm);
-    }
-    if (NULL != aln) {
-        free_aln(aln);
-    }
-    if (NULL != param) {
-        free_param(param);
-    }
+// TODO: investigating crash on Windows. The best solution would be moving KAlign into external tools?
+//    if (NULL != submatrix) {
+//        for (int i = 32; i--;){
+//            free(submatrix[i]);
+//        }
+//        free(submatrix);
+//    }
+//    if (NULL != dm) {
+//        for (int i = numseq; i--;){
+//            free(dm[i]);
+//        }
+//        free(dm);
+//    }
+//    if (NULL != aln) {
+//        free_aln(aln);
+//    }
+//    if (NULL != param) {
+//        free_param(param);
+//    }
 }
 
 void throwCancellingException() {

@@ -19,9 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
-
 #include "HmmerBuildSettings.h"
+
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
@@ -43,9 +43,7 @@ HmmerBuildSettings::HmmerBuildSettings()
       evn(200),
       efl(100),
       efn(200),
-      eft(0.04)
-{
-
+      eft(0.04) {
 }
 
 bool HmmerBuildSettings::validate() const {
@@ -68,4 +66,4 @@ bool HmmerBuildSettings::validate() const {
     return true;
 }
 
-}   // namespace U2
+}    // namespace U2

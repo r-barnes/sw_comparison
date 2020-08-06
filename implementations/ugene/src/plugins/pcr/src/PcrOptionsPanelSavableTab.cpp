@@ -19,6 +19,8 @@
 * MA 02110-1301, USA.
 */
 
+#include "PcrOptionsPanelSavableTab.h"
+
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2OpStatusUtils.h>
@@ -34,20 +36,17 @@
 #include "PrimerGroupBox.h"
 #include "PrimerLineEdit.h"
 
-#include "PcrOptionsPanelSavableTab.h"
-
 static const QString PCR_PRODUCTS_TABLE_NAME = "productsTable";
 static const QString WIDGET_ID_SEPARATOR = "__";
 
-typedef QPair<U2::ADVSequenceObjectContext *, QList<U2::InSilicoPcrProduct> > AdvContextPcrProductPair;
+typedef QPair<U2::ADVSequenceObjectContext *, QList<U2::InSilicoPcrProduct>> AdvContextPcrProductPair;
 
 Q_DECLARE_METATYPE(AdvContextPcrProductPair)
 
 namespace U2 {
 
 PcrOptionsPanelSavableTab::PcrOptionsPanelSavableTab(QWidget *wrappedWidget, MWMDIWindow *contextWindow)
-    : U2SavableWidget(wrappedWidget, contextWindow), originalWrappedWidget(qobject_cast<InSilicoPcrOptionPanelWidget *>(wrappedWidget))
-{
+    : U2SavableWidget(wrappedWidget, contextWindow), originalWrappedWidget(qobject_cast<InSilicoPcrOptionPanelWidget *>(wrappedWidget)) {
     SAFE_POINT(NULL != originalWrappedWidget, "Invalid input widget", );
 }
 
@@ -103,7 +102,7 @@ QString PcrOptionsPanelSavableTab::getChildId(QWidget *child) const {
     }
 }
 
-QWidget * PcrOptionsPanelSavableTab::getPrimerEditWidgetById(const QString &childId) const {
+QWidget *PcrOptionsPanelSavableTab::getPrimerEditWidgetById(const QString &childId) const {
     const QStringList ids = childId.split(WIDGET_ID_SEPARATOR);
     SAFE_POINT(2 == ids.size(), "Invalid widget ID", NULL);
     QWidget *primerGroup = wrappedWidget->findChild<QWidget *>(ids.first());
@@ -111,7 +110,7 @@ QWidget * PcrOptionsPanelSavableTab::getPrimerEditWidgetById(const QString &chil
     return primerGroup->findChild<QWidget *>(ids.last());
 }
 
-QWidget * PcrOptionsPanelSavableTab::getChildWidgetById(const QString &childId) const {
+QWidget *PcrOptionsPanelSavableTab::getChildWidgetById(const QString &childId) const {
     if (childId.contains(WIDGET_ID_SEPARATOR)) {
         return getPrimerEditWidgetById(childId);
     } else {
@@ -127,4 +126,4 @@ bool PcrOptionsPanelSavableTab::childExists(const QString &childId) const {
     }
 }
 
-} // namespace U2
+}    // namespace U2

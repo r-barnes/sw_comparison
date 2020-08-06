@@ -19,11 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "BlastDBCmdSupport.h"
+
 #include <QMainWindow>
 #include <QMessageBox>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/UserApplicationsSettings.h>
@@ -31,13 +34,11 @@
 #include <U2Gui/DialogUtils.h>
 #include <U2Gui/GUIUtils.h>
 #include <U2Gui/MainWindow.h>
-#include <U2Core/QObjectScopedPointer.h>
 
 #include <U2View/MSAEditor.h>
 #include <U2View/MaEditorFactory.h>
 
 #include "BlastDBCmdDialog.h"
-#include "BlastDBCmdSupport.h"
 #include "BlastDBCmdSupportTask.h"
 #include "ExternalToolSupportSettings.h"
 #include "ExternalToolSupportSettingsController.h"
@@ -47,8 +48,8 @@ namespace U2 {
 const QString BlastDbCmdSupport::ET_BLASTDBCMD = "BlastDBCmd";
 const QString BlastDbCmdSupport::ET_BLASTDBCMD_ID = "USUPP_BLAST_DB_CMD";
 
-BlastDbCmdSupport::BlastDbCmdSupport(const QString& path) : ExternalTool(ET_BLASTDBCMD_ID, ET_BLASTDBCMD, path)
-{
+BlastDbCmdSupport::BlastDbCmdSupport(const QString &path)
+    : ExternalTool(ET_BLASTDBCMD_ID, ET_BLASTDBCMD, path) {
     if (AppContext::getMainWindow() != NULL) {
         icon = QIcon(":external_tool_support/images/ncbi.png");
         grayIcon = QIcon(":external_tool_support/images/ncbi_gray.png");
@@ -56,27 +57,26 @@ BlastDbCmdSupport::BlastDbCmdSupport(const QString& path) : ExternalTool(ET_BLAS
     }
 
 #ifdef Q_OS_WIN
-    executableFileName="blastdbcmd.exe";
+    executableFileName = "blastdbcmd.exe";
 #else
-    #if defined(Q_OS_UNIX)
-    executableFileName="blastdbcmd";
-    #endif
+#    if defined(Q_OS_UNIX)
+    executableFileName = "blastdbcmd";
+#    endif
 #endif
-    validationArguments<<"--help";
-    validMessage="blastdbcmd";
-    description=tr("The <i>BlastDBCmd</i> fetches protein or"
-        " nucleotide sequences from BLAST+ database based on a query.");
+    validationArguments << "--help";
+    validMessage = "blastdbcmd";
+    description = tr("The <i>BlastDBCmd</i> fetches protein or"
+                     " nucleotide sequences from BLAST+ database based on a query.");
 
-    versionRegExp=QRegExp("BLAST database client, version (\\d+\\.\\d+\\.\\d+\\+?)");
-    toolKitName="BLAST+";
-
+    versionRegExp = QRegExp("BLAST database client, version (\\d+\\.\\d+\\.\\d+\\+?)");
+    toolKitName = "BLAST+";
 }
 
-void BlastDbCmdSupport::sl_runWithExtFileSpecify(){
+void BlastDbCmdSupport::sl_runWithExtFileSpecify() {
     //Check that BlastDBCmd folder path defined
-    if (path.isEmpty()){
+    if (path.isEmpty()) {
         QObjectScopedPointer<QMessageBox> msgBox = new QMessageBox;
-        msgBox->setWindowTitle("BLAST+ " +name);
+        msgBox->setWindowTitle("BLAST+ " + name);
         msgBox->setText(tr("Path for BLAST+ %1 tool not selected.").arg(ET_BLASTDBCMD));
         msgBox->setInformativeText(tr("Do you want to select it now?"));
         msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
@@ -85,18 +85,18 @@ void BlastDbCmdSupport::sl_runWithExtFileSpecify(){
         CHECK(!msgBox.isNull(), );
 
         switch (ret) {
-           case QMessageBox::Yes:
-               AppContext::getAppSettingsGUI()->showSettingsDialog(ExternalToolSupportSettingsPageId);
-               break;
-           case QMessageBox::No:
-               return;
-               break;
-           default:
-               assert(false);
-               break;
-         }
+        case QMessageBox::Yes:
+            AppContext::getAppSettingsGUI()->showSettingsDialog(ExternalToolSupportSettingsPageId);
+            break;
+        case QMessageBox::No:
+            return;
+            break;
+        default:
+            assert(false);
+            break;
+        }
     }
-    if (path.isEmpty()){
+    if (path.isEmpty()) {
         return;
     }
     U2OpStatus2Log os(LogLevel_DETAILS);
@@ -109,11 +109,11 @@ void BlastDbCmdSupport::sl_runWithExtFileSpecify(){
     blastDBCmdDialog->exec();
     CHECK(!blastDBCmdDialog.isNull(), );
 
-    if(blastDBCmdDialog->result() != QDialog::Accepted){
+    if (blastDBCmdDialog->result() != QDialog::Accepted) {
         return;
     }
 
-    BlastDBCmdSupportTask* blastDBCmdSupportTask =new BlastDBCmdSupportTask(settings);
+    BlastDBCmdSupportTask *blastDBCmdSupportTask = new BlastDBCmdSupportTask(settings);
     AppContext::getTaskScheduler()->registerTopLevelTask(blastDBCmdSupportTask);
 }
-}//namespace
+}    // namespace U2

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "SequenceQualityTrimWorker.h"
+
 #include <U2Designer/DelegateEditors.h>
 
 #include <U2Lang/ActorPrototypeRegistry.h>
@@ -30,7 +32,6 @@
 #include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/WorkflowMonitor.h>
 
-#include "SequenceQualityTrimWorker.h"
 #include "tasks/SequenceQualityTrimTask.h"
 
 namespace U2 {
@@ -41,9 +42,7 @@ static const QString LEN_ID("len-id");
 static const QString BOTH_ID("both-ends");
 
 SequenceQualityTrimPrompter::SequenceQualityTrimPrompter(Actor *actor)
-    : SequenceQualityTrimBase(actor)
-{
-
+    : SequenceQualityTrimBase(actor) {
 }
 
 QString SequenceQualityTrimPrompter::composeRichDoc() {
@@ -56,9 +55,7 @@ QString SequenceQualityTrimPrompter::composeRichDoc() {
 }
 
 SequenceQualityTrimWorker::SequenceQualityTrimWorker(Actor *actor)
-    : BaseThroughWorker(actor, BasePorts::IN_SEQ_PORT_ID(), BasePorts::OUT_SEQ_PORT_ID())
-{
-
+    : BaseThroughWorker(actor, BasePorts::IN_SEQ_PORT_ID(), BasePorts::OUT_SEQ_PORT_ID()) {
 }
 
 Task *SequenceQualityTrimWorker::createTask(const Message &message, U2OpStatus &os) {
@@ -97,24 +94,19 @@ QList<Message> SequenceQualityTrimWorker::fetchResult(Task *task, U2OpStatus &os
 
 const QString SequenceQualityTrimWorkerFactory::ACTOR_ID = "SequenceQualityTrim";
 
-SequenceQualityTrimWorkerFactory::SequenceQualityTrimWorkerFactory() :
-    DomainFactory(ACTOR_ID)
-{
-
+SequenceQualityTrimWorkerFactory::SequenceQualityTrimWorkerFactory()
+    : DomainFactory(ACTOR_ID) {
 }
 
 void SequenceQualityTrimWorkerFactory::init() {
-    Descriptor desc(ACTOR_ID, SequenceQualityTrimWorker::tr("Sequence Quality Trimmer"),
-        SequenceQualityTrimWorker::tr("The workflow scans each input sequence from the end to find the first position where the quality is greater or equal to the minimum quality threshold. "
-                              "Then it trims the sequence to that position. If a the whole sequence has quality less than the threshold or the length of the output sequence less than "
-                              "the minimum length threshold then the sequence is skipped."));
+    Descriptor desc(ACTOR_ID, SequenceQualityTrimWorker::tr("Sequence Quality Trimmer"), SequenceQualityTrimWorker::tr("The workflow scans each input sequence from the end to find the first position where the quality is greater or equal to the minimum quality threshold. "
+                                                                                                                       "Then it trims the sequence to that position. If a the whole sequence has quality less than the threshold or the length of the output sequence less than "
+                                                                                                                       "the minimum length threshold then the sequence is skipped."));
 
     QList<PortDescriptor *> ports;
     {
-        Descriptor inPortDescriptor(BasePorts::IN_SEQ_PORT_ID(), SequenceQualityTrimWorker::tr("Input Sequence"),
-            SequenceQualityTrimWorker::tr("Set of sequences to trim by quality"));
-        Descriptor outPortDescriptor(BasePorts::OUT_SEQ_PORT_ID(), SequenceQualityTrimWorker::tr("Output Sequence"),
-            SequenceQualityTrimWorker::tr("Trimmed sequences"));
+        Descriptor inPortDescriptor(BasePorts::IN_SEQ_PORT_ID(), SequenceQualityTrimWorker::tr("Input Sequence"), SequenceQualityTrimWorker::tr("Set of sequences to trim by quality"));
+        Descriptor outPortDescriptor(BasePorts::OUT_SEQ_PORT_ID(), SequenceQualityTrimWorker::tr("Output Sequence"), SequenceQualityTrimWorker::tr("Trimmed sequences"));
 
         QMap<Descriptor, DataTypePtr> inSlot;
         inSlot[BaseSlots::DNA_SEQUENCE_SLOT()] = BaseTypes::DNA_SEQUENCE_TYPE();
@@ -129,16 +121,13 @@ void SequenceQualityTrimWorkerFactory::init() {
 
     QList<Attribute *> attributes;
     {
-        Descriptor qualityTreshold(QUALITY_ID, SequenceQualityTrimWorker::tr("Trimming quality threshold"),
-                                   SequenceQualityTrimWorker::tr("Quality threshold for trimming."));
+        Descriptor qualityTreshold(QUALITY_ID, SequenceQualityTrimWorker::tr("Trimming quality threshold"), SequenceQualityTrimWorker::tr("Quality threshold for trimming."));
 
-        Descriptor minSequenceLength(LEN_ID, SequenceQualityTrimWorker::tr("Min length"),
-                                     SequenceQualityTrimWorker::tr("Too short reads are discarded by the filter."));
+        Descriptor minSequenceLength(LEN_ID, SequenceQualityTrimWorker::tr("Min length"), SequenceQualityTrimWorker::tr("Too short reads are discarded by the filter."));
 
-        Descriptor trimBothEnds(BOTH_ID, SequenceQualityTrimWorker::tr("Trim both ends"),
-                                SequenceQualityTrimWorker::tr("Trim the both ends of a read or not. Usually, you need to set <b>True</b> for <b>Sanger</b> sequencing and <b>False</b> for <b>NGS</b>"));
+        Descriptor trimBothEnds(BOTH_ID, SequenceQualityTrimWorker::tr("Trim both ends"), SequenceQualityTrimWorker::tr("Trim the both ends of a read or not. Usually, you need to set <b>True</b> for <b>Sanger</b> sequencing and <b>False</b> for <b>NGS</b>"));
 
-        attributes << new Attribute(qualityTreshold, BaseTypes:: NUM_TYPE(), false, QVariant(30));
+        attributes << new Attribute(qualityTreshold, BaseTypes::NUM_TYPE(), false, QVariant(30));
         attributes << new Attribute(minSequenceLength, BaseTypes::NUM_TYPE(), false, QVariant(0));
         attributes << new Attribute(trimBothEnds, BaseTypes::BOOL_TYPE(), false, true);
     }
@@ -166,5 +155,5 @@ Worker *SequenceQualityTrimWorkerFactory::createWorker(Actor *actor) {
     return new SequenceQualityTrimWorker(actor);
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

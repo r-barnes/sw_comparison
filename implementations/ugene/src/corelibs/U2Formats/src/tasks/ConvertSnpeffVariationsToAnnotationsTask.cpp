@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ConvertSnpeffVariationsToAnnotationsTask.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/CreateAnnotationTask.h>
 #include <U2Core/DeleteObjectsTask.h>
@@ -35,8 +37,6 @@
 
 #include <U2Formats/SnpeffInfoParser.h>
 
-#include "ConvertSnpeffVariationsToAnnotationsTask.h"
-
 namespace U2 {
 
 const QString ConvertSnpeffVariationsToAnnotationsTask::CHROM_QUALIFIER_NAME = "chrom";
@@ -48,12 +48,10 @@ const QString ConvertSnpeffVariationsToAnnotationsTask::ID_QUALIFIER_NAME = "ID"
 
 ConvertSnpeffVariationsToAnnotationsTask::ConvertSnpeffVariationsToAnnotationsTask(const QList<VariantTrackObject *> &variantTrackObjects)
     : Task(tr("Convert SnpEff variations to annotations task"), TaskFlag_None),
-      variantTrackObjects(variantTrackObjects)
-{
-
+      variantTrackObjects(variantTrackObjects) {
 }
 
-const QMap<QString, QList<SharedAnnotationData> > & ConvertSnpeffVariationsToAnnotationsTask::getAnnotationsData() const {
+const QMap<QString, QList<SharedAnnotationData>> &ConvertSnpeffVariationsToAnnotationsTask::getAnnotationsData() const {
     return annotationTablesData;
 }
 
@@ -64,7 +62,7 @@ void ConvertSnpeffVariationsToAnnotationsTask::run() {
         const U2VariantTrack variantTrack = variantTrackObject->getVariantTrack(stateInfo);
         CHECK_OP(stateInfo, );
 
-        QScopedPointer<U2DbiIterator<U2Variant> > variantsIterator(variantTrackObject->getVariants(U2_REGION_MAX, stateInfo));
+        QScopedPointer<U2DbiIterator<U2Variant>> variantsIterator(variantTrackObject->getVariants(U2_REGION_MAX, stateInfo));
         CHECK_OP(stateInfo, );
 
         SharedAnnotationData tableAnnotationData(new AnnotationData);
@@ -87,7 +85,7 @@ void ConvertSnpeffVariationsToAnnotationsTask::run() {
             }
 
             U2OpStatusImpl os;
-            const QList<QList<U2Qualifier> > qualifiersList = infoParser.parse(os, variant.additionalInfo[U2Variant::VCF4_INFO]);
+            const QList<QList<U2Qualifier>> qualifiersList = infoParser.parse(os, variant.additionalInfo[U2Variant::VCF4_INFO]);
             CHECK_OP(os, );
             CHECK_OP(stateInfo, );
             stateInfo.addWarnings(os.getWarnings());
@@ -126,8 +124,7 @@ LoadConvertAndSaveSnpeffVariationsToAnnotationsTask::LoadConvertAndSaveSnpeffVar
       convertTask(NULL),
       saveTask(NULL),
       loadedVariationsDocument(NULL),
-      annotationsDocument(NULL)
-{
+      annotationsDocument(NULL) {
     SAFE_POINT_EXT(!variationsUrl.isEmpty(), setError("Source VCF file URL is empty"), );
     SAFE_POINT_EXT(dstDbiRef.isValid(), setError("Destination DBI reference is invalid"), );
     SAFE_POINT_EXT(!dstUrl.isEmpty(), setError("Destination file URL is empty"), );
@@ -140,7 +137,7 @@ LoadConvertAndSaveSnpeffVariationsToAnnotationsTask::~LoadConvertAndSaveSnpeffVa
     delete annotationsDocument;
 }
 
-const QString & LoadConvertAndSaveSnpeffVariationsToAnnotationsTask::getResultUrl() const {
+const QString &LoadConvertAndSaveSnpeffVariationsToAnnotationsTask::getResultUrl() const {
     return dstUrl;
 }
 
@@ -175,7 +172,7 @@ QList<Task *> LoadConvertAndSaveSnpeffVariationsToAnnotationsTask::onSubTaskFini
     }
 
     if (convertTask == subTask) {
-        QMap<QString, QList<SharedAnnotationData> > annotationsData = convertTask->getAnnotationsData();
+        QMap<QString, QList<SharedAnnotationData>> annotationsData = convertTask->getAnnotationsData();
         foreach (const QString &chromosome, annotationsData.keys()) {
             AnnotationTableObject *annotationTableObject = new AnnotationTableObject(chromosome, dstDbiRef);
             annotationTableObjects << annotationTableObject;
@@ -206,7 +203,7 @@ QList<Task *> LoadConvertAndSaveSnpeffVariationsToAnnotationsTask::onSubTaskFini
     return newSubtasks;
 }
 
-Document * LoadConvertAndSaveSnpeffVariationsToAnnotationsTask::prepareDocument() {
+Document *LoadConvertAndSaveSnpeffVariationsToAnnotationsTask::prepareDocument() {
     DocumentFormat *format = AppContext::getDocumentFormatRegistry()->getFormatById(formatId);
     SAFE_POINT_EXT(NULL != format, setError(QString("Document format '%1' not found in the registry").arg(formatId)), NULL);
     IOAdapterFactory *ioAdapterFactory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(dstUrl));
@@ -233,4 +230,4 @@ void LoadConvertAndSaveSnpeffVariationsToAnnotationsTask::prepareSaveTask() {
     saveTask = new SaveDocumentTask(annotationsDocument);
 }
 
-}   // namespace U2
+}    // namespace U2

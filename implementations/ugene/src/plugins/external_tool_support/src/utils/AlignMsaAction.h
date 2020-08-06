@@ -31,15 +31,16 @@ class MSAEditor;
 class AlignMsaAction : public ExternalToolSupportAction {
     Q_OBJECT
 public:
-    AlignMsaAction(QObject *parent, const QString &toolId, GObjectView *view, const QString &text, int order) :
-        ExternalToolSupportAction(parent, view, text, order, QStringList(toolId)) {}
+    AlignMsaAction(QObject *parent, const QString &toolId, GObjectView *view, const QString &text, int order)
+        : ExternalToolSupportAction(parent, view, text, order, QStringList(toolId)) {
+    }
 
-    MSAEditor* getMsaEditor() const;
+    MSAEditor *getMsaEditor() const;
 
 private slots:
     void sl_updateState();
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_ALIGN_MSA_ACTION_H_
+#endif    // _U2_ALIGN_MSA_ACTION_H_

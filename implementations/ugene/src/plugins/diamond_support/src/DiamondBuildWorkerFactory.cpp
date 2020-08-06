@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DiamondBuildWorkerFactory.h"
+
 #include <U2Designer/DelegateEditors.h>
 
 #include <U2Gui/DialogUtils.h>
@@ -29,13 +31,12 @@
 #include <U2Lang/URLAttribute.h>
 #include <U2Lang/WorkflowEnv.h>
 
+#include "../ngs_reads_classification/src/GenomicLibraryDelegate.h"
+#include "../ngs_reads_classification/src/NgsReadsClassificationPlugin.h"
 #include "DiamondBuildPrompter.h"
 #include "DiamondBuildValidator.h"
 #include "DiamondBuildWorker.h"
-#include "DiamondBuildWorkerFactory.h"
 #include "DiamondSupport.h"
-#include "../ngs_reads_classification/src/GenomicLibraryDelegate.h"
-#include "../ngs_reads_classification/src/NgsReadsClassificationPlugin.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -48,9 +49,7 @@ const QString DiamondBuildWorkerFactory::DATABASE_ATTR_ID = "database";
 const QString DiamondBuildWorkerFactory::GENOMIC_LIBRARY_ATTR_ID = "genomic-library";
 
 DiamondBuildWorkerFactory::DiamondBuildWorkerFactory()
-    : DomainFactory(ACTOR_ID)
-{
-
+    : DomainFactory(ACTOR_ID) {
 }
 
 Worker *DiamondBuildWorkerFactory::createWorker(Actor *actor) {
@@ -71,11 +70,9 @@ void DiamondBuildWorkerFactory::init() {
 
     QList<Attribute *> attributes;
     {
-        Descriptor databaseDesc(DATABASE_ATTR_ID, DiamondBuildPrompter::tr("Database"),
-                                               DiamondBuildPrompter::tr("A name of the binary DIAMOND database file that should be created."));
+        Descriptor databaseDesc(DATABASE_ATTR_ID, DiamondBuildPrompter::tr("Database"), DiamondBuildPrompter::tr("A name of the binary DIAMOND database file that should be created."));
 
-        Descriptor genomicLibraryDesc(GENOMIC_LIBRARY_ATTR_ID, DiamondBuildPrompter::tr("Genomic library"),
-                                            DiamondBuildPrompter::tr("Genomes that should be used to build the database."));
+        Descriptor genomicLibraryDesc(GENOMIC_LIBRARY_ATTR_ID, DiamondBuildPrompter::tr("Genomic library"), DiamondBuildPrompter::tr("Genomes that should be used to build the database."));
 
         Attribute *databaseAttribute = new Attribute(databaseDesc, BaseTypes::STRING_TYPE(), true);
         Attribute *genomicLibraryAttribute = new Attribute(genomicLibraryDesc, BaseTypes::URL_DATASETS_TYPE(), true);
@@ -94,8 +91,7 @@ void DiamondBuildWorkerFactory::init() {
         delegates[GENOMIC_LIBRARY_ATTR_ID] = new GenomicLibraryDelegate();
     }
 
-    Descriptor desc(ACTOR_ID, DiamondBuildPrompter::tr("Build DIAMOND Database"),
-                          DiamondBuildPrompter::tr("Build a DIAMOND formatted database from a FASTA input file."));
+    Descriptor desc(ACTOR_ID, DiamondBuildPrompter::tr("Build DIAMOND Database"), DiamondBuildPrompter::tr("Build a DIAMOND formatted database from a FASTA input file."));
 
     ActorPrototype *proto = new IntegralBusActorPrototype(desc, ports, attributes);
     proto->setEditor(new DelegateEditor(delegates));
@@ -115,5 +111,5 @@ void DiamondBuildWorkerFactory::cleanup() {
     delete localDomain->unregisterEntry(ACTOR_ID);
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

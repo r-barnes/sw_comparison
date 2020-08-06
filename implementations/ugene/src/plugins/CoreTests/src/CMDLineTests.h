@@ -23,6 +23,7 @@
 #define _U2_CMDLINE_TESTS_H_
 
 #include <QProcess>
+
 #include <U2Test/XMLTestUtils.h>
 
 namespace U2 {
@@ -36,36 +37,36 @@ namespace U2 {
 class GTest_RunCMDLine : public XmlTest {
     Q_OBJECT
 public:
-    SIMPLE_XML_TEST_BODY_WITH_FACTORY( GTest_RunCMDLine, "run-cmdline" );
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_RunCMDLine, "run-cmdline");
     virtual void prepare();
     virtual ReportResult report();
     virtual void cleanup();
 
 private:
     void setUgeneclPath();
-    void setArgs( const QDomElement & owner );
-    QString getVal( const QString & val );
-    QString splitVal(const QString & val, QString prefValue, const QString & prefix, bool isTmp);
+    void setArgs(const QDomElement &owner);
+    QString getVal(const QString &val);
+    QString splitVal(const QString &val, QString prefValue, const QString &prefix, bool isTmp);
 
 private:
     QString expectedMessage;
     QString unexpectedMessage;
     QStringList args;
-    QProcess *  proc;
-    QString     ugeneclPath;
+    QProcess *proc;
+    QString ugeneclPath;
     QStringList tmpFiles;
-    QString     workingDir;
-    bool        autoRemoveWorkingDir;
-    bool        customIniSet;
+    QString workingDir;
+    bool autoRemoveWorkingDir;
+    bool customIniSet;
 
     static const QString UGENECL_PATH;
-}; // GTest_RunCMDLine
+};    // GTest_RunCMDLine
 
 class CMDLineTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
-}; // CMDLineTests
+    static QList<XMLTestFactory *> createTestFactories();
+};    // CMDLineTests
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_CMDLINE_TESTS_H_
+#endif    // _U2_CMDLINE_TESTS_H_

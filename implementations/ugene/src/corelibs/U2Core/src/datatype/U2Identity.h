@@ -27,65 +27,82 @@
 
 namespace U2 {
 
-template <class T> class AbstractId {
+template<class T>
+class AbstractId {
 protected:
-    AbstractId(const T& _id) : id(_id) {}
-    virtual ~AbstractId() {}
+    AbstractId(const T &_id)
+        : id(_id) {
+    }
+    virtual ~AbstractId() {
+    }
 
 public:
-    virtual bool isValid() const  = 0;
+    virtual bool isValid() const = 0;
 
-    bool operator==(const AbstractId<T>& oid) const {
+    bool operator==(const AbstractId<T> &oid) const {
         return oid.id == id;
     }
 
-    bool operator!=(const AbstractId<T>& oid) const {
+    bool operator!=(const AbstractId<T> &oid) const {
         return !(*this == oid);
     }
 
-    bool operator<(const AbstractId<T>& oid) const {
+    bool operator<(const AbstractId<T> &oid) const {
         return id < oid.id;
     }
 
     T id;
 };
 
-class AbstractStringId  : public AbstractId<QString> {
+class AbstractStringId : public AbstractId<QString> {
 protected:
-    AbstractStringId(const QString& id = QString()) : AbstractId<QString>(id){}
+    AbstractStringId(const QString &id = QString())
+        : AbstractId<QString>(id) {
+    }
 
 public:
-    virtual bool isValid() const {return !id.isEmpty();}
+    virtual bool isValid() const {
+        return !id.isEmpty();
+    }
 };
 
 class AbstractInt32Id : public AbstractId<int> {
 protected:
-    AbstractInt32Id(int id  = 0) : AbstractId<int>(id){}
+    AbstractInt32Id(int id = 0)
+        : AbstractId<int>(id) {
+    }
+
 public:
-    virtual bool isValid() const {return id > 0;}
+    virtual bool isValid() const {
+        return id > 0;
+    }
 };
 
-
-template <class T> uint qHash(const AbstractId<T>& key) {
+template<class T>
+uint qHash(const AbstractId<T> &key) {
     return ::qHash(key.id);
 }
 
 #define INT32_ID(Class) \
-class Class : public AbstractInt32Id { \
-public: \
-    Class() : AbstractInt32Id() {} \
-    Class(int id) : AbstractInt32Id(id) {} \
-};
+    class Class : public AbstractInt32Id { \
+    public: \
+        Class() : AbstractInt32Id() { \
+        } \
+        Class(int id) : AbstractInt32Id(id) { \
+        } \
+    };
 
 #define STRING_ID(Class) \
-class Class : public QString { \
-public: \
-    Class() : QString() {} \
-    Class(const QString& id) : QString(id) {} \
-    Class(const char* id) : QString(QString(id)) {} \
-};
+    class Class : public QString { \
+    public: \
+        Class() : QString() { \
+        } \
+        Class(const QString &id) : QString(id) { \
+        } \
+        Class(const char *id) : QString(QString(id)) { \
+        } \
+    };
 
-
-}//namespace
+}    // namespace U2
 
 #endif

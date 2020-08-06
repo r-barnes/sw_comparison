@@ -24,18 +24,20 @@
 
 #include "utils/GTUtilsDialog.h"
 
-namespace U2{
+namespace U2 {
 using namespace HI;
 
-class WorkflowMetaDialogFiller : public Filler
-{
+class WorkflowMetaDialogFiller : public Filler {
 public:
-    WorkflowMetaDialogFiller(HI::GUITestOpStatus& os, QString _url, QString _name): Filler(os, "WorkflowMetaDialog"),
-        url(_url),
-        name(_name){}
+    WorkflowMetaDialogFiller(HI::GUITestOpStatus &os, QString _url, QString _name)
+        : Filler(os, "WorkflowMetaDialog"),
+          url(_url),
+          name(_name) {
+    }
     void commonScenario();
+
 private:
     QString url, name;
 };
-}
-#endif // WORKFLOWMETADIALOGFILLER_H
+}    // namespace U2
+#endif    // WORKFLOWMETADIALOGFILLER_H

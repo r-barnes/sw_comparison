@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "Schema.h"
+
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
@@ -28,26 +30,25 @@
 #include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/WorkflowUtils.h>
 
-#include "Schema.h"
-
 namespace U2 {
 namespace Workflow {
 
 /**************************
  * Schema
  **************************/
-Schema::Schema() : deepCopy(false) {
+Schema::Schema()
+    : deepCopy(false) {
 }
 
 Schema::~Schema() {
     reset();
 }
 
-Schema::Schema( const Schema & other ) {
+Schema::Schema(const Schema &other) {
     *this = other;
 }
 
-Schema & Schema::operator =( const Schema & other ) {
+Schema &Schema::operator=(const Schema &other) {
     procs = other.procs;
     domain = other.domain;
     graph = ActorBindingsGraph(other.graph);
@@ -68,20 +69,19 @@ void Schema::reset() {
 }
 
 void Schema::applyConfiguration(const QMap<ActorId, QVariantMap> &cfg) {
-    foreach(Actor* a, procs) {
+    foreach (Actor *a, procs) {
         if (cfg.contains(a->getId())) {
             a->setParameters(cfg[a->getId()]);
         }
     }
 }
 
-
-Actor * Schema::actorById( ActorId id) const {
+Actor *Schema::actorById(ActorId id) const {
     return WorkflowUtils::actorById(procs, id);
 }
 
-QList<Actor*> Schema::actorsByOwnerId(ActorId id) const {
-    QList<Actor*> res;
+QList<Actor *> Schema::actorsByOwnerId(ActorId id) const {
+    QList<Actor *> res;
     foreach (Actor *proc, procs) {
         if (proc->getOwner() == id) {
             res.append(proc);
@@ -94,28 +94,28 @@ QString Schema::getDomain() const {
     return domain;
 }
 
-void Schema::setDomain(const QString & d) {
+void Schema::setDomain(const QString &d) {
     domain = d;
 }
 
-const ActorBindingsGraph & Schema::getActorBindingsGraph() const {
+const ActorBindingsGraph &Schema::getActorBindingsGraph() const {
     return graph;
 }
 
-const QList<Actor*> & Schema::getProcesses() const {
+const QList<Actor *> &Schema::getProcesses() const {
     return procs;
 }
 
-void Schema::addProcess(Actor * a) {
+void Schema::addProcess(Actor *a) {
     assert(a != NULL);
     procs.append(a);
 }
 
-QList<Link*> Schema::getFlows() const {
+QList<Link *> Schema::getFlows() const {
     return graph.getFlows();
 }
 
-void Schema::addFlow(Link* l) {
+void Schema::addFlow(Link *l) {
     assert(l != NULL);
     graph.addBinding(l->source(), l->destination());
 }
@@ -125,8 +125,8 @@ void Schema::setDeepCopyFlag(bool flag) {
 }
 
 bool Schema::hasParamAliases() const {
-    foreach(Actor * actor, procs) {
-        if(actor->hasParamAliases()) {
+    foreach (Actor *actor, procs) {
+        if (actor->hasParamAliases()) {
             return true;
         }
     }
@@ -134,8 +134,8 @@ bool Schema::hasParamAliases() const {
 }
 
 bool Schema::hasAliasHelp() const {
-    foreach(Actor * a, procs) {
-        if(a->hasAliasHelp()) {
+    foreach (Actor *a, procs) {
+        if (a->hasAliasHelp()) {
             return true;
         }
     }
@@ -179,7 +179,7 @@ void Schema::setTypeName(const QString &typeName) {
 using namespace std;
 
 bool Schema::recursiveExpand(QList<QString> &schemaIds) {
-    QMap<Actor*, Schema*> subSchemas;
+    QMap<Actor *, Schema *> subSchemas;
 
     // Expand all processes
     foreach (Actor *proc, procs) {
@@ -350,7 +350,7 @@ void Schema::replaceOutSlots(Actor *origProc, const PortAlias &portAlias) {
                     while (idPos >= 0) {
                         Actor *subProc = slotAlias.getSourcePort()->owner();
                         value.remove(idPos, slotString.length());
-                        value.insert(idPos, subProc->getId()+":"+subSlotId);
+                        value.insert(idPos, subProc->getId() + ":" + subSlotId);
                         idPos = value.indexOf(slotString);
                     }
                 }
@@ -391,17 +391,17 @@ void Schema::replacePortAliases(const PortAlias &subPortAlias) {
     this->portAliases = newPortAliases;
 }
 
-const QList<Wizard*> & Schema::getWizards() const {
+const QList<Wizard *> &Schema::getWizards() const {
     return wizards;
 }
 
-void Schema::setWizards(const QList<Wizard*> &value) {
+void Schema::setWizards(const QList<Wizard *> &value) {
     qDeleteAll(wizards);
     wizards = value;
 }
 
-QList<Wizard*> Schema::takeWizards() {
-    QList<Wizard*> result = wizards;
+QList<Wizard *> Schema::takeWizards() {
+    QList<Wizard *> result = wizards;
     wizards.clear();
     return result;
 }
@@ -415,10 +415,10 @@ void Schema::removeProcess(Actor *actor) {
     }
 
     // remove actor from port aliases
-    QList<Port*> ports = actor->getPorts();
+    QList<Port *> ports = actor->getPorts();
     QList<PortAlias>::iterator i = portAliases.begin();
     while (i != portAliases.end()) {
-        Port *p = const_cast<Port*>(i->getSourcePort());
+        Port *p = const_cast<Port *>(i->getSourcePort());
         if (ports.contains(p)) {
             i = portAliases.erase(i);
         } else {
@@ -436,16 +436,16 @@ void Schema::update() {
 
 void Schema::update(const QMap<ActorId, ActorId> &actorsMapping) {
     // update actors from the first level of the graph to the last one
-    QMap<int, QList<Actor*> > top = graph.getTopologicalSortedGraph(procs);
+    QMap<int, QList<Actor *>> top = graph.getTopologicalSortedGraph(procs);
     int beginLevel = top.size() - 1;
-    for (int level=beginLevel; level>=0; level--) {
+    for (int level = beginLevel; level >= 0; level--) {
         foreach (Actor *a, top[level]) {
             a->update(actorsMapping);
         }
     }
 }
 
-void Schema::removeFlow(Link* l) {
+void Schema::removeFlow(Link *l) {
     if (graph.contains(l->source(), l->destination())) {
         graph.removeBinding(l->source(), l->destination());
         l->disconnect();
@@ -453,7 +453,7 @@ void Schema::removeFlow(Link* l) {
     }
 }
 
-ActorId Schema::uniqueActorId(const QString &id, const QList<Actor*> &procs) {
+ActorId Schema::uniqueActorId(const QString &id, const QList<Actor *> &procs) {
     QStringList uniqueIds;
     foreach (Actor *a, procs) {
         uniqueIds << aid2str(a->getId());
@@ -476,24 +476,24 @@ void Schema::renameProcess(const ActorId &oldId, const ActorId &newId) {
 }
 
 namespace {
-    QStringList removeAliasesDupliucates(const QList<Actor*> &actors, Actor *newActor) {
-        QStringList removed;
-        QStringList allAliases;
-        foreach (Actor *actor, actors) {
-            allAliases << actor->getParamAliases().values();
-        }
-        QMap<QString, QString> newAliases = newActor->getParamAliases();
-        foreach (const QString &key, newAliases.keys()) {
-            QString alias = newAliases.value(key);
-            if (allAliases.contains(alias)) {
-                newActor->getParamAliases().remove(key);
-                newActor->getAliasHelp().remove(alias);
-                removed << alias;
-            }
-        }
-        return removed;
+QStringList removeAliasesDupliucates(const QList<Actor *> &actors, Actor *newActor) {
+    QStringList removed;
+    QStringList allAliases;
+    foreach (Actor *actor, actors) {
+        allAliases << actor->getParamAliases().values();
     }
+    QMap<QString, QString> newAliases = newActor->getParamAliases();
+    foreach (const QString &key, newAliases.keys()) {
+        QString alias = newAliases.value(key);
+        if (allAliases.contains(alias)) {
+            newActor->getParamAliases().remove(key);
+            newActor->getAliasHelp().remove(alias);
+            removed << alias;
+        }
+    }
+    return removed;
 }
+}    // namespace
 
 void Schema::merge(Schema &other) {
     foreach (Actor *newActor, other.procs) {
@@ -510,7 +510,7 @@ void Schema::merge(Schema &other) {
 void Schema::replaceProcess(Actor *oldActor, Actor *newActor, const QList<PortMapping> &mappings) {
     CHECK(procs.contains(oldActor), );
     CHECK(!procs.contains(newActor), );
-    QMap<int, QList<Actor*> > top = graph.getTopologicalSortedGraph(procs);
+    QMap<int, QList<Actor *>> top = graph.getTopologicalSortedGraph(procs);
 
     // replace actors flows
     foreach (Port *p, oldActor->getPorts()) {
@@ -526,15 +526,15 @@ void Schema::replaceProcess(Actor *oldActor, Actor *newActor, const QList<PortMa
             Link *newLink = new Link(p1, p2);
             addFlow(newLink);
             if (p2->isInput()) {
-                IntegralBusPort *oldPort = dynamic_cast<IntegralBusPort*>(p);
-                IntegralBusPort *newPort = dynamic_cast<IntegralBusPort*>(p2);
+                IntegralBusPort *oldPort = dynamic_cast<IntegralBusPort *>(p);
+                IntegralBusPort *newPort = dynamic_cast<IntegralBusPort *>(p2);
                 newPort->copyInput(oldPort, pm);
             }
         }
     }
 
     int beginLevel = top.size() - 1;
-    for (int level=beginLevel; level>=0; level--) {
+    for (int level = beginLevel; level >= 0; level--) {
         foreach (Actor *a, top[level]) {
             if (a != oldActor) {
                 a->replaceActor(oldActor, newActor, mappings);
@@ -554,8 +554,7 @@ ActorVisualData::ActorVisualData() {
 }
 
 ActorVisualData::ActorVisualData(const ActorId &_actorId)
-: actorId(_actorId)
-{
+    : actorId(_actorId) {
     initialize();
 }
 
@@ -670,16 +669,13 @@ void Metadata::setActorVisualData(const ActorVisualData &data) {
     actorVisual[data.getActorId()] = data;
 }
 
-QPointF Metadata::getTextPos(const ActorId &srcActorId, const QString &srcPortId,
-    const ActorId &dstActorId, const QString &dstPortId, bool &contains) const {
+QPointF Metadata::getTextPos(const ActorId &srcActorId, const QString &srcPortId, const ActorId &dstActorId, const QString &dstPortId, bool &contains) const {
     QString linkStr = getLinkString(srcActorId, srcPortId, dstActorId, dstPortId);
     contains = textPosMap.contains(linkStr);
     return textPosMap.value(linkStr, QPointF());
 }
 
-void Metadata::setTextPos(const ActorId &srcActorId, const QString &srcPortId,
-    const ActorId &dstActorId, const QString &dstPortId,
-    const QPointF &value) {
+void Metadata::setTextPos(const ActorId &srcActorId, const QString &srcPortId, const ActorId &dstActorId, const QString &dstPortId, const QPointF &value) {
     QString linkStr = getLinkString(srcActorId, srcPortId, dstActorId, dstPortId);
     textPosMap[linkStr] = value;
 }
@@ -704,10 +700,9 @@ ActorId Metadata::getActorId(const QString &portStr) const {
     return tokens[0];
 }
 
-QString Metadata::getLinkString(const ActorId &srcActorId, const QString &srcPortId,
-    const ActorId &dstActorId, const QString &dstPortId) const {
+QString Metadata::getLinkString(const ActorId &srcActorId, const QString &srcPortId, const ActorId &dstActorId, const QString &dstPortId) const {
     return getPortString(srcActorId, srcPortId) + "->" +
-        getPortString(dstActorId, dstPortId);
+           getPortString(dstActorId, dstPortId);
 }
 
 bool Metadata::isActorLinked(const ActorId &actorId, const QString &linkStr) const {
@@ -851,7 +846,7 @@ bool ActorBindingsGraph::validateGraph(QString &) const {
 }
 
 bool ActorBindingsGraph::addBinding(Port *source, Port *dest) {
-    QList<Port*> ports;
+    QList<Port *> ports;
     if (bindings.contains(source)) {
         ports = bindings.value(source);
         if (ports.contains(dest)) {
@@ -865,7 +860,7 @@ bool ActorBindingsGraph::addBinding(Port *source, Port *dest) {
 
 bool ActorBindingsGraph::contains(Port *source, Port *dest) const {
     if (bindings.contains(source)) {
-        const QList<Port*> &ports = bindings[source];
+        const QList<Port *> &ports = bindings[source];
         return ports.contains(dest);
     }
     return false;
@@ -873,7 +868,7 @@ bool ActorBindingsGraph::contains(Port *source, Port *dest) const {
 
 void ActorBindingsGraph::removeBinding(Port *source, Port *dest) {
     if (bindings.contains(source)) {
-        QList<Port*> &ports = bindings[source];
+        QList<Port *> &ports = bindings[source];
         ports.removeOne(dest);
         if (ports.isEmpty()) {
             bindings.remove(source);
@@ -881,16 +876,16 @@ void ActorBindingsGraph::removeBinding(Port *source, Port *dest) {
     }
 }
 
-const QMap<Port*, QList<Port*> > &ActorBindingsGraph::getBindings() const {
+const QMap<Port *, QList<Port *>> &ActorBindingsGraph::getBindings() const {
     return bindings;
 }
 
-QMap<Port*, QList<Port*> > &ActorBindingsGraph::getBindings() {
+QMap<Port *, QList<Port *>> &ActorBindingsGraph::getBindings() {
     return bindings;
 }
 
-QMap<int, QList<Actor*> > ActorBindingsGraph::getTopologicalSortedGraph(QList<Actor*> actors) const {
-    QMap<Actor*, QList<Port*> > graph;
+QMap<int, QList<Actor *>> ActorBindingsGraph::getTopologicalSortedGraph(QList<Actor *> actors) const {
+    QMap<Actor *, QList<Port *>> graph;
     foreach (Port *source, bindings.keys()) {
         if (graph.contains(source->owner())) {
             graph[source->owner()].append(bindings.value(source));
@@ -898,14 +893,14 @@ QMap<int, QList<Actor*> > ActorBindingsGraph::getTopologicalSortedGraph(QList<Ac
             graph.insert(source->owner(), bindings.value(source));
         }
     }
-    QMap<int, QList<Actor*> > result;
+    QMap<int, QList<Actor *>> result;
 
     int vertexLabel = 0;
     while (!graph.isEmpty()) {
-        QList<Actor*> endVertexes;
+        QList<Actor *> endVertexes;
         {
             foreach (Actor *a, actors) {
-                if (!graph.keys().contains(a)) { // so, there is no arcs from this actor
+                if (!graph.keys().contains(a)) {    // so, there is no arcs from this actor
                     endVertexes.append(a);
                 }
             }
@@ -913,7 +908,7 @@ QMap<int, QList<Actor*> > ActorBindingsGraph::getTopologicalSortedGraph(QList<Ac
         result.insert(vertexLabel, endVertexes);
 
         foreach (Actor *a, graph.keys()) {
-            QList<Port*> ports = graph.value(a);
+            QList<Port *> ports = graph.value(a);
             foreach (Port *p, ports) {
                 if (endVertexes.contains(p->owner())) {
                     ports.removeOne(p);
@@ -944,8 +939,8 @@ bool ActorBindingsGraph::isEmpty() const {
     return bindings.isEmpty();
 }
 
-QList<Link*> ActorBindingsGraph::getFlows() const {
-    QList<Link*> result;
+QList<Link *> ActorBindingsGraph::getFlows() const {
+    QList<Link *> result;
     foreach (Port *src, bindings.keys()) {
         foreach (Link *l, src->getLinks()) {
             SAFE_POINT(l->source() == src, "Link's source port mismatch", result);
@@ -957,6 +952,6 @@ QList<Link*> ActorBindingsGraph::getFlows() const {
     return result;
 }
 
-}//Workflow namespace
+}    // namespace Workflow
 
-}//GB2namespace
+}    // namespace U2

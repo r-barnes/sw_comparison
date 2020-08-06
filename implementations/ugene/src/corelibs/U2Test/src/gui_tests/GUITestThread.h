@@ -22,9 +22,11 @@
 #ifndef _U2_GUI_TEST_THREAD_H_
 #define _U2_GUI_TEST_THREAD_H_
 
-#include <QThread>
-#include <U2Core/global.h>
 #include <core/GUITest.h>
+
+#include <QThread>
+
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -34,16 +36,19 @@ typedef QList<HI::GUITest *> GUITests;
 class U2TEST_EXPORT GUITestThread : public QThread {
     Q_OBJECT
 public:
-    GUITestThread(HI::GUITest *test, Logger &log, bool needCleanup = true);
+    GUITestThread(HI::GUITest *test, bool isCleanupNeeded = true);
 
     void run();
 
-    HI::GUITest* getTest(){ return test; }
-    QString getTestResult() { return testResult; }
+    HI::GUITest *getTest() {
+        return test;
+    }
+    QString getTestResult() {
+        return testResult;
+    }
 
 private slots:
     void sl_testTimeOut();
-    void sl_getMemory();
 
 private:
     QString launchTest(const GUITests &tests);
@@ -56,17 +61,12 @@ private:
     void saveScreenshot();
     void cleanup();
     void writeTestResult();
-    void saveMemoryInfo();
-    int countMemForProcessTree(int pid);
 
     HI::GUITest *test;
-    Logger &log;
-    bool needCleanup;
+    bool isRunPostActionsAndCleanup;
     QString testResult;
-
-    QList<int> memoryList;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_GUI_TEST_THREAD_H_
+#endif    // _U2_GUI_TEST_THREAD_H_

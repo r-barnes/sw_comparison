@@ -20,17 +20,18 @@
  */
 
 #include "QDTests.h"
-#include "QDSceneIOTasks.h"
 
+#include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/DNASequenceObject.h>
-#include <U2Core/AnnotationTableObject.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/U2DbiRegistry.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Designer/QDScheduler.h>
+
+#include "QDSceneIOTasks.h"
 
 namespace U2 {
 
@@ -40,14 +41,14 @@ namespace U2 {
 
 static const QString GROUP_NAME = "Query results";
 
-void GTest_QDSchedulerTest::init(XMLTestFormat *, const QDomElement& el) {
+void GTest_QDSchedulerTest::init(XMLTestFormat *, const QDomElement &el) {
     sched = NULL;
     expectedResult = NULL;
     seqObj = NULL;
 
     U2OpStatusImpl os;
     const U2DbiRef dbiRef = AppContext::getDbiRegistry()->getSessionTmpDbiRef(os);
-    SAFE_POINT_OP(os,);
+    SAFE_POINT_OP(os, );
     result = new AnnotationTableObject(
         GObjectTypes::getTypeInfo(GObjectTypes::ANNOTATION_TABLE).name, dbiRef);
     schema = new QDScheme;
@@ -77,36 +78,36 @@ void GTest_QDSchedulerTest::prepare() {
     if (hasError() || isCanceled()) {
         return;
     }
-    Document* seqDoc = getContext<Document>(this, seqName);
-    if (seqDoc == NULL){
+    Document *seqDoc = getContext<Document>(this, seqName);
+    if (seqDoc == NULL) {
         stateInfo.setError("can't find sequence");
         return;
     }
-    seqObj = qobject_cast<U2SequenceObject*>(seqDoc->findGObjectByType(GObjectTypes::SEQUENCE).first());
-    if (seqObj == NULL){
+    seqObj = qobject_cast<U2SequenceObject *>(seqDoc->findGObjectByType(GObjectTypes::SEQUENCE).first());
+    if (seqObj == NULL) {
         stateInfo.setError("can't find sequence");
         return;
     }
 
-    Document* expDoc = getContext<Document>(this, expectedResName);
-    if (expDoc == NULL){
+    Document *expDoc = getContext<Document>(this, expectedResName);
+    if (expDoc == NULL) {
         stateInfo.setError("can't find result");
         return;
     }
     expectedResult = qobject_cast<AnnotationTableObject *>(expDoc->findGObjectByType(GObjectTypes::ANNOTATION_TABLE).first());
-    if (expectedResult == NULL){
+    if (expectedResult == NULL) {
         stateInfo.setError("can't find result");
         return;
     }
 
-    QDDocument* doc = new QDDocument;
+    QDDocument *doc = new QDDocument;
     QFile f(schemaUri);
     if (!f.open(QIODevice::ReadOnly)) {
         stateInfo.setError("can't read result");
         return;
     }
     QByteArray data = f.readAll();
-    const QString& content = QString::fromUtf8(data);
+    const QString &content = QString::fromUtf8(data);
     f.close();
     bool res = doc->setContent(content);
     if (!res) {
@@ -114,7 +115,7 @@ void GTest_QDSchedulerTest::prepare() {
         return;
     }
 
-    bool ok = QDSceneSerializer::doc2scheme((QList<QDDocument*>() << doc), schema);
+    bool ok = QDSceneSerializer::doc2scheme((QList<QDDocument *>() << doc), schema);
     delete doc;
     if (!ok) {
         stateInfo.setError(tr("can't read %1").arg(expectedResName));
@@ -133,8 +134,8 @@ void GTest_QDSchedulerTest::prepare() {
     addSubTask(sched);
 }
 
-QList<Task*> GTest_QDSchedulerTest::onSubTaskFinished(Task* subTask) {
-    QList<Task*> subs;
+QList<Task *> GTest_QDSchedulerTest::onSubTaskFinished(Task *subTask) {
+    QList<Task *> subs;
     if (subTask == sched) {
         AnnotationGroup *resG = result->getRootGroup()->getSubgroup(GROUP_NAME, false);
         AnnotationGroup *expResG = expectedResult->getRootGroup()->getSubgroup(GROUP_NAME, false);
@@ -145,7 +146,7 @@ QList<Task*> GTest_QDSchedulerTest::onSubTaskFinished(Task* subTask) {
         const QList<AnnotationGroup *> expRes = expResG->getSubgroups();
         subs.append(new CompareAnnotationGroupsTask(res, expRes));
     } else {
-        CompareAnnotationGroupsTask* compareTask = qobject_cast<CompareAnnotationGroupsTask*>(subTask);
+        CompareAnnotationGroupsTask *compareTask = qobject_cast<CompareAnnotationGroupsTask *>(subTask);
         assert(compareTask);
         if (!compareTask->areEqual()) {
             setError(tr("Results do not match."));
@@ -159,8 +160,8 @@ GTest_QDSchedulerTest::~GTest_QDSchedulerTest() {
     delete result;
 }
 
-QList<XMLTestFactory*> QDTests::createTestFactories() {
-    QList<XMLTestFactory*> res;
+QList<XMLTestFactory *> QDTests::createTestFactories() {
+    QList<XMLTestFactory *> res;
     res.append(GTest_QDSchedulerTest::createFactory());
     return res;
 }
@@ -207,4 +208,4 @@ void CompareAnnotationGroupsTask::run() {
     equal = true;
 }
 
-}//namespace
+}    // namespace U2

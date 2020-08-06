@@ -22,11 +22,11 @@
 #ifndef _U2_MACS_SETTINGS_
 #define _U2_MACS_SETTINGS_
 
-#include <U2Core/U2Region.h>
-
 #include <QList>
 #include <QString>
 #include <QStringList>
+
+#include <U2Core/U2Region.h>
 
 namespace U2 {
 
@@ -34,41 +34,40 @@ class MACSSettings {
 public:
     MACSSettings();
 
-    QString     outDir;
-    QString     fileNames;
-    bool        wiggleOut;
-    qint64      wiggleSpace;
+    QString outDir;
+    QString fileNames;
+    bool wiggleOut;
+    qint64 wiggleSpace;
 
-    qint64      genomeSizeInMbp;
-    double      pValue;
-    double      qValue;    //(MACS 2)
-    bool        useModel;
-    U2Region    modelFold;
-    qint64      shiftSize;
-    QString     keepDublicates;
-    qint64      bandWidth;
-    bool        extFr;    //(???)
+    qint64 genomeSizeInMbp;
+    double pValue;
+    double qValue;    //(MACS 2)
+    bool useModel;
+    U2Region modelFold;
+    qint64 shiftSize;
+    QString keepDublicates;
+    qint64 bandWidth;
+    bool extFr;    //(???)
     //optional
-    qint64      tagSize; //0 for default
+    qint64 tagSize;    //0 for default
     //advanced
-    bool        useLambda;
-    qint64      smallNearby;
-    qint64      largeNearby;
-    bool        autoBimodal;
-    bool        scaleLarge;
-    bool        shiftControl;    //(MACS 2)
-    bool        halfExtend;    //(MACS 2)
-    bool        broad;    //(MACS 2)
-    double      broadCutoff;    //(MACS 2)
+    bool useLambda;
+    qint64 smallNearby;
+    qint64 largeNearby;
+    bool autoBimodal;
+    bool scaleLarge;
+    bool shiftControl;    //(MACS 2)
+    bool halfExtend;    //(MACS 2)
+    bool broad;    //(MACS 2)
+    double broadCutoff;    //(MACS 2)
 
 public:
-    QStringList getArguments(const QString& treatFilePath, const QString& conFilePath);
+    QStringList getArguments(const QString &treatFilePath, const QString &conFilePath);
 
 private:
     void initDefault();
-
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_MACS_SETTINGS_
+#endif    // _U2_MACS_SETTINGS_

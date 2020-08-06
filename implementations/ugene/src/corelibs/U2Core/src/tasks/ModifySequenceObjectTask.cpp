@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ModifySequenceObjectTask.h"
+
 #include <U2Core/AddDocumentTask.h>
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
@@ -27,10 +29,10 @@
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/DNATranslation.h>
 #include <U2Core/DocumentModel.h>
-#include <U2Core/GenbankFeatures.h>
 #include <U2Core/GObject.h>
 #include <U2Core/GObjectRelationRoles.h>
 #include <U2Core/GObjectUtils.h>
+#include <U2Core/GenbankFeatures.h>
 #include <U2Core/IOAdapterUtils.h>
 #include <U2Core/Log.h>
 #include <U2Core/MultiTask.h>
@@ -41,17 +43,14 @@
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/U2SequenceUtils.h>
 
-#include "ModifySequenceObjectTask.h"
-
 namespace U2 {
 
 typedef QPair<QString, QString> QStrStrPair;
 
-ModifySequenceContentTask::ModifySequenceContentTask(const DocumentFormatId &dfId, U2SequenceObject *seqObj, const U2Region &regionTodelete,
-    const DNASequence &seq2Insert, bool recalculateQualifiers, U1AnnotationUtils::AnnotationStrategyForResize str, const GUrl &url, bool mergeAnnotations)
+ModifySequenceContentTask::ModifySequenceContentTask(const DocumentFormatId &dfId, U2SequenceObject *seqObj, const U2Region &regionTodelete, const DNASequence &seq2Insert, bool recalculateQualifiers, U1AnnotationUtils::AnnotationStrategyForResize str, const GUrl &url, bool mergeAnnotations)
     : Task(tr("Modify sequence task"), TaskFlags(TaskFlag_NoRun) | TaskFlag_ReportingIsSupported), resultFormatId(dfId),
-    mergeAnnotations(mergeAnnotations), recalculateQualifiers(recalculateQualifiers), curDoc(seqObj->getDocument()), newDoc(NULL), url(url), strat(str),
-    seqObj(seqObj), regionToReplace(regionTodelete), sequence2Insert(seq2Insert) {
+      mergeAnnotations(mergeAnnotations), recalculateQualifiers(recalculateQualifiers), curDoc(seqObj->getDocument()), newDoc(NULL), url(url), strat(str),
+      seqObj(seqObj), regionToReplace(regionTodelete), sequence2Insert(seq2Insert) {
     GCOUNTER(cvar, tvar, "Modify sequence task");
     inplaceMod = url == curDoc->getURL() || url.isEmpty();
 }
@@ -90,8 +89,8 @@ Task::ReportResult ModifySequenceContentTask::report() {
     }
 
     if (!inplaceMod) {
-        QList<Task*> tasks;
-        IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
+        QList<Task *> tasks;
+        IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
         tasks.append(new SaveDocumentTask(seqObj->getDocument(), iof, url.getURLString()));
         Project *p = AppContext::getProject();
         if (p != NULL) {
@@ -107,7 +106,7 @@ namespace {
 QString formatPairList(const QList<QStrStrPair> &pairList, bool useFirst) {
     QString result;
     const QString lineSeparator = "<br>";
-    foreach(const QStrStrPair &pair, pairList) {
+    foreach (const QStrStrPair &pair, pairList) {
         result += useFirst ? pair.first : pair.second;
         result += lineSeparator;
     }
@@ -115,13 +114,13 @@ QString formatPairList(const QList<QStrStrPair> &pairList, bool useFirst) {
     return result;
 }
 
-}
+}    // namespace
 
 QString ModifySequenceContentTask::generateReport() const {
     CHECK(!annotationForReport.isEmpty(), QString());
 
     QString report = tr("Some annotations have qualifiers referring a sequence region that has been removed during the sequence editing. "
-        "You might want to change the qualifiers manually. Find them in the table below");
+                        "You might want to change the qualifiers manually. Find them in the table below");
     report += "<br><table border=\"1\" cellpadding=\"1\">";
     report += "<tr><th>";
     report += tr("Annotation Name");
@@ -133,7 +132,7 @@ QString ModifySequenceContentTask::generateReport() const {
     report += tr("Referenced Region");
     report += "</th></tr>";
 
-    foreach(Annotation *an, annotationForReport.keys()) {
+    foreach (Annotation *an, annotationForReport.keys()) {
         if (annotationForReport[an].isEmpty()) {
             coreLog.error(tr("Unexpected qualifiers count"));
             assert(false);
@@ -157,7 +156,7 @@ qint64 ModifySequenceContentTask::getSequenceLengthDelta() const {
 
 void ModifySequenceContentTask::cloneSequenceAndAnnotations() {
     IOAdapterRegistry *ioReg = AppContext::getIOAdapterRegistry();
-    IOAdapterFactory* iof = ioReg->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
+    IOAdapterFactory *iof = ioReg->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
     CHECK(NULL != iof, );
     DocumentFormatRegistry *dfReg = AppContext::getDocumentFormatRegistry();
     DocumentFormat *df = dfReg->getFormatById(resultFormatId);
@@ -167,7 +166,7 @@ void ModifySequenceContentTask::cloneSequenceAndAnnotations() {
     U2OpStatus2Log os;
     newDoc = df->createNewLoadedDocument(iof, url, os, curDoc->getGHintsMap());
     SAFE_POINT_EXT(df->isObjectOpSupported(newDoc, DocumentFormat::DocObjectOp_Add, GObjectTypes::SEQUENCE),
-        stateInfo.setError("Failed to add sequence object to document!"), );
+                   stateInfo.setError("Failed to add sequence object to document!"), );
     U2Sequence clonedSeq = U2SequenceUtils::copySequence(oldSeqObj->getSequenceRef(), newDoc->getDbiRef(), U2ObjectDbi::ROOT_FOLDER, stateInfo);
     CHECK_OP(stateInfo, );
     seqObj = new U2SequenceObject(oldSeqObj->getGObjectName(), U2EntityRef(newDoc->getDbiRef(), clonedSeq.id), oldSeqObj->getGHintsMap());
@@ -178,12 +177,12 @@ void ModifySequenceContentTask::cloneSequenceAndAnnotations() {
             AnnotationTableObject *newDocAto = new AnnotationTableObject("Annotations", newDoc->getDbiRef());
             newDocAto->addObjectRelation(seqObj, ObjectRole_Sequence);
 
-            foreach(Document *d, docs) {
+            foreach (Document *d, docs) {
                 QList<GObject *> annotationTablesList = d->findGObjectByType(GObjectTypes::ANNOTATION_TABLE);
-                foreach(GObject *table, annotationTablesList) {
+                foreach (GObject *table, annotationTablesList) {
                     AnnotationTableObject *ato = qobject_cast<AnnotationTableObject *>(table);
                     if (ato->hasObjectRelation(oldSeqObj, ObjectRole_Sequence)) {
-                        foreach(Annotation *ann, ato->getAnnotations()) {
+                        foreach (Annotation *ann, ato->getAnnotations()) {
                             newDocAto->addAnnotations(QList<SharedAnnotationData>() << ann->getData(), ann->getGroup()->getName());
                         }
                     }
@@ -192,7 +191,7 @@ void ModifySequenceContentTask::cloneSequenceAndAnnotations() {
             newDoc->addObject(newDocAto);
         } else {
             // use only sequence-doc annotations
-            foreach(GObject *o, curDoc->getObjects()) {
+            foreach (GObject *o, curDoc->getObjects()) {
                 AnnotationTableObject *aObj = qobject_cast<AnnotationTableObject *>(o);
                 if (NULL != aObj) {
                     U2OpStatus2Log os;
@@ -206,4 +205,4 @@ void ModifySequenceContentTask::cloneSequenceAndAnnotations() {
     docs.append(newDoc);
 }
 
-} // namespace U2
+}    // namespace U2

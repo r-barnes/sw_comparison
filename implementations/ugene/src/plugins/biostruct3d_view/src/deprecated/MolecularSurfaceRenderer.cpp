@@ -20,9 +20,12 @@
  */
 
 #include "MolecularSurfaceRenderer.h"
-#include "GraphicUtils.h"
-#include <U2Algorithm/MolecularSurface.h>
+
 #include <QtOpenGL>
+
+#include <U2Algorithm/MolecularSurface.h>
+
+#include "GraphicUtils.h"
 
 namespace U2 {
 
@@ -35,11 +38,11 @@ const QList<QString> MolecularSurfaceRendererRegistry::factoriesNames() {
     return getInstance()->factories.keys();
 }
 
-const MolecularSurfaceRendererFactory* MolecularSurfaceRendererRegistry::getFactory(const QString &name) {
+const MolecularSurfaceRendererFactory *MolecularSurfaceRendererRegistry::getFactory(const QString &name) {
     return getInstance()->factories.value(name, 0);
 }
 
-MolecularSurfaceRenderer* MolecularSurfaceRendererRegistry::createMSRenderer(const QString &name) {
+MolecularSurfaceRenderer *MolecularSurfaceRendererRegistry::createMSRenderer(const QString &name) {
     const MolecularSurfaceRendererFactory *fact = getFactory(name);
 
     if (fact) {
@@ -53,7 +56,7 @@ MolecularSurfaceRendererRegistry::MolecularSurfaceRendererRegistry() {
     registerFactories();
 }
 
-MolecularSurfaceRendererRegistry* MolecularSurfaceRendererRegistry::getInstance() {
+MolecularSurfaceRendererRegistry *MolecularSurfaceRendererRegistry::getInstance() {
     static MolecularSurfaceRendererRegistry *reg = new MolecularSurfaceRendererRegistry();
     return reg;
 }
@@ -64,13 +67,11 @@ void MolecularSurfaceRendererRegistry::registerFactories() {
     REGISTER_FACTORY(ConvexMapRenderer);
 }
 
-
 const QString DotsRenderer::ID(QObject::tr("Dots"));
 const QString ConvexMapRenderer::ID(QObject::tr("Convex Map"));
 
 /* class DotsRenderer : public MolecularSurfaceRenderer */
-void DotsRenderer::drawSurface( MolecularSurface& surface )
-{
+void DotsRenderer::drawSurface(MolecularSurface &surface) {
     GLboolean ligting = glIsEnabled(GL_LIGHTING);
     glDisable(GL_LIGHTING);
 
@@ -78,7 +79,7 @@ void DotsRenderer::drawSurface( MolecularSurface& surface )
     glColor3f(1.0f, 1.0f, 1.0f);
 
     glBegin(GL_POINTS);
-    foreach(const Face& face, surface.getFaces()) {
+    foreach (const Face &face, surface.getFaces()) {
         float vct[3][3] = {
             {
                 static_cast<float>(face.v[0].x),
@@ -106,19 +107,18 @@ void DotsRenderer::drawSurface( MolecularSurface& surface )
     }
     glEnd();
 
-    if (ligting) glEnable(GL_LIGHTING);
+    if (ligting)
+        glEnable(GL_LIGHTING);
     CHECK_GL_ERROR;
 }
 
-
 /* class ConvexMapRenderer : public MolecularSurfaceRenderer */
-void ConvexMapRenderer::drawSurface( MolecularSurface& surface )
-{
+void ConvexMapRenderer::drawSurface(MolecularSurface &surface) {
     static GLfloat wall_mat[] = {1.f, 1.f, 1.f, 0.3f};
     glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, wall_mat);
 
     glBegin(GL_TRIANGLES);
-    foreach(const Face& face, surface.getFaces()) {
+    foreach (const Face &face, surface.getFaces()) {
         glNormal3f(face.n[0].x, face.n[0].y, face.n[0].z);
         glVertex3f(face.v[0].x, face.v[0].y, face.v[0].z);
         glNormal3f(face.n[1].x, face.n[1].y, face.n[1].z);
@@ -126,8 +126,8 @@ void ConvexMapRenderer::drawSurface( MolecularSurface& surface )
         glNormal3f(face.n[2].x, face.n[2].y, face.n[2].z);
         glVertex3f(face.v[2].x, face.v[2].y, face.v[2].z);
     }
-    glEnd( );
+    glEnd();
     CHECK_GL_ERROR;
 }
 
-} // namespace
+}    // namespace U2

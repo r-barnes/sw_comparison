@@ -22,31 +22,33 @@
 #ifndef _U2_EXPORT_IMAGE_PAINTER_H_
 #define _U2_EXPORT_IMAGE_PAINTER_H_
 
+#include <QPainter>
+
 #include <U2Core/U2OpStatus.h>
 #include <U2Core/U2Region.h>
 #include <U2Core/U2SafePoints.h>
-
-#include <QPainter>
 
 namespace U2 {
 
 class CustomExportSettings : public QObject {
     Q_OBJECT
 public:
-    virtual ~CustomExportSettings() {}
+    virtual ~CustomExportSettings() {
+    }
 signals:
     void si_changed();
 };
 
 class ExportImagePainter : public QObject {
 public:
-    virtual ~ExportImagePainter() {}
+    virtual ~ExportImagePainter() {
+    }
 
-    virtual void    paint(QPainter& p, CustomExportSettings* settings) const = 0;
-    virtual QSize   getImageSize(CustomExportSettings* settings) const = 0;
-    virtual bool    canPaintSvg(CustomExportSettings* settings, U2OpStatus &os) const = 0;
+    virtual void paint(QPainter &p, CustomExportSettings *settings) const = 0;
+    virtual QSize getImageSize(CustomExportSettings *settings) const = 0;
+    virtual bool canPaintSvg(CustomExportSettings *settings, U2OpStatus &os) const = 0;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_EXPORT_IMAGE_PAINTER_H_
+#endif    // _U2_EXPORT_IMAGE_PAINTER_H_

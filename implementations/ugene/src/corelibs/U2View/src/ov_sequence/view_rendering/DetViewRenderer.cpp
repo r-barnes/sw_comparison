@@ -20,19 +20,18 @@
  */
 
 #include "DetViewRenderer.h"
-#include "DetViewSingleLineRenderer.h"
-#include "DetViewMultiLineRenderer.h"
 
 #include <U2View/ADVSequenceObjectContext.h>
 #include <U2View/DetView.h>
 
+#include "DetViewMultiLineRenderer.h"
+#include "DetViewSingleLineRenderer.h"
 
 namespace U2 {
 
-DetViewRenderer::DetViewRenderer(DetView* detView, SequenceObjectContext* ctx)
+DetViewRenderer::DetViewRenderer(DetView *detView, SequenceObjectContext *ctx)
     : SequenceViewAnnotatedRenderer(ctx),
       detView(detView) {
-
 }
 
 double DetViewRenderer::getCurrentScale() const {
@@ -43,7 +42,7 @@ qint64 DetViewRenderer::getSymbolsPerLine(const qint64 width) const {
     return width / commonMetrics.charWidth;
 }
 
-DetViewRenderer* DetViewRendererFactory::createRenderer(DetView *detView, SequenceObjectContext *ctx, bool multiLine) {
+DetViewRenderer *DetViewRendererFactory::createRenderer(DetView *detView, SequenceObjectContext *ctx, bool multiLine) {
     if (multiLine) {
         return new DetViewMultiLineRenderer(detView, ctx);
     } else {
@@ -51,4 +50,4 @@ DetViewRenderer* DetViewRendererFactory::createRenderer(DetView *detView, Sequen
     }
 }
 
-} // namespace
+}    // namespace U2

@@ -35,13 +35,13 @@ class ExportMaConsensusTask;
 class MaExportConsensusWidget : public QWidget, private Ui_ExportConsensusWidget {
     Q_OBJECT
 public:
-    MaExportConsensusWidget(MaEditor* ma_, QWidget *parent = NULL);
+    MaExportConsensusWidget(MaEditor *ma_, QWidget *parent = NULL);
 
     void showHint(bool showHint);
 
 private slots:
     void sl_exportClicked();
-    void sl_consensusChanged(const QString& algoId);
+    void sl_consensusChanged(const QString &algoId);
     void sl_exportTaskStateChanged();
 
 private:
@@ -54,6 +54,6 @@ private:
     QSet<QString> exportTaskUrls;
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

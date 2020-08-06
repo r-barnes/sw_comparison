@@ -45,14 +45,14 @@ public:
 
 protected:
     FormatCheckResult checkRawTextData(const QByteArray &rawData, const GUrl &url = GUrl()) const;
-    Document * loadTextDocument(IOAdapter *io, const U2DbiRef &targetDb, const QVariantMap &hints, U2OpStatus &os);
+    Document *loadTextDocument(IOAdapter *io, const U2DbiRef &targetDb, const QVariantMap &hints, U2OpStatus &os);
 
 private:
     QList<ColumnDataParser::Column> getColumns() const;
     QString getAnnotationName() const;
     QList<SharedAnnotationData> parseAnnotations(IOAdapter *io, U2OpStatus &os);
     QList<SharedAnnotationData> parseAnnotations(const ColumnDataParser &parser, IOAdapter *io, QByteArray &buffer, U2OpStatus &os);
-    QList<ColumnDataParser::Column> getHeaderColumns(const QList<GObject*> &anns, U2OpStatus &os);
+    QList<ColumnDataParser::Column> getHeaderColumns(const QList<GObject *> &anns, U2OpStatus &os);
     void writeHeader(IOAdapter *io, const QList<ColumnDataParser::Column> &columns);
 
     static QString readLine(IOAdapter *io, QByteArray &buffer, U2OpStatus &os);
@@ -64,6 +64,6 @@ private:
     static const int BUFFER_SIZE;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_DIFFERENTIALFORMAT_H_
+#endif    // _U2_DIFFERENTIALFORMAT_H_

@@ -22,49 +22,46 @@
 #include <qglobal.h>
 #ifdef Q_OS_WIN
 
-#include <QDir>
+#    include <client/windows/handler/exception_handler.h>
 
-#include <client/windows/handler/exception_handler.h>
+#    include <QDir>
 
-#include <U2Core/AppContext.h>
-#include <U2Core/U2SafePoints.h>
+#    include <U2Core/AppContext.h>
+#    include <U2Core/U2SafePoints.h>
 
-#include "CrashHandler.h"
-#include "CrashHandlerArgsHelper.h"
-#include "CrashHandlerPrivateWin.h"
+#    include "CrashHandler.h"
+#    include "CrashHandlerArgsHelper.h"
+#    include "CrashHandlerPrivateWin.h"
 
-#if defined(Q_OS_WIN32)
-#ifdef UGENE_X86_64 //see http://social.msdn.microsoft.com/Forums/en-US/vcgeneral/thread/4dc15026-884c-4f8a-8435-09d0111d708d/
-extern "C"
-{
+#    if defined(Q_OS_WIN32)
+#        ifdef UGENE_X86_64    //see http://social.msdn.microsoft.com/Forums/en-US/vcgeneral/thread/4dc15026-884c-4f8a-8435-09d0111d708d/
+extern "C" {
 void rollbackStack();
 }
-#endif
-#endif
+#        endif
+#    endif
 
 namespace U2 {
 
 CrashHandlerPrivateWin::CrashHandlerPrivateWin()
     : CrashHandlerPrivate(),
       crashDirWasSucessfullyCreated(false),
-      dumpWasSuccessfullySaved(false)
-{
-
+      dumpWasSuccessfullySaved(false) {
 }
 
-CrashHandlerPrivateWin::~CrashHandlerPrivateWin()  {
+CrashHandlerPrivateWin::~CrashHandlerPrivateWin() {
     shutdown();
 }
 
 void CrashHandlerPrivateWin::setupHandler() {
-#ifndef _DEBUG
+#    ifndef _DEBUG
     const QString dumpDir = QDir::tempPath() + "/ugene_crashes";
     if (!QDir().exists(dumpDir)) {
         crashDirWasSucessfullyCreated = QDir().mkpath(dumpDir);
     }
 
     breakpadHandler = new google_breakpad::ExceptionHandler(dumpDir.toStdWString(), NULL, breakpadCallback, this, google_breakpad::ExceptionHandler::HANDLER_ALL);
-#endif
+#    endif
 }
 
 void CrashHandlerPrivateWin::shutdown() {
@@ -102,9 +99,9 @@ bool CrashHandlerPrivateWin::breakpadCallback(const wchar_t *dump_path,
     }
 
     CrashHandlerPrivateWin *privateHandler = static_cast<CrashHandlerPrivateWin *>(context);
-#ifdef Q_OS_WIN64
+#    ifdef Q_OS_WIN64
     privateHandler->walkStack(exinfo);
-#endif
+#    endif
     privateHandler->dumpWasSuccessfullySaved = succeeded;
 
     handleException(privateHandler->getExceptionText(exinfo), dumpPath);
@@ -113,22 +110,22 @@ bool CrashHandlerPrivateWin::breakpadCallback(const wchar_t *dump_path,
 
 void CrashHandlerPrivateWin::walkStack(EXCEPTION_POINTERS *exinfo) {
     if (exinfo->ExceptionRecord->ExceptionCode == EXCEPTION_STACK_OVERFLOW) {
-#if defined(Q_OS_WIN32)
-#ifdef UGENE_X86 //see http://social.msdn.microsoft.com/Forums/en-US/vcgeneral/thread/4dc15026-884c-4f8a-8435-09d0111d708d/
-        _asm add esp, 10240; //roll back stack and current frame pointer
-#else
-        rollbackStack();//TODO:need hack for x86_64
-#endif
-#endif
+#    if defined(Q_OS_WIN32)
+#        ifdef UGENE_X86    //see http://social.msdn.microsoft.com/Forums/en-US/vcgeneral/thread/4dc15026-884c-4f8a-8435-09d0111d708d/
+        _asm add esp, 10240;    //roll back stack and current frame pointer
+#        else
+        rollbackStack();    //TODO:need hack for x86_64
+#        endif
+#    endif
     }
-    st.ShowCallstack(OpenThread(READ_CONTROL ,false , breakpadHandler->get_requesting_thread_id()), exinfo->ContextRecord);
+    st.ShowCallstack(OpenThread(READ_CONTROL, false, breakpadHandler->get_requesting_thread_id()), exinfo->ContextRecord);
 }
 
 QString CrashHandlerPrivateWin::getExceptionText(EXCEPTION_POINTERS *exinfo) {
     QString exceptionText = "Unhandled exception";
     CHECK(NULL != exinfo, "C++ exception|" + exceptionText);
 
-    switch(exinfo->ExceptionRecord->ExceptionCode) {
+    switch (exinfo->ExceptionRecord->ExceptionCode) {
     case EXCEPTION_ACCESS_VIOLATION:
         exceptionText = "Access violation";
         break;
@@ -198,13 +195,12 @@ QString CrashHandlerPrivateWin::getExceptionText(EXCEPTION_POINTERS *exinfo) {
     case CONTROL_C_EXIT:
         exceptionText = "Control C exit";
         break;
-    default:
-        ;   // Do nothing
+    default:;    // Do nothing
     }
 
     return "C++ exception|" + exceptionText;
 }
 
-}   // namespace U2
+}    // namespace U2
 
 #endif

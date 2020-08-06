@@ -22,20 +22,22 @@
 #ifndef U2_SELECTMODELSDIALOG_H
 #define U2_SELECTMODELSDIALOG_H
 
-#include "ui_SelectModelsDialog.h"
 #include <QDialog>
+
+#include "ui_SelectModelsDialog.h"
 
 namespace U2 {
 
-class SelectModelsDialog : public QDialog, public Ui_SelectModelsDialog
-{
+class SelectModelsDialog : public QDialog, public Ui_SelectModelsDialog {
     Q_OBJECT
 
 public:
     SelectModelsDialog(const QList<int> &modelIds, const QList<int> &selectedItems, QWidget *parent = 0);
     ~SelectModelsDialog();
 
-    const QList<int> &getSelectedModelsIndexes() const { return selectedModelsIndexes; }
+    const QList<int> &getSelectedModelsIndexes() const {
+        return selectedModelsIndexes;
+    }
 
 public slots:
     virtual void accept();
@@ -49,6 +51,6 @@ private:
     QList<int> selectedModelsIndexes;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif  // #ifndef U2_SELECTMODELSDIALOG_H
+#endif    // #ifndef U2_SELECTMODELSDIALOG_H

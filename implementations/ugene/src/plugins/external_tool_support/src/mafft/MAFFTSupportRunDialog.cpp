@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "MAFFTSupportRunDialog.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 #include <QToolButton>
@@ -32,17 +34,14 @@
 #include <U2Gui/SaveDocumentController.h>
 #include <U2Gui/U2FileDialog.h>
 
-#include "MAFFTSupportRunDialog.h"
-
 namespace U2 {
 
 ////////////////////////////////////////
 //MAFFTSupportRunDialog
-MAFFTSupportRunDialog::MAFFTSupportRunDialog(MAFFTSupportTaskSettings& _settings, QWidget* _parent) :
-    QDialog(_parent), settings(_settings)
-{
+MAFFTSupportRunDialog::MAFFTSupportRunDialog(MAFFTSupportTaskSettings &_settings, QWidget *_parent)
+    : QDialog(_parent), settings(_settings) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742624");
+    new HelpButton(this, buttonBox, "46501190");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Align"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -50,14 +49,14 @@ MAFFTSupportRunDialog::MAFFTSupportRunDialog(MAFFTSupportTaskSettings& _settings
     this->adjustSize();
 }
 
-void MAFFTSupportRunDialog::accept(){
-    if(gapOpenCheckBox->isChecked()) {
+void MAFFTSupportRunDialog::accept() {
+    if (gapOpenCheckBox->isChecked()) {
         settings.gapOpenPenalty = gapOpenSpinBox->value();
     }
-    if(gapExtCheckBox->isChecked()) {
+    if (gapExtCheckBox->isChecked()) {
         settings.gapExtenstionPenalty = gapExtSpinBox->value();
     }
-    if(maxNumberIterRefinementCheckBox->isChecked()){
+    if (maxNumberIterRefinementCheckBox->isChecked()) {
         settings.maxNumberIterRefinement = maxNumberIterRefinementSpinBox->value();
     }
     QDialog::accept();
@@ -65,13 +64,12 @@ void MAFFTSupportRunDialog::accept(){
 
 ////////////////////////////////////////
 //MAFFTWithExtFileSpecifySupportRunDialog
-MAFFTWithExtFileSpecifySupportRunDialog::MAFFTWithExtFileSpecifySupportRunDialog(MAFFTSupportTaskSettings& _settings, QWidget* _parent) :
-    QDialog(_parent),
-    settings(_settings),
-    saveController(NULL)
-{
+MAFFTWithExtFileSpecifySupportRunDialog::MAFFTWithExtFileSpecifySupportRunDialog(MAFFTSupportTaskSettings &_settings, QWidget *_parent)
+    : QDialog(_parent),
+      settings(_settings),
+      saveController(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742624");
+    new HelpButton(this, buttonBox, "46501190");
 
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Align"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -83,8 +81,7 @@ MAFFTWithExtFileSpecifySupportRunDialog::MAFFTWithExtFileSpecifySupportRunDialog
 
 void MAFFTWithExtFileSpecifySupportRunDialog::sl_inputPathButtonClicked() {
     LastUsedDirHelper lod;
-    lod.url = U2FileDialog::getOpenFileName(this, tr("Open an alignment file"), lod.dir,
-        DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT, true));
+    lod.url = U2FileDialog::getOpenFileName(this, tr("Open an alignment file"), lod.dir, DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT, true));
     if (lod.url.isEmpty()) {
         return;
     }
@@ -105,28 +102,25 @@ void MAFFTWithExtFileSpecifySupportRunDialog::initSaveController() {
     saveController = new SaveDocumentController(config, formats, this);
 }
 
-void MAFFTWithExtFileSpecifySupportRunDialog::accept(){
-    if(gapOpenCheckBox->isChecked()) {
+void MAFFTWithExtFileSpecifySupportRunDialog::accept() {
+    if (gapOpenCheckBox->isChecked()) {
         settings.gapOpenPenalty = gapOpenSpinBox->value();
     }
-    if(gapExtCheckBox->isChecked()) {
+    if (gapExtCheckBox->isChecked()) {
         settings.gapExtenstionPenalty = gapExtSpinBox->value();
     }
-    if(maxNumberIterRefinementCheckBox->isChecked()){
+    if (maxNumberIterRefinementCheckBox->isChecked()) {
         settings.maxNumberIterRefinement = maxNumberIterRefinementSpinBox->value();
     }
-    if(inputFileLineEdit->text().isEmpty()){
-        QMessageBox::information(this, tr("Kalign with Align"),
-                                 tr("Input file is not set!") );
-    }else if(saveController->getSaveFileName().isEmpty()){
-        QMessageBox::information(this, tr("Kalign with Align"),
-                                 tr("Output file is not set!") );
-    }
-    else{
+    if (inputFileLineEdit->text().isEmpty()) {
+        QMessageBox::information(this, tr("Kalign with Align"), tr("Input file is not set!"));
+    } else if (saveController->getSaveFileName().isEmpty()) {
+        QMessageBox::information(this, tr("Kalign with Align"), tr("Output file is not set!"));
+    } else {
         settings.outputFilePath = saveController->getSaveFileName();
         settings.inputFilePath = inputFileLineEdit->text();
         QDialog::accept();
     }
 }
 
-}//namespace
+}    // namespace U2

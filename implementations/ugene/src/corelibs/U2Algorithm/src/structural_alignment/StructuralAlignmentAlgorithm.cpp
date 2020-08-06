@@ -31,8 +31,7 @@ QString BioStruct3DReference::print() const {
         int chainId = chains.first();
         s += QString(" chain %1").arg(chainId);
         s += QString(" region %1..%2").arg(chainRegion.startPos + 1).arg(chainRegion.endPos());
-    }
-    else {
+    } else {
         s += " chains [";
         foreach (int chain, chains) {
             s += QString::number(chain) + ",";
@@ -47,8 +46,8 @@ QString BioStruct3DReference::print() const {
 
 /* class U2ALGORITHM_EXPORT StructuralAlignmentTask : public Task */
 StructuralAlignmentTask::StructuralAlignmentTask(StructuralAlignmentAlgorithm *_algorithm, const StructuralAlignmentTaskSettings &_settings)
-        : Task("StructuralAlignmentTask", TaskFlag_ReportingIsSupported | TaskFlag_ReportingIsEnabled), algorithm(_algorithm), settings(_settings), result()
-{}
+    : Task("StructuralAlignmentTask", TaskFlag_ReportingIsSupported | TaskFlag_ReportingIsEnabled), algorithm(_algorithm), settings(_settings), result() {
+}
 
 void StructuralAlignmentTask::run() {
     result = algorithm->align(settings, stateInfo);
@@ -66,25 +65,24 @@ QString StructuralAlignmentTask::generateReport() const {
         res += QString("<b>RMSD</b> = %1").arg(result.rmsd);
 
         res += "<table><tr><td>";
-            res += "<b>Transform</b> = ";
+        res += "<b>Transform</b> = ";
         res += "</td><td>";
-            res += "<table>";
-                res += "<tr>";
-                for (int i = 0; i < 16; ++i) {
-                    res += "<td>" + QString::number(result.transform[i]) + "</td>";
-                    if ((i+1) % 4 == 0 && i < 15) {
-                        res += "<\tr><tr>";
-                    }
-                }
-                res += "</tr>";
-            res += "</table>";
+        res += "<table>";
+        res += "<tr>";
+        for (int i = 0; i < 16; ++i) {
+            res += "<td>" + QString::number(result.transform[i]) + "</td>";
+            if ((i + 1) % 4 == 0 && i < 15) {
+                res += "<\tr><tr>";
+            }
+        }
+        res += "</tr>";
+        res += "</table>";
         res += "</td></tr></table>";
-    }
-    else {
+    } else {
         res += QString("Structural alignment on <b>%1</b> (reference) vs <b>%2</b> failed").arg(settings.ref.print(), settings.alt.print());
     }
 
     return res;
 }
 
-}   // namespace U2
+}    // namespace U2

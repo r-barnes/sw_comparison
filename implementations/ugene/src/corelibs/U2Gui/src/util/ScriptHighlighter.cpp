@@ -24,26 +24,30 @@
 namespace U2 {
 
 ScriptHighlighter::ScriptHighlighter(QTextDocument *parent)
-    : QSyntaxHighlighter(parent)
-{
+    : QSyntaxHighlighter(parent) {
     HighlightingRule rule;
 
     keywordFormat.setForeground(Qt::darkBlue);
     keywordFormat.setFontWeight(QFont::Bold);
     QStringList keywordPatterns;
-    keywordPatterns << "\\bvar\\b" << "\\bArray\\b" << "\\bfunction\\b"
-        << "\\breturn\\b" << "\\barguments\\b" << "\\bif\\b"
-        << "\\belse\\b" << "\\bfor\\b" << "\\bswitch\\b"
-        << "\\bcase\\b" << "\\bbreak\\b" << "\\bwhile\\b";
-
+    keywordPatterns << "\\bvar\\b"
+                    << "\\bArray\\b"
+                    << "\\bfunction\\b"
+                    << "\\breturn\\b"
+                    << "\\barguments\\b"
+                    << "\\bif\\b"
+                    << "\\belse\\b"
+                    << "\\bfor\\b"
+                    << "\\bswitch\\b"
+                    << "\\bcase\\b"
+                    << "\\bbreak\\b"
+                    << "\\bwhile\\b";
 
     foreach (const QString &pattern, keywordPatterns) {
         rule.pattern = QRegExp(pattern);
         rule.format = keywordFormat;
         highlightingRules.append(rule);
     }
-
-
 
     // Values
     QTextCharFormat valueFormat;
@@ -110,4 +114,4 @@ void ScriptHighlighter::highlightBlock(const QString &text) {
     }
 }
 
-} // namespace U2
+}    // namespace U2

@@ -22,16 +22,19 @@
 #ifndef _U2_ORF_MARKER_TESTS_H_
 #define _U2_ORF_MARKER_TESTS_H_
 
-#include <U2Test/XMLTestUtils.h>
-#include <U2Core/GObject.h>
 #include <QDomElement>
-#include <U2Core/U2Region.h>
-#include <U2View/AnnotatedDNAView.h>
+
 #include <U2Algorithm/ORFAlgorithmTask.h>
 
+#include <U2Core/AppContext.h>
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/DNATranslation.h>
-#include <U2Core/AppContext.h>
+#include <U2Core/GObject.h>
+#include <U2Core/U2Region.h>
+
+#include <U2Test/XMLTestUtils.h>
+
+#include <U2View/AnnotatedDNAView.h>
 
 namespace U2 {
 
@@ -42,6 +45,7 @@ public:
 
     void prepare();
     Task::ReportResult report();
+
 private:
     QString seqName;
     QString translationId;
@@ -53,19 +57,22 @@ private:
 //FIXME! this class is a partial copy of DetView
 class Translator {
 public:
-    Translator(const U2SequenceObject *s, const QString& tid);
+    Translator(const U2SequenceObject *s, const QString &tid);
 
     //void setAminoTranslation(const QString& id);
-    DNATranslation* getComplTranslation() const {return complTransl;}
-    DNATranslation* getAminoTranslation() const {return aminoTransl;}
+    DNATranslation *getComplTranslation() const {
+        return complTransl;
+    }
+    DNATranslation *getAminoTranslation() const {
+        return aminoTransl;
+    }
 
 private:
     //QStringList translations;
-    const U2SequenceObject* seq;
-    DNATranslation* complTransl;
-    DNATranslation* aminoTransl;
+    const U2SequenceObject *seq;
+    DNATranslation *complTransl;
+    DNATranslation *aminoTransl;
 };
 
-} //namespace
+}    // namespace U2
 #endif
-

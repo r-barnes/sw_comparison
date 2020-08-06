@@ -40,9 +40,9 @@ class U2ALGORITHM_EXPORT MsaHighlightingSchemeGapsFactory : public MsaHighlighti
 public:
     MsaHighlightingSchemeGapsFactory(QObject *parent, const QString &id, const QString &name, const AlphabetFlags &supportedAlphabets);
 
-    MsaHighlightingScheme * create(QObject *parent, MultipleAlignmentObject *maObj) const;
+    MsaHighlightingScheme *create(QObject *parent, MultipleAlignmentObject *maObj) const;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MSA_HIGHLIGHTING_SCHEME_GAPS_H_
+#endif    // _U2_MSA_HIGHLIGHTING_SCHEME_GAPS_H_

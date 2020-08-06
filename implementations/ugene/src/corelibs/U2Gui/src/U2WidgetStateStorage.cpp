@@ -19,6 +19,8 @@
 * MA 02110-1301, USA.
 */
 
+#include "U2WidgetStateStorage.h"
+
 #include <QWidget>
 
 #include <U2Core/AppContext.h>
@@ -28,8 +30,6 @@
 #include <U2Gui/MainWindow.h>
 #include <U2Gui/U2SavableWidget.h>
 
-#include "U2WidgetStateStorage.h"
-
 namespace U2 {
 
 //////////////////////////////////////////////////////////////////////////
@@ -37,12 +37,10 @@ namespace U2 {
 //////////////////////////////////////////////////////////////////////////
 
 WidgetParamSnapshot::WidgetParamSnapshot(const QString &widgetId)
-    : widgetId(widgetId)
-{
-
+    : widgetId(widgetId) {
 }
 
-const QString & WidgetParamSnapshot::getWidgetId() const {
+const QString &WidgetParamSnapshot::getWidgetId() const {
     return widgetId;
 }
 
@@ -111,4 +109,4 @@ WidgetParamSnapshot U2WidgetStateStorage::findWidgetParams(const U2SavableWidget
     return WidgetParamSnapshot();
 }
 
-} // namespace U2
+}    // namespace U2

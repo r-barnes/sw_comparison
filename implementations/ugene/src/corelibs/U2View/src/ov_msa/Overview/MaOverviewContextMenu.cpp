@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "MaOverviewContextMenu.h"
+
 #include <QColorDialog>
 
 #include <U2Core/GUrlUtils.h>
@@ -29,19 +31,17 @@
 #include <U2Gui/ExportImageDialog.h>
 #include <U2Gui/MainWindow.h>
 
-#include "MaOverviewContextMenu.h"
 #include "MaOverviewImageExportTask.h"
 #include "MaSimpleOverview.h"
-#include "ov_msa/MaEditor.h"
 #include "ov_msa/MSAEditorOverviewArea.h"
+#include "ov_msa/MaEditor.h"
 
 namespace U2 {
 
 MaOverviewContextMenu::MaOverviewContextMenu(QWidget *parent, MaSimpleOverview *sOverview, MaGraphOverview *gOverview)
     : QMenu(parent),
       simpleOverview(sOverview),
-      graphOverview(gOverview)
-{
+      graphOverview(gOverview) {
     SAFE_POINT(simpleOverview != NULL, tr("Overview is NULL"), );
     SAFE_POINT(graphOverview != NULL, tr("Graph overview is NULL"), );
 
@@ -61,25 +61,23 @@ MaOverviewContextMenu::MaOverviewContextMenu(QWidget *parent, MaSimpleOverview *
 }
 
 void MaOverviewContextMenu::connectSlots() {
-
     connect(showSimpleOverviewAction, SIGNAL(toggled(bool)), simpleOverview, SLOT(setVisible(bool)));
 
     connect(exportAsImage, SIGNAL(triggered()), SLOT(sl_exportAsImageTriggered()));
     connect(graphOverview, SIGNAL(si_renderingStateChanged(bool)), exportAsImage, SLOT(setDisabled(bool)));
 
-    connect(graphTypeActionGroup, SIGNAL(triggered(QAction*)), SLOT(sl_graphTypeActionTriggered(QAction*)));
+    connect(graphTypeActionGroup, SIGNAL(triggered(QAction *)), SLOT(sl_graphTypeActionTriggered(QAction *)));
 
-    connect(orientationActionGroup, SIGNAL(triggered(QAction*)), SLOT(sl_graphOrientationActionTriggered(QAction*)));
+    connect(orientationActionGroup, SIGNAL(triggered(QAction *)), SLOT(sl_graphOrientationActionTriggered(QAction *)));
 
     connect(colorAction, SIGNAL(triggered()), SLOT(sl_colorActionTriggered()));
 
-    connect(calculationMethodActionGroup, SIGNAL(triggered(QAction*)), SLOT(sl_caclulationMethodActionTriggered(QAction*)));
-
+    connect(calculationMethodActionGroup, SIGNAL(triggered(QAction *)), SLOT(sl_caclulationMethodActionTriggered(QAction *)));
 }
 
 void MaOverviewContextMenu::sl_exportAsImageTriggered() {
     MaOverviewImageExportController factory(simpleOverview, graphOverview);
-    QWidget *p = (QWidget*)AppContext::getMainWindow()->getQMainWindow();
+    QWidget *p = (QWidget *)AppContext::getMainWindow()->getQMainWindow();
     const QString fileName = GUrlUtils::fixFileName(graphOverview->getEditor()->getMaObject()->getGObjectName());
     QObjectScopedPointer<ExportImageDialog> dialog = new ExportImageDialog(&factory, ExportImageDialog::MSA, fileName, ExportImageDialog::NoScaling, p);
     dialog->exec();
@@ -139,7 +137,7 @@ void MaOverviewContextMenu::sl_caclulationMethodActionTriggered(QAction *action)
 void MaOverviewContextMenu::initSimpleOverviewAction() {
     showSimpleOverviewAction = createCheckableAction(tr("Show simple overview"));
     showSimpleOverviewAction->setObjectName("Show simple overview");
-    showSimpleOverviewAction->setChecked( simpleOverview->isVisible() );
+    showSimpleOverviewAction->setChecked(simpleOverview->isVisible());
     addAction(showSimpleOverviewAction);
 }
 
@@ -170,7 +168,6 @@ void MaOverviewContextMenu::initCalculationMethodMenu() {
     gapMethodAction->setObjectName("Gaps");
     clustalMethodAction->setObjectName("Clustal");
     highlightingMethodAction->setObjectName("Highlighting");
-
 
     switch (graphOverview->getCurrentCalculationMethod()) {
     case Strict:
@@ -236,8 +233,8 @@ void MaOverviewContextMenu::initOrientationSubmenu() {
     }
 }
 
-QAction* MaOverviewContextMenu::createCheckableAction(const QString &text, QActionGroup* group) {
-    QAction* a = new QAction(text, this);
+QAction *MaOverviewContextMenu::createCheckableAction(const QString &text, QActionGroup *group) {
+    QAction *a = new QAction(text, this);
     a->setCheckable(true);
 
     if (group != NULL) {
@@ -247,4 +244,4 @@ QAction* MaOverviewContextMenu::createCheckableAction(const QString &text, QActi
     return a;
 }
 
-} // namespace
+}    // namespace U2

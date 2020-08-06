@@ -19,21 +19,21 @@
  * MA 02110-1301, USA.
  */
 
-#include <QtOpenGL>
 #include <time.h>
 
+#include <QtOpenGL>
+
 #include <U2Core/BioStruct3D.h>
-#include <U2Formats/PDBFormat.h>
-
-#include "GraphicUtils.h"
-#include "BioStruct3DGLWidget.h"
-#include "BioStruct3DColorScheme.h"
-#include "BallAndStickGLRenderer.h"
-
 #include <U2Core/Log.h>
 
-namespace U2 {
+#include <U2Formats/PDBFormat.h>
 
+#include "BallAndStickGLRenderer.h"
+#include "BioStruct3DColorScheme.h"
+#include "BioStruct3DGLWidget.h"
+#include "GraphicUtils.h"
+
+namespace U2 {
 
 const QString BallAndStickGLRenderer::ID(QObject::tr("Ball-and-Stick"));
 QList<GLuint> BallAndStickGLRenderer::dlIndexStorage;
@@ -41,20 +41,18 @@ QMutex BallAndStickGLRenderer::mutex;
 
 #define MAX_OPEN_VIEWS_NUMBER 8086
 
-BallAndStickGLRenderer::BallAndStickGLRenderer(const BioStruct3D& struc, const BioStruct3DColorScheme* s, const QList<int> &shownModels, const BioStruct3DRendererSettings *settings)
-    : BioStruct3DGLRenderer(struc,s,shownModels,settings)
-{
+BallAndStickGLRenderer::BallAndStickGLRenderer(const BioStruct3D &struc, const BioStruct3DColorScheme *s, const QList<int> &shownModels, const BioStruct3DRendererSettings *settings)
+    : BioStruct3DGLRenderer(struc, s, shownModels, settings) {
     {
         QMutexLocker lock(&mutex);
         if (dlIndexStorage.size() == 0) {
             dl = glGenLists(MAX_OPEN_VIEWS_NUMBER);
-            for (GLuint idx = dl+1; idx <= dl + MAX_OPEN_VIEWS_NUMBER; ++idx) {
+            for (GLuint idx = dl + 1; idx <= dl + MAX_OPEN_VIEWS_NUMBER; ++idx) {
                 dlIndexStorage.push_back(idx);
             }
         } else {
             dl = dlIndexStorage.takeFirst();
         }
-
     }
 
     create();
@@ -67,7 +65,6 @@ BallAndStickGLRenderer::~BallAndStickGLRenderer() {
 
     QMutexLocker lock(&mutex);
     dlIndexStorage.push_back(dl);
-
 }
 
 void BallAndStickGLRenderer::create() {
@@ -95,8 +92,7 @@ void BallAndStickGLRenderer::updateSettings() {
     createDisplayList();
 }
 
-static void drawAtomsBonds(const Color4f &viewAtomColor, float renderDetailLevel, const Molecule3DModel &model, const BioStruct3DColorScheme* colorScheme)
-{
+static void drawAtomsBonds(const Color4f &viewAtomColor, float renderDetailLevel, const Molecule3DModel &model, const BioStruct3DColorScheme *colorScheme) {
     GLUquadricObj *pObj = gluNewQuadric();
     gluQuadricNormals(pObj, GLU_SMOOTH);
 
@@ -106,10 +102,9 @@ static void drawAtomsBonds(const Color4f &viewAtomColor, float renderDetailLevel
     float radius = 0.35f;
     int numSlices = 8 * renderDetailLevel;
 
-    foreach(const SharedAtom atom, model.atoms) {
+    foreach (const SharedAtom atom, model.atoms) {
         Color4f atomColor = colorScheme->getAtomColor(atom);
-        if (viewAtomColor==atomColor)
-        {
+        if (viewAtomColor == atomColor) {
             Vector3D pos = atom->coord3d;
             //glPushMatrix();
             glTranslatef(pos.x, pos.y, pos.z);
@@ -128,21 +123,16 @@ static void drawAtomsBonds(const Color4f &viewAtomColor, float renderDetailLevel
 
         Vector3D middle = (a1->coord3d + a2->coord3d) / 2;
 
-        if (a1Color==viewAtomColor)
-        {
-            if (a1Color==a2Color)
-            {
+        if (a1Color == viewAtomColor) {
+            if (a1Color == a2Color) {
                 //glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, a1Color);
                 glDrawCylinder(pObj, a1->coord3d, a2->coord3d, bondThickness, renderDetailLevel);
-            }
-            else
-            {
+            } else {
                 //glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, a1Color);
                 glDrawCylinder(pObj, a1->coord3d, middle, bondThickness, renderDetailLevel);
             }
         }
-        if (a2Color == viewAtomColor)
-        {
+        if (a2Color == viewAtomColor) {
             //glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, a2Color);
             glDrawCylinder(pObj, middle, a2->coord3d, bondThickness, renderDetailLevel);
         }
@@ -151,8 +141,7 @@ static void drawAtomsBonds(const Color4f &viewAtomColor, float renderDetailLevel
     gluDeleteQuadric(pObj);
 }
 
-void BallAndStickGLRenderer::createDisplayList()
-{
+void BallAndStickGLRenderer::createDisplayList() {
     if (glIsList(dl)) {
         glDeleteLists(dl, 1);
     }
@@ -165,19 +154,16 @@ void BallAndStickGLRenderer::createDisplayList()
 
     foreach (const SharedMolecule mol, bioStruct.moleculeMap) {
         foreach (int index, shownModels) {
-            const Molecule3DModel& model = mol->models.value(index);
+            const Molecule3DModel &model = mol->models.value(index);
 
             colors.clear();
 
-            foreach(const SharedAtom atom, model.atoms) {
+            foreach (const SharedAtom atom, model.atoms) {
                 Color4f atomColor = colorScheme->getAtomColor(atom);
 
-                if (colors.contains(atomColor))
-                {
-                    continue; // Atom and bonds with this color has been already viewed
-                }
-                else
-                {
+                if (colors.contains(atomColor)) {
+                    continue;    // Atom and bonds with this color has been already viewed
+                } else {
                     drawAtomsBonds(atomColor, renderDetailLevel, model, colorScheme);
                     colors.push_back(atomColor);
                 }
@@ -190,4 +176,4 @@ void BallAndStickGLRenderer::createDisplayList()
     CHECK_GL_ERROR;
 }
 
-} //namespace
+}    // namespace U2

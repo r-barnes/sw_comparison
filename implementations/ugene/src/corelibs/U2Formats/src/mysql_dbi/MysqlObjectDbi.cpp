@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "MysqlObjectDbi.h"
+
 #include <QCryptographicHash>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -32,7 +34,6 @@
 #include "MysqlFeatureDbi.h"
 #include "MysqlModDbi.h"
 #include "MysqlMsaDbi.h"
-#include "MysqlObjectDbi.h"
 #include "MysqlSequenceDbi.h"
 #include "MysqlUdrDbi.h"
 #include "util/MysqlHelpers.h"
@@ -41,13 +42,12 @@ namespace U2 {
 
 static const int OBJ_USAGE_CHECK_INTERVAL = 2 * U2ObjectDbi::OBJECT_ACCESS_UPDATE_INTERVAL / 1000;
 
-MysqlObjectDbi::MysqlObjectDbi(MysqlDbi* dbi) :
-    U2ObjectDbi(dbi),
-    MysqlChildDbiCommon(dbi)
-{
+MysqlObjectDbi::MysqlObjectDbi(MysqlDbi *dbi)
+    : U2ObjectDbi(dbi),
+      MysqlChildDbiCommon(dbi) {
 }
 
-void MysqlObjectDbi::initSqlSchema(U2OpStatus& os) {
+void MysqlObjectDbi::initSqlSchema(U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -55,19 +55,28 @@ void MysqlObjectDbi::initSqlSchema(U2OpStatus& os) {
     // rank: see U2DbiObjectRank
     // name is a visual name of the object shown to user.
     U2SqlQuery("CREATE TABLE Object (id BIGINT PRIMARY KEY AUTO_INCREMENT, type INTEGER NOT NULL, "
-                                    "version BIGINT NOT NULL DEFAULT 1, rank INTEGER NOT NULL, "
-                                    "name TEXT NOT NULL, trackMod INTEGER NOT NULL DEFAULT 0) ENGINE=InnoDB DEFAULT CHARSET=utf8", db, os).execute();
+               "version BIGINT NOT NULL DEFAULT 1, rank INTEGER NOT NULL, "
+               "name TEXT NOT NULL, trackMod INTEGER NOT NULL DEFAULT 0) ENGINE=InnoDB DEFAULT CHARSET=utf8",
+               db,
+               os)
+        .execute();
     CHECK_OP(os, );
 
     U2SqlQuery("CREATE TABLE ObjectAccessTrack (object BIGINT PRIMARY KEY, lastAccessTime TIMESTAMP, "
-                "FOREIGN KEY(object) REFERENCES Object(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8", db, os).execute();
+               "FOREIGN KEY(object) REFERENCES Object(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8",
+               db,
+               os)
+        .execute();
     CHECK_OP(os, );
 
     // parent-child object relation
     U2SqlQuery("CREATE TABLE Parent (parent BIGINT, child BIGINT, "
-                       "PRIMARY KEY (parent, child), "
-                       "FOREIGN KEY(parent) REFERENCES Object(id) ON DELETE CASCADE, "
-                       "FOREIGN KEY(child) REFERENCES Object(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8", db, os).execute();
+               "PRIMARY KEY (parent, child), "
+               "FOREIGN KEY(parent) REFERENCES Object(id) ON DELETE CASCADE, "
+               "FOREIGN KEY(child) REFERENCES Object(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8",
+               db,
+               os)
+        .execute();
     CHECK_OP(os, );
 
     U2SqlQuery("CREATE INDEX Parent_parent_child on Parent(parent, child)", db, os).execute();
@@ -76,14 +85,20 @@ void MysqlObjectDbi::initSqlSchema(U2OpStatus& os) {
 
     // folders
     U2SqlQuery("CREATE TABLE Folder (id BIGINT PRIMARY KEY AUTO_INCREMENT, path LONGTEXT NOT NULL, hash VARCHAR(32) UNIQUE NOT NULL, previousPath LONGTEXT, "
-               "vlocal BIGINT NOT NULL DEFAULT 1, vglobal BIGINT NOT NULL DEFAULT 1) ENGINE=InnoDB DEFAULT CHARSET=utf8", db, os).execute();
+               "vlocal BIGINT NOT NULL DEFAULT 1, vglobal BIGINT NOT NULL DEFAULT 1) ENGINE=InnoDB DEFAULT CHARSET=utf8",
+               db,
+               os)
+        .execute();
     CHECK_OP(os, );
 
     // folder-object relation
     U2SqlQuery("CREATE TABLE FolderContent (folder BIGINT, object BIGINT, "
-              "PRIMARY KEY (folder, object), "
-              "FOREIGN KEY(folder) REFERENCES Folder(id) ON DELETE CASCADE,"
-              "FOREIGN KEY(object) REFERENCES Object(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8", db, os).execute();
+               "PRIMARY KEY (folder, object), "
+               "FOREIGN KEY(folder) REFERENCES Folder(id) ON DELETE CASCADE,"
+               "FOREIGN KEY(object) REFERENCES Object(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8",
+               db,
+               os)
+        .execute();
     CHECK_OP(os, );
     U2SqlQuery("CREATE INDEX FolderContent_object on FolderContent(object)", db, os).execute();
     CHECK_OP(os, );
@@ -97,41 +112,40 @@ void MysqlObjectDbi::initSqlSchema(U2OpStatus& os) {
 // Read methods for objects
 #define TOP_LEVEL_FILTER ("rank = " + QString::number(U2DbiObjectRank_TopLevel))
 
-qint64 MysqlObjectDbi::countObjects(U2OpStatus& os) {
+qint64 MysqlObjectDbi::countObjects(U2OpStatus &os) {
     static const QString queryString = "SELECT COUNT (*) FROM Object WHERE " + TOP_LEVEL_FILTER;
     return U2SqlQuery(queryString, db, os).selectInt64();
 }
 
-qint64 MysqlObjectDbi::countObjects(U2DataType type, U2OpStatus& os) {
+qint64 MysqlObjectDbi::countObjects(U2DataType type, U2OpStatus &os) {
     static const QString queryString = "SELECT COUNT (*) FROM Object WHERE " + TOP_LEVEL_FILTER + " AND type = :type";
     U2SqlQuery q(queryString, db, os);
     q.bindType(":type", type);
     return q.selectInt64();
 }
 
-QList<U2DataId> MysqlObjectDbi::getObjects(qint64 offset, qint64 count, U2OpStatus& os) {
+QList<U2DataId> MysqlObjectDbi::getObjects(qint64 offset, qint64 count, U2OpStatus &os) {
     static const QString queryString = "SELECT id, type, '' FROM Object WHERE " + TOP_LEVEL_FILTER;
     return U2SqlQuery(queryString, offset, count, db, os).selectDataIdsExt();
 }
 
-QList<U2DataId> MysqlObjectDbi::getObjects(U2DataType type, qint64 offset, qint64 count, U2OpStatus& os) {
+QList<U2DataId> MysqlObjectDbi::getObjects(U2DataType type, qint64 offset, qint64 count, U2OpStatus &os) {
     static const QString queryString = "SELECT id, type, '' FROM Object WHERE " + TOP_LEVEL_FILTER + " AND type = :type";
-    U2SqlQuery q(queryString, offset, count, db, os );
+    U2SqlQuery q(queryString, offset, count, db, os);
     q.bindType(":type", type);
     return q.selectDataIdsExt();
 }
 
-QList<U2DataId> MysqlObjectDbi::getParents(const U2DataId& entityId, U2OpStatus& os) {
+QList<U2DataId> MysqlObjectDbi::getParents(const U2DataId &entityId, U2OpStatus &os) {
     static const QString queryString = "SELECT o.id AS id, o.type AS type, '' FROM Parent AS p, Object AS o WHERE p.parent = o.id AND p.child = :child";
     U2SqlQuery q(queryString, db, os);
     q.bindDataId(":child", entityId);
     return q.selectDataIdsExt();
 }
 
-U2DbiIterator<U2DataId>* MysqlObjectDbi::getObjectsByVisualName(const QString& visualName, U2DataType type, U2OpStatus& os) {
+U2DbiIterator<U2DataId> *MysqlObjectDbi::getObjectsByVisualName(const QString &visualName, U2DataType type, U2OpStatus &os) {
     bool checkType = (type != U2Type::Unknown);
-    static const QString query = "SELECT id, type FROM Object WHERE " + TOP_LEVEL_FILTER
-            + " AND name = :name " + (checkType ? "AND type = :type" : "" + QString(" ORDER BY id"));
+    static const QString query = "SELECT id, type FROM Object WHERE " + TOP_LEVEL_FILTER + " AND name = :name " + (checkType ? "AND type = :type" : "" + QString(" ORDER BY id"));
     QSharedPointer<U2SqlQuery> q(new U2SqlQuery(query, db, os));
     q->bindString(":name", visualName);
     if (checkType) {
@@ -141,11 +155,10 @@ U2DbiIterator<U2DataId>* MysqlObjectDbi::getObjectsByVisualName(const QString& v
     return new MysqlRSIterator<U2DataId>(q, new MysqlDataIdRSLoaderEx(), NULL, U2DataId(), os);
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 // Read methods for folders
 
-QStringList MysqlObjectDbi::getFolders(U2OpStatus& os) {
+QStringList MysqlObjectDbi::getFolders(U2OpStatus &os) {
     static const QString queryString = "SELECT path FROM Folder ORDER BY BINARY(path)";
     return U2SqlQuery(queryString, db, os).selectStrings();
 }
@@ -154,8 +167,9 @@ QHash<U2Object, QString> MysqlObjectDbi::getObjectFolders(U2OpStatus &os) {
     QHash<U2Object, QString> result;
 
     static const QString queryString = "SELECT o.id, o.type, o.version, o.name, o.trackMod, f.path "
-        "FROM Object AS o, FolderContent AS fc, Folder AS f WHERE fc.object=o.id AND "
-        "fc.folder=f.id AND " + TOP_LEVEL_FILTER;
+                                       "FROM Object AS o, FolderContent AS fc, Folder AS f WHERE fc.object=o.id AND "
+                                       "fc.folder=f.id AND " +
+                                       TOP_LEVEL_FILTER;
     U2SqlQuery q(queryString, db, os);
     CHECK_OP(os, result);
 
@@ -229,18 +243,18 @@ QString MysqlObjectDbi::getFolderPreviousPath(const QString &currentPath, U2OpSt
     return result.first();
 }
 
-qint64 MysqlObjectDbi::countObjects(const QString& folder, U2OpStatus& os) {
+qint64 MysqlObjectDbi::countObjects(const QString &folder, U2OpStatus &os) {
     const QString canonicalFolder = U2DbiUtils::makeFolderCanonical(folder);
     const QByteArray hash = QCryptographicHash::hash(canonicalFolder.toLatin1(), QCryptographicHash::Md5).toHex();
 
     static const QString queryString = "SELECT COUNT(*) FROM FolderContent AS fc, Folder AS f "
-        "WHERE f.hash = :hash AND fc.folder = f.id";
+                                       "WHERE f.hash = :hash AND fc.folder = f.id";
     U2SqlQuery q(queryString, db, os);
     q.bindBlob(":hash", hash);
     return q.selectInt64();
 }
 
-QList<U2DataId> MysqlObjectDbi::getObjects(const QString& folder, qint64 offset, qint64 count, U2OpStatus& os) {
+QList<U2DataId> MysqlObjectDbi::getObjects(const QString &folder, qint64 offset, qint64 count, U2OpStatus &os) {
     const QString canonicalFolder = U2DbiUtils::makeFolderCanonical(folder);
     const QByteArray hash = QCryptographicHash::hash(canonicalFolder.toLatin1(), QCryptographicHash::Md5).toHex();
 
@@ -250,7 +264,7 @@ QList<U2DataId> MysqlObjectDbi::getObjects(const QString& folder, qint64 offset,
     return q.selectDataIdsExt();
 }
 
-QStringList MysqlObjectDbi::getObjectFolders(const U2DataId& objectId, U2OpStatus& os) {
+QStringList MysqlObjectDbi::getObjectFolders(const U2DataId &objectId, U2OpStatus &os) {
     static const QString queryString = "SELECT f.path FROM FolderContent AS fc, Folder AS f WHERE fc.object = :object AND fc.folder = f.id";
     U2SqlQuery q(queryString, db, os);
     q.bindDataId(":object", objectId);
@@ -258,7 +272,7 @@ QStringList MysqlObjectDbi::getObjectFolders(const U2DataId& objectId, U2OpStatu
     return result;
 }
 
-qint64 MysqlObjectDbi::getFolderLocalVersion(const QString& folder, U2OpStatus& os) {
+qint64 MysqlObjectDbi::getFolderLocalVersion(const QString &folder, U2OpStatus &os) {
     const QString canonicalFolder = U2DbiUtils::makeFolderCanonical(folder);
     const QByteArray hash = QCryptographicHash::hash(canonicalFolder.toLatin1(), QCryptographicHash::Md5).toHex();
 
@@ -268,7 +282,7 @@ qint64 MysqlObjectDbi::getFolderLocalVersion(const QString& folder, U2OpStatus& 
     return q.selectInt64();
 }
 
-qint64 MysqlObjectDbi::getFolderGlobalVersion(const QString& folder, U2OpStatus& os) {
+qint64 MysqlObjectDbi::getFolderGlobalVersion(const QString &folder, U2OpStatus &os) {
     const QString canonicalFolder = U2DbiUtils::makeFolderCanonical(folder);
     const QByteArray hash = QCryptographicHash::hash(canonicalFolder.toLatin1(), QCryptographicHash::Md5).toHex();
 
@@ -278,18 +292,17 @@ qint64 MysqlObjectDbi::getFolderGlobalVersion(const QString& folder, U2OpStatus&
     return q.selectInt64();
 }
 
-U2DbiObjectRank MysqlObjectDbi::getObjectRank(const U2DataId &objectId, U2OpStatus& os) {
+U2DbiObjectRank MysqlObjectDbi::getObjectRank(const U2DataId &objectId, U2OpStatus &os) {
     static const QString queryString("SELECT rank FROM Object WHERE id = :id");
     U2SqlQuery q(queryString, db, os);
     q.bindDataId(":id", objectId);
-    return static_cast<U2DbiObjectRank> (q.selectInt32());
+    return static_cast<U2DbiObjectRank>(q.selectInt32());
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 // Write methods for objects
 
-bool MysqlObjectDbi::removeObject(const U2DataId& dataId, bool force, U2OpStatus& os) {
+bool MysqlObjectDbi::removeObject(const U2DataId &dataId, bool force, U2OpStatus &os) {
     bool result = removeObjectImpl(dataId, force, os);
     CHECK_OP(os, result);
 
@@ -315,9 +328,9 @@ QString createDeleteObjectQueryStr(int objectCount) {
     return result;
 }
 
-}
+}    // namespace
 
-bool MysqlObjectDbi::removeObjects(const QList<U2DataId>& dataIds, bool force, U2OpStatus& os) {
+bool MysqlObjectDbi::removeObjects(const QList<U2DataId> &dataIds, bool force, U2OpStatus &os) {
     Q_UNUSED(force)
     CHECK(!dataIds.isEmpty(), true);
 
@@ -325,7 +338,7 @@ bool MysqlObjectDbi::removeObjects(const QList<U2DataId>& dataIds, bool force, U
     Q_UNUSED(t);
 
     // remove specific objects' data first
-    foreach(const U2DataId &objectId, dataIds) {
+    foreach (const U2DataId &objectId, dataIds) {
         removeObjectSpecificData(objectId, os);
         CHECK_OP(os, false);
     }
@@ -388,7 +401,7 @@ void MysqlObjectDbi::renameObject(const U2DataId &id, const QString &newName, U2
 //////////////////////////////////////////////////////////////////////////
 // Write methods for folders
 
-void MysqlObjectDbi::createFolder(const QString& path, U2OpStatus& os) {
+void MysqlObjectDbi::createFolder(const QString &path, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
     CHECK_OP(os, );
@@ -416,7 +429,7 @@ void MysqlObjectDbi::createFolder(const QString& path, U2OpStatus& os) {
     onFolderUpdated(canonicalPath);
 }
 
-bool MysqlObjectDbi::removeFolder(const QString& folder, U2OpStatus& os) {
+bool MysqlObjectDbi::removeFolder(const QString &folder, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -425,7 +438,7 @@ bool MysqlObjectDbi::removeFolder(const QString& folder, U2OpStatus& os) {
 
     // remove subfolders first
     static const QString selectSubfoldersString = "SELECT path FROM Folder WHERE path LIKE BINARY :path "
-        "ORDER BY LENGTH(path) DESC";
+                                                  "ORDER BY LENGTH(path) DESC";
     U2SqlQuery selectSubfoldersQuery(selectSubfoldersString, db, os);
     selectSubfoldersQuery.bindString(":path", canonicalFolder + U2ObjectDbi::PATH_SEP + "%");
     const QStringList subfolders = selectSubfoldersQuery.selectStrings();
@@ -459,7 +472,7 @@ bool MysqlObjectDbi::removeFolder(const QString& folder, U2OpStatus& os) {
     return result;
 }
 
-void MysqlObjectDbi::addObjectsToFolder(const QList<U2DataId>& objectIds, const QString& folder, U2OpStatus& os) {
+void MysqlObjectDbi::addObjectsToFolder(const QList<U2DataId> &objectIds, const QString &folder, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -476,7 +489,7 @@ void MysqlObjectDbi::addObjectsToFolder(const QList<U2DataId>& objectIds, const 
     U2SqlQuery insertQ(insertString, db, os);
     U2SqlQuery rankQ(rankString, db, os);
 
-    foreach (const U2DataId& objectId, objectIds) {
+    foreach (const U2DataId &objectId, objectIds) {
         countQ.bindInt64(":folder", folderId);
         countQ.bindDataId(":object", objectId);
         int count = countQ.selectInt64();
@@ -500,9 +513,7 @@ void MysqlObjectDbi::addObjectsToFolder(const QList<U2DataId>& objectIds, const 
     onFolderUpdated(canonicalFolder);
 }
 
-void MysqlObjectDbi::moveObjects(const QList<U2DataId>& objectIds, const QString& fromFolder,
-    const QString& toFolder, U2OpStatus& os, bool saveFromFolder)
-{
+void MysqlObjectDbi::moveObjects(const QList<U2DataId> &objectIds, const QString &fromFolder, const QString &toFolder, U2OpStatus &os, bool saveFromFolder) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -523,11 +534,12 @@ void MysqlObjectDbi::moveObjects(const QList<U2DataId>& objectIds, const QString
         U2AttributeDbi *attrDbi = dbi->getAttributeDbi();
         foreach (const U2DataId &id, objectIds) {
             const QList<U2DataId> attributes = attrDbi->getObjectAttributes(id,
-                PREV_OBJ_PATH_ATTR_NAME, os);
+                                                                            PREV_OBJ_PATH_ATTR_NAME,
+                                                                            os);
             CHECK_OP(os, );
 
             CHECK_EXT(attributes.size() <= 1,
-                os.setError("Multiple attribute definition detected!"), );
+                      os.setError("Multiple attribute definition detected!"), );
 
             if (!attributes.isEmpty()) {
                 attrDbi->removeAttributes(attributes, os);
@@ -549,11 +561,13 @@ QStringList MysqlObjectDbi::restoreObjects(const QList<U2DataId> &objectIds, U2O
     QStringList result;
     foreach (const U2DataId &objId, objectIds) {
         const QList<U2DataId> attributes = attrDbi->getObjectAttributes(objId,
-            PREV_OBJ_PATH_ATTR_NAME, os);
+                                                                        PREV_OBJ_PATH_ATTR_NAME,
+                                                                        os);
         CHECK_OP(os, result);
 
         CHECK_EXT(attributes.size() == 1,
-            os.setError("Stored folder path not found!"), result);
+                  os.setError("Stored folder path not found!"),
+                  result);
 
         const U2DataId attrId = attributes.first();
 
@@ -564,7 +578,8 @@ QStringList MysqlObjectDbi::restoreObjects(const QList<U2DataId> &objectIds, U2O
 
         const QStringList folders = getObjectFolders(objId, os);
         CHECK_EXT(1 == folders.size(),
-            os.setError("Multiple reference to object from folders found!"), result);
+                  os.setError("Multiple reference to object from folders found!"),
+                  result);
         moveObjects(QList<U2DataId>() << objId, folders.first(), storedPath.value, os);
         CHECK_OP(os, result);
     }
@@ -586,7 +601,7 @@ void MysqlObjectDbi::updateObjectAccessTime(const U2DataId &objectId, U2OpStatus
 //////////////////////////////////////////////////////////////////////////
 // Undo/redo methods
 
-void MysqlObjectDbi::undo(const U2DataId& objId, U2OpStatus& os) {
+void MysqlObjectDbi::undo(const U2DataId &objId, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -616,19 +631,19 @@ void MysqlObjectDbi::undo(const U2DataId& objId, U2OpStatus& os) {
         return;
     }
 
-    QList< QList<U2SingleModStep> > modSteps = dbi->getMysqlModDbi()->getModSteps(objId, userModStepVersion, os);
+    QList<QList<U2SingleModStep>> modSteps = dbi->getMysqlModDbi()->getModSteps(objId, userModStepVersion, os);
     if (os.hasError()) {
         coreLog.trace("Error getting modSteps for an object: " + os.getError());
         os.setError(errorDescr);
         return;
     }
 
-    QList< QList<U2SingleModStep> >::const_iterator multiIt = modSteps.end();
+    QList<QList<U2SingleModStep>>::const_iterator multiIt = modSteps.end();
     while (multiIt != modSteps.begin()) {
         --multiIt;
-        const QList<U2SingleModStep>& multiStepSingleSteps = *multiIt;
+        const QList<U2SingleModStep> &multiStepSingleSteps = *multiIt;
 
-        foreach (const U2SingleModStep& modStep, multiStepSingleSteps) {
+        foreach (const U2SingleModStep &modStep, multiStepSingleSteps) {
             undoSingleModStep(modStep, os);
             CHECK_OP(os, );
 
@@ -649,7 +664,7 @@ void MysqlObjectDbi::undo(const U2DataId& objId, U2OpStatus& os) {
     }
 }
 
-void MysqlObjectDbi::redo(const U2DataId& objId, U2OpStatus& os) {
+void MysqlObjectDbi::redo(const U2DataId &objId, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -672,17 +687,17 @@ void MysqlObjectDbi::redo(const U2DataId& objId, U2OpStatus& os) {
     }
 
     // Get all single modification steps
-    QList< QList<U2SingleModStep> > modSteps = dbi->getMysqlModDbi()->getModSteps(objId, obj.version, os);
+    QList<QList<U2SingleModStep>> modSteps = dbi->getMysqlModDbi()->getModSteps(objId, obj.version, os);
     if (os.hasError()) {
         coreLog.trace("Error getting modSteps for an object: " + os.getError());
         os.setError(errorDescr);
         return;
     }
 
-    foreach (const QList<U2SingleModStep>& multiStepSingleSteps, modSteps) {
+    foreach (const QList<U2SingleModStep> &multiStepSingleSteps, modSteps) {
         QSet<U2DataId> objectIds;
 
-        foreach (const U2SingleModStep& modStep, multiStepSingleSteps) {
+        foreach (const U2SingleModStep &modStep, multiStepSingleSteps) {
             redoSingleModStep(modStep, os);
             CHECK_OP(os, );
             objectIds.insert(modStep.objectId);
@@ -700,19 +715,18 @@ void MysqlObjectDbi::redo(const U2DataId& objId, U2OpStatus& os) {
     }
 }
 
-bool MysqlObjectDbi::canUndo(const U2DataId& objId, U2OpStatus& os) {
+bool MysqlObjectDbi::canUndo(const U2DataId &objId, U2OpStatus &os) {
     return dbi->getMysqlModDbi()->canUndo(objId, os);
 }
 
-bool MysqlObjectDbi::canRedo(const U2DataId& objId, U2OpStatus& os) {
+bool MysqlObjectDbi::canRedo(const U2DataId &objId, U2OpStatus &os) {
     return dbi->getMysqlModDbi()->canRedo(objId, os);
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 // Helper methods
 
-U2DataId MysqlObjectDbi::createObject(U2Object& object, const QString& folder, U2DbiObjectRank rank, U2OpStatus& os) {
+U2DataId MysqlObjectDbi::createObject(U2Object &object, const QString &folder, U2DbiObjectRank rank, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -762,7 +776,7 @@ U2DataId MysqlObjectDbi::createObject(U2Object& object, const QString& folder, U
     return res;
 }
 
-void MysqlObjectDbi::setObjectRank(const U2DataId &objectId, U2DbiObjectRank newRank, U2OpStatus& os) {
+void MysqlObjectDbi::setObjectRank(const U2DataId &objectId, U2DbiObjectRank newRank, U2OpStatus &os) {
     static const QString queryStr("UPDATE Object SET rank = :rank WHERE id = :id");
     U2SqlQuery query(queryStr, db, os);
     CHECK_OP(os, );
@@ -774,7 +788,7 @@ void MysqlObjectDbi::setObjectRank(const U2DataId &objectId, U2DbiObjectRank new
     }
 }
 
-void MysqlObjectDbi::getObject(U2Object& object, const U2DataId& id, U2OpStatus& os) {
+void MysqlObjectDbi::getObject(U2Object &object, const U2DataId &id, U2OpStatus &os) {
     static const QString queryString = "SELECT name, version, trackMod FROM Object WHERE id = :id";
     U2SqlQuery q(queryString, db, os);
     q.bindDataId(":id", id);
@@ -799,7 +813,7 @@ void MysqlObjectDbi::getObject(U2Object& object, const U2DataId& id, U2OpStatus&
     }
 }
 
-U2DataId MysqlObjectDbi::getObject(qint64 objectId, U2OpStatus& os) {
+U2DataId MysqlObjectDbi::getObject(qint64 objectId, U2OpStatus &os) {
     U2SqlQuery q("SELECT id, type FROM Object WHERE id = :id", db, os);
     q.bindInt64(":id", objectId);
     if (q.step()) {
@@ -828,7 +842,7 @@ QHash<U2DataId, QString> MysqlObjectDbi::getObjectNames(qint64 offset, qint64 co
     return result;
 }
 
-void MysqlObjectDbi::updateObject(U2Object& obj, U2OpStatus& os) {
+void MysqlObjectDbi::updateObject(U2Object &obj, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -838,7 +852,7 @@ void MysqlObjectDbi::updateObject(U2Object& obj, U2OpStatus& os) {
     obj.version = getObjectVersion(obj.id, os);
 }
 
-qint64 MysqlObjectDbi::getFolderId(const QString& path, bool mustExist, MysqlDbRef* db, U2OpStatus& os) {
+qint64 MysqlObjectDbi::getFolderId(const QString &path, bool mustExist, MysqlDbRef *db, U2OpStatus &os) {
     const QString canonicalPath = U2DbiUtils::makeFolderCanonical(path);
     const QByteArray hash = QCryptographicHash::hash(canonicalPath.toLatin1(), QCryptographicHash::Md5).toHex();
 
@@ -855,7 +869,7 @@ qint64 MysqlObjectDbi::getFolderId(const QString& path, bool mustExist, MysqlDbR
     return res;
 }
 
-void MysqlObjectDbi::incrementVersion(const U2DataId& objectId, MysqlDbRef* db, U2OpStatus& os) {
+void MysqlObjectDbi::incrementVersion(const U2DataId &objectId, MysqlDbRef *db, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -865,23 +879,24 @@ void MysqlObjectDbi::incrementVersion(const U2DataId& objectId, MysqlDbRef* db, 
     const int affectedRows = q.update();
     if (1 != affectedRows) {
         os.setError(QString("Invalid affected rows count for the object version update. Object ID: %1, affected rows: %2")
-            .arg(QString(objectId)).arg(affectedRows));
+                        .arg(QString(objectId))
+                        .arg(affectedRows));
     }
 }
 
-qint64 MysqlObjectDbi::getObjectVersion(const U2DataId& objectId, U2OpStatus& os) {
+qint64 MysqlObjectDbi::getObjectVersion(const U2DataId &objectId, U2OpStatus &os) {
     static const QString queryString = "SELECT version FROM Object WHERE id = :id";
     U2SqlQuery q(queryString, db, os);
     q.bindDataId(":id", objectId);
     return q.selectInt64();
 }
 
-void MysqlObjectDbi::setTrackModType(const U2DataId& objectId, U2TrackModType trackModType, U2OpStatus& os) {
+void MysqlObjectDbi::setTrackModType(const U2DataId &objectId, U2TrackModType trackModType, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
     static const QString updateObjectString = "UPDATE Object AS O LEFT OUTER JOIN Parent AS P ON O.id = P.child "
-        "SET O.trackMod = :trackMod WHERE O.id = :id OR P.parent = :parent";
+                                              "SET O.trackMod = :trackMod WHERE O.id = :id OR P.parent = :parent";
     U2SqlQuery updateObjectQuery(updateObjectString, db, os);
     updateObjectQuery.bindInt32(":trackMod", trackModType);
     updateObjectQuery.bindDataId(":id", objectId);
@@ -889,7 +904,7 @@ void MysqlObjectDbi::setTrackModType(const U2DataId& objectId, U2TrackModType tr
     updateObjectQuery.execute();
 }
 
-U2TrackModType MysqlObjectDbi::getTrackModType(const U2DataId& objectId, U2OpStatus& os) {
+U2TrackModType MysqlObjectDbi::getTrackModType(const U2DataId &objectId, U2OpStatus &os) {
     static const QString queryString = "SELECT trackMod FROM Object WHERE id = :id";
     U2SqlQuery q(queryString, db, os);
     q.bindDataId(":id", objectId);
@@ -907,7 +922,7 @@ U2TrackModType MysqlObjectDbi::getTrackModType(const U2DataId& objectId, U2OpSta
     return NoTrack;
 }
 
-void MysqlObjectDbi::removeParent(const U2DataId& parentId, const U2DataId& childId, bool removeDeadChild, U2OpStatus& os) {
+void MysqlObjectDbi::removeParent(const U2DataId &parentId, const U2DataId &childId, bool removeDeadChild, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -934,7 +949,7 @@ void MysqlObjectDbi::removeParent(const U2DataId& parentId, const U2DataId& chil
     removeObject(childId, false, os);
 }
 
-void MysqlObjectDbi::setParent(const U2DataId& parentId, const U2DataId& childId, U2OpStatus& os) {
+void MysqlObjectDbi::setParent(const U2DataId &parentId, const U2DataId &childId, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -970,9 +985,10 @@ void MysqlObjectDbi::updateObjectType(U2Object &obj, U2OpStatus &os) {
     q.execute();
 }
 
-bool MysqlObjectDbi::isObjectInUse(const U2DataId& id, U2OpStatus& os) {
+bool MysqlObjectDbi::isObjectInUse(const U2DataId &id, U2OpStatus &os) {
     static const QString queryString = QString("SELECT COUNT(*) FROM ObjectAccessTrack "
-        "WHERE object = :object AND lastAccessTime + INTERVAL %1 SECOND > NOW()").arg(OBJ_USAGE_CHECK_INTERVAL);
+                                               "WHERE object = :object AND lastAccessTime + INTERVAL %1 SECOND > NOW()")
+                                           .arg(OBJ_USAGE_CHECK_INTERVAL);
     U2SqlQuery q(queryString, db, os);
     q.bindDataId(":object", id);
     return 1 == q.selectInt64();
@@ -980,7 +996,8 @@ bool MysqlObjectDbi::isObjectInUse(const U2DataId& id, U2OpStatus& os) {
 
 QList<U2DataId> MysqlObjectDbi::getAllObjectsInUse(U2OpStatus &os) {
     static const QString queryString = QString("SELECT oat.object, o.type, '' FROM ObjectAccessTrack AS oat, Object AS o "
-        "WHERE lastAccessTime + INTERVAL %1 SECOND > NOW() AND o.id = oat.object").arg(OBJ_USAGE_CHECK_INTERVAL);
+                                               "WHERE lastAccessTime + INTERVAL %1 SECOND > NOW() AND o.id = oat.object")
+                                           .arg(OBJ_USAGE_CHECK_INTERVAL);
     U2SqlQuery q(queryString, db, os);
     return q.selectDataIdsExt();
 }
@@ -1011,7 +1028,7 @@ void MysqlObjectDbi::removeObjectFromAllFolders(const U2DataId &id, U2OpStatus &
     deleteQ.execute();
 }
 
-bool MysqlObjectDbi::removeObjectImpl(const U2DataId& objectId, bool force, U2OpStatus& os) {
+bool MysqlObjectDbi::removeObjectImpl(const U2DataId &objectId, bool force, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -1059,15 +1076,15 @@ void MysqlObjectDbi::removeObjectSpecificData(const U2DataId &objectId, U2OpStat
     }
 }
 
-void MysqlObjectDbi::removeObjectAttributes(const U2DataId& id, U2OpStatus& os) {
+void MysqlObjectDbi::removeObjectAttributes(const U2DataId &id, U2OpStatus &os) {
     dbi->getAttributeDbi()->removeObjectAttributes(id, os);
 }
 
-void MysqlObjectDbi::removeObjectModHistory(const U2DataId& id, U2OpStatus& os) {
+void MysqlObjectDbi::removeObjectModHistory(const U2DataId &id, U2OpStatus &os) {
     dbi->getModDbi()->removeObjectMods(id, os);
 }
 
-void MysqlObjectDbi::incrementVersion(const U2DataId& id, U2OpStatus& os) {
+void MysqlObjectDbi::incrementVersion(const U2DataId &id, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -1077,7 +1094,7 @@ void MysqlObjectDbi::incrementVersion(const U2DataId& id, U2OpStatus& os) {
     q.update();
 }
 
-void MysqlObjectDbi::setVersion(const U2DataId& id, qint64 version, U2OpStatus& os) {
+void MysqlObjectDbi::setVersion(const U2DataId &id, qint64 version, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -1088,7 +1105,7 @@ void MysqlObjectDbi::setVersion(const U2DataId& id, qint64 version, U2OpStatus& 
     q.update();
 }
 
-void MysqlObjectDbi::undoSingleModStep(const U2SingleModStep& modStep, U2OpStatus& os) {
+void MysqlObjectDbi::undoSingleModStep(const U2SingleModStep &modStep, U2OpStatus &os) {
     if (U2ModType::isUdrModType(modStep.modType)) {
         dbi->getMysqlUdrDbi()->undo(modStep, os);
     } else if (U2ModType::isMsaModType(modStep.modType)) {
@@ -1103,7 +1120,7 @@ void MysqlObjectDbi::undoSingleModStep(const U2SingleModStep& modStep, U2OpStatu
     }
 }
 
-void MysqlObjectDbi::redoSingleModStep(const U2SingleModStep& modStep, U2OpStatus &os) {
+void MysqlObjectDbi::redoSingleModStep(const U2SingleModStep &modStep, U2OpStatus &os) {
     if (U2ModType::isUdrModType(modStep.modType)) {
         dbi->getMysqlUdrDbi()->redo(modStep, os);
     } else if (U2ModType::isMsaModType(modStep.modType)) {
@@ -1136,7 +1153,7 @@ void MysqlObjectDbi::redoCore(const U2DataId &objId, qint64 modType, const QByte
     }
 }
 
-void MysqlObjectDbi::undoUpdateObjectName(const U2DataId& id, const QByteArray& modDetails, U2OpStatus& os) {
+void MysqlObjectDbi::undoUpdateObjectName(const U2DataId &id, const QByteArray &modDetails, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -1154,7 +1171,7 @@ void MysqlObjectDbi::undoUpdateObjectName(const U2DataId& id, const QByteArray& 
     q.update();
 }
 
-void MysqlObjectDbi::redoUpdateObjectName(const U2DataId& id, const QByteArray& modDetails, U2OpStatus& os) {
+void MysqlObjectDbi::redoUpdateObjectName(const U2DataId &id, const QByteArray &modDetails, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -1172,8 +1189,8 @@ void MysqlObjectDbi::redoUpdateObjectName(const U2DataId& id, const QByteArray& 
     updateObjectCore(obj, os);
 }
 
-void MysqlObjectDbi::onFolderUpdated(const QString& ) {
+void MysqlObjectDbi::onFolderUpdated(const QString &) {
     // Do nothing.
 }
 
-}   // namespace U2
+}    // namespace U2

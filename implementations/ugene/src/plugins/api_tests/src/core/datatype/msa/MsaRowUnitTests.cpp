@@ -25,7 +25,6 @@
 #include <U2Core/U2Msa.h>
 #include <U2Core/U2OpStatusUtils.h>
 
-
 namespace U2 {
 
 const int MsaRowTestUtils::rowWithGapsLength = 7;
@@ -34,40 +33,40 @@ const int MsaRowTestUtils::rowWithoutGapsLength = 5;
 
 const QString MsaRowTestUtils::rowWithGapsName = "Row with gaps name";
 
-MultipleSequenceAlignmentRow MsaRowTestUtils::initTestRowWithGaps(MultipleSequenceAlignment& almnt) {
+MultipleSequenceAlignmentRow MsaRowTestUtils::initTestRowWithGaps(MultipleSequenceAlignment &almnt) {
     almnt->setName("For row with gaps");
     almnt->addRow(rowWithGapsName, "---AG-T");
-    return almnt->getMsaRow(0)->getExplicitCopy(); // "---AG-T"
+    return almnt->getMsaRow(0)->getExplicitCopy();    // "---AG-T"
 }
 
-MultipleSequenceAlignmentRow MsaRowTestUtils::initTestRowWithGapsInMiddle(MultipleSequenceAlignment& almnt) {
+MultipleSequenceAlignmentRow MsaRowTestUtils::initTestRowWithGapsInMiddle(MultipleSequenceAlignment &almnt) {
     almnt->setName("For row with gaps in middle");
     almnt->addRow("Test sequence", "GG-T--AT");
-    return almnt->getMsaRow(0)->getExplicitCopy(); // "GG-T--AT"
+    return almnt->getMsaRow(0)->getExplicitCopy();    // "GG-T--AT"
 }
 
-MultipleSequenceAlignmentRow MsaRowTestUtils::initTestRowWithTrailingGaps(MultipleSequenceAlignment& almnt) {
+MultipleSequenceAlignmentRow MsaRowTestUtils::initTestRowWithTrailingGaps(MultipleSequenceAlignment &almnt) {
     almnt->setName("For row with trailing gaps");
     almnt->addRow("Row with trailing gaps", "CA-GT--T--");
-    return almnt->getMsaRow(0)->getExplicitCopy(); // "CA-GT--T--"
+    return almnt->getMsaRow(0)->getExplicitCopy();    // "CA-GT--T--"
 }
 
-MultipleSequenceAlignmentRow MsaRowTestUtils::initTestRowWithoutGaps(MultipleSequenceAlignment& almnt) {
+MultipleSequenceAlignmentRow MsaRowTestUtils::initTestRowWithoutGaps(MultipleSequenceAlignment &almnt) {
     almnt->setName("For a row without gaps");
     almnt->addRow("Row without gaps", "ACGTA");
-    return almnt->getMsaRow(0)->getExplicitCopy(); // "ACGTA"
+    return almnt->getMsaRow(0)->getExplicitCopy();    // "ACGTA"
 }
 
-MultipleSequenceAlignmentRow MsaRowTestUtils::initEmptyRow(MultipleSequenceAlignment& almnt) {
+MultipleSequenceAlignmentRow MsaRowTestUtils::initEmptyRow(MultipleSequenceAlignment &almnt) {
     almnt->setName("For empty row");
     almnt->addRow("Empty", "");
-    return almnt->getMsaRow(0)->getExplicitCopy(); // ""
+    return almnt->getMsaRow(0)->getExplicitCopy();    // ""
 }
 
-MultipleSequenceAlignmentRow MsaRowTestUtils::initTestRowForModification(MultipleSequenceAlignment& almnt) {
+MultipleSequenceAlignmentRow MsaRowTestUtils::initTestRowForModification(MultipleSequenceAlignment &almnt) {
     almnt->setName("For row for modifications");
     almnt->addRow("Test sequence", "A---ACG--GTT-A-C---G");
-    return almnt->getMsaRow(0)->getExplicitCopy(); // "A---ACG--GTT-A-C---G"
+    return almnt->getMsaRow(0)->getExplicitCopy();    // "A---ACG--GTT-A-C---G"
 }
 
 QString MsaRowTestUtils::getRowData(const MultipleSequenceAlignmentRow &row) {
@@ -76,7 +75,6 @@ QString MsaRowTestUtils::getRowData(const MultipleSequenceAlignmentRow &row) {
     SAFE_POINT_OP(os, QString());
     return result;
 }
-
 
 /** Tests createRow */
 IMPLEMENT_TEST(MsaRowUnitTests, createRow_fromBytes) {
@@ -1039,7 +1037,6 @@ IMPLEMENT_TEST(MsaRowUnitTests, charAt_onlyCharsInRow) {
     CHECK_EQUAL('-', ch, "char 3");
 }
 
-
 /** Tests rowEqual */
 IMPLEMENT_TEST(MsaRowUnitTests, rowsEqual_sameContent) {
     MultipleSequenceAlignment almnt;
@@ -1185,32 +1182,32 @@ IMPLEMENT_TEST(MsaRowUnitTests, ungapped_rowWithoutOffset) {
     MultipleSequenceAlignmentRow row = MsaRowTestUtils::initTestRowWithGapsInMiddle(almnt);
     CHECK_EQUAL(5, row->getUngappedLength(), "ungapped length");
     CHECK_EQUAL(-1, row->getUngappedPosition(-1), "pos -1");
-    CHECK_EQUAL(0,  row->getUngappedPosition(0),  "pos 0");
-    CHECK_EQUAL(1,  row->getUngappedPosition(1),  "pos 1");
-    CHECK_EQUAL(-1, row->getUngappedPosition(2),  "pos 2");
-    CHECK_EQUAL(2,  row->getUngappedPosition(3),  "pos 3");
-    CHECK_EQUAL(-1, row->getUngappedPosition(4),  "pos 4");
-    CHECK_EQUAL(-1, row->getUngappedPosition(5),  "pos 5");
-    CHECK_EQUAL(3,  row->getUngappedPosition(6),  "pos 6");
-    CHECK_EQUAL(4,  row->getUngappedPosition(7),  "pos 7");
-    CHECK_EQUAL(-1, row->getUngappedPosition(8),  "pos 8");
+    CHECK_EQUAL(0, row->getUngappedPosition(0), "pos 0");
+    CHECK_EQUAL(1, row->getUngappedPosition(1), "pos 1");
+    CHECK_EQUAL(-1, row->getUngappedPosition(2), "pos 2");
+    CHECK_EQUAL(2, row->getUngappedPosition(3), "pos 3");
+    CHECK_EQUAL(-1, row->getUngappedPosition(4), "pos 4");
+    CHECK_EQUAL(-1, row->getUngappedPosition(5), "pos 5");
+    CHECK_EQUAL(3, row->getUngappedPosition(6), "pos 6");
+    CHECK_EQUAL(4, row->getUngappedPosition(7), "pos 7");
+    CHECK_EQUAL(-1, row->getUngappedPosition(8), "pos 8");
 }
 
 IMPLEMENT_TEST(MsaRowUnitTests, ungapped_offsetTrailing) {
     MultipleSequenceAlignment almnt("Test alignment");
     almnt->addRow("Test row", "---AG-T-");
     MultipleSequenceAlignmentRow row = almnt->getMsaRow(0);
-    CHECK_EQUAL(3,  row->getUngappedLength(), "ungapped length");
+    CHECK_EQUAL(3, row->getUngappedLength(), "ungapped length");
     CHECK_EQUAL(-1, row->getUngappedPosition(-1), "pos -1");
-    CHECK_EQUAL(-1, row->getUngappedPosition(0),  "pos 0");
-    CHECK_EQUAL(-1, row->getUngappedPosition(1),  "pos 1");
-    CHECK_EQUAL(-1, row->getUngappedPosition(2),  "pos 2");
-    CHECK_EQUAL(0,  row->getUngappedPosition(3),  "pos 3");
-    CHECK_EQUAL(1,  row->getUngappedPosition(4),  "pos 4");
-    CHECK_EQUAL(-1, row->getUngappedPosition(5),  "pos 5");
-    CHECK_EQUAL(2,  row->getUngappedPosition(6),  "pos 6");
-    CHECK_EQUAL(-1, row->getUngappedPosition(7),  "pos 7");
-    CHECK_EQUAL(-1, row->getUngappedPosition(8),  "pos 8");
+    CHECK_EQUAL(-1, row->getUngappedPosition(0), "pos 0");
+    CHECK_EQUAL(-1, row->getUngappedPosition(1), "pos 1");
+    CHECK_EQUAL(-1, row->getUngappedPosition(2), "pos 2");
+    CHECK_EQUAL(0, row->getUngappedPosition(3), "pos 3");
+    CHECK_EQUAL(1, row->getUngappedPosition(4), "pos 4");
+    CHECK_EQUAL(-1, row->getUngappedPosition(5), "pos 5");
+    CHECK_EQUAL(2, row->getUngappedPosition(6), "pos 6");
+    CHECK_EQUAL(-1, row->getUngappedPosition(7), "pos 7");
+    CHECK_EQUAL(-1, row->getUngappedPosition(8), "pos 8");
 }
 
 /** Tests crop */
@@ -1533,5 +1530,4 @@ IMPLEMENT_TEST(MsaRowUnitTests, replaceChars_trailingGaps) {
     CHECK_EQUAL("A--CC---AG-AC-TG-", MsaRowTestUtils::getRowData(row), "row data");
 }
 
-
-} // namespace
+}    // namespace U2

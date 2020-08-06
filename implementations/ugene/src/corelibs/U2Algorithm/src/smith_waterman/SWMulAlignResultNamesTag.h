@@ -22,22 +22,23 @@
 #ifndef _U2_SW_MUL_ALIGN_RESULT_NAMES_TAGS_H_
 #define _U2_SW_MUL_ALIGN_RESULT_NAMES_TAGS_H_
 
-#include <U2Algorithm/SmithWatermanResult.h>
-
 #include <QString>
 #include <QVariant>
+
+#include <U2Algorithm/SmithWatermanResult.h>
 
 namespace U2 {
 
 class U2ALGORITHM_EXPORT SWMulAlignResultNamesTag {
 public:
     inline SWMulAlignResultNamesTag(const QString _shorthand, const QString _label);
-    virtual ~SWMulAlignResultNamesTag() {}
-    virtual QString expandTag(const QVariant & argument = QVariant ()) const = 0;
+    virtual ~SWMulAlignResultNamesTag() {
+    }
+    virtual QString expandTag(const QVariant &argument = QVariant()) const = 0;
 
-    inline const QString & getShorthand() const;
-    inline const QString & getLabel() const;
-    inline const bool & isAcceptableForSubseqNamesOnly() const;
+    inline const QString &getShorthand() const;
+    inline const QString &getLabel() const;
+    inline const bool &isAcceptableForSubseqNamesOnly() const;
 
 protected:
     bool acceptableForSubseqNamesOnly;
@@ -47,23 +48,22 @@ private:
     const QString label;
 };
 
-
-
 inline SWMulAlignResultNamesTag::SWMulAlignResultNamesTag(const QString _shorthand, const QString _label)
-    : shorthand(_shorthand), label(_label) {}
+    : shorthand(_shorthand), label(_label) {
+}
 
-inline const QString & SWMulAlignResultNamesTag::getShorthand() const {
+inline const QString &SWMulAlignResultNamesTag::getShorthand() const {
     return shorthand;
 }
 
-inline const QString & SWMulAlignResultNamesTag::getLabel() const {
+inline const QString &SWMulAlignResultNamesTag::getLabel() const {
     return label;
 }
 
-inline const bool & SWMulAlignResultNamesTag::isAcceptableForSubseqNamesOnly() const {
+inline const bool &SWMulAlignResultNamesTag::isAcceptableForSubseqNamesOnly() const {
     return acceptableForSubseqNamesOnly;
 }
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_SW_MUL_ALIGN_RESULT_NAMES_TAGS_H_
+#endif    // _U2_SW_MUL_ALIGN_RESULT_NAMES_TAGS_H_

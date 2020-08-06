@@ -38,25 +38,45 @@ class SaveDocumentTask;
 class DNASequenceGeneratorConfig {
 public:
     DNASequenceGeneratorConfig()
-        : addToProj(false), saveDoc(true), alphabet(NULL), length(0), numSeqs(1), useRef(true), window(0), seed(0) {}
+        : addToProj(false), saveDoc(true), alphabet(NULL), length(0), numSeqs(1), useRef(true), window(0), seed(0) {
+    }
 
-    const DNAAlphabet* getAlphabet() const { assert(alphabet); return alphabet; }
+    const DNAAlphabet *getAlphabet() const {
+        assert(alphabet);
+        return alphabet;
+    }
 
-    bool useReference() const { return useRef; }
+    bool useReference() const {
+        return useRef;
+    }
 
-    const QString& getReferenceUrl() const { return refUrl; }
+    const QString &getReferenceUrl() const {
+        return refUrl;
+    }
 
-    const QMap<char, qreal>& getContent() const { return content; }
+    const QMap<char, qreal> &getContent() const {
+        return content;
+    }
 
-    int getLength() const { return length; }
+    int getLength() const {
+        return length;
+    }
 
-    int getNumberOfSequences() const { return numSeqs; }
+    int getNumberOfSequences() const {
+        return numSeqs;
+    }
 
-    QString getSequenceName() const { return sequenceName; }
+    QString getSequenceName() const {
+        return sequenceName;
+    }
 
-    QString getOutUrlString() const { return outUrl; }
+    QString getOutUrlString() const {
+        return outUrl;
+    }
 
-    const DocumentFormatId & getDocumentFormatId() const { return formatId; }
+    const DocumentFormatId &getDocumentFormatId() const {
+        return formatId;
+    }
 
     bool addToProj;
     bool saveDoc;
@@ -67,7 +87,7 @@ public:
     // output document format
     DocumentFormatId formatId;
     // output sequence alphabet
-    const DNAAlphabet* alphabet;
+    const DNAAlphabet *alphabet;
     // output sequence length
     int length;
     // number of sequences to generate
@@ -90,41 +110,48 @@ public:
 
     static QString prepareReferenceFileFilter();
 
-    static void generateSequence(const QMap<char, qreal>& charFreqs, int length, QByteArray& result);
+    static void generateSequence(const QMap<char, qreal> &charFreqs, int length, QByteArray &result);
 
-    static void evaluateBaseContent(const DNASequence& sequence, QMap<char, qreal>& result);
+    static void evaluateBaseContent(const DNASequence &sequence, QMap<char, qreal> &result);
 
-    static void evaluateBaseContent(const MultipleSequenceAlignment& ma, QMap<char, qreal>& result);
+    static void evaluateBaseContent(const MultipleSequenceAlignment &ma, QMap<char, qreal> &result);
 };
 
 class EvaluateBaseContentTask : public Task {
     Q_OBJECT
 public:
-    EvaluateBaseContentTask(GObject* obj);
+    EvaluateBaseContentTask(GObject *obj);
 
     void run();
 
-    QMap<char, qreal> getResult() const { return result; }
+    QMap<char, qreal> getResult() const {
+        return result;
+    }
 
-    const DNAAlphabet* getAlphabet() const { return alp; }
+    const DNAAlphabet *getAlphabet() const {
+        return alp;
+    }
 
 private:
-    GObject* _obj;
-    const DNAAlphabet* alp;
+    GObject *_obj;
+    const DNAAlphabet *alp;
     QMap<char, qreal> result;
 };
 
 class GenerateDNASequenceTask : public Task {
     Q_OBJECT
 public:
-    GenerateDNASequenceTask( const QMap<char, qreal>& baseContent_, int length_, int window_,
-        int count_, int seed_ );
+    GenerateDNASequenceTask(const QMap<char, qreal> &baseContent_, int length_, int window_, int count_, int seed_);
 
-    void prepare( );
-    void run( );
+    void prepare();
+    void run();
 
-    QList<U2Sequence> getResults( ) const { return results; }
-    U2DbiRef getDbiRef( ) const { return dbiRef; }
+    QList<U2Sequence> getResults() const {
+        return results;
+    }
+    U2DbiRef getDbiRef() const {
+        return dbiRef;
+    }
 
 private:
     QMap<char, qreal> baseContent;
@@ -139,29 +166,31 @@ private:
 class DNASequenceGeneratorTask : public Task {
     Q_OBJECT
 public:
-    DNASequenceGeneratorTask(const DNASequenceGeneratorConfig& cfg_);
-    QList<Task*> onSubTaskFinished(Task* subTask);
-    QList<DNASequence> getSequences() const { return results; }
+    DNASequenceGeneratorTask(const DNASequenceGeneratorConfig &cfg_);
+    QList<Task *> onSubTaskFinished(Task *subTask);
+    QList<DNASequence> getSequences() const {
+        return results;
+    }
 
 private:
-    QList<Task*> onLoadRefTaskFinished( );
-    QList<Task*> onEvalTaskFinished( );
-    QList<Task*> onGenerateTaskFinished( );
-    QList<Task*> onSaveTaskFinished( );
+    QList<Task *> onLoadRefTaskFinished();
+    QList<Task *> onEvalTaskFinished();
+    QList<Task *> onGenerateTaskFinished();
+    QList<Task *> onSaveTaskFinished();
 
-    void addSequencesToMsaDoc( Document *source );
-    void addSequencesToSeqDoc( Document *source );
+    void addSequencesToMsaDoc(Document *source);
+    void addSequencesToSeqDoc(Document *source);
 
-    static EvaluateBaseContentTask* createEvaluationTask(Document* doc, QString& err);
+    static EvaluateBaseContentTask *createEvaluationTask(Document *doc, QString &err);
 
     DNASequenceGeneratorConfig cfg;
-    LoadDocumentTask* loadRefTask;
-    EvaluateBaseContentTask* evalTask;
-    GenerateDNASequenceTask* generateTask;
-    SaveDocumentTask* saveTask;
+    LoadDocumentTask *loadRefTask;
+    EvaluateBaseContentTask *evalTask;
+    GenerateDNASequenceTask *generateTask;
+    SaveDocumentTask *saveTask;
     QList<DNASequence> results;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

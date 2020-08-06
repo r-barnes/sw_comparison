@@ -22,8 +22,9 @@
 #ifndef _GTUTILS_PRIMER_LIBRARY_H_
 #define _GTUTILS_PRIMER_LIBRARY_H_
 
-#include <U2Core/U2OpStatus.h>
 #include <GTGlobals.h>
+
+#include <U2Core/U2OpStatus.h>
 
 class QAbstractButton;
 class QTableView;
@@ -32,10 +33,15 @@ namespace U2 {
 
 class GTUtilsPrimerLibrary {
 public:
-    enum Button {Add, Edit, Remove, Import, Export, Close};
-    static QWidget * openLibrary(HI::GUITestOpStatus &os);
+    enum Button { Add,
+                  Edit,
+                  Remove,
+                  Import,
+                  Export,
+                  Close };
+    static QWidget *openLibrary(HI::GUITestOpStatus &os);
     static void clickButton(HI::GUITestOpStatus &os, Button button);
-    static QAbstractButton * getButton(HI::GUITestOpStatus &os, Button button);
+    static QAbstractButton *getButton(HI::GUITestOpStatus &os, Button button);
     static int librarySize(HI::GUITestOpStatus &os);
     static QString getPrimerSequence(HI::GUITestOpStatus &os, int number);
     static QString getPrimerSequence(HI::GUITestOpStatus &os, const QString &name);
@@ -47,9 +53,9 @@ public:
     static void selectAll(HI::GUITestOpStatus &os);
 
 private:
-    static QTableView * table(HI::GUITestOpStatus &os);
+    static QTableView *table(HI::GUITestOpStatus &os);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _GTUTILS_PRIMER_LIBRARY_H_
+#endif    // _GTUTILS_PRIMER_LIBRARY_H_

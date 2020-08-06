@@ -20,6 +20,7 @@
  */
 
 #include <cassert>
+
 #include "Header.h"
 
 namespace U2 {
@@ -27,33 +28,32 @@ namespace BAM {
 
 // Header::Reference
 
-Header::Reference::Reference(const QByteArray &name, int length):
-        name(name),
-        length(length)
-{
+Header::Reference::Reference(const QByteArray &name, int length)
+    : name(name),
+      length(length) {
 }
 
-const QByteArray &Header::Reference::getName()const {
+const QByteArray &Header::Reference::getName() const {
     return name;
 }
 
-int Header::Reference::getLength()const {
+int Header::Reference::getLength() const {
     return length;
 }
 
-const QByteArray &Header::Reference::getAssemblyId()const {
+const QByteArray &Header::Reference::getAssemblyId() const {
     return assemblyId;
 }
 
-const QByteArray &Header::Reference::getMd5()const {
+const QByteArray &Header::Reference::getMd5() const {
     return md5;
 }
 
-const QByteArray &Header::Reference::getSpecies()const {
+const QByteArray &Header::Reference::getSpecies() const {
     return species;
 }
 
-const QString &Header::Reference::getUri()const {
+const QString &Header::Reference::getUri() const {
     return uri;
 }
 
@@ -83,44 +83,43 @@ void Header::Reference::setUri(const QString &uri) {
 
 // Header::ReadGroup
 
-Header::ReadGroup::ReadGroup():
-    predictedInsertSize(-1)
-{
+Header::ReadGroup::ReadGroup()
+    : predictedInsertSize(-1) {
 }
 
-const QByteArray &Header::ReadGroup::getSequencingCenter()const {
+const QByteArray &Header::ReadGroup::getSequencingCenter() const {
     return sequencingCenter;
 }
 
-const QByteArray &Header::ReadGroup::getDescription()const {
+const QByteArray &Header::ReadGroup::getDescription() const {
     return description;
 }
 
-const QVariant &Header::ReadGroup::getDate()const {
+const QVariant &Header::ReadGroup::getDate() const {
     return date;
 }
 
-const QByteArray &Header::ReadGroup::getLibrary()const {
+const QByteArray &Header::ReadGroup::getLibrary() const {
     return library;
 }
 
-const QByteArray &Header::ReadGroup::getPrograms()const {
+const QByteArray &Header::ReadGroup::getPrograms() const {
     return programs;
 }
 
-int Header::ReadGroup::getPredictedInsertSize()const {
+int Header::ReadGroup::getPredictedInsertSize() const {
     return predictedInsertSize;
 }
 
-const QByteArray &Header::ReadGroup::getPlatform()const {
+const QByteArray &Header::ReadGroup::getPlatform() const {
     return platform;
 }
 
-const QByteArray &Header::ReadGroup::getPlatformUnit()const {
+const QByteArray &Header::ReadGroup::getPlatformUnit() const {
     return platformUnit;
 }
 
-const QByteArray &Header::ReadGroup::getSample()const {
+const QByteArray &Header::ReadGroup::getSample() const {
     return sample;
 }
 
@@ -162,24 +161,23 @@ void Header::ReadGroup::setSample(const QByteArray &sample) {
 
 // Header::Program
 
-Header::Program::Program():
-    previousId(-1)
-{
+Header::Program::Program()
+    : previousId(-1) {
 }
 
-const QByteArray &Header::Program::getName()const {
+const QByteArray &Header::Program::getName() const {
     return name;
 }
 
-const QByteArray &Header::Program::getCommandLine()const {
+const QByteArray &Header::Program::getCommandLine() const {
     return commandLine;
 }
 
-int Header::Program::getPreviousId()const {
+int Header::Program::getPreviousId() const {
     return previousId;
 }
 
-const QByteArray &Header::Program::getVersion()const {
+const QByteArray &Header::Program::getVersion() const {
     return version;
 }
 
@@ -201,33 +199,31 @@ void Header::Program::setVersion(const QByteArray &version) {
 
 // Header
 
-Header::Header() :
-    sortingOrder(Unknown)
-{
-
+Header::Header()
+    : sortingOrder(Unknown) {
 }
 
-const Version &Header::getFormatVersion()const {
+const Version &Header::getFormatVersion() const {
     return formatVersion;
 }
 
-Header::SortingOrder Header::getSortingOrder()const {
+Header::SortingOrder Header::getSortingOrder() const {
     return sortingOrder;
 }
 
-const QList<Header::Reference> &Header::getReferences()const {
+const QList<Header::Reference> &Header::getReferences() const {
     return references;
 }
 
-const QList<Header::ReadGroup> &Header::getReadGroups()const {
+const QList<Header::ReadGroup> &Header::getReadGroups() const {
     return readGroups;
 }
 
-const QList<Header::Program> &Header::getPrograms()const {
+const QList<Header::Program> &Header::getPrograms() const {
     return programs;
 }
 
-const QString &Header::getText()const {
+const QString &Header::getText() const {
     return text;
 }
 
@@ -251,9 +247,9 @@ void Header::setPrograms(const QList<Program> &programs) {
     this->programs = programs;
 }
 
-void Header::setText(const QString& text) {
+void Header::setText(const QString &text) {
     this->text = text;
 }
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2

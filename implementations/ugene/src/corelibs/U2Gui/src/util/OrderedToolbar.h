@@ -22,34 +22,33 @@
 #ifndef _U2_ORDERED_TOOLBAR_H_
 #define _U2_ORDERED_TOOLBAR_H_
 
-#include <U2Core/global.h>
-
 #include <QAction>
 #include <QToolBar>
 
+#include <U2Core/global.h>
 
 namespace U2 {
 
 class U2GUI_EXPORT OrderedToolbar : public QToolBar {
 public:
-    OrderedToolbar(QWidget* parent, Qt::Orientation orientation = Qt::Horizontal);
+    OrderedToolbar(QWidget *parent, Qt::Orientation orientation = Qt::Horizontal);
 
-    void setButtonTabOrderList(QList<QString> * buttonNamesInNeededOrder);
+    void setButtonTabOrderList(QList<QString> *buttonNamesInNeededOrder);
 
     virtual void setVisible(bool visible);
 
 protected:
-    void paintEvent(QPaintEvent* ) {
+    void paintEvent(QPaintEvent *) {
         //do not draw any special toolbar control -> make is merged with parent widget
     }
 
 private:
     void setButtonsTabOrder() const;
 
-    bool                tabOrdered;
-    QList<QString>*     buttonTabOrderList;
+    bool tabOrdered;
+    QList<QString> *buttonTabOrderList;
 };
 
-} //namespace
+}    // namespace U2
 
-#endif // _U2_ORDERED_TOOLBAR_H_
+#endif    // _U2_ORDERED_TOOLBAR_H_

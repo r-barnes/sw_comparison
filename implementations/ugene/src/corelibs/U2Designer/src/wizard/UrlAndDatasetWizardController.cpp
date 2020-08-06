@@ -19,26 +19,25 @@
  * MA 02110-1301, USA.
  */
 
+#include "UrlAndDatasetWizardController.h"
+
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Lang/URLContainer.h>
 
-#include "UrlAndDatasetWizardController.h"
 #include "WizardController.h"
 
 namespace U2 {
 
 UrlAndDatasetWizardController::UrlAndDatasetWizardController(WizardController *wc, UrlAndDatasetWidget *_widget)
-: WidgetController(wc), widget(_widget), dsc(NULL)
-{
-
+    : WidgetController(wc), widget(_widget), dsc(NULL) {
 }
 
 UrlAndDatasetWizardController::~UrlAndDatasetWizardController() {
     delete dsc;
 }
 
-QWidget * UrlAndDatasetWizardController::createGUI(U2OpStatus &os) {
+QWidget *UrlAndDatasetWizardController::createGUI(U2OpStatus &os) {
     if (2 != widget->getInfos().count()) {
         os.setError("Invalid info");
         return NULL;
@@ -48,8 +47,8 @@ QWidget * UrlAndDatasetWizardController::createGUI(U2OpStatus &os) {
     AttributeInfo info2 = widget->getInfos().at(1);
     QVariant value1 = wc->getAttributeValue(info1);
     QVariant value2 = wc->getAttributeValue(info2);
-    QList<Dataset> urls = value1.value< QList<Dataset> >();
-    QList<Dataset> sets = value2.value< QList<Dataset> >();
+    QList<Dataset> urls = value1.value<QList<Dataset>>();
+    QList<Dataset> sets = value2.value<QList<Dataset>>();
 
     if (NULL != dsc) {
         delete dsc;
@@ -61,8 +60,8 @@ QWidget * UrlAndDatasetWizardController::createGUI(U2OpStatus &os) {
 
 void UrlAndDatasetWizardController::sl_datasetsChanged() {
     CHECK(2 == widget->getInfos().size(), );
-    wc->setAttributeValue(widget->getInfos().at(0), qVariantFromValue< QList<Dataset> >(dsc->getUrls()));
-    wc->setAttributeValue(widget->getInfos().at(1), qVariantFromValue< QList<Dataset> >(dsc->getDatasets()));
+    wc->setAttributeValue(widget->getInfos().at(0), qVariantFromValue<QList<Dataset>>(dsc->getUrls()));
+    wc->setAttributeValue(widget->getInfos().at(1), qVariantFromValue<QList<Dataset>>(dsc->getDatasets()));
 }
 
-} // U2
+}    // namespace U2

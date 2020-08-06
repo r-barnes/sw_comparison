@@ -19,55 +19,51 @@
  * MA 02110-1301, USA.
  */
 
+#include "ConvertAssemblyToSamTask.h"
+
+#include <QSharedPointer>
+
 #include <U2Core/AppContext.h>
-#include <U2Core/U2AssemblyUtils.h>
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DNASequence.h>
 #include <U2Core/DocumentUtils.h>
-#include <U2Core/U2AssemblyDbi.h>
-#include <U2Core/U2AttributeDbi.h>
-#include <U2Core/U2DbiUtils.h>
 #include <U2Core/IOAdapter.h>
 #include <U2Core/IOAdapterUtils.h>
+#include <U2Core/U2AssemblyDbi.h>
+#include <U2Core/U2AssemblyUtils.h>
+#include <U2Core/U2AttributeDbi.h>
+#include <U2Core/U2DbiRegistry.h>
+#include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
-#include <U2Core/U2DbiRegistry.h>
 
 #include <U2Formats/BAMUtils.h>
 #include <U2Formats/SAMFormat.h>
 
-#include <QSharedPointer>
-
-#include "ConvertAssemblyToSamTask.h"
-
 namespace U2 {
 
 ConvertAssemblyToSamTask::ConvertAssemblyToSamTask(GUrl db, GUrl sam)
-: Task("ConvertAssemblyToSamTask", TaskFlag_ReportingIsSupported | TaskFlag_ReportingIsEnabled),
-    dbFileUrl(db),
-    samFileUrl(sam),
-    handle(NULL)
-{
+    : Task("ConvertAssemblyToSamTask", TaskFlag_ReportingIsSupported | TaskFlag_ReportingIsEnabled),
+      dbFileUrl(db),
+      samFileUrl(sam),
+      handle(NULL) {
 }
 
 ConvertAssemblyToSamTask::ConvertAssemblyToSamTask(const DbiConnection *h, GUrl sam)
-: Task("ConvertAssemblyToSamTask", TaskFlag_ReportingIsSupported | TaskFlag_ReportingIsEnabled),
-    dbFileUrl(NULL),
-    samFileUrl(sam),
-    handle(h)
-{
+    : Task("ConvertAssemblyToSamTask", TaskFlag_ReportingIsSupported | TaskFlag_ReportingIsEnabled),
+      dbFileUrl(NULL),
+      samFileUrl(sam),
+      handle(h) {
 }
 
-ConvertAssemblyToSamTask::ConvertAssemblyToSamTask(const U2EntityRef& entityRef, GUrl sam)
-: Task("ConvertAssemblyToSamTask", TaskFlag_ReportingIsSupported | TaskFlag_ReportingIsEnabled),
-    dbFileUrl(NULL),
-    samFileUrl(sam),
-    assemblyEntityRef(entityRef),
-    handle(NULL)
-{
+ConvertAssemblyToSamTask::ConvertAssemblyToSamTask(const U2EntityRef &entityRef, GUrl sam)
+    : Task("ConvertAssemblyToSamTask", TaskFlag_ReportingIsSupported | TaskFlag_ReportingIsEnabled),
+      dbFileUrl(NULL),
+      samFileUrl(sam),
+      assemblyEntityRef(entityRef),
+      handle(NULL) {
 }
-
 
 void ConvertAssemblyToSamTask::run() {
     taskLog.details("Start converting assemblies to SAM");
@@ -78,19 +74,18 @@ void ConvertAssemblyToSamTask::run() {
         if (assemblyEntityRef.isValid()) {
             dbiHandle = QSharedPointer<DbiConnection>(
                 new DbiConnection(assemblyEntityRef.dbiRef,
-                false,
-                stateInfo));
-        }
-        else {
+                                  false,
+                                  stateInfo));
+        } else {
             dbiHandle = QSharedPointer<DbiConnection>(
                 new DbiConnection(U2DbiRef(SQLITE_DBI_ID, dbFileUrl.getURLString()),
-                false,
-                stateInfo));
+                                  false,
+                                  stateInfo));
         }
         handle = dbiHandle.data();
     }
 
-    if (handle->dbi == NULL){
+    if (handle->dbi == NULL) {
         setError(tr("Given file is not valid UGENE database file"));
         return;
     }
@@ -109,7 +104,7 @@ void ConvertAssemblyToSamTask::run() {
 
     DocumentFormat *format = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::SAM);
     IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(samFileUrl));
-    QScopedPointer<Document> doc(format->createNewLoadedDocument(iof, samFileUrl , stateInfo));
+    QScopedPointer<Document> doc(format->createNewLoadedDocument(iof, samFileUrl, stateInfo));
     CHECK_OP(stateInfo, );
     doc->setDocumentOwnsDbiResources(false);
     foreach (const U2DataId &id, objectIds) {
@@ -132,4 +127,4 @@ QString ConvertAssemblyToSamTask::generateReport() const {
     return QString("Conversion task was finished. A new SAM file is: <a href=\"%1\">%2</a>").arg(samFileUrl.getURLString()).arg(samFileUrl.getURLString());
 }
 
-} // U2
+}    // namespace U2

@@ -24,14 +24,13 @@
 namespace U2 {
 
 BreakpointGreaterOrEqualHitCounter::BreakpointGreaterOrEqualHitCounter(
-    BreakpointHitCountCondition initCondition, quint32 initHitCount)
-    : BreakpointEqualHitCounter(initCondition, initHitCount)
-{
-
+    BreakpointHitCountCondition initCondition,
+    quint32 initHitCount)
+    : BreakpointEqualHitCounter(initCondition, initHitCount) {
 }
 
 bool BreakpointGreaterOrEqualHitCounter::hit() {
     return (++hitCount >= targetHitCount);
 }
 
-} // namespace U2
+}    // namespace U2

@@ -22,11 +22,11 @@
 #ifndef _U2_UNIT_TEST_H_
 #define _U2_UNIT_TEST_H_
 
+#include <QMetaType>
 #include <QString>
 
-
 #define _STR(c) #c
-#define TEST_CLASS(suite, name)          suite##_##name
+#define TEST_CLASS(suite, name) suite##_##name
 #define TEST_CLASS_STR(suite, name) _STR(suite##_##name)
 
 /** Macros for writing tests without repeating too much */
@@ -50,9 +50,9 @@
 /** Macros to be used in test body: they all check for some condition,
     and if check fails then set test error and break its execution */
 
-#define CHECK_NO_ERROR(os) CHECK_OP_EXT(os, SetError(os.getError()),)
-#define CHECK_TRUE(condition, error) CHECK_EXT(condition, SetError(error),)
-#define CHECK_FALSE(condition, error) CHECK_EXT(!(condition), SetError(error),)
+#define CHECK_NO_ERROR(os) CHECK_OP_EXT(os, SetError(os.getError()), )
+#define CHECK_TRUE(condition, error) CHECK_EXT(condition, SetError(error), )
+#define CHECK_FALSE(condition, error) CHECK_EXT(!(condition), SetError(error), )
 
 /** To use CHECK_EQUAL and CHECK_NOT_EQUAL for class that is not convertible to QString,
     define partial specialization of template function toString<T>(const T &t) */
@@ -63,19 +63,30 @@ namespace U2 {
 
 class UnitTest {
 public:
-    virtual ~UnitTest() {}
+    virtual ~UnitTest() {
+    }
 
     virtual void Test() = 0;
-    virtual void SetUp() {}
-    virtual void TearDown() {}
-    virtual void SetError(const QString& err) { error = err; }
-    virtual QString GetError() { return error; }
+    virtual void SetUp() {
+    }
+    virtual void TearDown() {
+    }
+    virtual void SetError(const QString &err) {
+        error = err;
+    }
+    virtual QString GetError() {
+        return error;
+    }
+
 protected:
     QString error;
 };
 
-template<class T> QString toString(const T &t) { return QString("%1").arg(t); }
+template<class T>
+QString toString(const T &t) {
+    return QString("%1").arg(t);
+}
 
-} // namespace
+}    // namespace U2
 
 #endif

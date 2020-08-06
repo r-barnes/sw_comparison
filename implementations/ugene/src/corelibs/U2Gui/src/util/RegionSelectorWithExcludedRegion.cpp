@@ -23,12 +23,11 @@
 
 #include "ui_RegionSelectorWithExcludedRegion.h"
 
-
 namespace U2 {
 
-RegionSelectorWithExludedRegion::RegionSelectorWithExludedRegion(QWidget* parent,
+RegionSelectorWithExludedRegion::RegionSelectorWithExludedRegion(QWidget *parent,
                                                                  qint64 maxLen,
-                                                                 DNASequenceSelection* selection,
+                                                                 DNASequenceSelection *selection,
                                                                  bool isCircularAvailable)
     : QWidget(parent),
       ui(new Ui_RegionSelectorWithExcludedRegion) {
@@ -102,7 +101,6 @@ QString RegionSelectorWithExludedRegion::getErrorMessage() const {
 
 void RegionSelectorWithExludedRegion::connectSlots() {
     connect(ui->excludeCheckBox, SIGNAL(toggled(bool)), ui->excludeWidget, SLOT(setEnabled(bool)));
-
 }
 
-} // namespace
+}    // namespace U2

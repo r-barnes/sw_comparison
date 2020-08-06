@@ -19,12 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "CreateCircularBranchesTask.h"
+
 #include <QStack>
 
-#include "CreateCircularBranchesTask.h"
+#include <U2Core/PhyTreeObject.h>
+
 #include "GraphicsCircularBranchItem.h"
 #include "GraphicsRectangularBranchItem.h"
-#include <U2Core/PhyTreeObject.h>
 #include "TreeViewerUtils.h"
 
 namespace U2 {
@@ -33,12 +35,14 @@ const qreal CreateCircularBranchesTask::DEGENERATED_WIDTH = 300;
 const qreal CreateCircularBranchesTask::WIDTH_RADIUS = 30;
 const qreal CreateCircularBranchesTask::SCALE = 6.0;
 
-CreateCircularBranchesTask::CreateCircularBranchesTask(GraphicsRectangularBranchItem *r, bool _degeneratedCase): root1(r), degeneratedCase(_degeneratedCase) {}
+CreateCircularBranchesTask::CreateCircularBranchesTask(GraphicsRectangularBranchItem *r, bool _degeneratedCase)
+    : root1(r), degeneratedCase(_degeneratedCase) {
+}
 
-GraphicsCircularBranchItem* CreateCircularBranchesTask::getBranch(GraphicsRectangularBranchItem *from, GraphicsCircularBranchItem* parent) {
-    GraphicsCircularBranchItem* res = new GraphicsCircularBranchItem(parent, coef * from->getHeight(), from, from->getNodeLabel());
-    foreach (QGraphicsItem* item, from->childItems()) {
-        GraphicsRectangularBranchItem* ri = dynamic_cast<GraphicsRectangularBranchItem*>(item);
+GraphicsCircularBranchItem *CreateCircularBranchesTask::getBranch(GraphicsRectangularBranchItem *from, GraphicsCircularBranchItem *parent) {
+    GraphicsCircularBranchItem *res = new GraphicsCircularBranchItem(parent, coef * from->getHeight(), from, from->getNodeLabel());
+    foreach (QGraphicsItem *item, from->childItems()) {
+        GraphicsRectangularBranchItem *ri = dynamic_cast<GraphicsRectangularBranchItem *>(item);
         if (ri != NULL) {
             getBranch(ri, res);
         }
@@ -49,16 +53,16 @@ GraphicsCircularBranchItem* CreateCircularBranchesTask::getBranch(GraphicsRectan
 
 void CreateCircularBranchesTask::run() {
     coef = SCALE / root1->childrenBoundingRect().height();
-    if (degeneratedCase){
+    if (degeneratedCase) {
         root1->setWidthW(DEGENERATED_WIDTH);
-    }else{
+    } else {
         root1->setWidthW(WIDTH_RADIUS);
     }
 
-    GraphicsCircularBranchItem* r = getBranch(root1, NULL);
+    GraphicsCircularBranchItem *r = getBranch(root1, NULL);
     r->setVisibleW(false);
     root = r;
     root1->setWidthW(0);
 }
 
-}
+}    // namespace U2

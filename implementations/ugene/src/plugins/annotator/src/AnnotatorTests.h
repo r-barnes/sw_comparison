@@ -31,8 +31,8 @@
 #include <U2View/AnnotatedDNAView.h>
 
 #include "CollocationsDialogController.h"
-#include "GeneByGeneReportTask.h"
 #include "CustomPatternAnnotationTask.h"
+#include "GeneByGeneReportTask.h"
 
 namespace U2 {
 
@@ -43,6 +43,7 @@ public:
 
     void prepare();
     Task::ReportResult report();
+
 private:
     QString seqName;
     QString docName;
@@ -60,21 +61,22 @@ public:
 
     void prepare();
     Task::ReportResult report();
+
 private:
     QString seqName;
     QString docName;
     QString resultDocContextName;
     bool isCircular;
-    CustomPatternAnnotationTask* searchTask;
+    CustomPatternAnnotationTask *searchTask;
 };
 
-
-class GTest_GeneByGeneApproach : public XmlTest{
+class GTest_GeneByGeneApproach : public XmlTest {
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_GeneByGeneApproach, "plugin_dna-annotator-gene-by-gene");
 
     void prepare();
     Task::ReportResult report();
+
 private:
     QString seqName;
     QString annName;
@@ -84,6 +86,6 @@ private:
     GeneByGeneCompareResult result;
 };
 
-} //namespace U2
+}    //namespace U2
 
 #endif

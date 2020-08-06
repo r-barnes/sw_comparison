@@ -20,16 +20,16 @@
  */
 
 #include "SaveProjectDialogFiller.h"
+#include <primitives/GTWidget.h>
+
 #include <QApplication>
 #include <QPushButton>
 
-#include <primitives/GTWidget.h>
-
-namespace U2{
-void SaveProjectDialogFiller::commonScenario(){
-    QWidget* dialog = QApplication::activeModalWidget();
+namespace U2 {
+void SaveProjectDialogFiller::commonScenario() {
+    QWidget *dialog = QApplication::activeModalWidget();
     CHECK_SET_ERR(dialog, "save project dialog not found");
 
     GTUtilsDialog::clickButtonBox(os, dialog, b);
 }
-}
+}    // namespace U2

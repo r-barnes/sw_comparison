@@ -23,6 +23,7 @@
 #define _U2_AUTO_ANNOTATION_UTILS_H_
 
 #include <U2Core/GObjectReference.h>
+
 #include "ADVSingleSequenceWidget.h"
 
 namespace U2 {
@@ -35,14 +36,20 @@ class MWMDIWindow;
 class AutoAnnotationsADVAction : public ADVSequenceWidgetAction {
     Q_OBJECT
 public:
-    AutoAnnotationsADVAction(ADVSequenceWidget* widget, AutoAnnotationObject* aaObj);
+    AutoAnnotationsADVAction(ADVSequenceWidget *widget, AutoAnnotationObject *aaObj);
     ~AutoAnnotationsADVAction();
-    QList<QAction*> getToggleActions();
-    QAction* getSelectAllAction() { return selectAllAction; }
-    QAction* getDeselectAllAction() { return deselectAllAction; }
-    AutoAnnotationObject* getAAObj() {return aaObj; }
-    QAction* findToggleAction(const QString& groupName);
-    void addUpdaterToMenu(AutoAnnotationsUpdater* updater);
+    QList<QAction *> getToggleActions();
+    QAction *getSelectAllAction() {
+        return selectAllAction;
+    }
+    QAction *getDeselectAllAction() {
+        return deselectAllAction;
+    }
+    AutoAnnotationObject *getAAObj() {
+        return aaObj;
+    }
+    QAction *findToggleAction(const QString &groupName);
+    void addUpdaterToMenu(AutoAnnotationsUpdater *updater);
     static const QString ACTION_NAME;
 
 private slots:
@@ -54,9 +61,9 @@ private slots:
 
 private:
     void updateMenu();
-    AutoAnnotationObject* aaObj;
-    QMenu* menu;
-    QAction *selectAllAction,*deselectAllAction;
+    AutoAnnotationObject *aaObj;
+    QMenu *menu;
+    QAction *selectAllAction, *deselectAllAction;
     int updatesCount;
 };
 
@@ -72,19 +79,19 @@ public:
 private:
     AnnotationGroup *aGroup;
     GObjectReference aRef;
-    ADVSequenceObjectContext* seqCtx;
-    ADVCreateAnnotationsTask* createTask;
+    ADVSequenceObjectContext *seqCtx;
+    ADVCreateAnnotationsTask *createTask;
     const QString annDescription;
 };
 
 class U2VIEW_EXPORT AutoAnnotationUtils {
 public:
-    static AutoAnnotationsADVAction* findAutoAnnotationADVAction(ADVSequenceObjectContext* ctx);
-    static QAction* findAutoAnnotationsToggleAction(ADVSequenceObjectContext* ctx, const QString& name);
-    static QList<QAction*> getAutoAnnotationToggleActions(ADVSequenceObjectContext* ctx);
-    static void triggerAutoAnnotationsUpdate(ADVSequenceObjectContext* ctx, const QString& aaGroupName);
+    static AutoAnnotationsADVAction *findAutoAnnotationADVAction(ADVSequenceObjectContext *ctx);
+    static QAction *findAutoAnnotationsToggleAction(ADVSequenceObjectContext *ctx, const QString &name);
+    static QList<QAction *> getAutoAnnotationToggleActions(ADVSequenceObjectContext *ctx);
+    static void triggerAutoAnnotationsUpdate(ADVSequenceObjectContext *ctx, const QString &aaGroupName);
 };
 
-}
+}    // namespace U2
 
-#endif // _U2_AUTO_ANNOTATION_UTILS_H_
+#endif    // _U2_AUTO_ANNOTATION_UTILS_H_

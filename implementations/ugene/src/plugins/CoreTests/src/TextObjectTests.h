@@ -42,9 +42,9 @@ private:
 
 class TextObjectTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_TEXT_OBJECT_TESTS_H_
+#endif    // _U2_TEXT_OBJECT_TESTS_H_

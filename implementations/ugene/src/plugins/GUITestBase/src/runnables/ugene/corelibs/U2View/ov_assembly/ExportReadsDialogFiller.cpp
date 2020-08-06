@@ -20,16 +20,15 @@
  */
 
 #include "ExportReadsDialogFiller.h"
+#include <primitives/GTCheckBox.h>
+#include <primitives/GTComboBox.h>
+#include <primitives/GTLineEdit.h>
+#include <primitives/GTWidget.h>
 
 #include <QApplication>
-#include <QLineEdit>
-#include <QComboBox>
 #include <QCheckBox>
-
-#include <primitives/GTLineEdit.h>
-#include <primitives/GTComboBox.h>
-#include <primitives/GTCheckBox.h>
-#include <primitives/GTWidget.h>
+#include <QComboBox>
+#include <QLineEdit>
 
 namespace U2 {
 
@@ -39,8 +38,7 @@ ExportReadsDialogFiller::ExportReadsDialogFiller(HI::GUITestOpStatus &os, const 
     : Filler(os, "ExportReadsDialog"),
       filePath(filePath),
       format(format),
-      addToProject(addToProject)
-{
+      addToProject(addToProject) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
@@ -48,15 +46,15 @@ void ExportReadsDialogFiller::commonScenario() {
     QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog != NULL, "dialog not found");
 
-    QLineEdit* fileLineEdit = dialog->findChild<QLineEdit*>("filepathLineEdit");
+    QLineEdit *fileLineEdit = dialog->findChild<QLineEdit *>("filepathLineEdit");
     GT_CHECK(fileLineEdit != NULL, "File path lineEdit not found");
     GTLineEdit::setText(os, fileLineEdit, filePath);
 
-    QComboBox *formatComboBox = dialog->findChild<QComboBox*>("documentFormatComboBox");
+    QComboBox *formatComboBox = dialog->findChild<QComboBox *>("documentFormatComboBox");
     GT_CHECK(formatComboBox != NULL, "Format comboBox not found");
     GTComboBox::setIndexWithText(os, formatComboBox, format);
 
-    QCheckBox* addToPrj = dialog->findChild<QCheckBox*>("addToProjectCheckBox");
+    QCheckBox *addToPrj = dialog->findChild<QCheckBox *>("addToProjectCheckBox");
     GT_CHECK(addToPrj != NULL, "Add to project check box not found");
     GTCheckBox::setChecked(os, addToPrj, addToProject);
 
@@ -67,4 +65,4 @@ void ExportReadsDialogFiller::commonScenario() {
 
 #undef GT_CLASS_NAME
 
-} // namespace
+}    // namespace U2

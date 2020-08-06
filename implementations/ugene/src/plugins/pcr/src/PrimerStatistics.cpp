@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "PrimerStatistics.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/DNASequenceUtils.h>
@@ -29,8 +31,6 @@
 
 #include "Primer.h"
 #include "PrimerGroupBox.h"
-
-#include "PrimerStatistics.h"
 
 namespace U2 {
 
@@ -59,7 +59,7 @@ double PrimerStatistics::getMeltingTemperature(const QByteArray &sequence) {
     return calc.getTm();
 }
 
-double PrimerStatistics::getMeltingTemperature(const QByteArray& initialPrimer, const QByteArray& alternativePrimer) {
+double PrimerStatistics::getMeltingTemperature(const QByteArray &initialPrimer, const QByteArray &alternativePrimer) {
     if (PrimerStatistics::validate(initialPrimer)) {
         return PrimerStatistics::getMeltingTemperature(initialPrimer);
     }
@@ -92,7 +92,6 @@ bool PrimerStatistics::validate(QString primer) {
     return pv.validate(primer, pos) == QValidator::Acceptable;
 }
 
-
 QString PrimerStatistics::getDoubleStringValue(double value) {
     QString result = QString::number(value, 'f', 2);
     result.remove(QRegExp("\\.?0+$"));
@@ -111,20 +110,29 @@ const int PrimerStatisticsCalculator::RUNS_TOP = 4;
 const double PrimerStatisticsCalculator::DIMERS_ENERGY_THRESHOLD = -6.0;
 
 PrimerStatisticsCalculator::PrimerStatisticsCalculator(const QByteArray &sequence, Direction direction)
-: sequence(sequence), direction(direction), nA(0), nC(0), nG(0), nT(0), maxRun(0)
-{
+    : sequence(sequence), direction(direction), nA(0), nC(0), nG(0), nT(0), maxRun(0) {
     CHECK(!sequence.isEmpty(), );
 
     int currentRun = 0;
     char prevC = sequence[0];
-    foreach(const char c, sequence) {
+    foreach (const char c, sequence) {
         switch (c) {
-            case 'A': nA++; break;
-            case 'C': nC++; break;
-            case 'G': nG++; break;
-            case 'T': nT++; break;
-            case 'N': break;
-            default: FAIL(QString("Unexpected symbol: ") + c, );
+        case 'A':
+            nA++;
+            break;
+        case 'C':
+            nC++;
+            break;
+        case 'G':
+            nG++;
+            break;
+        case 'T':
+            nT++;
+            break;
+        case 'N':
+            break;
+        default:
+            FAIL(QString("Unexpected symbol: ") + c, );
         }
         if (prevC == c) {
             currentRun++;
@@ -175,7 +183,7 @@ int PrimerStatisticsCalculator::getRuns() const {
     return maxRun;
 }
 
-const DimerFinderResult& PrimerStatisticsCalculator::getDimersInfo() const {
+const DimerFinderResult &PrimerStatisticsCalculator::getDimersInfo() const {
     return dimersInfo;
 }
 
@@ -210,7 +218,6 @@ QString PrimerStatisticsCalculator::getFirstError() const {
     return result;
 }
 
-
 bool PrimerStatisticsCalculator::isValidGC(QString &error) const {
     double value = getGC();
     CHECK_EXT(value >= GC_BOTTOM, error = getMessage(PrimerStatistics::tr("low GC-content")), false);
@@ -239,12 +246,12 @@ bool PrimerStatisticsCalculator::isValidRuns(QString &error) const {
 
 QString PrimerStatisticsCalculator::getMessage(const QString &error) const {
     switch (direction) {
-        case Forward:
-            return PrimerStatistics::tr("forward primer has %1.").arg(error);
-        case Reverse:
-            return PrimerStatistics::tr("reverse primer has %1.").arg(error);
-        default:
-            return error;
+    case Forward:
+        return PrimerStatistics::tr("forward primer has %1.").arg(error);
+    case Reverse:
+        return PrimerStatistics::tr("reverse primer has %1.").arg(error);
+    default:
+        return error;
     }
 }
 
@@ -253,24 +260,22 @@ bool PrimerStatisticsCalculator::isSelfDimer(QString &error) const {
     return true;
 }
 
-
 /************************************************************************/
 /* PrimersPairStatistics */
 /************************************************************************/
 const QString PrimersPairStatistics::TmString = "Tm" + QString::fromLatin1(" (\x00B0") + "C)";
 
 namespace {
-    const QString GC_RANGE = QString("%1-%2").arg(PrimerStatisticsCalculator::GC_BOTTOM).arg(PrimerStatisticsCalculator::GC_TOP);
-    const QString TM_RANGE = QString("%1-%2").arg(PrimerStatisticsCalculator::TM_BOTTOM).arg(PrimerStatisticsCalculator::TM_TOP);
-    const QString CLAMP_RANGE = QString("&gt;=%1 G or C at 3' end").arg(PrimerStatisticsCalculator::CLAMP_BOTTOM);
-    const QString RUNS_RANGE = QString("&lt;=%1 base runs").arg(PrimerStatisticsCalculator::RUNS_TOP);
-    const QString DIMERS_RANGE = QString("&Delta;G &gt;=%1 kcal/mol").arg(PrimerStatisticsCalculator::DIMERS_ENERGY_THRESHOLD);
-}
+const QString GC_RANGE = QString("%1-%2").arg(PrimerStatisticsCalculator::GC_BOTTOM).arg(PrimerStatisticsCalculator::GC_TOP);
+const QString TM_RANGE = QString("%1-%2").arg(PrimerStatisticsCalculator::TM_BOTTOM).arg(PrimerStatisticsCalculator::TM_TOP);
+const QString CLAMP_RANGE = QString("&gt;=%1 G or C at 3' end").arg(PrimerStatisticsCalculator::CLAMP_BOTTOM);
+const QString RUNS_RANGE = QString("&lt;=%1 base runs").arg(PrimerStatisticsCalculator::RUNS_TOP);
+const QString DIMERS_RANGE = QString("&Delta;G &gt;=%1 kcal/mol").arg(PrimerStatisticsCalculator::DIMERS_ENERGY_THRESHOLD);
+}    // namespace
 
 PrimersPairStatistics::PrimersPairStatistics(const QByteArray &forward, const QByteArray &reverse)
     : forward(forward, PrimerStatisticsCalculator::Forward),
-      reverse(reverse, PrimerStatisticsCalculator::Reverse)
-{
+      reverse(reverse, PrimerStatisticsCalculator::Reverse) {
     HeteroDimersFinder dimersFinder(forward, reverse);
     dimersInfo = dimersFinder.getResult();
 }
@@ -278,16 +283,16 @@ PrimersPairStatistics::PrimersPairStatistics(const QByteArray &forward, const QB
 QString PrimersPairStatistics::getFirstError() const {
     QString result = forward.getFirstError();
 
-    if(!result.isEmpty()) {
+    if (!result.isEmpty()) {
         return result;
     }
 
     result = reverse.getFirstError();
-    if(!result.isEmpty()) {
+    if (!result.isEmpty()) {
         return result;
     }
 
-    if(dimersInfo.canBeFormed) {
+    if (dimersInfo.canBeFormed) {
         return dimersInfo.getShortReport();
     }
 
@@ -319,26 +324,26 @@ QString PrimersPairStatistics::generateReport() const {
     result += "</tr>";
 
     QString e;
-    CREATE_ROW("% GC",      GC_RANGE,       toString(forward.getGC()),              toString(reverse.getGC()),              forward.isValidGC(e),         reverse.isValidGC(e));
-    CREATE_ROW(TmString,    TM_RANGE,       toString(forward.getTm()),              toString(reverse.getTm()),              forward.isValidTm(e),         reverse.isValidTm(e));
-    CREATE_ROW("GC Clamp",  CLAMP_RANGE,    QString::number(forward.getGCClamp()),  QString::number(reverse.getGCClamp()),  forward.isValidGCClamp(e),    reverse.isValidGCClamp(e));
-    CREATE_ROW("Runs",      RUNS_RANGE,     QString::number(forward.getRuns()),     QString::number(reverse.getRuns()),     forward.isValidRuns(e),       reverse.isValidRuns(e));
+    CREATE_ROW("% GC", GC_RANGE, toString(forward.getGC()), toString(reverse.getGC()), forward.isValidGC(e), reverse.isValidGC(e));
+    CREATE_ROW(TmString, TM_RANGE, toString(forward.getTm()), toString(reverse.getTm()), forward.isValidTm(e), reverse.isValidTm(e));
+    CREATE_ROW("GC Clamp", CLAMP_RANGE, QString::number(forward.getGCClamp()), QString::number(reverse.getGCClamp()), forward.isValidGCClamp(e), reverse.isValidGCClamp(e));
+    CREATE_ROW("Runs", RUNS_RANGE, QString::number(forward.getRuns()), QString::number(reverse.getRuns()), forward.isValidRuns(e), reverse.isValidRuns(e));
     result += "</table>";
     addDimersToReport(result);
     return result;
 }
 
-void PrimersPairStatistics::addDimersToReport(QString& report) const {
-    if(forward.getDimersInfo().canBeFormed || reverse.getDimersInfo().canBeFormed) {
+void PrimersPairStatistics::addDimersToReport(QString &report) const {
+    if (forward.getDimersInfo().canBeFormed || reverse.getDimersInfo().canBeFormed) {
         report += "<h4>Self-dimers: </h4>";
-        if(forward.getDimersInfo().canBeFormed) {
+        if (forward.getDimersInfo().canBeFormed) {
             report += "<p>" + forward.getDimersInfo().getFullReport() + "</p>";
         }
-        if(reverse.getDimersInfo().canBeFormed) {
+        if (reverse.getDimersInfo().canBeFormed) {
             report += "<p>" + reverse.getDimersInfo().getFullReport() + "</p>";
         }
     }
-    if(dimersInfo.canBeFormed) {
+    if (dimersInfo.canBeFormed) {
         report += "<h4>Hetero-dimers: </h4>";
         report += "<p>" + dimersInfo.getFullReport() + "</p>";
     }
@@ -350,4 +355,4 @@ QString PrimersPairStatistics::toString(double value) {
     return result;
 }
 
-} // U2
+}    // namespace U2

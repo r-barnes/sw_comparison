@@ -28,7 +28,6 @@
 
 #include <U2Core/MultipleSequenceAlignment.h>
 
-
 namespace U2 {
 
 class MaEditor;
@@ -44,7 +43,7 @@ class U2VIEW_EXPORT MSAEditorConsensusCache : public QObject {
     Q_OBJECT
     Q_DISABLE_COPY(MSAEditorConsensusCache)
 public:
-    MSAEditorConsensusCache(QObject* p, MultipleAlignmentObject* aliObj, MSAConsensusAlgorithmFactory* algo);
+    MSAEditorConsensusCache(QObject *p, MultipleAlignmentObject *aliObj, MSAConsensusAlgorithmFactory *algo);
     ~MSAEditorConsensusCache();
 
     char getConsensusChar(int pos);
@@ -52,11 +51,15 @@ public:
     int getConsensusCharPercent(int pos);
     QList<int> getConsensusPercents(const U2Region &region);
 
-    int getConsensusLength() const { return cache.size(); }
+    int getConsensusLength() const {
+        return cache.size();
+    }
 
-    void setConsensusAlgorithm(MSAConsensusAlgorithmFactory* algo);
+    void setConsensusAlgorithm(MSAConsensusAlgorithmFactory *algo);
 
-    MSAConsensusAlgorithm* getConsensusAlgorithm() const {return algorithm;}
+    MSAConsensusAlgorithm *getConsensusAlgorithm() const {
+        return algorithm;
+    }
 
     QByteArray getConsensusLine(const U2Region &region, bool withGaps);
     QByteArray getConsensusLine(bool withGaps);
@@ -72,20 +75,22 @@ private slots:
 
 private:
     struct CacheItem {
-        CacheItem(char c = '-', int tc = 0) : topChar(c), topPercent(tc){}
-        char    topChar;
-        char    topPercent;
+        CacheItem(char c = '-', int tc = 0)
+            : topChar(c), topPercent(tc) {
+        }
+        char topChar;
+        char topPercent;
     };
 
     void updateCacheItem(int pos);
 
-    int                         curCacheSize;
-    QVector<CacheItem>          cache;
-    QBitArray                   updateMap;
-    MultipleAlignmentObject*    aliObj;
-    MSAConsensusAlgorithm*      algorithm;
+    int curCacheSize;
+    QVector<CacheItem> cache;
+    QBitArray updateMap;
+    MultipleAlignmentObject *aliObj;
+    MSAConsensusAlgorithm *algorithm;
 };
 
-}//namespace;
+}    // namespace U2
 
 #endif

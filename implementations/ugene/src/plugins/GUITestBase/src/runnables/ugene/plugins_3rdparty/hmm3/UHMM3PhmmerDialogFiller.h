@@ -27,13 +27,15 @@
 namespace U2 {
 using namespace HI;
 
-class UHMM3PhmmerDialogFiller: public Filler
-{
+class UHMM3PhmmerDialogFiller : public Filler {
 public:
-    UHMM3PhmmerDialogFiller(HI::GUITestOpStatus &os, QString _input):Filler(os, "PhmmerSearchDialog"), input(_input){}
+    UHMM3PhmmerDialogFiller(HI::GUITestOpStatus &os, QString _input)
+        : Filler(os, "PhmmerSearchDialog"), input(_input) {
+    }
     void commonScenario();
+
 private:
     QString input;
 };
-}
-#endif // _U2_UHMM3_PHMMER_DIALOG_FILLER_H_
+}    // namespace U2
+#endif    // _U2_UHMM3_PHMMER_DIALOG_FILLER_H_

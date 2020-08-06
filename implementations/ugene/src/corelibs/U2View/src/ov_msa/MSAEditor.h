@@ -25,9 +25,9 @@
 #include <U2Core/MultipleSequenceAlignmentObject.h>
 #include <U2Core/U2Msa.h>
 
-#include "PhyTrees/MSAEditorTreeManager.h"
 #include "MaEditor.h"
 #include "MsaEditorWgt.h"
+#include "PhyTrees/MSAEditorTreeManager.h"
 
 namespace U2 {
 
@@ -38,11 +38,9 @@ class PairwiseAlignmentWidgetsSettings {
 public:
     PairwiseAlignmentWidgetsSettings()
         : firstSequenceId(U2MsaRow::INVALID_ROW_ID),
-        secondSequenceId(U2MsaRow::INVALID_ROW_ID), inNewWindow(true),
-        pairwiseAlignmentTask(NULL), showSequenceWidget(true), showAlgorithmWidget(false),
-        showOutputWidget(false), sequenceSelectionModeOn(false)
-    {
-
+          secondSequenceId(U2MsaRow::INVALID_ROW_ID), inNewWindow(true),
+          pairwiseAlignmentTask(NULL), showSequenceWidget(true), showAlgorithmWidget(false),
+          showOutputWidget(false), sequenceSelectionModeOn(false) {
     }
 
     qint64 firstSequenceId;
@@ -50,7 +48,7 @@ public:
     QString algorithmName;
     bool inNewWindow;
     QString resultFileName;
-    PairwiseAlignmentTask* pairwiseAlignmentTask;
+    PairwiseAlignmentTask *pairwiseAlignmentTask;
     bool showSequenceWidget;
     bool showAlgorithmWidget;
     bool showOutputWidget;
@@ -68,80 +66,107 @@ class U2VIEW_EXPORT MSAEditor : public MaEditor {
     friend class SequenceWithChromatogramAreaRenderer;
 
 public:
-    MSAEditor(const QString& viewName, MultipleSequenceAlignmentObject* obj);
+    MSAEditor(const QString &viewName, MultipleSequenceAlignmentObject *obj);
     ~MSAEditor();
 
-    QString getSettingsRoot() const { return MSAE_SETTINGS_ROOT; }
+    QString getSettingsRoot() const override {
+        return MSAE_SETTINGS_ROOT;
+    }
 
-    MultipleSequenceAlignmentObject* getMaObject() const { return qobject_cast<MultipleSequenceAlignmentObject*>(maObject); }
+    MultipleSequenceAlignmentObject *getMaObject() const {
+        return qobject_cast<MultipleSequenceAlignmentObject *>(maObject);
+    }
 
-    virtual void buildStaticToolbar(QToolBar* tb);
+    virtual void buildStaticToolbar(QToolBar *tb);
 
-    virtual void buildStaticMenu(QMenu* m);
+    virtual void buildStaticMenu(QMenu *m);
 
-    MsaEditorWgt* getUI() const;
+    MsaEditorWgt *getUI() const;
 
     //Return alignment row that is displayed on target line in MSAEditor
-    const MultipleSequenceAlignmentRow getRowByLineNumber(int lineNumber) const;
+    const MultipleSequenceAlignmentRow getRowByViewRowIndex(int viewRowIndex) const;
 
-    void copyRowFromSequence(U2SequenceObject *seqObj, U2OpStatus &os);
+    PairwiseAlignmentWidgetsSettings *getPairwiseAlignmentWidgetsSettings() const {
+        return pairwiseAlignmentWidgetsSettings;
+    }
 
-    PairwiseAlignmentWidgetsSettings* getPairwiseAlignmentWidgetsSettings() const { return pairwiseAlignmentWidgetsSettings; }
-
-    MSAEditorTreeManager* getTreeManager() {return &treeManager;}
+    MSAEditorTreeManager *getTreeManager() {
+        return &treeManager;
+    }
 
     void buildTree();
 
-    QString getReferenceRowName() const;
+    QString getReferenceRowName() const override;
 
-    char getReferenceCharAt(int pos) const;
+    char getReferenceCharAt(int pos) const override;
+
+    void sortSequences(bool isByName, const MultipleAlignment::Order& sortOrder);
 
 protected slots:
-    void sl_onContextMenuRequested(const QPoint & pos);
+    void sl_onContextMenuRequested(const QPoint &pos);
 
     void sl_buildTree();
     void sl_align();
     void sl_addToAlignment();
+    void sl_searchInSequences();
+    void sl_searchInSequenceNames();
     void sl_realignSomeSequences();
     void sl_setSeqAsReference();
     void sl_unsetReferenceSeq();
 
-    void sl_onSeqOrderChanged(const QStringList& order);
+    void sl_onSeqOrderChanged(const QStringList &order);
     void sl_showTreeOP();
     void sl_hideTreeOP();
     void sl_rowsRemoved(const QList<qint64> &rowIds);
     void sl_updateRealignAction();
+    void sl_showCustomSettings();
+    void sl_sortSequencesByName();
+    void sl_sortSequencesByLength();
 
 protected:
-    QWidget* createWidget();
-    bool eventFilter(QObject* o, QEvent* e);
-    virtual bool onObjectRemoved(GObject* obj);
-    virtual void onObjectRenamed(GObject* obj, const QString& oldName);
+    QWidget *createWidget();
+    bool eventFilter(QObject *o, QEvent *e);
+    virtual bool onObjectRemoved(GObject *obj);
+    virtual void onObjectRenamed(GObject *obj, const QString &oldName);
     virtual bool onCloseEvent();
 
 private:
-    void addExportMenu(QMenu* m);
-    void addTreeMenu(QMenu* m);
-    void addAdvancedMenu(QMenu* m);
-    void addStatisticsMenu(QMenu* m);
+    void addEditMenu(QMenu *m) override;
+    void addSortMenu(QMenu *m);
+    void addExportMenu(QMenu *m) override;
+    void addAppearanceMenu(QMenu *m);
+    void addColorsMenu(QMenu *m);
+    void addHighlightingMenu(QMenu *m);
+    void addNavigationMenu(QMenu *m);
+    void addTreeMenu(QMenu *m);
+    void addAdvancedMenu(QMenu *m);
+    void addStatisticsMenu(QMenu *m);
 
-    virtual void updateActions();
+    void updateActions() override;
 
     void initDragAndDropSupport();
-    void alignSequencesFromObjectsToAlignment(const QList<GObject*>& objects);
+    void alignSequencesFromObjectsToAlignment(const QList<GObject *> &objects);
     void alignSequencesFromFilesToAlignment();
 
-    QAction*          buildTreeAction;
-    QAction*          alignAction;
-    QAction*          alignSequencesToAlignmentAction;
-    QAction*          realignSomeSequenceAction;
-    QAction*          setAsReferenceSequenceAction;
-    QAction*          unsetReferenceSequenceAction;
+    QAction *buildTreeAction;
+    QAction *alignAction;
+    QAction *alignSequencesToAlignmentAction;
+    QAction *realignSomeSequenceAction;
+    QAction *setAsReferenceSequenceAction;
+    QAction *unsetReferenceSequenceAction;
+    QAction *gotoAction;
+    QAction *searchInSequencesAction;
+    QAction *searchInSequenceNamesAction;
+    QAction *openCustomSettingsAction;
+    QAction *sortByNameAscendingAction;
+    QAction *sortByNameDescendingAction;
+    QAction *sortByLengthAscendingAction;
+    QAction *sortByLengthDescendingAction;
 
-    PairwiseAlignmentWidgetsSettings* pairwiseAlignmentWidgetsSettings;
-    MSAEditorTreeManager           treeManager;
+    PairwiseAlignmentWidgetsSettings *pairwiseAlignmentWidgetsSettings;
+    MSAEditorTreeManager treeManager;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MSA_EDITOR_H_
+#endif    // _U2_MSA_EDITOR_H_

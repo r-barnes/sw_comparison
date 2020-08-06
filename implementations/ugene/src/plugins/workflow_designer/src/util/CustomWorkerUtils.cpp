@@ -19,13 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "CustomWorkerUtils.h"
+
 #include <QRegularExpression>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/Log.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "CustomWorkerUtils.h"
 
 namespace U2 {
 namespace Workflow {
@@ -59,12 +59,12 @@ bool CustomWorkerUtils::commandContainsSpecialTool(const QString &cmd, const Ext
     return commandContainsVarName(cmd, varName);
 }
 
-bool CustomWorkerUtils::commandContainsVarName(const QString& cmd, const QString& varName) {
+bool CustomWorkerUtils::commandContainsVarName(const QString &cmd, const QString &varName) {
     QRegularExpression regex1 = QRegularExpression(CMDTOOL_SPECIAL_REGEX + ("%" + varName + "%"));
     return cmd.indexOf(regex1) >= 0;
 }
 
-QStringList CustomWorkerUtils::getToolIdsFromCommand(const QString& cmd) {
+QStringList CustomWorkerUtils::getToolIdsFromCommand(const QString &cmd) {
     QRegularExpression regex1 = QRegularExpression(CMDTOOL_SPECIAL_REGEX + QString("%([A-Za-z0-9_-]+)%"));
     QRegularExpressionMatchIterator match = regex1.globalMatch(cmd);
     QStringList result;
@@ -110,6 +110,5 @@ void CustomWorkerUtils::commandReplaceAllSpecialByUgenePath(QString &cmd, Extern
     }
 }
 
-
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

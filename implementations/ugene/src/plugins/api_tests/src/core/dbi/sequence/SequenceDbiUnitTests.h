@@ -22,15 +22,16 @@
 #ifndef _U2_SEQUENCE_DBI_UNITTESTS_H_
 #define _U2_SEQUENCE_DBI_UNITTESTS_H_
 
-#include "core/dbi/DbiTest.h"
+#include <unittest.h>
 
-#include <U2Core/U2DbiRegistry.h>
-#include <U2Core/U2SequenceDbi.h>
 #include <U2Core/DNAAlphabet.h>
+#include <U2Core/U2DbiRegistry.h>
 #include <U2Core/U2OpStatusUtils.h>
+#include <U2Core/U2SequenceDbi.h>
+
 #include <U2Test/TestRunnerSettings.h>
 
-#include <unittest.h>
+#include "core/dbi/DbiTest.h"
 
 namespace U2 {
 
@@ -45,20 +46,19 @@ class SequenceTestData {
 public:
     static void init();
     static void shutdown();
-    static U2SequenceDbi* getSequenceDbi();
-    static QList<U2DataId>* getSequences() { return sequences; };
-    static bool compareSequences(const U2Sequence& s1, const U2Sequence& s2);
-    static void checkUpdateSequence(UnitTest *t, const UpdateSequenceArgs& args);
-    static void replaceRegion(UnitTest *t, const QByteArray& originalSequence,
-        const QByteArray& dataToInsert,
-        const U2Region& region,
-        QByteArray& resultSequence);
+    static U2SequenceDbi *getSequenceDbi();
+    static QList<U2DataId> *getSequences() {
+        return sequences;
+    };
+    static bool compareSequences(const U2Sequence &s1, const U2Sequence &s2);
+    static void checkUpdateSequence(UnitTest *t, const UpdateSequenceArgs &args);
+    static void replaceRegion(UnitTest *t, const QByteArray &originalSequence, const QByteArray &dataToInsert, const U2Region &region, QByteArray &resultSequence);
 
 public:
-    static U2SequenceDbi* sequenceDbi;
-    static QList<U2DataId>* sequences;
+    static U2SequenceDbi *sequenceDbi;
+    static QList<U2DataId> *sequences;
 
-    static const QString& SEQ_DB_URL;
+    static const QString &SEQ_DB_URL;
 
 protected:
     static TestDbiProvider dbiProvider;
@@ -125,7 +125,7 @@ public:
     void Test();
 };
 
-} // namespace U2
+}    // namespace U2
 
 Q_DECLARE_METATYPE(U2::U2Sequence);
 Q_DECLARE_METATYPE(U2::UpdateSequenceArgs);
@@ -142,4 +142,4 @@ Q_DECLARE_METATYPE(U2::SequenceDbiUnitTests_updateSequenceData);
 Q_DECLARE_METATYPE(U2::SequenceDbiUnitTests_updateSequenceObject);
 Q_DECLARE_METATYPE(U2::SequenceDbiUnitTests_updateSequencesData);
 
-#endif //_U2_SEQUENCE_DBI_UNITTESTS_H_
+#endif    //_U2_SEQUENCE_DBI_UNITTESTS_H_

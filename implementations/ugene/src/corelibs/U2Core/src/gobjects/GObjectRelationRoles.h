@@ -42,6 +42,6 @@ public:
     static GObjectRelationRole fromString(const QString &str);
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

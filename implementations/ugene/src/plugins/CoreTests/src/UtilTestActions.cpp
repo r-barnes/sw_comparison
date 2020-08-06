@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "UtilTestActions.h"
+
 #include <QDir>
 
 #include <U2Core/AppContext.h>
@@ -27,16 +29,14 @@
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "UtilTestActions.h"
-
 namespace U2 {
 
 /************************************************************************/
 /* GTest_CopyFile */
 /************************************************************************/
 const QString GTest_CopyFile::FROM_URL_ATTR = "from";
-const QString GTest_CopyFile::TO_URL_ATTR ="to";
-const QString GTest_CopyFile::IS_DIRECTORY ="is_dir";
+const QString GTest_CopyFile::TO_URL_ATTR = "to";
+const QString GTest_CopyFile::IS_DIRECTORY = "is_dir";
 
 void GTest_CopyFile::init(XMLTestFormat *, const QDomElement &el) {
     fromUrl = el.attribute(FROM_URL_ATTR);
@@ -51,19 +51,19 @@ Task::ReportResult GTest_CopyFile::report() {
     bool copied = isDir ? copyDirectry(fromUrl, toUrl) : QFile::copy(fromUrl, toUrl);
     if (!copied) {
         stateInfo.setError(tr("Can't copy %1 '%2' to '%3'.")
-                           .arg(isDir ? "directory" : "file")
-                           .arg(fromUrl)
-                           .arg(toUrl));
+                               .arg(isDir ? "directory" : "file")
+                               .arg(fromUrl)
+                               .arg(toUrl));
     }
 
     return ReportResult_Finished;
 }
 
-bool GTest_CopyFile::copyDirectry(const QString& from, const QString& to) {
+bool GTest_CopyFile::copyDirectry(const QString &from, const QString &to) {
     QDir dirFrom(from);
 
     QStringList foldersList = dirFrom.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-    foreach(const QString& folder, foldersList) {
+    foreach (const QString &folder, foldersList) {
         QString subfolder = to + QDir::separator() + folder;
         dirFrom.mkpath(subfolder);
         bool copied = copyDirectry(from + QDir::separator() + folder, subfolder);
@@ -71,7 +71,7 @@ bool GTest_CopyFile::copyDirectry(const QString& from, const QString& to) {
     }
 
     QStringList filesList = dirFrom.entryList(QDir::Files);
-    foreach(const QString& file, filesList) {
+    foreach (const QString &file, filesList) {
         bool copied = QFile::copy(from + QDir::separator() + file, to + QDir::separator() + file);
         CHECK(copied, false);
     }
@@ -127,11 +127,11 @@ Task::ReportResult GTest_AddSharedDbUrl::report() {
 /*******************************
 * GUrlTests
 *******************************/
-QList<XMLTestFactory*> UtilTestActions::createTestFactories() {
-    QList<XMLTestFactory*> res;
+QList<XMLTestFactory *> UtilTestActions::createTestFactories() {
+    QList<XMLTestFactory *> res;
     res.append(GTest_CopyFile::createFactory());
     res.append(GTest_AddSharedDbUrl::createFactory());
     return res;
 }
 
-}   // namespace U2
+}    // namespace U2

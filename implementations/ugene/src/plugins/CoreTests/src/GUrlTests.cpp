@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "GUrlTests.h"
+
 #include <QDir>
 
 #include <U2Core/AppContext.h>
@@ -28,17 +30,15 @@
 #include <U2Core/GUrl.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "GUrlTests.h"
-
 namespace U2 {
 
-#define ORIGINAL_URL_ATTR       "original"
-#define EXPECTED_RESULT_ATTR    "expected-result"
-#define PLATFORM_ATTR           "platform"
-#define PLATFORM_WIN            "win"
-#define PLATFORM_UNIX           "unix"
+#define ORIGINAL_URL_ATTR "original"
+#define EXPECTED_RESULT_ATTR "expected-result"
+#define PLATFORM_ATTR "platform"
+#define PLATFORM_WIN "win"
+#define PLATFORM_UNIX "unix"
 
-void GTest_ConvertPath::init(XMLTestFormat*, const QDomElement& el) {
+void GTest_ConvertPath::init(XMLTestFormat *, const QDomElement &el) {
     originalUrl = el.attribute(ORIGINAL_URL_ATTR);
     expectedResult = el.attribute(EXPECTED_RESULT_ATTR);
     platform = el.attribute(PLATFORM_ATTR);
@@ -50,7 +50,7 @@ void GTest_ConvertPath::init(XMLTestFormat*, const QDomElement& el) {
 #endif
 
     runThisTest = (platform == currPlatform);
-    if(runThisTest) {
+    if (runThisTest) {
         GUrl gurl(originalUrl);
         result = gurl.getURLString();
         isFileUrl = (gurl.getType() == GUrl_File);
@@ -58,8 +58,8 @@ void GTest_ConvertPath::init(XMLTestFormat*, const QDomElement& el) {
 }
 
 Task::ReportResult GTest_ConvertPath::report() {
-    if(runThisTest) {
-        if(!isFileUrl) {
+    if (runThisTest) {
+        if (!isFileUrl) {
             stateInfo.setError(tr("%1 isn't a File URL.").arg(originalUrl));
         } else if (expectedResult != result) {
             stateInfo.setError(tr("%1 was converted into %2, while %3 was expected").arg(originalUrl).arg(result).arg(expectedResult));
@@ -96,7 +96,7 @@ Task::ReportResult GTest_CreateTmpDir::report() {
 /* GTest_RemoveTmpDir */
 /************************************************************************/
 void GTest_RemoveTmpDir::init(XMLTestFormat * /*tf*/, const QDomElement &el) {
-    url = env->getVar( TEMP_DATA_DIR_ENV_ID ) + "/" + el.attribute(URL_ATTR);
+    url = env->getVar(TEMP_DATA_DIR_ENV_ID) + "/" + el.attribute(URL_ATTR);
 }
 
 Task::ReportResult GTest_RemoveTmpDir::report() {
@@ -106,21 +106,7 @@ Task::ReportResult GTest_RemoveTmpDir::report() {
 
 void GTest_RemoveTmpDir::removeDir(const QString &url) {
     QDir dir(url);
-    if (!dir.exists()) {
-        return;
-    }
-    foreach (const QFileInfo &entry, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries)) {
-        if (entry.isDir()) {
-            removeDir(entry.absoluteFilePath());
-            CHECK_OP(stateInfo, );
-        } else {
-            bool removed = QFile::remove(entry.absoluteFilePath());
-            if (!removed) {
-                setError(QString("Can not remove a file: %1").arg(entry.absoluteFilePath()));
-            }
-        }
-    }
-    bool removed = dir.rmdir(url);
+    bool removed = dir.removeRecursively();
     if (!removed) {
         setError(QString("Can not remove a dir: %1").arg(url));
     }
@@ -130,7 +116,7 @@ void GTest_RemoveTmpDir::removeDir(const QString &url) {
 /* GTest_RemoveTmpFile */
 /************************************************************************/
 void GTest_RemoveTmpFile::init(XMLTestFormat * /*tf*/, const QDomElement &el) {
-    url = env->getVar( TEMP_DATA_DIR_ENV_ID ) + "/" + el.attribute(URL_ATTR);
+    url = env->getVar(TEMP_DATA_DIR_ENV_ID) + "/" + el.attribute(URL_ATTR);
 }
 
 Task::ReportResult GTest_RemoveTmpFile::report() {
@@ -145,7 +131,7 @@ Task::ReportResult GTest_RemoveTmpFile::report() {
 /* GTest_CreateTmpFile */
 /************************************************************************/
 void GTest_CreateTmpFile::init(XMLTestFormat * /*tf*/, const QDomElement &el) {
-    url = env->getVar( TEMP_DATA_DIR_ENV_ID ) + "/" + el.attribute(URL_ATTR);
+    url = env->getVar(TEMP_DATA_DIR_ENV_ID) + "/" + el.attribute(URL_ATTR);
     data = el.attribute(DATA_ATTR);
 }
 
@@ -165,7 +151,7 @@ Task::ReportResult GTest_CreateTmpFile::report() {
 /* GTest_CheckTmpFile */
 /************************************************************************/
 void GTest_CheckTmpFile::init(XMLTestFormat * /*tf*/, const QDomElement &el) {
-    url = env->getVar( TEMP_DATA_DIR_ENV_ID ) + "/" + el.attribute(URL_ATTR);
+    url = env->getVar(TEMP_DATA_DIR_ENV_ID) + "/" + el.attribute(URL_ATTR);
     exists = bool(el.attribute(EXISTS_ATTR).toInt());
 }
 
@@ -195,7 +181,7 @@ Task::ReportResult GTest_CheckStorageFile::report() {
     return ReportResult_Finished;
 }
 
-bool GTest_CheckStorageFile::findRecursive(const QString& currentDirUrl) {
+bool GTest_CheckStorageFile::findRecursive(const QString &currentDirUrl) {
     QDir currentDir(currentDirUrl);
     QFileInfoList subDirList = currentDir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
     QFileInfoList fileList = currentDir.entryInfoList(QDir::Files);
@@ -221,36 +207,36 @@ bool GTest_CheckStorageFile::findRecursive(const QString& currentDirUrl) {
 #define URL_ATTR "url"
 #define LESS_ATTR "lessThen"
 #define MORE_ATTR "moreThen"
-void GTest_CheckCreationTime::init(XMLTestFormat *tf, const QDomElement &el){
+void GTest_CheckCreationTime::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf)
     url = el.attribute(URL_ATTR);
     XMLTestUtils::replacePrefix(env, url);
 
     QString lessThen_string = el.attribute(LESS_ATTR);
     QString moreThen_string = el.attribute(MORE_ATTR);
-    if(lessThen_string.isEmpty() && moreThen_string.isEmpty()){
+    if (lessThen_string.isEmpty() && moreThen_string.isEmpty()) {
         setError("lessThen or moreThen tag should be set, but neither was set");
         return;
     }
-    if(!lessThen_string.isEmpty() && !moreThen_string.isEmpty()){
+    if (!lessThen_string.isEmpty() && !moreThen_string.isEmpty()) {
         setError("lessThen or moreThen tag should be set, but both were set");
         return;
     }
 
     int lessThen_int = -1;
     int moreThen_int = -1;
-    if(!lessThen_string.isEmpty()){
+    if (!lessThen_string.isEmpty()) {
         bool ok;
         lessThen_int = lessThen_string.toInt(&ok);
-        if(!ok){
+        if (!ok) {
             setError("lessThen tag is not a number");
             return;
         }
     }
-    if(!moreThen_string.isEmpty()){
+    if (!moreThen_string.isEmpty()) {
         bool ok;
         moreThen_int = moreThen_string.toInt(&ok);
-        if(!ok){
+        if (!ok) {
             setError("moreThen tag is not a number");
             return;
         }
@@ -259,10 +245,9 @@ void GTest_CheckCreationTime::init(XMLTestFormat *tf, const QDomElement &el){
     moreThen = moreThen_int;
 }
 
-Task::ReportResult GTest_CheckCreationTime::report(){
-
+Task::ReportResult GTest_CheckCreationTime::report() {
     QFile f(url);
-    if(!f.exists()){
+    if (!f.exists()) {
         setError("file " + url + " not found");
         return Task::ReportResult_Finished;
     }
@@ -272,14 +257,14 @@ Task::ReportResult GTest_CheckCreationTime::report(){
     QDateTime now = QDateTime::currentDateTime();
     int seconds = created.secsTo(now);
 
-    if(lessThen != -1){
-        if(seconds>lessThen){
+    if (lessThen != -1) {
+        if (seconds > lessThen) {
             setError(QString("time is more then expected: %1").arg(seconds));
             return Task::ReportResult_Finished;
         }
     }
-    if(moreThen != -1){
-        if(seconds<moreThen){
+    if (moreThen != -1) {
+        if (seconds < moreThen) {
             setError(QString("time is less then expected: %1").arg(seconds));
             return Task::ReportResult_Finished;
         }
@@ -292,33 +277,32 @@ Task::ReportResult GTest_CheckCreationTime::report(){
 /************************************************************************/
 #define FOLDER_ATTR "folder"
 #define EXP_NUM "expected"
-void GTest_CheckFilesNum::init(XMLTestFormat *tf, const QDomElement &el){
+void GTest_CheckFilesNum::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf)
     folder = el.attribute(FOLDER_ATTR);
     QString num_string = el.attribute(EXP_NUM);
-    if(num_string.isEmpty()){
+    if (num_string.isEmpty()) {
         setError("<expected> tag should be set");
         return;
     }
     bool ok;
     expectedNum = num_string.toInt(&ok);
-    if(!ok){
+    if (!ok) {
         setError("<expected> tab sould be integer");
     }
-
 }
 
-Task::ReportResult GTest_CheckFilesNum::report(){
+Task::ReportResult GTest_CheckFilesNum::report() {
     XMLTestUtils::replacePrefix(env, folder);
     QDir d(folder);
-    if(!d.exists()){
+    if (!d.exists()) {
         setError("file " + d.absolutePath());
         return Task::ReportResult_Finished;
     }
 
     QFileInfoList list = d.entryInfoList();
     int actualNum = list.size();
-    if(actualNum != expectedNum){
+    if (actualNum != expectedNum) {
         setError(QString("Unexpected files number: %1").arg(actualNum));
         return Task::ReportResult_Finished;
     }
@@ -328,8 +312,8 @@ Task::ReportResult GTest_CheckFilesNum::report(){
 /*******************************
 * GUrlTests
 *******************************/
-QList<XMLTestFactory*> GUrlTests::createTestFactories() {
-    QList<XMLTestFactory*> res;
+QList<XMLTestFactory *> GUrlTests::createTestFactories() {
+    QList<XMLTestFactory *> res;
     res.append(GTest_ConvertPath::createFactory());
     res.append(GTest_CreateTmpDir::createFactory());
     res.append(GTest_RemoveTmpDir::createFactory());
@@ -342,5 +326,4 @@ QList<XMLTestFactory*> GUrlTests::createTestFactories() {
     return res;
 }
 
-
-}//namespace
+}    // namespace U2

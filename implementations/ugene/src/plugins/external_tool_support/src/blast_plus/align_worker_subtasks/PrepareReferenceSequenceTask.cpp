@@ -19,6 +19,10 @@
  * MA 02110-1301, USA.
  */
 
+#include "PrepareReferenceSequenceTask.h"
+
+#include <QFileInfo>
+
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/BaseDocumentFormats.h>
@@ -26,17 +30,14 @@
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/DocumentModel.h>
+#include <U2Core/GUrlUtils.h>
 #include <U2Core/IOAdapter.h>
 #include <U2Core/IOAdapterUtils.h>
-#include <U2Core/GUrlUtils.h>
 #include <U2Core/LoadDocumentTask.h>
 #include <U2Core/SaveDocumentTask.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/UserApplicationsSettings.h>
 
-#include <QFileInfo>
-
-#include "PrepareReferenceSequenceTask.h"
 #include "RemoveGapsFromSequenceTask.h"
 
 namespace U2 {
@@ -47,8 +48,7 @@ PrepareReferenceSequenceTask::PrepareReferenceSequenceTask(const QString &refere
       dstDbiRef(dstDbiRef),
       copyTask(NULL),
       loadTask(NULL),
-      removeGapsTask(NULL)
-{
+      removeGapsTask(NULL) {
     SAFE_POINT_EXT(!referenceUrl.isEmpty(), setError("Reference URL is empty"), );
     SAFE_POINT_EXT(dstDbiRef.isValid(), setError("Destination DBI reference is not valid"), );
 }
@@ -76,7 +76,7 @@ QList<Task *> PrepareReferenceSequenceTask::onSubTaskFinished(Task *subTask) {
 
         newSubTasks << loadTask;
     } else if (loadTask == subTask) {
-        Document * const document = loadTask->getDocument(false);
+        Document *const document = loadTask->getDocument(false);
         SAFE_POINT(NULL != document, "Document is NULL", newSubTasks);
 
         document->setDocumentOwnsDbiResources(false);
@@ -92,20 +92,20 @@ QList<Task *> PrepareReferenceSequenceTask::onSubTaskFinished(Task *subTask) {
         referenceEntityRef = referenceObject->getEntityRef();
 
         newSubTasks << new RemoveGapsFromSequenceTask(referenceObject);
-    } else if (qobject_cast<RemoveGapsFromSequenceTask*>(subTask) != NULL) {
-        Document* doc = loadTask->getDocument(false);
+    } else if (qobject_cast<RemoveGapsFromSequenceTask *>(subTask) != NULL) {
+        Document *doc = loadTask->getDocument(false);
         SAFE_POINT(NULL != doc, "Document is NULL", newSubTasks);
 
         DocumentFormat *fastaFormat = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::FASTA);
         IOAdapterFactory *ioAdapterFactory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(doc->getURL()));
 
-        preparedReferenceUrl = GUrlUtils::rollFileName(doc->getURL().getURLString(), "_");        // we roll the URL here because there was a strange problem when UGENE couldn't overwrite the file (UTI-242)
+        preparedReferenceUrl = GUrlUtils::rollFileName(doc->getURL().getURLString(), "_");    // we roll the URL here because there was a strange problem when UGENE couldn't overwrite the file (UTI-242)
         Document *fastaDoc = doc->getSimpleCopy(fastaFormat, ioAdapterFactory, preparedReferenceUrl);
-        SaveDocumentTask* saveTask = new SaveDocumentTask(fastaDoc, SaveDoc_Overwrite | SaveDoc_DestroyButDontUnload);
+        SaveDocumentTask *saveTask = new SaveDocumentTask(fastaDoc, SaveDoc_Overwrite | SaveDoc_DestroyButDontUnload);
         newSubTasks << saveTask;
     }
 
     return newSubTasks;
 }
 
-}   // namespace U2
+}    // namespace U2

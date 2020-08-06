@@ -19,13 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "FeatureDbiUnitTests.h"
+
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2FeatureUtils.h>
-#include <U2Core/U2SequenceDbi.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "FeatureDbiUnitTests.h"
+#include <U2Core/U2SequenceDbi.h>
 
 namespace U2 {
 
@@ -40,17 +40,17 @@ U2FeatureDbi *FeatureTestData::subgroupDbi = NULL;
 U2SequenceDbi *FeatureTestData::sequenceDbi = NULL;
 
 void FeatureTestData::init() {
-    SAFE_POINT(NULL == featureDbi, "featuresDbi has been already initialized!",);
+    SAFE_POINT(NULL == featureDbi, "featuresDbi has been already initialized!", );
 
     bool ok = dbiProvider.init(featureDbiUrl, false);
-    SAFE_POINT(ok, "Dbi provider failed to initialize in FeaturesTestData::init()!",);
+    SAFE_POINT(ok, "Dbi provider failed to initialize in FeaturesTestData::init()!", );
 
     U2Dbi *dbi = dbiProvider.getDbi();
     featureDbi = dbi->getFeatureDbi();
-    SAFE_POINT(NULL != featureDbi, "Failed to get featureDbi!",);
+    SAFE_POINT(NULL != featureDbi, "Failed to get featureDbi!", );
 
     sequenceDbi = dbi->getSequenceDbi();
-    SAFE_POINT(NULL != sequenceDbi, "Failed to get sequenceDbi!",);
+    SAFE_POINT(NULL != sequenceDbi, "Failed to get sequenceDbi!", );
 
     SAFE_POINT(NULL == subgroupDbi, "subgroupDbi has been already initialized!", );
 
@@ -65,12 +65,12 @@ void FeatureTestData::init() {
 void FeatureTestData::shutdown() {
     U2OpStatusImpl os;
     if (NULL != featureDbi) {
-        SAFE_POINT(NULL != sequenceDbi, "sequenceDbi must also be not NULL on this step!",);
+        SAFE_POINT(NULL != sequenceDbi, "sequenceDbi must also be not NULL on this step!", );
 
         dbiProvider.close();
         featureDbi = NULL;
         sequenceDbi = NULL;
-        SAFE_POINT_OP(os,);
+        SAFE_POINT_OP(os, );
     }
     if (NULL != subgroupDbi) {
         SAFE_POINT(NULL != subgroupDbi, "subgroupDbi must also be not NULL on this step!", );
@@ -95,16 +95,14 @@ U2FeatureDbi *FeatureTestData::getSubgroupDbi() {
     return subgroupDbi;
 }
 
-U2SequenceDbi* FeatureTestData::getSequenceDbi() {
+U2SequenceDbi *FeatureTestData::getSequenceDbi() {
     if (NULL == sequenceDbi) {
         init();
     }
     return sequenceDbi;
 }
 
-U2Feature FeatureTestData::createTestFeature1(const U2Sequence &seq, U2OpStatus &os,
-    const U2Feature &parentFeature)
-{
+U2Feature FeatureTestData::createTestFeature1(const U2Sequence &seq, U2OpStatus &os, const U2Feature &parentFeature) {
     U2Feature feature;
     feature.sequenceId = seq.id;
     feature.location = U2FeatureLocation(U2Strand::Complementary, U2Region(1000, 100));
@@ -121,9 +119,7 @@ U2Feature FeatureTestData::createTestFeature1(const U2Sequence &seq, U2OpStatus 
     return feature;
 }
 
-U2Feature FeatureTestData::createTestFeature2(const U2Sequence &seq, U2OpStatus &os,
-    const U2Feature &parentFeature)
-{
+U2Feature FeatureTestData::createTestFeature2(const U2Sequence &seq, U2OpStatus &os, const U2Feature &parentFeature) {
     U2Feature feature;
     feature.sequenceId = seq.id;
     feature.location = U2FeatureLocation(U2Strand::Direct, U2Region(500, 600));
@@ -140,9 +136,7 @@ U2Feature FeatureTestData::createTestFeature2(const U2Sequence &seq, U2OpStatus 
     return feature;
 }
 
-U2Feature FeatureTestData::createTestFeature3(const U2Sequence &seq, U2OpStatus &os,
-    const U2Feature &parentFeature)
-{
+U2Feature FeatureTestData::createTestFeature3(const U2Sequence &seq, U2OpStatus &os, const U2Feature &parentFeature) {
     U2Feature feature;
     feature.sequenceId = seq.id;
     feature.location = U2FeatureLocation(U2Strand::Direct, U2Region(800, 10));
@@ -159,9 +153,7 @@ U2Feature FeatureTestData::createTestFeature3(const U2Sequence &seq, U2OpStatus 
     return feature;
 }
 
-U2Feature FeatureTestData::createTestFeatureWithoutKeys(const U2Sequence &seq, U2OpStatus &os,
-    const U2Feature &parentFeature)
-{
+U2Feature FeatureTestData::createTestFeatureWithoutKeys(const U2Sequence &seq, U2OpStatus &os, const U2Feature &parentFeature) {
     U2Feature feature;
     feature.sequenceId = seq.id;
     feature.location = U2FeatureLocation(U2Strand::Direct, U2Region(800, 10));
@@ -194,9 +186,11 @@ IMPLEMENT_TEST(FeatureDbiUnitTests, createFeature) {
 
     CHECK_EQUAL(featureBackup.sequenceId, newFeature.sequenceId, "sequence ID");
     CHECK_EQUAL(featureBackup.location.strand.getDirectionValue(),
-        newFeature.location.strand.getDirectionValue(), "location.strand");
+                newFeature.location.strand.getDirectionValue(),
+                "location.strand");
     CHECK_EQUAL(featureBackup.location.region.toString(),
-        newFeature.location.region.toString(), "location.strand");
+                newFeature.location.region.toString(),
+                "location.strand");
     CHECK_EQUAL(featureBackup.name, newFeature.name, "name");
 }
 
@@ -221,9 +215,11 @@ IMPLEMENT_TEST(FeatureDbiUnitTests, getFeature) {
 
     CHECK_EQUAL(featureBackup.sequenceId, newFeature.sequenceId, "sequence ID");
     CHECK_EQUAL(featureBackup.location.strand.getDirectionValue(),
-        newFeature.location.strand.getDirectionValue(), "location.strand");
+                newFeature.location.strand.getDirectionValue(),
+                "location.strand");
     CHECK_EQUAL(featureBackup.location.region.toString(),
-        newFeature.location.region.toString(), "location.strand");
+                newFeature.location.region.toString(),
+                "location.strand");
     CHECK_EQUAL(featureBackup.name, newFeature.name, "name");
 }
 
@@ -342,7 +338,7 @@ IMPLEMENT_TEST(FeatureDbiUnitTests, getFeatures) {
     while (iter->hasNext()) {
         const U2Feature current = iter->next();
         CHECK_TRUE((feature2.id == current.id) || (feature3.id == current.id),
-            "third feature query");
+                   "third feature query");
     }
 
     query.sequenceId = seq2.id;
@@ -352,7 +348,7 @@ IMPLEMENT_TEST(FeatureDbiUnitTests, getFeatures) {
     while (iter->hasNext()) {
         const U2Feature current = iter->next();
         CHECK_TRUE((feature2.id == current.id) || (feature3.id == current.id),
-            "fourth feature query");
+                   "fourth feature query");
     }
 
     query.keyName = "1";
@@ -408,8 +404,7 @@ IMPLEMENT_TEST(FeatureDbiUnitTests, getFeatureKeys) {
     featureDbi->createFeature(feature2, QList<U2FeatureKey>(), os);
     CHECK_NO_ERROR(os);
     CHECK_TRUE(feature2.hasValidId(), "Invalid feature ID!");
-    CHECK_EQUAL(0, featureDbi->getFeatureKeys(feature2.id, os).size(),
-        "feature key count");
+    CHECK_EQUAL(0, featureDbi->getFeatureKeys(feature2.id, os).size(), "feature key count");
 }
 
 IMPLEMENT_TEST(FeatureDbiUnitTests, addKey) {
@@ -595,12 +590,11 @@ IMPLEMENT_TEST(FeatureDbiUnitTests, updateLocation) {
     const U2Feature changedFeature = featureDbi->getFeature(feature.id, os);
     CHECK_NO_ERROR(os);
 
-    CHECK_EQUAL(location.region.startPos, changedFeature.location.region.startPos,
-        "feature region start");
-    CHECK_EQUAL(location.region.length, changedFeature.location.region.length,
-        "feature region length");
+    CHECK_EQUAL(location.region.startPos, changedFeature.location.region.startPos, "feature region start");
+    CHECK_EQUAL(location.region.length, changedFeature.location.region.length, "feature region length");
     CHECK_EQUAL(location.strand.getDirectionValue(),
-        changedFeature.location.strand.getDirectionValue(), "feature region strand");
+                changedFeature.location.strand.getDirectionValue(),
+                "feature region strand");
 }
 
 IMPLEMENT_TEST(FeatureDbiUnitTests, updateName) {
@@ -679,13 +673,16 @@ IMPLEMENT_TEST(FeatureDbiUnitTests, getFeaturesByRegion) {
     U2Feature feature3 = FeatureTestData::createTestFeature3(seq, os);
     CHECK_NO_ERROR(os);
     U2DbiIterator<U2Feature> *iter = featureDbi->getFeaturesByRegion(U2Region(900, 200),
-        U2DataId(), "misc_feature", seq.id, os);
+                                                                     U2DataId(),
+                                                                     "misc_feature",
+                                                                     seq.id,
+                                                                     os);
     CHECK_NO_ERROR(os);
 
     while (iter->hasNext()) {
         U2Feature current = iter->next();
         CHECK_TRUE((current.id == feature1.id) || (current.id == feature3.id),
-            "Unexpected feature ID");
+                   "Unexpected feature ID");
     }
 }
 
@@ -704,14 +701,13 @@ IMPLEMENT_TEST(FeatureDbiUnitTests, getSubFeatures) {
     CHECK_NO_ERROR(os);
     U2Feature feature3 = FeatureTestData::createTestFeature3(seq, os, feature2);
     CHECK_NO_ERROR(os);
-    U2DbiIterator<U2Feature> *iter = featureDbi->getFeaturesByParent(feature2.id, QString(),
-        seq.id, os);
+    U2DbiIterator<U2Feature> *iter = featureDbi->getFeaturesByParent(feature2.id, QString(), seq.id, os);
     CHECK_NO_ERROR(os);
 
     while (iter->hasNext()) {
         U2Feature current = iter->next();
         CHECK_TRUE((current.id == feature1.id) || (current.id == feature3.id),
-            "Unexpected feature ID");
+                   "Unexpected feature ID");
     }
 }
 
@@ -733,14 +729,13 @@ IMPLEMENT_TEST(FeatureDbiUnitTests, getFeaturesBySequence) {
     CHECK_NO_ERROR(os);
     U2Feature feature3 = FeatureTestData::createTestFeature3(seq1, os, feature2);
     CHECK_NO_ERROR(os);
-    U2DbiIterator<U2Feature> *iter = featureDbi->getFeaturesBySequence("misc_feature", seq1.id,
-        os);
+    U2DbiIterator<U2Feature> *iter = featureDbi->getFeaturesBySequence("misc_feature", seq1.id, os);
     CHECK_NO_ERROR(os);
 
     while (iter->hasNext()) {
         U2Feature current = iter->next();
         CHECK_TRUE((current.id == feature1.id) || (current.id == feature3.id),
-            "Unexpected feature ID");
+                   "Unexpected feature ID");
     }
 }
 
@@ -766,4 +761,4 @@ IMPLEMENT_TEST(FeatureDbiUnitTests, sortingSubgroups) {
     }
 }
 
-} // namespace U2
+}    // namespace U2

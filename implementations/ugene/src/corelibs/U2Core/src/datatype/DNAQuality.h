@@ -22,10 +22,10 @@
 #ifndef _U2_DNA_QUALITY_H_
 #define _U2_DNA_QUALITY_H_
 
-#include <U2Core/global.h>
-
 #include <QByteArray>
 #include <QStringList>
+
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -60,26 +60,30 @@ typedef QString DNAQualityFormat;
 
 class U2CORE_EXPORT DNAQuality {
 public:
-    DNAQuality() : type (DNAQualityType_Sanger) {}
+    DNAQuality()
+        : type(DNAQualityType_Sanger) {
+    }
     DNAQuality(const QByteArray &qualScore);
     DNAQuality(const QByteArray &qualScore, DNAQualityType type);
 
-    bool isEmpty() const { return qualCodes.isEmpty(); }
+    bool isEmpty() const {
+        return qualCodes.isEmpty();
+    }
     int getValue(int pos) const;
     static char encode(int val, DNAQualityType type);
 
     static QString getDNAQualityNameByType(DNAQualityType t);
-    static DNAQualityType getDNAQualityTypeByName(const QString& name);
+    static DNAQualityType getDNAQualityTypeByName(const QString &name);
     static QStringList getDNAQualityTypeNames();
     static DNAQualityType detectTypeByCodes(const QByteArray &qualCodes);
     static DNAQualityType detectTypeByMinMaxQualityValues(int minQualityValue, int maxQualityValue);
 
     qint64 memoryHint() const;
 
-    QByteArray      qualCodes;
-    void setQualCodes(const QByteArray& qualCodes);
+    QByteArray qualCodes;
+    void setQualCodes(const QByteArray &qualCodes);
 
-    DNAQualityType  type;
+    DNAQualityType type;
 
     static const DNAQualityFormat QUAL_FORMAT;
     static const DNAQualityFormat ENCODED;
@@ -87,7 +91,6 @@ public:
     static const int MIN_PHRED64_VALUE;
 };
 
-}//namespace
-
+}    // namespace U2
 
 #endif

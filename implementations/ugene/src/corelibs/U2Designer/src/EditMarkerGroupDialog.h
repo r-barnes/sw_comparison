@@ -23,14 +23,14 @@
 #define _EDIT_MARKER_DIALOG_H_
 
 #include "ui_EditFloatMarkerWidget.h"
-#include "ui_EditMarkerGroupDialog.h"
-#include "ui_EditMarkerDialog.h"
 #include "ui_EditIntegerMarkerWidget.h"
+#include "ui_EditMarkerDialog.h"
+#include "ui_EditMarkerGroupDialog.h"
 #include "ui_EditStringMarkerWidget.h"
 
 namespace U2 {
 namespace Workflow {
-    class MarkerGroupListCfgModel;
+class MarkerGroupListCfgModel;
 }
 
 class Marker;
@@ -85,7 +85,7 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
     int columnCount(const QModelIndex &) const;
     int rowCount(const QModelIndex &) const;
-    Qt::ItemFlags flags( const QModelIndex & index ) const;
+    Qt::ItemFlags flags(const QModelIndex &index) const;
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
 
     void addMarker(const QString &valueString, const QString &name);
@@ -103,8 +103,12 @@ class EditMarkerDialog : public QDialog, public Ui_EditMarkerDialog {
     Q_OBJECT
 public:
     EditMarkerDialog(bool isNew, const QString &type, const QString &name, const QVariantList &values, QWidget *parent);
-    QString getName() {return name;}
-    QVariantList getValues() {return values;}
+    QString getName() {
+        return name;
+    }
+    QVariantList getValues() {
+        return values;
+    }
     void accept();
 
 private:
@@ -119,17 +123,19 @@ private:
 /************************************************************************/
 /* EditTypedMarkerWidget */
 /************************************************************************/
-class EditTypedMarkerWidget: public QWidget {
+class EditTypedMarkerWidget : public QWidget {
     Q_OBJECT
 public:
-    EditTypedMarkerWidget(const QVariantList &values, QWidget *parent) : QWidget(parent), values(values) {}
+    EditTypedMarkerWidget(const QVariantList &values, QWidget *parent)
+        : QWidget(parent), values(values) {
+    }
     virtual QVariantList getValues() = 0;
 
 protected:
     QVariantList values;
 };
 
-class EditIntegerMarkerWidget: public EditTypedMarkerWidget, public Ui_EditIntegerMarkerWidget {
+class EditIntegerMarkerWidget : public EditTypedMarkerWidget, public Ui_EditIntegerMarkerWidget {
     Q_OBJECT
 public:
     EditIntegerMarkerWidget(bool isNew, const QVariantList &values, QWidget *parent);
@@ -137,7 +143,7 @@ public:
     virtual QVariantList getValues();
 };
 
-class EditFloatMarkerWidget: public EditTypedMarkerWidget, public Ui_EditFloatMarkerWidget {
+class EditFloatMarkerWidget : public EditTypedMarkerWidget, public Ui_EditFloatMarkerWidget {
     Q_OBJECT
 public:
     EditFloatMarkerWidget(bool isNew, const QVariantList &values, QWidget *parent);
@@ -145,7 +151,7 @@ public:
     virtual QVariantList getValues();
 };
 
-class EditStringMarkerWidget: public EditTypedMarkerWidget, public Ui_EditStringMarkerWidget {
+class EditStringMarkerWidget : public EditTypedMarkerWidget, public Ui_EditStringMarkerWidget {
     Q_OBJECT
 public:
     EditStringMarkerWidget(bool isNew, const QVariantList &values, QWidget *parent);
@@ -153,6 +159,6 @@ public:
     virtual QVariantList getValues();
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _EDIT_MARKER_DIALOG_H_
+#endif    // _EDIT_MARKER_DIALOG_H_

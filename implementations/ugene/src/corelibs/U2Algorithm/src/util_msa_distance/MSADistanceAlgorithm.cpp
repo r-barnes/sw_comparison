@@ -28,27 +28,26 @@ namespace U2 {
 //////////////////////////////////////////////////////////////////////////
 // Factory
 
-MSADistanceAlgorithmFactory::MSADistanceAlgorithmFactory(const QString& algoId, DistanceAlgorithmFlags _flags, QObject* p)
-: QObject(p), algorithmId(algoId), flags(_flags)
-{
+MSADistanceAlgorithmFactory::MSADistanceAlgorithmFactory(const QString &algoId, DistanceAlgorithmFlags _flags, QObject *p)
+    : QObject(p), algorithmId(algoId), flags(_flags) {
 }
 
-DistanceAlgorithmFlags MSADistanceAlgorithmFactory::getAphabetFlags(const DNAAlphabet* al) {
+DistanceAlgorithmFlags MSADistanceAlgorithmFactory::getAphabetFlags(const DNAAlphabet *al) {
     if (al->getType() == DNAAlphabet_AMINO) {
         return DistanceAlgorithmFlag_Amino;
     } else if (al->getType() == DNAAlphabet_NUCL) {
         return DistanceAlgorithmFlag_Nucleic;
     }
-    assert(al->getType() ==  DNAAlphabet_RAW);
+    assert(al->getType() == DNAAlphabet_RAW);
     return DistanceAlgorithmFlag_Raw;
 }
 
-void MSADistanceAlgorithmFactory::setFlag( DistanceAlgorithmFlag flag ){
+void MSADistanceAlgorithmFactory::setFlag(DistanceAlgorithmFlag flag) {
     flags |= flag;
 }
 
-void MSADistanceAlgorithmFactory::resetFlag( DistanceAlgorithmFlag flag ){
-    if(flags.testFlag(flag)){
+void MSADistanceAlgorithmFactory::resetFlag(DistanceAlgorithmFlag flag) {
+    if (flags.testFlag(flag)) {
         flags ^= flag;
     }
 }
@@ -56,13 +55,8 @@ void MSADistanceAlgorithmFactory::resetFlag( DistanceAlgorithmFlag flag ){
 //////////////////////////////////////////////////////////////////////////
 // Algorithm
 
-MSADistanceAlgorithm::MSADistanceAlgorithm(MSADistanceAlgorithmFactory* _factory, const MultipleSequenceAlignment& _ma)
-: Task(tr("MSA distance algorithm \"%1\" task").arg(_factory->getName()), TaskFlag_None)
-, factory(_factory)
-, ma(_ma->getCopy())
-, excludeGaps(true)
-, isSimilarity(true)
-{
+MSADistanceAlgorithm::MSADistanceAlgorithm(MSADistanceAlgorithmFactory *_factory, const MultipleSequenceAlignment &_ma)
+    : Task(tr("MSA distance algorithm \"%1\" task").arg(_factory->getName()), TaskFlag_None), factory(_factory), ma(_ma->getCopy()), excludeGaps(true), isSimilarity(true) {
     int rowsNumber = ma->getNumRows();
     qint64 requiredMemory = sizeof(int) * rowsNumber * rowsNumber / 2 + sizeof(QVarLengthArray<int>) * rowsNumber;
     bool memoryAcquired = memoryLocker.tryAcquire(requiredMemory);
@@ -70,14 +64,14 @@ MSADistanceAlgorithm::MSADistanceAlgorithm(MSADistanceAlgorithmFactory* _factory
     distanceMatrix = MSADistanceMatrix(ma, getExcludeGapsFlag(), false);
 }
 
-int MSADistanceAlgorithm::getSimilarity (int row1, int row2, bool _usePercents) {
+int MSADistanceAlgorithm::getSimilarity(int row1, int row2, bool _usePercents) {
     lock.lock();
     int res = distanceMatrix.getSimilarity(row1, row2, _usePercents);
     lock.unlock();
     return res;
 }
 
-const MSADistanceMatrix& MSADistanceAlgorithm::getMatrix() const{
+const MSADistanceMatrix &MSADistanceAlgorithm::getMatrix() const {
     QMutexLocker locker(&lock);
     return distanceMatrix;
 }
@@ -111,11 +105,11 @@ void MSADistanceAlgorithm::setExcludeGaps(bool _excludeGaps) {
 }
 
 MSADistanceMatrix::MSADistanceMatrix()
-: usePercents(true), excludeGaps(false), alignmentLength(0) {
+    : usePercents(true), excludeGaps(false), alignmentLength(0) {
 }
 
-MSADistanceMatrix::MSADistanceMatrix(const MultipleSequenceAlignment& ma, bool _excludeGaps, bool _usePercents)
-: usePercents(_usePercents), excludeGaps(_excludeGaps), alignmentLength(ma->getLength()) {
+MSADistanceMatrix::MSADistanceMatrix(const MultipleSequenceAlignment &ma, bool _excludeGaps, bool _usePercents)
+    : usePercents(_usePercents), excludeGaps(_excludeGaps), alignmentLength(ma->getLength()) {
     int nSeq = ma->getNumRows();
     table.reserve(nSeq);
     for (int i = 0; i < nSeq; i++) {
@@ -125,11 +119,11 @@ MSADistanceMatrix::MSADistanceMatrix(const MultipleSequenceAlignment& ma, bool _
     }
 }
 
-int  MSADistanceMatrix::getSimilarity(int row1, int row2) const {
+int MSADistanceMatrix::getSimilarity(int row1, int row2) const {
     return getSimilarity(row1, row2, usePercents);
 }
 
-int MSADistanceMatrix::getSimilarity (int refRow, int row, bool _usePercents) const {
+int MSADistanceMatrix::getSimilarity(int refRow, int row, bool _usePercents) const {
     if (refRow >= table.size() || row >= table.size()) {
         return -1;
     }
@@ -149,4 +143,4 @@ int MSADistanceMatrix::getSimilarity (int refRow, int row, bool _usePercents) co
     }
 }
 
-} //namespace
+}    // namespace U2

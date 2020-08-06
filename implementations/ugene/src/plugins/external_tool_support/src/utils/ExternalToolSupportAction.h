@@ -23,6 +23,7 @@
 #define _U2_EXTERNAL_TOOL_SUPPORT_ACTION_H
 
 #include <U2Core/ExternalToolRegistry.h>
+
 #include <U2Gui/ObjectViewModel.h>
 
 namespace U2 {
@@ -30,14 +31,18 @@ namespace U2 {
 class ExternalToolSupportAction : public GObjectViewAction {
     Q_OBJECT
 public:
-    ExternalToolSupportAction(QObject* p, GObjectView* v, const QString& _text, int order, const QStringList& _toolIds);
-    ExternalToolSupportAction(const QString& text, QObject* p, const QStringList& _toolIds);
+    ExternalToolSupportAction(QObject *p, GObjectView *v, const QString &_text, int order, const QStringList &_toolIds);
+    ExternalToolSupportAction(const QString &text, QObject *p, const QStringList &_toolIds);
 
-    const QStringList getToolIds() const {return toolIds;}
+    const QStringList getToolIds() const {
+        return toolIds;
+    }
 
 private slots:
     void sl_pathChanged();
-    void sl_toolStateChanged(bool) { sl_pathChanged(); }
+    void sl_toolStateChanged(bool) {
+        sl_pathChanged();
+    }
 
 private:
     bool checkTools(bool connectSignals = false);
@@ -46,5 +51,5 @@ private:
     QStringList toolIds;
 };
 
-}//namespace
-#endif // _U2_EXTERNAL_TOOL_SUPPORT_ACTION_H
+}    // namespace U2
+#endif    // _U2_EXTERNAL_TOOL_SUPPORT_ACTION_H

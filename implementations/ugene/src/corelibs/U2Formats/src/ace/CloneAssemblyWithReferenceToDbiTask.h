@@ -23,8 +23,8 @@
 #define _U2_CLONE_ASSEMBLY_WITH_REFERENCE_TO_DBI_TASK_H_
 
 #include <U2Core/Task.h>
-#include <U2Core/U2Type.h>
 #include <U2Core/U2Assembly.h>
+#include <U2Core/U2Type.h>
 
 namespace U2 {
 
@@ -54,6 +54,6 @@ private:
     CloneObjectTask *cloneReferenceTask;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_CLONE_ASSEMBLY_WITH_REFERENCE_TO_DBI_TASK_H_
+#endif    // _U2_CLONE_ASSEMBLY_WITH_REFERENCE_TO_DBI_TASK_H_

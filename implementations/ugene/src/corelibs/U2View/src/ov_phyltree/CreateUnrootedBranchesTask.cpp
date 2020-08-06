@@ -19,22 +19,26 @@
  * MA 02110-1301, USA.
  */
 
+#include "CreateUnrootedBranchesTask.h"
+
 #include <QStack>
 
-#include "CreateUnrootedBranchesTask.h"
-#include "GraphicsUnrootedBranchItem.h"
-#include "GraphicsRectangularBranchItem.h"
 #include <U2Core/PhyTreeObject.h>
+
+#include "GraphicsRectangularBranchItem.h"
+#include "GraphicsUnrootedBranchItem.h"
 #include "TreeViewerUtils.h"
 
 namespace U2 {
 
-CreateUnrootedBranchesTask::CreateUnrootedBranchesTask(GraphicsRectangularBranchItem *r): root1(r) {}
+CreateUnrootedBranchesTask::CreateUnrootedBranchesTask(GraphicsRectangularBranchItem *r)
+    : root1(r) {
+}
 
-GraphicsUnrootedBranchItem* CreateUnrootedBranchesTask::getBranch(GraphicsRectangularBranchItem *from, GraphicsUnrootedBranchItem* parent) {
-    GraphicsUnrootedBranchItem* res = new GraphicsUnrootedBranchItem(parent, coef * from->getHeight(), from, from->getNodeLabel());
-    foreach (QGraphicsItem* item, from->childItems()) {
-        GraphicsRectangularBranchItem* ri = dynamic_cast<GraphicsRectangularBranchItem*>(item);
+GraphicsUnrootedBranchItem *CreateUnrootedBranchesTask::getBranch(GraphicsRectangularBranchItem *from, GraphicsUnrootedBranchItem *parent) {
+    GraphicsUnrootedBranchItem *res = new GraphicsUnrootedBranchItem(parent, coef * from->getHeight(), from, from->getNodeLabel());
+    foreach (QGraphicsItem *item, from->childItems()) {
+        GraphicsRectangularBranchItem *ri = dynamic_cast<GraphicsRectangularBranchItem *>(item);
         if (ri != NULL) {
             getBranch(ri, res);
         }
@@ -48,4 +52,4 @@ void CreateUnrootedBranchesTask::run() {
     root = getBranch(root1, NULL);
 }
 
-}
+}    // namespace U2

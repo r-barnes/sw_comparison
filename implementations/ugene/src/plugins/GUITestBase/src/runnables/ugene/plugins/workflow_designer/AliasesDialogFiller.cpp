@@ -20,32 +20,32 @@
  */
 
 #include "AliasesDialogFiller.h"
+#include <drivers/GTKeyboardDriver.h>
+#include <drivers/GTMouseDriver.h>
+#include <primitives/GTTableView.h>
+#include <primitives/GTWidget.h>
+
 #include <QApplication>
 #include <QPushButton>
 #include <QTableWidget>
 
-#include <primitives/GTWidget.h>
-#include <primitives/GTTableView.h>
-#include <drivers/GTMouseDriver.h>
-#include <drivers/GTKeyboardDriver.h>
-
-namespace U2{
+namespace U2 {
 using namespace HI;
 #define GT_CLASS_NAME "GTUtilsDialog::StartupDialogFiller"
 #define GT_METHOD_NAME "commonScenario"
 
-void AliasesDialogFiller::commonScenario(){
-    QWidget* dialog = QApplication::activeModalWidget();
+void AliasesDialogFiller::commonScenario() {
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
     GTGlobals::sleep(500);
 
-    QTableView* table = qobject_cast<QTableView*>(GTWidget::findWidget(os,"paramAliasesTableWidget",dialog));
-    QMap<QPoint*, QString>::iterator i;
-    for (i = map.begin(); i != map.end(); ++i){
-        GTMouseDriver::moveTo(GTTableView::getCellPosition(os,table,i.key()->x(),i.key()->y()));
+    QTableView *table = qobject_cast<QTableView *>(GTWidget::findWidget(os, "paramAliasesTableWidget", dialog));
+    QMap<QPoint *, QString>::iterator i;
+    for (i = map.begin(); i != map.end(); ++i) {
+        GTMouseDriver::moveTo(GTTableView::getCellPosition(os, table, i.key()->x(), i.key()->y()));
         GTMouseDriver::doubleClick();
         GTKeyboardDriver::keySequence(i.value());
-        GTKeyboardDriver::keyClick( Qt::Key_Enter);
+        GTKeyboardDriver::keyClick(Qt::Key_Enter);
     }
 
     GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
@@ -53,5 +53,4 @@ void AliasesDialogFiller::commonScenario(){
 
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
-}
-
+}    // namespace U2

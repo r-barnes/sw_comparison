@@ -42,7 +42,7 @@ HMMCalibrateDialogController::HMMCalibrateDialogController(QWidget* w)
       saveController(NULL) {
     task = NULL;
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742590");
+    new HelpButton(this, buttonBox, "46501159");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Calibrate"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Close"));
 

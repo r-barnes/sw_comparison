@@ -50,18 +50,18 @@ public:
     ProjectTreeController(EditableTreeView *tree, const ProjectTreeControllerModeSettings &settings, QObject *parent);
     ~ProjectTreeController();
 
-    const DocumentSelection * getDocumentSelection() const;
-    const GObjectSelection * getGObjectSelection() const;
+    const DocumentSelection *getDocumentSelection() const;
+    const GObjectSelection *getGObjectSelection() const;
     QList<Folder> getSelectedFolders() const;
 
     bool isObjectInRecycleBin(GObject *obj) const;
     bool isObjectInFolder(GObject *obj, const Folder &folder) const;
-    const ProjectTreeControllerModeSettings & getModeSettings() const;
+    const ProjectTreeControllerModeSettings &getModeSettings() const;
     void highlightItem(Document *doc);
     void refreshObject(GObject *object);
-    QAction * getLoadSeletectedDocumentsAction() const;
+    QAction *getLoadSeletectedDocumentsAction() const;
     void updateSettings(const ProjectTreeControllerModeSettings &settings);
-    QSet<Document*> getDocsInSelection(bool deriveFromObjects) const;
+    QSet<Document *> getDocsInSelection(bool deriveFromObjects) const;
 
 private slots:
     void sl_onDocumentAdded(Document *doc);
@@ -117,11 +117,11 @@ private:
     void disconnectDocument(Document *doc);
     void connectToResourceTracker();
     void updateLoadingState(Document *doc);
-    void runLoadDocumentTasks(const QList<Document*> &docs) const;
-    void removeItems(const QList<Document*> &docs, QList<Folder> folders, QList<GObject *> objs);
-    bool removeObjects(const QList<GObject*> &objs, const QList<Document*> &excludedDocs, const QList<Folder> &excludedFolders, bool removeFromDbi);
-    bool removeFolders(const QList<Folder> &folders, const QList<Document*> &excludedDocs);
-    void removeDocuments(const QList<Document*> &docs);
+    void runLoadDocumentTasks(const QList<Document *> &docs) const;
+    void removeItems(const QList<Document *> &docs, QList<Folder> folders, QList<GObject *> objs);
+    bool removeObjects(const QList<GObject *> &objs, const QList<Document *> &excludedDocs, const QList<Folder> &excludedFolders, bool removeFromDbi);
+    bool removeFolders(const QList<Folder> &folders, const QList<Document *> &excludedDocs);
+    void removeDocuments(const QList<Document *> &docs);
     void updateObjectActiveStateVisual(GObject *obj);
     bool canCreateSubFolder() const;
     bool canRenameFolder() const;
@@ -135,9 +135,9 @@ private:
     void updateLoadDocumentActions();
     QModelIndex getIndexForDoc(Document *doc) const;
     QModelIndex getOriginalModelIndex(const QModelIndex &index) const;
-    
+
     // auto expands/collapses document node based on loaded state & current documents count in project
-    void handleAutoExpand(Document* doc);
+    void handleAutoExpand(Document *doc);
 
     // after folders or objects has been removed from Project View,
     // they can still present in the database during the next merge procedure (due to their large sizes).
@@ -151,8 +151,8 @@ private:
 
     static bool isObjectRemovable(GObject *object);
     static bool isFolderRemovable(const Folder &folder);
-    bool isAnyObjectInRecycleBin(const QList <GObject *> &objects);
-    static bool isAnyFolderInRecycleBin(const QList <Folder> &folders);
+    bool isAnyObjectInRecycleBin(const QList<GObject *> &objects);
+    static bool isAnyFolderInRecycleBin(const QList<Folder> &folders);
     static void excludeUnremovableObjectsFromList(QList<GObject *> &objects);
     static void excludeUnremovableFoldersFromList(QList<Folder> &folders);
     static bool isSubFolder(const QList<Folder> &folders, const Folder &expectedSubFolder, bool trueIfSamePath);
@@ -184,10 +184,10 @@ private:
     GObjectView *markActiveView;
     GObject *objectIsBeingRecycled;
 
-    QHash<Task *, QHash<Document *, QSet<U2DataId> > > task2ObjectsBeingDeleted;
-    QHash<Task *, QHash<Document *, QSet<QString> > > task2FoldersBeingDeleted;
+    QHash<Task *, QHash<Document *, QSet<U2DataId>>> task2ObjectsBeingDeleted;
+    QHash<Task *, QHash<Document *, QSet<QString>>> task2FoldersBeingDeleted;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_PROJECTTREECONTROLLER_H_
+#endif    // _U2_PROJECTTREECONTROLLER_H_

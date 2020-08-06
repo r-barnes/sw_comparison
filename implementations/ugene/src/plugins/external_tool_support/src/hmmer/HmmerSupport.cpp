@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "HmmerSupport.h"
+
 #include <QMainWindow>
 #include <QMessageBox>
 
@@ -43,7 +45,6 @@
 #include "ExternalToolSupportSettingsController.h"
 #include "HmmerBuildDialog.h"
 #include "HmmerSearchDialog.h"
-#include "HmmerSupport.h"
 #include "PhmmerSearchDialog.h"
 
 namespace U2 {
@@ -55,9 +56,8 @@ const QString HmmerSupport::SEARCH_TOOL_ID = "USUPP_HMMSEARCH";
 const QString HmmerSupport::PHMMER_TOOL = "PHMMER search";
 const QString HmmerSupport::PHMMER_TOOL_ID = "USUPP_PHMMER";
 
-HmmerSupport::HmmerSupport(const QString& id, const QString &name)
-    : ExternalTool(id, name, "")
-{
+HmmerSupport::HmmerSupport(const QString &id, const QString &name)
+    : ExternalTool(id, name, "") {
     if (AppContext::getMainWindow()) {
         icon = QIcon(":external_tool_support/images/cmdline.png");
         grayIcon = QIcon(":external_tool_support/images/cmdline_gray.png");
@@ -107,7 +107,7 @@ void HmmerSupport::sl_buildProfile() {
 
 namespace {
 
-U2SequenceObject * getDnaSequenceObject() {
+U2SequenceObject *getDnaSequenceObject() {
     U2SequenceObject *seqObj = NULL;
     GObjectViewWindow *activeWindow = qobject_cast<GObjectViewWindow *>(AppContext::getMainWindow()->getMDIManager()->getActiveWindow());
     if (NULL != activeWindow) {
@@ -127,7 +127,7 @@ U2SequenceObject * getDnaSequenceObject() {
     return seqObj;
 }
 
-}
+}    // namespace
 
 void HmmerSupport::sl_search() {
     if (!isToolSet(SEARCH_TOOL)) {
@@ -142,15 +142,15 @@ void HmmerSupport::sl_search() {
     ADVSequenceObjectContext *seqCtx = NULL;
     GObjectViewWindow *activeWindow = qobject_cast<GObjectViewWindow *>(AppContext::getMainWindow()->getMDIManager()->getActiveWindow());
     if (NULL != activeWindow) {
-        AnnotatedDNAView* dnaView = qobject_cast<AnnotatedDNAView *>(activeWindow->getObjectView());
+        AnnotatedDNAView *dnaView = qobject_cast<AnnotatedDNAView *>(activeWindow->getObjectView());
         seqCtx = (dnaView != NULL) ? dnaView->getSequenceInFocus() : NULL;
     }
 
     QWidget *parent = AppContext::getMainWindow()->getQMainWindow();
-    if(seqCtx != NULL){
+    if (seqCtx != NULL) {
         QObjectScopedPointer<HmmerSearchDialog> searchDlg = new HmmerSearchDialog(seqCtx, parent);
         searchDlg->exec();
-    }else{
+    } else {
         QObjectScopedPointer<HmmerSearchDialog> searchDlg = new HmmerSearchDialog(seqObj, parent);
         searchDlg->exec();
     }
@@ -169,15 +169,15 @@ void HmmerSupport::sl_phmmerSearch() {
     ADVSequenceObjectContext *seqCtx = NULL;
     GObjectViewWindow *activeWindow = qobject_cast<GObjectViewWindow *>(AppContext::getMainWindow()->getMDIManager()->getActiveWindow());
     if (NULL != activeWindow) {
-        AnnotatedDNAView* dnaView = qobject_cast<AnnotatedDNAView *>(activeWindow->getObjectView());
+        AnnotatedDNAView *dnaView = qobject_cast<AnnotatedDNAView *>(activeWindow->getObjectView());
         seqCtx = (dnaView != NULL) ? dnaView->getSequenceInFocus() : NULL;
     }
 
     QWidget *parent = AppContext::getMainWindow()->getQMainWindow();
-    if(seqCtx != NULL){
+    if (seqCtx != NULL) {
         QObjectScopedPointer<PhmmerSearchDialog> phmmerDialog = new PhmmerSearchDialog(seqCtx, parent);
         phmmerDialog->exec();
-    }else{
+    } else {
         QObjectScopedPointer<PhmmerSearchDialog> phmmerDialog = new PhmmerSearchDialog(seqObj, parent);
         phmmerDialog->exec();
     }
@@ -244,7 +244,7 @@ void HmmerSupport::initPhmmer() {
 }
 
 bool HmmerSupport::isToolSet(const QString &name) const {
-    if (path.isEmpty()){
+    if (path.isEmpty()) {
         QObjectScopedPointer<QMessageBox> msgBox = new QMessageBox;
         msgBox->setWindowTitle(name);
         msgBox->setText(tr("Path for %1 tool not selected.").arg(name));
@@ -255,16 +255,16 @@ bool HmmerSupport::isToolSet(const QString &name) const {
         CHECK(!msgBox.isNull(), false);
 
         switch (ret) {
-           case QMessageBox::Yes:
-               AppContext::getAppSettingsGUI()->showSettingsDialog(ExternalToolSupportSettingsPageId);
-               break;
-           case QMessageBox::No:
-               return false;
-               break;
-           default:
-               assert(false);
-               break;
-         }
+        case QMessageBox::Yes:
+            AppContext::getAppSettingsGUI()->showSettingsDialog(ExternalToolSupportSettingsPageId);
+            break;
+        case QMessageBox::No:
+            return false;
+            break;
+        default:
+            assert(false);
+            break;
+        }
     }
 
     if (path.isEmpty()) {
@@ -275,9 +275,7 @@ bool HmmerSupport::isToolSet(const QString &name) const {
 }
 
 HmmerMsaEditorContext::HmmerMsaEditorContext(QObject *parent)
-    : GObjectViewWindowContext(parent, MsaEditorFactory::ID)
-{
-
+    : GObjectViewWindowContext(parent, MsaEditorFactory::ID) {
 }
 
 void HmmerMsaEditorContext::initViewContext(GObjectView *view) {
@@ -313,15 +311,14 @@ void HmmerMsaEditorContext::sl_build() {
 
     MultipleSequenceAlignmentObject *obj = msaEditor->getMaObject();
     if (obj != NULL) {
-        QObjectScopedPointer<HmmerBuildDialog> buildDlg = new HmmerBuildDialog(obj->getMultipleAlignment  ());
+        QObjectScopedPointer<HmmerBuildDialog> buildDlg = new HmmerBuildDialog(obj->getMultipleAlignment());
         buildDlg->exec();
         CHECK(!buildDlg.isNull(), );
     }
 }
 
-HmmerAdvContext::HmmerAdvContext(QObject *parent) :
-    GObjectViewWindowContext(parent, AnnotatedDNAViewFactory::ID) {
-
+HmmerAdvContext::HmmerAdvContext(QObject *parent)
+    : GObjectViewWindowContext(parent, AnnotatedDNAViewFactory::ID) {
 }
 
 void HmmerAdvContext::initViewContext(GObjectView *view) {
@@ -333,7 +330,7 @@ void HmmerAdvContext::initViewContext(GObjectView *view) {
     connect(searchAction, SIGNAL(triggered()), SLOT(sl_search()));
 }
 
-#define MAX_HMMSEARCH_SEQUENCE_LENGTH_X86 (2*1024*1024)
+#define MAX_HMMSEARCH_SEQUENCE_LENGTH_X86 (2 * 1024 * 1024)
 
 void HmmerAdvContext::sl_search() {
     QWidget *parent = getParentWidget(sender());
@@ -357,12 +354,11 @@ void HmmerAdvContext::sl_search() {
     }
 #endif
 
-
     QObjectScopedPointer<HmmerSearchDialog> searchDlg = new HmmerSearchDialog(seqCtx, parent);
     searchDlg->exec();
 }
 
-QWidget * HmmerAdvContext::getParentWidget(QObject *sender) {
+QWidget *HmmerAdvContext::getParentWidget(QObject *sender) {
     GObjectViewAction *action = qobject_cast<GObjectViewAction *>(sender);
     SAFE_POINT(NULL != action, "action is NULL", NULL);
     AnnotatedDNAView *adv = qobject_cast<AnnotatedDNAView *>(action->getObjectView());
@@ -375,7 +371,7 @@ QWidget * HmmerAdvContext::getParentWidget(QObject *sender) {
     }
 }
 
-U2SequenceObject * HmmerAdvContext::getSequenceInFocus(QObject *sender) {
+U2SequenceObject *HmmerAdvContext::getSequenceInFocus(QObject *sender) {
     GObjectViewAction *action = qobject_cast<GObjectViewAction *>(sender);
     SAFE_POINT(NULL != action, "action is NULL", NULL);
     AnnotatedDNAView *adv = qobject_cast<AnnotatedDNAView *>(action->getObjectView());
@@ -387,12 +383,10 @@ U2SequenceObject * HmmerAdvContext::getSequenceInFocus(QObject *sender) {
     return seqCtx->getSequenceObject();
 }
 
-HmmerContext::HmmerContext(QObject *parent) :
-    QObject(parent),
-    msaEditorContext(NULL),
-    advContext(NULL)
-{
-
+HmmerContext::HmmerContext(QObject *parent)
+    : QObject(parent),
+      msaEditorContext(NULL),
+      advContext(NULL) {
 }
 
 void HmmerContext::init() {
@@ -404,15 +398,14 @@ void HmmerContext::init() {
 }
 
 Hmmer3LogParser::Hmmer3LogParser() {
-
 }
 
-void Hmmer3LogParser::parseErrOutput(const QString& partOfLog) {
+void Hmmer3LogParser::parseErrOutput(const QString &partOfLog) {
     lastPartOfLog = partOfLog.split(QRegExp("(\n|\r)"));
     lastPartOfLog.first() = lastErrLine + lastPartOfLog.first();
     lastErrLine = lastPartOfLog.takeLast();
 
-    foreach(const QString &buf, lastPartOfLog) {
+    foreach (const QString &buf, lastPartOfLog) {
         if (!buf.isEmpty()) {
             algoLog.error("Hmmer3: " + buf);
             setLastError(buf);
@@ -420,4 +413,4 @@ void Hmmer3LogParser::parseErrOutput(const QString& partOfLog) {
     }
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -22,15 +22,15 @@
 #ifndef _U2_DBI_H_
 #define _U2_DBI_H_
 
-#include <U2Core/U2FormatCheckResult.h>
-#include <U2Core/U2Feature.h>
-#include <U2Core/U2Assembly.h>
-#include <U2Core/U2Mod.h>
-#include <U2Core/U2Msa.h>
-#include <U2Core/GUrl.h>
-
 #include <QHash>
 #include <QSet>
+
+#include <U2Core/GUrl.h>
+#include <U2Core/U2Assembly.h>
+#include <U2Core/U2Feature.h>
+#include <U2Core/U2FormatCheckResult.h>
+#include <U2Core/U2Mod.h>
+#include <U2Core/U2Msa.h>
 
 class QMutex;
 
@@ -186,13 +186,12 @@ public:
         rawData param is used for compatibility with UGENE 1.x format detection
         and can be used by factory directly to check database header
         */
-    virtual FormatCheckResult isValidDbi(const QHash<QString, QString>& properties, const QByteArray& rawData, U2OpStatus& os) const = 0;
+    virtual FormatCheckResult isValidDbi(const QHash<QString, QString> &properties, const QByteArray &rawData, U2OpStatus &os) const = 0;
 
-    virtual GUrl id2Url(const U2DbiId& id) const = 0;
+    virtual GUrl id2Url(const U2DbiId &id) const = 0;
 
-    virtual bool isDbiExists(const U2DbiId& id) const = 0;
+    virtual bool isDbiExists(const U2DbiId &id) const = 0;
 };
-
 
 /**
     Database access interface.
@@ -204,7 +203,6 @@ public:
     //////////////////////////////////////////////////////////////////////////
     // base methods that any DBI must support
 
-
     /**
         Boots the database up to functional state.
         Some property names are reserved:
@@ -215,7 +213,7 @@ public:
 
         @see shutdown()
         */
-    virtual void init(const QHash<QString, QString>& properties, const QVariantMap& persistentData, U2OpStatus& os) = 0;
+    virtual void init(const QHash<QString, QString> &properties, const QVariantMap &persistentData, U2OpStatus &os) = 0;
 
     /** Stops the database and frees up used resources.
     Returns persistent database state for external storage in a project or workspace, if any.
@@ -225,13 +223,13 @@ public:
     Note: this method will call flush()
     @see init()
     */
-    virtual QVariantMap shutdown(U2OpStatus& os) = 0;
+    virtual QVariantMap shutdown(U2OpStatus &os) = 0;
 
     /**
         Ensures that dbi state is synchronized with storage
         Return 'true' of operation is successful
         */
-    virtual bool flush(U2OpStatus& os) = 0;
+    virtual bool flush(U2OpStatus &os) = 0;
 
     /**  Unique database id. Usually is an URL of the database */
     virtual U2DbiId getDbiId() const = 0;
@@ -252,16 +250,16 @@ public:
     virtual void populateDefaultSchema(U2OpStatus &os);
 
     /** Returns all features supported by this DBI instance */
-    virtual const QSet<U2DbiFeature>& getFeatures() const = 0;
+    virtual const QSet<U2DbiFeature> &getFeatures() const = 0;
 
     /** Returns properties used to initialize the database */
     virtual QHash<QString, QString> getInitProperties() const = 0;
 
     /** Returns database meta-info. Any set of properties to be shown to user */
-    virtual QHash<QString, QString> getDbiMetaInfo(U2OpStatus&) = 0;
+    virtual QHash<QString, QString> getDbiMetaInfo(U2OpStatus &) = 0;
 
     /** Returns type of the entity referenced by the given ID */
-    virtual U2DataType getEntityTypeById(const U2DataId& id) const = 0;
+    virtual U2DataType getEntityTypeById(const U2DataId &id) const = 0;
 
     /** Returns current DBI state */
     virtual U2DbiState getState() const = 0;
@@ -270,78 +268,78 @@ public:
         Database interface to access objects
         All dbi implementations must support a subset of this interface
         */
-    virtual U2ObjectDbi* getObjectDbi() = 0;
+    virtual U2ObjectDbi *getObjectDbi() = 0;
 
     /**
         Database interface to access object relations.
         */
-    virtual U2ObjectRelationsDbi* getObjectRelationsDbi();
+    virtual U2ObjectRelationsDbi *getObjectRelationsDbi();
 
     /**
         U2Sequence related DBI routines
         Not NULL only if U2DbiFeature_ReadSequences supported
         */
-    virtual U2SequenceDbi* getSequenceDbi() = 0;
+    virtual U2SequenceDbi *getSequenceDbi() = 0;
 
     /**
         U2Feature related DBI routines
         Not NULL only if U2DbiFeature_ReadFeatures supported
         */
-    virtual U2FeatureDbi* getFeatureDbi() = 0;
+    virtual U2FeatureDbi *getFeatureDbi() = 0;
 
     /**
         U2Annotation related DBI routines
         Not NULL only if U2DbiFeature_ReadMsa supported
         */
-    virtual U2MsaDbi* getMsaDbi() = 0;
+    virtual U2MsaDbi *getMsaDbi() = 0;
 
     /**
         U2Annotation related DBI routines
         Not NULL only if U2DbiFeature_ReadAssembly supported
         */
-    virtual U2AssemblyDbi* getAssemblyDbi() = 0;
+    virtual U2AssemblyDbi *getAssemblyDbi() = 0;
 
     /**
         U2Attribute related DBI routines
         Not NULL only if U2DbiFeature_ReadAttributes supported
         */
-    virtual U2AttributeDbi* getAttributeDbi() = 0;
+    virtual U2AttributeDbi *getAttributeDbi() = 0;
 
     /**
         U2Variant related DBI routines
         Not NULL only if U2DbiFeature_ReadVariants supported
         */
-    virtual U2VariantDbi* getVariantDbi() = 0;
+    virtual U2VariantDbi *getVariantDbi() = 0;
 
     /**
         Cross database references handling routines
         Not NULL only if U2DbiFeature_ReadCrossDatabaseReferences supported
         */
-    virtual U2CrossDatabaseReferenceDbi* getCrossDatabaseReferenceDbi() = 0;
+    virtual U2CrossDatabaseReferenceDbi *getCrossDatabaseReferenceDbi() = 0;
 
     /**
         U2Mod related DBI routines
         Not NULL only if U2DbiFeature_ReadModifications supported
         */
-    virtual U2ModDbi* getModDbi() = 0;
+    virtual U2ModDbi *getModDbi() = 0;
 
     /**
         UdrRecord related DBI routines
         Not NULL only if U2DbiFeature_ReadUdr supported
         */
-    virtual UdrDbi* getUdrDbi() = 0;
+    virtual UdrDbi *getUdrDbi() = 0;
 
     /**
         Reads database global properties.
         Requires U2DbiFeature_ReadProperties support
         */
-    virtual QString getProperty(const QString& name, const QString& defaultValue, U2OpStatus& os) = 0;
+    virtual QString getProperty(const QString &name, const QString &defaultValue, U2OpStatus &os) = 0;
 
     /**
         Sets database global properties.
         Requires U2DbiFeature_WriteProperties support
         */
-    virtual void setProperty(const QString& name, const QString& value, U2OpStatus& os) = 0;
+    virtual void setProperty(const QString &name, const QString &value, U2OpStatus &os) = 0;
 
     /**
         Initializes execution of the block of operation through the one transaction
@@ -353,7 +351,7 @@ public:
     /** Returns a mutex that synchronizes access to internal database handler.
         This method is supposed to be used by caching DBIs
         in order to prevent cache inconsistency. */
-    virtual QMutex * getDbMutex() const;
+    virtual QMutex *getDbMutex() const;
 
     virtual bool isReadOnly() const = 0;
 
@@ -371,17 +369,17 @@ protected:
     */
 class U2CORE_EXPORT U2ChildDbi {
 protected:
-    U2ChildDbi(U2Dbi* _rootDbi);
+    U2ChildDbi(U2Dbi *_rootDbi);
 
 public:
     virtual ~U2ChildDbi();
 
-    U2Dbi* getRootDbi() const;
+    U2Dbi *getRootDbi() const;
 
 private:
-    U2Dbi* rootDbi;
+    U2Dbi *rootDbi;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

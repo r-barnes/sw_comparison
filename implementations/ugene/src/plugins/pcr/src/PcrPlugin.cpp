@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "PcrPlugin.h"
+
 #include <QMenu>
 
 #include <U2Core/L10n.h>
@@ -29,25 +31,21 @@
 #include <U2Gui/OPWidgetFactoryRegistry.h>
 #include <U2Gui/ToolsMenu.h>
 
+#include "FindPrimerPairsWorker.h"
 #include "InSilicoPcrOPWidgetFactory.h"
+#include "InSilicoPcrWorker.h"
 #include "PrimerLibrary.h"
 #include "PrimerLibraryMdiWindow.h"
-
-#include "PcrPlugin.h"
-
-#include "InSilicoPcrWorker.h"
 #include "PrimersGrouperWorker.h"
-#include "FindPrimerPairsWorker.h"
 
 namespace U2 {
 
-extern "C" Q_DECL_EXPORT Plugin* U2_PLUGIN_INIT_FUNC() {
+extern "C" Q_DECL_EXPORT Plugin *U2_PLUGIN_INIT_FUNC() {
     return new PcrPlugin();
 }
 
 PcrPlugin::PcrPlugin()
-: Plugin(tr("In silico PCR"), tr("In silico PCR"))
-{
+    : Plugin(tr("In silico PCR"), tr("In silico PCR")) {
     // Init primer library
     U2OpStatus2Log os;
     PrimerLibrary *library = PrimerLibrary::getInstance(os);
@@ -78,4 +76,4 @@ void PcrPlugin::sl_primerLibrary() {
     PrimerLibraryMdiWindow::showLibrary();
 }
 
-} // U2
+}    // namespace U2

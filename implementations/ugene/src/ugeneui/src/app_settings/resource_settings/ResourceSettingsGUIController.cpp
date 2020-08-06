@@ -22,50 +22,47 @@
 #include "ResourceSettingsGUIController.h"
 
 #include <U2Core/AppContext.h>
-#include <U2Core/AppSettings.h>
 #include <U2Core/AppResources.h>
+#include <U2Core/AppSettings.h>
 
-namespace U2
-{
+namespace U2 {
 #define TRANSMAP_FILE_NAME "translations.txt"
 
-ResourceSettingsGUIPageController::ResourceSettingsGUIPageController(QObject* p) 
-: AppSettingsGUIPageController(tr("Resources"), APP_SETTINGS_RESOURCES, p)
-{
+ResourceSettingsGUIPageController::ResourceSettingsGUIPageController(QObject *p)
+    : AppSettingsGUIPageController(tr("Resources"), APP_SETTINGS_RESOURCES, p) {
 }
 
-
-AppSettingsGUIPageState* ResourceSettingsGUIPageController::getSavedState() {
-    ResourceSettingsGUIPageState* state = new ResourceSettingsGUIPageState();
-    AppResourcePool* s = AppContext::getAppSettings()->getAppResourcePool();
+AppSettingsGUIPageState *ResourceSettingsGUIPageController::getSavedState() {
+    ResourceSettingsGUIPageState *state = new ResourceSettingsGUIPageState();
+    AppResourcePool *s = AppContext::getAppSettings()->getAppResourcePool();
     state->nCpus = s->getIdealThreadCount();
     state->nThreads = s->getMaxThreadCount();
     state->maxMem = s->getMaxMemorySizeInMB();
     return state;
 }
 
-void ResourceSettingsGUIPageController::saveState(AppSettingsGUIPageState* _state) {
-    ResourceSettingsGUIPageState* state = qobject_cast<ResourceSettingsGUIPageState*>(_state);
-    AppResourcePool* s = AppContext::getAppSettings()->getAppResourcePool();
+void ResourceSettingsGUIPageController::saveState(AppSettingsGUIPageState *_state) {
+    ResourceSettingsGUIPageState *state = qobject_cast<ResourceSettingsGUIPageState *>(_state);
+    AppResourcePool *s = AppContext::getAppSettings()->getAppResourcePool();
     assert(state->nCpus <= state->nThreads);
     s->setMaxThreadCount(state->nThreads);
     s->setIdealThreadCount(state->nCpus);
     s->setMaxMemorySizeInMB(state->maxMem);
 }
 
-AppSettingsGUIPageWidget* ResourceSettingsGUIPageController::createWidget(AppSettingsGUIPageState* state) {
-    ResourceSettingsGUIPageWidget* r = new ResourceSettingsGUIPageWidget(this);
+AppSettingsGUIPageWidget *ResourceSettingsGUIPageController::createWidget(AppSettingsGUIPageState *state) {
+    ResourceSettingsGUIPageWidget *r = new ResourceSettingsGUIPageWidget(this);
     r->setState(state);
     return r;
 }
 
-const QString ResourceSettingsGUIPageController::helpPageId = QString("24742342");
+const QString ResourceSettingsGUIPageController::helpPageId = QString("46499696");
 
-ResourceSettingsGUIPageWidget::ResourceSettingsGUIPageWidget(ResourceSettingsGUIPageController*) {
+ResourceSettingsGUIPageWidget::ResourceSettingsGUIPageWidget(ResourceSettingsGUIPageController *) {
     setupUi(this);
 
     int maxMem = AppResourcePool::x32MaxMemoryLimitMb;
-#if defined(Q_OS_MAC64) || defined(Q_OS_WIN64) || defined(UGENE_X86_64) || defined( __amd64__ ) || defined( __AMD64__ ) || defined( __x86_64__ ) || defined( _M_X64 )
+#if defined(Q_OS_MAC64) || defined(Q_OS_WIN64) || defined(UGENE_X86_64) || defined(__amd64__) || defined(__AMD64__) || defined(__x86_64__) || defined(_M_X64)
     maxMem = AppResourcePool::x64MaxMemoryLimitMb;
 #endif
 
@@ -74,17 +71,17 @@ ResourceSettingsGUIPageWidget::ResourceSettingsGUIPageWidget(ResourceSettingsGUI
     connect(cpuBox, SIGNAL(valueChanged(int)), SLOT(sl_cpuCountChanged(int)));
 }
 
-void ResourceSettingsGUIPageWidget::setState(AppSettingsGUIPageState* s) {
-    ResourceSettingsGUIPageState* state = qobject_cast<ResourceSettingsGUIPageState*>(s);
+void ResourceSettingsGUIPageWidget::setState(AppSettingsGUIPageState *s) {
+    ResourceSettingsGUIPageState *state = qobject_cast<ResourceSettingsGUIPageState *>(s);
     cpuBox->setValue(state->nCpus);
     threadBox->setValue(state->nThreads);
     memBox->setValue(state->maxMem);
     memBox->setObjectName("memorySpinBox");
 }
 
-AppSettingsGUIPageState* ResourceSettingsGUIPageWidget::getState(QString& err) const {
+AppSettingsGUIPageState *ResourceSettingsGUIPageWidget::getState(QString &err) const {
     Q_UNUSED(err);
-    ResourceSettingsGUIPageState* state = new ResourceSettingsGUIPageState();
+    ResourceSettingsGUIPageState *state = new ResourceSettingsGUIPageState();
     state->nCpus = cpuBox->value();
     state->nThreads = threadBox->value();
     state->maxMem = memBox->value();
@@ -103,4 +100,4 @@ void ResourceSettingsGUIPageWidget::sl_cpuCountChanged(int n) {
     }
 }
 
-} //namespace
+}    // namespace U2

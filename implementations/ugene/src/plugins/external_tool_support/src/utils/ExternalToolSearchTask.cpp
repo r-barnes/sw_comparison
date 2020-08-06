@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExternalToolSearchTask.h"
+
 #include <QCoreApplication>
 #include <QDir>
 #include <QProcessEnvironment>
@@ -27,22 +29,21 @@
 #include <U2Core/ExternalToolRegistry.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "ExternalToolSearchTask.h"
 #include "ExternalToolSupportSettings.h"
 
 namespace U2 {
 
 const QString ExternalToolSearchTask::TOOLS = "tools";
 
-ExternalToolSearchTask::ExternalToolSearchTask(const QString& _toolId) :
-    Task(tr("'%1' external tool search task").arg(AppContext::getExternalToolRegistry()->getToolNameById(_toolId)), TaskFlag_None),
-    toolId(_toolId) {
+ExternalToolSearchTask::ExternalToolSearchTask(const QString &_toolId)
+    : Task(tr("'%1' external tool search task").arg(AppContext::getExternalToolRegistry()->getToolNameById(_toolId)), TaskFlag_None),
+      toolId(_toolId) {
 }
 
 void ExternalToolSearchTask::run() {
-    ExternalToolRegistry* etRegistry = AppContext::getExternalToolRegistry();
+    ExternalToolRegistry *etRegistry = AppContext::getExternalToolRegistry();
     SAFE_POINT(etRegistry, "External tool registry is NULL", );
-    ExternalTool* tool = etRegistry->getById(toolId);
+    ExternalTool *tool = etRegistry->getById(toolId);
     CHECK_EXT(tool, setError(tr("An external tool '%1' isn't found in the registry").arg(toolId)), );
 
     // 1. Search for the tool in the tools folder
@@ -50,7 +51,7 @@ void ExternalToolSearchTask::run() {
     QStringList entryList = appDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
     QString toolsDir;
 
-    foreach (const QString& dirName, entryList) {
+    foreach (const QString &dirName, entryList) {
         if (dirName == TOOLS) {
             toolsDir = appDir.absolutePath() + QDir::separator() + dirName;
             break;
@@ -61,7 +62,7 @@ void ExternalToolSearchTask::run() {
         QString exeName = getExeName(tool);
         CHECK(!exeName.isEmpty(), );
         bool fileNotFound = true;
-        LimitedDirIterator it (toolsDir);
+        LimitedDirIterator it(toolsDir);
 
         while (it.hasNext() && fileNotFound) {
             it.next();
@@ -83,17 +84,17 @@ void ExternalToolSearchTask::run() {
 #if defined(Q_OS_UNIX)
         QStringList paths = pathEnv.split("=").at(1).split(":");
 #else
-#ifdef Q_OS_WIN
+#    ifdef Q_OS_WIN
         QStringList paths = pathEnv.split("=").at(1).split(";");
-#else
+#    else
         Q_UNUSED(pathEnv);
         QStringList paths;
-#endif
+#    endif
 #endif
         QString exeName = getExeName(tool);
         CHECK(!exeName.isEmpty(), );
 
-        foreach (const QString& curPath, paths) {
+        foreach (const QString &curPath, paths) {
             QString exePath = curPath + QDir::separator() + exeName;
             QFileInfo info(exePath);
             if (info.exists()) {
@@ -111,7 +112,7 @@ void ExternalToolSearchTask::run() {
     }
 }
 
-QString ExternalToolSearchTask::getExeName(ExternalTool* tool) {
+QString ExternalToolSearchTask::getExeName(ExternalTool *tool) {
     SAFE_POINT_EXT(tool, setError(tr("Tool pointer is NULL")), "");
 
     if (!tool->getExecutableFileName().isEmpty()) {
@@ -121,9 +122,9 @@ QString ExternalToolSearchTask::getExeName(ExternalTool* tool) {
     if (tool->isModule()) {
         QStringList dependencies = tool->getDependencies();
         SAFE_POINT_EXT(!dependencies.isEmpty(), setError(tr("External tool module hasn't any dependencies: it hasn't master tool")), "");
-        ExternalToolRegistry* etRegistry = AppContext::getExternalToolRegistry();
+        ExternalToolRegistry *etRegistry = AppContext::getExternalToolRegistry();
         SAFE_POINT_EXT(etRegistry, setError(tr("External tool registry is NULL")), "");
-        ExternalTool* masterTool = etRegistry->getById(dependencies.first());
+        ExternalTool *masterTool = etRegistry->getById(dependencies.first());
         SAFE_POINT_EXT(masterTool, setError(tr("An external tool '%1' isn't found in the registry").arg(dependencies.first())), "");
         return masterTool->getExecutableFileName();
     }
@@ -132,19 +133,19 @@ QString ExternalToolSearchTask::getExeName(ExternalTool* tool) {
     return "";
 }
 
-ExternalToolsSearchTask::ExternalToolsSearchTask(const QList<Task*> &_tasks) :
-    SequentialMultiTask(tr("Searching external tools"), _tasks, TaskFlags(TaskFlag_NoRun | TaskFlag_CancelOnSubtaskCancel)) {
+ExternalToolsSearchTask::ExternalToolsSearchTask(const QList<Task *> &_tasks)
+    : SequentialMultiTask(tr("Searching external tools"), _tasks, TaskFlags(TaskFlag_NoRun | TaskFlag_CancelOnSubtaskCancel)) {
 }
 
-QList<Task*> ExternalToolsSearchTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> subTasks;
-    ExternalToolSearchTask* searchTask = qobject_cast<ExternalToolSearchTask*>(subTask);
+QList<Task *> ExternalToolsSearchTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> subTasks;
+    ExternalToolSearchTask *searchTask = qobject_cast<ExternalToolSearchTask *>(subTask);
     bool muted = false;
 
     if (searchTask) {
-        ExternalToolRegistry* etRegistry = AppContext::getExternalToolRegistry();
+        ExternalToolRegistry *etRegistry = AppContext::getExternalToolRegistry();
         SAFE_POINT(etRegistry, "External tool registry is NULL", subTasks);
-        ExternalTool* tool = etRegistry->getById(searchTask->getToolId());
+        ExternalTool *tool = etRegistry->getById(searchTask->getToolId());
         SAFE_POINT(tool, QString("An external tool '%1' isn't found in the registry").arg(searchTask->getToolId()), subTasks);
         muted = tool->isMuted();
     }
@@ -161,4 +162,4 @@ QList<Task*> ExternalToolsSearchTask::onSubTaskFinished(Task* subTask) {
     return subTasks;
 }
 
-}   // namespace U2
+}    // namespace U2

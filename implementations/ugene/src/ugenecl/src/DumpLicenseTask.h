@@ -27,7 +27,7 @@
 namespace U2 {
 
 class DumpLicenseTask : public Task {
-Q_OBJECT
+    Q_OBJECT
 public:
     static const QString LICENSE_CMDLINE_OPTION;
     static const QString LICENCE_FILENAME;
@@ -37,8 +37,8 @@ public:
     DumpLicenseTask();
     virtual void run();
 
-}; // DumpLicenseTask
+};    // DumpLicenseTask
 
-}
+}    // namespace U2
 
-#endif // _U2_UGENECL_DUMP_LICENCE_TASK_H_
+#endif    // _U2_UGENECL_DUMP_LICENCE_TASK_H_

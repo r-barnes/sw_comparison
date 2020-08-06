@@ -31,7 +31,8 @@ class QueryViewController;
 class QDGroupsEditor : public QTreeWidget {
     Q_OBJECT
 public:
-    QDGroupsEditor(QueryViewController* p);
+    QDGroupsEditor(QueryViewController *p);
+
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
 private slots:
@@ -41,18 +42,20 @@ private slots:
     void sl_removeActor();
     void sl_setReqNum();
     void rebuild();
+
 private:
     void initActions();
-private:
-    QueryViewController* view;
 
-    QAction* addGroupAction;
-    QAction* removeGroupAction;
-    QAction* addActorAction;
-    QAction* removeActorAction;
-    QAction* setGroupReqNumAction;
+private:
+    QueryViewController *view;
+
+    QAction *addGroupAction;
+    QAction *removeGroupAction;
+    QAction *addActorAction;
+    QAction *removeActorAction;
+    QAction *setGroupReqNumAction;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

@@ -27,8 +27,8 @@
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
 
-#include "ConductGOTask.h"
 #include "ConductGOSettings.h"
+#include "ConductGOTask.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -50,28 +50,32 @@ private:
 
 private slots:
     void sl_taskFinished();
-}; // ConductGOWorker
+};    // ConductGOWorker
 
 class ConductGOWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
 
-    ConductGOWorkerFactory() : DomainFactory(ACTOR_ID) {}
+    ConductGOWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
     static void init();
     virtual Worker *createWorker(Actor *a);
-}; // ConductGOWorkerFactory
+};    // ConductGOWorkerFactory
 
 class ConductGOPrompter : public PrompterBase<ConductGOPrompter> {
     Q_OBJECT
 public:
-    ConductGOPrompter(Actor *p = NULL) : PrompterBase<ConductGOPrompter>(p) {}
+    ConductGOPrompter(Actor *p = NULL)
+        : PrompterBase<ConductGOPrompter>(p) {
+    }
 
 protected:
     QString composeRichDoc();
 
-}; // ConductGOPrompter
+};    // ConductGOPrompter
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_CONDUCT_GO_WORKER_
+#endif    // _U2_CONDUCT_GO_WORKER_

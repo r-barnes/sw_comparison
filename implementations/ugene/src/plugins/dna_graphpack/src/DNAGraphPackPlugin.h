@@ -22,16 +22,17 @@
 #ifndef _U2_DNA_GRAPHPACK_PLUGIN_H_
 #define _U2_DNA_GRAPHPACK_PLUGIN_H_
 
+#include <QMenu>
+#include <QPointer>
+#include <QToolBar>
+
 #include <U2Core/PluginModel.h>
+
 #include <U2Gui/ObjectViewModel.h>
 
-#include <U2View/GraphMenu.h>
-#include <U2View/GSequenceGraphView.h>
 #include <U2View/ADVSequenceWidget.h>
-
-#include <QMenu>
-#include <QToolBar>
-#include <QPointer>
+#include <U2View/GSequenceGraphView.h>
+#include <U2View/GraphMenu.h>
 
 namespace U2 {
 
@@ -43,34 +44,29 @@ class GraphAction;
 class DNAGraphPackViewContext;
 class ADVSingleSequenceWidget;
 
-
 class DNAGraphPackPlugin : public Plugin {
     Q_OBJECT
 public:
     DNAGraphPackPlugin();
 
 private:
-    DNAGraphPackViewContext* ctx;
+    DNAGraphPackViewContext *ctx;
 };
 
-
-class DNAGraphPackViewContext : public GObjectViewWindowContext
-{
+class DNAGraphPackViewContext : public GObjectViewWindowContext {
     Q_OBJECT
 public:
-    DNAGraphPackViewContext(QObject* parent);
+    DNAGraphPackViewContext(QObject *parent);
 
 private:
-    QList<GSequenceGraphFactory*>   graphFactories;
+    QList<GSequenceGraphFactory *> graphFactories;
 
-    virtual void initViewContext(GObjectView* view);
+    virtual void initViewContext(GObjectView *view);
 
 private slots:
-    void sl_sequenceWidgetAdded(ADVSequenceWidget*);
+    void sl_sequenceWidgetAdded(ADVSequenceWidget *);
 };
 
-
-
-} //namespace
+}    // namespace U2
 
 #endif

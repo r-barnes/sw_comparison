@@ -25,7 +25,6 @@
 #include <U2Gui/U2SavableWidget.h>
 
 #include "ov_phyltree/TreeSettings.h"
-
 #include "ui_TreeOptionsWidget.h"
 
 namespace U2 {
@@ -40,32 +39,32 @@ class MaModificationInfo;
 
 struct TreeOpWidgetViewSettings {
     TreeOpWidgetViewSettings()
-        : showFontSettings(false), showPenSettings(false){}
+        : showFontSettings(false), showPenSettings(false) {
+    }
 
     bool showFontSettings;
     bool showPenSettings;
 };
 
-class U2VIEW_EXPORT TreeOptionsWidget : public QWidget, private Ui_TreeOptionWidget
-{
+class U2VIEW_EXPORT TreeOptionsWidget : public QWidget, private Ui_TreeOptionWidget {
     Q_OBJECT
 public:
-    TreeOptionsWidget(TreeViewer* tree, const TreeOpWidgetViewSettings& _viewSettings);
-    TreeOptionsWidget(MSAEditor* msa, const TreeOpWidgetViewSettings& _viewSettings);
+    TreeOptionsWidget(TreeViewer *tree, const TreeOpWidgetViewSettings &_viewSettings);
+    TreeOptionsWidget(MSAEditor *msa, const TreeOpWidgetViewSettings &_viewSettings);
     ~TreeOptionsWidget();
 
-    const TreeOpWidgetViewSettings& getViewSettings();
+    const TreeOpWidgetViewSettings &getViewSettings();
 signals:
-    void saveViewSettings(const TreeOpWidgetViewSettings&);
+    void saveViewSettings(const TreeOpWidgetViewSettings &);
 private slots:
     void sl_labelsColorButton();
     void sl_branchesColorButton();
     void sl_fontChanged();
 
-    void sl_onLblLinkActivated(const QString& link);
+    void sl_onLblLinkActivated(const QString &link);
     void sl_valueChanged();
 
-    void sl_onOptionChanged(TreeViewOption option, const QVariant& value);
+    void sl_onOptionChanged(TreeViewOption option, const QVariant &value);
 
 private:
     void initialazeOptionsMap();
@@ -76,15 +75,15 @@ private:
     void updateAllWidgets();
     void connectSlots();
 
-    void updateButtonColor(QPushButton* button, const QColor& newColor);
+    void updateButtonColor(QPushButton *button, const QColor &newColor);
     void updateShowFontOpLabel(QString newText);
     void updateShowPenOpLabel(QString newText);
 
     void updateRelations(TreeViewOption option, QVariant newValue);
 
-    TreeViewerUI* getTreeViewer();
+    TreeViewerUI *getTreeViewer();
 
-    MSAEditor    *msa;
+    MSAEditor *msa;
     TreeViewerUI *treeViewer;
 
     TreeOpWidgetViewSettings viewSettings;
@@ -92,7 +91,7 @@ private:
     bool showFontSettings;
     bool showPenSettings;
 
-    QWidget* contentWidget;
+    QWidget *contentWidget;
 
     U2SavableWidget savableTab;
 
@@ -101,12 +100,12 @@ private:
     bool isUpdating;
 };
 
-class U2VIEW_EXPORT AddTreeWidget : public QWidget
-{
+class U2VIEW_EXPORT AddTreeWidget : public QWidget {
     Q_OBJECT
 public:
-    AddTreeWidget(MSAEditor* msa);
-    ~AddTreeWidget(){}
+    AddTreeWidget(MSAEditor *msa);
+    ~AddTreeWidget() {
+    }
 
 private slots:
     void sl_onOpenTreeTriggered();
@@ -114,13 +113,13 @@ private slots:
     void sl_updateBuildTreeButtonState();
 
 private:
-    MSAEditor*   editor;
+    MSAEditor *editor;
 
-    QPushButton* openTreeButton;
-    QPushButton* buildTreeButton;
-    QLabel*      addTreeHint;
+    QPushButton *openTreeButton;
+    QPushButton *buildTreeButton;
+    QLabel *addTreeHint;
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

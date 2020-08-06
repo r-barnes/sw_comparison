@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExtractConsensusWorker.h"
+
 #include <U2Algorithm/AssemblyConsensusAlgorithmRegistry.h>
 #include <U2Algorithm/BuiltInAssemblyConsensusAlgorithms.h>
 
@@ -41,29 +43,24 @@
 #include <U2View/AssemblyModel.h>
 #include <U2View/ExportConsensusTask.h>
 
-#include "ExtractConsensusWorker.h"
-
 namespace U2 {
 namespace LocalWorkflow {
 
 const QString ExtractConsensusWorkerFactory::ACTOR_ID("extract-consensus");
 
 namespace {
-    const QString ALGO_ATTR_ID("algorithm");
-    const QString GAPS_ATTR_ID("keep-gaps");
-}
+const QString ALGO_ATTR_ID("algorithm");
+const QString GAPS_ATTR_ID("keep-gaps");
+}    // namespace
 
 ExtractConsensusWorker::ExtractConsensusWorker(Actor *actor)
-: BaseWorker(actor)
-{
-
+    : BaseWorker(actor) {
 }
 
 void ExtractConsensusWorker::init() {
-
 }
 
-Task * ExtractConsensusWorker::tick() {
+Task *ExtractConsensusWorker::tick() {
     if (hasAssembly()) {
         U2OpStatusImpl os;
         const U2EntityRef assembly = takeAssembly(os);
@@ -77,7 +74,7 @@ Task * ExtractConsensusWorker::tick() {
 }
 
 void ExtractConsensusWorker::sl_taskFinished() {
-    ExtractConsensusTaskHelper *t = dynamic_cast<ExtractConsensusTaskHelper*>(sender());
+    ExtractConsensusTaskHelper *t = dynamic_cast<ExtractConsensusTaskHelper *>(sender());
     CHECK(NULL != t, );
     CHECK(t->isFinished() && !t->hasError(), );
     CHECK(!t->isCanceled(), );
@@ -86,7 +83,6 @@ void ExtractConsensusWorker::sl_taskFinished() {
 }
 
 void ExtractConsensusWorker::cleanup() {
-
 }
 
 bool ExtractConsensusWorker::hasAssembly() const {
@@ -111,7 +107,7 @@ U2EntityRef ExtractConsensusWorker::takeAssembly(U2OpStatus &os) {
     return obj->getEntityRef();
 }
 
-Task * ExtractConsensusWorker::createTask(const U2EntityRef &assembly) {
+Task *ExtractConsensusWorker::createTask(const U2EntityRef &assembly) {
     const QString algoId = getValue<QString>(ALGO_ATTR_ID);
     const bool keepGaps = getValue<bool>(GAPS_ATTR_ID);
     Task *t = new ExtractConsensusTaskHelper(algoId, keepGaps, assembly, context->getDataStorage()->getDbiRef());
@@ -143,14 +139,12 @@ void ExtractConsensusWorker::sendResult(const SharedDbiDataHandler &seqId) {
 /* ExtractConsensusTaskHelper */
 /************************************************************************/
 ExtractConsensusTaskHelper::ExtractConsensusTaskHelper(const QString &algoId, bool keepGaps, const U2EntityRef &assembly, const U2DbiRef &targetDbi)
-: Task(tr("Extract consensus"), TaskFlags_NR_FOSCOE),
-  algoId(algoId),
-  keepGaps(keepGaps),
-  assembly(assembly),
-  targetDbi(targetDbi),
-  exportTask(NULL)
-{
-
+    : Task(tr("Extract consensus"), TaskFlags_NR_FOSCOE),
+      algoId(algoId),
+      keepGaps(keepGaps),
+      assembly(assembly),
+      targetDbi(targetDbi),
+      exportTask(NULL) {
 }
 
 void ExtractConsensusTaskHelper::prepare() {
@@ -180,7 +174,7 @@ U2EntityRef ExtractConsensusTaskHelper::getResult() const {
     return ref;
 }
 
-AssemblyConsensusAlgorithm * ExtractConsensusTaskHelper::createAlgorithm() {
+AssemblyConsensusAlgorithm *ExtractConsensusTaskHelper::createAlgorithm() {
     AssemblyConsensusAlgorithmRegistry *reg = AppContext::getAssemblyConsensusAlgorithmRegistry();
     SAFE_POINT_EXT(NULL != reg, setError("NULL registry"), NULL);
 
@@ -193,7 +187,7 @@ AssemblyConsensusAlgorithm * ExtractConsensusTaskHelper::createAlgorithm() {
     return f->createAlgorithm();
 }
 
-AssemblyModel * ExtractConsensusTaskHelper::createModel() {
+AssemblyModel *ExtractConsensusTaskHelper::createModel() {
     const DbiConnection con(assembly.dbiRef, stateInfo);
     CHECK_OP(stateInfo, NULL);
 
@@ -213,12 +207,10 @@ AssemblyModel * ExtractConsensusTaskHelper::createModel() {
 /* ExtractConsensusWorkerFactory */
 /************************************************************************/
 ExtractConsensusWorkerFactory::ExtractConsensusWorkerFactory()
-: DomainFactory(ACTOR_ID)
-{
-
+    : DomainFactory(ACTOR_ID) {
 }
 
-Worker * ExtractConsensusWorkerFactory::createWorker(Actor *actor) {
+Worker *ExtractConsensusWorkerFactory::createWorker(Actor *actor) {
     return new ExtractConsensusWorker(actor);
 }
 
@@ -227,10 +219,10 @@ void ExtractConsensusWorkerFactory::init() {
     SAFE_POINT(NULL != reg, "NULL registry", );
 
     const Descriptor desc(ACTOR_ID,
-        QObject::tr("Extract Consensus from Assembly"),
-        QObject::tr("Extract the consensus sequence from the incoming assembly."));
+                          QObject::tr("Extract Consensus from Assembly"),
+                          QObject::tr("Extract the consensus sequence from the incoming assembly."));
 
-    QList<PortDescriptor*> ports;
+    QList<PortDescriptor *> ports;
     {
         QMap<Descriptor, DataTypePtr> inData;
         inData[BaseSlots::ASSEMBLY_SLOT()] = BaseTypes::ASSEMBLY_TYPE();
@@ -243,19 +235,19 @@ void ExtractConsensusWorkerFactory::init() {
         ports << new PortDescriptor(BasePorts::OUT_SEQ_PORT_ID(), outType, false, true);
     }
 
-    QList<Attribute*> attrs;
+    QList<Attribute *> attrs;
     {
         const Descriptor algoDesc(ALGO_ATTR_ID,
-            QObject::tr("Algorithm"),
-            QObject::tr("The algorithm of consensus extracting."));
+                                  QObject::tr("Algorithm"),
+                                  QObject::tr("The algorithm of consensus extracting."));
         const Descriptor gapsDesc(GAPS_ATTR_ID,
-            QObject::tr("Keep gaps"),
-            QObject::tr("Set this parameter if the result consensus must keep the gaps."));
+                                  QObject::tr("Keep gaps"),
+                                  QObject::tr("Set this parameter if the result consensus must keep the gaps."));
         attrs << new Attribute(algoDesc, BaseTypes::STRING_TYPE(), true, BuiltInAssemblyConsensusAlgorithms::DEFAULT_ALGO);
         attrs << new Attribute(gapsDesc, BaseTypes::BOOL_TYPE(), true, true);
     }
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
         QVariantMap algos;
         foreach (const QString algoId, reg->getAlgorithmIds()) {
@@ -278,9 +270,7 @@ void ExtractConsensusWorkerFactory::init() {
 /* ExtractConsensusWorkerPrompter */
 /************************************************************************/
 ExtractConsensusWorkerPrompter::ExtractConsensusWorkerPrompter(Actor *actor)
-: PrompterBase<ExtractConsensusWorkerPrompter>(actor)
-{
-
+    : PrompterBase<ExtractConsensusWorkerPrompter>(actor) {
 }
 
 QString ExtractConsensusWorkerPrompter::composeRichDoc() {
@@ -289,5 +279,5 @@ QString ExtractConsensusWorkerPrompter::composeRichDoc() {
     return tr("Extracts the consensus sequence from the incoming assembly using the %1 algorithm.").arg(link);
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

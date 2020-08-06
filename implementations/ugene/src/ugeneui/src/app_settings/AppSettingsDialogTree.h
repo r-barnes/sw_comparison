@@ -25,16 +25,21 @@
 #include <QTreeWidget>
 
 namespace U2 {
-    class AppSettingsDialogController;
+class AppSettingsDialogController;
 }
 
 class AppSettingsDialogTree : public QTreeWidget {
     Q_OBJECT
 public:
-    AppSettingsDialogTree(QWidget* w = NULL) : QTreeWidget(w), controller(NULL) {}
-    void setController(U2::AppSettingsDialogController* c) {controller = c;}
+    AppSettingsDialogTree(QWidget *w = NULL)
+        : QTreeWidget(w), controller(NULL) {
+    }
+    void setController(U2::AppSettingsDialogController *c) {
+        controller = c;
+    }
+
 private:
-    U2::AppSettingsDialogController* controller;
+    U2::AppSettingsDialogController *controller;
 };
 
 #endif

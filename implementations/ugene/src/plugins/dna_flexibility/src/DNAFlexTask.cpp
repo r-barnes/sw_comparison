@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DNAFlexTask.h"
+
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/BaseDocumentFormats.h>
@@ -29,17 +31,16 @@
 #include <U2Core/U1AnnotationUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "DNAFlexTask.h"
 #include "FindHighFlexRegions.h"
 
 namespace U2 {
 
-DNAFlexTask::DNAFlexTask(const HighFlexSettings& _settings,
-        AnnotationTableObject *_annotObject,
-        const QString& _annotName,
-        const QString& _annotGroup,
-        const QString &annDescription,
-        const DNASequence& _sequence)
+DNAFlexTask::DNAFlexTask(const HighFlexSettings &_settings,
+                         AnnotationTableObject *_annotObject,
+                         const QString &_annotName,
+                         const QString &_annotGroup,
+                         const QString &annDescription,
+                         const DNASequence &_sequence)
 
     : Task(tr("DNA Flexibility task"), TaskFlags_NR_FOSCOE),
       settings(_settings),
@@ -47,12 +48,11 @@ DNAFlexTask::DNAFlexTask(const HighFlexSettings& _settings,
       annotName(_annotName),
       annotGroup(_annotGroup),
       annDescription(annDescription),
-      sequence(_sequence)
-{
+      sequence(_sequence) {
     addSubTask(findHighFlexTask = new FindHighFlexRegions(_sequence, settings));
 }
 
-QList<Task*> DNAFlexTask::onSubTaskFinished(Task* subTask) {
+QList<Task *> DNAFlexTask::onSubTaskFinished(Task *subTask) {
     QList<Task *> resultsList;
 
     if (subTask->hasError() && subTask == findHighFlexTask) {
@@ -69,13 +69,13 @@ QList<Task*> DNAFlexTask::onSubTaskFinished(Task* subTask) {
     }
 
     if (subTask == findHighFlexTask) {
-        FindHighFlexRegions* findTask = qobject_cast<FindHighFlexRegions*>(findHighFlexTask);
-        SAFE_POINT(findTask, "Failed to cast FindHighFlexRegions task!", QList<Task*>());
+        FindHighFlexRegions *findTask = qobject_cast<FindHighFlexRegions *>(findHighFlexTask);
+        SAFE_POINT(findTask, "Failed to cast FindHighFlexRegions task!", QList<Task *>());
 
         QList<HighFlexResult> results = findTask->getResults();
         QList<SharedAnnotationData> annots = getAnnotationsFromResults(results);
 
-        if(!annots.isEmpty()) {
+        if (!annots.isEmpty()) {
             resultsList.append(new CreateAnnotationsTask(annotObject, annots, annotGroup));
         }
     }
@@ -96,10 +96,9 @@ QList<SharedAnnotationData> DNAFlexTask::getAnnotationsFromResults(const QList<H
 
         U1AnnotationUtils::addDescriptionQualifier(annotData, annDescription);
 
-
         annotResults.append(annotData);
     }
     return annotResults;
 }
 
-} // namespace
+}    // namespace U2

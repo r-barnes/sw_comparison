@@ -22,55 +22,57 @@
 #ifndef _U2_MAFFT_ADD_TO_ALIGNMENT_TASK_H_
 #define _U2_MAFFT_ADD_TO_ALIGNMENT_TASK_H_
 
-#include <U2Algorithm/AlignmentAlgorithmsRegistry.h>
 #include <U2Algorithm/AlignSequencesToAlignmentTaskSettings.h>
+#include <U2Algorithm/AlignmentAlgorithmsRegistry.h>
+
 #include <U2Core/DNASequence.h>
 #include <U2Core/DocumentModel.h>
-#include <U2Core/MultipleSequenceAlignment.h>
 #include <U2Core/LoadDocumentTask.h>
-#include "MafftAddToAlignmentTask.h"
+#include <U2Core/MultipleSequenceAlignment.h>
+
 #include "MAFFTSupportTask.h"
+#include "MafftAddToAlignmentTask.h"
 
 namespace U2 {
 
 class U2UseCommonUserModStep;
 
-class MafftAddToAlignmentTask : public AbstractAlignmentTask{
+class MafftAddToAlignmentTask : public AbstractAlignmentTask {
     Q_OBJECT
 public:
-    MafftAddToAlignmentTask(const AlignSequencesToAlignmentTaskSettings& settings);
+    MafftAddToAlignmentTask(const AlignSequencesToAlignmentTaskSettings &settings);
 
     void prepare();
     void run();
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
     ReportResult report();
+
 private:
     bool useMemsaveOption() const;
 
     AlignSequencesToAlignmentTaskSettings settings;
 
-    MultipleSequenceAlignment                  inputMsa;
+    MultipleSequenceAlignment inputMsa;
 
-    QSharedPointer<Document>    tmpDoc;
-    QString                     url;
-    MAFFTLogParser*             logParser;
+    QSharedPointer<Document> tmpDoc;
+    QString url;
+    MAFFTLogParser *logParser;
 
-    SaveDocumentTask*           saveSequencesDocumentTask;
-    SaveMSA2SequencesTask*      saveAlignmentDocumentTask;
-    ExternalToolRunTask*        mafftTask;
-    LoadDocumentTask*           loadTmpDocumentTask;
-    U2UseCommonUserModStep*     modStep;
-    QMap<QString, QString>      uniqueIdsToNames;
+    SaveDocumentTask *saveSequencesDocumentTask;
+    SaveMSA2SequencesTask *saveAlignmentDocumentTask;
+    ExternalToolRunTask *mafftTask;
+    LoadDocumentTask *loadTmpDocumentTask;
+    U2UseCommonUserModStep *modStep;
+    QMap<QString, QString> uniqueIdsToNames;
 
     QString tmpDirUrl;
     QString resultFilePath;
 };
 
-class MafftAddToAlignmentTaskFactory : public AbstractAlignmentTaskFactory
-{
+class MafftAddToAlignmentTaskFactory : public AbstractAlignmentTaskFactory {
 public:
-    virtual AbstractAlignmentTask* getTaskInstance(AbstractAlignmentTaskSettings *_settings) const;
+    virtual AbstractAlignmentTask *getTaskInstance(AbstractAlignmentTaskSettings *_settings) const;
 };
 
 class MafftAddToAligmnentAlgorithm : public AlignmentAlgorithm {
@@ -80,6 +82,6 @@ public:
     bool isAlgorithmAvailable() const;
 };
 
-}// namespace
+}    // namespace U2
 
-#endif //_U2_MAFFT_ADD_TO_ALIGNMENT_TASK_H_
+#endif    //_U2_MAFFT_ADD_TO_ALIGNMENT_TASK_H_

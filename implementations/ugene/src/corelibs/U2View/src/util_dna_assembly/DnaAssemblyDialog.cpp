@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DnaAssemblyDialog.h"
+
 #include <QKeyEvent>
 #include <QMessageBox>
 
@@ -43,7 +45,6 @@
 
 #include <U2View/DnaAssemblyUtils.h>
 
-#include "DnaAssemblyDialog.h"
 #include "DnaAssemblyGUIExtension.h"
 
 namespace U2 {
@@ -54,25 +55,24 @@ QString DnaAssemblyDialog::methodName;
 bool DnaAssemblyDialog::prebuiltIndex = false;
 bool DnaAssemblyDialog::samOutput = false;
 
-#define LIBRARY_TYPE_PAIRED     "Paired-end"
-#define LIBRARY_TYPE_SINGLE     "Single-end"
-#define MATE_UPSTREAM           "Upstream"
-#define MATE_DOWNSTREAM         "Downstream"
+#define LIBRARY_TYPE_PAIRED "Paired-end"
+#define LIBRARY_TYPE_SINGLE "Single-end"
+#define MATE_UPSTREAM "Upstream"
+#define MATE_DOWNSTREAM "Downstream"
 
-DnaAssemblyDialog::DnaAssemblyDialog(QWidget* p, const QStringList& shortReadsUrls, const QString& refSeqUrl)
+DnaAssemblyDialog::DnaAssemblyDialog(QWidget *p, const QStringList &shortReadsUrls, const QString &refSeqUrl)
     : QDialog(p),
       assemblyRegistry(AppContext::getDnaAssemblyAlgRegistry()),
       customGUI(NULL),
-      saveController(NULL)
-{
+      saveController(NULL) {
     setupUi(this);
-    QMap<QString,QString> helpPagesMap;
-    helpPagesMap.insert("BWA","24742604");
-    helpPagesMap.insert("BWA-MEM","24742638");
-    helpPagesMap.insert("BWA-SW","24742632");
-    helpPagesMap.insert("Bowtie","24742601");
-    helpPagesMap.insert("Bowtie2","24742629");
-    helpPagesMap.insert("UGENE Genome Aligner","24742607");
+    QMap<QString, QString> helpPagesMap;
+    helpPagesMap.insert("BWA", "46501216");
+    helpPagesMap.insert("BWA-MEM", "46501230");
+    helpPagesMap.insert("BWA-SW", "46501223");
+    helpPagesMap.insert("Bowtie", "46501199");
+    helpPagesMap.insert("Bowtie2", "46501208");
+    helpPagesMap.insert("UGENE Genome Aligner", "46501237");
     new ComboboxDependentHelpButton(this, buttonBox, methodNamesBox, helpPagesMap);
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Start"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -93,17 +93,17 @@ DnaAssemblyDialog::DnaAssemblyDialog(QWidget* p, const QStringList& shortReadsUr
     }
 
     shortReadsTable->installEventFilter(this);
-    QHeaderView* header = shortReadsTable->header();
-    header->setStretchLastSection( false );
-    header->setSectionsClickable( false );
-    header->setSectionResizeMode( 0, QHeaderView::Stretch );
+    QHeaderView *header = shortReadsTable->header();
+    header->setStretchLastSection(false);
+    header->setSectionsClickable(false);
+    header->setSectionResizeMode(0, QHeaderView::Stretch);
 
     initSaveController();
 
     sl_onAlgorithmChanged(methodNamesBox->currentText());
-    connect(addShortreadsButton, SIGNAL(clicked()), SLOT(sl_onAddShortReadsButtonClicked()) );
+    connect(addShortreadsButton, SIGNAL(clicked()), SLOT(sl_onAddShortReadsButtonClicked()));
     connect(removeShortReadsButton, SIGNAL(clicked()), SLOT(sl_onRemoveShortReadsButtonClicked()));
-    connect(addRefButton, SIGNAL(clicked()), SLOT(sl_onAddRefButtonClicked()) );
+    connect(addRefButton, SIGNAL(clicked()), SLOT(sl_onAddRefButtonClicked()));
     connect(methodNamesBox, SIGNAL(currentIndexChanged(const QString &)), SLOT(sl_onAlgorithmChanged(const QString &)));
     connect(samBox, SIGNAL(clicked()), SLOT(sl_onSamBoxClicked()));
     connect(libraryComboBox, SIGNAL(currentIndexChanged(int)), SLOT(sl_onLibraryTypeChanged()));
@@ -115,17 +115,16 @@ DnaAssemblyDialog::DnaAssemblyDialog(QWidget* p, const QStringList& shortReadsUr
         if (NULL != customGUI) {
             QString error;
             customGUI->buildIndexUrl(lastRefSeqUrl, prebuiltIndex, error);
-            customGUI->validateReferenceSequence( activeRefSeqUrl );
+            customGUI->validateReferenceSequence(activeRefSeqUrl);
             //todo: process error!
         }
     }
 
     QStringList activeShortReadsUrl = shortReadsUrls.isEmpty() ? lastShortReadsUrls : shortReadsUrls;
-    foreach(const QString& read, activeShortReadsUrl) {
-        ShortReadsTableItem* item = new ShortReadsTableItem(shortReadsTable, read);
+    foreach (const QString &read, activeShortReadsUrl) {
+        ShortReadsTableItem *item = new ShortReadsTableItem(shortReadsTable, read);
         ShortReadsTableItem::addItemToTable(item, shortReadsTable);
     }
-
 }
 
 void DnaAssemblyDialog::updateState() {
@@ -140,9 +139,9 @@ void DnaAssemblyDialog::sl_onAddShortReadsButtonClicked() {
     }
     lod.url = fileNames.at(fileNames.count() - 1);
 
-    foreach(const QString& f, fileNames) {
-        ShortReadsTableItem* item = new ShortReadsTableItem(shortReadsTable, f);
-        item->setLibraryType( libraryComboBox->currentIndex() == 0 ? LIBRARY_TYPE_SINGLE : LIBRARY_TYPE_PAIRED);
+    foreach (const QString &f, fileNames) {
+        ShortReadsTableItem *item = new ShortReadsTableItem(shortReadsTable, f);
+        item->setLibraryType(libraryComboBox->currentIndex() == 0 ? LIBRARY_TYPE_SINGLE : LIBRARY_TYPE_PAIRED);
         ShortReadsTableItem::addItemToTable(item, shortReadsTable);
     }
 }
@@ -164,7 +163,7 @@ void DnaAssemblyDialog::sl_onAddRefButtonClicked() {
         if (!customGUI->buildIndexUrl(lod.url, prebuiltIndex, error)) {
             QMessageBox::information(this, "DNA Assembly", error);
         }
-        customGUI->validateReferenceSequence( GUrl( lod.url ) );
+        customGUI->validateReferenceSequence(GUrl(lod.url));
     }
 }
 
@@ -191,23 +190,19 @@ void DnaAssemblyDialog::accept() {
     }
 
     if (refSeqEdit->text().isEmpty()) {
-        QMessageBox::information(this, tr("DNA Assembly"),
-            tr("Reference sequence url is not set!") );
-    } else if (saveController->getSaveFileName().isEmpty() ) {
-        QMessageBox::information(this, tr("DNA Assembly"),
-            tr("Result alignment file name is not set!") );
-    } else if (shortReadsTable->topLevelItemCount() == 0 ) {
-        QMessageBox::information(this, tr("DNA Assembly"),
-            tr("Short reads list is empty!") );
+        QMessageBox::information(this, tr("DNA Assembly"), tr("Reference sequence url is not set!"));
+    } else if (saveController->getSaveFileName().isEmpty()) {
+        QMessageBox::information(this, tr("DNA Assembly"), tr("Result alignment file name is not set!"));
+    } else if (shortReadsTable->topLevelItemCount() == 0) {
+        QMessageBox::information(this, tr("DNA Assembly"), tr("Short reads list is empty!"));
     } else {
-
         lastRefSeqUrl.clear();
         lastShortReadsUrls.clear();
 
         lastRefSeqUrl = refSeqEdit->text();
         int numItems = shortReadsTable->topLevelItemCount();
-        for( int i =0; i < numItems; ++i) {
-            lastShortReadsUrls.append(shortReadsTable->topLevelItem(i)->data(0,0).toString());
+        for (int i = 0; i < numItems; ++i) {
+            lastShortReadsUrls.append(shortReadsTable->topLevelItem(i)->data(0, 0).toString());
         }
 
         DnaAssemblyToRefTaskSettings settings = DnaAssemblyGUIUtils::getSettings(this);
@@ -216,8 +211,8 @@ void DnaAssemblyDialog::accept() {
                 settings.prebuiltIndex = true;
             } else {
                 QMessageBox::warning(this,
-                    tr("DNA Assembly"),
-                    tr("You set the index as a reference and the index files are corrupted.\n\nTry to build it again or choose a reference sequence."));
+                                     tr("DNA Assembly"),
+                                     tr("You set the index as a reference and the index files are corrupted.\n\nTry to build it again or choose a reference sequence."));
                 return;
             }
         }
@@ -227,17 +222,17 @@ void DnaAssemblyDialog::accept() {
         if (!unknownFormatFiles.isEmpty()) {
             QString filesText = DnaAssemblySupport::unknownText(unknownFormatFiles);
             QMessageBox::warning(this,
-                tr("DNA Assembly"),
-                tr("These files have the unknown format:\n\n") + filesText);
+                                 tr("DNA Assembly"),
+                                 tr("These files have the unknown format:\n\n") + filesText);
             return;
         }
         if (!toConvert.isEmpty()) {
             QString filesText = DnaAssemblySupport::toConvertText(toConvert);
             QMessageBox::StandardButton res = QMessageBox::information(this,
-                tr("DNA Assembly"),
-                tr("These files have the incompatible format:\n\n") + filesText +
-                tr("\n\nDo you want to convert the files and run the aligner?"),
-                QMessageBox::Yes | QMessageBox::No);
+                                                                       tr("DNA Assembly"),
+                                                                       tr("These files have the incompatible format:\n\n") + filesText +
+                                                                           tr("\n\nDo you want to convert the files and run the aligner?"),
+                                                                       QMessageBox::Yes | QMessageBox::No);
             if (QMessageBox::No == res) {
                 return;
             }
@@ -276,19 +271,16 @@ const GUrl DnaAssemblyDialog::getRefSeqUrl() {
     return refSeqEdit->text();
 }
 
-const QList<ShortReadSet> DnaAssemblyDialog::getShortReadSets()
-{
+const QList<ShortReadSet> DnaAssemblyDialog::getShortReadSets() {
     QList<ShortReadSet> sets;
 
     int numItems = shortReadsTable->topLevelItemCount();
 
-    for( int i =0; i < numItems; ++i) {
-        ShortReadsTableItem* item = static_cast<ShortReadsTableItem*> ( shortReadsTable->topLevelItem(i) );
-        sets.append( ShortReadSet(item->getUrl(), item->getType(), item->getOrder()));
-
+    for (int i = 0; i < numItems; ++i) {
+        ShortReadsTableItem *item = static_cast<ShortReadsTableItem *>(shortReadsTable->topLevelItem(i));
+        sets.append(ShortReadSet(item->getUrl(), item->getType(), item->getOrder()));
     }
     return sets;
-
 }
 
 const QString DnaAssemblyDialog::getAlgorithmName() {
@@ -298,7 +290,6 @@ const QString DnaAssemblyDialog::getAlgorithmName() {
 void DnaAssemblyDialog::sl_onRemoveShortReadsButtonClicked() {
     int currentRow = shortReadsTable->currentIndex().row();
     shortReadsTable->takeTopLevelItem(currentRow);
-
 }
 
 void DnaAssemblyDialog::sl_onAlgorithmChanged(const QString &text) {
@@ -351,7 +342,7 @@ void DnaAssemblyDialog::addGuiExtension() {
     }
 
     // insert new extension widget
-    DnaAssemblyAlgorithmEnv* env = assemblyRegistry->getAlgorithm(methodNamesBox->currentText());
+    DnaAssemblyAlgorithmEnv *env = assemblyRegistry->getAlgorithm(methodNamesBox->currentText());
 
     if (NULL == env) {
         adjustSize();
@@ -375,8 +366,8 @@ void DnaAssemblyDialog::addGuiExtension() {
     } else {
         samBox->setEnabled(true);
     }
-    DnaAssemblyGUIExtensionsFactory* gui = env->getGUIExtFactory();
-    if (gui!=NULL && gui->hasMainWidget()) {
+    DnaAssemblyGUIExtensionsFactory *gui = env->getGUIExtFactory();
+    if (gui != NULL && gui->hasMainWidget()) {
         customGUI = gui->createMainWidget(this);
         int extensionMinWidth = customGUI->sizeHint().width();
         int extensionMinHeight = customGUI->sizeHint().height();
@@ -393,7 +384,7 @@ void DnaAssemblyDialog::addGuiExtension() {
         if (!refSeqEdit->text().isEmpty()) {
             QString error;
             customGUI->buildIndexUrl(refSeqEdit->text(), prebuiltIndex, error);
-            customGUI->validateReferenceSequence( GUrl( refSeqEdit->text( ) ) );
+            customGUI->validateReferenceSequence(GUrl(refSeqEdit->text()));
         }
         customGUI->show();
         adjustSize();
@@ -402,10 +393,10 @@ void DnaAssemblyDialog::addGuiExtension() {
     }
 }
 
-bool DnaAssemblyDialog::eventFilter( QObject * obj, QEvent * event ) {
+bool DnaAssemblyDialog::eventFilter(QObject *obj, QEvent *event) {
     if (obj == shortReadsTable) {
         if (event->type() == QEvent::KeyPress) {
-            QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
             if (keyEvent->key() == Qt::Key_Delete) {
                 sl_onRemoveShortReadsButtonClicked();
             }
@@ -419,12 +410,11 @@ bool DnaAssemblyDialog::eventFilter( QObject * obj, QEvent * event ) {
     }
 }
 
-void DnaAssemblyDialog::sl_onLibraryTypeChanged()
-{
+void DnaAssemblyDialog::sl_onLibraryTypeChanged() {
     int count = shortReadsTable->topLevelItemCount();
     for (int i = 0; i < count; ++i) {
-        ShortReadsTableItem* item = static_cast<ShortReadsTableItem*> (shortReadsTable->topLevelItem(i));
-        item->setLibraryType( libraryComboBox->currentIndex() == 0 ? LIBRARY_TYPE_SINGLE : LIBRARY_TYPE_PAIRED );
+        ShortReadsTableItem *item = static_cast<ShortReadsTableItem *>(shortReadsTable->topLevelItem(i));
+        item->setLibraryType(libraryComboBox->currentIndex() == 0 ? LIBRARY_TYPE_SINGLE : LIBRARY_TYPE_PAIRED);
     }
 }
 
@@ -446,7 +436,7 @@ DnaAssemblyToRefTaskSettings DnaAssemblyGUIUtils::getSettings(DnaAssemblyDialog 
     return s;
 }
 
-void DnaAssemblyGUIUtils::runAssembly2ReferenceDialog(const QStringList& shortReadUrls, const QString& refSeqUrl) {
+void DnaAssemblyGUIUtils::runAssembly2ReferenceDialog(const QStringList &shortReadUrls, const QString &refSeqUrl) {
     QObjectScopedPointer<DnaAssemblyDialog> dlg = new DnaAssemblyDialog(QApplication::activeWindow(), shortReadUrls, refSeqUrl);
     dlg->exec();
     CHECK(!dlg.isNull(), );
@@ -454,14 +444,13 @@ void DnaAssemblyGUIUtils::runAssembly2ReferenceDialog(const QStringList& shortRe
     if (QDialog::Accepted == dlg->result()) {
         DnaAssemblyToRefTaskSettings s = getSettings(dlg.data());
         s.openView = true;
-        Task* assemblyTask = new DnaAssemblyTaskWithConversions(s, true);
+        Task *assemblyTask = new DnaAssemblyTaskWithConversions(s, true);
         AppContext::getTaskScheduler()->registerTopLevelTask(assemblyTask);
     }
 }
 
-ShortReadsTableItem::ShortReadsTableItem(QTreeWidget *treeWidget, const QString& url) : QTreeWidgetItem(treeWidget)
-{
-
+ShortReadsTableItem::ShortReadsTableItem(QTreeWidget *treeWidget, const QString &url)
+    : QTreeWidgetItem(treeWidget) {
     mateTypeBox = new QComboBox(treeWidget);
     mateTypeBox->addItem(MATE_UPSTREAM);
     mateTypeBox->addItem(MATE_DOWNSTREAM);
@@ -470,30 +459,25 @@ ShortReadsTableItem::ShortReadsTableItem(QTreeWidget *treeWidget, const QString&
     setData(1, 0, LIBRARY_TYPE_SINGLE);
 }
 
-GUrl ShortReadsTableItem::getUrl() const
-{
-    return data(0,0).toString();
+GUrl ShortReadsTableItem::getUrl() const {
+    return data(0, 0).toString();
 }
 
-ShortReadSet::LibraryType ShortReadsTableItem::getType() const
-{
-    return data(1,0).toString() == LIBRARY_TYPE_PAIRED ? ShortReadSet::PairedEndReads : ShortReadSet::SingleEndReads;
+ShortReadSet::LibraryType ShortReadsTableItem::getType() const {
+    return data(1, 0).toString() == LIBRARY_TYPE_PAIRED ? ShortReadSet::PairedEndReads : ShortReadSet::SingleEndReads;
 }
 
-ShortReadSet::MateOrder ShortReadsTableItem::getOrder() const
-{
+ShortReadSet::MateOrder ShortReadsTableItem::getOrder() const {
     return mateTypeBox->currentText() == MATE_DOWNSTREAM ? ShortReadSet::DownstreamMate : ShortReadSet::UpstreamMate;
 }
 
-void ShortReadsTableItem::addItemToTable(ShortReadsTableItem *item, QTreeWidget *treeWidget)
-{
+void ShortReadsTableItem::addItemToTable(ShortReadsTableItem *item, QTreeWidget *treeWidget) {
     treeWidget->addTopLevelItem(item);
-    treeWidget->setItemWidget(item,2,item->mateTypeBox);
+    treeWidget->setItemWidget(item, 2, item->mateTypeBox);
 }
 
-void ShortReadsTableItem::setLibraryType( const QString& libraryType )
-{
-    setData(1,0, libraryType);
+void ShortReadsTableItem::setLibraryType(const QString &libraryType) {
+    setData(1, 0, libraryType);
     if (libraryType == LIBRARY_TYPE_SINGLE) {
         mateTypeBox->setCurrentIndex(0);
         mateTypeBox->setEnabled(false);
@@ -502,6 +486,4 @@ void ShortReadsTableItem::setLibraryType( const QString& libraryType )
     }
 }
 
-
-
-} // U2
+}    // namespace U2

@@ -26,7 +26,6 @@
 
 #include <U2Core/SMatrix.h>
 
-
 namespace U2 {
 
 class FMatrix;
@@ -74,6 +73,6 @@ private:
     void setFValue(int i, int j, float v);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_NW_ALIGNER_H_
+#endif    // _U2_NW_ALIGNER_H_

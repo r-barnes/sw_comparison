@@ -22,11 +22,11 @@
 #ifndef _U2_PHMMER_SEARCH_TASK_TEST_H_
 #define _U2_PHMMER_SEARCH_TASK_TEST_H_
 
-#include "PhmmerSearchTask.h"
-
 #include <U2Test/GTest.h>
 #include <U2Test/XMLTestFormat.h>
 #include <U2Test/XMLTestUtils.h>
+
+#include "PhmmerSearchTask.h"
 
 namespace U2 {
 
@@ -52,20 +52,20 @@ public:
 
     void prepare();
     ReportResult report();
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
 private:
     void setAndCheckArgs();
 
-    static void setSearchTaskSettings(PhmmerSearchSettings& set, const QDomElement& el, TaskStateInfo& si);
+    static void setSearchTaskSettings(PhmmerSearchSettings &set, const QDomElement &el, TaskStateInfo &si);
 
 private:
-    PhmmerSearchSettings    searchSettings;
-    QString                 queryFilename;
-    QString                 dbFilename;
-    PhmmerSearchTask *      phmmerTask;
-    QString                 outputDir;
-}; // GTest_UHMM3Phmmer
+    PhmmerSearchSettings searchSettings;
+    QString queryFilename;
+    QString dbFilename;
+    PhmmerSearchTask *phmmerTask;
+    QString outputDir;
+};    // GTest_UHMM3Phmmer
 
 /*****************************************
 * Test compares original hmmer3 phmmer results with UHMM3SearchResults
@@ -87,10 +87,10 @@ private:
     void setAndCheckArgs();
 
 private:
-    QString             actualOutFilename;
-    QString             trueOutFilename;
-}; // GTest_UHMM3PhmmerCompare
+    QString actualOutFilename;
+    QString trueOutFilename;
+};    // GTest_UHMM3PhmmerCompare
 
-}
+}    // namespace U2
 
 #endif

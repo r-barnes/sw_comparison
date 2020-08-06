@@ -46,31 +46,31 @@ class U2GUI_EXPORT CreateAnnotationModel {
 public:
     CreateAnnotationModel();
 
-    GObjectReference        sequenceObjectRef;  // this object is selected by default
-    bool                    defaultIsNewDoc;    //new doc field is selected by default
+    GObjectReference sequenceObjectRef;    // this object is selected by default
+    bool defaultIsNewDoc;    //new doc field is selected by default
 
-    bool                    hideGroupName;      // hides annotation group name field
-    bool                    hideLocation;       // hides location field and does not check it in validate()
-    bool                    hideAnnotationType; // hides annotation type field
-    bool                    hideAnnotationName; // hides annotation name field
-    bool                    hideDescription;    // hides description field
-    bool                    hideUsePatternNames;// hides "use pattern names" checkbox
-    bool                    useUnloadedObjects;
-    bool                    useAminoAnnotationTypes;
+    bool hideGroupName;    // hides annotation group name field
+    bool hideLocation;    // hides location field and does not check it in validate()
+    bool hideAnnotationType;    // hides annotation type field
+    bool hideAnnotationName;    // hides annotation name field
+    bool hideDescription;    // hides description field
+    bool hideUsePatternNames;    // hides "use pattern names" checkbox
+    bool useUnloadedObjects;
+    bool useAminoAnnotationTypes;
 
-    QString                 groupName;          // default groupname. If empty -> <auto> value is used (annotationObject->name value).
-    SharedAnnotationData    data;               // holds name, location and preferred type of the annotation
-    QString                 description;        // some info that will be saved as qualifier /note
+    QString groupName;    // default groupname. If empty -> <auto> value is used (annotationObject->name value).
+    SharedAnnotationData data;    // holds name, location and preferred type of the annotation
+    QString description;    // some info that will be saved as qualifier /note
 
-    GObjectReference        annotationObjectRef; // the object to be loaded
-    QString                 newDocUrl;        // the URL of new document with annotation table to be created
-    qint64                  sequenceLen;        //length of target sequence for validation purposes
+    GObjectReference annotationObjectRef;    // the object to be loaded
+    QString newDocUrl;    // the URL of new document with annotation table to be created
+    qint64 sequenceLen;    //length of target sequence for validation purposes
 
-    bool                    hideAnnotationTableOption;  // hides all options of annotation table object location
-    bool                    hideAutoAnnotationsOption; // show automated highlighting for new annotation if possible
-    bool                    hideAnnotationParameters;   // hides annotation parameters groupbox
+    bool hideAnnotationTableOption;    // hides all options of annotation table object location
+    bool hideAutoAnnotationsOption;    // show automated highlighting for new annotation if possible
+    bool hideAnnotationParameters;    // hides annotation parameters groupbox
 
-    AnnotationTableObject *   getAnnotationObject() const;
+    AnnotationTableObject *getAnnotationObject() const;
 };
 
 class U2GUI_EXPORT CreateAnnotationWidgetController : public QObject {
@@ -83,7 +83,7 @@ public:
     };
 
     // useCompact defines the layout of the widget (normal or compact for the Options Panel)
-    CreateAnnotationWidgetController(const CreateAnnotationModel& m, QObject* p, AnnotationWidgetMode layoutMode = Normal);
+    CreateAnnotationWidgetController(const CreateAnnotationModel &m, QObject *p, AnnotationWidgetMode layoutMode = Normal);
 
     // returns error message or empty string if no error found;
     // does not create any new objects
@@ -108,17 +108,19 @@ public:
 
     void setEnabledNameEdit(bool enbaled);
 
-    QWidget* getWidget() const;
+    QWidget *getWidget() const;
 
-    const CreateAnnotationModel&    getModel() const {return model;}
+    const CreateAnnotationModel &getModel() const {
+        return model;
+    }
     AnnotationCreationPattern getAnnotationPattern() const;
 
-    void updateWidgetForAnnotationModel(const CreateAnnotationModel& model);
+    void updateWidgetForAnnotationModel(const CreateAnnotationModel &model);
 
     /** It is called from the constructor and updateWidgetForAnnotationModel(...) */
-    void commonWidgetUpdate(const CreateAnnotationModel& model);
+    void commonWidgetUpdate(const CreateAnnotationModel &model);
 
-    QPair<QWidget*, QWidget*> getTaborderEntryAndExitPoints() const;
+    QPair<QWidget *, QWidget *> getTaborderEntryAndExitPoints() const;
 
     void countDescriptionUsage() const;
 
@@ -145,16 +147,16 @@ private:
     void initSaveController();
     bool isAnnotationsTableVirtual();
 
-    CreateAnnotationModel       model;
-    GObjectComboBoxController * occ;
-    CreateAnnotationWidget *    w;
-    SaveDocumentController *    saveController;
-    
+    CreateAnnotationModel model;
+    GObjectComboBoxController *occ;
+    CreateAnnotationWidget *w;
+    SaveDocumentController *saveController;
+
     QString GROUP_NAME_AUTO;
     static const QString DESCRIPTION_QUALIFIER_KEY;
     static const QString SETTINGS_LASTDIR;
 };
 
-} // namespace U2
+}    // namespace U2
 
 #endif

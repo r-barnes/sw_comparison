@@ -25,11 +25,11 @@
 
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/DNASequenceSelection.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/GUIUtils.h>
 #include <U2Gui/OPWidgetFactoryRegistry.h>
-#include <U2Core/QObjectScopedPointer.h>
 
 #include <U2View/ADVConstants.h>
 #include <U2View/ADVSequenceObjectContext.h>
@@ -49,9 +49,9 @@ const QString NEW_SEQ_ORIGIN_ACTION_NAME = "Set new sequence origin";
 
 namespace U2 {
 
-extern "C" Q_DECL_EXPORT Plugin* U2_PLUGIN_INIT_FUNC() {
+extern "C" Q_DECL_EXPORT Plugin *U2_PLUGIN_INIT_FUNC() {
     if (AppContext::getMainWindow()) {
-        CircularViewPlugin* plug = new CircularViewPlugin();
+        CircularViewPlugin *plug = new CircularViewPlugin();
         return plug;
     }
     return NULL;
@@ -66,35 +66,33 @@ CircularViewSettings::CircularViewSettings()
       showRulerCoordinates(true),
       rulerFontSize(11),
       labelMode(Mixed),
-      labelFontSize(11)
-{
+      labelFontSize(11) {
     titleFont = QApplication::font().family();
 }
 
-CircularViewPlugin::CircularViewPlugin() : Plugin(tr("CircularView"), tr("Enables drawing of DNA sequences using circular representation")) {
+CircularViewPlugin::CircularViewPlugin()
+    : Plugin(tr("CircularView"), tr("Enables drawing of DNA sequences using circular representation")) {
     viewCtx = new CircularViewContext(this);
     viewCtx->init();
 
     OPWidgetFactoryRegistry *opWidgetFactoryRegistry = AppContext::getOPWidgetFactoryRegistry();
     SAFE_POINT(opWidgetFactoryRegistry != NULL, tr("OPWidgetFactoryRegistry is NULL"), );
-    opWidgetFactoryRegistry->registerFactory(new CircularViewSettingsWidgetFactory(qobject_cast<CircularViewContext*>(viewCtx)));
+    opWidgetFactoryRegistry->registerFactory(new CircularViewSettingsWidgetFactory(qobject_cast<CircularViewContext *>(viewCtx)));
 }
 
-#define CIRCULAR_ACTION_NAME   "CircularViewAction"
-#define CIRCULAR_VIEW_NAME     "CIRCULAR_VIEW"
+#define CIRCULAR_ACTION_NAME "CircularViewAction"
+#define CIRCULAR_VIEW_NAME "CIRCULAR_VIEW"
 
-CircularViewContext::CircularViewContext(QObject* p)
-    : GObjectViewWindowContext(p, ANNOTATED_DNA_VIEW_FACTORY_ID)
-{
-
+CircularViewContext::CircularViewContext(QObject *p)
+    : GObjectViewWindowContext(p, ANNOTATED_DNA_VIEW_FACTORY_ID) {
 }
 
-CircularViewSettings * CircularViewContext::getSettings(AnnotatedDNAView *view) {
+CircularViewSettings *CircularViewContext::getSettings(AnnotatedDNAView *view) {
     return viewSettings.value(view);
 }
 
-void CircularViewContext::initViewContext(GObjectView* v) {
-    AnnotatedDNAView* av = qobject_cast<AnnotatedDNAView*>(v);
+void CircularViewContext::initViewContext(GObjectView *v) {
+    AnnotatedDNAView *av = qobject_cast<AnnotatedDNAView *>(v);
     SAFE_POINT(!viewSettings.contains(av), "Unexpected sequence view", );
 
     viewSettings.insert(av, new CircularViewSettings());
@@ -109,31 +107,29 @@ void CircularViewContext::initViewContext(GObjectView* v) {
     connect(setSequenceOriginAction, SIGNAL(triggered()), SLOT(sl_setSequenceOrigin()));
     addViewAction(setSequenceOriginAction);
 
-    foreach(ADVSequenceWidget* w, av->getSequenceWidgets()) {
+    foreach (ADVSequenceWidget *w, av->getSequenceWidgets()) {
         sl_sequenceWidgetAdded(w);
     }
-    connect(av, SIGNAL(si_sequenceWidgetAdded(ADVSequenceWidget*)), SLOT(sl_sequenceWidgetAdded(ADVSequenceWidget*)));
-    connect(av, SIGNAL(si_sequenceWidgetRemoved(ADVSequenceWidget*)), SLOT(sl_sequenceWidgetRemoved(ADVSequenceWidget*)));
-    connect(av, SIGNAL(si_onClose(AnnotatedDNAView*)), SLOT(sl_onDNAViewClosed(AnnotatedDNAView*)));
+    connect(av, SIGNAL(si_sequenceWidgetAdded(ADVSequenceWidget *)), SLOT(sl_sequenceWidgetAdded(ADVSequenceWidget *)));
+    connect(av, SIGNAL(si_sequenceWidgetRemoved(ADVSequenceWidget *)), SLOT(sl_sequenceWidgetRemoved(ADVSequenceWidget *)));
+    connect(av, SIGNAL(si_onClose(AnnotatedDNAView *)), SLOT(sl_onDNAViewClosed(AnnotatedDNAView *)));
 
-    ADVGlobalAction* globalToggleViewAction = new ADVGlobalAction(av, QIcon(":circular_view/images/circular.png"),
-        tr("Toggle circular views"), std::numeric_limits<int>::max(), ADVGlobalActionFlags(ADVGlobalActionFlag_AddToToolbar)
-        | ADVGlobalActionFlag_SingleSequenceOnly); // big enough to be the last one?
+    ADVGlobalAction *globalToggleViewAction = new ADVGlobalAction(av, QIcon(":circular_view/images/circular.png"), tr("Toggle circular views"), std::numeric_limits<int>::max(), ADVGlobalActionFlags(ADVGlobalActionFlag_AddToToolbar) | ADVGlobalActionFlag_SingleSequenceOnly);    // big enough to be the last one?
 
     globalToggleViewAction->addAlphabetFilter(DNAAlphabet_NUCL);
     globalToggleViewAction->setObjectName("globalToggleViewAction");
     connect(globalToggleViewAction, SIGNAL(triggered()), SLOT(sl_toggleViews()));
 }
 
-#define MIN_LENGTH_TO_AUTO_SHOW (1000*1000)
+#define MIN_LENGTH_TO_AUTO_SHOW (1000 * 1000)
 
-void CircularViewContext::sl_sequenceWidgetAdded(ADVSequenceWidget* w) {
-    ADVSingleSequenceWidget* sw = qobject_cast<ADVSingleSequenceWidget*>(w);
+void CircularViewContext::sl_sequenceWidgetAdded(ADVSequenceWidget *w) {
+    ADVSingleSequenceWidget *sw = qobject_cast<ADVSingleSequenceWidget *>(w);
     if (sw == NULL || sw->getSequenceObject() == NULL || !sw->getSequenceObject()->getAlphabet()->isNucleic()) {
         return;
     }
 
-    CircularViewAction* action = new CircularViewAction();
+    CircularViewAction *action = new CircularViewAction();
     action->setIcon(QIcon(":circular_view/images/circular.png"));
     action->setCheckable(true);
     action->setChecked(false);
@@ -154,31 +150,31 @@ void CircularViewContext::sl_sequenceWidgetAdded(ADVSequenceWidget* w) {
     connect(sw->getSequenceObject(), SIGNAL(si_sequenceCircularStateChanged()), action, SLOT(sl_circularStateChanged()));
 }
 
-void CircularViewContext::sl_sequenceWidgetRemoved(ADVSequenceWidget* w) {
-    ADVSingleSequenceWidget* sw = qobject_cast<ADVSingleSequenceWidget*>(w);
-    if(!sw->getSequenceObject()->getAlphabet()->isNucleic()){
+void CircularViewContext::sl_sequenceWidgetRemoved(ADVSequenceWidget *w) {
+    ADVSingleSequenceWidget *sw = qobject_cast<ADVSingleSequenceWidget *>(w);
+    if (!sw->getSequenceObject()->getAlphabet()->isNucleic()) {
         return;
     }
 
-    CircularViewSplitter* splitter = getView(sw->getAnnotatedDNAView(), false);
-    if(splitter != NULL) {
-        CircularViewAction* a = qobject_cast<CircularViewAction*>(sw->getADVSequenceWidgetAction(CIRCULAR_ACTION_NAME));
+    CircularViewSplitter *splitter = getView(sw->getAnnotatedDNAView(), false);
+    if (splitter != NULL) {
+        CircularViewAction *a = qobject_cast<CircularViewAction *>(sw->getADVSequenceWidgetAction(CIRCULAR_ACTION_NAME));
         SAFE_POINT(a != NULL, "Circular view action is not found", );
         CHECK(a->view != NULL, );
-        splitter->removeView(a->view,a->rmapWidget);
+        splitter->removeView(a->view, a->rmapWidget);
         delete a->view;
         delete a->rmapWidget;
-        if(splitter->isEmpty()) {
+        if (splitter->isEmpty()) {
             removeCircularView(sw->getAnnotatedDNAView());
         }
     }
 }
 
-CircularViewSplitter * CircularViewContext::getView(GObjectView *view, bool create) {
+CircularViewSplitter *CircularViewContext::getView(GObjectView *view, bool create) {
     CircularViewSplitter *circularView = NULL;
     QList<QObject *> resources = viewResources.value(view);
     foreach (QObject *r, resources) {
-        circularView = qobject_cast<CircularViewSplitter*>(r);
+        circularView = qobject_cast<CircularViewSplitter *>(r);
         if (NULL != circularView) {
             return circularView;
         }
@@ -204,7 +200,7 @@ void CircularViewContext::buildMenu(GObjectView *v, QMenu *m) {
     foreach (QObject *r, resources) {
         CircularViewSplitter *circularView = qobject_cast<CircularViewSplitter *>(r);
         if (NULL != circularView) {
-            if(!circularView->isEmpty()) {
+            if (!circularView->isEmpty()) {
                 empty = false;
             }
             break;
@@ -226,13 +222,13 @@ void CircularViewContext::buildMenu(GObjectView *v, QMenu *m) {
 }
 //////////////////////////////////////////////////////////////////////////
 
-void CircularViewContext::removeCircularView(GObjectView* view) {
-    QList<QObject*> resources = viewResources.value(view);
-    foreach(QObject* r, resources) {
-        CircularViewSplitter* circularView = qobject_cast<CircularViewSplitter*>(r);
+void CircularViewContext::removeCircularView(GObjectView *view) {
+    QList<QObject *> resources = viewResources.value(view);
+    foreach (QObject *r, resources) {
+        CircularViewSplitter *circularView = qobject_cast<CircularViewSplitter *>(r);
         if (NULL != circularView) {
             SAFE_POINT(circularView->isEmpty(), "Circular view is not empty", );
-            AnnotatedDNAView* av = qobject_cast<AnnotatedDNAView*>(view);
+            AnnotatedDNAView *av = qobject_cast<AnnotatedDNAView *>(view);
             av->unregisterSplitWidget(circularView);
             resources.removeOne(circularView);
             viewResources.insert(view, resources);
@@ -244,12 +240,12 @@ void CircularViewContext::removeCircularView(GObjectView* view) {
 
 void CircularViewContext::toggleViews(AnnotatedDNAView *av) {
     SAFE_POINT(av != NULL, "AnnotatedDNAView is NULL", );
-    QList<ADVSequenceWidget*> sWidgets = av->getSequenceWidgets();
+    QList<ADVSequenceWidget *> sWidgets = av->getSequenceWidgets();
 
     bool openAll = true;
-    foreach( ADVSequenceWidget* sw, sWidgets) {
+    foreach (ADVSequenceWidget *sw, sWidgets) {
         SAFE_POINT(sw != NULL, "ADVSequenceWidget is NULL", );
-        CircularViewAction* a = qobject_cast<CircularViewAction*>(sw->getADVSequenceWidgetAction(CIRCULAR_ACTION_NAME));
+        CircularViewAction *a = qobject_cast<CircularViewAction *>(sw->getADVSequenceWidgetAction(CIRCULAR_ACTION_NAME));
         CHECK_OPERATION(a != NULL, continue);
         //if there is at least one opened CV, close them all
         if (a->isChecked()) {
@@ -259,39 +255,38 @@ void CircularViewContext::toggleViews(AnnotatedDNAView *av) {
     }
 
     if (openAll) {
-        foreach( ADVSequenceWidget* sw, sWidgets) {
-           SAFE_POINT(sw != NULL, "ADVSequenceWidget is NULL", );
-           CircularViewAction* a = qobject_cast<CircularViewAction*>(sw->getADVSequenceWidgetAction(CIRCULAR_ACTION_NAME));
-           CHECK_OPERATION(a != NULL, continue);
-           a->trigger();
+        foreach (ADVSequenceWidget *sw, sWidgets) {
+            SAFE_POINT(sw != NULL, "ADVSequenceWidget is NULL", );
+            CircularViewAction *a = qobject_cast<CircularViewAction *>(sw->getADVSequenceWidgetAction(CIRCULAR_ACTION_NAME));
+            CHECK_OPERATION(a != NULL, continue);
+            a->trigger();
         }
     }
 }
 
 void CircularViewContext::sl_showCircular() {
-    CircularViewAction* a = qobject_cast<CircularViewAction*>(sender());
+    CircularViewAction *a = qobject_cast<CircularViewAction *>(sender());
     SAFE_POINT(NULL != a, "Invalid CV action", );
-    ADVSingleSequenceWidget* sw = qobject_cast<ADVSingleSequenceWidget*>(a->seqWidget);
+    ADVSingleSequenceWidget *sw = qobject_cast<ADVSingleSequenceWidget *>(a->seqWidget);
     if (a->isChecked()) {
         a->setText(tr("Remove circular view"));
         assert(a->view == NULL);
-        CircularViewSplitter* splitter = getView(sw->getAnnotatedDNAView(), true);
-        a->view = new CircularView(sw, sw->getSequenceContext(),
-                                   viewSettings.value(sw->getAnnotatedDNAView()));
+        CircularViewSplitter *splitter = getView(sw->getAnnotatedDNAView(), true);
+        a->view = new CircularView(sw, sw->getSequenceContext(), viewSettings.value(sw->getAnnotatedDNAView()));
         a->view->setObjectName("CV_" + sw->objectName());
-        a->rmapWidget=new RestrctionMapWidget(sw->getSequenceContext(),splitter);
-        splitter->addView(a->view,a->rmapWidget);
+        a->rmapWidget = new RestrctionMapWidget(sw->getSequenceContext(), splitter);
+        splitter->addView(a->view, a->rmapWidget);
         sw->getAnnotatedDNAView()->insertWidgetIntoSplitter(splitter);
         splitter->adaptSize();
     } else {
         a->setText(tr("Show circular view"));
-        assert(a->view!=NULL);
-        CircularViewSplitter* splitter = getView(sw->getAnnotatedDNAView(), false);
-        if(splitter != NULL) {
-            splitter->removeView(a->view,a->rmapWidget);
+        assert(a->view != NULL);
+        CircularViewSplitter *splitter = getView(sw->getAnnotatedDNAView(), false);
+        if (splitter != NULL) {
+            splitter->removeView(a->view, a->rmapWidget);
             delete a->view;
             delete a->rmapWidget;
-            if(splitter->isEmpty()) {
+            if (splitter->isEmpty()) {
                 removeCircularView(sw->getAnnotatedDNAView());
             }
         }
@@ -299,26 +294,24 @@ void CircularViewContext::sl_showCircular() {
     }
 }
 
-void CircularViewContext::sl_toggleViews()
-{
-    ADVGlobalAction* globalToggleViewAction = qobject_cast<ADVGlobalAction*>(sender());
+void CircularViewContext::sl_toggleViews() {
+    ADVGlobalAction *globalToggleViewAction = qobject_cast<ADVGlobalAction *>(sender());
     assert(globalToggleViewAction != NULL);
-    AnnotatedDNAView* av = qobject_cast<AnnotatedDNAView*> (globalToggleViewAction->getObjectView());
+    AnnotatedDNAView *av = qobject_cast<AnnotatedDNAView *>(globalToggleViewAction->getObjectView());
     if (av == NULL) {
         return;
     }
     toggleViews(av);
 }
 
-void CircularViewContext::sl_setSequenceOrigin()
-{
+void CircularViewContext::sl_setSequenceOrigin() {
     GObjectViewAction *setSequenceOriginAction = qobject_cast<GObjectViewAction *>(sender());
     SAFE_POINT(NULL != setSequenceOriginAction, "Invalid action detected", );
 
     AnnotatedDNAView *av = qobject_cast<AnnotatedDNAView *>(setSequenceOriginAction->getObjectView());
     CHECK(NULL != av, );
 
-    ADVSequenceObjectContext* seqCtx = av->getSequenceInFocus();
+    ADVSequenceObjectContext *seqCtx = av->getSequenceInFocus();
     U2SequenceObject *seqObj = seqCtx->getSequenceObject();
     CHECK(NULL != seqObj, );
 
@@ -335,36 +328,34 @@ void CircularViewContext::sl_setSequenceOrigin()
             connect(t, SIGNAL(si_stateChanged()), av, SLOT(sl_sequenceModifyTaskStateChanged()));
         }
     }
-
 }
 
 void CircularViewContext::sl_onDNAViewClosed(AnnotatedDNAView *v) {
-    CircularViewSettings* settings = viewSettings.value(v);
+    CircularViewSettings *settings = viewSettings.value(v);
     viewSettings.remove(v);
     delete settings;
 }
 
-void CircularViewContext::sl_toggleBySettings(CircularViewSettings* s) {
-    AnnotatedDNAView* av = viewSettings.key(s, NULL);
+void CircularViewContext::sl_toggleBySettings(CircularViewSettings *s) {
+    AnnotatedDNAView *av = viewSettings.key(s, NULL);
     SAFE_POINT(av != NULL, "No AnnotatedDNAView corresponds to provided CircularViewSettings", );
     toggleViews(av);
 }
 
-CircularViewAction::CircularViewAction() : ADVSequenceWidgetAction(CIRCULAR_ACTION_NAME, tr("Show circular view")), view(NULL), rmapWidget(NULL)
-{
+CircularViewAction::CircularViewAction()
+    : ADVSequenceWidgetAction(CIRCULAR_ACTION_NAME, tr("Show circular view")), view(NULL), rmapWidget(NULL) {
 }
 
 void CircularViewAction::sl_circularStateChanged() {
-    U2SequenceObject* seqObj = qobject_cast<U2SequenceObject*>(sender());
+    U2SequenceObject *seqObj = qobject_cast<U2SequenceObject *>(sender());
     SAFE_POINT(seqObj != NULL, "Sequence Object is NULL", );
 
     // if sequence is marked as circular and CV is hidden, show CV, and hide it if unmarked
     if (seqObj->isCircular() && !isChecked()) {
         trigger();
-    }else if (!seqObj->isCircular() && isChecked()) {
+    } else if (!seqObj->isCircular() && isChecked()) {
         trigger();
     }
 }
 
-
-}//namespace
+}    // namespace U2

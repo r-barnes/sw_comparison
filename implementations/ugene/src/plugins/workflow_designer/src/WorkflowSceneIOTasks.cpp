@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "WorkflowSceneIOTasks.h"
+
 #include <QDomDocument>
 
 #include <U2Core/AppContext.h>
@@ -32,7 +34,6 @@
 
 #include "SceneSerializer.h"
 #include "WorkflowDocument.h"
-#include "WorkflowSceneIOTasks.h"
 #include "WorkflowViewController.h"
 
 namespace U2 {
@@ -43,21 +44,21 @@ using namespace Workflow;
  **********************************/
 const QString SaveWorkflowSceneTask::SCHEMA_PATHS_SETTINGS_TAG = "workflow_settings/schema_paths";
 
-SaveWorkflowSceneTask::SaveWorkflowSceneTask(Schema *s, const Metadata& m)
-: Task(tr("Save workflow scene task"), TaskFlag_None), schema(s), meta(m) {
-    GCOUNTER(cvar,tvar,"SaveWorkflowSceneTask");
+SaveWorkflowSceneTask::SaveWorkflowSceneTask(Schema *s, const Metadata &m)
+    : Task(tr("Save workflow scene task"), TaskFlag_None), schema(s), meta(m) {
+    GCOUNTER(cvar, tvar, "SaveWorkflowSceneTask");
     assert(schema != NULL);
 
     // add ( name, path ) pair to settings. need for running schemas in cmdline by name
-    Settings * settings = AppContext::getSettings();
-    assert( settings != NULL );
-    QVariantMap pathsMap = settings->getValue( SCHEMA_PATHS_SETTINGS_TAG ).toMap();
+    Settings *settings = AppContext::getSettings();
+    assert(settings != NULL);
+    QVariantMap pathsMap = settings->getValue(SCHEMA_PATHS_SETTINGS_TAG).toMap();
     pathsMap.insert(meta.name, meta.url);
-    settings->setValue( SCHEMA_PATHS_SETTINGS_TAG, pathsMap );
+    settings->setValue(SCHEMA_PATHS_SETTINGS_TAG, pathsMap);
 }
 
 void SaveWorkflowSceneTask::run() {
-    if(hasError()) {
+    if (hasError()) {
         return;
     }
     HRSchemaSerializer::saveSchema(schema, &meta, meta.url, stateInfo);
@@ -67,15 +68,14 @@ void SaveWorkflowSceneTask::run() {
  * LoadWorkflowSceneTask
  **********************************/
 LoadWorkflowSceneTask::LoadWorkflowSceneTask(Schema *_schema, Metadata *_meta, WorkflowScene *_scene, const QString &_url, bool _noUrl, bool _disableWizardAutorun)
-    : Task(tr("Load workflow scene"),TaskFlag_None),
+    : Task(tr("Load workflow scene"), TaskFlag_None),
       schema(_schema),
       meta(_meta),
       scene(_scene),
       url(_url),
       noUrl(_noUrl),
-      disableWizardAutorun(_disableWizardAutorun)
-{
-    GCOUNTER(cvar,tvar, "LoadWorkflowSceneTask");
+      disableWizardAutorun(_disableWizardAutorun) {
+    GCOUNTER(cvar, tvar, "LoadWorkflowSceneTask");
     assert(schema != NULL);
     assert(meta != NULL);
     assert(scene != NULL);
@@ -83,7 +83,7 @@ LoadWorkflowSceneTask::LoadWorkflowSceneTask(Schema *_schema, Metadata *_meta, W
 
 void LoadWorkflowSceneTask::run() {
     QFile file(url);
-    if(!file.open(QIODevice::ReadOnly)) {
+    if (!file.open(QIODevice::ReadOnly)) {
         setError(L10N::errorOpeningFileRead(url));
         return;
     }
@@ -91,24 +91,25 @@ void LoadWorkflowSceneTask::run() {
     in.setCodec("UTF-8");
     rawData = in.readAll();
     format = LoadWorkflowTask::detectFormat(rawData);
-    if(format == LoadWorkflowTask::UNKNOWN) {
+    if (format == LoadWorkflowTask::UNKNOWN) {
         setError(tr("Undefined format: plain text or xml expected"));
         return;
     }
 }
 
 Task::ReportResult LoadWorkflowSceneTask::report() {
-    if(hasError()) {
+    if (hasError()) {
         return ReportResult_Finished;
     }
+    CHECK(scene != nullptr, ReportResult_Finished);
 
     QString err;
     if (!scene->items().isEmpty()) {
         resetSceneAndScheme();
     }
-    if(format == LoadWorkflowTask::HR) {
+    if (format == LoadWorkflowTask::HR) {
         err = HRSchemaSerializer::string2Schema(rawData, schema, meta);
-    } else if(format == LoadWorkflowTask::XML) {
+    } else if (format == LoadWorkflowTask::XML) {
         QDomDocument xml;
         QMap<ActorId, ActorId> remapping;
         xml.setContent(rawData);
@@ -121,9 +122,9 @@ Task::ReportResult LoadWorkflowSceneTask::report() {
         assert(false);
     }
 
-    if(!err.isEmpty()) {
+    if (!err.isEmpty()) {
         setError(tr("Error while parsing file: %1").arg(err));
-        resetSceneAndScheme( );
+        resetSceneAndScheme();
         return ReportResult_Finished;
     }
 
@@ -141,10 +142,10 @@ Task::ReportResult LoadWorkflowSceneTask::report() {
     return ReportResult_Finished;
 }
 
-void LoadWorkflowSceneTask::resetSceneAndScheme( ) {
+void LoadWorkflowSceneTask::resetSceneAndScheme() {
     scene->sl_reset();
     schema->reset();
     meta->reset();
 }
 
-}//namespace
+}    // namespace U2

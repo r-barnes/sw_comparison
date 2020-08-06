@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CufflinksSupportTask.h"
+
 #include <QCoreApplication>
 #include <QDir>
 
@@ -42,37 +44,34 @@
 #include <U2Formats/FpkmTrackingFormat.h>
 #include <U2Formats/GTFFormat.h>
 
-#include "CufflinksSupport.h"
-#include "CufflinksSupportTask.h"
 #include "../ExternalToolSupportL10N.h"
+#include "CufflinksSupport.h"
 #include "tophat/TopHatSettings.h"
 
 namespace U2 {
 
 const QString CufflinksSupportTask::outSubDirBaseName("cufflinks_out");
 
-CufflinksSupportTask::CufflinksSupportTask(const CufflinksSettings& _settings)
+CufflinksSupportTask::CufflinksSupportTask(const CufflinksSettings &_settings)
     : ExternalToolSupportTask(tr("Running Cufflinks task"), TaskFlags_NR_FOSE_COSC),
       settings(_settings),
       tmpDoc(NULL),
       convertAssToSamTask(NULL),
       cufflinksExtToolTask(NULL),
-      loadIsoformAnnotationsTask(NULL)
-{
+      loadIsoformAnnotationsTask(NULL) {
     GCOUNTER(cvar, tvar, "NGS:CufflinksTask");
 }
 
-CufflinksSupportTask::~CufflinksSupportTask()
-{
+CufflinksSupportTask::~CufflinksSupportTask() {
     delete tmpDoc;
 }
 
 QString CufflinksSupportTask::initTmpDir() {
     // Add a new subdirectory for temporary files
-    QString tmpDirName = "Cufflinks_"+QString::number(this->getTaskId())+"_"+
-        QDate::currentDate().toString("dd.MM.yyyy")+"_"+
-        QTime::currentTime().toString("hh.mm.ss.zzz")+"_"+
-        QString::number(QCoreApplication::applicationPid())+"/";
+    QString tmpDirName = "Cufflinks_" + QString::number(this->getTaskId()) + "_" +
+                         QDate::currentDate().toString("dd.MM.yyyy") + "_" +
+                         QTime::currentTime().toString("hh.mm.ss.zzz") + "_" +
+                         QString::number(QCoreApplication::applicationPid()) + "/";
 
     QString cufflinksTmpDirName =
         AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath(CufflinksSupport::CUFFLINKS_TMP_DIR);
@@ -80,11 +79,11 @@ QString CufflinksSupportTask::initTmpDir() {
     QDir tmpDir(cufflinksTmpDirName + "/" + tmpDirName);
 
     if (tmpDir.exists()) {
-        foreach (const QString& file, tmpDir.entryList()) {
+        foreach (const QString &file, tmpDir.entryList()) {
             tmpDir.remove(file);
         }
 
-        if (!tmpDir.rmdir(tmpDir.absolutePath())){
+        if (!tmpDir.rmdir(tmpDir.absolutePath())) {
             stateInfo.setError(ExternalToolSupportL10N::errorRemovingTmpSubdir(tmpDir.absolutePath()));
             return "";
         }
@@ -97,11 +96,11 @@ QString CufflinksSupportTask::initTmpDir() {
     return tmpDir.absolutePath();
 }
 
-void CufflinksSupportTask::prepare()
-{
+void CufflinksSupportTask::prepare() {
     settings.outDir = GUrlUtils::createDirectory(
         settings.outDir + "/" + outSubDirBaseName,
-        "_", stateInfo);
+        "_",
+        stateInfo);
     CHECK_OP(stateInfo, );
 
     workingDirectory = initTmpDir();
@@ -114,7 +113,7 @@ void CufflinksSupportTask::prepare()
     }
 
     settings.url = workingDirectory + "/tmp.sam";
-    DocumentFormat* docFormat = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::SAM);
+    DocumentFormat *docFormat = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::SAM);
     tmpDoc = docFormat->createNewLoadedDocument(IOAdapterUtils::get(BaseIOAdapters::LOCAL_FILE), GUrl(settings.url), stateInfo);
     CHECK_OP(stateInfo, );
 
@@ -130,7 +129,7 @@ void CufflinksSupportTask::prepare()
     addSubTask(convertAssToSamTask);
 }
 
-ExternalToolRunTask * CufflinksSupportTask::runCufflinks() {
+ExternalToolRunTask *CufflinksSupportTask::runCufflinks() {
     // Init the arguments list
     QStringList arguments;
 
@@ -168,18 +167,16 @@ ExternalToolRunTask * CufflinksSupportTask::runCufflinks() {
     arguments << settings.url;
 
     // Create the Cufflinks task
-    ExternalToolRunTask* runTask = new ExternalToolRunTask(CufflinksSupport::ET_CUFFLINKS_ID,
-        arguments,
-        new ExternalToolLogParser(),
-        workingDirectory);
+    ExternalToolRunTask *runTask = new ExternalToolRunTask(CufflinksSupport::ET_CUFFLINKS_ID,
+                                                           arguments,
+                                                           new ExternalToolLogParser(),
+                                                           workingDirectory);
     setListenerForTask(runTask);
     return runTask;
 }
 
-
-QList<Task*> CufflinksSupportTask::onSubTaskFinished(Task* subTask)
-{
-    QList<Task*> result;
+QList<Task *> CufflinksSupportTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> result;
 
     if (subTask->hasError()) {
         stateInfo.setError(subTask->getError());
@@ -257,4 +254,4 @@ const QStringList &CufflinksSupportTask::getOutputFiles() const {
     return outputFiles;
 }
 
-} // namespace U2
+}    // namespace U2

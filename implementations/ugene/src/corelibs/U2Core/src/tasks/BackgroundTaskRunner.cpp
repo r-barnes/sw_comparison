@@ -30,4 +30,4 @@ void BackgroundTaskRunner_base::emitFinished() {
     emit(si_finished());
 }
 
-} //ns
+}    // namespace U2

@@ -22,12 +22,12 @@
 #ifndef _U2_DESC_H_
 #define _U2_DESC_H_
 
-#include <U2Core/global.h>
-#include <QMap>
-#include <QString>
-#include <QMetaType>
-
 #include <QIcon>
+#include <QMap>
+#include <QMetaType>
+#include <QString>
+
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -37,28 +37,39 @@ namespace U2 {
  */
 class U2LANG_EXPORT Descriptor {
 public:
-    Descriptor(const QString& id, const QString& name, const QString& doc);
-    Descriptor(const QString& _id);
-    Descriptor(const char* _id);
+    Descriptor(const QString &id, const QString &name, const QString &doc);
+    Descriptor(const QString &_id);
+    Descriptor(const char *_id);
     Descriptor();
-    virtual ~Descriptor() {}
+    virtual ~Descriptor() {
+    }
 
     // standard getters/setters
     QString getId() const;
     QString getDisplayName() const;
     QString getDocumentation() const;
-    void setId(const QString& i);
-    virtual void setDisplayName(const QString& n);
-    virtual void setDocumentation(const QString& d);
+    void setId(const QString &i);
+    virtual void setDisplayName(const QString &n);
+    virtual void setDocumentation(const QString &d);
 
     // descriptors with equal id's are equal
-    inline bool operator==(const Descriptor& d) const { return id == d.id; }
-    inline bool operator!=(const Descriptor& d) const { return id != d.id; }
-    inline bool operator==(const QString& s) const { return id == s; }
-    inline bool operator!=(const QString& s) const { return id != s; }
+    inline bool operator==(const Descriptor &d) const {
+        return id == d.id;
+    }
+    inline bool operator!=(const Descriptor &d) const {
+        return id != d.id;
+    }
+    inline bool operator==(const QString &s) const {
+        return id == s;
+    }
+    inline bool operator!=(const QString &s) const {
+        return id != s;
+    }
 
     // necessary for using with QMap e.g. QMap<Descriptor, Attribute>
-    inline bool operator<(const Descriptor& d) const { return id < d.id; }
+    inline bool operator<(const Descriptor &d) const {
+        return id < d.id;
+    }
 
 protected:
     // entity identifier
@@ -68,20 +79,20 @@ protected:
     // description of entity
     QString desc;
 
-}; // Descriptor
+};    // Descriptor
 
 /**
  * It is a Descriptor with icon
  */
 class U2LANG_EXPORT VisualDescriptor : public Descriptor {
 public:
-    VisualDescriptor(const Descriptor& d, const QString & _iconPath = QString());
+    VisualDescriptor(const Descriptor &d, const QString &_iconPath = QString());
 
     //getIcon will create icon from its path (if path exists) on the first call.
     //This is compatibility issue for congene.
     QIcon getIcon();
     void setIcon(QIcon icon_);
-    void setIconPath( const QString & iconPath_ );
+    void setIconPath(const QString &iconPath_);
 
 private:
     // full path to the icon
@@ -89,9 +100,9 @@ private:
     // user defined or taken from iconPath icon
     QIcon icon;
 
-}; // VisualDescriptor
+};    // VisualDescriptor
 
-} //namespace U2
+}    //namespace U2
 
 Q_DECLARE_METATYPE(U2::Descriptor)
 Q_DECLARE_METATYPE(QList<U2::Descriptor>)

@@ -22,42 +22,43 @@
 #ifndef _U2_BLAST_DB_CMD_SUPPORT_TASK_H
 #define _U2_BLAST_DB_CMD_SUPPORT_TASK_H
 
-#include <U2Core/Task.h>
-#include <U2Core/IOAdapter.h>
 #include <U2Core/ExternalToolRunTask.h>
-#include <U2Core/SaveDocumentTask.h>
-#include "utils/ExportTasks.h"
-
+#include <U2Core/IOAdapter.h>
 #include <U2Core/MultipleSequenceAlignmentObject.h>
+#include <U2Core/SaveDocumentTask.h>
+#include <U2Core/Task.h>
+
+#include "utils/ExportTasks.h"
 
 namespace U2 {
 
 class BlastDBCmdSupportTaskSettings {
 public:
-    BlastDBCmdSupportTaskSettings() {reset();}
+    BlastDBCmdSupportTaskSettings() {
+        reset();
+    }
     void reset();
 
-    QString         query;
-    QString         outputPath;
-    QString         databasePath;
-    bool            isNuclDatabase;
-    bool            addToProject;
+    QString query;
+    QString outputPath;
+    QString databasePath;
+    bool isNuclDatabase;
+    bool addToProject;
 };
-
 
 class BlastDBCmdSupportTask : public Task {
     Q_OBJECT
 public:
-    BlastDBCmdSupportTask(const BlastDBCmdSupportTaskSettings& settings);
+    BlastDBCmdSupportTask(const BlastDBCmdSupportTaskSettings &settings);
     void prepare();
     Task::ReportResult report();
-    virtual QList<Task*> onSubTaskFinished(Task* subTask);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
+
 private:
-    ExternalToolRunTask*        blastDBCmdTask;
+    ExternalToolRunTask *blastDBCmdTask;
     BlastDBCmdSupportTaskSettings settings;
     QString toolId;
 };
 
-
-}//namespace
-#endif // _U2_BLAST_DB_CMD_SUPPORT_TASK_H
+}    // namespace U2
+#endif    // _U2_BLAST_DB_CMD_SUPPORT_TASK_H

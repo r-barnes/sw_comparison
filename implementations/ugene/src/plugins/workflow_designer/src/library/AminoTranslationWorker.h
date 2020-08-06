@@ -22,32 +22,37 @@
 #ifndef _U2_TRANSLATE_SEQUENCE_WORKER_H_
 #define _U2_TRANSLATE_SEQUENCE_WORKER_H_
 
+#include <QSharedPointer>
+
+#include <U2Core/DNATranslation.h>
+
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
-#include <QSharedPointer>
-#include <U2Core/DNATranslation.h>
 
 namespace U2 {
 
 namespace LocalWorkflow {
 
-class AminoTranslationSettings{
+class AminoTranslationSettings {
 public:
     QString resultName;
     QVector<U2Region> regionsDirect;
     QVector<U2Region> regionsComplementary;
     QSharedPointer<U2SequenceObject> seqObj;
-    DNATranslation* aminoTT;
+    DNATranslation *aminoTT;
 };
 
-class TranslateSequence2AminoTask : public Task{
+class TranslateSequence2AminoTask : public Task {
     Q_OBJECT
 public:
     TranslateSequence2AminoTask(const AminoTranslationSettings &configs, const U2DbiRef &dbiRef);
     virtual void run();
-    QList<U2SequenceObject*> popResults(){return results;}
+    QList<U2SequenceObject *> popResults() {
+        return results;
+    }
+
 private:
-    QList<U2SequenceObject*> results;
+    QList<U2SequenceObject *> results;
     AminoTranslationSettings configs;
     const U2DbiRef dbiRef;
 };
@@ -58,7 +63,10 @@ typedef PrompterBase<AminoTranslationPrompter> AminoTranslationPrompterBase;
 class AminoTranslationPrompter : public AminoTranslationPrompterBase {
     Q_OBJECT
 public:
-    AminoTranslationPrompter(Actor* p = 0) : AminoTranslationPrompterBase(p) {}
+    AminoTranslationPrompter(Actor *p = 0)
+        : AminoTranslationPrompterBase(p) {
+    }
+
 protected:
     QString composeRichDoc();
 };
@@ -66,14 +74,14 @@ protected:
 class AminoTranslationWorker : public BaseWorker {
     Q_OBJECT
 public:
-    AminoTranslationWorker(Actor* a);
+    AminoTranslationWorker(Actor *a);
 
     virtual void init();
-    virtual Task* tick();
+    virtual Task *tick();
     virtual void cleanup();
 
-    private slots:
-        void sl_taskFinished();
+private slots:
+    void sl_taskFinished();
 
 protected:
     IntegralBus *input, *output;
@@ -83,12 +91,16 @@ class AminoTranslationWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
     static void init();
-    AminoTranslationWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual Worker* createWorker(Actor* a) {return new AminoTranslationWorker(a);}
+    AminoTranslationWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual Worker *createWorker(Actor *a) {
+        return new AminoTranslationWorker(a);
+    }
 };
 
-}// Workflow namespace
+}    // namespace LocalWorkflow
 
-}// U2 namespace
+}    // namespace U2
 
 #endif

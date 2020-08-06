@@ -24,6 +24,8 @@
 
 #include "BaseMessageTranslator.h"
 
+#include <U2Core/U2Type.h>
+
 namespace U2 {
 
 class U2EntityRef;
@@ -38,6 +40,6 @@ protected:
     U2EntityRef assemblyRef;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_ASSEMBLY_MESSAGE_TRANSLATOR_H_
+#endif    // _U2_ASSEMBLY_MESSAGE_TRANSLATOR_H_

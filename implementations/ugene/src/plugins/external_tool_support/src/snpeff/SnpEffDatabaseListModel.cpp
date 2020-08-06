@@ -21,10 +21,10 @@
 
 #include "SnpEffDatabaseListModel.h"
 
+#include <QFile>
+
 #include <U2Core/Timer.h>
 #include <U2Core/U2SafePoints.h>
-
-#include <QFile>
 
 namespace U2 {
 
@@ -35,7 +35,7 @@ SnpEffDatabaseInfo::SnpEffDatabaseInfo(QString line) {
     organism = info.at(1);
 }
 
-SnpEffDatabaseListModel::SnpEffDatabaseListModel(QObject* parent)
+SnpEffDatabaseListModel::SnpEffDatabaseListModel(QObject *parent)
     : QAbstractTableModel(parent) {
     databaseCount = 0;
 }
@@ -78,7 +78,7 @@ int SnpEffDatabaseListModel::columnCount(const QModelIndex &) const {
 
 QVariant SnpEffDatabaseListModel::data(const QModelIndex &index, int role) const {
     if (role == Qt::DisplayRole) {
-        const SnpEffDatabaseInfo& info = databaseList.value(index.row());
+        const SnpEffDatabaseInfo &info = databaseList.value(index.row());
         switch (index.column()) {
         case 0:
             return QVariant(info.getGenome());
@@ -102,4 +102,4 @@ QVariant SnpEffDatabaseListModel::headerData(int section, Qt::Orientation orient
     return QVariant();
 }
 
-} // namespace U2
+}    // namespace U2

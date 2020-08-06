@@ -24,9 +24,7 @@
 namespace U2 {
 
 AnnotationCreationPattern::AnnotationCreationPattern()
-    : type(U2FeatureTypes::MiscFeature)
-{
-
+    : type(U2FeatureTypes::MiscFeature) {
 }
 
-}   // namespace U2
+}    // namespace U2

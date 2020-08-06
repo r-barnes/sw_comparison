@@ -19,9 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
-
 #include "MaxInfoStep.h"
+
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -29,8 +29,7 @@ namespace LocalWorkflow {
 const QString MaxInfoStepFactory::ID = "MAXINFO";
 
 MaxInfoStep::MaxInfoStep()
-    : TrimmomaticStep(MaxInfoStepFactory::ID)
-{
+    : TrimmomaticStep(MaxInfoStepFactory::ID) {
     name = "MAXINFO";
     description = tr("<html><head></head><body>"
                      "<h4>MAXINFO</h4>"
@@ -128,14 +127,12 @@ void MaxInfoSettingsWidget::setState(const QVariantMap &state) {
 }
 
 MaxInfoStepFactory::MaxInfoStepFactory()
-    : TrimmomaticStepFactory(ID)
-{
-
+    : TrimmomaticStepFactory(ID) {
 }
 
 MaxInfoStep *MaxInfoStepFactory::createStep() const {
     return new MaxInfoStep();
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

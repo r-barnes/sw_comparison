@@ -19,19 +19,18 @@
  * MA 02110-1301, USA.
  */
 
+#include "PerlSupport.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/ScriptingToolRegistry.h>
-
-#include "PerlSupport.h"
 
 namespace U2 {
 
 const QString PerlSupport::ET_PERL = "perl";
 const QString PerlSupport::ET_PERL_ID = "USUPP_PERL";
 
-PerlSupport::PerlSupport(const QString& id, const QString &name, const QString &path)
-: RunnerTool(QStringList(), id, name, path)
-{
+PerlSupport::PerlSupport(const QString &id, const QString &name, const QString &path)
+    : RunnerTool(QStringList(), id, name, path) {
     if (AppContext::getMainWindow()) {
         icon = QIcon(":external_tool_support/images/perl.png");
         grayIcon = QIcon(":external_tool_support/images/perl_gray.png");
@@ -47,9 +46,9 @@ PerlSupport::PerlSupport(const QString& id, const QString &name, const QString &
 
     description += tr("Perl scripts interpreter");
     versionRegExp = QRegExp("(\\d+.\\d+.\\d+)");
-    toolKitName="perl";
+    toolKitName = "perl";
 
     muted = true;
 }
 
-} // U2
+}    // namespace U2

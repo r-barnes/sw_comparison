@@ -19,22 +19,22 @@
  * MA 02110-1301, USA.
  */
 
+#include "ImportObjectToDatabaseTask.h"
+
 #include <U2Core/Counter.h>
 #include <U2Core/DocumentModel.h>
-#include <U2Core/U2SafePoints.h>
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2ObjectDbi.h>
-
-#include "ImportObjectToDatabaseTask.h"
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
-ImportObjectToDatabaseTask::ImportObjectToDatabaseTask(GObject* object, const U2DbiRef& dstDbiRef, const QString& dstFolder) :
-Task(tr("Import object %1 to database").arg(NULL != object ? object->getGObjectName() : ""), TaskFlag_None),
-object(object),
-dstDbiRef(dstDbiRef),
-dstFolder(dstFolder),
-dstObject(NULL) {
+ImportObjectToDatabaseTask::ImportObjectToDatabaseTask(GObject *object, const U2DbiRef &dstDbiRef, const QString &dstFolder)
+    : Task(tr("Import object %1 to database").arg(NULL != object ? object->getGObjectName() : ""), TaskFlag_None),
+      object(object),
+      dstDbiRef(dstDbiRef),
+      dstFolder(dstFolder),
+      dstObject(NULL) {
     GCOUNTER(cvar, tvar, "ImportObjectToDatabaseTask");
     CHECK_EXT(NULL != object, setError(tr("Invalid object to import")), );
     CHECK_EXT(dstDbiRef.isValid(), setError(tr("Invalid database reference")), );
@@ -57,13 +57,13 @@ void ImportObjectToDatabaseTask::run() {
     dstObject->moveToThread(QCoreApplication::instance()->thread());
 }
 
-GObject * ImportObjectToDatabaseTask::takeResult() {
+GObject *ImportObjectToDatabaseTask::takeResult() {
     GObject *result = dstObject;
     dstObject = NULL;
     return result;
 }
 
-GObject * ImportObjectToDatabaseTask::getSourceObject() const {
+GObject *ImportObjectToDatabaseTask::getSourceObject() const {
     return object.data();
 }
 
@@ -71,12 +71,12 @@ GObject *ImportObjectToDatabaseTask::getDestinationObject() const {
     return dstObject;
 }
 
-const QString & ImportObjectToDatabaseTask::getFolder() const {
+const QString &ImportObjectToDatabaseTask::getFolder() const {
     return dstFolder;
 }
 
-const U2DbiRef & ImportObjectToDatabaseTask::getDbiRef() const {
+const U2DbiRef &ImportObjectToDatabaseTask::getDbiRef() const {
     return dstDbiRef;
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -30,6 +30,7 @@
         <file>javascript/StatisticsWidget.js</file>
         <file>javascript/TableWidget.js</file>
         <file>javascript/StatusWidget.js</file>
+        <file>javascript/WebPageInitialize.js</file>
     </qresource>
     <qresource prefix="/">
         <file>javascript/bootstrap/css/bootstrap-responsive.css</file>

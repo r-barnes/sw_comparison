@@ -44,7 +44,7 @@ public:
     virtual ~WizardWidget();
 
     virtual void accept(WizardWidgetVisitor *visitor) = 0;
-    virtual void validate(const QList<Actor*> &actors, U2OpStatus &os) const;
+    virtual void validate(const QList<Actor *> &actors, U2OpStatus &os) const;
 };
 
 /************************************************************************/
@@ -58,7 +58,7 @@ public:
     virtual void accept(WizardWidgetVisitor *visitor);
 
     void setLogoPath(const QString &value);
-    const QString & getLogoPath() const;
+    const QString &getLogoPath() const;
     bool isDefault() const;
 
     static const QString ID;
@@ -77,13 +77,13 @@ public:
     virtual ~WidgetsArea();
 
     virtual void accept(WizardWidgetVisitor *visitor);
-    virtual void validate(const QList<Actor*> &actors, U2OpStatus &os) const;
+    virtual void validate(const QList<Actor *> &actors, U2OpStatus &os) const;
 
     void addWidget(WizardWidget *widget);
-    const QList<WizardWidget*> & getWidgets() const;
+    const QList<WizardWidget *> &getWidgets() const;
 
-    const QString & getName() const;
-    const QString & getTitle() const;
+    const QString &getName() const;
+    const QString &getTitle() const;
     void setTitle(const QString &value);
 
     bool hasLabelSize() const;
@@ -94,8 +94,8 @@ private:
     bool titleable;
     QString name;
     QString title;
-    int labelSize; // px
-    QList<WizardWidget*> widgets;
+    int labelSize;    // px
+    QList<WizardWidget *> widgets;
 };
 
 /************************************************************************/
@@ -134,15 +134,15 @@ public:
     virtual ~AttributeWidget();
 
     virtual void accept(WizardWidgetVisitor *visitor);
-    virtual void validate(const QList<Actor*> &actors, U2OpStatus &os) const;
+    virtual void validate(const QList<Actor *> &actors, U2OpStatus &os) const;
 
     QString getActorId() const;
     QString getAttributeId() const;
 
     void setInfo(const AttributeInfo &value);
-    const AttributeInfo & getInfo() const;
+    const AttributeInfo &getInfo() const;
 
-    const QVariantMap & getWigdetHints() const;
+    const QVariantMap &getWigdetHints() const;
     QVariantMap getProperties() const;
     QString getProperty(const QString &id) const;
 
@@ -158,7 +158,7 @@ public:
     PairedReadsWidget();
 
     virtual void accept(WizardWidgetVisitor *visitor);
-    virtual void validate(const QList<Actor*> &actors, U2OpStatus &os) const;
+    virtual void validate(const QList<Actor *> &actors, U2OpStatus &os) const;
 
     void addInfo(const AttributeInfo &value);
 
@@ -179,7 +179,7 @@ public:
     UrlAndDatasetWidget();
 
     virtual void accept(WizardWidgetVisitor *visitor);
-    virtual void validate(const QList<Actor*> &actors, U2OpStatus &os) const;
+    virtual void validate(const QList<Actor *> &actors, U2OpStatus &os) const;
 
     void addInfo(const AttributeInfo &value);
 
@@ -208,10 +208,10 @@ public:
 
     virtual void accept(WizardWidgetVisitor *visitor);
 
-    const QString & var() const;
+    const QString &var() const;
     void setVar(const QString &value);
 
-    const QList<Value> & values() const;
+    const QList<Value> &values() const;
     void add(const Value &value);
 
     static const QString ID;
@@ -230,13 +230,13 @@ public:
 
     virtual void accept(WizardWidgetVisitor *visitor);
 
-    const QString & var() const;
+    const QString &var() const;
     void setVar(const QString &value);
 
-    const QString & type() const;
+    const QString &type() const;
     void setType(const QString &value);
 
-    const QString & label() const;
+    const QString &label() const;
     void setLabel(const QString &value);
 
     static const QString ID;
@@ -256,7 +256,7 @@ public:
     BowtieWidget();
 
     virtual void accept(WizardWidgetVisitor *visitor);
-    virtual void validate(const QList<Actor*> &actors, U2OpStatus &os) const;
+    virtual void validate(const QList<Actor *> &actors, U2OpStatus &os) const;
 
     static const QString ID;
 
@@ -273,7 +273,7 @@ public:
     TophatSamplesWidget();
 
     virtual void accept(WizardWidgetVisitor *visitor);
-    virtual void validate(const QList<Actor*> &actors, U2OpStatus &os) const;
+    virtual void validate(const QList<Actor *> &actors, U2OpStatus &os) const;
 
     static const QString ID;
 
@@ -301,7 +301,6 @@ public:
     QString backgroundColor;
 };
 
+}    // namespace U2
 
-} // U2
-
-#endif // _U2_WIZARDWIDGET_H_
+#endif    // _U2_WIZARDWIDGET_H_

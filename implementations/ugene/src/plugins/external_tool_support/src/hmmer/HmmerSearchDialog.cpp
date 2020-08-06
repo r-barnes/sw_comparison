@@ -21,9 +21,9 @@
 
 #include <math.h>
 
+#include <QButtonGroup>
 #include <QMessageBox>
 #include <QPushButton>
-#include <QButtonGroup>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/DNAAlphabet.h>
@@ -46,28 +46,26 @@
 
 namespace U2 {
 
-const QString HmmerSearchDialog::DOM_E_PLUS_PREFIX          = "1E+";
-const QString HmmerSearchDialog::DOM_E_MINUS_PREFIX         = "1E";
-const QString HmmerSearchDialog::HMM_FILES_DIR_ID           = "uhmmer3_search_dlg_impl_hmm_dir";
-const QString HmmerSearchDialog::ANNOTATIONS_DEFAULT_NAME   = "hmm_signal";
+const QString HmmerSearchDialog::DOM_E_PLUS_PREFIX = "1E+";
+const QString HmmerSearchDialog::DOM_E_MINUS_PREFIX = "1E";
+const QString HmmerSearchDialog::HMM_FILES_DIR_ID = "uhmmer3_search_dlg_impl_hmm_dir";
+const QString HmmerSearchDialog::ANNOTATIONS_DEFAULT_NAME = "hmm_signal";
 
 HmmerSearchDialog::HmmerSearchDialog(U2SequenceObject *seqObj, QWidget *parent)
-    : QDialog(parent), seqCtx(NULL)
-{
+    : QDialog(parent), seqCtx(NULL) {
     init(seqObj);
 }
 
 HmmerSearchDialog::HmmerSearchDialog(ADVSequenceObjectContext *seqCtx, QWidget *parent)
-    : QDialog(parent), seqCtx(seqCtx)
-{
+    : QDialog(parent), seqCtx(seqCtx) {
     init(seqCtx->getSequenceObject());
 }
 
-void HmmerSearchDialog::init(U2SequenceObject *seqObj){
+void HmmerSearchDialog::init(U2SequenceObject *seqObj) {
     setupUi(this);
     SAFE_POINT(NULL != seqObj, L10N::nullPointerError("sequence object"), );
 
-    new HelpButton(this, buttonBox, "24742594");
+    new HelpButton(this, buttonBox, "46501169");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Run"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -78,7 +76,7 @@ void HmmerSearchDialog::init(U2SequenceObject *seqObj){
     useExplicitScoreTresholdButton->setChecked(true);
 
     model.sequence = QPointer<U2SequenceObject>(seqObj);
-    setModelValues(); // default settings here
+    setModelValues();    // default settings here
 
     // Annotations widget
     CreateAnnotationModel annModel;
@@ -100,21 +98,21 @@ void HmmerSearchDialog::init(U2SequenceObject *seqObj){
     QPushButton *searchButton = buttonBox->button(QDialogButtonBox::Ok);
     QPushButton *cancelButton = buttonBox->button(QDialogButtonBox::Cancel);
 
-    connect(cancelButton,                   SIGNAL(clicked()),          SLOT(reject()));
-    connect(searchButton,                   SIGNAL(clicked()),          SLOT(sl_okButtonClicked()));
-    connect(useEvalTresholdsButton,         SIGNAL(toggled(bool)),      SLOT(sl_useEvalTresholdsButtonChanged(bool)));
-    connect(useScoreTresholdsButton,        SIGNAL(toggled(bool)),      SLOT(sl_useScoreTresholdsButtonChanged(bool)));
-    connect(useExplicitScoreTresholdButton, SIGNAL(toggled(bool)),      SLOT(sl_useExplicitScoreTresholdButton(bool)));
-    connect(maxCheckBox,                    SIGNAL(stateChanged(int)),  SLOT(sl_maxCheckBoxChanged(int)));
-    connect(domESpinBox,                    SIGNAL(valueChanged(int)),  SLOT(sl_domESpinBoxChanged(int)));
-    connect(queryHmmFileToolButton,         SIGNAL(clicked()),          SLOT(sl_queryHmmFileToolButtonClicked()));
-    connect(domZCheckBox,                   SIGNAL(stateChanged(int)),  SLOT(sl_domZCheckBoxChanged(int)));
+    connect(cancelButton, SIGNAL(clicked()), SLOT(reject()));
+    connect(searchButton, SIGNAL(clicked()), SLOT(sl_okButtonClicked()));
+    connect(useEvalTresholdsButton, SIGNAL(toggled(bool)), SLOT(sl_useEvalTresholdsButtonChanged(bool)));
+    connect(useScoreTresholdsButton, SIGNAL(toggled(bool)), SLOT(sl_useScoreTresholdsButtonChanged(bool)));
+    connect(useExplicitScoreTresholdButton, SIGNAL(toggled(bool)), SLOT(sl_useExplicitScoreTresholdButton(bool)));
+    connect(maxCheckBox, SIGNAL(stateChanged(int)), SLOT(sl_maxCheckBoxChanged(int)));
+    connect(domESpinBox, SIGNAL(valueChanged(int)), SLOT(sl_domESpinBoxChanged(int)));
+    connect(queryHmmFileToolButton, SIGNAL(clicked()), SLOT(sl_queryHmmFileToolButtonClicked()));
+    connect(domZCheckBox, SIGNAL(stateChanged(int)), SLOT(sl_domZCheckBoxChanged(int)));
 }
 
 void HmmerSearchDialog::setModelValues() {
     domESpinBox->setValue(1);
-    scoreTresholdDoubleSpin->setValue(0); // because default is OPTION_NOT_SET
-    domZDoubleSpinBox->setValue(0); // because default is OPTION_NOT_SET
+    scoreTresholdDoubleSpin->setValue(0);    // because default is OPTION_NOT_SET
+    domZDoubleSpinBox->setValue(0);    // because default is OPTION_NOT_SET
     nobiasCheckBox->setChecked(model.searchSettings.noBiasFilter);
     nonull2CheckBox->setChecked(model.searchSettings.noNull2);
     maxCheckBox->setChecked(model.searchSettings.doMax);
@@ -136,7 +134,7 @@ void HmmerSearchDialog::getModelValues() {
             model.searchSettings.useBitCutoffs = HmmerSearchSettings::p7H_GA;
         } else if (useNCTresholdsButton->isChecked()) {
             model.searchSettings.useBitCutoffs = HmmerSearchSettings::p7H_NC;
-        } else if(useTCTresholdsButton->isChecked()) {
+        } else if (useTCTresholdsButton->isChecked()) {
             model.searchSettings.useBitCutoffs = HmmerSearchSettings::p7H_TC;
         } else {
             assert(false);
@@ -200,7 +198,7 @@ void HmmerSearchDialog::sl_okButtonClicked() {
         QMessageBox::critical(this, tr("Error: bad arguments!"), err);
         return;
     }
-    if(seqCtx != NULL){
+    if (seqCtx != NULL) {
         seqCtx->getAnnotatedDNAView()->tryAddObject(annotationsWidgetController->getModel().getAnnotationObject());
     }
 
@@ -262,4 +260,4 @@ void HmmerSearchDialog::sl_domZCheckBoxChanged(int state) {
     domZDoubleSpinBox->setEnabled(checked);
 }
 
-}   // namespace U2
+}    // namespace U2

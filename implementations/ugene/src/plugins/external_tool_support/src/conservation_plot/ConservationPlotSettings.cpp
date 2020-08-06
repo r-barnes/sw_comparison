@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-
 #include "ConservationPlotSettings.h"
 
 #include <U2Core/GUrlUtils.h>
@@ -30,7 +29,7 @@ ConservationPlotSettings::ConservationPlotSettings() {
     initDefault();
 }
 
-void ConservationPlotSettings::initDefault(){
+void ConservationPlotSettings::initDefault() {
     outFile = "";
     title = "Average Phastcons around the Center of Sites";
     label = "Conservation at peak summits";
@@ -40,20 +39,20 @@ void ConservationPlotSettings::initDefault(){
     width = 1000;
 }
 
-QStringList ConservationPlotSettings::getArguments(const QList<QString>& bedFiles){
+QStringList ConservationPlotSettings::getArguments(const QList<QString> &bedFiles) {
     QStringList result;
 
     result << "--phasdb=" + GUrlUtils::getQuotedString(assemblyVersion);
 
-    if(height > 0){
+    if (height > 0) {
         result << "--height=" + QByteArray::number(height);
     }
 
-    if(width > 0){
+    if (width > 0) {
         result << "--width=" + QByteArray::number(width);
     }
 
-    if(windowSize > 0){
+    if (windowSize > 0) {
         result << "-w " + QByteArray::number(windowSize);
     }
 
@@ -62,7 +61,7 @@ QStringList ConservationPlotSettings::getArguments(const QList<QString>& bedFile
     //labels
     result << "--bed-label=" + GUrlUtils::getQuotedString(label);
 
-    foreach(QString bedFile, bedFiles){
+    foreach (QString bedFile, bedFiles) {
         bedFile = bedFile.replace(' ', '_');
         result << bedFile;
     }
@@ -70,4 +69,4 @@ QStringList ConservationPlotSettings::getArguments(const QList<QString>& bedFile
     return result;
 }
 
-} // U2
+}    // namespace U2

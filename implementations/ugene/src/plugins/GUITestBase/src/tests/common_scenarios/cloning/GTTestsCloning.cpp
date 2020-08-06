@@ -20,40 +20,38 @@
  */
 
 #include "GTTestsCloning.h"
-
-#include "GTUtilsAnnotationsTreeView.h"
-#include "GTUtilsTaskTreeView.h"
-#include "utils/GTUtilsDialog.h"
-
 #include <base_dialogs/GTFileDialog.h>
-#include "primitives/GTMenu.h"
 #include <primitives/GTToolbar.h>
 #include <primitives/GTTreeWidget.h>
 #include <primitives/GTWidget.h>
 
+#include <U2Gui/ToolsMenu.h>
+
+#include "GTUtilsAnnotationsTreeView.h"
+#include "GTUtilsTaskTreeView.h"
+#include "primitives/GTMenu.h"
 #include "runnables/ugene/plugins/enzymes/DigestSequenceDialogFiller.h"
 #include "runnables/ugene/plugins/enzymes/FindEnzymesDialogFiller.h"
-
-#include <U2Gui/ToolsMenu.h>
+#include "utils/GTUtilsDialog.h"
 
 namespace U2 {
 
 namespace GUITest_common_scenarios_cloning {
 
 GUI_TEST_CLASS_DEFINITION(test_0011) {
-//    1. Open file (samples/FASTA/human_T1.gb)
-//    2. Perform search for restriction site 'SacII'
-//    3. Use {Tools->Cloning->Digest Sequence Into Fragments}
-//    4. Select found enzymes and press 'OK'
-//    Expected state: there are the following qualifiers in the founded fragment annotaions
-//        left_end_seq,
-//        left_end_term,
-//        left_end_type,
-//        left_end_strand,
-//        right_end_seq,
-//        right_end_term,
-//        right_end_type,
-//        right_end_strand
+    //    1. Open file (samples/FASTA/human_T1.gb)
+    //    2. Perform search for restriction site 'SacII'
+    //    3. Use {Tools->Cloning->Digest Sequence Into Fragments}
+    //    4. Select found enzymes and press 'OK'
+    //    Expected state: there are the following qualifiers in the founded fragment annotaions
+    //        left_end_seq,
+    //        left_end_term,
+    //        left_end_type,
+    //        left_end_strand,
+    //        right_end_seq,
+    //        right_end_term,
+    //        right_end_type,
+    //        right_end_strand
 
     GTFileDialog::openFile(os, dataDir + "samples/FASTA", "human_T1.fa");
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -63,13 +61,15 @@ GUI_TEST_CLASS_DEFINITION(test_0011) {
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     GTUtilsDialog::waitForDialog(os, new DigestSequenceDialogFiller(os));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "Cloning" << "Digest into fragments...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "Cloning"
+                                                << "Digest into fragments...");
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
-    QTreeWidgetItem* fr1 = GTUtilsAnnotationsTreeView::findItem(os, "Fragment 1");
+    QTreeWidgetItem *fr1 = GTUtilsAnnotationsTreeView::findItem(os, "Fragment 1");
     CHECK_SET_ERR(fr1 != NULL, "Fragment 1 annotation not found");
 
-    QTreeWidgetItem* fr2 = GTUtilsAnnotationsTreeView::findItem(os, "Fragment 2");
+    QTreeWidgetItem *fr2 = GTUtilsAnnotationsTreeView::findItem(os, "Fragment 2");
     CHECK_SET_ERR(fr2 != NULL, "Fragment 2 annotation not found");
 
     GTTreeWidget::expand(os, fr1);
@@ -93,6 +93,6 @@ GUI_TEST_CLASS_DEFINITION(test_0011) {
     GTUtilsAnnotationsTreeView::findItem(os, "right_end_type", fr2);
 }
 
-} // namespace GUITest_common_scenarios_cloning
+}    // namespace GUITest_common_scenarios_cloning
 
-} //namespace U2
+}    //namespace U2

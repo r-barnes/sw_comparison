@@ -34,29 +34,31 @@ class IOAdapter;
 class U2FORMATS_EXPORT FastaFormat : public TextDocumentFormat {
     Q_OBJECT
 public:
-    FastaFormat(QObject* p);
+    FastaFormat(QObject *p);
 
-    void storeSequence(const DNASequence& sequence, IOAdapter* io, U2OpStatus& os);
+    void storeSequence(const DNASequence &sequence, IOAdapter *io, U2OpStatus &os);
     void storeSequence(const U2SequenceObject *sequence, IOAdapter *io, U2OpStatus &os);
 
-    virtual void storeDocument(Document* d, IOAdapter* io, U2OpStatus& os);
+    virtual void storeDocument(Document *d, IOAdapter *io, U2OpStatus &os);
 
     //name-sequence list
-    static QList <QPair<QString, QString> > getSequencesAndNamesFromUserInput(const QString &userInput, U2OpStatus &os);
+    static QList<QPair<QString, QString>> getSequencesAndNamesFromUserInput(const QString &userInput, U2OpStatus &os);
 
-    virtual bool isStreamingSupport() {return true;}
+    virtual bool isStreamingSupport() {
+        return true;
+    }
 
-    virtual void storeEntry(IOAdapter *io, const QMap< GObjectType, QList<GObject*> > &objectsMap, U2OpStatus &os);
+    virtual void storeEntry(IOAdapter *io, const QMap<GObjectType, QList<GObject *>> &objectsMap, U2OpStatus &os);
 
     static const char FASTA_HEADER_START_SYMBOL;
     static const char FASTA_COMMENT_START_SYMBOL;
 
 protected:
-    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& = GUrl()) const;
-    virtual DNASequence *loadTextSequence(IOAdapter* io, U2OpStatus& os);
-    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
+    virtual FormatCheckResult checkRawTextData(const QByteArray &rawData, const GUrl & = GUrl()) const;
+    virtual DNASequence *loadTextSequence(IOAdapter *io, U2OpStatus &os);
+    virtual Document *loadTextDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os);
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

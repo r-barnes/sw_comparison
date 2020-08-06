@@ -23,9 +23,9 @@
 #define _U2_URLLINEEDIT_H_
 
 #include <QLineEdit>
+#include <QObject>
 
 #include <U2Core/global.h>
-#include <QObject>
 
 namespace U2 {
 
@@ -43,7 +43,7 @@ public:
                 bool saveFile,
                 URLWidget *parent);
     bool isMulti();
-    CompletionFiller * getCompletionFillerInstance();
+    CompletionFiller *getCompletionFillerInstance();
 
 protected:
     void focusOutEvent(QFocusEvent *event);
@@ -72,6 +72,6 @@ private:
     void checkExtension(QString &name);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_URLLINEEDIT_H_
+#endif    // _U2_URLLINEEDIT_H_

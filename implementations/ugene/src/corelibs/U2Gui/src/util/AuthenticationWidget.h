@@ -25,6 +25,7 @@
 #include <QWidget>
 
 #include <U2Core/global.h>
+
 #include "ui_AuthenticationWidget.h"
 
 namespace U2 {
@@ -34,8 +35,8 @@ class U2GUI_EXPORT AuthenticationWidget : public QWidget, public Ui_Authenticati
 public:
     AuthenticationWidget(QWidget *parent = NULL);
 
-    void setLogin(const QString& login);
-    void setPassword(const QString& password);
+    void setLogin(const QString &login);
+    void setPassword(const QString &password);
     void setRemembered(bool isChecked);
 
     QString getLogin() const;
@@ -43,6 +44,6 @@ public:
     bool isRemembered() const;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_AUTHENTICATION_WIDGET_H_
+#endif    // _U2_AUTHENTICATION_WIDGET_H_

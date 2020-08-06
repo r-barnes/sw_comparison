@@ -26,23 +26,22 @@
 #include "ov_msa/McaReferenceCharController.h"
 #include "ov_msa/helpers/BaseWidthController.h"
 
-
 namespace U2 {
 
 McaConsensusAreaRenderer::McaConsensusAreaRenderer(MaEditorConsensusArea *area)
     : MaConsensusAreaRenderer(area) {
-    McaEditorWgt* wgt = qobject_cast<McaEditorWgt*>(area->getEditorWgt());
+    McaEditorWgt *wgt = qobject_cast<McaEditorWgt *>(area->getEditorWgt());
     SAFE_POINT(wgt != NULL, "McaEditorWgt is NULL", );
     refCharController = wgt->getRefCharController();
 }
 
 void McaConsensusAreaRenderer::drawRuler(QPainter &painter, const ConsensusRenderSettings &renderSettings) {
-    McaEditorConsensusArea* mcaConsArea = qobject_cast<McaEditorConsensusArea*>(area);
+    McaEditorConsensusArea *mcaConsArea = qobject_cast<McaEditorConsensusArea *>(area);
     SAFE_POINT(mcaConsArea != NULL, "Failed to cast consensus area to MCA consensus area", );
-    McaEditorWgt * wgt = qobject_cast<McaEditorWgt *>(mcaConsArea->getEditorWgt());
+    McaEditorWgt *wgt = qobject_cast<McaEditorWgt *>(mcaConsArea->getEditorWgt());
     SAFE_POINT(wgt != NULL, "Failed to cast!", );
     OffsetRegions charRegions = refCharController->getCharRegions(U2Region(renderSettings.firstNotchedBasePosition,
-                                                                       renderSettings.lastNotchedBasePosition - renderSettings.firstNotchedBasePosition + 1));
+                                                                           renderSettings.lastNotchedBasePosition - renderSettings.firstNotchedBasePosition + 1));
     ConsensusRenderSettings cutRenderSettings = renderSettings;
     for (int i = 0; i < charRegions.getSize(); i++) {
         U2Region r = charRegions.getRegion(i);
@@ -55,4 +54,4 @@ void McaConsensusAreaRenderer::drawRuler(QPainter &painter, const ConsensusRende
     }
 }
 
-} // namespace
+}    // namespace U2

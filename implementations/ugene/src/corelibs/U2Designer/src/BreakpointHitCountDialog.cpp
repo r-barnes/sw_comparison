@@ -40,25 +40,29 @@ const char *WRONG_INPUT_MESSAGE_BOX_CONTENT = "The specified hit count target is
 namespace U2 {
 
 BreakpointHitCountDialog::BreakpointHitCountDialog(const QStringList &hitCountConditions,
-    const QString &conditionOnLaunch, quint32 hitCountParameterOnLaunch, quint32 hitCountOnLaunch,
-    const QStringList &hitCountersListWithoutParameter, QWidget *parent, Qt::WindowFlags f)
+                                                   const QString &conditionOnLaunch,
+                                                   quint32 hitCountParameterOnLaunch,
+                                                   quint32 hitCountOnLaunch,
+                                                   const QStringList &hitCountersListWithoutParameter,
+                                                   QWidget *parent,
+                                                   Qt::WindowFlags f)
     : QDialog(parent, f),
       initialCondition(conditionOnLaunch),
       initialParameter(hitCountParameterOnLaunch),
       hitCountersConditionsWithoutParameter(hitCountersListWithoutParameter),
       chosenCondition(conditionOnLaunch),
       hitCounterParameter(LOWER_BOUNDARY_FOR_HIT_COUNTER_PARAMETER),
-      isHitCounterReset(false)
-{
+      isHitCounterReset(false) {
     ui = new Ui_BreakpointHitCountDialog();
     ui->setupUi(this);
-    new HelpButton(this, ui->buttonBox, "24740355");
+    new HelpButton(this, ui->buttonBox, "46500386");
 
     ui->hitConditionCombo->addItems(hitCountConditions);
     ui->hitConditionCombo->setCurrentIndex(hitCountConditions.indexOf(conditionOnLaunch));
     sl_hitConditionChanged(conditionOnLaunch);
     ui->hitParameterEdit->setValidator(new QIntValidator(LOWER_BOUNDARY_FOR_HIT_COUNTER_PARAMETER,
-        UPPER_BOUNDARY_FOR_HIT_COUNTER_PARAMETER, this));
+                                                         UPPER_BOUNDARY_FOR_HIT_COUNTER_PARAMETER,
+                                                         this));
     ui->currentHitCountValueLabel->setText(QString::number(hitCountOnLaunch));
     ui->hitParameterEdit->setText(QString::number(hitCountParameterOnLaunch));
 
@@ -73,7 +77,6 @@ BreakpointHitCountDialog::BreakpointHitCountDialog(const QStringList &hitCountCo
     connect(resetButton, SIGNAL(clicked()), this, SLOT(sl_resetHitCount()));
     connect(okButton, SIGNAL(clicked()), this, SLOT(sl_dialogAccepted()));
     connect(ui->hitConditionCombo, SIGNAL(currentIndexChanged(const QString &)), SLOT(sl_hitConditionChanged(const QString &)));
-
 }
 
 BreakpointHitCountDialog::~BreakpointHitCountDialog() {
@@ -83,13 +86,10 @@ BreakpointHitCountDialog::~BreakpointHitCountDialog() {
 void BreakpointHitCountDialog::sl_dialogAccepted() {
     bool conversionResult = true;
     hitCounterParameter = ui->hitParameterEdit->text().toInt(&conversionResult);
-    if ( ( !conversionResult
-        && !hitCountersConditionsWithoutParameter.contains(
-        ui->hitConditionCombo->currentText( ) ) )
-        || 1 > hitCounterParameter )
-    {
-        QMessageBox::critical(this, tr(WRONG_INPUT_MESSAGE_BOX_TITLE),
-            tr(WRONG_INPUT_MESSAGE_BOX_CONTENT));
+    if ((!conversionResult && !hitCountersConditionsWithoutParameter.contains(
+                                  ui->hitConditionCombo->currentText())) ||
+        1 > hitCounterParameter) {
+        QMessageBox::critical(this, tr(WRONG_INPUT_MESSAGE_BOX_TITLE), tr(WRONG_INPUT_MESSAGE_BOX_CONTENT));
         return;
     }
 
@@ -110,11 +110,11 @@ void BreakpointHitCountDialog::sl_resetHitCount() {
 
 void BreakpointHitCountDialog::sl_hitConditionChanged(const QString &text) {
     chosenCondition = text;
-    if(hitCountersConditionsWithoutParameter.contains(ui->hitConditionCombo->currentText())) {
+    if (hitCountersConditionsWithoutParameter.contains(ui->hitConditionCombo->currentText())) {
         ui->hitParameterEdit->hide();
-    } else if(!ui->hitParameterEdit->isVisible()) {
+    } else if (!ui->hitParameterEdit->isVisible()) {
         ui->hitParameterEdit->show();
     }
 }
 
-} // namespace U2
+}    // namespace U2

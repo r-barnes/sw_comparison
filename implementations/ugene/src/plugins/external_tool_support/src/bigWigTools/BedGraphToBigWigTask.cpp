@@ -19,83 +19,79 @@
  * MA 02110-1301, USA.
  */
 
-#include <QDir>
-
-#include "BigWigSupport.h"
 #include "BedGraphToBigWigTask.h"
 
+#include <QDir>
+
 #include <U2Core/AppContext.h>
-#include <U2Core/U2SafePoints.h>
 #include <U2Core/ExternalToolRegistry.h>
-#include <U2Core/GUrlUtils.h>
 #include <U2Core/ExternalToolRunTask.h>
+#include <U2Core/GUrlUtils.h>
+#include <U2Core/U2SafePoints.h>
+
+#include "BigWigSupport.h"
 
 namespace U2 {
 
 //////////////////////////////////////////////////////////////////////////
 //BedGraphToBigWigParser
 BedGraphToBigWigParser::BedGraphToBigWigParser()
-    :ExternalToolLogParser() {
-
+    : ExternalToolLogParser() {
 }
 
-void BedGraphToBigWigParser::parseOutput( const QString& partOfLog ){
+void BedGraphToBigWigParser::parseOutput(const QString &partOfLog) {
     ExternalToolLogParser::parseOutput(partOfLog);
 }
 
-void BedGraphToBigWigParser::parseErrOutput( const QString& partOfLog ){
-    lastPartOfLog=partOfLog.split(QRegExp("(\n|\r)"));
-    lastPartOfLog.first()=lastErrLine+lastPartOfLog.first();
-    lastErrLine=lastPartOfLog.takeLast();
-    foreach(QString buf, lastPartOfLog){
-            if(buf.contains("ERROR", Qt::CaseInsensitive)){
-                    coreLog.error("bedGraphToBigWig: " + buf);
-            }
+void BedGraphToBigWigParser::parseErrOutput(const QString &partOfLog) {
+    lastPartOfLog = partOfLog.split(QRegExp("(\n|\r)"));
+    lastPartOfLog.first() = lastErrLine + lastPartOfLog.first();
+    lastErrLine = lastPartOfLog.takeLast();
+    foreach (QString buf, lastPartOfLog) {
+        if (buf.contains("ERROR", Qt::CaseInsensitive)) {
+            coreLog.error("bedGraphToBigWig: " + buf);
+        }
     }
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 //BedGraphToBigWigTask
 BedGraphToBigWigTask::BedGraphToBigWigTask(const BedGraphToBigWigSetting &settings)
-:ExternalToolSupportTask(QString("bedGrapthToBigWig for %1").arg(settings.inputUrl), TaskFlags_FOSE_COSC)
-,settings(settings)
-{
-
+    : ExternalToolSupportTask(QString("bedGrapthToBigWig for %1").arg(settings.inputUrl), TaskFlags_FOSE_COSC), settings(settings) {
 }
 
-void BedGraphToBigWigTask::prepare(){
-    if (settings.inputUrl.isEmpty()){
+void BedGraphToBigWigTask::prepare() {
+    if (settings.inputUrl.isEmpty()) {
         setError("No input URL");
-        return ;
+        return;
     }
 
     const QDir outDir = QFileInfo(settings.outDir).absoluteDir();
     if (!outDir.exists()) {
         setError("Folder does not exist: " + outDir.absolutePath());
-        return ;
+        return;
     }
 
-    if(settings.genomePath.isEmpty()){
+    if (settings.genomePath.isEmpty()) {
         setError("No path to genome lengths");
-        return ;
+        return;
     }
 
     const QStringList args = getParameters(stateInfo);
     CHECK_OP(stateInfo, );
 
-    ExternalToolRunTask* etTask = new ExternalToolRunTask(BigWigSupport::ET_BIGWIG_ID, args, new BedGraphToBigWigParser(), settings.outDir);
+    ExternalToolRunTask *etTask = new ExternalToolRunTask(BigWigSupport::ET_BIGWIG_ID, args, new BedGraphToBigWigParser(), settings.outDir);
     setListenerForTask(etTask);
     addSubTask(etTask);
 }
 
-void BedGraphToBigWigTask::run(){
+void BedGraphToBigWigTask::run() {
     CHECK_OP(stateInfo, );
 
     resultUrl = settings.outDir + settings.outName;
 }
 
-QStringList BedGraphToBigWigTask::getParameters(U2OpStatus &/*os*/){
+QStringList BedGraphToBigWigTask::getParameters(U2OpStatus & /*os*/) {
     QStringList res;
 
     res << settings.inputUrl;
@@ -103,11 +99,11 @@ QStringList BedGraphToBigWigTask::getParameters(U2OpStatus &/*os*/){
     res << settings.outDir + settings.outName;
     res << QString("-blockSize=%1").arg(settings.blockSize);
     res << QString("-itemsPerSlot=%1").arg(settings.itemsPerSlot);
-    if(settings.uncompressed){
+    if (settings.uncompressed) {
         res << QString("-unc");
     }
 
     return res;
 }
 
-} //namespace U2
+}    //namespace U2

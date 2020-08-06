@@ -19,17 +19,20 @@
  * MA 02110-1301, USA.
  */
 
+#include "JsContext.h"
+
 #include <QtCore/QObject>
 #include <QtCore/QString>
 
 #include <U2Core/AppContext.h>
+
 #include <U2Lang/ScriptContext.h>
 #include <U2Lang/WorkflowRunFromScriptTask.h>
+
 #include <U2Script/U2Script.h>
 
 #include "ActorWrap.h"
 #include "DebugStatusWrap.h"
-#include "JsContext.h"
 #include "JsScheduler.h"
 #include "NodeApiUtils.h"
 
@@ -43,112 +46,112 @@ namespace U2 {
 
 namespace Js {
 
-void initModule( Handle<Object> target ) {
-    ActorWrap::init( );
-    DebugStatusWrap::init( );
+void initModule(Handle<Object> target) {
+    ActorWrap::init();
+    DebugStatusWrap::init();
 
-    target->Set( String::NewSymbol( "debugStatus" ),
-        FunctionTemplate::New( debugStatus )->GetFunction( ) );
-    target->Set( String::NewSymbol( "launchSchemeWithScheduler" ),
-        FunctionTemplate::New( launchSchemeWithScheduler )->GetFunction( ) );
-    target->Set( String::NewSymbol( "topologicalSortedGraph" ),
-        FunctionTemplate::New( topologicalSortedGraph )->GetFunction( ) );
-    target->Set( String::NewSymbol( "tick" ), FunctionTemplate::New( tick )->GetFunction( ) );
+    target->Set(String::NewSymbol("debugStatus"),
+                FunctionTemplate::New(debugStatus)->GetFunction());
+    target->Set(String::NewSymbol("launchSchemeWithScheduler"),
+                FunctionTemplate::New(launchSchemeWithScheduler)->GetFunction());
+    target->Set(String::NewSymbol("topologicalSortedGraph"),
+                FunctionTemplate::New(topologicalSortedGraph)->GetFunction());
+    target->Set(String::NewSymbol("tick"), FunctionTemplate::New(tick)->GetFunction());
 }
 
-Handle<Value> launchSchemeWithScheduler( const Arguments &args ) {
+Handle<Value> launchSchemeWithScheduler(const Arguments &args) {
     HandleScope scope;
-    if ( !NodeApiUtils::isArgumentCountCorrect( args.Length(), 3 ) ) {
-        return scope.Close( Undefined( ) );
+    if (!NodeApiUtils::isArgumentCountCorrect(args.Length(), 3)) {
+        return scope.Close(Undefined());
     }
-    if ( !args[0]->IsString( ) || !args[1]->IsFunction( ) || !args[2]->IsString( ) ) {
-        ThrowException( Exception::TypeError( String::New( WRONG_ARGUMENT_TYPE_MESSAGE ) ) );
-        return scope.Close( Undefined( ) );
+    if (!args[0]->IsString() || !args[1]->IsFunction() || !args[2]->IsString()) {
+        ThrowException(Exception::TypeError(String::New(WRONG_ARGUMENT_TYPE_MESSAGE)));
+        return scope.Close(Undefined());
     }
-    Local<Function> schedulerCallback = Local<Function>::Cast( args[1] );
-    JsScheduler *scheduler = new JsScheduler( NULL, schedulerCallback );
+    Local<Function> schedulerCallback = Local<Function>::Cast(args[1]);
+    JsScheduler *scheduler = new JsScheduler(NULL, schedulerCallback);
 
-    const String::Utf8Value pathToScheme( args[0]->ToString( ) );
-    const String::Utf8Value workingDir( args[2]->ToString( ) );
+    const String::Utf8Value pathToScheme(args[0]->ToString());
+    const String::Utf8Value workingDir(args[2]->ToString());
     Handle<Value> result;
-    initContext( *workingDir );
+    initContext(*workingDir);
     SchemeHandle *scheme = NULL;
-    U2ErrorType error = createScheme( *pathToScheme, scheme );
-    CHECK( U2_OK == error, scope.Close( Undefined( ) ) );
-    result = scope.Close( Number::New( launchScheme( scheme ) ) );
-    releaseContext( );
+    U2ErrorType error = createScheme(*pathToScheme, scheme);
+    CHECK(U2_OK == error, scope.Close(Undefined()));
+    result = scope.Close(Number::New(launchScheme(scheme)));
+    releaseContext();
     return result;
 }
 
-Handle<Value> topologicalSortedGraph( const Arguments &args ) {
+Handle<Value> topologicalSortedGraph(const Arguments &args) {
     HandleScope scope;
-    if ( !NodeApiUtils::isArgumentCountCorrect( args.Length(), 0 ) ) {
-        return scope.Close( Undefined( ) );
+    if (!NodeApiUtils::isArgumentCountCorrect(args.Length(), 0)) {
+        return scope.Close(Undefined());
     }
-    ScriptContext *scriptContext = NodeApiUtils::getScriptContext( );
-    if ( NULL == scriptContext ) {
-        return scope.Close( Undefined( ) );
+    ScriptContext *scriptContext = NodeApiUtils::getScriptContext();
+    if (NULL == scriptContext) {
+        return scope.Close(Undefined());
     }
-    QMap<int, QList<Actor *> > topologicalSortedGraph = scriptContext->getTopologicalSortedGraph();
+    QMap<int, QList<Actor *>> topologicalSortedGraph = scriptContext->getTopologicalSortedGraph();
     const int schemeTiersCount = topologicalSortedGraph.size();
-    Local<Object> scheme = Object::New( );
-    for ( int i = 0; schemeTiersCount > i; ++i ) {
-        Local<Object> tier = Object::New( );
+    Local<Object> scheme = Object::New();
+    for (int i = 0; schemeTiersCount > i; ++i) {
+        Local<Object> tier = Object::New();
         int actorCounter = 0;
-        foreach ( Actor *actor, topologicalSortedGraph[i] ) {
-            Handle<Value> actorInitData[] = { Integer::New( reinterpret_cast<int>( actor ) ) };
-            Handle<Value> wrappedActor = ActorWrap::newInstance( 1, actorInitData );
-            tier->Set( String::NewSymbol( actor->getId( ).toLocal8Bit( ).constData( ) ),
-                wrappedActor );
+        foreach (Actor *actor, topologicalSortedGraph[i]) {
+            Handle<Value> actorInitData[] = {Integer::New(reinterpret_cast<int>(actor))};
+            Handle<Value> wrappedActor = ActorWrap::newInstance(1, actorInitData);
+            tier->Set(String::NewSymbol(actor->getId().toLocal8Bit().constData()),
+                      wrappedActor);
             ++actorCounter;
         }
-        scheme->Set( i, tier );
+        scheme->Set(i, tier);
     }
-    return scope.Close( scheme );
+    return scope.Close(scheme);
 }
 
-Handle<Value> tick( const Arguments &args ) {
+Handle<Value> tick(const Arguments &args) {
     HandleScope scope;
-    if ( !NodeApiUtils::isArgumentCountCorrect( args.Length(), 1 ) ) {
-        return scope.Close( Undefined( ) );
+    if (!NodeApiUtils::isArgumentCountCorrect(args.Length(), 1)) {
+        return scope.Close(Undefined());
     }
-    if ( !args[0]->IsString() ) {
-        ThrowException( Exception::TypeError( String::New( WRONG_ARGUMENT_TYPE_MESSAGE ) ) );
-        return scope.Close( Undefined( ) );
+    if (!args[0]->IsString()) {
+        ThrowException(Exception::TypeError(String::New(WRONG_ARGUMENT_TYPE_MESSAGE)));
+        return scope.Close(Undefined());
     }
-    const String::Utf8Value actorId( args[0]->ToString( ) );
-    ScriptContext *scriptContext = NodeApiUtils::getScriptContext( );
-    if ( NULL == scriptContext ) {
-        return scope.Close( Undefined( ) );
+    const String::Utf8Value actorId(args[0]->ToString());
+    ScriptContext *scriptContext = NodeApiUtils::getScriptContext();
+    if (NULL == scriptContext) {
+        return scope.Close(Undefined());
     }
-    if ( NULL == scriptContext->getActorById( *actorId ) ) {
-        ThrowException( Exception::TypeError( String::New( ACTOR_NOT_FOUND_MESSAGE ) ) );
-        return scope.Close( Undefined( ) );
+    if (NULL == scriptContext->getActorById(*actorId)) {
+        ThrowException(Exception::TypeError(String::New(ACTOR_NOT_FOUND_MESSAGE)));
+        return scope.Close(Undefined());
     }
-    scriptContext->addActorTick( *actorId );
-    return scope.Close( Undefined( ) );
+    scriptContext->addActorTick(*actorId);
+    return scope.Close(Undefined());
 }
 
-Handle<Value> debugStatus( const Arguments &args ) {
+Handle<Value> debugStatus(const Arguments &args) {
     HandleScope scope;
-    if ( !NodeApiUtils::isArgumentCountCorrect( args.Length(), 0 ) ) {
-        return scope.Close( Undefined( ) );
+    if (!NodeApiUtils::isArgumentCountCorrect(args.Length(), 0)) {
+        return scope.Close(Undefined());
     }
-    ScriptContext *scriptContext = NodeApiUtils::getScriptContext( );
-    if ( NULL == scriptContext ) {
-        return scope.Close( Undefined( ) );
+    ScriptContext *scriptContext = NodeApiUtils::getScriptContext();
+    if (NULL == scriptContext) {
+        return scope.Close(Undefined());
     }
     Handle<Value> wrappedDebugInfo;
-    WorkflowDebugStatus *debugInfo = scriptContext->getDebugStatus( );
-    if ( NULL != debugInfo ) {
-        Handle<Value> debugInfoInitData[] = { Integer::New( reinterpret_cast<int>( debugInfo ) ) };
-        wrappedDebugInfo = DebugStatusWrap::newInstance( 1, debugInfoInitData );
+    WorkflowDebugStatus *debugInfo = scriptContext->getDebugStatus();
+    if (NULL != debugInfo) {
+        Handle<Value> debugInfoInitData[] = {Integer::New(reinterpret_cast<int>(debugInfo))};
+        wrappedDebugInfo = DebugStatusWrap::newInstance(1, debugInfoInitData);
     } else {
-        wrappedDebugInfo = Undefined( );
+        wrappedDebugInfo = Undefined();
     }
-    return scope.Close( wrappedDebugInfo );
+    return scope.Close(wrappedDebugInfo);
 }
 
-} // namespace Js
+}    // namespace Js
 
-} // namespace U2
+}    // namespace U2

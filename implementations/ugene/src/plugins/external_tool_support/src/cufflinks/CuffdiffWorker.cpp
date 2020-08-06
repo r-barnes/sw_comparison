@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CuffdiffWorker.h"
+
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
@@ -39,7 +41,6 @@
 #include <U2Lang/WorkflowMonitor.h>
 
 #include "CufflinksSupport.h"
-#include "CuffdiffWorker.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -83,107 +84,106 @@ static const QString TMP_DIR_PATH("tmp-dir");
 
 static const QString SAMPLE_SLOT_ID("sample");
 
-void CuffdiffWorkerFactory::init()
-{
-    QList<PortDescriptor*> portDescriptors;
-    QList<Attribute*> attributes;
+void CuffdiffWorkerFactory::init() {
+    QList<PortDescriptor *> portDescriptors;
+    QList<Attribute *> attributes;
 
     // Description of the element
     Descriptor cuffdiffDescriptor(ACTOR_ID,
-        CuffdiffWorker::tr("Test for Diff. Expression with Cuffdiff"),
-        CuffdiffWorker::tr("Cuffdiff takes a transcript file as input, along with two or"
-        " more fragment alignments (e.g. in SAM format) for two or more samples."
-        " It produces a number of output files that contain"
-        " test results for changes in expression at the level of transcripts,"
-        " primary transcripts, and genes. It also tracks changes in"
-        " the relative abundance of transcripts sharing a common transcription"
-        " start site, and in the relative abundances of the primary transcripts"
-        " of each gene. Tracking the former allows one to see changes in splicing,"
-        " and the latter lets one see changes in relative promoter use within"
-        " a gene."));
+                                  CuffdiffWorker::tr("Test for Diff. Expression with Cuffdiff"),
+                                  CuffdiffWorker::tr("Cuffdiff takes a transcript file as input, along with two or"
+                                                     " more fragment alignments (e.g. in SAM format) for two or more samples."
+                                                     " It produces a number of output files that contain"
+                                                     " test results for changes in expression at the level of transcripts,"
+                                                     " primary transcripts, and genes. It also tracks changes in"
+                                                     " the relative abundance of transcripts sharing a common transcription"
+                                                     " start site, and in the relative abundances of the primary transcripts"
+                                                     " of each gene. Tracking the former allows one to see changes in splicing,"
+                                                     " and the latter lets one see changes in relative promoter use within"
+                                                     " a gene."));
 
-    { // Define parameters of the element
+    {    // Define parameters of the element
         Descriptor outDir(OUT_DIR,
-            CuffdiffWorker::tr("Output folder"),
-            CuffdiffWorker::tr("The base name of output folder. It could be modified with a suffix."));
+                          CuffdiffWorker::tr("Output folder"),
+                          CuffdiffWorker::tr("The base name of output folder. It could be modified with a suffix."));
 
         Descriptor timeSeriesAnalysis(TIME_SERIES_ANALYSIS,
-            CuffdiffWorker::tr("Time series analysis"),
-            CuffdiffWorker::tr("If set to <i>True</i>, instructs Cuffdiff to analyze"
-            " the provided samples as a time series, rather than testing for differences"
-            " between all pairs of samples. Samples should be provided in increasing time"
-            " order."));
+                                      CuffdiffWorker::tr("Time series analysis"),
+                                      CuffdiffWorker::tr("If set to <i>True</i>, instructs Cuffdiff to analyze"
+                                                         " the provided samples as a time series, rather than testing for differences"
+                                                         " between all pairs of samples. Samples should be provided in increasing time"
+                                                         " order."));
 
         Descriptor upperQuartileNorm(UPPER_QUARTILE_NORM,
-            CuffdiffWorker::tr("Upper quartile norm"),
-            CuffdiffWorker::tr("If set to <i>True</i>, normalizes by the upper quartile"
-            " of the number of fragments mapping to individual loci instead of the total"
-            " number of sequenced fragments. This can improve robustness of differential"
-            " expression calls for less abundant genes and transcripts."));
+                                     CuffdiffWorker::tr("Upper quartile norm"),
+                                     CuffdiffWorker::tr("If set to <i>True</i>, normalizes by the upper quartile"
+                                                        " of the number of fragments mapping to individual loci instead of the total"
+                                                        " number of sequenced fragments. This can improve robustness of differential"
+                                                        " expression calls for less abundant genes and transcripts."));
 
         Descriptor hitsNorm(HITS_NORM,
-            CuffdiffWorker::tr("Hits norm"),
-            CuffdiffWorker::tr("Instructs how to count all fragments. <i>Total</i> specifies"
-            " to count all fragments, including those not compatible with any reference"
-            " transcript, towards the number of mapped fragments used in the FPKM denominator."
-            " <i>Compatible</i> specifies to use only compatible fragments."
-            " Selecting <i>Compatible</i> is generally recommended in Cuffdiff to reduce"
-            " certain types of bias caused by differential amounts of ribosomal reads"
-            " which can create the impression of falsely differentially expressed genes."));
+                            CuffdiffWorker::tr("Hits norm"),
+                            CuffdiffWorker::tr("Instructs how to count all fragments. <i>Total</i> specifies"
+                                               " to count all fragments, including those not compatible with any reference"
+                                               " transcript, towards the number of mapped fragments used in the FPKM denominator."
+                                               " <i>Compatible</i> specifies to use only compatible fragments."
+                                               " Selecting <i>Compatible</i> is generally recommended in Cuffdiff to reduce"
+                                               " certain types of bias caused by differential amounts of ribosomal reads"
+                                               " which can create the impression of falsely differentially expressed genes."));
 
         Descriptor fragBiasCorrect(FRAG_BIAS_CORRECT,
-            CuffdiffWorker::tr("Frag bias correct"),
-            CuffdiffWorker::tr("Providing the sequences your reads were mapped to instructs"
-            " Cuffdiff to run bias detection and correction algorithm which can significantly"
-            " improve accuracy of transcript abundance estimates."));
+                                   CuffdiffWorker::tr("Frag bias correct"),
+                                   CuffdiffWorker::tr("Providing the sequences your reads were mapped to instructs"
+                                                      " Cuffdiff to run bias detection and correction algorithm which can significantly"
+                                                      " improve accuracy of transcript abundance estimates."));
 
         Descriptor multiReadCorrect(MULTI_READ_CORRECT,
-            CuffdiffWorker::tr("Multi read correct"),
-            CuffdiffWorker::tr("Do an initial estimation procedure to more accurately weight"
-            " reads mapping to multiple locations in the genome."));
+                                    CuffdiffWorker::tr("Multi read correct"),
+                                    CuffdiffWorker::tr("Do an initial estimation procedure to more accurately weight"
+                                                       " reads mapping to multiple locations in the genome."));
 
         Descriptor libraryType(LIBRARY_TYPE,
-            CuffdiffWorker::tr("Library type"),
-            CuffdiffWorker::tr("Specifies RNA-Seq protocol."));
+                               CuffdiffWorker::tr("Library type"),
+                               CuffdiffWorker::tr("Specifies RNA-Seq protocol."));
 
         Descriptor maskFile(MASK_FILE,
-            CuffdiffWorker::tr("Mask file"),
-            CuffdiffWorker::tr("Ignore all reads that could have come from transcripts"
-            " in this file. It is recommended to include any annotated rRNA, mitochondrial"
-            " transcripts or other abundant transcripts you wish to ignore in your analysis"
-            " in this file. Due to variable efficiency of mRNA enrichment methods and"
-            " rRNA depletion kits, masking these transcripts often improves the overall"
-            " robustness of transcript abundance estimates."));
+                            CuffdiffWorker::tr("Mask file"),
+                            CuffdiffWorker::tr("Ignore all reads that could have come from transcripts"
+                                               " in this file. It is recommended to include any annotated rRNA, mitochondrial"
+                                               " transcripts or other abundant transcripts you wish to ignore in your analysis"
+                                               " in this file. Due to variable efficiency of mRNA enrichment methods and"
+                                               " rRNA depletion kits, masking these transcripts often improves the overall"
+                                               " robustness of transcript abundance estimates."));
 
         Descriptor minAlignmentCount(MIN_ALIGNMENT_COUNT,
-            CuffdiffWorker::tr("Min alignment count"),
-            CuffdiffWorker::tr("The minimum number of alignments in a locus for needed"
-            " to conduct significance testing on changes in that locus observed between"
-            " samples. If no testing is performed, changes in the locus are deemed not"
-            " significant, and the locus' observed changes don't contribute to correction"
-            " for multiple testing."));
+                                     CuffdiffWorker::tr("Min alignment count"),
+                                     CuffdiffWorker::tr("The minimum number of alignments in a locus for needed"
+                                                        " to conduct significance testing on changes in that locus observed between"
+                                                        " samples. If no testing is performed, changes in the locus are deemed not"
+                                                        " significant, and the locus' observed changes don't contribute to correction"
+                                                        " for multiple testing."));
 
         Descriptor fdr(FDR,
-            CuffdiffWorker::tr("FDR"),
-            CuffdiffWorker::tr("The allowed false discovery rate used in testing."));
+                       CuffdiffWorker::tr("FDR"),
+                       CuffdiffWorker::tr("The allowed false discovery rate used in testing."));
 
         Descriptor maxMleIterations(MAX_MLE_ITERATIONS,
-            CuffdiffWorker::tr("Max MLE iterations"),
-            CuffdiffWorker::tr("Sets the number of iterations allowed during maximum"
-            " likelihood estimation of abundances."));
+                                    CuffdiffWorker::tr("Max MLE iterations"),
+                                    CuffdiffWorker::tr("Sets the number of iterations allowed during maximum"
+                                                       " likelihood estimation of abundances."));
 
         Descriptor emitCountTables(EMIT_COUNT_TABLES,
-            CuffdiffWorker::tr("Emit count tables"),
-            CuffdiffWorker::tr("Include information about the fragment counts, fragment"
-            " count variances, and fitted variance model into the report."));
+                                   CuffdiffWorker::tr("Emit count tables"),
+                                   CuffdiffWorker::tr("Include information about the fragment counts, fragment"
+                                                      " count variances, and fitted variance model into the report."));
 
         Descriptor extToolPath(EXT_TOOL_PATH,
-            CuffdiffWorker::tr("Cuffdiff tool path"),
-            CuffdiffWorker::tr("The path to the Cuffdiff external tool in UGENE."));
+                               CuffdiffWorker::tr("Cuffdiff tool path"),
+                               CuffdiffWorker::tr("The path to the Cuffdiff external tool in UGENE."));
 
         Descriptor tmpDir(TMP_DIR_PATH,
-            CuffdiffWorker::tr("Temporary folder"),
-            CuffdiffWorker::tr("The folder for temporary files."));
+                          CuffdiffWorker::tr("Temporary folder"),
+                          CuffdiffWorker::tr("The folder for temporary files."));
 
         attributes << new Attribute(outDir, BaseTypes::STRING_TYPE(), true, "");
         attributes << new Attribute(timeSeriesAnalysis, BaseTypes::BOOL_TYPE(), false, QVariant(false));
@@ -201,16 +201,16 @@ void CuffdiffWorkerFactory::init()
         attributes << new Attribute(tmpDir, BaseTypes::STRING_TYPE(), true, QVariant(L10N::defaultStr()));
     }
 
-    { // Define ports of the element
+    {    // Define ports of the element
         Descriptor assemblyDesc(BasePorts::IN_ASSEMBLY_PORT_ID(),
-            CuffdiffWorker::tr("Assembly"),
-            CuffdiffWorker::tr("RNA-Seq reads assemblies"));
+                                CuffdiffWorker::tr("Assembly"),
+                                CuffdiffWorker::tr("RNA-Seq reads assemblies"));
         Descriptor annsDesc(BasePorts::IN_ANNOTATIONS_PORT_ID(),
-            CuffdiffWorker::tr("Annotations"),
-            CuffdiffWorker::tr("Transcript annotations"));
+                            CuffdiffWorker::tr("Annotations"),
+                            CuffdiffWorker::tr("Transcript annotations"));
         Descriptor sampleDesc(SAMPLE_SLOT_ID,
-            CuffdiffWorker::tr("Sample"),
-            CuffdiffWorker::tr("Sample name of assembly file"));
+                              CuffdiffWorker::tr("Sample"),
+                              CuffdiffWorker::tr("Sample name of assembly file"));
 
         QMap<Descriptor, DataTypePtr> assemblyTypeMap;
         assemblyTypeMap[BaseSlots::URL_SLOT()] = BaseTypes::STRING_TYPE();
@@ -226,12 +226,12 @@ void CuffdiffWorkerFactory::init()
     }
 
     // Create the actor prototype
-    ActorPrototype* proto = new IntegralBusActorPrototype(cuffdiffDescriptor,
-        portDescriptors,
-        attributes);
+    ActorPrototype *proto = new IntegralBusActorPrototype(cuffdiffDescriptor,
+                                                          portDescriptors,
+                                                          attributes);
 
     // Values range of some parameters
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
 
     {
         QVariantMap vm;
@@ -272,7 +272,7 @@ void CuffdiffWorkerFactory::init()
     proto->setPrompter(new CuffdiffPrompter());
     proto->setPortValidator(BasePorts::IN_ASSEMBLY_PORT_ID(), new InputSlotValidator());
 
-    { // external tools
+    {    // external tools
         proto->addExternalTool(CufflinksSupport::ET_CUFFDIFF_ID, EXT_TOOL_PATH);
     }
 
@@ -280,22 +280,18 @@ void CuffdiffWorkerFactory::init()
         BaseActorCategories::CATEGORY_RNA_SEQ(),
         proto);
 
-    DomainFactory* localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
+    DomainFactory *localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
     localDomain->registerEntry(new CuffdiffWorkerFactory());
 }
-
 
 /*****************************
  * CuffdiffPrompter
  *****************************/
-CuffdiffPrompter::CuffdiffPrompter(Actor* parent)
-    : PrompterBase<CuffdiffPrompter>(parent)
-{
+CuffdiffPrompter::CuffdiffPrompter(Actor *parent)
+    : PrompterBase<CuffdiffPrompter>(parent) {
 }
 
-
-QString CuffdiffPrompter::composeRichDoc()
-{
+QString CuffdiffPrompter::composeRichDoc() {
     QString result = CuffdiffWorker::tr(
         "Searches for significant changes in transcript expression,"
         " splicing and promoter use.");
@@ -303,20 +299,18 @@ QString CuffdiffPrompter::composeRichDoc()
     return result;
 }
 
-
 /*****************************
  * CuffdiffWorker
  *****************************/
 CuffdiffWorker::CuffdiffWorker(Actor *actor)
-: BaseWorker(actor, false), inAssembly(NULL), inTranscript(NULL), groupBySamples(false)
-{
+    : BaseWorker(actor, false), inAssembly(NULL), inTranscript(NULL), groupBySamples(false) {
 }
 
 void CuffdiffWorker::initSlotsState() {
     Port *port = actor->getPort(BasePorts::IN_ASSEMBLY_PORT_ID());
-    IntegralBusPort *bus = dynamic_cast<IntegralBusPort*>(port);
+    IntegralBusPort *bus = dynamic_cast<IntegralBusPort *>(port);
 
-    QList<Actor*> producers = bus->getProducers(SAMPLE_SLOT_ID);
+    QList<Actor *> producers = bus->getProducers(SAMPLE_SLOT_ID);
     groupBySamples = !producers.isEmpty();
 }
 
@@ -341,7 +335,7 @@ bool CuffdiffWorker::isReady() const {
     return (inTranscript->hasMessage() || inTranscript->isEnded());
 }
 
-Task * CuffdiffWorker::tick() {
+Task *CuffdiffWorker::tick() {
     while (inAssembly->hasMessage()) {
         takeAssembly();
     }
@@ -361,7 +355,7 @@ Task * CuffdiffWorker::tick() {
 }
 
 void CuffdiffWorker::sl_onTaskFinished() {
-    CuffdiffSupportTask *task = qobject_cast<CuffdiffSupportTask*>(sender());
+    CuffdiffSupportTask *task = qobject_cast<CuffdiffSupportTask *>(sender());
     if (Task::State_Finished != task->getState()) {
         return;
     }
@@ -374,7 +368,6 @@ void CuffdiffWorker::sl_onTaskFinished() {
 }
 
 void CuffdiffWorker::cleanup() {
-
 }
 
 CuffdiffSettings CuffdiffWorker::scanParameters() const {
@@ -401,7 +394,8 @@ CuffdiffSettings CuffdiffWorker::takeSettings() {
     Message m = getMessageAndSetupScriptValues(inTranscript);
     QVariantMap data = m.getData().toMap();
     SAFE_POINT(data.contains(BaseSlots::ANNOTATION_TABLE_SLOT().getId()),
-        "No annotations in a message", result);
+               "No annotations in a message",
+               result);
     const QVariant packedHandlers = data[BaseSlots::ANNOTATION_TABLE_SLOT().getId()];
     const QList<SharedDbiDataHandler> annTableHandlers = StorageUtils::getAnnotationTableHandlers(packedHandlers);
 
@@ -418,7 +412,7 @@ void CuffdiffWorker::takeAssembly() {
     QVariantMap data = m.getData().toMap();
 
     SAFE_POINT(data.contains(BaseSlots::URL_SLOT().getId()),
-        "No url in a message", );
+               "No url in a message", );
     QString sampleName;
     if (groupBySamples) {
         SAFE_POINT(data.contains(SAMPLE_SLOT_ID), "No sample in a message", );
@@ -427,5 +421,5 @@ void CuffdiffWorker::takeAssembly() {
     assemblyUrls[sampleName] << data[BaseSlots::URL_SLOT().getId()].toString();
 }
 
-} // namespace LocalWorkflow
-} // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

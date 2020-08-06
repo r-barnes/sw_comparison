@@ -19,24 +19,20 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-
 #include "OrfDialogFiller.h"
+
+#include <QApplication>
 
 namespace U2 {
 
 #define GT_CLASS_NAME "OrfDialogFiller"
 
 OrfDialogFiller::OrfDialogFiller(GUITestOpStatus &os)
-    : Filler(os, "ORFDialogBase")
-{
-
+    : Filler(os, "ORFDialogBase") {
 }
 
 OrfDialogFiller::OrfDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario)
-    : Filler(os, "ORFDialogBase", scenario)
-{
-
+    : Filler(os, "ORFDialogBase", scenario) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
@@ -50,4 +46,4 @@ void OrfDialogFiller::commonScenario() {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

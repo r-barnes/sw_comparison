@@ -19,22 +19,22 @@
  * MA 02110-1301, USA.
  */
 
+#include "HmmerBuildTask.h"
+
 #include <U2Core/AppContext.h>
-#include <U2Core/AppSettings.h>
 #include <U2Core/AppResources.h>
+#include <U2Core/AppSettings.h>
 #include <U2Core/Counter.h>
 #include <U2Core/GUrlUtils.h>
 
 #include "HmmerSupport.h"
-#include "HmmerBuildTask.h"
 
 namespace U2 {
 
 HmmerBuildTask::HmmerBuildTask(const HmmerBuildSettings &settings, const QString &msaUrl)
     : ExternalToolRunTask(HmmerSupport::BUILD_TOOL_ID, getArguments(settings, msaUrl), new Hmmer3LogParser()),
       settings(settings),
-      stockholmMsaUrl(msaUrl)
-{
+      stockholmMsaUrl(msaUrl) {
     GCOUNTER(cvar, tvar, "UHMM3BuildTask");
 
     SAFE_POINT_EXT(settings.validate(), setError("Settings are invalid"), );
@@ -76,16 +76,16 @@ QString HmmerBuildTask::getReport(const Task *task, const HmmerBuildSettings &se
         res += tr("Gerstein/Sonnhammer/Chothia tree weights");
         break;
     case HmmerBuildSettings::p7_WGT_BLOSUM:
-        res += tr("Henikoff simple filter weights" );
+        res += tr("Henikoff simple filter weights");
         break;
     case HmmerBuildSettings::p7_WGT_PB:
-        res += tr("Henikoff position-based weights" );
+        res += tr("Henikoff position-based weights");
         break;
     case HmmerBuildSettings::p7_WGT_NONE:
-        res += tr("No relative weighting; set all to 1" );
+        res += tr("No relative weighting; set all to 1");
         break;
     case HmmerBuildSettings::p7_WGT_GIVEN:
-        res += tr("Weights given in MSA file" );
+        res += tr("Weights given in MSA file");
         break;
     default:
         assert(false);
@@ -104,7 +104,7 @@ QString HmmerBuildTask::getReport(const Task *task, const HmmerBuildSettings &se
         res += tr("no effective sequence number weighting: just use number of sequences");
         break;
     case HmmerBuildSettings::p7_EFFN_SET:
-        res += tr("set effective sequence number for all models to: %1" ).arg(settings.eset);
+        res += tr("set effective sequence number for all models to: %1").arg(settings.eset);
         break;
     default:
         assert(false);
@@ -201,4 +201,4 @@ QStringList HmmerBuildTask::getArguments(const HmmerBuildSettings &settings, con
     return arguments;
 }
 
-}   // namespace U2
+}    // namespace U2

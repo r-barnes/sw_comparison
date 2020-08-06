@@ -19,12 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "TrimmomaticSupport.h"
+
 #include <QFileInfo>
 
 #include <U2Core/AppContext.h>
 
 #include "TrimmomaticStep.h"
-#include "TrimmomaticSupport.h"
 #include "java/JavaSupport.h"
 #include "steps/AvgQualStep.h"
 #include "steps/CropStep.h"
@@ -43,9 +44,8 @@ namespace U2 {
 const QString TrimmomaticSupport::ET_TRIMMOMATIC = "Trimmomatic";
 const QString TrimmomaticSupport::ET_TRIMMOMATIC_ID = "USUPP_TRIMMOMATIC";
 
-TrimmomaticSupport::TrimmomaticSupport(const QString& id, const QString &name, const QString &path)
-    : ExternalTool(id, name, path)
-{
+TrimmomaticSupport::TrimmomaticSupport(const QString &id, const QString &name, const QString &path)
+    : ExternalTool(id, name, path) {
     toolKitName = "Trimmomatic";
     description = tr("<i>Trimmomatic</i> is a flexible read trimming tool for Illumina NGS data.");
 
@@ -78,4 +78,4 @@ void TrimmomaticSupport::initTrimmomaticSteps() {
     registry->registerEntry(new LocalWorkflow::TrailingStepFactory());
 }
 
-} // namespace U2
+}    // namespace U2

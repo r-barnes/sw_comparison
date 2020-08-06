@@ -28,13 +28,16 @@ namespace U2 {
 
 class CustomExternalToolLogParser : public ExternalToolLogParser {
 public:
-    CustomExternalToolLogParser() : ExternalToolLogParser() {};
+    CustomExternalToolLogParser()
+        : ExternalToolLogParser() {};
 
 private:
-    bool isError(const QString& line) const override { return false;};
-    void parseErrOutput(const QString& partOfLog) override {};
+    bool isError(const QString &line) const override {
+        return false;
+    };
+    void parseErrOutput(const QString &partOfLog) override {};
 };
 
-}
+}    // namespace U2
 
 #endif

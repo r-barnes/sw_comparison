@@ -19,27 +19,25 @@
  * MA 02110-1301, USA.
  */
 
-#include <QToolButton>
-#include <QApplication>
-#include <QGroupBox>
-#include <QComboBox>
-
-#include <primitives/GTWidget.h>
-#include <primitives/GTSpinBox.h>
-#include <primitives/GTDoubleSpinBox.h>
 #include <primitives/GTCheckBox.h>
-#include <primitives/GTLineEdit.h>
 #include <primitives/GTComboBox.h>
+#include <primitives/GTDoubleSpinBox.h>
+#include <primitives/GTLineEdit.h>
 #include <primitives/GTRadioButton.h>
+#include <primitives/GTSpinBox.h>
+#include <primitives/GTWidget.h>
+
+#include <QApplication>
+#include <QComboBox>
+#include <QGroupBox>
+#include <QToolButton>
 
 #include "FormatDBDialogFiller.h"
 
 namespace U2 {
 
 FormatDBSupportRunDialogFiller::FormatDBSupportRunDialogFiller(HI::GUITestOpStatus &os, const Parameters &parameters)
-: Filler(os, "FormatDBSupportRunDialog"), parameters(parameters)
-{
-
+    : Filler(os, "FormatDBSupportRunDialog"), parameters(parameters) {
 }
 
 #define GT_CLASS_NAME "GTUtilsDialog::FormatDBSupportRunDialogFiller"
@@ -49,23 +47,23 @@ void FormatDBSupportRunDialogFiller::commonScenario() {
     QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
-    QRadioButton *inputFilesRadioButton = qobject_cast<QRadioButton*>(GTWidget::findWidget(os, "inputFilesRadioButton", dialog));
+    QRadioButton *inputFilesRadioButton = qobject_cast<QRadioButton *>(GTWidget::findWidget(os, "inputFilesRadioButton", dialog));
     GT_CHECK(inputFilesRadioButton, "inputFilesRadioButton not found");
-    QLineEdit *inputFilesLineEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "inputFilesLineEdit", dialog));
+    QLineEdit *inputFilesLineEdit = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "inputFilesLineEdit", dialog));
     GT_CHECK(inputFilesLineEdit, "inputFilesLineEdit is NULL");
-    QToolButton *inputFilesToolButton = qobject_cast<QToolButton*>(GTWidget::findWidget(os, "inputFilesToolButton", dialog));
+    QToolButton *inputFilesToolButton = qobject_cast<QToolButton *>(GTWidget::findWidget(os, "inputFilesToolButton", dialog));
     GT_CHECK(inputFilesToolButton, "inputFilesToolButton is NULL");
 
-    QRadioButton *inputDirRadioButton = qobject_cast<QRadioButton*>(GTWidget::findWidget(os, "inputDirRadioButton", dialog));
+    QRadioButton *inputDirRadioButton = qobject_cast<QRadioButton *>(GTWidget::findWidget(os, "inputDirRadioButton", dialog));
     GT_CHECK(inputDirRadioButton, "inputDirRadioButton not found");
-    QLineEdit *inputDirLineEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "inputDirLineEdit", dialog));
+    QLineEdit *inputDirLineEdit = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "inputDirLineEdit", dialog));
     GT_CHECK(inputDirLineEdit, "inputDirLineEdit is NULL");
-    QToolButton *inputDirToolButton = qobject_cast<QToolButton*>(GTWidget::findWidget(os, "inputDirToolButton", dialog));
+    QToolButton *inputDirToolButton = qobject_cast<QToolButton *>(GTWidget::findWidget(os, "inputDirToolButton", dialog));
     GT_CHECK(inputDirLineEdit, "inputDirToolButton is NULL");
 
-    QRadioButton *proteinTypeRadioButton = qobject_cast<QRadioButton*>(GTWidget::findWidget(os, "proteinTypeRadioButton", dialog));
+    QRadioButton *proteinTypeRadioButton = qobject_cast<QRadioButton *>(GTWidget::findWidget(os, "proteinTypeRadioButton", dialog));
     GT_CHECK(proteinTypeRadioButton, "proteinTypeRadioButton not found");
-    QRadioButton *nucleotideTypeRadioButton = qobject_cast<QRadioButton*>(GTWidget::findWidget(os, "nucleotideTypeRadioButton", dialog));
+    QRadioButton *nucleotideTypeRadioButton = qobject_cast<QRadioButton *>(GTWidget::findWidget(os, "nucleotideTypeRadioButton", dialog));
     GT_CHECK(nucleotideTypeRadioButton, "nucleotideTypeRadioButton not found");
 
     if (parameters.customFiller_3551) {
@@ -84,7 +82,7 @@ void FormatDBSupportRunDialogFiller::commonScenario() {
         return;
     }
 
-    if(parameters.checkAlphabetType) {
+    if (parameters.checkAlphabetType) {
         bool isProtein = Parameters::Protein == parameters.alphabetType;
         CHECK_SET_ERR(isProtein == proteinTypeRadioButton->isChecked(), "Incorrect alphabet is set");
     }
@@ -116,4 +114,4 @@ void FormatDBSupportRunDialogFiller::commonScenario() {
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-} // U2
+}    // namespace U2

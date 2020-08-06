@@ -22,11 +22,10 @@
 #ifndef _U2_ASSEMBLY_BROSER_STATE_H_
 #define _U2_ASSEMBLY_BROSER_STATE_H_
 
-#include <U2Core/U2Region.h>
-#include <U2Core/GObject.h>
-
 #include <QVariant>
 
+#include <U2Core/GObject.h>
+#include <U2Core/U2Region.h>
 
 namespace U2 {
 
@@ -34,18 +33,23 @@ class AssemblyBrowser;
 
 class U2VIEW_EXPORT AssemblyBrowserState {
 public:
-    AssemblyBrowserState(){}
-    AssemblyBrowserState(const QVariantMap &stateData_) : stateData(stateData_) {}
+    AssemblyBrowserState() {
+    }
+    AssemblyBrowserState(const QVariantMap &stateData_)
+        : stateData(stateData_) {
+    }
 
     bool isValid() const;
 
     void saveState(const AssemblyBrowser *ab);
-    QVariantMap data() { return stateData; }
+    QVariantMap data() {
+        return stateData;
+    }
 
     // a shortcut for saveState() and data()
     inline static QVariantMap buildStateMap(const AssemblyBrowser *v);
 
-    void restoreState(AssemblyBrowser * ab) const;
+    void restoreState(AssemblyBrowser *ab) const;
 
     void setGObjectRef(const GObjectReference &ref);
     GObjectReference getGObjectRef() const;
@@ -70,6 +74,6 @@ inline QVariantMap AssemblyBrowserState::buildStateMap(const AssemblyBrowser *v)
     return s.data();
 }
 
-} // namespace
+}    // namespace U2
 
 #endif

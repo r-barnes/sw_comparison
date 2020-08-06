@@ -23,9 +23,9 @@
 #define _U2_DBICLASSPROTOTYPE_H_
 
 #include <QObject>
-#include <QScriptable>
 #include <QScriptClass>
 #include <QScriptEngine>
+#include <QScriptable>
 
 #include <U2Lang/DbiDataHandler.h>
 
@@ -42,7 +42,7 @@ public:
     virtual ~ScriptDbiData();
     ScriptDbiData(const Workflow::SharedDbiDataHandler &seqId);
 
-    const Workflow::SharedDbiDataHandler & getId() const;
+    const Workflow::SharedDbiDataHandler &getId() const;
 
     /** Removes own dbi data handler */
     void release();
@@ -61,7 +61,8 @@ public:
     virtual ~DbiClassPrototype();
 
 public:
-    template<class T> static void registerScriptClass(QScriptEngine *engine);
+    template<class T>
+    static void registerScriptClass(QScriptEngine *engine);
 
 public slots:
     /** Returns NullValue if the id was released */
@@ -71,9 +72,9 @@ public slots:
     void release();
 
 protected:
-    ScriptDbiData * thisData() const;
-    WorkflowScriptEngine * workflowEngine() const;
-    Workflow::DbiDataStorage * dataStorage() const;
+    ScriptDbiData *thisData() const;
+    WorkflowScriptEngine *workflowEngine() const;
+    Workflow::DbiDataStorage *dataStorage() const;
 };
 
 /**
@@ -103,7 +104,7 @@ protected:
     static void fromScriptValue(const QScriptValue &obj, ScriptDbiData &id);
 };
 
-} // U2
+}    // namespace U2
 
 /** Template implementations */
 namespace U2 {
@@ -119,16 +120,16 @@ void DbiClassPrototype::registerScriptClass(QScriptEngine *engine) {
 template<class T>
 QScriptValue DbiScriptClass::toScriptValue(QScriptEngine *engine, const ScriptDbiData &id) {
     QScriptValue factory = engine->globalObject().property(T::CLASS_NAME);
-    T *sClass = qscriptvalue_cast<T*>(factory.data());
+    T *sClass = qscriptvalue_cast<T *>(factory.data());
     if (!sClass) {
         return engine->newVariant(qVariantFromValue(id));
     }
     return sClass->newInstance(id, false /* deepCopy */);
 }
 
-} // U2
+}    // namespace U2
 
 Q_DECLARE_METATYPE(U2::ScriptDbiData)
-Q_DECLARE_METATYPE(U2::ScriptDbiData*)
+Q_DECLARE_METATYPE(U2::ScriptDbiData *)
 
-#endif // _U2_DBICLASSPROTOTYPE_H_
+#endif    // _U2_DBICLASSPROTOTYPE_H_

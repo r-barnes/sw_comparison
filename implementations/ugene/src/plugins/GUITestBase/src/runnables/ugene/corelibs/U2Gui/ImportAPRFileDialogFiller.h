@@ -30,10 +30,10 @@ using namespace HI;
 class ImportAPRFileFiller : public Filler {
 public:
     ImportAPRFileFiller(HI::GUITestOpStatus &os,
-                     bool isReadOnly,
-                     QString dstUrl = QString(),
-                     QString formatToConvertTo = "fasta",
-                     int timeoutMs = 120000);
+                        bool isReadOnly,
+                        QString dstUrl = QString(),
+                        QString formatToConvertTo = "fasta",
+                        int timeoutMs = 120000);
     ImportAPRFileFiller(HI::GUITestOpStatus &os, CustomScenario *_c);
 
     virtual void commonScenario();
@@ -44,6 +44,6 @@ private:
     const QString format;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_GT_RUNNABLES_IMPORT_APR_FILE_DIALOG_FILLER_H_
+#endif    // _U2_GT_RUNNABLES_IMPORT_APR_FILE_DIALOG_FILLER_H_

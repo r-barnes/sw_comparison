@@ -28,27 +28,27 @@ namespace U2 {
 
 const int U2AssemblyUtils::MAX_COVERAGE_VECTOR_SIZE = 1000 * 1000;
 
-U2CigarOp U2AssemblyUtils::char2Cigar(char c, QString& err) {
+U2CigarOp U2AssemblyUtils::char2Cigar(char c, QString &err) {
     char cu = TextUtils::UPPER_CASE_MAP[c];
     switch (cu) {
     case 'D':
-        return U2CigarOp_D; // deleted
+        return U2CigarOp_D;    // deleted
     case 'I':
-        return U2CigarOp_I; // inserted
+        return U2CigarOp_I;    // inserted
     case 'H':
-        return U2CigarOp_H; // hard-clipped
+        return U2CigarOp_H;    // hard-clipped
     case 'M':
-        return U2CigarOp_M; // matched
+        return U2CigarOp_M;    // matched
     case 'N':
-        return U2CigarOp_N; // skipped
+        return U2CigarOp_N;    // skipped
     case 'P':
-        return U2CigarOp_P; // padded
+        return U2CigarOp_P;    // padded
     case 'S':
-        return U2CigarOp_S; // soft-clipped
+        return U2CigarOp_S;    // soft-clipped
     case '=':
-        return U2CigarOp_EQ; // sequence match
+        return U2CigarOp_EQ;    // sequence match
     case 'X':
-        return U2CigarOp_X; // sequence mismatch
+        return U2CigarOp_X;    // sequence mismatch
     }
     err = tr("Invalid CIGAR op: '%1'!").arg(c);
     return U2CigarOp_Invalid;
@@ -57,24 +57,44 @@ U2CigarOp U2AssemblyUtils::char2Cigar(char c, QString& err) {
 char U2AssemblyUtils::cigar2Char(U2CigarOp op) {
     char c;
     switch (op) {
-    case U2CigarOp_D: c = 'D'; break;
-    case U2CigarOp_I: c = 'I'; break;
-    case U2CigarOp_H: c = 'H'; break;
-    case U2CigarOp_M: c = 'M'; break;
-    case U2CigarOp_N: c = 'N'; break;
-    case U2CigarOp_P: c = 'P'; break;
-    case U2CigarOp_S: c = 'S'; break;
-    case U2CigarOp_EQ:c = '='; break;
-    case U2CigarOp_X: c = 'X'; break;
-    default: assert(0); c = '?';
+    case U2CigarOp_D:
+        c = 'D';
+        break;
+    case U2CigarOp_I:
+        c = 'I';
+        break;
+    case U2CigarOp_H:
+        c = 'H';
+        break;
+    case U2CigarOp_M:
+        c = 'M';
+        break;
+    case U2CigarOp_N:
+        c = 'N';
+        break;
+    case U2CigarOp_P:
+        c = 'P';
+        break;
+    case U2CigarOp_S:
+        c = 'S';
+        break;
+    case U2CigarOp_EQ:
+        c = '=';
+        break;
+    case U2CigarOp_X:
+        c = 'X';
+        break;
+    default:
+        assert(0);
+        c = '?';
     }
     return c;
 }
 
-QList<U2CigarToken> U2AssemblyUtils::parseCigar(const QByteArray& cigarString, QString& err) {
+QList<U2CigarToken> U2AssemblyUtils::parseCigar(const QByteArray &cigarString, QString &err) {
     QList<U2CigarToken> result;
     int pos = 0, len = cigarString.length();
-    const char* cigar = cigarString.constData();
+    const char *cigar = cigarString.constData();
     int count = 0;
     // count numbers
     while (pos < len) {
@@ -94,10 +114,9 @@ QList<U2CigarToken> U2AssemblyUtils::parseCigar(const QByteArray& cigarString, Q
     return result;
 }
 
-
-QByteArray U2AssemblyUtils::cigar2String(const QList<U2CigarToken>& cigar) {
+QByteArray U2AssemblyUtils::cigar2String(const QList<U2CigarToken> &cigar) {
     QByteArray res;
-    foreach(const U2CigarToken& t, cigar) {
+    foreach (const U2CigarToken &t, cigar) {
         if (t.op != U2CigarOp_Invalid) {
             res = res + QByteArray::number(t.count) + cigar2Char(t.op);
         }
@@ -105,13 +124,13 @@ QByteArray U2AssemblyUtils::cigar2String(const QList<U2CigarToken>& cigar) {
     return res;
 }
 
-qint64 U2AssemblyUtils::getEffectiveReadLength(const U2AssemblyRead& read) {
+qint64 U2AssemblyUtils::getEffectiveReadLength(const U2AssemblyRead &read) {
     return read->readSequence.length() + getCigarExtraLength(read->cigar);
 }
 
-qint64 U2AssemblyUtils::getCigarExtraLength(const QList<U2CigarToken>& cigar) {
+qint64 U2AssemblyUtils::getCigarExtraLength(const QList<U2CigarToken> &cigar) {
     qint64 res = 0;
-    foreach(const U2CigarToken& t, cigar) {
+    foreach (const U2CigarToken &t, cigar) {
         switch (t.op) {
         case U2CigarOp_I:
         case U2CigarOp_S:
@@ -127,22 +146,22 @@ qint64 U2AssemblyUtils::getCigarExtraLength(const QList<U2CigarToken>& cigar) {
     return res;
 }
 
-QByteArray U2AssemblyUtils::serializeCoverageStat(const U2AssemblyCoverageStat& coverageStat) {
+QByteArray U2AssemblyUtils::serializeCoverageStat(const U2AssemblyCoverageStat &coverageStat) {
     QByteArray data;
-    for (int index = 0;index < coverageStat.size();index++) {
-        for (int i = 0;i < 4;i++) {
+    for (int index = 0; index < coverageStat.size(); index++) {
+        for (int i = 0; i < 4; i++) {
             data.append((char)(coverageStat[index] >> (i * 8)));
         }
     }
     return data;
 }
 
-void U2AssemblyUtils::deserializeCoverageStat(QByteArray data, U2AssemblyCoverageStat& res, U2OpStatus &os) {
+void U2AssemblyUtils::deserializeCoverageStat(QByteArray data, U2AssemblyCoverageStat &res, U2OpStatus &os) {
     res.clear();
     if (!data.isEmpty() && 0 == (data.size() % 4)) {
-        for (int index = 0;index < data.size() / 4;index++) {
+        for (int index = 0; index < data.size() / 4; index++) {
             int value = 0;
-            for (int i = 0;i < 4;i++) {
+            for (int i = 0; i < 4; i++) {
                 value |= ((int)data[index * 4 + i] & 0xff) << (i * 8);
             }
             res.append(value);
@@ -152,4 +171,4 @@ void U2AssemblyUtils::deserializeCoverageStat(QByteArray data, U2AssemblyCoverag
     }
 }
 
-} //namespace
+}    // namespace U2

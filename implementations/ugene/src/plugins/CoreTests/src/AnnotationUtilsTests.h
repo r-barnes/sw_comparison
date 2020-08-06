@@ -28,7 +28,7 @@ namespace U2 {
 
 class GTest_ShiftSequence : public XmlTest {
 public:
-SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_ShiftSequence, "check-shift-sequence", TaskFlags_NR_FOSCOE);
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_ShiftSequence, "check-shift-sequence", TaskFlags_NR_FOSCOE);
 
     Task::ReportResult report();
 
@@ -41,8 +41,8 @@ private:
 
 class AnnotationUtilsTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-} // namespace
+}    // namespace U2
 #endif

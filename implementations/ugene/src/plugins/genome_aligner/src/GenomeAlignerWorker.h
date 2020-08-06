@@ -24,8 +24,9 @@
 
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
-#include "GenomeAlignerTask.h"
+
 #include "GenomeAlignerIO.h"
+#include "GenomeAlignerTask.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -33,7 +34,10 @@ namespace LocalWorkflow {
 class GenomeAlignerPrompter : public PrompterBase<GenomeAlignerPrompter> {
     Q_OBJECT
 public:
-    GenomeAlignerPrompter(Actor* p = 0) : PrompterBase<GenomeAlignerPrompter>(p) {}
+    GenomeAlignerPrompter(Actor *p = 0)
+        : PrompterBase<GenomeAlignerPrompter>(p) {
+    }
+
 protected:
     QString composeRichDoc();
 };
@@ -41,12 +45,13 @@ protected:
 class GenomeAlignerWorker : public BaseWorker {
     Q_OBJECT
 public:
-    GenomeAlignerWorker(Actor* a);
+    GenomeAlignerWorker(Actor *a);
     virtual void init();
-    virtual Task* tick();
+    virtual Task *tick();
     virtual void cleanup();
 private slots:
     void sl_taskFinished();
+
 private:
     DnaAssemblyToRefTaskSettings getSettings(U2OpStatus &os);
 
@@ -59,12 +64,16 @@ class GenomeAlignerWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
     static void init();
-    GenomeAlignerWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual Worker* createWorker(Actor* a) {return new GenomeAlignerWorker(a);}
+    GenomeAlignerWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual Worker *createWorker(Actor *a) {
+        return new GenomeAlignerWorker(a);
+    }
     static bool openclEnabled;
 };
 
-} // Workflow namespace
-} // U2 namespace
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // GENOME_ALIGNER_WORKER
+#endif    // GENOME_ALIGNER_WORKER

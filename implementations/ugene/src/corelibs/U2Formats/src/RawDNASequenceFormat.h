@@ -32,20 +32,22 @@ namespace U2 {
 class U2FORMATS_EXPORT RawDNASequenceFormat : public TextDocumentFormat {
     Q_OBJECT
 public:
-    RawDNASequenceFormat(QObject* p);
+    RawDNASequenceFormat(QObject *p);
 
-    virtual void storeDocument(Document* d, IOAdapter* io, U2OpStatus& os);
+    virtual void storeDocument(Document *d, IOAdapter *io, U2OpStatus &os);
 
-    virtual bool isStreamingSupport() {return true;}
+    virtual bool isStreamingSupport() {
+        return true;
+    }
 
-    virtual void storeEntry(IOAdapter *io, const QMap< GObjectType, QList<GObject*> > &objectsMap, U2OpStatus &os);
+    virtual void storeEntry(IOAdapter *io, const QMap<GObjectType, QList<GObject *>> &objectsMap, U2OpStatus &os);
 
 protected:
-    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& = GUrl()) const;
+    virtual FormatCheckResult checkRawTextData(const QByteArray &rawData, const GUrl & = GUrl()) const;
 
-    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
+    virtual Document *loadTextDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os);
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

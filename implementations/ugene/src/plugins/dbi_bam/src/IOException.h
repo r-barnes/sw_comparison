@@ -27,13 +27,12 @@
 namespace U2 {
 namespace BAM {
 
-class IOException : public Exception
-{
+class IOException : public Exception {
 public:
     IOException(const QString &message);
 };
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2
 
-#endif // _U2_BAM_IO_EXCEPTION_H_
+#endif    // _U2_BAM_IO_EXCEPTION_H_

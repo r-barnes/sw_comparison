@@ -19,35 +19,33 @@
  * MA 02110-1301, USA.
  */
 
+#include "ScriptEditorDelegate.h"
+
+#include <QBoxLayout>
 #include <QLineEdit>
 #include <QTextEdit>
-#include <QBoxLayout>
 
 #include "ScriptHighlighter.h"
-
-#include "ScriptEditorDelegate.h"
 
 namespace U2 {
 
 //////////////////////////////////////////////////////////////////////////
 ////AbstractScriptEditorDelegate /////////////////////////////////////////
 
-AbstractScriptEditorDelegate::AbstractScriptEditorDelegate(QWidget *parent) : QWidget(parent) {
+AbstractScriptEditorDelegate::AbstractScriptEditorDelegate(QWidget *parent)
+    : QWidget(parent) {
     layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
     layout->setMargin(0);
 }
 
 AbstractScriptEditorDelegate::~AbstractScriptEditorDelegate() {
-
 }
 
 void AbstractScriptEditorDelegate::installScriptHighlighter() const {
-
 }
 
-AbstractScriptEditorDelegate * AbstractScriptEditorDelegate::createInstance(QWidget *parent,
-    ScriptEditorType type)
-{
+AbstractScriptEditorDelegate *AbstractScriptEditorDelegate::createInstance(QWidget *parent,
+                                                                           ScriptEditorType type) {
     AbstractScriptEditorDelegate *result = NULL;
     switch (type) {
     case LINE_EDIT:
@@ -65,7 +63,8 @@ AbstractScriptEditorDelegate * AbstractScriptEditorDelegate::createInstance(QWid
 //////////////////////////////////////////////////////////////////////////
 ////       LineEditDelegate      /////////////////////////////////////////
 
-LineEditDelegate::LineEditDelegate(QWidget *parent) : AbstractScriptEditorDelegate(parent) {
+LineEditDelegate::LineEditDelegate(QWidget *parent)
+    : AbstractScriptEditorDelegate(parent) {
     edit = new QLineEdit(this);
     layout->addWidget(edit);
 }
@@ -85,7 +84,8 @@ int LineEditDelegate::cursorLineNumber() const {
 //////////////////////////////////////////////////////////////////////////
 ////       TextEditDelegate      /////////////////////////////////////////
 
-TextEditDelegate::TextEditDelegate(QWidget *parent) : AbstractScriptEditorDelegate(parent) {
+TextEditDelegate::TextEditDelegate(QWidget *parent)
+    : AbstractScriptEditorDelegate(parent) {
     edit = new QTextEdit(this);
     layout->addWidget(edit);
     connect(edit, SIGNAL(textChanged()), SIGNAL(si_textChanged()));
@@ -108,4 +108,4 @@ void TextEditDelegate::installScriptHighlighter() const {
     new ScriptHighlighter(edit->document());
 }
 
-} // namespace U2
+}    // namespace U2

@@ -26,7 +26,6 @@
 #include <U2Lang/WorkflowUtils.h>
 
 #include "InSilicoPcrTask.h"
-
 #include "Primer.h"
 
 namespace U2 {
@@ -44,7 +43,7 @@ protected:
 class InSilicoPcrWorkerFactory : public DomainFactory {
 public:
     InSilicoPcrWorkerFactory();
-    Worker * createWorker(Actor *a);
+    Worker *createWorker(Actor *a);
 
     static const QString ACTOR_ID;
     static void init();
@@ -56,10 +55,10 @@ public:
     class TableRow {
     public:
         QString sequenceName;
-        QMap<int, int> productsNumber; // pair number -> products count
+        QMap<int, int> productsNumber;    // pair number -> products count
     };
 
-    InSilicoPcrReportTask(const QList<TableRow> &table, const QList< QPair<Primer, Primer> > &primers, const QString &reportUrl);
+    InSilicoPcrReportTask(const QList<TableRow> &table, const QList<QPair<Primer, Primer>> &primers, const QString &reportUrl);
     void run();
 
 private:
@@ -73,7 +72,7 @@ private:
 
 private:
     QList<TableRow> table;
-    QList< QPair<Primer, Primer> > primers;
+    QList<QPair<Primer, Primer>> primers;
     QString reportUrl;
 };
 
@@ -84,14 +83,14 @@ public:
 
 protected:
     // BaseThroughWorker
-    Task * createPrepareTask(U2OpStatus &os) const;
+    Task *createPrepareTask(U2OpStatus &os) const;
     void onPrepared(Task *task, U2OpStatus &os);
-    Task * onInputEnded();
+    Task *onInputEnded();
     QList<Message> fetchResult(Task *task, U2OpStatus &os);
-    Task * createTask(const Message &message, U2OpStatus &os);
+    Task *createTask(const Message &message, U2OpStatus &os);
 
 private:
-    void fetchPrimers(const QList<GObject*> &objects, U2OpStatus &os);
+    void fetchPrimers(const QList<GObject *> &objects, U2OpStatus &os);
     Primer createPrimer(GObject *object, bool &skipped, U2OpStatus &os);
     int createMetadata(const InSilicoPcrTaskSettings &settings, const U2Region &productRegion, int pairNumber);
     QByteArray createReport() const;
@@ -99,13 +98,13 @@ private:
     QVariant fetchAnnotations(Document *doc);
 
 private:
-    QList< QPair<Primer, Primer> > primers;
+    QList<QPair<Primer, Primer>> primers;
     QList<SharedDbiDataHandler> sequences;
     QList<InSilicoPcrReportTask::TableRow> table;
     bool reported;
 };
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_INSILICO_PCR_WORKER_H_
+#endif    // _U2_INSILICO_PCR_WORKER_H_

@@ -32,17 +32,18 @@ namespace U2 {
 class U2FORMATS_EXPORT PlainTextFormat : public TextDocumentFormat {
     Q_OBJECT
 public:
-    PlainTextFormat(QObject* p);
+    PlainTextFormat(QObject *p);
 
-    virtual void storeDocument(Document* d, IOAdapter* io, U2OpStatus& os);
+    virtual void storeDocument(Document *d, IOAdapter *io, U2OpStatus &os);
 
-    static void storeRawData(const QByteArray& data, U2OpStatus& ts, IOAdapter* io);
+    static void storeRawData(const QByteArray &data, U2OpStatus &ts, IOAdapter *io);
+
 protected:
-    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& = GUrl()) const;
+    virtual FormatCheckResult checkRawTextData(const QByteArray &rawData, const GUrl & = GUrl()) const;
 
-    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
+    virtual Document *loadTextDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os);
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

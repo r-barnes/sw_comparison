@@ -24,10 +24,6 @@
 
 #include <QDialog>
 
-#include "ExtractAssemblyRegionTask.h"
-
-#include "ui_ExtractAssemblyRegionDialog.h"
-
 #include <U2Core/U2Region.h>
 
 #include <U2Formats/SQLiteDbi.h>
@@ -43,21 +39,21 @@ class RegionSelector;
 class ExtractAssemblyRegionDialog : public QDialog, public Ui_ExtractAssemblyRegionDialog {
     Q_OBJECT
 public:
-    ExtractAssemblyRegionDialog(QWidget * p, ExtractAssemblyRegionTaskSettings* settings);
+    ExtractAssemblyRegionDialog(QWidget *p, ExtractAssemblyRegionTaskSettings *settings);
 
     virtual void accept();
 
 private slots:
-    void sl_regionChanged(const U2Region& newRegion);
+    void sl_regionChanged(const U2Region &newRegion);
 
 private:
     void initSaveController();
 
-    SaveDocumentController * saveController;
-    RegionSelector * regionSelector;
+    SaveDocumentController *saveController;
+    RegionSelector *regionSelector;
     ExtractAssemblyRegionTaskSettings *settings;
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

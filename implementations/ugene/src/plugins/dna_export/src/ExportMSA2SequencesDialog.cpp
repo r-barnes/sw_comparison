@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportMSA2SequencesDialog.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 
@@ -31,17 +33,15 @@
 #include <U2Gui/HelpButton.h>
 #include <U2Gui/SaveDocumentController.h>
 
-#include "ExportMSA2SequencesDialog.h"
-
 namespace U2 {
 
-ExportMSA2SequencesDialog::ExportMSA2SequencesDialog(const QString &defaultDir, const QString &defaultFileName, QWidget* p)
+ExportMSA2SequencesDialog::ExportMSA2SequencesDialog(const QString &defaultDir, const QString &defaultFileName, QWidget *p)
     : QDialog(p),
-    defaultDir(defaultDir),
-    defaultFileName(defaultFileName),
-    saveController(NULL) {
+      defaultDir(defaultDir),
+      defaultFileName(defaultFileName),
+      saveController(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742332");
+    new HelpButton(this, buttonBox, "46499662");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Export"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -72,7 +72,7 @@ void ExportMSA2SequencesDialog::initSaveController() {
     config.fileNameEdit = fileNameEdit;
     config.formatCombo = formatCombo;
     config.parentWidget = this;
-    config.defaultFileName = defaultDir + "/" + defaultFileName + "." +AppContext::getDocumentFormatRegistry()->getFormatById(config.defaultFormatId)->getSupportedDocumentFileExtensions().first();
+    config.defaultFileName = defaultDir + "/" + defaultFileName + "." + AppContext::getDocumentFormatRegistry()->getFormatById(config.defaultFormatId)->getSupportedDocumentFileExtensions().first();
 
     DocumentFormatConstraints formatConstraints;
     formatConstraints.supportedObjectTypes << GObjectTypes::SEQUENCE;
@@ -82,4 +82,4 @@ void ExportMSA2SequencesDialog::initSaveController() {
     saveController = new SaveDocumentController(config, formatConstraints, this);
 }
 
-}   // namespace U2
+}    // namespace U2

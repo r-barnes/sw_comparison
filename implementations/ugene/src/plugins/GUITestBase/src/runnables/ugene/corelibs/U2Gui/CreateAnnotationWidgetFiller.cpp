@@ -19,19 +19,19 @@
  * MA 02110-1301, USA.
  */
 
+#include "CreateAnnotationWidgetFiller.h"
+#include <drivers/GTKeyboardDriver.h>
+#include <primitives/GTComboBox.h>
+#include <primitives/GTLineEdit.h>
+#include <primitives/GTRadioButton.h>
+#include <primitives/GTWidget.h>
+
 #include <QAbstractButton>
 #include <QApplication>
 #include <QDialogButtonBox>
 #include <QDir>
 #include <QPushButton>
 #include <QRadioButton>
-
-#include "CreateAnnotationWidgetFiller.h"
-#include <primitives/GTComboBox.h>
-#include <drivers/GTKeyboardDriver.h>
-#include <primitives/GTLineEdit.h>
-#include <primitives/GTRadioButton.h>
-#include <primitives/GTWidget.h>
 
 namespace U2 {
 
@@ -43,29 +43,25 @@ CreateAnnotationWidgetFiller::CreateAnnotationWidgetFiller(HI::GUITestOpStatus &
                                                            const QString &annotationName,
                                                            const QString &location,
                                                            const QString &saveTo,
-                                                           const QString &description) :
-    Filler(os, "CreateAnnotationDialog"),
-    groupName(groupName),
-    annotationName(annotationName),
-    location(location),
-    newTableRB(newTableRB),
-    saveTo(saveTo),
-    description(description)
-{
-
+                                                           const QString &description)
+    : Filler(os, "CreateAnnotationDialog"),
+      groupName(groupName),
+      annotationName(annotationName),
+      location(location),
+      newTableRB(newTableRB),
+      saveTo(saveTo),
+      description(description) {
 }
 
-CreateAnnotationWidgetFiller::CreateAnnotationWidgetFiller(HI::GUITestOpStatus &os, CustomScenario *scenario) :
-    Filler(os, "CreateAnnotationDialog", scenario),
-    newTableRB(false)
-{
-
+CreateAnnotationWidgetFiller::CreateAnnotationWidgetFiller(HI::GUITestOpStatus &os, CustomScenario *scenario)
+    : Filler(os, "CreateAnnotationDialog", scenario),
+      newTableRB(false) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
 
 void CreateAnnotationWidgetFiller::commonScenario() {
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
     if (newTableRB) {
@@ -97,4 +93,4 @@ void CreateAnnotationWidgetFiller::commonScenario() {
 
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

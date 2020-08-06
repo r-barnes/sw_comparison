@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "StreamSequenceWriter.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentModel.h>
@@ -28,25 +30,20 @@
 
 #include <U2Formats/FastaFormat.h>
 
-#include "StreamSequenceWriter.h"
-
 namespace U2 {
 
-
-StreamShortReadsWriter::StreamShortReadsWriter(const GUrl& url, const QString& refName , int refLength )
-: numSeqWritten(0), refSeqLength(refLength)
-{
+StreamShortReadsWriter::StreamShortReadsWriter(const GUrl &url, const QString &refName, int refLength)
+    : numSeqWritten(0), refSeqLength(refLength) {
     refSeqName = QString(refName).replace(QRegExp("\\s|\\t"), "_").toLatin1();
 
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
     io = iof->createIOAdapter();
     bool res = io->open(url, IOAdapterMode_Write);
     assert(res == true);
     Q_UNUSED(res);
-
 }
 
-bool StreamShortReadsWriter::writeNextAlignedRead( int offset, const DNASequence& seq ) {
+bool StreamShortReadsWriter::writeNextAlignedRead(int offset, const DNASequence &seq) {
     bool writeOk = format.storeAlignedRead(offset, seq, io, refSeqName, refSeqLength, numSeqWritten == 0);
     if (writeOk) {
         ++numSeqWritten;
@@ -54,7 +51,6 @@ bool StreamShortReadsWriter::writeNextAlignedRead( int offset, const DNASequence
     }
 
     return false;
-
 }
 
 void StreamShortReadsWriter::close() {
@@ -65,13 +61,12 @@ StreamShortReadsWriter::~StreamShortReadsWriter() {
     delete io;
 }
 
-
 StreamShortReadWriter::StreamShortReadWriter() {
-    DocumentFormat* df = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::FASTA);
-    fastaFormat = qobject_cast<FastaFormat*> (df);
+    DocumentFormat *df = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::FASTA);
+    fastaFormat = qobject_cast<FastaFormat *>(df);
     assert(fastaFormat != NULL);
 
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
     io = iof->createIOAdapter();
 }
 
@@ -80,13 +75,13 @@ StreamShortReadWriter::~StreamShortReadWriter() {
     delete io;
 }
 
-bool StreamShortReadWriter::init(const GUrl& url) {
+bool StreamShortReadWriter::init(const GUrl &url) {
     ouputPath = url;
     bool res = io->open(url, IOAdapterMode_Write);
     return res;
 }
 
-bool StreamShortReadWriter::writeNextSequence( const DNASequence& seq ) {
+bool StreamShortReadWriter::writeNextSequence(const DNASequence &seq) {
     U2OpStatus2Log os;
     fastaFormat->storeSequence(seq, io, os);
 
@@ -106,14 +101,12 @@ void StreamShortReadWriter::close() {
 }
 
 StreamGzippedShortReadWriter::StreamGzippedShortReadWriter()
-    : StreamShortReadWriter()
-{
+    : StreamShortReadWriter() {
     delete io;
     io = NULL;
 
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::GZIPPED_LOCAL_FILE);
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::GZIPPED_LOCAL_FILE);
     io = iof->createIOAdapter();
 }
 
-} //namespace
-
+}    // namespace U2

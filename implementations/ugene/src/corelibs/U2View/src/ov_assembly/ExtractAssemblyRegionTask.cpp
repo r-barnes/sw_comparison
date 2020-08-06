@@ -19,6 +19,8 @@
 * MA 02110-1301, USA.
 */
 
+#include "ExtractAssemblyRegionTask.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/AssemblyObject.h>
 #include <U2Core/BaseDocumentFormats.h>
@@ -37,12 +39,11 @@
 
 #include <U2View/AssemblyModel.h>
 
-#include "ExtractAssemblyRegionTask.h"
-
 namespace U2 {
 
-ExtractAssemblyRegionAndOpenViewTask::ExtractAssemblyRegionAndOpenViewTask(const ExtractAssemblyRegionTaskSettings& settings)
-    : Task(tr("Extract Assembly Region And Open View Task"), TaskFlags_NR_FOSE_COSC), settings(settings), extractTask(NULL) {}
+ExtractAssemblyRegionAndOpenViewTask::ExtractAssemblyRegionAndOpenViewTask(const ExtractAssemblyRegionTaskSettings &settings)
+    : Task(tr("Extract Assembly Region And Open View Task"), TaskFlags_NR_FOSE_COSC), settings(settings), extractTask(NULL) {
+}
 
 void ExtractAssemblyRegionAndOpenViewTask::prepare() {
     if (settings.addToProject) {
@@ -55,8 +56,8 @@ void ExtractAssemblyRegionAndOpenViewTask::prepare() {
     addSubTask(extractTask);
 }
 
-QList<Task*> ExtractAssemblyRegionAndOpenViewTask::onSubTaskFinished(Task *subTask) {
-    QList<Task*> result;
+QList<Task *> ExtractAssemblyRegionAndOpenViewTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> result;
     CHECK(NULL != subTask, result);
 
     if (subTask->hasError() || subTask->isCanceled()) {
@@ -64,14 +65,14 @@ QList<Task*> ExtractAssemblyRegionAndOpenViewTask::onSubTaskFinished(Task *subTa
     }
 
     if (extractTask == subTask && settings.addToProject) {
-        Task* openTask = AppContext::getProjectLoader()->openWithProjectTask(settings.fileUrl);
+        Task *openTask = AppContext::getProjectLoader()->openWithProjectTask(settings.fileUrl);
         CHECK(openTask != NULL, result);
         result.append(openTask);
     }
     return result;
 }
 
-ExtractAssemblyRegionTask::ExtractAssemblyRegionTask(const ExtractAssemblyRegionTaskSettings& settings)
+ExtractAssemblyRegionTask::ExtractAssemblyRegionTask(const ExtractAssemblyRegionTaskSettings &settings)
     : Task(tr("Extract Assembly Region Task"), TaskFlag_None), settings(settings) {
     tpm = Task::Progress_Manual;
 }
@@ -80,7 +81,7 @@ void ExtractAssemblyRegionTask::run() {
     taskLog.details("Start extracting regions to assembly");
 
     if (settings.fileFormat == BaseDocumentFormats::BAM || settings.fileFormat == BaseDocumentFormats::SAM) {
-        QList<GObject*> objects;
+        QList<GObject *> objects;
         objects.append(settings.obj);
         BAMUtils::writeObjects(objects, GUrl(settings.fileUrl), settings.fileFormat, stateInfo, settings.regionToExtract);
     } else if (settings.fileFormat == BaseDocumentFormats::UGENEDB) {
@@ -95,4 +96,4 @@ void ExtractAssemblyRegionTask::run() {
     taskLog.details("Finish extracting regions to assembly");
 }
 
-}
+}    // namespace U2

@@ -19,21 +19,21 @@
  * MA 02110-1301, USA.
  */
 
+#include "SqliteUpgraderFrom_0_To_1_13.h"
+
 #include <U2Core/L10n.h>
 #include <U2Core/U2Dbi.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/U2SqlHelpers.h>
 
-#include "SqliteUpgraderFrom_0_To_1_13.h"
-#include "../SQLiteDbi.h"
 #include "../SQLiteAssemblyDbi.h"
+#include "../SQLiteDbi.h"
 #include "../SQLiteObjectRelationsDbi.h"
 
 namespace U2 {
 
-SqliteUpgraderFrom_0_To_1_13::SqliteUpgraderFrom_0_To_1_13(SQLiteDbi *dbi) :
-    SqliteUpgrader(Version::parseVersion("0.0.0"), Version::parseVersion("1.13.0"), dbi)
-{
+SqliteUpgraderFrom_0_To_1_13::SqliteUpgraderFrom_0_To_1_13(SQLiteDbi *dbi)
+    : SqliteUpgrader(Version::parseVersion("0.0.0"), Version::parseVersion("1.13.0"), dbi) {
 }
 
 void SqliteUpgraderFrom_0_To_1_13::upgrade(U2OpStatus &os) const {
@@ -95,13 +95,15 @@ void SqliteUpgraderFrom_0_To_1_13::upgradeAssemblyDbi(U2OpStatus &os) const {
     const QString newTableName = "Assembly_new";
 
     SQLiteWriteQuery(SQLiteAssemblyDbi::getCreateAssemblyTableQuery(newTableName), db, os).execute();
-    SAFE_POINT_OP(os,);
+    SAFE_POINT_OP(os, );
 
     SQLiteReadQuery assemblyFetch("SELECT object, reference, imethod, cmethod, idata, cdata FROM Assembly", db, os);
     SAFE_POINT_OP(os, );
 
     SQLiteWriteQuery assemblyInsert(QString("INSERT INTO %1 (object, reference, imethod, cmethod, idata, cdata) VALUES(?1, ?2, ?3, ?4, ?5, ?6)")
-        .arg(newTableName), db, os);
+                                        .arg(newTableName),
+                                    db,
+                                    os);
     SAFE_POINT_OP(os, );
     while (assemblyFetch.step()) {
         assemblyInsert.bindDataId(1, assemblyFetch.getDataId(0, U2Type::Assembly));
@@ -127,4 +129,4 @@ void SqliteUpgraderFrom_0_To_1_13::upgradeAssemblyDbi(U2OpStatus &os) const {
     SQLiteWriteQuery(QString("ALTER TABLE %1 RENAME TO Assembly").arg(newTableName), db, os).execute();
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -22,15 +22,16 @@
 #ifndef _U2_SNP_EFF_TASK_H_
 #define _U2_SNP_EFF_TASK_H_
 
-#include <U2Core/Task.h>
 #include <U2Core/ExternalToolRunTask.h>
+#include <U2Core/Task.h>
 
 namespace U2 {
 
-
-class SnpEffSetting{
+class SnpEffSetting {
 public:
-    SnpEffSetting(): inputUrl(""), outDir(""), inFormat(""), outFormat(""),genome(""), updownLength(""),canon(false), hgvs(false), lof(false), motif(false) {}
+    SnpEffSetting()
+        : inputUrl(""), outDir(""), inFormat(""), outFormat(""), genome(""), updownLength(""), canon(false), hgvs(false), lof(false), motif(false) {
+    }
 
     QString inputUrl;
     QString outDir;
@@ -42,7 +43,6 @@ public:
     bool hgvs;
     bool lof;
     bool motif;
-
 };
 
 class SnpEffTask : public ExternalToolSupportTask {
@@ -53,27 +53,28 @@ public:
     void prepare();
     void run();
 
-    QString getResult(){return resultUrl;}
+    QString getResult() {
+        return resultUrl;
+    }
     QString getSummaryUrl();
     QString getResFileUrl();
 
 protected:
     QString getDataPath() const;
-    QStringList getParameters(U2OpStatus& os) const;
+    QStringList getParameters(U2OpStatus &os) const;
 
 protected:
     SnpEffSetting settings;
     QString resultUrl;
 };
 
-
 class SnpEffParser : public ExternalToolLogParser {
     Q_OBJECT
 public:
     SnpEffParser(const QString &genome = QString());
 
-    void parseOutput(const QString& partOfLog);
-    void parseErrOutput(const QString& partOfLog);
+    void parseOutput(const QString &partOfLog);
+    void parseErrOutput(const QString &partOfLog);
 
 private:
     static QStringList initStringsToIgnore();
@@ -84,7 +85,6 @@ private:
     static const QStringList stringsToIgnore;
 };
 
-}//namespace
+}    // namespace U2
 
-#endif // _U2_SNP_EFF_H_
-
+#endif    // _U2_SNP_EFF_H_

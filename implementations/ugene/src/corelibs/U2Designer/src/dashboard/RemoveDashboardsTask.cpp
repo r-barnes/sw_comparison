@@ -19,18 +19,15 @@
  * MA 02110-1301, USA.
  */
 
+#include "RemoveDashboardsTask.h"
+
 #include <U2Core/GUrlUtils.h>
 #include <U2Core/U2OpStatusUtils.h>
-#include <U2Core/U2SafePoints.h>
-
-#include "RemoveDashboardsTask.h"
 
 namespace U2 {
 
 RemoveDashboardsTask::RemoveDashboardsTask(const QList<DashboardInfo> &_dashboardInfos)
-    : Task(tr("Remove dashboards"), TaskFlag_None), dashboardInfos(_dashboardInfos)
-{
-
+    : Task(tr("Remove dashboards"), TaskFlag_None), dashboardInfos(_dashboardInfos) {
 }
 
 void RemoveDashboardsTask::run() {
@@ -40,4 +37,4 @@ void RemoveDashboardsTask::run() {
     }
 }
 
-}   // namespace U2
+}    // namespace U2

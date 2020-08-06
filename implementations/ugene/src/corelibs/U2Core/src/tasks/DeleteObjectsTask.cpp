@@ -19,13 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "DeleteObjectsTask.h"
+
 #include <U2Core/DocumentModel.h>
 #include <U2Core/GObject.h>
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "DeleteObjectsTask.h"
 
 namespace U2 {
 
@@ -37,10 +37,10 @@ class ProgressUpdater {
     const int percentStep;
     int ticksCount;
     int currentStep;
+
 public:
     ProgressUpdater(U2OpStatus &os, int size)
-        : os(os), size(size), percentStep(size / 100), ticksCount(0), currentStep(0)
-    {
+        : os(os), size(size), percentStep(size / 100), ticksCount(0), currentStep(0) {
         os.setProgress(0);
     }
     inline void tick() {
@@ -54,15 +54,14 @@ public:
     }
 };
 
-}
+}    // namespace
 
 //////////////////////////////////////////////////////////////////////////
 // DeleteObjectsTask
 //////////////////////////////////////////////////////////////////////////
 
 DeleteObjectsTask::DeleteObjectsTask(const QList<GObject *> &objs)
-    : Task(tr("Delete objects"), TaskFlag_None)
-{
+    : Task(tr("Delete objects"), TaskFlag_None) {
     tpm = Progress_Manual;
 
     foreach (GObject *obj, objs) {
@@ -94,8 +93,7 @@ void DeleteObjectsTask::run() {
 //////////////////////////////////////////////////////////////////////////
 
 DeleteFoldersTask::DeleteFoldersTask(const QList<Folder> &folders)
-    : Task(tr("Delete folders"), TaskFlag_None)
-{
+    : Task(tr("Delete folders"), TaskFlag_None) {
     tpm = Progress_Manual;
     foreach (const Folder &folder, folders) {
         Document *doc = folder.getDocument();
@@ -119,4 +117,4 @@ void DeleteFoldersTask::run() {
     }
 }
 
-} // namespace U2
+}    // namespace U2

@@ -123,6 +123,7 @@ HEADERS += src/LicenseDialog.h \
            src/ov_msa/SeqStatistics/SeqStatisticsWidget.h \
            src/ov_msa/SeqStatistics/SeqStatisticsWidgetFactory.h \
            src/ov_msa/SequenceSelectorWidgetController.h \
+           src/ov_msa/sort/MsaEditorSortSequencesWidget.h \
            src/ov_msa/TreeOptions/TreeOptionsWidget.h \
            src/ov_msa/TreeOptions/TreeOptionsWidgetFactory.h \
            src/ov_msa/view_rendering/MaConsensusAreaRenderer.h \
@@ -398,6 +399,7 @@ SOURCES += src/LicenseDialog.cpp \
            src/ov_msa/SeqStatistics/SeqStatisticsWidget.cpp \
            src/ov_msa/SeqStatistics/SeqStatisticsWidgetFactory.cpp \
            src/ov_msa/SequenceSelectorWidgetController.cpp \
+           src/ov_msa/sort/MsaEditorSortSequencesWidget.cpp \
            src/ov_msa/view_rendering/MaConsensusAreaRenderer.cpp \
            src/ov_msa/view_rendering/MaEditorConsensusArea.cpp \
            src/ov_msa/view_rendering/MaEditorSelection.cpp \

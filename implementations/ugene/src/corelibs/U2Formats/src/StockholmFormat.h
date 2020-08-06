@@ -47,35 +47,38 @@ public:
     static const QByteArray UNI_ANNOTATION_MARK;
 
 public:
-    StockholmFormat( QObject* obj );
+    StockholmFormat(QObject *obj);
 
-    virtual void storeDocument(Document* d, IOAdapter* io, U2OpStatus& os);
+    virtual void storeDocument(Document *d, IOAdapter *io, U2OpStatus &os);
 
-    virtual bool isObjectOpSupported( const Document* d , DocumentFormat::DocObjectOp op, GObjectType t ) const;
+    virtual bool isObjectOpSupported(const Document *d, DocumentFormat::DocObjectOp op, GObjectType t) const;
 
     //exceptions
     struct StockholmBaseException {
         QString msg;
-        StockholmBaseException( const QString& str ): msg( str ){}
+        StockholmBaseException(const QString &str)
+            : msg(str) {
+        }
     };
     struct ReadError : public StockholmBaseException {
-        ReadError(const GUrl& url);
+        ReadError(const GUrl &url);
     };
-    struct WriteError: public StockholmBaseException {
-        WriteError(const GUrl& url);
+    struct WriteError : public StockholmBaseException {
+        WriteError(const GUrl &url);
     };
     struct BadFileData : public StockholmBaseException {
-        BadFileData( const QString& msg ): StockholmBaseException( msg ){}
+        BadFileData(const QString &msg)
+            : StockholmBaseException(msg) {
+        }
     };
 
 protected:
-    virtual FormatCheckResult checkRawTextData(const QByteArray& data, const GUrl& = GUrl()) const;
+    virtual FormatCheckResult checkRawTextData(const QByteArray &data, const GUrl & = GUrl()) const;
 
-    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
+    virtual Document *loadTextDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os);
 
-}; // StockholmFormat
+};    // StockholmFormat
 
-} // namespace
+}    // namespace U2
 
-
-#endif //_U2_STOCKHOLM_FORMAT_H_
+#endif    //_U2_STOCKHOLM_FORMAT_H_

@@ -35,6 +35,6 @@ public:
     //void commonScenario();
 };
 
-}
+}    // namespace U2
 
-#endif // TRIMMOMATIC_DIALOG_FILLER_H
+#endif    // TRIMMOMATIC_DIALOG_FILLER_H

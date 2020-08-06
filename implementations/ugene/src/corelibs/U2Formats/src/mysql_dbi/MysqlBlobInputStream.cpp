@@ -19,19 +19,18 @@
  * MA 02110-1301, USA.
  */
 
+#include "MysqlBlobInputStream.h"
+
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/UdrSchema.h>
 
 #include "util/MysqlHelpers.h"
-#include "MysqlBlobInputStream.h"
 
 namespace U2 {
 
-MysqlBlobInputStream::MysqlBlobInputStream(MysqlDbRef *db, const QByteArray &tableId,
-    const QByteArray &columnId, const U2DataId &rowId, U2OpStatus &os)
-    : size(0), offset(0)
-{
+MysqlBlobInputStream::MysqlBlobInputStream(MysqlDbRef *db, const QByteArray &tableId, const QByteArray &columnId, const U2DataId &rowId, U2OpStatus &os)
+    : size(0), offset(0) {
     CHECK_EXT(NULL != db, os.setError("Invalid database handler detected!"), );
 
     U2SqlQuery q(QString("SELECT %1 FROM %2 WHERE %3 = :%3").arg(QString(columnId), QString(tableId), QString(UdrSchema::RECORD_ID_FIELD_NAME)), db, os);
@@ -48,7 +47,6 @@ qint64 MysqlBlobInputStream::available() {
 }
 
 void MysqlBlobInputStream::close() {
-
 }
 
 int MysqlBlobInputStream::read(char *buffer, int length, U2OpStatus &os) {
@@ -66,7 +64,7 @@ int MysqlBlobInputStream::read(char *buffer, int length, U2OpStatus &os) {
     return targetLength;
 }
 
-qint64 MysqlBlobInputStream::skip(qint64 n, U2OpStatus &/*os*/) {
+qint64 MysqlBlobInputStream::skip(qint64 n, U2OpStatus & /*os*/) {
     if (offset + n >= size) {
         int oldOffset = offset;
         offset = size;
@@ -81,4 +79,4 @@ qint64 MysqlBlobInputStream::skip(qint64 n, U2OpStatus &/*os*/) {
     return n;
 }
 
-} // U2
+}    // namespace U2

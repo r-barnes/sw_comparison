@@ -19,12 +19,12 @@
  * MA 02110-1301, USA.
  */
 
+#include "PanViewRows.h"
+
 #include <QVarLengthArray>
 
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "PanViewRows.h"
 
 namespace U2 {
 
@@ -35,9 +35,7 @@ PVRowsManager::~PVRowsManager() {
 typedef QVector<U2Region>::const_iterator LRIter;
 
 PVRowData::PVRowData(const QString &key)
-    : key(key)
-{
-
+    : key(key) {
 }
 
 bool PVRowData::fitToRow(const QVector<U2Region> &location) {
@@ -81,11 +79,10 @@ inline bool compare_rows(PVRowData *x, PVRowData *y) {
 }
 
 PVRowsManager::PVRowsManager() {
-
 }
 
 void PVRowsManager::addAnnotation(Annotation *a) {
-    SAFE_POINT(!rowByAnnotation.contains(a), "Annotation has been already added",);
+    SAFE_POINT(!rowByAnnotation.contains(a), "Annotation has been already added", );
     const SharedAnnotationData &data = a->getData();
     const QVector<U2Region> location = data->getRegions();
 
@@ -136,11 +133,11 @@ void substractRegions(QVector<U2Region> &regionsToProcess, const QVector<U2Regio
     regionsToProcess = result;
 }
 
-}
+}    // namespace
 
 void PVRowsManager::removeAnnotation(Annotation *a) {
     PVRowData *row = rowByAnnotation.value(a, NULL);
-    CHECK(NULL != row,); // annotation may present in a DB, but has not been added to the panview yet
+    CHECK(NULL != row, );    // annotation may present in a DB, but has not been added to the panview yet
     rowByAnnotation.remove(a);
     rowByName.remove(a->getName());
     row->annotations.removeOne(a);
@@ -179,15 +176,15 @@ bool PVRowsManager::contains(const QString &key) const {
     return rowByName.contains(key);
 }
 
-PVRowData * PVRowsManager::getAnnotationRow(Annotation *a) const {
+PVRowData *PVRowsManager::getAnnotationRow(Annotation *a) const {
     return rowByAnnotation.value(a, NULL);
 }
 
-PVRowData * PVRowsManager::getRow(int row) const {
+PVRowData *PVRowsManager::getRow(int row) const {
     if (row >= 0 && row < rows.size()) {
         return rows.at(row);
     }
     return NULL;
 }
 
-} // namespace
+}    // namespace U2

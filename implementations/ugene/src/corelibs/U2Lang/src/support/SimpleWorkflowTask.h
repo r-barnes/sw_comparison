@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-
 /** Set of wrappers for typical workflow tasks */
 
 #ifndef _SIMPLE_WORKFLOW_TASK_H_
@@ -47,14 +46,14 @@ class MultipleSequenceAlignmentObject;
 class U2LANG_EXPORT SimpleInOutWorkflowTaskConfig {
 public:
     SimpleInOutWorkflowTaskConfig();
-    QList<GObject*>     objects;
-    DocumentFormatId    inFormat;
-    QVariantMap         inDocHints;
-    DocumentFormatId    outFormat;
-    QVariantMap         outDocHints;
-    QStringList         extraArgs;
-    QString             schemaName;
-    bool                emptyResultPossible;
+    QList<GObject *> objects;
+    DocumentFormatId inFormat;
+    QVariantMap inDocHints;
+    DocumentFormatId outFormat;
+    QVariantMap outDocHints;
+    QStringList extraArgs;
+    QString schemaName;
+    bool emptyResultPossible;
 };
 
 /**
@@ -65,35 +64,32 @@ public:
 class U2LANG_EXPORT SimpleInOutWorkflowTask : public DocumentProviderTask {
     Q_OBJECT
 public:
-    SimpleInOutWorkflowTask(const SimpleInOutWorkflowTaskConfig& conf);
+    SimpleInOutWorkflowTask(const SimpleInOutWorkflowTaskConfig &conf);
     void prepare();
-    virtual QList<Task*> onSubTaskFinished(Task* subTask);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
 
 private:
-    void prepareTmpFile(QTemporaryFile& tmpFile, const QString& tmpl);
+    void prepareTmpFile(QTemporaryFile &tmpFile, const QString &tmpl);
 
-    SimpleInOutWorkflowTaskConfig        conf;
+    SimpleInOutWorkflowTaskConfig conf;
 
-    Document*                           inDoc;
+    Document *inDoc;
 
-    SaveDocumentTask*                   saveInputTask;
-    QTemporaryFile                      inputTmpFile;
+    SaveDocumentTask *saveInputTask;
+    QTemporaryFile inputTmpFile;
 
-    CmdlineTaskRunner*                  runWorkflowTask;
+    CmdlineTaskRunner *runWorkflowTask;
 
-    QTemporaryFile                      resultTmpFile;
-    LoadDocumentTask*                   loadResultTask;
+    QTemporaryFile resultTmpFile;
+    LoadDocumentTask *loadResultTask;
 
-    QString                             schemaPath;
-
+    QString schemaPath;
 };
-
 
 class SimpleMSAWorkflowTaskConfig {
 public:
-    QString     schemaName;
+    QString schemaName;
     QStringList schemaArgs;
-    QString     algoName;
     QVariantMap resultDocHints;
 };
 
@@ -101,22 +97,18 @@ class U2LANG_EXPORT SimpleMSAWorkflow4GObjectTask : public Task {
     Q_OBJECT
 
 public:
-    SimpleMSAWorkflow4GObjectTask(const QString& taskName, MultipleSequenceAlignmentObject* maObj, const SimpleMSAWorkflowTaskConfig& conf);
-    ~SimpleMSAWorkflow4GObjectTask();
+    SimpleMSAWorkflow4GObjectTask(const QString &taskName, MultipleSequenceAlignmentObject *maObj, const SimpleMSAWorkflowTaskConfig &conf);
 
     void prepare();
     ReportResult report();
     MultipleSequenceAlignment getResult();
 
 private:
-    void releaseModStep(const QString error = QString());
-
-    QPointer<MultipleSequenceAlignmentObject>  obj;
-    QPointer<StateLock>         lock;
-    QString                     docName;
+    QPointer<MultipleSequenceAlignmentObject> msaObjectPointer;
+    QString docName;
     SimpleMSAWorkflowTaskConfig conf;
-    SimpleInOutWorkflowTask*    runWorkflowTask;
-    U2UseCommonUserModStep      *userModStep;
+    SimpleInOutWorkflowTask *runWorkflowTask;
+    QPointer<StateLock> msaObjectLock;
 };
 
 }    // namespace U2

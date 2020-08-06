@@ -23,34 +23,32 @@
 
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/U2MsaDbi.h>
+#include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SequenceDbi.h>
 #include <U2Core/U2SequenceUtils.h>
-#include <U2Core/U2OpStatusUtils.h>
 
 #include <U2Formats/SQLiteDbi.h>
-
 
 namespace U2 {
 
 TestDbiProvider MsaTestData::dbiProvider = TestDbiProvider();
-const QString& MsaTestData::MSA_DB_URL("msa-dbi.ugenedb");
-U2MsaDbi* MsaTestData::msaDbi = NULL;
-U2SequenceDbi* MsaTestData::sequenceDbi = NULL;
-
+const QString &MsaTestData::MSA_DB_URL("msa-dbi.ugenedb");
+U2MsaDbi *MsaTestData::msaDbi = NULL;
+U2SequenceDbi *MsaTestData::sequenceDbi = NULL;
 
 void MsaTestData::init() {
     SAFE_POINT(NULL == msaDbi, "msaDbi has been already initialized!", );
     SAFE_POINT(NULL == sequenceDbi, "sequenceDbi has been already initialized!", );
 
     bool ok = dbiProvider.init(MSA_DB_URL, false);
-    SAFE_POINT(ok, "Dbi provider failed to initialize in MsaTestData::init()!",);
+    SAFE_POINT(ok, "Dbi provider failed to initialize in MsaTestData::init()!", );
 
-    U2Dbi* dbi = dbiProvider.getDbi();
+    U2Dbi *dbi = dbiProvider.getDbi();
     msaDbi = dbi->getMsaDbi();
-    SAFE_POINT(NULL != msaDbi, "Failed to get msaDbi!",);
+    SAFE_POINT(NULL != msaDbi, "Failed to get msaDbi!", );
 
     sequenceDbi = dbi->getSequenceDbi();
-    SAFE_POINT(NULL != sequenceDbi, "Failed to get sequenceDbi!",);
+    SAFE_POINT(NULL != sequenceDbi, "Failed to get sequenceDbi!", );
 }
 
 void MsaTestData::shutdown() {
@@ -65,14 +63,14 @@ void MsaTestData::shutdown() {
     }
 }
 
-U2MsaDbi* MsaTestData::getMsaDbi() {
+U2MsaDbi *MsaTestData::getMsaDbi() {
     if (NULL == msaDbi) {
         init();
     }
     return msaDbi;
 }
 
-U2SequenceDbi* MsaTestData::getSequenceDbi() {
+U2SequenceDbi *MsaTestData::getSequenceDbi() {
     if (NULL == sequenceDbi) {
         init();
     }
@@ -80,7 +78,7 @@ U2SequenceDbi* MsaTestData::getSequenceDbi() {
 }
 
 IMPLEMENT_TEST(MsaDbiUnitTests, createMsaObject) {
-    U2MsaDbi* msaDbi = MsaTestData::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaTestData::getMsaDbi();
 
     U2AlphabetId testAlphabet = BaseDNAAlphabetIds::AMINO_DEFAULT();
 
@@ -88,7 +86,7 @@ IMPLEMENT_TEST(MsaDbiUnitTests, createMsaObject) {
     U2DataId msaId = msaDbi->createMsaObject("", "Test name", testAlphabet, os);
     CHECK_NO_ERROR(os);
 
-    const U2Msa& actual = msaDbi->getMsaObject(msaId, os);
+    const U2Msa &actual = msaDbi->getMsaObject(msaId, os);
     CHECK_NO_ERROR(os);
 
     CHECK_EQUAL(testAlphabet.id, actual.alphabet.id, "alphabet");
@@ -101,7 +99,7 @@ IMPLEMENT_TEST(MsaDbiUnitTests, createMsaObject) {
 
 IMPLEMENT_TEST(MsaDbiUnitTests, addRows) {
     U2OpStatusImpl os;
-    U2MsaDbi* msaDbi = MsaTestData::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaTestData::getMsaDbi();
 
     // Create an alignment
     U2AlphabetId alphabet = BaseDNAAlphabetIds::NUCL_DNA_DEFAULT();
@@ -109,7 +107,7 @@ IMPLEMENT_TEST(MsaDbiUnitTests, addRows) {
     CHECK_NO_ERROR(os);
 
     // Create sequences
-    U2SequenceDbi* sequenceDbi = MsaTestData::getSequenceDbi();
+    U2SequenceDbi *sequenceDbi = MsaTestData::getSequenceDbi();
     U2Sequence seq1;
     U2Sequence seq2;
     sequenceDbi->createSequenceObject(seq1, "", os);
@@ -150,7 +148,7 @@ IMPLEMENT_TEST(MsaDbiUnitTests, addRows) {
     CHECK_NO_ERROR(os);
     CHECK_EQUAL(2, actualRows.count(), "number of rows");
 
-    const U2MsaRow& actualRow1 = actualRows[0];
+    const U2MsaRow &actualRow1 = actualRows[0];
     CHECK_EQUAL(rows.at(0).rowId, actualRow1.rowId, "first row id");
     CHECK_EQUAL(seq1.id, actualRow1.sequenceId, "first row sequence id");
     CHECK_EQUAL(0, actualRow1.gstart, "first row global start");
@@ -163,7 +161,7 @@ IMPLEMENT_TEST(MsaDbiUnitTests, addRows) {
     CHECK_EQUAL(3, actualRow1Gap2.offset, "first row gap2 offset");
     CHECK_EQUAL(1, actualRow1Gap2.gap, "first row gap2 length");
 
-    const U2MsaRow& actualRow2 = actualRows[1];
+    const U2MsaRow &actualRow2 = actualRows[1];
     CHECK_EQUAL(rows.at(1).rowId, actualRow2.rowId, "second row id");
     CHECK_EQUAL(seq2.id, actualRow2.sequenceId, "second row sequence id");
     CHECK_EQUAL(2, actualRow2.gstart, "second row global start");
@@ -173,14 +171,14 @@ IMPLEMENT_TEST(MsaDbiUnitTests, addRows) {
 
 IMPLEMENT_TEST(MsaDbiUnitTests, removeRows) {
     U2OpStatusImpl os;
-    U2MsaDbi* msaDbi = MsaTestData::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaTestData::getMsaDbi();
 
     // Create an alignment
     U2DataId msaId = msaDbi->createMsaObject("", "Test name", BaseDNAAlphabetIds::NUCL_DNA_DEFAULT(), os);
     CHECK_NO_ERROR(os);
 
     // Create sequences
-    U2SequenceDbi* sequenceDbi = MsaTestData::getSequenceDbi();
+    U2SequenceDbi *sequenceDbi = MsaTestData::getSequenceDbi();
     U2Sequence seq1;
     U2Sequence seq2;
     U2Sequence seq3;
@@ -221,7 +219,6 @@ IMPLEMENT_TEST(MsaDbiUnitTests, removeRows) {
     row3.gstart = 0;
     row3.gend = 10;
 
-
     QList<U2MsaRow> rows;
     rows << row1 << row2 << row3;
 
@@ -244,7 +241,7 @@ IMPLEMENT_TEST(MsaDbiUnitTests, removeRows) {
     CHECK_NO_ERROR(os);
     CHECK_EQUAL(1, actualRows.count(), "number of rows");
 
-    const U2MsaRow& actualRow = actualRows[0];
+    const U2MsaRow &actualRow = actualRows[0];
     CHECK_EQUAL(rows.at(1).rowId, actualRow.rowId, "row id");
     CHECK_EQUAL(seq2.id, actualRow.sequenceId, "row sequence id");
     CHECK_EQUAL(2, actualRow.gstart, "row global start");
@@ -255,4 +252,4 @@ IMPLEMENT_TEST(MsaDbiUnitTests, removeRows) {
     CHECK_EQUAL(2, actualRowGap.gap, "row gap length");
 }
 
-} // namespace
+}    // namespace U2

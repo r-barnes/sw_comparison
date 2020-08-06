@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "SchemaEstimationTask.h"
+
 #include <U2Core/DocumentImport.h>
 #include <U2Core/DocumentUtils.h>
 #include <U2Core/U2OpStatusUtils.h>
@@ -27,8 +29,6 @@
 #include <U2Lang/ActorModel.h>
 #include <U2Lang/URLContainer.h>
 #include <U2Lang/WorkflowUtils.h>
-
-#include "SchemaEstimationTask.h"
 
 namespace U2 {
 namespace Workflow {
@@ -41,9 +41,7 @@ EstimationResult::EstimationResult() {
 }
 
 SchemaEstimationTask::SchemaEstimationTask(const Schema *_schema, const Metadata *_meta)
-: Task(tr("Workflow estimation task"), TaskFlag_None), schema(_schema), meta(_meta)
-{
-
+    : Task(tr("Workflow estimation task"), TaskFlag_None), schema(_schema), meta(_meta) {
 }
 
 void SchemaEstimationTask::run() {
@@ -57,8 +55,8 @@ void SchemaEstimationTask::run() {
     QScriptValue result = engine.evaluate(meta->estimationsCode);
     if (engine.hasUncaughtException()) {
         setError(tr("Exception during script execution! Line: %1, error: %2")
-            .arg(engine.uncaughtExceptionLineNumber())
-            .arg(engine.uncaughtException().toString()));
+                     .arg(engine.uncaughtExceptionLineNumber())
+                     .arg(engine.uncaughtException().toString()));
         return;
     }
 
@@ -78,9 +76,7 @@ EstimationResult SchemaEstimationTask::result() const {
 /* Utils */
 /************************************************************************/
 ExtimationsUtilsClass::ExtimationsUtilsClass(QScriptEngine &_engine, const Schema *_schema)
-: engine(_engine), schema(_schema)
-{
-
+    : engine(_engine), schema(_schema) {
 }
 
 QStringList ExtimationsUtilsClass::parseTokens(const QString &attrStr, U2OpStatus &os) {
@@ -91,7 +87,7 @@ QStringList ExtimationsUtilsClass::parseTokens(const QString &attrStr, U2OpStatu
     return tokens;
 }
 
-Attribute * ExtimationsUtilsClass::getAttribute(const QString &attrStr, U2OpStatus &os) {
+Attribute *ExtimationsUtilsClass::getAttribute(const QString &attrStr, U2OpStatus &os) {
     QStringList tokens = parseTokens(attrStr, os);
     CHECK_OP(os, NULL);
 
@@ -155,11 +151,11 @@ QScriptValue ExtimationsUtilsClass::attributeValue(const QString &attrStr) {
     CHECK_JS_OP(os, QScriptValue::NullValue);
 
     QVariant value = attr->getAttributePureValue();
-    if (!value.canConvert< QList<Dataset> >()) {
+    if (!value.canConvert<QList<Dataset>>()) {
         return engine.newVariant(value);
     }
 
-    return WorkflowUtils::datasetsToScript(value.value< QList<Dataset> >(), engine);
+    return WorkflowUtils::datasetsToScript(value.value<QList<Dataset>>(), engine);
 }
 
 qint64 ExtimationsUtilsClass::fileSize(const QString &url) {
@@ -217,7 +213,7 @@ void ExtimationsUtilsClass::test(QScriptValue v) {
         bool bv = v.toBoolean();
         coreLog.info(bv ? "true" : "false");
     }
-    for (int i=0; i<v.property("length").toInt32(); i++) {
+    for (int i = 0; i < v.property("length").toInt32(); i++) {
         coreLog.info(v.property(i).toString());
     }
 }
@@ -241,5 +237,5 @@ bool ExtimationsUtilsClass::testAttr(const QString &attrStr) {
     return WorkflowUtils::isUrlAttribute(attr, actor);
 }
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

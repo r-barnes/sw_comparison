@@ -19,11 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "ImageExportTask.h"
+
 #include <QWidget>
 
 #include <U2Core/U2SafePoints.h>
-
-#include "ImageExportTask.h"
 
 namespace U2 {
 
@@ -40,8 +40,7 @@ ImageExportTaskSettings::ImageExportTaskSettings(const QString &fileName,
       format(format),
       imageSize(size),
       imageQuality(quality),
-      imageDpi(dpi)
-{
+      imageDpi(dpi) {
 }
 
 bool ImageExportTaskSettings::isBitmapFormat() const {
@@ -67,14 +66,12 @@ Task::ReportResult ImageExportTask::report() {
     return Task::ReportResult_Finished;
 }
 
-ImageExportController::ImageExportController(const ExportImageFormatPolicy& fPolicy)
+ImageExportController::ImageExportController(const ExportImageFormatPolicy &fPolicy)
     : settingsWidget(NULL),
-      formatPolicy(fPolicy)
-{
-
+      formatPolicy(fPolicy) {
 }
 
-Task * ImageExportController::getTaskInstance(const ImageExportTaskSettings &settings) const {
+Task *ImageExportController::getTaskInstance(const ImageExportTaskSettings &settings) const {
     if (settings.isSVGFormat()) {
         SAFE_POINT(isSvgSupported(), tr("SVG format is not supported"), NULL);
         return getExportToSvgTask(settings);
@@ -87,11 +84,11 @@ Task * ImageExportController::getTaskInstance(const ImageExportTaskSettings &set
     return getExportToBitmapTask(settings);
 }
 
-QWidget * ImageExportController::getSettingsWidget() {
+QWidget *ImageExportController::getSettingsWidget() {
     if (settingsWidget == NULL) {
         initSettingsWidget();
     }
     return settingsWidget;
 }
 
-} // namespace
+}    // namespace U2

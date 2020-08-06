@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ADVAnnotationCreation.h"
+
 #include <QFileInfo>
 
 #include <U2Core/AnnotationSelection.h>
@@ -31,26 +33,23 @@
 #include <U2Core/GObjectReference.h>
 #include <U2Core/GObjectUtils.h>
 #include <U2Core/LoadDocumentTask.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/Task.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/CreateAnnotationDialog.h>
 #include <U2Gui/CreateAnnotationWidgetController.h>
-#include <U2Core/QObjectScopedPointer.h>
 
-#include "ADVAnnotationCreation.h"
 #include "ADVSequenceObjectContext.h"
 #include "AnnotatedDNAView.h"
 #include "AnnotationsTreeView.h"
 
 namespace U2 {
 
-ADVCreateAnnotationsTask::ADVCreateAnnotationsTask(AnnotatedDNAView *ctx, const GObjectReference &aobjRef, const QString &group,
-    const QList<SharedAnnotationData> &data)
-    : Task(tr("Create annotations task"), TaskFlags_NR_FOSCOE), ctx(ctx)
-{
+ADVCreateAnnotationsTask::ADVCreateAnnotationsTask(AnnotatedDNAView *ctx, const GObjectReference &aobjRef, const QString &group, const QList<SharedAnnotationData> &data)
+    : Task(tr("Create annotations task"), TaskFlags_NR_FOSCOE), ctx(ctx) {
     LoadUnloadedDocumentTask::addLoadingSubtask(this, LoadDocumentTaskConfig(true, aobjRef, new LDTObjectFactory(this)));
-    t  = new CreateAnnotationsTask(aobjRef, data, group);
+    t = new CreateAnnotationsTask(aobjRef, data, group);
     addSubTask(t);
 }
 
@@ -69,7 +68,7 @@ Task::ReportResult ADVCreateAnnotationsTask::report() {
             AnnotationSelection *annSelection = ctx->getAnnotationsSelection();
             CHECK(annSelection != NULL, ReportResult_Finished);
             foreach (Annotation *a, t->getResultAnnotations()) {
-                    annSelection->add(a);
+                annSelection->add(a);
             }
         }
     }
@@ -79,9 +78,8 @@ Task::ReportResult ADVCreateAnnotationsTask::report() {
 //////////////////////////////////////////////////////////////////////////
 /// ADVAnnotationCreation
 
-ADVAnnotationCreation::ADVAnnotationCreation(AnnotatedDNAView* c)
-    : QObject(c)
-{
+ADVAnnotationCreation::ADVAnnotationCreation(AnnotatedDNAView *c)
+    : QObject(c) {
     ctx = c;
     createAction = new QAction(QIcon(":core/images/create_annotation_icon.png"), tr("New annotation..."), this);
     createAction->setObjectName("create_annotation_action");
@@ -92,7 +90,7 @@ ADVAnnotationCreation::ADVAnnotationCreation(AnnotatedDNAView* c)
 
 void ADVAnnotationCreation::sl_createAnnotation() {
     ADVSequenceObjectContext *seqCtx = ctx->getSequenceInFocus();
-    SAFE_POINT(NULL != seqCtx, "Invalid sequence context detected!",);
+    SAFE_POINT(NULL != seqCtx, "Invalid sequence context detected!", );
     CreateAnnotationModel m;
     m.useUnloadedObjects = true;
     m.useAminoAnnotationTypes = seqCtx->getAlphabet()->isAmino();
@@ -130,4 +128,4 @@ void ADVAnnotationCreation::sl_createAnnotation() {
     AppContext::getTaskScheduler()->registerTopLevelTask(t);
 }
 
-} // namespace
+}    // namespace U2

@@ -40,7 +40,7 @@ public:
     ~CfgExternalToolItem();
 
     const QString &getDataType() const;
-    void setDataType(const QString& typeId);
+    void setDataType(const QString &typeId);
 
     const QString &getId() const;
     void setId(const QString &id);
@@ -80,7 +80,7 @@ public:
         COLUMN_DATA_TYPE = 2,
         COLUMN_FORMAT = 3,
         COLUMN_DESCRIPTION = 4,
-        COLUMNS_COUNT = COLUMN_DESCRIPTION + 1   // elements count
+        COLUMNS_COUNT = COLUMN_DESCRIPTION + 1    // elements count
     };
 
     CfgExternalToolModel(ModelType modelType, QObject *obj = NULL);
@@ -88,8 +88,8 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
-    CfgExternalToolItem* getItem(const QModelIndex &index) const;
-    QList<CfgExternalToolItem*> getItems() const;
+    CfgExternalToolItem *getItem(const QModelIndex &index) const;
+    QList<CfgExternalToolItem *> getItems() const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     void createFormatDelegate(const QString &newType, CfgExternalToolItem *item);
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
@@ -103,7 +103,7 @@ private:
     void initTypes();
 
     bool isInput;
-    QList<CfgExternalToolItem*> items;
+    QList<CfgExternalToolItem *> items;
     QVariantMap types;
     QVariantMap seqFormatsW;
     QVariantMap msaFormatsW;
@@ -130,8 +130,8 @@ public:
     const QString &getDataType() const;
     void setDataType(const QString &type);
 
-    const QVariant&getDefaultValue() const;
-    void setDefaultValue(const QVariant&defaultValue);
+    const QVariant &getDefaultValue() const;
+    void setDefaultValue(const QVariant &defaultValue);
 
     const QString &getDescription() const;
     void setDescription(const QString &description);
@@ -157,18 +157,18 @@ public:
         COLUMN_DATA_TYPE = 2,
         COLUMN_DEFAULT_VALUE = 3,
         COLUMN_DESCRIPTION = 4,
-        COLUMNS_COUNT = COLUMN_DESCRIPTION + 1   // elements count
+        COLUMNS_COUNT = COLUMN_DESCRIPTION + 1    // elements count
     };
 
-    CfgExternalToolModelAttributes(SchemaConfig* schemaConfig, QObject *parent = nullptr);
+    CfgExternalToolModelAttributes(SchemaConfig *schemaConfig, QObject *parent = nullptr);
     ~CfgExternalToolModelAttributes();
 
-    void changeDefaultValueDelegate(const QString& newType, AttributeItem* item);
+    void changeDefaultValueDelegate(const QString &newType, AttributeItem *item);
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
-    AttributeItem* getItem(const QModelIndex &index) const;
-    QList<AttributeItem*> getItems() const;
+    AttributeItem *getItem(const QModelIndex &index) const;
+    QList<AttributeItem *> getItems() const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
@@ -176,12 +176,12 @@ public:
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
 
 private:
-    QList<AttributeItem*> items;
+    QList<AttributeItem *> items;
     PropertyDelegate *typesDelegate;
     QList<ComboItem> types;
     SchemaConfig *schemaConfig;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _CFG_EXTERNAL_TOOL_MODEL_H_
+#endif    // _CFG_EXTERNAL_TOOL_MODEL_H_

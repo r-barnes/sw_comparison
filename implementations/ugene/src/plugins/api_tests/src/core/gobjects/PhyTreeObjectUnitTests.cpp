@@ -19,14 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "PhyTreeObjectUnitTests.h"
+
 #include <U2Core/DatatypeSerializeUtils.h>
-#include <U2Core/RawDataUdrSchema.h>
 #include <U2Core/PhyTreeObject.h>
+#include <U2Core/RawDataUdrSchema.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/UdrDbi.h>
-
-#include "PhyTreeObjectUnitTests.h"
 
 namespace U2 {
 
@@ -49,14 +49,14 @@ U2EntityRef PhyTreeObjectTestData::getObjRef() {
     return objRef;
 }
 
-U2ObjectDbi * PhyTreeObjectTestData::getObjDbi() {
+U2ObjectDbi *PhyTreeObjectTestData::getObjDbi() {
     if (!inited) {
         init();
     }
     return dbiProvider.getDbi()->getObjectDbi();
 }
 
-UdrDbi * PhyTreeObjectTestData::getUdrDbi() {
+UdrDbi *PhyTreeObjectTestData::getUdrDbi() {
     if (!inited) {
         init();
     }
@@ -65,7 +65,7 @@ UdrDbi * PhyTreeObjectTestData::getUdrDbi() {
 
 void PhyTreeObjectTestData::init() {
     bool ok = dbiProvider.init(UDR_DB_URL, true);
-    SAFE_POINT(ok, "dbi provider failed to initialize",);
+    SAFE_POINT(ok, "dbi provider failed to initialize", );
 
     initData();
 
@@ -97,20 +97,23 @@ void PhyTreeObjectTestData::shutdown() {
 }
 
 namespace {
-    PhyTree createTree() {
-        PhyTree result(new PhyTreeData());
-        PhyNode *root = new PhyNode();
-        root->setName("ROOT");
-        result->setRootNode(root);
-        QStringList names; names << "A" << "B" << "C";
-        foreach (const QString &name, names) {
-            PhyNode *node = new PhyNode();
-            node->setName(name);
-            result->addBranch(root, node, 5.1);
-        }
-        return result;
+PhyTree createTree() {
+    PhyTree result(new PhyTreeData());
+    PhyNode *root = new PhyNode();
+    root->setName("ROOT");
+    result->setRootNode(root);
+    QStringList names;
+    names << "A"
+          << "B"
+          << "C";
+    foreach (const QString &name, names) {
+        PhyNode *node = new PhyNode();
+        node->setName(name);
+        result->addBranch(root, node, 5.1);
     }
+    return result;
 }
+}    // namespace
 
 IMPLEMENT_TEST(PhyTreeObjectUnitTests, createInstance) {
     U2OpStatusImpl os;
@@ -154,7 +157,7 @@ IMPLEMENT_TEST(PhyTreeObjectUnitTests, clone) {
 
     U2OpStatusImpl os;
     GObject *clonedGObj = object.clone(PhyTreeObjectTestData::getDbiRef(), os);
-    QScopedPointer<PhyTreeObject> cloned(dynamic_cast<PhyTreeObject*>(clonedGObj));
+    QScopedPointer<PhyTreeObject> cloned(dynamic_cast<PhyTreeObject *>(clonedGObj));
     CHECK_NO_ERROR(os);
 
     PhyTree clonedTree = createTree();
@@ -198,4 +201,4 @@ IMPLEMENT_TEST(PhyTreeObjectUnitTests, remove) {
     CHECK_TRUE(records.isEmpty(), "records");
 }
 
-} // U2
+}    // namespace U2

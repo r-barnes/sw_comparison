@@ -34,20 +34,20 @@ namespace U2 {
 class MrBayesSupport : public ExternalTool {
     Q_OBJECT
 public:
-    MrBayesSupport(const QString& id, const QString& name, const QString& path = "");
+    MrBayesSupport(const QString &id, const QString &name, const QString &path = "");
 
     static const QString ET_MRBAYES;
     static const QString ET_MRBAYES_ID;
     static const QString MRBAYES_TMP_DIR;
 };
 
-class MrBayesAdapter : public PhyTreeGenerator{
+class MrBayesAdapter : public PhyTreeGenerator {
 public:
-    Task * createCalculatePhyTreeTask(const MultipleSequenceAlignment &ma, const CreatePhyTreeSettings &s) ;
+    Task *createCalculatePhyTreeTask(const MultipleSequenceAlignment &ma, const CreatePhyTreeSettings &s);
     CreatePhyTreeWidget *createPhyTreeSettingsWidget(const MultipleSequenceAlignment &ma, QWidget *parent = NULL);
 };
 
-class MrBayesModelTypes{
+class MrBayesModelTypes {
 public:
     static QString poisson;
     static QString jones;
@@ -68,7 +68,7 @@ public:
     static QStringList getSubstitutionModelTypes();
 };
 
-class MrBayesVariationTypes{
+class MrBayesVariationTypes {
 public:
     static QString equal;
     static QString gamma;
@@ -77,5 +77,5 @@ public:
     static QStringList getVariationTypes();
 };
 
-}   // namespace U2
-#endif // _U2_MRBAYES_SUPPORT_H_
+}    // namespace U2
+#endif    // _U2_MRBAYES_SUPPORT_H_

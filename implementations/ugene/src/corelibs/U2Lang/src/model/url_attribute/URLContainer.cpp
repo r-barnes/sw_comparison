@@ -19,13 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "URLContainer.h"
+
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Lang/DbFolderScanner.h>
 #include <U2Lang/SharedDbUrlUtils.h>
 #include <U2Lang/WorkflowUtils.h>
-
-#include "URLContainer.h"
 
 namespace U2 {
 
@@ -34,22 +34,19 @@ static QString toUniversal(const QString &url) {
 }
 
 URLContainer::URLContainer(const QString &_url, bool convertUrlToAbsolute)
-    : url(convertUrlToAbsolute ? toUniversal(_url) : _url)
-{
-
+    : url(convertUrlToAbsolute ? toUniversal(_url) : _url) {
 }
 
 URLContainer::~URLContainer() {
-
 }
 
-const QString & URLContainer::getUrl() const {
+const QString &URLContainer::getUrl() const {
     return url;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-URLContainer * URLContainerFactory::createUrlContainer(const QString &url) {
+URLContainer *URLContainerFactory::createUrlContainer(const QString &url) {
     if (SharedDbUrlUtils::isDbObjectUrl(url)) {
         return new DbObjUrlContainer(url);
     } else if (SharedDbUrlUtils::isDbFolderUrl(url)) {
@@ -71,16 +68,14 @@ URLContainer * URLContainerFactory::createUrlContainer(const QString &url) {
 //////////////////////////////////////////////////////////////////////////
 
 FileUrlContainer::FileUrlContainer(const QString &url)
-    : URLContainer(url)
-{
-
+    : URLContainer(url) {
 }
 
-FilesIterator * FileUrlContainer::getFileUrls() {
+FilesIterator *FileUrlContainer::getFileUrls() {
     return FilesIteratorFactory::createFileList(QStringList() << url);
 }
 
-URLContainer * FileUrlContainer::clone() {
+URLContainer *FileUrlContainer::clone() {
     return new FileUrlContainer(url);
 }
 
@@ -95,16 +90,14 @@ bool FileUrlContainer::validateUrl(NotificationsList &notificationList) {
 //////////////////////////////////////////////////////////////////////////
 
 DbObjUrlContainer::DbObjUrlContainer(const QString &url)
-    : URLContainer(url, false)
-{
-
+    : URLContainer(url, false) {
 }
 
-FilesIterator * DbObjUrlContainer::getFileUrls() {
+FilesIterator *DbObjUrlContainer::getFileUrls() {
     return FilesIteratorFactory::createFileList(QStringList() << url);
 }
 
-URLContainer * DbObjUrlContainer::clone() {
+URLContainer *DbObjUrlContainer::clone() {
     return new DbObjUrlContainer(url);
 }
 
@@ -119,22 +112,18 @@ bool DbObjUrlContainer::validateUrl(NotificationsList &notificationList) {
 //////////////////////////////////////////////////////////////////////////
 
 DirUrlContainer::DirUrlContainer(const QString &url)
-    : URLContainer(url), recursive(false)
-{
-
+    : URLContainer(url), recursive(false) {
 }
 
 DirUrlContainer::DirUrlContainer(const QString &url, const QString &_incFilter, const QString &_excFilter, bool _recursive)
-    : URLContainer(url), incFilter(_incFilter), excFilter(_excFilter), recursive(_recursive)
-{
-
+    : URLContainer(url), incFilter(_incFilter), excFilter(_excFilter), recursive(_recursive) {
 }
 
-FilesIterator * DirUrlContainer::getFileUrls() {
+FilesIterator *DirUrlContainer::getFileUrls() {
     return FilesIteratorFactory::createDirectoryScanner(QStringList() << url, incFilter, excFilter, recursive);
 }
 
-URLContainer * DirUrlContainer::clone() {
+URLContainer *DirUrlContainer::clone() {
     DirUrlContainer *cloned = new DirUrlContainer(url);
     cloned->incFilter = incFilter;
     cloned->excFilter = excFilter;
@@ -162,11 +151,11 @@ bool DirUrlContainer::validateUrl(NotificationsList &notificationList) {
     return res;
 }
 
-const QString & DirUrlContainer::getIncludeFilter() const {
+const QString &DirUrlContainer::getIncludeFilter() const {
     return incFilter;
 }
 
-const QString & DirUrlContainer::getExcludeFilter() const {
+const QString &DirUrlContainer::getExcludeFilter() const {
     return excFilter;
 }
 
@@ -189,22 +178,18 @@ void DirUrlContainer::setRecursive(bool value) {
 //////////////////////////////////////////////////////////////////////////
 
 DbFolderUrlContainer::DbFolderUrlContainer(const QString &url)
-    : URLContainer(url, false), recursive(false)
-{
-
+    : URLContainer(url, false), recursive(false) {
 }
 
 DbFolderUrlContainer::DbFolderUrlContainer(const QString &url, const QString &accFilter, const QString &objNameFilter, bool recursive)
-    : URLContainer(url, false), accFilter(accFilter), objNameFilter(objNameFilter), recursive(recursive)
-{
-
+    : URLContainer(url, false), accFilter(accFilter), objNameFilter(objNameFilter), recursive(recursive) {
 }
 
-FilesIterator * DbFolderUrlContainer::getFileUrls() {
+FilesIterator *DbFolderUrlContainer::getFileUrls() {
     return new DbFolderScanner(url, accFilter, objNameFilter, recursive);
 }
 
-URLContainer * DbFolderUrlContainer::clone() {
+URLContainer *DbFolderUrlContainer::clone() {
     return new DbFolderUrlContainer(url, accFilter, objNameFilter, recursive);
 }
 
@@ -228,11 +213,11 @@ bool DbFolderUrlContainer::validateUrl(NotificationsList &notificationList) {
     return res;
 }
 
-const QString & DbFolderUrlContainer::getSequenceAccFilter() const {
+const QString &DbFolderUrlContainer::getSequenceAccFilter() const {
     return accFilter;
 }
 
-const QString & DbFolderUrlContainer::getObjNameFilter() const {
+const QString &DbFolderUrlContainer::getObjNameFilter() const {
     return objNameFilter;
 }
 
@@ -256,4 +241,4 @@ URLContainerVisitor::~URLContainerVisitor() {
     // do nothing
 }
 
-} // U2
+}    // namespace U2

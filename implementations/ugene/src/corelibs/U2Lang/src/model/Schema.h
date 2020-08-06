@@ -29,7 +29,7 @@
 #include <U2Lang/Attribute.h>
 #include <U2Lang/PortMapping.h>
 
-typedef QPair<U2::ActorId,QString> IterationCfgKey;
+typedef QPair<U2::ActorId, QString> IterationCfgKey;
 typedef QMap<IterationCfgKey, QVariant> IterationCfg;
 typedef QMap<U2::ActorId, QVariantMap> CfgMap;
 
@@ -52,8 +52,10 @@ class Port;
  */
 class U2LANG_EXPORT ActorBindingsGraph {
 public:
-    ActorBindingsGraph() {}
-    virtual ~ActorBindingsGraph() {}
+    ActorBindingsGraph() {
+    }
+    virtual ~ActorBindingsGraph() {
+    }
 
     void clear();
     bool isEmpty() const;
@@ -62,14 +64,14 @@ public:
     bool addBinding(Port *source, Port *dest);
     bool contains(Port *source, Port *dest) const;
     void removeBinding(Port *source, Port *dest);
-    const QMap<Port*, QList<Port*> > & getBindings() const;
-    QMap<Port*, QList<Port*> > & getBindings();
-    QMap<int, QList<Actor*> > getTopologicalSortedGraph(QList<Actor*> actors) const;
-    QList<Link*> getFlows() const;
+    const QMap<Port *, QList<Port *>> &getBindings() const;
+    QMap<Port *, QList<Port *>> &getBindings();
+    QMap<int, QList<Actor *>> getTopologicalSortedGraph(QList<Actor *> actors) const;
+    QList<Link *> getFlows() const;
 
 private:
-    QMap<Port*, QList<Port*> > bindings;
-}; // ActorBindingsGraph
+    QMap<Port *, QList<Port *>> bindings;
+};    // ActorBindingsGraph
 
 /**
  * Schema is oriented graph of actors
@@ -79,23 +81,23 @@ class U2LANG_EXPORT Schema {
 public:
     Schema();
     virtual ~Schema();
-    Schema( const Schema & other );
-    Schema & operator=( const Schema & other );
+    Schema(const Schema &other);
+    Schema &operator=(const Schema &other);
 
     void reset();
     void update();
     /** The actors' aliases of @other can be removed in case of duplication */
     void merge(Schema &other);
 
-    Actor* actorById(ActorId) const;
-    QList<Actor*> actorsByOwnerId(ActorId) const;
+    Actor *actorById(ActorId) const;
+    QList<Actor *> actorsByOwnerId(ActorId) const;
 
     QString getDomain() const;
-    void setDomain(const QString & d);
+    void setDomain(const QString &d);
 
-    const ActorBindingsGraph & getActorBindingsGraph() const;
+    const ActorBindingsGraph &getActorBindingsGraph() const;
 
-    const QList<Actor*> & getProcesses() const;
+    const QList<Actor *> &getProcesses() const;
     void addProcess(Actor *actor);
     void removeProcess(Actor *actor);
     void renameProcess(const ActorId &oldId, const ActorId &newId);
@@ -103,9 +105,9 @@ public:
 
     void applyConfiguration(const QMap<ActorId, QVariantMap> &cfg);
 
-    QList<Link*> getFlows() const;
-    void addFlow(Link* l);
-    void removeFlow(Link* l);
+    QList<Link *> getFlows() const;
+    void addFlow(Link *l);
+    void removeFlow(Link *l);
 
     void setDeepCopyFlag(bool flag);
 
@@ -122,15 +124,15 @@ public:
     QString getTypeName() const;
     void setTypeName(const QString &typeName);
 
-    const QList<Wizard*> & getWizards() const;
-    void setWizards(const QList<Wizard*> &value);
-    QList<Wizard*> takeWizards();
+    const QList<Wizard *> &getWizards() const;
+    void setWizards(const QList<Wizard *> &value);
+    QList<Wizard *> takeWizards();
 
-    static ActorId uniqueActorId(const QString &id, const QList<Actor*> &procs);
+    static ActorId uniqueActorId(const QString &id, const QList<Actor *> &procs);
 
 private:
     // set of actors
-    QList<Actor*> procs;
+    QList<Actor *> procs;
     // name of domain in which we work now
     // default is LocalDomainFactory::ID
     QString domain;
@@ -144,7 +146,7 @@ private:
     QList<PortAlias> portAliases;
     // if you include this schema to another schema then here is new type name
     QString includedTypeName;
-    QList<Wizard*> wizards;
+    QList<Wizard *> wizards;
 
 private:
     void setAliasedAttributes(Actor *proc, Actor *subProc);
@@ -156,7 +158,7 @@ private:
     bool recursiveExpand(QList<QString> &schemaIds);
     void update(const QMap<ActorId, ActorId> &actorsMapping);
 
-}; // Schema
+};    // Schema
 
 class U2LANG_EXPORT ActorVisualData {
 public:
@@ -184,11 +186,16 @@ public:
 private:
     ActorId actorId;
 
-    QPointF pos; bool posInited;
-    QString styleId; bool styleInited;
-    QColor color; bool colorInited;
-    QFont font; bool fontInited;
-    QRectF rect; bool rectInited;
+    QPointF pos;
+    bool posInited;
+    QString styleId;
+    bool styleInited;
+    QColor color;
+    bool colorInited;
+    QFont font;
+    bool fontInited;
+    QRectF rect;
+    bool rectInited;
     QMap<QString, qreal> angleMap;
 
 private:
@@ -212,12 +219,9 @@ public:
     ActorVisualData getActorVisualData(const ActorId &actorId, bool &contains) const;
     void setActorVisualData(const ActorVisualData &data);
 
-    QPointF getTextPos(const ActorId &srcActorId, const QString &srcPortId,
-        const ActorId &dstActorId, const QString &dstPortId, bool &contains) const;
+    QPointF getTextPos(const ActorId &srcActorId, const QString &srcPortId, const ActorId &dstActorId, const QString &dstPortId, bool &contains) const;
 
-    void setTextPos(const ActorId &srcActorId, const QString &srcPortId,
-        const ActorId &dstActorId, const QString &dstPortId,
-        const QPointF &value);
+    void setTextPos(const ActorId &srcActorId, const QString &srcPortId, const ActorId &dstActorId, const QString &dstPortId, const QPointF &value);
 
     void removeActorMeta(const ActorId &actorId);
     void renameActors(const QMap<ActorId, ActorId> &actorsMapping);
@@ -240,20 +244,19 @@ public:
 
 private:
     QMap<ActorId, ActorVisualData> actorVisual;
-    QMap<QString, QPointF> textPosMap; // actorId.portId->actorId.portId <-> textPos
+    QMap<QString, QPointF> textPosMap;    // actorId.portId->actorId.portId <-> textPos
 
 private:
     QString getPortString(const ActorId &actorId, const QString &portId) const;
     ActorId getActorId(const QString &portStr) const;
-    QString getLinkString(const ActorId &srcActorId, const QString &srcPortId,
-        const ActorId &dstActorId, const QString &dstPortId) const;
+    QString getLinkString(const ActorId &srcActorId, const QString &srcPortId, const ActorId &dstActorId, const QString &dstPortId) const;
     bool isActorLinked(const ActorId &actorId, const QString &linkStr) const;
     QString renameLink(const QString &linkStr, const QMap<ActorId, ActorId> &actorsMapping) const;
     QString renameLink(const QString &linkStr, const ActorId &oldId, const ActorId &newId, const QList<PortMapping> &mappings) const;
-}; // Metadata
+};    // Metadata
 
-}//Workflow namespace
+}    // namespace Workflow
 
-}//GB2 namespace
+}    // namespace U2
 
-#endif // _U2_WORKFLOW_ITERATION_H_
+#endif    // _U2_WORKFLOW_ITERATION_H_

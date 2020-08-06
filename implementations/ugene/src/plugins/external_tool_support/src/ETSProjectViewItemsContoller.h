@@ -22,10 +22,10 @@
 #ifndef _U2_ETS_PROJECT_VIEW_ITEMS_CONTOLLER_H
 #define _U2_ETS_PROJECT_VIEW_ITEMS_CONTOLLER_H
 
-#include <U2Core/global.h>
-
 #include <QAction>
 #include <QMenu>
+
+#include <U2Core/global.h>
 
 #include "utils/ExternalToolSupportAction.h"
 
@@ -34,14 +34,14 @@ namespace U2 {
 class ETSProjectViewItemsContoller : public QObject {
     Q_OBJECT
 public:
-    ETSProjectViewItemsContoller(QObject* p);
+    ETSProjectViewItemsContoller(QObject *p);
 private slots:
-    void sl_addToProjectViewMenu(QMenu&);
+    void sl_addToProjectViewMenu(QMenu &);
 
-    void sl_runFormatDBOnSelection();
+    void sl_runMakeBlastDbOnSelection();
+
 private:
-    ExternalToolSupportAction* formatDBOnSelectionAction;
-    ExternalToolSupportAction* makeBLASTDBOnSelectionAction;
+    ExternalToolSupportAction *makeBLASTDBOnSelectionAction;
 };
-}//namespace
-#endif // _U2_ETS_PROJECT_VIEW_ITEMS_CONTOLLER_H
+}    // namespace U2
+#endif    // _U2_ETS_PROJECT_VIEW_ITEMS_CONTOLLER_H

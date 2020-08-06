@@ -19,18 +19,16 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Lang/URLContainer.h>
-
 #include "Dataset.h"
+
+#include <U2Lang/URLContainer.h>
 
 namespace U2 {
 
 const QString Dataset::DEFAULT_NAME("Dataset 1");
 
 Dataset::Dataset(const QString &_name)
-: name(_name)
-{
-
+    : name(_name) {
 }
 
 Dataset::Dataset() {
@@ -45,7 +43,7 @@ Dataset::~Dataset() {
     clear();
 }
 
-const QString & Dataset::getName() const {
+const QString &Dataset::getName() const {
     return name;
 }
 
@@ -63,11 +61,11 @@ void Dataset::removeUrl(URLContainer *url) {
     urls.removeOne(url);
 }
 
-QList<URLContainer*> Dataset::getUrls() const {
+QList<URLContainer *> Dataset::getUrls() const {
     return urls;
 }
 
-QList<URLContainer*> & Dataset::getUrls() {
+QList<URLContainer *> &Dataset::getUrls() {
     return urls;
 }
 
@@ -75,7 +73,7 @@ QList<Dataset> Dataset::getDefaultDatasetList() {
     return QList<Dataset>() << Dataset();
 }
 
-Dataset &Dataset::operator =(const Dataset &other) {
+Dataset &Dataset::operator=(const Dataset &other) {
     if (this == &other) {
         return *this;
     }
@@ -109,8 +107,7 @@ void Dataset::clear() {
 /* DatasetFilesIterator */
 /************************************************************************/
 DatasetFilesIterator::DatasetFilesIterator(const QList<Dataset> &_sets)
-: FilesIterator(), currentIter(NULL)
-{
+    : FilesIterator(), currentIter(NULL) {
     foreach (const Dataset &dSet, _sets) {
         sets << dSet;
     }
@@ -152,7 +149,7 @@ bool DatasetFilesIterator::hasNext() {
         sets.first().removeUrl(url);
         delete currentIter;
         currentIter = url->getFileUrls();
-    } while(!currentIter->hasNext());
+    } while (!currentIter->hasNext());
 
     return (NULL != currentIter && currentIter->hasNext());
 }
@@ -165,4 +162,4 @@ void DatasetFilesIterator::tryEmitDatasetEnded() {
     hasNext();
 }
 
-} // U2
+}    // namespace U2

@@ -22,11 +22,11 @@
 #ifndef _U2_SERVICE_MODEL_H_
 #define _U2_SERVICE_MODEL_H_
 
-#include <U2Core/global.h>
-
-#include <QString>
 #include <QList>
 #include <QPointer>
+#include <QString>
+
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -44,8 +44,8 @@ enum ServiceState {
 };
 
 enum ServiceFlag {
-    ServiceFlag_None        = 0, //no flags
-    ServiceFlag_Singleton   = 1, //only one service with this id can be registered
+    ServiceFlag_None = 0,    //no flags
+    ServiceFlag_Singleton = 1,    //only one service with this id can be registered
 };
 
 typedef QFlags<ServiceFlag> ServiceFlags;
@@ -55,43 +55,63 @@ class U2CORE_EXPORT Service : public QObject {
     friend class ServiceLock;
     Q_OBJECT
 public:
-    Service(ServiceType t, const QString& _name, const QString& _desc,
-        const QList<ServiceType>& parentServices = QList<ServiceType>(),
-        ServiceFlags flags = ServiceFlag_None);
+    Service(ServiceType t, const QString &_name, const QString &_desc, const QList<ServiceType> &parentServices = QList<ServiceType>(), ServiceFlags flags = ServiceFlag_None);
 
-    const QList<ServiceType>& getParentServiceTypes() const {return parentServices;}
+    const QList<ServiceType> &getParentServiceTypes() const {
+        return parentServices;
+    }
 
-    ServiceType getType() const {return type;}
+    ServiceType getType() const {
+        return type;
+    }
 
-    const QString& getName() const {return name;}
+    const QString &getName() const {
+        return name;
+    }
 
-    const QString& getDescription() const {return description;}
+    const QString &getDescription() const {
+        return description;
+    }
 
-    ServiceState getState() const {return state;}
+    ServiceState getState() const {
+        return state;
+    }
 
-    bool isDisabled() const {return state!=ServiceState_Enabled;}
+    bool isDisabled() const {
+        return state != ServiceState_Enabled;
+    }
 
-    bool isEnabled() const {return !isDisabled();}
+    bool isEnabled() const {
+        return !isDisabled();
+    }
 
-    ServiceFlags getFlags() const {return flags;}
+    ServiceFlags getFlags() const {
+        return flags;
+    }
 
 protected:
     /// returns NULL if no actions are required to enable service
-    virtual Task* createServiceEnablingTask() {return NULL;}
+    virtual Task *createServiceEnablingTask() {
+        return NULL;
+    }
 
     /// returns NULL if no actions are required to disable service
-    virtual Task* createServiceDisablingTask() {return NULL;}
+    virtual Task *createServiceDisablingTask() {
+        return NULL;
+    }
 
-    virtual void serviceStateChangedCallback(ServiceState oldState, bool enabledStateChanged) { Q_UNUSED(oldState); Q_UNUSED(enabledStateChanged);}
+    virtual void serviceStateChangedCallback(ServiceState oldState, bool enabledStateChanged) {
+        Q_UNUSED(oldState);
+        Q_UNUSED(enabledStateChanged);
+    }
 
 private:
-    ServiceType         type;
-    QString             name;
-    QString             description;
-    QList<ServiceType>  parentServices;
-    ServiceState        state;
-    ServiceFlags        flags;
-
+    ServiceType type;
+    QString name;
+    QString description;
+    QList<ServiceType> parentServices;
+    ServiceState state;
+    ServiceFlags flags;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -100,37 +120,38 @@ private:
 class U2CORE_EXPORT ServiceRegistry : public QObject {
     Q_OBJECT
 public:
-
     /// Returns list of all registered services
-    virtual const QList<Service*>& getServices() const = 0;
+    virtual const QList<Service *> &getServices() const = 0;
 
     /// Finds service with the specified ServiceType
-    virtual QList<Service*> findServices(ServiceType t) const = 0;
+    virtual QList<Service *> findServices(ServiceType t) const = 0;
 
     /// registers the service in a registry and initiates enabling task if all parent services are enabled
     /// if service started successfully - checks all child services if new services can be started
-    virtual Task* registerServiceTask(Service* s, bool lockServiceResource = true) = 0;
+    virtual Task *registerServiceTask(Service *s, bool lockServiceResource = true) = 0;
 
     /// unregisters the service in a registry.
     /// if the service is enabled -> initiates service disabling task first
-    virtual Task* unregisterServiceTask(Service* s, bool lockServiceResource = true) = 0;
+    virtual Task *unregisterServiceTask(Service *s, bool lockServiceResource = true) = 0;
 
-    virtual Task* enableServiceTask(Service* s, bool lockServiceResource = true) = 0;
+    virtual Task *enableServiceTask(Service *s, bool lockServiceResource = true) = 0;
 
-    virtual Task* disableServiceTask(Service* s, bool lockServiceResource = true) = 0;
+    virtual Task *disableServiceTask(Service *s, bool lockServiceResource = true) = 0;
 
 protected:
-    void _setServiceState(Service* s, ServiceState state);
-    Task* _createServiceEnablingTask(Service* s) {return s->createServiceEnablingTask();}
-    Task* _createServiceDisablingTask(Service* s) {return s->createServiceDisablingTask();}
-
+    void _setServiceState(Service *s, ServiceState state);
+    Task *_createServiceEnablingTask(Service *s) {
+        return s->createServiceEnablingTask();
+    }
+    Task *_createServiceDisablingTask(Service *s) {
+        return s->createServiceDisablingTask();
+    }
 
 signals:
-    void si_serviceUnregistered(Service* s);
-    void si_serviceStateChanged(Service* s, ServiceState oldState);
+    void si_serviceUnregistered(Service *s);
+    void si_serviceStateChanged(Service *s, ServiceState oldState);
 };
 
-
-}//namespace
+}    // namespace U2
 
 #endif

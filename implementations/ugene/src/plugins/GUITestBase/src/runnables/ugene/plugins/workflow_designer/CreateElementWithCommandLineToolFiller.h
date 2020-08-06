@@ -22,10 +22,6 @@
 #ifndef _U2_GT_CREATE_ELEMENT_WITH_COMMAND_LINE_TOOL_FILLER_H_
 #define _U2_GT_CREATE_ELEMENT_WITH_COMMAND_LINE_TOOL_FILLER_H_
 
-#include <QApplication>
-#include <QMessageBox>
-#include <QTableView>
-
 #include <drivers/GTKeyboardDriver.h>
 #include <drivers/GTMouseDriver.h>
 #include <primitives/GTComboBox.h>
@@ -35,19 +31,24 @@
 #include <utils/GTThread.h>
 #include <utils/GTUtilsDialog.h>
 
+#include <QApplication>
+#include <QMessageBox>
+#include <QTableView>
+
 namespace U2 {
 using namespace HI;
 
 class CreateElementWithCommandLineToolFiller : public Filler {
 public:
-    template <typename DataType>
+    template<typename DataType>
     class Data {
     public:
         Data(QString _displayName, DataType type, QString desc = QString(), QString _argumentName = QString())
             : displayName(_displayName),
               argumentName(_argumentName),
               type(type),
-              description(desc) {}
+              description(desc) {
+        }
         QString displayName;
         QString argumentName;
         DataType type;
@@ -74,7 +75,7 @@ public:
         Sequence,
         String
     };
-    typedef QPair<InOutType, QString> InOutDataType;        // type / argument value
+    typedef QPair<InOutType, QString> InOutDataType;    // type / argument value
     typedef Data<InOutDataType> InOutData;
 
     enum ParameterType {
@@ -87,81 +88,84 @@ public:
         OutputFileUrl,
         OutputFolderUrl
     };
-    typedef QPair<ParameterType, QString> ParameterDataType;        // type / default value
+    typedef QPair<ParameterType, QString> ParameterDataType;    // type / default value
     typedef Data<ParameterDataType> ParameterData;
 
     struct ElementWithCommandLineSettings {
-        ElementWithCommandLineSettings() : tooltype(CommandLineToolType::IntegratedExternalTool),
-                                           commandDialogButtonTitle("Continue"),
-                                           summaryDialogButton(QMessageBox::Yes) {}
+        ElementWithCommandLineSettings()
+            : tooltype(CommandLineToolType::IntegratedExternalTool),
+              commandDialogButtonTitle("Continue"),
+              summaryDialogButton(QMessageBox::Yes) {
+        }
 
         //1th page
-        QString                         elementName;
-        CommandLineToolType             tooltype;
-        QString                         tool;
+        QString elementName;
+        CommandLineToolType tooltype;
+        QString tool;
 
         //2th page
-        QList<InOutData>                input;
+        QList<InOutData> input;
 
         //3th page
-        QList<ParameterData>            parameters;
+        QList<ParameterData> parameters;
 
         //4th page
-        QList<InOutData>                output;
+        QList<InOutData> output;
 
         //5th page
-        QString                         command;
-        QString                         commandDialogButtonTitle;
+        QString command;
+        QString commandDialogButtonTitle;
 
         //6th page
-        QString                         description;
-        QString                         prompter;
+        QString description;
+        QString prompter;
 
         //7th page
-        QMessageBox::Button             summaryDialogButton;
+        QMessageBox::Button summaryDialogButton;
     };
 
 public:
-    CreateElementWithCommandLineToolFiller(HI::GUITestOpStatus& os,
-                                           const ElementWithCommandLineSettings& settings);
+    CreateElementWithCommandLineToolFiller(HI::GUITestOpStatus &os,
+                                           const ElementWithCommandLineSettings &settings);
     CreateElementWithCommandLineToolFiller(HI::GUITestOpStatus &os, CustomScenario *scenario);
     void commonScenario();
+
 private:
     QString dataTypeToString(const InOutType &type) const;
     QString dataTypeToString(const ParameterType &type) const;
-    QString formatToArgumentValue(const QString& format) const;
+    QString formatToArgumentValue(const QString &format) const;
 
-    void processStringType(QTableView* table, int row, const ColumnName columnName, const QString& value);
+    void processStringType(QTableView *table, int row, const ColumnName columnName, const QString &value);
     void processDataType(QTableView *table, int row, const InOutDataType &type);
     void processDataType(QTableView *table, int row, const ParameterDataType &type);
 
-    bool processFirstPage(QWidget* dialog, QString& errorMessage);
-    bool processSecondPage(QWidget* dialog, QString& errorMessage);
-    bool processThirdPage(QWidget* dialog, QString& errorMessage);
-    bool processFourthPage(QWidget* dialog, QString& errorMessage);
-    bool processFifthPage(QWidget* dialog, QString& errorMessage);
-    bool processSixthPage(QWidget* dialog, QString& errorMessage);
-    bool processSeventhPage(QWidget* dialog, QString& errorMessage);
+    bool processFirstPage(QWidget *dialog, QString &errorMessage);
+    bool processSecondPage(QWidget *dialog, QString &errorMessage);
+    bool processThirdPage(QWidget *dialog, QString &errorMessage);
+    bool processFourthPage(QWidget *dialog, QString &errorMessage);
+    bool processFifthPage(QWidget *dialog, QString &errorMessage);
+    bool processSixthPage(QWidget *dialog, QString &errorMessage);
+    bool processSeventhPage(QWidget *dialog, QString &errorMessage);
 
-    template <typename DataType>
+    template<typename DataType>
     void setType(QTableView *table, int row, const DataType &type) {
         GTMouseDriver::moveTo(GTTableView::getCellPosition(os, table, static_cast<int>(ColumnName::Type), row));
         GTMouseDriver::doubleClick();
         GTThread::waitForMainThread();
 
-        QComboBox* box = qobject_cast<QComboBox*>(QApplication::focusWidget());
+        QComboBox *box = qobject_cast<QComboBox *>(QApplication::focusWidget());
         QString dataType = dataTypeToString(type);
         GTComboBox::setIndexWithText(os, box, dataType);
 #ifdef Q_OS_WIN
-        GTKeyboardDriver::keyClick( Qt::Key_Enter);
+        GTKeyboardDriver::keyClick(Qt::Key_Enter);
 #endif
     }
 
-    template <typename DataType>
-    void fillTheTable(QTableView* table,
-                      QWidget* addRowButton,
-                      QList< Data<DataType> >& rowItems) {
-        QAbstractItemModel* model = table->model();
+    template<typename DataType>
+    void fillTheTable(QTableView *table,
+                      QWidget *addRowButton,
+                      QList<Data<DataType>> &rowItems) {
+        QAbstractItemModel *model = table->model();
         int row = model->rowCount();
 
         foreach (const Data<DataType> &rowData, rowItems) {
@@ -183,9 +187,9 @@ private:
         }
     }
 
-    ElementWithCommandLineSettings  settings;
+    ElementWithCommandLineSettings settings;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_GT_CREATE_ELEMENT_WITH_COMMAND_LINE_TOOL_FILLER_H_
+#endif    // _U2_GT_CREATE_ELEMENT_WITH_COMMAND_LINE_TOOL_FILLER_H_

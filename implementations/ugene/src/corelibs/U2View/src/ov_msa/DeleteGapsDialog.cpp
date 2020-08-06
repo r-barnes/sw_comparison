@@ -20,17 +20,19 @@
  */
 
 #include "DeleteGapsDialog.h"
-#include "ui_DeleteGapsDialog.h"
-
-#include <U2Gui/HelpButton.h>
 
 #include <QPushButton>
 
+#include <U2Gui/HelpButton.h>
+
+#include "ui_DeleteGapsDialog.h"
+
 namespace U2 {
 
-DeleteGapsDialog::DeleteGapsDialog(QWidget* parent, int rowNum): QDialog(parent), ui(new Ui_DeleteGapsDialog()) {
+DeleteGapsDialog::DeleteGapsDialog(QWidget *parent, int rowNum)
+    : QDialog(parent), ui(new Ui_DeleteGapsDialog()) {
     ui->setupUi(this);
-    new HelpButton(this, ui->buttonBox, "24742460");
+    new HelpButton(this, ui->buttonBox, "46500015");
     ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Remove"));
     ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -48,9 +50,8 @@ DeleteGapsDialog::DeleteGapsDialog(QWidget* parent, int rowNum): QDialog(parent)
     connect(cancelButton, SIGNAL(clicked()), SLOT(sl_onCancelClicked()));
 
     sl_onRadioButtonClicked();
-
 }
-DeleteGapsDialog::~DeleteGapsDialog(){
+DeleteGapsDialog::~DeleteGapsDialog() {
     delete ui;
 }
 
@@ -69,12 +70,15 @@ void DeleteGapsDialog::sl_onRadioButtonClicked() {
 void DeleteGapsDialog::sl_onOkClicked() {
     deleteMode = ui->allRadioButton->isChecked() ? DeleteAll : (ui->relativeRadioButton->isChecked() ? DeleteByRelativeVal : DeleteByAbsoluteVal);
 
-    switch(deleteMode) {
-        case DeleteByAbsoluteVal: value = ui->absoluteSpinBox->value();
-            break;
-        case DeleteByRelativeVal: value = ui->relativeSpinBox->value();
-            break;
-        default: value = 0;
+    switch (deleteMode) {
+    case DeleteByAbsoluteVal:
+        value = ui->absoluteSpinBox->value();
+        break;
+    case DeleteByRelativeVal:
+        value = ui->relativeSpinBox->value();
+        break;
+    default:
+        value = 0;
     }
 
     accept();
@@ -84,4 +88,4 @@ void DeleteGapsDialog::sl_onCancelClicked() {
     reject();
 }
 
-}
+}    // namespace U2

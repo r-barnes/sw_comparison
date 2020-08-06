@@ -23,6 +23,7 @@
 #define __COVERED_REGIONS_MANAGER_H__
 
 #include <QVector>
+
 #include "CoverageInfo.h"
 
 namespace U2 {
@@ -32,21 +33,25 @@ namespace U2 {
  * intersecting the region.
  */
 struct CoveredRegion {
-    CoveredRegion(const U2Region & region_, qint64 coverage_) : region(region_), coverage(coverage_) {}
+    CoveredRegion(const U2Region &region_, qint64 coverage_)
+        : region(region_), coverage(coverage_) {
+    }
     U2Region region;
     qint64 coverage;
 };
-
 
 /**
  * Simple holder of coverage information, provides methods to select well-covered regions.
  */
 class CoveredRegionsManager {
 public:
-    CoveredRegionsManager() {}
-    CoveredRegionsManager(const U2Region & visibleRegion_, const U2AssemblyCoverageStat & coverageInfo_);
+    CoveredRegionsManager() {
+    }
+    CoveredRegionsManager(const U2Region &visibleRegion_, const U2AssemblyCoverageStat &coverageInfo_);
 
-    inline bool isEmpty() const {return allRegions.empty();}
+    inline bool isEmpty() const {
+        return allRegions.empty();
+    }
 
     inline int getSize() const {
         return allRegions.size();
@@ -60,7 +65,7 @@ public:
     /**
      * Returns topSize most covered regions with topSize >= coverageLevel.
      */
-    QList<CoveredRegion> getTopCoveredRegions(int topSize, qint64 coverageLevel=0) const;
+    QList<CoveredRegion> getTopCoveredRegions(int topSize, qint64 coverageLevel = 0) const;
 
     static const int DESIRED_REGION_LENGTH;
 
@@ -69,7 +74,6 @@ private:
     QList<CoveredRegion> allRegions;
 };
 
-
-}
+}    // namespace U2
 
 #endif

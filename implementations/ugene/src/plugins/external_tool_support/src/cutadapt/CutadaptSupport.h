@@ -29,7 +29,7 @@ namespace U2 {
 class CutadaptSupport : public ExternalTool {
     Q_OBJECT
 public:
-    CutadaptSupport(const QString& id, const QString& name, const QString& path = "");
+    CutadaptSupport(const QString &id, const QString &name, const QString &path = "");
 
     static const QString ET_CUTADAPT;
     static const QString ET_CUTADAPT_ID;
@@ -37,5 +37,5 @@ public:
     static const QString ADAPTERS_DATA_NAME;
 };
 
-}//namespace
-#endif // _U2_CUTADAPT_SUPPORT_H_
+}    // namespace U2
+#endif    // _U2_CUTADAPT_SUPPORT_H_

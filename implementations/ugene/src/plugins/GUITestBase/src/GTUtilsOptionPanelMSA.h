@@ -38,7 +38,8 @@ public:
         PairwiseAlignment,
         TreeSettings,
         ExportConsensus,
-        Statistics
+        Statistics,
+        Search
     };
 
     enum AddRefMethod {
@@ -51,6 +52,18 @@ public:
         GreaterOrEqual
     };
 
+    enum class CopyFormat {
+        Fasta,
+        CLUSTALW,
+        Stocholm,
+        MSF,
+        NEXUS,
+        Mega,
+        PHYLIP_Interleaved,
+        PHYLIP_Sequential,
+        Rich_text
+    };
+
     static const QMap<Tabs, QString> tabsNames;
     static const QMap<Tabs, QString> innerWidgetNames;
 
@@ -58,6 +71,7 @@ public:
     static void openTab(HI::GUITestOpStatus &os, Tabs tab);
     static void closeTab(HI::GUITestOpStatus &os, Tabs tab);
     static bool isTabOpened(HI::GUITestOpStatus &os, Tabs tab);
+    static void checkTabIsOpened(HI::GUITestOpStatus &os, Tabs tab);
 
     static void addReference(HI::GUITestOpStatus &os, QString seqName, AddRefMethod method = Button);
     static void addFirstSeqToPA(HI::GUITestOpStatus &os, QString seqName, AddRefMethod method = Button);
@@ -67,6 +81,7 @@ public:
     static QString getReference(HI::GUITestOpStatus &os);
     static int getLength(HI::GUITestOpStatus &os);
     static int getHeight(HI::GUITestOpStatus &os);
+    static void copySelection(HI::GUITestOpStatus &os, const CopyFormat format = CopyFormat::CLUSTALW);
 
     static void setColorScheme(HI::GUITestOpStatus &os, const QString &colorSchemeName, GTGlobals::UseMethod method = GTGlobals::UseKeyBoard);
     static QString getColorScheme(HI::GUITestOpStatus &os);
@@ -74,9 +89,9 @@ public:
     static void setHighlightingScheme(HI::GUITestOpStatus &os, const QString &highlightingSchemeName);
 
     // functions for accessing PA gui elements
-    static QToolButton* getAddButton(HI::GUITestOpStatus &os, int number);
-    static QLineEdit* getSeqLineEdit(HI::GUITestOpStatus &os, int number);
-    static QToolButton* getDeleteButton(HI::GUITestOpStatus &os, int number);
+    static QToolButton *getAddButton(HI::GUITestOpStatus &os, int number);
+    static QLineEdit *getSeqLineEdit(HI::GUITestOpStatus &os, int number);
+    static QToolButton *getDeleteButton(HI::GUITestOpStatus &os, int number);
     static QPushButton *getAlignButton(HI::GUITestOpStatus &os);
     static void setPairwiseAlignmentAlgorithm(HI::GUITestOpStatus &os, const QString &algorithm);
 
@@ -94,11 +109,27 @@ public:
     static void setExportConsensusOutputPath(HI::GUITestOpStatus &os, const QString &filePath);
     static QString getExportConsensusOutputPath(HI::GUITestOpStatus &os);
 
-    static void setExportConsensusOutputFormat(HI::GUITestOpStatus &os, const QString &format);
     static QString getExportConsensusOutputFormat(HI::GUITestOpStatus &os);
 
+    // functions for accessing "Find pattern" options elements
+    static void enterPattern(HI::GUITestOpStatus &os, QString pattern, bool useCopyPaste = false);
+    static QString getPattern(HI::GUITestOpStatus &os);
+    static void setAlgorithm(HI::GUITestOpStatus &os, QString algorithm);
+    static void setMatchPercentage(HI::GUITestOpStatus &os, int percentage);
+    static void setCheckedRemoveOverlappedResults(HI::GUITestOpStatus &os, bool checkedState = true);
+    static void checkResultsText(HI::GUITestOpStatus &os, QString expectedText);
+    static void setRegionType(HI::GUITestOpStatus &os, const QString &regionType);
+    static void setRegion(HI::GUITestOpStatus &os, int from, int to);
+    static void setSearchContext(HI::GUITestOpStatus &os, const QString& context);
+
+    static void clickNext(HI::GUITestOpStatus &os);
+    static void clickPrev(HI::GUITestOpStatus &os);
+
+    static bool isSearchInShowHideWidgetOpened(HI::GUITestOpStatus &os);
+    static void openSearchInShowHideWidget(HI::GUITestOpStatus &os, bool open = true);
+
 private:
-    static QWidget* getWidget(HI::GUITestOpStatus &os, const QString& widgetName, int number);
+    static QWidget *getWidget(HI::GUITestOpStatus &os, const QString &widgetName, int number);
 
     static void addSeqToPA(HI::GUITestOpStatus &os, QString seqName, AddRefMethod method, int number);
 
@@ -106,6 +137,6 @@ private:
     static QMap<Tabs, QString> initInnerWidgetNames();
 };
 
-}
+}    // namespace U2
 
-#endif // _U2_GT_UTILS_OPTION_PANEL_MSA_H_
+#endif    // _U2_GT_UTILS_OPTION_PANEL_MSA_H_

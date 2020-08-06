@@ -33,8 +33,9 @@
 
 #include <U2View/BaseWidthController.h>
 #include <U2View/MSAEditorConsensusArea.h>
-#include <U2View/MaEditorNameList.h>
 #include <U2View/MSAEditorOverviewArea.h>
+#include <U2View/MaEditorFactory.h>
+#include <U2View/MaEditorNameList.h>
 #include <U2View/MaGraphOverview.h>
 #include <U2View/MaSimpleOverview.h>
 #include <U2View/RowHeightController.h>
@@ -52,6 +53,26 @@ using namespace HI;
 
 #define GT_CLASS_NAME "GTUtilsMsaEditor"
 
+#define GT_METHOD_NAME "getActiveMsaEditorWindow"
+QWidget *GTUtilsMsaEditor::getActiveMsaEditorWindow(GUITestOpStatus &os) {
+    QWidget *widget = GTUtilsMdi::getActiveObjectViewWindow(os, MsaEditorFactory::ID);
+    GTThread::waitForMainThread();
+    return widget;
+}
+#undef GT_METHOD_NAME
+
+#define GT_METHOD_NAME "checkMsaEditorWindowIsActive"
+void GTUtilsMsaEditor::checkMsaEditorWindowIsActive(GUITestOpStatus &os) {
+    getActiveMsaEditorWindow(os);
+}
+#undef GT_METHOD_NAME
+
+#define GT_METHOD_NAME "checkNoMsaEditorWindowIsOpened"
+void GTUtilsMsaEditor::checkNoMsaEditorWindowIsOpened(GUITestOpStatus &os) {
+    GTUtilsMdi::checkNoObjectViewWindowIsOpened(os, MsaEditorFactory::ID);
+}
+#undef GT_METHOD_NAME
+
 #define GT_METHOD_NAME "getGraphOverviewTopLeftPixelColor"
 QColor GTUtilsMsaEditor::getGraphOverviewPixelColor(GUITestOpStatus &os, const QPoint &point) {
     return GTWidget::getColor(os, getGraphOverview(os), point);
@@ -63,26 +84,34 @@ QColor GTUtilsMsaEditor::getSimpleOverviewPixelColor(GUITestOpStatus &os, const 
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getEditor"
-MSAEditor * GTUtilsMsaEditor::getEditor(GUITestOpStatus &os) {
+MSAEditor *GTUtilsMsaEditor::getEditor(GUITestOpStatus &os) {
     MsaEditorWgt *editorUi = getEditorUi(os);
-    CHECK_OP(os, NULL);
     return editorUi->getEditor();
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getEditorUi"
-MsaEditorWgt * GTUtilsMsaEditor::getEditorUi(GUITestOpStatus &os) {
-    QWidget *activeWindow = GTUtilsMdi::activeWindow(os);
-    CHECK_OP(os, NULL);
-    return activeWindow->findChild<MsaEditorWgt *>();
+MsaEditorWgt *GTUtilsMsaEditor::getEditorUi(GUITestOpStatus &os) {
+    checkMsaEditorWindowIsActive(os);
+    MsaEditorWgt *msaEditorWgt = nullptr;
+    // For some reason MsaEditorWgt is not within normal widgets hierarchy (wrong parent?), so can't use GTWidget::findWidget here.
+    for (int time = 0; time < GT_OP_WAIT_MILLIS && msaEditorWgt == nullptr; time += GT_OP_CHECK_MILLIS) {
+        GTGlobals::sleep(time > 0 ? GT_OP_CHECK_MILLIS : 0);
+        MainWindow *mainWindow = AppContext::getMainWindow();
+        QWidget *activeWindow = mainWindow == nullptr ? nullptr : mainWindow->getMDIManager()->getActiveWindow();
+        if (activeWindow == nullptr) {
+            continue;
+        }
+        msaEditorWgt = activeWindow->findChild<MsaEditorWgt *>();
+    }
+    GT_CHECK_RESULT(msaEditorWgt != nullptr, "MSA Editor widget is not found", nullptr);
+    return msaEditorWgt;
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getGraphOverview"
-MaGraphOverview * GTUtilsMsaEditor::getGraphOverview(GUITestOpStatus &os) {
-    QWidget *activeWindow = GTUtilsMdi::activeWindow(os);
-    CHECK_OP(os, NULL);
-
+MaGraphOverview *GTUtilsMsaEditor::getGraphOverview(GUITestOpStatus &os) {
+    QWidget *activeWindow = getActiveMsaEditorWindow(os);
     MaGraphOverview *result = GTWidget::findExactWidget<MaGraphOverview *>(os, MSAEditorOverviewArea::OVERVIEW_AREA_OBJECT_NAME + QString("_graph"), activeWindow);
     GT_CHECK_RESULT(NULL != result, "MaGraphOverview is not found", NULL);
     return result;
@@ -90,10 +119,8 @@ MaGraphOverview * GTUtilsMsaEditor::getGraphOverview(GUITestOpStatus &os) {
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getSimpleOverview"
-MaSimpleOverview * GTUtilsMsaEditor::getSimpleOverview(GUITestOpStatus &os) {
-    QWidget *activeWindow = GTUtilsMdi::activeWindow(os);
-    CHECK_OP(os, NULL);
-
+MaSimpleOverview *GTUtilsMsaEditor::getSimpleOverview(GUITestOpStatus &os) {
+    QWidget *activeWindow = getActiveMsaEditorWindow(os);
     MaSimpleOverview *result = GTWidget::findExactWidget<MaSimpleOverview *>(os, MSAEditorOverviewArea::OVERVIEW_AREA_OBJECT_NAME + QString("_simple"), activeWindow);
     GT_CHECK_RESULT(NULL != result, "MaSimpleOverview is not found", NULL);
     return result;
@@ -101,18 +128,15 @@ MaSimpleOverview * GTUtilsMsaEditor::getSimpleOverview(GUITestOpStatus &os) {
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getTreeView"
-MSAEditorTreeViewerUI * GTUtilsMsaEditor::getTreeView(GUITestOpStatus &os) {
-    QWidget *activeWindow = GTUtilsMdi::activeWindow(os);
-    CHECK_OP(os, NULL);
+MSAEditorTreeViewerUI *GTUtilsMsaEditor::getTreeView(GUITestOpStatus &os) {
+    QWidget *activeWindow = getActiveMsaEditorWindow(os);
     return GTWidget::findExactWidget<MSAEditorTreeViewerUI *>(os, "treeView", activeWindow);
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getNameListArea"
-MaEditorNameList * GTUtilsMsaEditor::getNameListArea(GUITestOpStatus &os) {
-    QWidget *activeWindow = GTUtilsMdi::activeWindow(os);
-    CHECK_OP(os, NULL);
-
+MaEditorNameList *GTUtilsMsaEditor::getNameListArea(GUITestOpStatus &os) {
+    QWidget *activeWindow = getActiveMsaEditorWindow(os);
     MaEditorNameList *result = GTWidget::findExactWidget<MaEditorNameList *>(os, "msa_editor_name_list", activeWindow);
     GT_CHECK_RESULT(NULL != result, "MaGraphOverview is not found", NULL);
     return result;
@@ -120,15 +144,14 @@ MaEditorNameList * GTUtilsMsaEditor::getNameListArea(GUITestOpStatus &os) {
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getConsensusArea"
-MSAEditorConsensusArea * GTUtilsMsaEditor::getConsensusArea(GUITestOpStatus &os) {
-    QWidget *activeWindow = GTUtilsMdi::activeWindow(os);
-    CHECK_OP(os, NULL);
+MSAEditorConsensusArea *GTUtilsMsaEditor::getConsensusArea(GUITestOpStatus &os) {
+    QWidget *activeWindow = getActiveMsaEditorWindow(os);
     return GTWidget::findExactWidget<MSAEditorConsensusArea *>(os, "consArea", activeWindow);
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getSequenceNameRect"
-MSAEditorSequenceArea * GTUtilsMsaEditor::getSequenceArea(GUITestOpStatus &os) {
+MSAEditorSequenceArea *GTUtilsMsaEditor::getSequenceArea(GUITestOpStatus &os) {
     return GTUtilsMSAEditorSequenceArea::getSequenceArea(os);
 }
 #undef GT_METHOD_NAME
@@ -141,7 +164,7 @@ QRect GTUtilsMsaEditor::getSequenceNameRect(GUITestOpStatus &os, const QString &
     const QStringList names = GTUtilsMSAEditorSequenceArea::getVisibleNames(os);
     const int rowNumber = names.indexOf(sequenceName);
     GT_CHECK_RESULT(0 <= rowNumber, QString("Sequence '%1' not found").arg(sequenceName), QRect());
-    return getSequenceNameRect(os,  rowNumber);
+    return getSequenceNameRect(os, rowNumber);
 }
 #undef GT_METHOD_NAME
 
@@ -321,7 +344,7 @@ void GTUtilsMsaEditor::toggleCollapsingMode(GUITestOpStatus &os) {
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "isSequenceCollapsed"
-bool GTUtilsMsaEditor::isSequenceCollapsed(GUITestOpStatus &os, const QString &seqName){
+bool GTUtilsMsaEditor::isSequenceCollapsed(GUITestOpStatus &os, const QString &seqName) {
     QStringList names = GTUtilsMSAEditorSequenceArea::getNameList(os);
     GT_CHECK_RESULT(names.contains(seqName), "sequence " + seqName + " not found in name list", false);
     QStringList visiablenames = GTUtilsMSAEditorSequenceArea::getVisibleNames(os);
@@ -372,24 +395,28 @@ QStringList GTUtilsMsaEditor::getWholeData(GUITestOpStatus &os) {
 
 #define GT_METHOD_NAME "undo"
 void GTUtilsMsaEditor::undo(GUITestOpStatus &os) {
+    getActiveMsaEditorWindow(os);
     GTWidget::click(os, GTToolbar::getWidgetForActionName(os, GTToolbar::getToolbar(os, MWTOOLBAR_ACTIVEMDI), "msa_action_undo"));
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "redo"
 void GTUtilsMsaEditor::redo(GUITestOpStatus &os) {
+    getActiveMsaEditorWindow(os);
     GTWidget::click(os, GTToolbar::getWidgetForActionName(os, GTToolbar::getToolbar(os, MWTOOLBAR_ACTIVEMDI), "msa_action_redo"));
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "isUndoEnabled"
 bool GTUtilsMsaEditor::isUndoEnabled(GUITestOpStatus &os) {
+    getActiveMsaEditorWindow(os);
     return GTToolbar::getWidgetForActionName(os, GTToolbar::getToolbar(os, MWTOOLBAR_ACTIVEMDI), "msa_action_undo")->isEnabled();
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "isRedoEnabled"
 bool GTUtilsMsaEditor::isRedoEnabled(GUITestOpStatus &os) {
+    getActiveMsaEditorWindow(os);
     return GTToolbar::getWidgetForActionName(os, GTToolbar::getToolbar(os, MWTOOLBAR_ACTIVEMDI), "msa_action_redo")->isEnabled();
 }
 #undef GT_METHOD_NAME
@@ -417,4 +444,4 @@ void GTUtilsMsaEditor::setReference(GUITestOpStatus &os, const QString &sequence
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

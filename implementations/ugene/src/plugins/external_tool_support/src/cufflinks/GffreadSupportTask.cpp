@@ -19,21 +19,19 @@
  * MA 02110-1301, USA.
  */
 
-#include "CufflinksSupport.h"
+#include "GffreadSupportTask.h"
 
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentUtils.h>
 #include <U2Core/ExternalToolRunTask.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "GffreadSupportTask.h"
+#include "CufflinksSupport.h"
 
 namespace U2 {
 
 GffreadSupportTask::GffreadSupportTask(const GffreadSettings &_settings)
-: ExternalToolSupportTask(tr("Running Gffread task"), TaskFlags_NR_FOSE_COSC), settings(_settings)
-{
-
+    : ExternalToolSupportTask(tr("Running Gffread task"), TaskFlags_NR_FOSE_COSC), settings(_settings) {
 }
 
 void GffreadSupportTask::prepare() {
@@ -42,7 +40,7 @@ void GffreadSupportTask::prepare() {
     checkFormat(settings.transcriptsUrl, BaseDocumentFormats::GTF);
     CHECK_OP(stateInfo, );
 
-    ExternalToolRunTask* runTask = new ExternalToolRunTask(CufflinksSupport::ET_GFFREAD_ID, settings.getArguments(), new ExternalToolLogParser());
+    ExternalToolRunTask *runTask = new ExternalToolRunTask(CufflinksSupport::ET_GFFREAD_ID, settings.getArguments(), new ExternalToolLogParser());
     setListenerForTask(runTask);
     addSubTask(runTask);
 }
@@ -78,4 +76,4 @@ QStringList GffreadSettings::getArguments() const {
     return args;
 }
 
-} // U2
+}    // namespace U2

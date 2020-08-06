@@ -21,44 +21,43 @@
 
 #include "SequenceWalkerTests.h"
 
-#include <U2Core/U2Region.h>
 #include <U2Core/GObject.h>
 #include <U2Core/GObjectTypes.h>
+#include <U2Core/U2Region.h>
 
 /* TRANSLATOR U2::GTest */
 
 namespace U2 {
 
-#define CHUNK_ATTR      "chunk"
-#define OVERLAP_ATTR    "overlap"
-#define EXTRA_LEN_ATTR  "extra_len"
-#define REGION_ATTR     "region"
-#define REVERSE_ATTR    "reverse"
-#define RESULT_ATTR     "result"
+#define CHUNK_ATTR "chunk"
+#define OVERLAP_ATTR "overlap"
+#define EXTRA_LEN_ATTR "extra_len"
+#define REGION_ATTR "region"
+#define REVERSE_ATTR "reverse"
+#define RESULT_ATTR "result"
 
-void GTest_SW_CheckRegion::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_SW_CheckRegion::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
-
 
     QString stepStr = el.attribute(CHUNK_ATTR);
     if (stepStr.isEmpty()) {
         failMissingValue(CHUNK_ATTR);
         return;
     }
-    bool ok=false;
+    bool ok = false;
     chunkSize = stepStr.toInt(&ok);
-    if(!ok) {
+    if (!ok) {
         failMissingValue(CHUNK_ATTR);
         return;
     }
-    QString overlapStr= el.attribute(OVERLAP_ATTR);
+    QString overlapStr = el.attribute(OVERLAP_ATTR);
     if (overlapStr.isEmpty()) {
         failMissingValue(OVERLAP_ATTR);
         return;
     }
-    ok=false;
+    ok = false;
     overlap = overlapStr.toInt(&ok);
-    if(!ok) {
+    if (!ok) {
         failMissingValue(OVERLAP_ATTR);
         return;
     }
@@ -67,9 +66,9 @@ void GTest_SW_CheckRegion::init(XMLTestFormat *tf, const QDomElement& el) {
         failMissingValue(EXTRA_LEN_ATTR);
         return;
     }
-    ok=false;
+    ok = false;
     extraLen = extraLenStr.toInt(&ok);
-    if(!ok) {
+    if (!ok) {
         failMissingValue(EXTRA_LEN_ATTR);
         return;
     }
@@ -79,25 +78,25 @@ void GTest_SW_CheckRegion::init(XMLTestFormat *tf, const QDomElement& el) {
         return;
     }
     QStringList regNums = regionStr.split("..");
-    if (regNums.size()!=2) {
+    if (regNums.size() != 2) {
         failMissingValue(REGION_ATTR);
         return;
     }
-    ok=false;
+    ok = false;
     region.startPos = regNums[0].toInt(&ok);
-    if(!ok) {
+    if (!ok) {
         failMissingValue(REGION_ATTR);
         return;
     }
-    region.length= regNums[1].toInt(&ok)-region.startPos;
-    if(!ok) {
+    region.length = regNums[1].toInt(&ok) - region.startPos;
+    if (!ok) {
         failMissingValue(REGION_ATTR);
         return;
     }
     QString reventNorm_str = el.attribute(REVERSE_ATTR);
     if (reventNorm_str == "true") {
         reventNorm = true;
-    } else if(reventNorm_str == "false") {
+    } else if (reventNorm_str == "false") {
         reventNorm = false;
     } else {
         failMissingValue(REVERSE_ATTR);
@@ -112,9 +111,9 @@ void GTest_SW_CheckRegion::init(XMLTestFormat *tf, const QDomElement& el) {
     QStringList list;
     int pos = 0;
     while ((pos = rx.indexIn(regions_str, pos)) != -1) {
-        int start=rx.cap(1).toInt();
-        int end=rx.cap(3).toInt();
-        result.append(U2Region(start,end-start));
+        int start = rx.cap(1).toInt();
+        int end = rx.cap(3).toInt();
+        result.append(U2Region(start, end - start));
         pos += rx.matchedLength();
     }
 }
@@ -125,16 +124,20 @@ Task::ReportResult GTest_SW_CheckRegion::report() {
     }
     QVector<U2Region> chunks = SequenceWalkerTask::splitRange(region, chunkSize, overlap, extraLen, reventNorm);
     int n = result.size();
-    if (n!=chunks.size()) {
+    if (n != chunks.size()) {
         stateInfo.setError(QString("number of regions not matched: %1, expected %2").arg(chunks.size()).arg(n));
         return ReportResult_Finished;
     }
-    for(int i=0; i<n; i++) {
-        const U2Region& region = result[i];
-        const U2Region& chunk = chunks[i];
-        if (chunk!=region) {
+    for (int i = 0; i < n; i++) {
+        const U2Region &region = result[i];
+        const U2Region &chunk = chunks[i];
+        if (chunk != region) {
             stateInfo.setError(QString("location not matched, idx=%1, \"%2..%3\", expected \"%4..%5\"")
-                .arg(i).arg(chunk.startPos).arg(chunk.endPos()).arg(region.startPos).arg(region.endPos()));
+                                   .arg(i)
+                                   .arg(chunk.startPos)
+                                   .arg(chunk.endPos())
+                                   .arg(region.startPos)
+                                   .arg(region.endPos()));
             return ReportResult_Finished;
         }
     }
@@ -142,10 +145,10 @@ Task::ReportResult GTest_SW_CheckRegion::report() {
     return ReportResult_Finished;
 }
 
-QList<XMLTestFactory*> SequenceWalkerTests::createTestFactories() {
-    QList<XMLTestFactory*> res;
+QList<XMLTestFactory *> SequenceWalkerTests::createTestFactories() {
+    QList<XMLTestFactory *> res;
     res.append(GTest_SW_CheckRegion::createFactory());
     return res;
 }
 
-}//namespace
+}    // namespace U2

@@ -20,17 +20,20 @@
  */
 
 #include "PythonSupport.h"
-#include "seqpos/SeqPosSupport.h"
-#include "ExternalToolSupportSettingsController.h"
-#include "ExternalToolSupportSettings.h"
+
+#include <QMainWindow>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/ScriptingToolRegistry.h>
-#include <U2Core/U2SafePoints.h>
 #include <U2Core/U2OpStatusUtils.h>
+#include <U2Core/U2SafePoints.h>
+
 #include <U2Gui/MainWindow.h>
-#include <QMainWindow>
+
+#include "ExternalToolSupportSettings.h"
+#include "ExternalToolSupportSettingsController.h"
+#include "seqpos/SeqPosSupport.h"
 
 namespace U2 {
 
@@ -43,9 +46,8 @@ const QString PythonModuleNumpySupport::ET_PYTHON_NUMPY_ID = "NUMPY";
 const QString PythonModuleBioSupport::ET_PYTHON_BIO = "Bio";
 const QString PythonModuleBioSupport::ET_PYTHON_BIO_ID = "BIO";
 
-PythonSupport::PythonSupport(const QString& id, const QString& name, const QString& path)
-    : RunnerTool(QStringList(), id, name, path)
-{
+PythonSupport::PythonSupport(const QString &id, const QString &name, const QString &path)
+    : RunnerTool(QStringList(), id, name, path) {
     if (AppContext::getMainWindow()) {
         icon = QIcon(":external_tool_support/images/python.png");
         grayIcon = QIcon(":external_tool_support/images/python_gray.png");
@@ -54,9 +56,9 @@ PythonSupport::PythonSupport(const QString& id, const QString& name, const QStri
 #ifdef Q_OS_WIN
     executableFileName = "python.exe";
 #else
-    #if defined(Q_OS_UNIX)
+#    if defined(Q_OS_UNIX)
     executableFileName = "python2.7";
-    #endif
+#    endif
 #endif
     validMessage = "Python ";
     validationArguments << "--version";
@@ -68,8 +70,8 @@ PythonSupport::PythonSupport(const QString& id, const QString& name, const QStri
     muted = true;
 }
 
-PythonModuleSupport::PythonModuleSupport(const QString& id, const QString &name) :
-    ExternalToolModule(id, name) {
+PythonModuleSupport::PythonModuleSupport(const QString &id, const QString &name)
+    : ExternalToolModule(id, name) {
     if (AppContext::getMainWindow()) {
         icon = QIcon(":external_tool_support/images/python.png");
         grayIcon = QIcon(":external_tool_support/images/python_gray.png");
@@ -78,9 +80,9 @@ PythonModuleSupport::PythonModuleSupport(const QString& id, const QString &name)
 #ifdef Q_OS_WIN
     executableFileName = "python.exe";
 #else
-    #if defined(Q_OS_UNIX)
+#    if defined(Q_OS_UNIX)
     executableFileName = "python2.7";
-    #endif
+#    endif
 #endif
 
     validationArguments << "-c";
@@ -97,8 +99,8 @@ PythonModuleSupport::PythonModuleSupport(const QString& id, const QString &name)
     muted = true;
 }
 
-PythonModuleDjangoSupport::PythonModuleDjangoSupport(const QString& id, const QString &name) :
-    PythonModuleSupport(id, name) {
+PythonModuleDjangoSupport::PythonModuleDjangoSupport(const QString &id, const QString &name)
+    : PythonModuleSupport(id, name) {
     description += ET_PYTHON_DJANGO + tr(": Python module for the %1 tool").arg(SeqPosSupport::ET_SEQPOS);
 
     validationArguments << "import django;print(\"django version: \", django.VERSION);";
@@ -106,8 +108,8 @@ PythonModuleDjangoSupport::PythonModuleDjangoSupport(const QString& id, const QS
     versionRegExp = QRegExp("(\\d+,\\s\\d+,\\s\\d+)");
 }
 
-PythonModuleNumpySupport::PythonModuleNumpySupport(const QString& id, const QString &name) :
-    PythonModuleSupport(id, name) {
+PythonModuleNumpySupport::PythonModuleNumpySupport(const QString &id, const QString &name)
+    : PythonModuleSupport(id, name) {
     description += ET_PYTHON_NUMPY + tr(": Python module for the %1 tool").arg(SeqPosSupport::ET_SEQPOS);
 
     validationArguments << "import numpy;print(\"numpy version: \", numpy.__version__);";
@@ -116,11 +118,11 @@ PythonModuleNumpySupport::PythonModuleNumpySupport(const QString& id, const QStr
 }
 
 namespace {
-    const QString ET_METAPHLAN = "MetaPhlAn2";
+const QString ET_METAPHLAN = "MetaPhlAn2";
 }
 
-PythonModuleBioSupport::PythonModuleBioSupport(const QString& id, const QString& name) :
-    PythonModuleSupport(id, name) {
+PythonModuleBioSupport::PythonModuleBioSupport(const QString &id, const QString &name)
+    : PythonModuleSupport(id, name) {
     description += ET_PYTHON_BIO + tr(" (or biopython) is a python module for biological computations.");
 
     validationArguments << "import Bio;print(\"Bio version: \", Bio.__version__);";
@@ -128,5 +130,4 @@ PythonModuleBioSupport::PythonModuleBioSupport(const QString& id, const QString&
     versionRegExp = QRegExp("(\\d+.\\d+)");
 }
 
-
-}//namespace
+}    // namespace U2

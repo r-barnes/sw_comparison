@@ -22,12 +22,12 @@
 #ifndef _U2_SEQUENCEPROTOTYPE_H_
 #define _U2_SEQUENCEPROTOTYPE_H_
 
+#include <QObject>
+
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/U2OpStatus.h>
 
 #include "DbiClassPrototype.h"
-
-#include <QObject>
 namespace U2 {
 
 /************************************************************************/
@@ -65,9 +65,9 @@ public slots:
     void splice();
 
 private:
-    U2SequenceObject * getSequenceObject() const;
+    U2SequenceObject *getSequenceObject() const;
     /** Returns NULL and throws script exception if this object is invalid */
-    U2SequenceObject * getValidSequenceObject() const;
+    U2SequenceObject *getValidSequenceObject() const;
     /** startPosArg < lengthPosArg */
     U2Region getRegion(int startPosArg, int lengthPosArg);
 };
@@ -92,11 +92,11 @@ public:
     static Workflow::SharedDbiDataHandler copySequence(const ScriptDbiData &id, QScriptEngine *engine);
 
 private:
-    WorkflowScriptEngine * workflowEngine() const;
+    WorkflowScriptEngine *workflowEngine() const;
 };
 
-} // U2
+}    // namespace U2
 
-Q_DECLARE_METATYPE(U2::SequenceScriptClass*)
+Q_DECLARE_METATYPE(U2::SequenceScriptClass *)
 
-#endif // _U2_SEQUENCEPROTOTYPE_H_
+#endif    // _U2_SEQUENCEPROTOTYPE_H_

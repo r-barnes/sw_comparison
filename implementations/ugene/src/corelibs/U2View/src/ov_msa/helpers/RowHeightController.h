@@ -28,7 +28,7 @@ namespace U2 {
 
 class MaEditorWgt;
 
-class U2VIEW_EXPORT RowHeightController : public QObject{
+class U2VIEW_EXPORT RowHeightController : public QObject {
     Q_OBJECT
 public:
     RowHeightController(MaEditorWgt *ui);
@@ -52,8 +52,8 @@ public:
     U2Region getGlobalYRegionByMaRowIndex(int maRowIndex, const QList<int> &maRowIndexes) const;
     U2Region getGlobalYRegionByViewRowIndex(int viewRowIndex) const;
 
-    U2Region getGlobalYRegionByViewRowsRegion(const U2Region& viewRowsRegion) const;
-    U2Region getScreenYRegionByViewRowsRegion(const U2Region& viewRowsRegion) const;
+    U2Region getGlobalYRegionByViewRowsRegion(const U2Region &viewRowsRegion) const;
+    U2Region getScreenYRegionByViewRowsRegion(const U2Region &viewRowsRegion) const;
 
     U2Region getScreenYRegionByMaRowIndex(int maRowIndex) const;
 
@@ -68,11 +68,11 @@ public:
     int getSingleRowHeight() const;
 
 protected:
-    U2Region mapGlobalToScreen(const U2Region& globalRegion) const;
+    U2Region mapGlobalToScreen(const U2Region &globalRegion) const;
 
     MaEditorWgt *ui;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_ROW_HEIGHT_CONTROLLER_H_
+#endif    // _U2_ROW_HEIGHT_CONTROLLER_H_

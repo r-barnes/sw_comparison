@@ -22,9 +22,9 @@
 #ifndef _U2_MSA_EDITOR_STATUS_BAR_H_
 #define _U2_MSA_EDITOR_STATUS_BAR_H_
 
-#include "MaEditorStatusBar.h"
-
 #include <QRegExpValidator>
+
+#include "MaEditorStatusBar.h"
 
 class QLineEdit;
 class QPushButton;
@@ -37,7 +37,7 @@ class MaSearchValidator;
 class MsaEditorStatusBar : public MaEditorStatusBar {
     Q_OBJECT
 public:
-    MsaEditorStatusBar(MultipleAlignmentObject* mobj, MaEditorSequenceArea* seqArea);
+    MsaEditorStatusBar(MultipleAlignmentObject *mobj, MaEditorSequenceArea *seqArea);
 
 private:
     void setupLayout();
@@ -46,10 +46,10 @@ private:
 
 class MaSearchValidator : public QRegExpValidator {
 public:
-    MaSearchValidator(const DNAAlphabet* alphabet, QObject* parent);
+    MaSearchValidator(const DNAAlphabet *alphabet, QObject *parent);
     State validate(QString &input, int &pos) const;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_MSA_EDITOR_STATUS_BAR_H_
+#endif    // _U2_MSA_EDITOR_STATUS_BAR_H_

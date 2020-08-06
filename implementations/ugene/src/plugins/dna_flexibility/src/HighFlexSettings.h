@@ -24,18 +24,15 @@
 
 #include <QString>
 
-
 namespace U2 {
 
-
-class HighFlexSettings
-{
+class HighFlexSettings {
 public:
     HighFlexSettings();
 
-    int             windowSize;
-    int             windowStep;
-    double          threshold;
+    int windowSize;
+    int windowStep;
+    double threshold;
 
     void restoreDefaults();
     void rememberSettings();
@@ -52,7 +49,6 @@ private:
     bool restoreRememberedSettings();
 };
 
-
-} // namespace
+}    // namespace U2
 
 #endif

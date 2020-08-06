@@ -21,36 +21,37 @@
 
 #ifdef OPENCL_SUPPORT
 
-#include <algorithm>
-#include <functional>
+#    include <algorithm>
+#    include <functional>
 
-#include <U2Core/AppContext.h>
-#include <U2Core/Settings.h>
-#include <U2Core/U2SafePoints.h>
+#    include <U2Core/AppContext.h>
+#    include <U2Core/Settings.h>
+#    include <U2Core/U2SafePoints.h>
 
-#include "OpenCLGpuRegistry.h"
+#    include "OpenCLGpuRegistry.h"
 
 namespace U2 {
 
-OpenCLGpuRegistry::OpenCLGpuRegistry() : openCLHelper(NULL){
+OpenCLGpuRegistry::OpenCLGpuRegistry()
+    : openCLHelper(NULL) {
 }
 
 OpenCLGpuRegistry::~OpenCLGpuRegistry() {
-    qDeleteAll( gpus.values() );
+    qDeleteAll(gpus.values());
 }
 
-void OpenCLGpuRegistry::registerOpenCLGpu( OpenCLGpuModel * gpu ) {
-    assert( !gpus.contains(gpu->getId()) );
-    gpus.insert( gpu->getId(), gpu );
+void OpenCLGpuRegistry::registerOpenCLGpu(OpenCLGpuModel *gpu) {
+    assert(!gpus.contains(gpu->getId()));
+    gpus.insert(gpu->getId(), gpu);
 }
 
-void OpenCLGpuRegistry::unregisterOpenCLGpu(OpenCLGpuModel * gpu) {
+void OpenCLGpuRegistry::unregisterOpenCLGpu(OpenCLGpuModel *gpu) {
     CHECK(gpus.contains(gpu->getId()), );
     delete gpus.take(gpu->getId());
 }
 
-OpenCLGpuModel * OpenCLGpuRegistry::getGpuById(cl_device_id id ) const {
-    return gpus.value( id, 0 );
+OpenCLGpuModel *OpenCLGpuRegistry::getGpuById(cl_device_id id) const {
+    return gpus.value(id, 0);
 }
 
 OpenCLGpuModel *OpenCLGpuRegistry::getGpuByName(const QString &name) const {
@@ -69,11 +70,11 @@ QList<OpenCLGpuModel *> OpenCLGpuRegistry::getRegisteredGpus() const {
     return gpus.values();
 }
 
-OpenCLGpuModel* OpenCLGpuRegistry::getEnabledGpu() const {
-    QList<OpenCLGpuModel*> registeredGpus = getRegisteredGpus();
+OpenCLGpuModel *OpenCLGpuRegistry::getEnabledGpu() const {
+    QList<OpenCLGpuModel *> registeredGpus = getRegisteredGpus();
 
     OpenCLGpuModel *enabledGpu = nullptr;
-    foreach (OpenCLGpuModel* m, registeredGpus) {
+    foreach (OpenCLGpuModel *m, registeredGpus) {
         if (m && m->isEnabled()) {
             enabledGpu = m;
             break;
@@ -84,7 +85,7 @@ OpenCLGpuModel* OpenCLGpuRegistry::getEnabledGpu() const {
 }
 
 QString OpenCLGpuRegistry::getEnabledGpuName() const {
-    OpenCLGpuModel * enabledGpu = getEnabledGpu();
+    OpenCLGpuModel *enabledGpu = getEnabledGpu();
     CHECK(nullptr != enabledGpu, QString());
 
     return enabledGpu->getName();
@@ -92,7 +93,7 @@ QString OpenCLGpuRegistry::getEnabledGpuName() const {
 
 OpenCLGpuModel *OpenCLGpuRegistry::acquireEnabledGpuIfReady() {
     OpenCLGpuModel *model = nullptr;
-    foreach(OpenCLGpuModel * gpuModel, gpus.values()) {
+    foreach (OpenCLGpuModel *gpuModel, gpus.values()) {
         CHECK_CONTINUE(gpuModel->isEnabled());
         CHECK_BREAK(gpuModel->isReady());
 
@@ -104,8 +105,8 @@ OpenCLGpuModel *OpenCLGpuRegistry::acquireEnabledGpuIfReady() {
 }
 
 void OpenCLGpuRegistry::saveGpusSettings() const {
-    Settings* s = AppContext::getSettings();
-    foreach(OpenCLGpuModel *m, gpus) {
+    Settings *s = AppContext::getSettings();
+    foreach (OpenCLGpuModel *m, gpus) {
         CHECK_CONTINUE(m->isEnabled());
 
         s->setValue(OPENCL_GPU_REGISTRY_SETTINGS_GPU_ENABLED, QVariant(m->getName()));
@@ -113,6 +114,6 @@ void OpenCLGpuRegistry::saveGpusSettings() const {
     }
 }
 
-} //namespace
+}    // namespace U2
 
 #endif /*OPENCL_SUPPORT*/

@@ -19,12 +19,15 @@
  * MA 02110-1301, USA.
  */
 
+#include "ClustalWSupport.h"
+
 #include <QMainWindow>
 #include <QMessageBox>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/MultipleSequenceAlignmentObject.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/UserApplicationsSettings.h>
@@ -33,12 +36,10 @@
 #include <U2Gui/DialogUtils.h>
 #include <U2Gui/GUIUtils.h>
 #include <U2Gui/MainWindow.h>
-#include <U2Core/QObjectScopedPointer.h>
 
 #include <U2View/MSAEditor.h>
 #include <U2View/MaEditorFactory.h>
 
-#include "ClustalWSupport.h"
 #include "ClustalWSupportRunDialog.h"
 #include "ClustalWSupportTask.h"
 #include "ExternalToolSupportSettings.h"
@@ -51,8 +52,8 @@ const QString ClustalWSupport::ET_CLUSTAL = "ClustalW";
 const QString ClustalWSupport::ET_CLUSTAL_ID = "USUPP_CLUSTALW";
 const QString ClustalWSupport::CLUSTAL_TMP_DIR = "clustal";
 
-ClustalWSupport::ClustalWSupport(const QString& id, const QString& name, const QString& path) : ExternalTool(id, name, path)
-{
+ClustalWSupport::ClustalWSupport(const QString &id, const QString &name, const QString &path)
+    : ExternalTool(id, name, path) {
     if (AppContext::getMainWindow()) {
         viewCtx = new ClustalWSupportContext(this);
         icon = QIcon(":external_tool_support/images/clustalx.png");
@@ -60,22 +61,22 @@ ClustalWSupport::ClustalWSupport(const QString& id, const QString& name, const Q
         warnIcon = QIcon(":external_tool_support/images/clustalx_warn.png");
     }
 #ifdef Q_OS_WIN
-    executableFileName="clustalw2.exe";
+    executableFileName = "clustalw2.exe";
 #else
-    #if defined(Q_OS_UNIX)
-    executableFileName="clustalw2";
-    #endif
+#    if defined(Q_OS_UNIX)
+    executableFileName = "clustalw2";
+#    endif
 #endif
-    validationArguments<<"-help";
-    validMessage="CLUSTAL";
-    description=tr("<i>ClustalW</i> is a free sequence alignment software for DNA or proteins.");
-    versionRegExp=QRegExp("CLUSTAL (\\d+\\.\\d+) Multiple Sequence Alignments");
-    toolKitName="ClustalW";
+    validationArguments << "-help";
+    validMessage = "CLUSTAL";
+    description = tr("<i>ClustalW</i> is a free sequence alignment software for DNA or proteins.");
+    versionRegExp = QRegExp("CLUSTAL (\\d+\\.\\d+) Multiple Sequence Alignments");
+    toolKitName = "ClustalW";
 }
 
-void ClustalWSupport::sl_runWithExtFileSpecify(){
+void ClustalWSupport::sl_runWithExtFileSpecify() {
     //Check that Clustal and tempory folder path defined
-    if (path.isEmpty()){
+    if (path.isEmpty()) {
         QObjectScopedPointer<QMessageBox> msgBox = new QMessageBox;
         msgBox->setWindowTitle(name);
         msgBox->setText(tr("Path for %1 tool not selected.").arg(name));
@@ -86,18 +87,18 @@ void ClustalWSupport::sl_runWithExtFileSpecify(){
         CHECK(!msgBox.isNull(), );
 
         switch (ret) {
-           case QMessageBox::Yes:
-               AppContext::getAppSettingsGUI()->showSettingsDialog(ExternalToolSupportSettingsPageId);
-               break;
-           case QMessageBox::No:
-               return;
-               break;
-           default:
-               assert(false);
-               break;
-         }
+        case QMessageBox::Yes:
+            AppContext::getAppSettingsGUI()->showSettingsDialog(ExternalToolSupportSettingsPageId);
+            break;
+        case QMessageBox::No:
+            return;
+            break;
+        default:
+            assert(false);
+            break;
+        }
     }
-    if (path.isEmpty()){
+    if (path.isEmpty()) {
         return;
     }
     U2OpStatus2Log os(LogLevel_DETAILS);
@@ -110,23 +111,23 @@ void ClustalWSupport::sl_runWithExtFileSpecify(){
     clustalWRunDialog->exec();
     CHECK(!clustalWRunDialog.isNull(), );
 
-    if(clustalWRunDialog->result() != QDialog::Accepted){
+    if (clustalWRunDialog->result() != QDialog::Accepted) {
         return;
     }
     assert(!settings.inputFilePath.isEmpty());
 
-    ClustalWWithExtFileSpecifySupportTask* clustalWSupportTask=new ClustalWWithExtFileSpecifySupportTask(settings);
+    ClustalWWithExtFileSpecifySupportTask *clustalWSupportTask = new ClustalWWithExtFileSpecifySupportTask(settings);
     AppContext::getTaskScheduler()->registerTopLevelTask(clustalWSupportTask);
 }
 
 ////////////////////////////////////////
 //ExternalToolSupportMSAContext
-ClustalWSupportContext::ClustalWSupportContext(QObject* p) : GObjectViewWindowContext(p, MsaEditorFactory::ID) {
-
+ClustalWSupportContext::ClustalWSupportContext(QObject *p)
+    : GObjectViewWindowContext(p, MsaEditorFactory::ID) {
 }
 
-void ClustalWSupportContext::initViewContext(GObjectView* view) {
-    MSAEditor* msaed = qobject_cast<MSAEditor*>(view);
+void ClustalWSupportContext::initViewContext(GObjectView *view) {
+    MSAEditor *msaed = qobject_cast<MSAEditor *>(view);
     SAFE_POINT(msaed != NULL, "Invalid GObjectView", );
     CHECK(msaed->getMaObject() != NULL, );
 
@@ -144,18 +145,18 @@ void ClustalWSupportContext::initViewContext(GObjectView* view) {
     connect(alignAction, SIGNAL(triggered()), SLOT(sl_align_with_ClustalW()));
 }
 
-void ClustalWSupportContext::buildMenu(GObjectView* view, QMenu* m) {
+void ClustalWSupportContext::buildMenu(GObjectView *view, QMenu *m) {
     QList<GObjectViewAction *> actions = getViewActions(view);
-    QMenu* alignMenu = GUIUtils::findSubMenu(m, MSAE_MENU_ALIGN);
+    QMenu *alignMenu = GUIUtils::findSubMenu(m, MSAE_MENU_ALIGN);
     SAFE_POINT(alignMenu != NULL, "alignMenu", );
-    foreach(GObjectViewAction* a, actions) {
+    foreach (GObjectViewAction *a, actions) {
         a->addToMenuWithOrder(alignMenu);
     }
 }
 
 void ClustalWSupportContext::sl_align_with_ClustalW() {
     //Check that Clustal and tempory folder path defined
-    if (AppContext::getExternalToolRegistry()->getById(ClustalWSupport::ET_CLUSTAL_ID)->getPath().isEmpty()){
+    if (AppContext::getExternalToolRegistry()->getById(ClustalWSupport::ET_CLUSTAL_ID)->getPath().isEmpty()) {
         QObjectScopedPointer<QMessageBox> msgBox = new QMessageBox;
         msgBox->setWindowTitle(ClustalWSupport::ET_CLUSTAL);
         msgBox->setText(tr("Path for %1 tool not selected.").arg(ClustalWSupport::ET_CLUSTAL));
@@ -166,18 +167,18 @@ void ClustalWSupportContext::sl_align_with_ClustalW() {
         CHECK(!msgBox.isNull(), );
 
         switch (ret) {
-           case QMessageBox::Yes:
-               AppContext::getAppSettingsGUI()->showSettingsDialog(ExternalToolSupportSettingsPageId);
-               break;
-           case QMessageBox::No:
-               return;
-               break;
-           default:
-               assert(false);
-               break;
-         }
+        case QMessageBox::Yes:
+            AppContext::getAppSettingsGUI()->showSettingsDialog(ExternalToolSupportSettingsPageId);
+            break;
+        case QMessageBox::No:
+            return;
+            break;
+        default:
+            assert(false);
+            break;
+        }
     }
-    if (AppContext::getExternalToolRegistry()->getById(ClustalWSupport::ET_CLUSTAL_ID)->getPath().isEmpty()){
+    if (AppContext::getExternalToolRegistry()->getById(ClustalWSupport::ET_CLUSTAL_ID)->getPath().isEmpty()) {
         return;
     }
     U2OpStatus2Log os(LogLevel_DETAILS);
@@ -185,10 +186,10 @@ void ClustalWSupportContext::sl_align_with_ClustalW() {
     CHECK_OP(os, );
 
     //Call run ClustalW align dialog
-    AlignMsaAction* action = qobject_cast<AlignMsaAction *>(sender());
-    assert(action!=NULL);
-    MSAEditor* ed = action->getMsaEditor();
-    MultipleSequenceAlignmentObject* obj = ed->getMaObject();
+    AlignMsaAction *action = qobject_cast<AlignMsaAction *>(sender());
+    assert(action != NULL);
+    MSAEditor *ed = action->getMsaEditor();
+    MultipleSequenceAlignmentObject *obj = ed->getMaObject();
     if (obj == NULL) {
         return;
     }
@@ -199,11 +200,11 @@ void ClustalWSupportContext::sl_align_with_ClustalW() {
     clustalWRunDialog->exec();
     CHECK(!clustalWRunDialog.isNull(), );
 
-    if(clustalWRunDialog->result() != QDialog::Accepted){
+    if (clustalWRunDialog->result() != QDialog::Accepted) {
         return;
     }
 
-    ClustalWSupportTask* clustalWSupportTask = new ClustalWSupportTask(obj->getMultipleAlignment(), GObjectReference(obj), settings);
+    ClustalWSupportTask *clustalWSupportTask = new ClustalWSupportTask(obj->getMultipleAlignment(), GObjectReference(obj), settings);
     connect(obj, SIGNAL(destroyed()), clustalWSupportTask, SLOT(cancel()));
     AppContext::getTaskScheduler()->registerTopLevelTask(clustalWSupportTask);
 
@@ -211,4 +212,4 @@ void ClustalWSupportContext::sl_align_with_ClustalW() {
     ed->resetCollapsibleModel();
 }
 
-}//namespace
+}    // namespace U2

@@ -19,13 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "FindPatternTask.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/CreateAnnotationTask.h>
 #include <U2Core/GenbankFeatures.h>
 #include <U2Core/Log.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "FindPatternTask.h"
 
 namespace U2 {
 
@@ -36,9 +36,7 @@ FindPatternTask::FindPatternTask(const FindAlgorithmTaskSettings &settings, bool
       settings(settings),
       removeOverlaps(removeOverlaps),
       findAlgorithmTask(NULL),
-      noResults(false)
-{
-
+      noResults(false) {
 }
 
 QList<Task *> FindPatternTask::onSubTaskFinished(Task *subTask) {
@@ -54,7 +52,7 @@ QList<Task *> FindPatternTask::onSubTaskFinished(Task *subTask) {
         SAFE_POINT(task, "Failed to cast FindAlgorithTask!", QList<Task *>());
 
         QList<FindAlgorithmResult> resultz = task->popResults();
-        if (settings.patternSettings == FindAlgorithmPatternSettings_RegExp) { //Other algos always return sorted results
+        if (settings.patternSettings == FindAlgorithmPatternSettings_RegExp) {    //Other algos always return sorted results
             qSort(resultz.begin(), resultz.end(), FindAlgorithmResult::lessByRegionStartPos);
         }
         if (removeOverlaps && !resultz.isEmpty()) {
@@ -76,8 +74,8 @@ void FindPatternTask::removeOverlappedResults(QList<FindAlgorithmResult> &result
                 return;
             }
             SAFE_POINT(results.at(j).region.startPos >= results.at(i).region.startPos,
-                "Internal error: inconsistence between regions start positions."
-                "Skipping further removing of overlapped results.",);
+                       "Internal error: inconsistence between regions start positions."
+                       "Skipping further removing of overlapped results.", );
 
             if (results.at(j).strand != results.at(i).strand) {
                 continue;
@@ -101,8 +99,7 @@ void FindPatternTask::removeOverlappedResults(QList<FindAlgorithmResult> &result
                 results.removeAt(j);
                 j--;
                 n--;
-            }
-            else {
+            } else {
                 break;
             }
         }
@@ -112,7 +109,7 @@ void FindPatternTask::removeOverlappedResults(QList<FindAlgorithmResult> &result
     coreLog.info(tr("Removed %1 overlapped results.").arg(removed));
 }
 
-const QList<SharedAnnotationData> & FindPatternTask::getResults() const {
+const QList<SharedAnnotationData> &FindPatternTask::getResults() const {
     return results;
 }
 
@@ -123,10 +120,8 @@ void FindPatternTask::prepare() {
 }
 
 FindPatternListTask::FindPatternListTask(const FindAlgorithmTaskSettings &settings, const QList<NamePattern> &patterns, bool removeOverlaps, int match)
-    : Task( tr( "Searching patterns in sequence task" ), TaskFlags_NR_FOSE_COSC), settings(settings), removeOverlaps(removeOverlaps),
-    match(match), noResults(true), patterns(patterns)
-{
-
+    : Task(tr("Searching patterns in sequence task"), TaskFlags_NR_FOSE_COSC), settings(settings), removeOverlaps(removeOverlaps),
+      match(match), noResults(true), patterns(patterns) {
 }
 
 QList<Task *> FindPatternListTask::onSubTaskFinished(Task *subTask) {
@@ -147,7 +142,7 @@ int FindPatternListTask::getMaxError(const QString &pattern) const {
     return int((float)(1 - float(match) / 100) * pattern.length());
 }
 
-const QList<SharedAnnotationData> & FindPatternListTask::getResults() const {
+const QList<SharedAnnotationData> &FindPatternListTask::getResults() const {
     return results;
 }
 
@@ -162,13 +157,12 @@ void FindPatternListTask::prepare() {
             continue;
         }
         FindAlgorithmTaskSettings subTaskSettings = settings;
-        subTaskSettings.pattern = pattern.second.toLocal8Bit().toUpper();
-        subTaskSettings.maxErr = getMaxError( subTaskSettings.pattern );
+        subTaskSettings.pattern = pattern.second.toUtf8();
+        subTaskSettings.maxErr = getMaxError(subTaskSettings.pattern);
         subTaskSettings.name = pattern.first;
         subTaskSettings.countTask = false;
-        FindPatternTask *task = new FindPatternTask(subTaskSettings, removeOverlaps);
-        addSubTask(task);
+        addSubTask(new FindPatternTask(subTaskSettings, removeOverlaps));
     }
 }
 
-} // namespace
+}    // namespace U2

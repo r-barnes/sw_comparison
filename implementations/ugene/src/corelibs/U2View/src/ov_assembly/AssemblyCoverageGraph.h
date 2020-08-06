@@ -22,23 +22,24 @@
 #ifndef __ASSEMBLY_COVERAGE_GRAPH_H__
 #define __ASSEMBLY_COVERAGE_GRAPH_H__
 
-#include "CoverageInfo.h"
-
-#include <QWidget>
 #include <QSharedPointer>
+#include <QWidget>
+
+#include "CoverageInfo.h"
 
 namespace U2 {
 
 class AssemblyBrowserUi;
 class AssemblyBrowser;
 
-class AssemblyCoverageGraph: public QWidget {
+class AssemblyCoverageGraph : public QWidget {
     Q_OBJECT
 public:
-    AssemblyCoverageGraph(AssemblyBrowserUi * ui);
+    AssemblyCoverageGraph(AssemblyBrowserUi *ui);
+
 protected:
-    void paintEvent(QPaintEvent * e);
-    void mouseMoveEvent(QMouseEvent * e);
+    void paintEvent(QPaintEvent *e);
+    void mouseMoveEvent(QMouseEvent *e);
 
 signals:
     void si_mouseMovedToPos(const QPoint &);
@@ -52,11 +53,10 @@ private:
     void connectSlots();
     void doRedraw();
     void drawAll();
-    void drawGraph(QPainter & p, const CoverageInfo & ci, int alpha = 255);
+    void drawGraph(QPainter &p, const CoverageInfo &ci, int alpha = 255);
 
-
-    AssemblyBrowserUi * ui;
-    AssemblyBrowser * browser;
+    AssemblyBrowserUi *ui;
+    AssemblyBrowser *browser;
     QSharedPointer<AssemblyModel> model;
 
     QPixmap cachedView;
@@ -70,6 +70,6 @@ private:
     bool canceled;
 };
 
-} //ns
+}    // namespace U2
 
 #endif

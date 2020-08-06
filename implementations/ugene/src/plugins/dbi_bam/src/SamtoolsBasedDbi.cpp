@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include <SamtoolsAdapter.h>
+
 #include <QFile>
 #include <QFileInfo>
 
@@ -27,8 +29,8 @@
 #include <U2Core/AppSettings.h>
 #include <U2Core/IOAdapterUtils.h>
 #include <U2Core/U2AssemblyUtils.h>
-#include <U2Core/U2DbiRegistry.h>
 #include <U2Core/U2CoreAttributes.h>
+#include <U2Core/U2DbiRegistry.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
@@ -38,9 +40,6 @@
 #include "BAMFormat.h"
 #include "Exception.h"
 #include "IOException.h"
-
-#include <SamtoolsAdapter.h>
-
 #include "SamtoolsBasedDbi.h"
 
 namespace U2 {
@@ -52,31 +51,29 @@ static const QByteArray ATTRIBUTE_SEP(":~!ugene-attribute!~:");
 /* SamtoolsBasedDbi */
 /************************************************************************/
 SamtoolsBasedDbi::SamtoolsBasedDbi()
-: U2AbstractDbi(SamtoolsBasedDbiFactory::ID), assembliesCount(0), bamHandler(NULL), header(NULL), index(NULL)
-{
-
+    : U2AbstractDbi(SamtoolsBasedDbiFactory::ID), assembliesCount(0), bamHandler(NULL), header(NULL), index(NULL) {
 }
 
 SamtoolsBasedDbi::~SamtoolsBasedDbi() {
     this->cleanup();
 }
 
-QVariantMap SamtoolsBasedDbi::shutdown(U2OpStatus &/*os*/) {
+QVariantMap SamtoolsBasedDbi::shutdown(U2OpStatus & /*os*/) {
     cleanup();
     return QVariantMap();
 }
 
 void SamtoolsBasedDbi::init(const QHash<QString, QString> &properties, const QVariantMap & /*persistentData*/, U2OpStatus &os) {
     try {
-        if(U2DbiState_Void != state) {
+        if (U2DbiState_Void != state) {
             throw Exception(BAMDbiPlugin::tr("Invalid DBI state"));
         }
         state = U2DbiState_Starting;
-        if(properties.value(U2DbiOptions::U2_DBI_OPTION_URL).isEmpty()) {
+        if (properties.value(U2DbiOptions::U2_DBI_OPTION_URL).isEmpty()) {
             throw Exception(BAMDbiPlugin::tr("URL is not specified"));
         }
         url = GUrl(properties.value(U2DbiOptions::U2_DBI_OPTION_URL));
-        if(!url.isLocalFile()) {
+        if (!url.isLocalFile()) {
             throw Exception(BAMDbiPlugin::tr("Non-local files are not supported"));
         }
         bool sorted = BAMUtils::isSortedBam(url, os);
@@ -100,7 +97,7 @@ void SamtoolsBasedDbi::init(const QHash<QString, QString> &properties, const QVa
         features.insert(U2DbiFeature_ReadAssembly);
         dbiId = url.getURLString();
         state = U2DbiState_Ready;
-    } catch(const Exception &e) {
+    } catch (const Exception &e) {
         os.setError(e.getMessage());
         this->cleanup();
     }
@@ -152,7 +149,7 @@ void SamtoolsBasedDbi::cleanup() {
 
 void SamtoolsBasedDbi::createObjectDbi() {
     QList<U2DataId> assemblyObjectIds;
-    for (int i=0; i<header->n_targets; i++) {
+    for (int i = 0; i < header->n_targets; i++) {
         assemblyObjectIds << QByteArray::number(i);
     }
     objectDbi.reset(new SamtoolsBasedObjectDbi(*this, assemblyObjectIds));
@@ -169,7 +166,7 @@ U2DataType SamtoolsBasedDbi::getEntityTypeById(const U2DataId &id) const {
     int dbId = SamtoolsBasedAssemblyDbi::toSamtoolsId(id, os);
     CHECK_OP(os, U2Type::Unknown);
 
-    if(dbId <= assembliesCount) {
+    if (dbId <= assembliesCount) {
         return U2Type::Assembly;
     } else {
         return U2Type::Unknown;
@@ -189,7 +186,7 @@ const bam_index_t *SamtoolsBasedDbi::getIndex() const {
 }
 
 U2AssemblyDbi *SamtoolsBasedDbi::getAssemblyDbi() {
-    if(U2DbiState_Ready == state) {
+    if (U2DbiState_Ready == state) {
         return assemblyDbi.data();
     } else {
         return NULL;
@@ -197,7 +194,7 @@ U2AssemblyDbi *SamtoolsBasedDbi::getAssemblyDbi() {
 }
 
 U2ObjectDbi *SamtoolsBasedDbi::getObjectDbi() {
-    if(U2DbiState_Ready == state) {
+    if (U2DbiState_Ready == state) {
         return objectDbi.data();
     } else {
         return NULL;
@@ -205,7 +202,7 @@ U2ObjectDbi *SamtoolsBasedDbi::getObjectDbi() {
 }
 
 U2AttributeDbi *SamtoolsBasedDbi::getAttributeDbi() {
-    if(U2DbiState_Ready == state) {
+    if (U2DbiState_Ready == state) {
         return attributeDbi.data();
     } else {
         return NULL;
@@ -220,9 +217,7 @@ bool SamtoolsBasedDbi::isReadOnly() const {
 /* SamtoolsBasedObjectDbi */
 /************************************************************************/
 SamtoolsBasedObjectDbi::SamtoolsBasedObjectDbi(SamtoolsBasedDbi &dbi, const QList<U2DataId> &assemblyObjectIds)
-: U2SimpleObjectDbi(&dbi), dbi(dbi), assemblyObjectIds(assemblyObjectIds)
-{
-
+    : U2SimpleObjectDbi(&dbi), dbi(dbi), assemblyObjectIds(assemblyObjectIds) {
 }
 
 qint64 SamtoolsBasedObjectDbi::countObjects(U2OpStatus &os) {
@@ -231,9 +226,10 @@ qint64 SamtoolsBasedObjectDbi::countObjects(U2OpStatus &os) {
 
 qint64 SamtoolsBasedObjectDbi::countObjects(U2DataType type, U2OpStatus &os) {
     CHECK_EXT(U2DbiState_Ready == dbi.getState(),
-              os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")), 0);
+              os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")),
+              0);
 
-    if(U2Type::Assembly == type) {
+    if (U2Type::Assembly == type) {
         return assemblyObjectIds.size();
     } else {
         return 0;
@@ -243,14 +239,15 @@ qint64 SamtoolsBasedObjectDbi::countObjects(U2DataType type, U2OpStatus &os) {
 QHash<U2DataId, QString> SamtoolsBasedObjectDbi::getObjectNames(qint64 /*offset*/, qint64 /*count*/, U2OpStatus &os) {
     QHash<U2DataId, QString> result;
     CHECK_EXT(U2DbiState_Ready == dbi.getState(),
-              os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")), result);
+              os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")),
+              result);
 
     return result;
 }
 
 void SamtoolsBasedObjectDbi::getObject(U2Object &object, const U2DataId &id, U2OpStatus &os) {
     CHECK_EXT(U2DbiState_Ready == dbi.getState(),
-        os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")), );
+              os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")), );
 
     CHECK_EXT(assemblyObjectIds.contains(id), os.setError(BAMDbiPlugin::tr("Object not found")), );
     object = dbi.getAssemblyDbi()->getAssemblyObject(id, os);
@@ -262,9 +259,10 @@ QList<U2DataId> SamtoolsBasedObjectDbi::getObjects(qint64 offset, qint64 count, 
 
 QList<U2DataId> SamtoolsBasedObjectDbi::getObjects(U2DataType type, qint64 offset, qint64 count, U2OpStatus &os) {
     CHECK_EXT(U2DbiState_Ready == dbi.getState(),
-        os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")), QList<U2DataId>());
+              os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")),
+              QList<U2DataId>());
 
-    if(U2Type::Assembly == type) {
+    if (U2Type::Assembly == type) {
         qint64 lastExc = offset + count;
         if (U2DbiOptions::U2_DBI_NO_LIMIT == count) {
             lastExc = assemblyObjectIds.size();
@@ -276,77 +274,89 @@ QList<U2DataId> SamtoolsBasedObjectDbi::getObjects(U2DataType type, qint64 offse
     }
 }
 
-QList<U2DataId> SamtoolsBasedObjectDbi::getParents(const U2DataId& /*entityId*/, U2OpStatus &os) {
+QList<U2DataId> SamtoolsBasedObjectDbi::getParents(const U2DataId & /*entityId*/, U2OpStatus &os) {
     CHECK_EXT(U2DbiState_Ready == dbi.getState(),
-        os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")), QList<U2DataId>());
+              os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")),
+              QList<U2DataId>());
     return QList<U2DataId>();
 }
 
 QStringList SamtoolsBasedObjectDbi::getFolders(U2OpStatus &os) {
     CHECK_EXT(U2DbiState_Ready == dbi.getState(),
-        os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")), QStringList());
+              os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")),
+              QStringList());
     return QStringList(U2ObjectDbi::ROOT_FOLDER);
 }
 
 qint64 SamtoolsBasedObjectDbi::countObjects(const QString &folder, U2OpStatus &os) {
     CHECK_EXT(U2DbiState_Ready == dbi.getState(),
-        os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")), 0);
+              os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")),
+              0);
 
     CHECK_EXT(U2ObjectDbi::ROOT_FOLDER == folder,
-        os.setError(BAMDbiPlugin::tr("No such folder: %1").arg(folder)), 0);
+              os.setError(BAMDbiPlugin::tr("No such folder: %1").arg(folder)),
+              0);
 
     return countObjects(os);
 }
 
 QList<U2DataId> SamtoolsBasedObjectDbi::getObjects(const QString &folder, qint64 offset, qint64 count, U2OpStatus &os) {
     CHECK_EXT(U2DbiState_Ready == dbi.getState(),
-        os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")), QList<U2DataId>());
+              os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")),
+              QList<U2DataId>());
 
     CHECK_EXT(U2ObjectDbi::ROOT_FOLDER == folder,
-        os.setError(BAMDbiPlugin::tr("No such folder: %1").arg(folder)), QList<U2DataId>());
+              os.setError(BAMDbiPlugin::tr("No such folder: %1").arg(folder)),
+              QList<U2DataId>());
 
     return getObjects(offset, count, os);
 }
 
-QStringList SamtoolsBasedObjectDbi::getObjectFolders(const U2DataId& objectId, U2OpStatus &os) {
+QStringList SamtoolsBasedObjectDbi::getObjectFolders(const U2DataId &objectId, U2OpStatus &os) {
     CHECK_EXT(U2DbiState_Ready == dbi.getState(),
-        os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")), QStringList());
+              os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")),
+              QStringList());
 
-    if(U2Type::Assembly == dbi.getEntityTypeById(objectId)) {
+    if (U2Type::Assembly == dbi.getEntityTypeById(objectId)) {
         return QStringList(U2ObjectDbi::ROOT_FOLDER);
     } else {
         return QStringList();
     }
 }
 
-qint64 SamtoolsBasedObjectDbi::getObjectVersion(const U2DataId& /*objectId*/, U2OpStatus &os) {
+qint64 SamtoolsBasedObjectDbi::getObjectVersion(const U2DataId & /*objectId*/, U2OpStatus &os) {
     CHECK_EXT(U2DbiState_Ready == dbi.getState(),
-        os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")), 0);
+              os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")),
+              0);
 
     return 0;
 }
 
 qint64 SamtoolsBasedObjectDbi::getFolderLocalVersion(const QString &folder, U2OpStatus &os) {
     CHECK_EXT(U2DbiState_Ready == dbi.getState(),
-        os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")), 0);
+              os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")),
+              0);
 
     CHECK_EXT(U2ObjectDbi::ROOT_FOLDER == folder,
-        os.setError(BAMDbiPlugin::tr("No such folder: %1").arg(folder)), 0);
+              os.setError(BAMDbiPlugin::tr("No such folder: %1").arg(folder)),
+              0);
 
     return 0;
 }
 
 qint64 SamtoolsBasedObjectDbi::getFolderGlobalVersion(const QString &folder, U2OpStatus &os) {
     CHECK_EXT(U2DbiState_Ready == dbi.getState(),
-        os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")), 0);
+              os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")),
+              0);
 
     CHECK_EXT(U2ObjectDbi::ROOT_FOLDER == folder,
-        os.setError(BAMDbiPlugin::tr("No such folder: %1").arg(folder)), 0);
+              os.setError(BAMDbiPlugin::tr("No such folder: %1").arg(folder)),
+              0);
 
     return 0;
 }
 
-U2DbiIterator<U2DataId>* SamtoolsBasedObjectDbi::getObjectsByVisualName(const QString& , U2DataType , U2OpStatus& ) {
+U2DbiIterator<U2DataId> *SamtoolsBasedObjectDbi::getObjectsByVisualName(const QString &, U2DataType, U2OpStatus &) {
     // TODO:
     return NULL;
 }
@@ -364,7 +374,7 @@ U2DbiObjectRank SamtoolsBasedObjectDbi::getObjectRank(const U2DataId & /*objectI
     return U2DbiObjectRank_TopLevel;
 }
 
-void SamtoolsBasedObjectDbi::setParent(const U2DataId& /*parentId*/, const U2DataId& /*childId*/, U2OpStatus& os){
+void SamtoolsBasedObjectDbi::setParent(const U2DataId & /*parentId*/, const U2DataId & /*childId*/, U2OpStatus &os) {
     os.setError("Not implemented!");
 }
 
@@ -374,9 +384,11 @@ void SamtoolsBasedObjectDbi::setParent(const U2DataId& /*parentId*/, const U2Dat
 const int SamtoolsBasedReadsIterator::BUFFERED_INTERVAL_SIZE = 1000;
 
 SamtoolsBasedReadsIterator::SamtoolsBasedReadsIterator(
-    int assemblyId, const U2Region &_r, SamtoolsBasedDbi &_dbi, const QByteArray &_nameFilter)
-: U2DbiIterator<U2AssemblyRead>(), assemblyId(assemblyId), dbi(_dbi), nameFilter(_nameFilter)
-{
+    int assemblyId,
+    const U2Region &_r,
+    SamtoolsBasedDbi &_dbi,
+    const QByteArray &_nameFilter)
+    : U2DbiIterator<U2AssemblyRead>(), assemblyId(assemblyId), dbi(_dbi), nameFilter(_nameFilter) {
     current = reads.begin();
     bool errorRegion = false;
     qint64 startPos = _r.startPos;
@@ -471,7 +483,7 @@ static const int SEQ_COL = 9;
 static const int QUAL_COL = 10;
 
 int bamFetchFunction(const bam1_t *b, void *data) {
-    SamtoolsBasedReadsIterator *it = (SamtoolsBasedReadsIterator*)data;
+    SamtoolsBasedReadsIterator *it = (SamtoolsBasedReadsIterator *)data;
     QList<U2AssemblyRead> &reads = it->reads;
     SamtoolsBasedDbi &dbi = it->dbi;
 
@@ -496,12 +508,10 @@ int bamFetchFunction(const bam1_t *b, void *data) {
         }
         read->effectiveLen = Alignment::computeLength(read->cigar);
         delete[] samStr;
-        read->id = read->name
-           + ";" + QByteArray::number(read->leftmostPos)
-           + ";" + QByteArray::number(read->effectiveLen);
+        read->id = read->name + ";" + QByteArray::number(read->leftmostPos) + ";" + QByteArray::number(read->effectiveLen);
         read->rnext = values[RNEXT_COL];
         read->pnext = b->core.mpos;
-        QByteArray auxStr((const char*)bam1_aux(b), b->l_aux);
+        QByteArray auxStr((const char *)bam1_aux(b), b->l_aux);
         read->aux = SamtoolsAdapter::string2aux(auxStr);
     }
 
@@ -523,7 +533,7 @@ void SamtoolsBasedReadsIterator::fetchNextChunk() {
     SAFE_POINT_EXT(NULL != bam, nextPosToRead = INT_MAX, );
     SAFE_POINT_EXT(NULL != idx, nextPosToRead = INT_MAX, );
 
-    void *data = (void*)(this);
+    void *data = (void *)(this);
     borderReadIds = newBorderReadIds;
     newBorderReadIds.clear();
     int startPos = (int)nextPosToRead;
@@ -538,9 +548,7 @@ void SamtoolsBasedReadsIterator::fetchNextChunk() {
 /* SamtoolsBasedAssemblyDbi */
 /************************************************************************/
 SamtoolsBasedAssemblyDbi::SamtoolsBasedAssemblyDbi(SamtoolsBasedDbi &dbi)
-: U2SimpleAssemblyDbi(&dbi), dbi(dbi)
-{
-
+    : U2SimpleAssemblyDbi(&dbi), dbi(dbi) {
 }
 
 int SamtoolsBasedAssemblyDbi::toSamtoolsId(const U2DataId &assemblyId, U2OpStatus &os) {
@@ -561,13 +569,15 @@ U2DataId SamtoolsBasedAssemblyDbi::toU2Id(int assemblyId) {
 
 U2Assembly SamtoolsBasedAssemblyDbi::getAssemblyObject(const U2DataId &id, U2OpStatus &os) {
     CHECK_EXT(U2DbiState_Ready == dbi.getState(),
-        os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")), U2Assembly());
+              os.setError(BAMDbiPlugin::tr("Invalid samtools DBI state")),
+              U2Assembly());
 
     const bam_header_t *header = dbi.getHeader();
     SAFE_POINT(NULL != header, "NULL BAM header", U2Assembly());
 
     CHECK_EXT(U2Type::Assembly == dbi.getEntityTypeById(id),
-        os.setError(BAMDbiPlugin::tr("The specified object is not an assembly")), U2Assembly());
+              os.setError(BAMDbiPlugin::tr("The specified object is not an assembly")),
+              U2Assembly());
 
     int dbId = SamtoolsBasedAssemblyDbi::toSamtoolsId(id, os);
     CHECK_OP(os, U2Assembly());
@@ -582,7 +592,7 @@ U2Assembly SamtoolsBasedAssemblyDbi::getAssemblyObject(const U2DataId &id, U2OpS
 }
 
 int bamCountFunction(const bam1_t * /*b*/, void *data) {
-    qint64 *count = (qint64*)data;
+    qint64 *count = (qint64 *)data;
     (*count)++;
     return 0;
 }
@@ -601,7 +611,7 @@ qint64 SamtoolsBasedAssemblyDbi::countReads(const U2DataId &assemblyId, const U2
     return result;
 }
 
-U2DbiIterator<U2AssemblyRead> * SamtoolsBasedAssemblyDbi::getReads(const U2DataId &assemblyId, const U2Region &r, U2OpStatus& os, bool /*sortedHint*/) {
+U2DbiIterator<U2AssemblyRead> *SamtoolsBasedAssemblyDbi::getReads(const U2DataId &assemblyId, const U2Region &r, U2OpStatus &os, bool /*sortedHint*/) {
     int id = SamtoolsBasedAssemblyDbi::toSamtoolsId(assemblyId, os);
     CHECK_OP(os, NULL);
     U2Region targetReg = this->getCorrectRegion(assemblyId, r, os);
@@ -613,12 +623,12 @@ qint64 SamtoolsBasedAssemblyDbi::getMaxPackedRow(const U2DataId &, const U2Regio
     return 0;
 }
 
-U2DbiIterator<U2AssemblyRead> * SamtoolsBasedAssemblyDbi::getReadsByRow(const U2DataId &, const U2Region &, qint64, qint64, U2OpStatus &os) {
+U2DbiIterator<U2AssemblyRead> *SamtoolsBasedAssemblyDbi::getReadsByRow(const U2DataId &, const U2Region &, qint64, qint64, U2OpStatus &os) {
     os.setError("Operation not supported: BAM::SamtoolsBasedAssemblyDbi::getReadsByRow");
     return NULL;
 }
 
-U2DbiIterator<U2AssemblyRead> * SamtoolsBasedAssemblyDbi::getReadsByName(const U2DataId &assemblyId, const QByteArray &name, U2OpStatus &os) {
+U2DbiIterator<U2AssemblyRead> *SamtoolsBasedAssemblyDbi::getReadsByName(const U2DataId &assemblyId, const QByteArray &name, U2OpStatus &os) {
     int id = SamtoolsBasedAssemblyDbi::toSamtoolsId(assemblyId, os);
     CHECK_OP(os, NULL);
     U2Region targetReg = this->getCorrectRegion(assemblyId, U2_REGION_MAX, os);
@@ -666,19 +676,17 @@ U2Region SamtoolsBasedAssemblyDbi::getCorrectRegion(const U2DataId &assemblyId, 
 /* SamtoolsBasedAttributeDbi */
 /************************************************************************/
 SamtoolsBasedAttributeDbi::SamtoolsBasedAttributeDbi(SamtoolsBasedDbi &_dbi)
-: U2SimpleAttributeDbi(&_dbi), dbi(_dbi)
-{
-
+    : U2SimpleAttributeDbi(&_dbi), dbi(_dbi) {
 }
 
-QStringList SamtoolsBasedAttributeDbi::getAvailableAttributeNames(U2OpStatus &/*os*/) {
+QStringList SamtoolsBasedAttributeDbi::getAvailableAttributeNames(U2OpStatus & /*os*/) {
     QStringList result;
     result << U2BaseAttributeName::reference_length;
 
     return result;
 }
 
-QList<U2DataId> SamtoolsBasedAttributeDbi::getObjectAttributes(const U2DataId &objectId, const QString &attributeName, U2OpStatus &/*os*/) {
+QList<U2DataId> SamtoolsBasedAttributeDbi::getObjectAttributes(const U2DataId &objectId, const QString &attributeName, U2OpStatus & /*os*/) {
     QList<U2DataId> result;
     if (attributeName.isEmpty()) {
         result << objectId + ATTRIBUTE_SEP + U2BaseAttributeName::reference_length.toLatin1();
@@ -689,7 +697,7 @@ QList<U2DataId> SamtoolsBasedAttributeDbi::getObjectAttributes(const U2DataId &o
     return result;
 }
 
-QList<U2DataId> SamtoolsBasedAttributeDbi::getObjectPairAttributes(const U2DataId &/*objectId*/, const U2DataId &/*childId*/, const QString &/*attributeName*/, U2OpStatus &/*os*/) {
+QList<U2DataId> SamtoolsBasedAttributeDbi::getObjectPairAttributes(const U2DataId & /*objectId*/, const U2DataId & /*childId*/, const QString & /*attributeName*/, U2OpStatus & /*os*/) {
     return QList<U2DataId>();
 }
 
@@ -708,7 +716,7 @@ U2IntegerAttribute SamtoolsBasedAttributeDbi::getIntegerAttribute(const U2DataId
         const bam_header_t *header = dbi.getHeader();
         CHECK_EXT(NULL != header, os.setError("NULL header"), result);
         CHECK_EXT(id < header->n_targets, os.setError("Unknown assembly id"), result);
-        qint64 length =  header->target_len[id];
+        qint64 length = header->target_len[id];
         result = U2IntegerAttribute(objIdStr, U2BaseAttributeName::reference_length, length);
         result.id = attributeId;
         result.value = length;
@@ -717,19 +725,19 @@ U2IntegerAttribute SamtoolsBasedAttributeDbi::getIntegerAttribute(const U2DataId
     return result;
 }
 
-U2RealAttribute SamtoolsBasedAttributeDbi::getRealAttribute(const U2DataId &/*attributeId*/, U2OpStatus &/*os*/) {
+U2RealAttribute SamtoolsBasedAttributeDbi::getRealAttribute(const U2DataId & /*attributeId*/, U2OpStatus & /*os*/) {
     return U2RealAttribute();
 }
 
-U2StringAttribute SamtoolsBasedAttributeDbi::getStringAttribute(const U2DataId &/*attributeId*/, U2OpStatus &/*os*/) {
+U2StringAttribute SamtoolsBasedAttributeDbi::getStringAttribute(const U2DataId & /*attributeId*/, U2OpStatus & /*os*/) {
     return U2StringAttribute();
 }
 
-U2ByteArrayAttribute SamtoolsBasedAttributeDbi::getByteArrayAttribute(const U2DataId &/*attributeId*/, U2OpStatus &/*os*/) {
+U2ByteArrayAttribute SamtoolsBasedAttributeDbi::getByteArrayAttribute(const U2DataId & /*attributeId*/, U2OpStatus & /*os*/) {
     return U2ByteArrayAttribute();
 }
 
-QList<U2DataId> SamtoolsBasedAttributeDbi::sort(const U2DbiSortConfig &/*sc*/, qint64 /*offset*/, qint64 /*count*/, U2OpStatus &os) {
+QList<U2DataId> SamtoolsBasedAttributeDbi::sort(const U2DbiSortConfig & /*sc*/, qint64 /*offset*/, qint64 /*count*/, U2OpStatus &os) {
     U2DbiUtils::logNotSupported(U2DbiFeature_WriteAttributes, getRootDbi(), os);
     return QList<U2DataId>();
 }
@@ -740,16 +748,14 @@ QList<U2DataId> SamtoolsBasedAttributeDbi::sort(const U2DbiSortConfig &/*sc*/, q
 const QString SamtoolsBasedDbiFactory::ID = BAM_DBI_ID;
 
 SamtoolsBasedDbiFactory::SamtoolsBasedDbiFactory()
-: U2DbiFactory()
-{
-
+    : U2DbiFactory() {
 }
 
 U2Dbi *SamtoolsBasedDbiFactory::createDbi() {
     return new SamtoolsBasedDbi();
 }
 
-U2DbiFactoryId SamtoolsBasedDbiFactory::getId()const {
+U2DbiFactoryId SamtoolsBasedDbiFactory::getId() const {
     return ID;
 }
 
@@ -759,10 +765,9 @@ FormatCheckResult SamtoolsBasedDbiFactory::isValidDbi(const QHash<QString, QStri
     return res;
 }
 
-
-bool SamtoolsBasedDbiFactory::isDbiExists(const U2DbiId& id) const {
+bool SamtoolsBasedDbiFactory::isDbiExists(const U2DbiId &id) const {
     return QFile::exists(id);
 }
 
-} // BAM
-} // U2
+}    // namespace BAM
+}    // namespace U2

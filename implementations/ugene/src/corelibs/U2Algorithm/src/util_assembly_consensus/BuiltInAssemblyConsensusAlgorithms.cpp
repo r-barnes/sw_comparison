@@ -27,4 +27,4 @@ const QString BuiltInAssemblyConsensusAlgorithms::DEFAULT_ALGO("Default");
 const QString BuiltInAssemblyConsensusAlgorithms::LEVITSKY_ALGO("Levitsky");
 const QString BuiltInAssemblyConsensusAlgorithms::SAMTOOLS_ALGO("SAMtools");
 
-}//namespace
+}    // namespace U2

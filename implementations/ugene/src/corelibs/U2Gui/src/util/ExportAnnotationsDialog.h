@@ -30,39 +30,37 @@ namespace U2 {
 
 class Ui_ExportAnnotationsDialog;
 
-
 class SaveDocumentController;
 
 class U2GUI_EXPORT ExportAnnotationsDialog : public QDialog {
     Q_OBJECT
-    Q_DISABLE_COPY( ExportAnnotationsDialog )
+    Q_DISABLE_COPY(ExportAnnotationsDialog)
 public:
-                                    ExportAnnotationsDialog( const QString &filename,
-                                            QWidget *parent );
-                                    ~ExportAnnotationsDialog( );
+    ExportAnnotationsDialog(const QString &filename,
+                            QWidget *parent);
+    ~ExportAnnotationsDialog();
 
-    QString                         fileFormat( ) const;
-    QString                         filePath( ) const;
-    bool                            exportSequence( ) const;
-    bool                            exportSequenceNames( ) const;
-    bool                            addToProject() const;
+    QString fileFormat() const;
+    QString filePath() const;
+    bool exportSequence() const;
+    bool exportSequenceNames() const;
+    bool addToProject() const;
 
-    static const QString            CSV_FORMAT_ID;
+    static const QString CSV_FORMAT_ID;
 
 private slots:
     void sl_formatChanged(const QString &newFormatId);
     void sl_addToProjectStateChanged(bool state);
 
 private:
-    void                            initSaveController(const QString &filename);
+    void initSaveController(const QString &filename);
 
-    QList<QString>                  supportedFormatsExts;
-    SaveDocumentController *        saveController;
-    Ui_ExportAnnotationsDialog *    ui;
-    bool                            lastAddToProjectState;
-
+    QList<QString> supportedFormatsExts;
+    SaveDocumentController *saveController;
+    Ui_ExportAnnotationsDialog *ui;
+    bool lastAddToProjectState;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_EXPORT_ANNOTATIONS_DIALOG_H_
+#endif    // _U2_EXPORT_ANNOTATIONS_DIALOG_H_

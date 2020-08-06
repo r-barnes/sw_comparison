@@ -29,14 +29,15 @@ namespace U2 {
 class ConductGOSupport : public ExternalTool {
     Q_OBJECT
 public:
-    ConductGOSupport(const QString& id, const QString &name);
+    ConductGOSupport(const QString &id, const QString &name);
 
     static const QString ET_GO_ANALYSIS;
     static const QString ET_GO_ANALYSIS_ID;
+
 private:
     void initialize();
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_CONDUCT_GO_SUPPORT_
+#endif    // _U2_CONDUCT_GO_SUPPORT_

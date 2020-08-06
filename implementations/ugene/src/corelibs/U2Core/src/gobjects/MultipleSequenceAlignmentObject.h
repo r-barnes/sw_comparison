@@ -40,7 +40,7 @@ public:
 
     /** GObject methods */
     //Actually this method doesn't exactly clone MSA database rows, row ID will be generated for each copied row again
-    virtual MultipleSequenceAlignmentObject* clone(const U2DbiRef &dstDbiRef, U2OpStatus &os, const QVariantMap &hints = QVariantMap()) const;
+    virtual MultipleSequenceAlignmentObject *clone(const U2DbiRef &dstDbiRef, U2OpStatus &os, const QVariantMap &hints = QVariantMap()) const;
 
     /** Const getters */
     char charAt(int seqNum, qint64 position) const;
@@ -66,17 +66,19 @@ public:
 
     void deleteColumnsWithGaps(U2OpStatus &os, int requiredGapsCount = -1);
 
+    void insertGap(const U2Region &rows, int pos, int nGaps);
+
+    void insertGapByRowIndexList(const QList<int> &rowIndexes, int pos, int nGaps);
+
 private:
     void loadAlignment(U2OpStatus &os);
     void updateCachedRows(U2OpStatus &os, const QList<qint64> &rowIds);
     void updateDatabase(U2OpStatus &os, const MultipleAlignment &ma);
 
     void removeRowPrivate(U2OpStatus &os, const U2EntityRef &msaRef, qint64 rowId);
-    void removeRegionPrivate(U2OpStatus &os, const U2EntityRef &maRef, const QList<qint64> &rows,
-                             int startPos, int nBases);
-    void insertGap(const U2Region &rows, int pos, int nGaps);
+    void removeRegionPrivate(U2OpStatus &os, const U2EntityRef &maRef, const QList<qint64> &rows, int startPos, int nBases);
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MULTIPLE_SEQUENCE_ALIGNMENT_OBJECT_H_
+#endif    // _U2_MULTIPLE_SEQUENCE_ALIGNMENT_OBJECT_H_

@@ -30,21 +30,22 @@ namespace U2 {
     Range or interval or values
     Usually used by functions that must return not exact value, but interval: [min, max]
 */
-template <typename T> class U2Range {
+template<typename T>
+class U2Range {
 public:
-    U2Range(T _minValue = 0, T _maxValue = 0) : minValue(_minValue), maxValue(_maxValue){}
+    U2Range(T _minValue = 0, T _maxValue = 0)
+        : minValue(_minValue), maxValue(_maxValue) {
+    }
 
     T minValue;
     T maxValue;
 };
 
-template <typename T>
-U2Range<T> operator +(const U2Range<T>& r1, const U2Range<T>& r2) {
+template<typename T>
+U2Range<T> operator+(const U2Range<T> &r1, const U2Range<T> &r2) {
     U2Range<T> result(qMin(r1.minValue, r2.minValue), qMax(r1.maxValue, r2.maxValue));
     return result;
 }
 
-
-
-}//namespace
+}    // namespace U2
 #endif

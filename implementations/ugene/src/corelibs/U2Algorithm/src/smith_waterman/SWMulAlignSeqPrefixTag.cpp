@@ -25,16 +25,16 @@ const QString REG_EXP_PATTERN_FOR_WORDS_SEPARATORS = "\\s|_";
 
 namespace U2 {
 
-QString SWMulAlignSeqPrefixTag::expandTag(const QVariant & argument) const {
+QString SWMulAlignSeqPrefixTag::expandTag(const QVariant &argument) const {
     assert(argument.canConvert(QVariant::String));
     QString seqName = argument.toString();
     assert(!seqName.isEmpty());
 
     int lastWordEndPositionInPrefix = seqName.lastIndexOf(QRegExp(REG_EXP_PATTERN_FOR_WORDS_SEPARATORS), prefixLength - 1);
-    if(-1 == lastWordEndPositionInPrefix)
+    if (-1 == lastWordEndPositionInPrefix)
         lastWordEndPositionInPrefix = prefixLength - 1;
 
     return seqName.left(lastWordEndPositionInPrefix);
 }
 
-} // namespace
+}    // namespace U2

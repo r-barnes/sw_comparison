@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "GroupOptionsWidget.h"
+
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -26,16 +28,13 @@
 
 #include <U2Gui/HelpButton.h>
 
-#include "GroupOptionsWidget.h"
-
 namespace U2 {
 
-GroupOptionsWidget::GroupOptionsWidget(const QString& _groupId, const QString& _title, const QString& documentationPage, QWidget* _widget)
+GroupOptionsWidget::GroupOptionsWidget(const QString &_groupId, const QString &_title, const QString &documentationPage, QWidget *_widget, QWidget *mainWidget)
     : groupId(_groupId),
       widget(_widget),
-      title(_title)
-{
-
+      mainWidget(mainWidget),
+      title(_title) {
 #ifdef Q_OS_MAC
     setStyleSheet("font-size: 11.25pt;");
 #else
@@ -82,4 +81,4 @@ GroupOptionsWidget::GroupOptionsWidget(const QString& _groupId, const QString& _
     setFocusProxy(widget);
 }
 
-} // namespace
+}    // namespace U2

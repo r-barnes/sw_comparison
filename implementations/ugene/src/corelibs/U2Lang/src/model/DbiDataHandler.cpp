@@ -19,20 +19,18 @@
  * MA 02110-1301, USA.
  */
 
+#include "DbiDataHandler.h"
+
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2OpStatusUtils.h>
 
 #include <U2Lang/DbiDataStorage.h>
 
-#include "DbiDataHandler.h"
-
 namespace U2 {
 namespace Workflow {
 
 DbiDataHandler::DbiDataHandler(const U2EntityRef &entRef, U2ObjectDbi *dbi, bool useGC)
-: entRef(entRef), dbi(dbi), useGC(useGC)
-{
-
+    : entRef(entRef), dbi(dbi), useGC(useGC) {
 }
 
 DbiDataHandler::~DbiDataHandler() {
@@ -45,8 +43,7 @@ DbiDataHandler::~DbiDataHandler() {
 }
 
 DbiDataHandler::DbiDataHandler(const DbiDataHandler & /*other*/)
-: QSharedData()
-{
+    : QSharedData() {
 }
 
 DbiDataHandler &DbiDataHandler::operator=(const DbiDataHandler &) {
@@ -73,5 +70,5 @@ bool DbiDataHandler::isValid() const {
     return entRef.isValid();
 }
 
-}
-}
+}    // namespace Workflow
+}    // namespace U2

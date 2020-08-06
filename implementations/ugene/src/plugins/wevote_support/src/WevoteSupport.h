@@ -27,6 +27,7 @@
 namespace U2 {
 
 class WevoteSupport : public ExternalTool {
+    Q_OBJECT
 public:
     WevoteSupport();
 
@@ -34,6 +35,6 @@ public:
     static const QString TOOL_NAME;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_WEVOTE_SUPPORT_H_
+#endif    // _U2_WEVOTE_SUPPORT_H_

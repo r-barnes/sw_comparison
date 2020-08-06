@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportDocumentDialogController.h"
+
 #include <QDir>
 #include <QPushButton>
 
@@ -30,39 +32,36 @@
 #include <U2Gui/DialogUtils.h>
 #include <U2Gui/HelpButton.h>
 
-#include "ExportDocumentDialogController.h"
 #include "SaveDocumentController.h"
 #include "ui_ExportDocumentDialog.h"
 
-namespace U2{
+namespace U2 {
 
-ExportDocumentDialogController::ExportDocumentDialogController(Document* d, QWidget *p)
+ExportDocumentDialogController::ExportDocumentDialogController(Document *d, QWidget *p)
     : QDialog(p),
       saveController(NULL),
       sourceDoc(d),
-      sourceObject(NULL)
-{
+      sourceObject(NULL) {
     ui = new Ui_ExportDocumentDialog();
     ui->setupUi(this);
-    new HelpButton(this, ui->buttonBox, "24742326");
+    new HelpButton(this, ui->buttonBox, "46499647");
     ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Export"));
     ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
     initSaveController(sourceDoc->getObjects(), sourceDoc->getURLString());
 }
 
-ExportDocumentDialogController::ExportDocumentDialogController(GObject *object, QWidget *parent, const QString &initUrl) :
-    QDialog(parent),
-    ui(new Ui_ExportDocumentDialog()),
-    sourceDoc(NULL),
-    sourceObject(object)
-{
+ExportDocumentDialogController::ExportDocumentDialogController(GObject *object, QWidget *parent, const QString &initUrl)
+    : QDialog(parent),
+      ui(new Ui_ExportDocumentDialog()),
+      sourceDoc(NULL),
+      sourceObject(object) {
     ui->setupUi(this);
 
     QList<GObject *> objectList = QList<GObject *>() << sourceObject;
     initSaveController(objectList, initUrl);
 
-    new HelpButton(this, ui->buttonBox, "24742326");
+    new HelpButton(this, ui->buttonBox, "46499647");
     ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Export"));
     ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 }
@@ -86,7 +85,7 @@ DocumentFormatConstraints ExportDocumentDialogController::getAcceptableConstrain
     DocumentFormatConstraints formatConstraints;
 
     QMap<GObjectType, int> objPerTypeMap;
-    foreach (GObject* obj, objects) {
+    foreach (GObject *obj, objects) {
         GObjectType objectType = obj->getGObjectType();
         formatConstraints.supportedObjectTypes += objectType;
         if (objPerTypeMap.contains(objectType)) {
@@ -97,7 +96,7 @@ DocumentFormatConstraints ExportDocumentDialogController::getAcceptableConstrain
     }
 
     int maxObjs = 1;
-    foreach (int val, objPerTypeMap){
+    foreach (int val, objPerTypeMap) {
         maxObjs = qMax(maxObjs, val);
     }
 
@@ -113,7 +112,7 @@ QString ExportDocumentDialogController::getDocumentURL() const {
     QString path = saveController->getSaveFileName();
     if (ui->compressCheck != NULL && ui->compressCheck->isChecked() && ui->compressCheck->isEnabled()) {
         QString suffix = path.split(".").last();
-        if(suffix != "gz") {
+        if (suffix != "gz") {
             return path + ".gz";
         }
     }
@@ -124,18 +123,15 @@ DocumentFormatId ExportDocumentDialogController::getDocumentFormatId() const {
     return saveController->getFormatIdToSave();
 }
 
-ExportDocumentDialogController::~ExportDocumentDialogController()
-{
+ExportDocumentDialogController::~ExportDocumentDialogController() {
     delete ui;
 }
 
-bool ExportDocumentDialogController::getAddToProjectFlag() const
-{
+bool ExportDocumentDialogController::getAddToProjectFlag() const {
     return ui->addToProjCheck->isChecked();
 }
 
-void ExportDocumentDialogController::setAddToProjectFlag(bool checked)
-{
+void ExportDocumentDialogController::setAddToProjectFlag(bool checked) {
     ui->addToProjCheck->setChecked(checked);
 }
 
@@ -147,4 +143,4 @@ GObject *ExportDocumentDialogController::getSourceObject() const {
     return sourceObject;
 }
 
-}//namespace
+}    // namespace U2

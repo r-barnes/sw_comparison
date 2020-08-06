@@ -38,46 +38,57 @@ class SaveDocumentController;
 class U2GUI_EXPORT ExportImageDialog : public QDialog {
     Q_OBJECT
 public:
-    enum InvokedFrom{ WD, CircularView, MSA, SequenceView, AssemblyView, PHYTreeView, DotPlot, MolView};
+    enum InvokedFrom { WD,
+                       CircularView,
+                       MSA,
+                       SequenceView,
+                       AssemblyView,
+                       PHYTreeView,
+                       DotPlot,
+                       MolView };
     enum ImageScalingPolicy {
         NoScaling,
         SupportScaling
     };
 
-    ExportImageDialog(QWidget* screenShotWidget,
+    ExportImageDialog(QWidget *screenShotWidget,
                       InvokedFrom invoSource,
-                      const QString& file,
+                      const QString &file,
                       ImageScalingPolicy scalingPolicy = NoScaling,
-                      QWidget* parent = NULL);
+                      QWidget *parent = NULL);
 
     ExportImageDialog(ImageExportController *factory,
                       InvokedFrom invoSource,
-                      const QString& file,
+                      const QString &file,
                       ImageScalingPolicy scalingPolicy = NoScaling,
-                      QWidget* parent = NULL);
+                      QWidget *parent = NULL);
 
     ~ExportImageDialog();
 
-    const QString& getFilename() const { return filename; }
-    const QString& getFormat() const { return format; }
+    const QString &getFilename() const {
+        return filename;
+    }
+    const QString &getFormat() const {
+        return format;
+    }
     int getWidth() const;
     int getHeight() const;
 
     bool hasQuality() const;
-    int  getQuality() const;
+    int getQuality() const;
 
 public slots:
     void accept();
 
 private slots:
-    void sl_onFormatsBoxItemChanged(const QString& format);
+    void sl_onFormatsBoxItemChanged(const QString &format);
 
-    void sl_showMessage(const QString& message);
+    void sl_showMessage(const QString &message);
     void sl_disableExport(bool disable);
 
 private:
     void init();
-    void initSaveController(const QString& defaultFormat);
+    void initSaveController(const QString &defaultFormat);
     void setSizeControlsEnabled(bool enabled);
     QStringList getFormats();
     QStringList getRasterFormats();
@@ -87,17 +98,17 @@ private:
     static bool isLossyFormat(const QString &formatName);
 
     SaveDocumentController *saveController;
-    ImageExportController*  exportController;
-    ImageScalingPolicy      scalingPolicy;
+    ImageExportController *exportController;
+    ImageScalingPolicy scalingPolicy;
 
     QString filename;
     QString origFilename;
     QString format;
 
-    Ui_ImageExportForm* ui;
+    Ui_ImageExportForm *ui;
     InvokedFrom source;
-}; // class ExportImageDialog
+};    // class ExportImageDialog
 
-} // namespace
+}    // namespace U2
 
 #endif

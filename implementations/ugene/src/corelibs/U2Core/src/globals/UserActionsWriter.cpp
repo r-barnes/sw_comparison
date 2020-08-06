@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "UserActionsWriter.h"
+
 #include <QAbstractSpinBox>
 #include <QApplication>
 #include <QLabel>
@@ -35,9 +37,8 @@
 
 #include "Log.h"
 #include "U2SafePoints.h"
-#include "UserActionsWriter.h"
 
-#define BUFFER_CONDITION(keyEvent) (keyEvent->key()<=Qt::Key_QuoteLeft && keyEvent->key()>=Qt::Key_Space && (keyEvent->modifiers().testFlag(Qt::NoModifier) || keyEvent->modifiers().testFlag(Qt::KeypadModifier)))
+#define BUFFER_CONDITION(keyEvent) (keyEvent->key() <= Qt::Key_QuoteLeft && keyEvent->key() >= Qt::Key_Space && (keyEvent->modifiers().testFlag(Qt::NoModifier) || keyEvent->modifiers().testFlag(Qt::KeypadModifier)))
 
 namespace U2 {
 
@@ -48,12 +49,12 @@ bool UserActionsWriter::eventFilter(QObject *obj, QEvent *event) {
     if (event->type() == QEvent::MouseButtonPress ||
         event->type() == QEvent::MouseButtonRelease ||
         event->type() == QEvent::MouseButtonDblClick) {
-        QMouseEvent* m = dynamic_cast<QMouseEvent *>(event);
+        QMouseEvent *m = dynamic_cast<QMouseEvent *>(event);
         generateMouseMessage(m);
         return false;
     } else if (event->type() == QEvent::KeyPress ||
-        event->type() == QEvent::KeyRelease) {
-        QKeyEvent* k = dynamic_cast<QKeyEvent *>(event);
+               event->type() == QEvent::KeyRelease) {
+        QKeyEvent *k = dynamic_cast<QKeyEvent *>(event);
         generateKeyMessage(k);
         return false;
     } else {
@@ -61,7 +62,7 @@ bool UserActionsWriter::eventFilter(QObject *obj, QEvent *event) {
     }
 }
 
-void UserActionsWriter::generateMouseMessage(QMouseEvent* m) {
+void UserActionsWriter::generateMouseMessage(QMouseEvent *m) {
     CHECK_EXT(m, userActLog.error(QString("MouseEvent is NULL %1:%2").arg(__FILE__).arg(__LINE__)), );
 
     QString message("");
@@ -70,7 +71,7 @@ void UserActionsWriter::generateMouseMessage(QMouseEvent* m) {
     //button type
     message.append(getMouseButtonInfo(m));
 
-    QMainWindow* mainWindow = AppContext::getMainWindow()->getQMainWindow();
+    QMainWindow *mainWindow = AppContext::getMainWindow()->getQMainWindow();
     CHECK_EXT(mainWindow, userActLog.error(QString("Main window is NULL %1:%2").arg(__FILE__).arg(__LINE__)), );
 
     //window size info
@@ -85,14 +86,14 @@ void UserActionsWriter::generateMouseMessage(QMouseEvent* m) {
     message.append(QString("%1 %2 ").arg(windowP.x()).arg(windowP.y()));
 
     //widget info
-    QWidget* w = QApplication::widgetAt(m->globalPos());
+    QWidget *w = QApplication::widgetAt(m->globalPos());
     if (w) {
         QString className = w->metaObject()->className();
 
         //tree widget and list widget
         //sometimes QWidget is on top. it does not give any information, but it's parent does
         if (className == "QWidget") {
-            QWidget* parent = qobject_cast<QWidget*>(w->parent());
+            QWidget *parent = qobject_cast<QWidget *>(w->parent());
             if (parent) {
                 message.append(getTreeWidgetInfo(m, parent));
                 w = parent;
@@ -111,7 +112,7 @@ void UserActionsWriter::generateMouseMessage(QMouseEvent* m) {
     filterMouseMessages(message);
 }
 
-QString UserActionsWriter::getMouseButtonInfo(QMouseEvent* m) {
+QString UserActionsWriter::getMouseButtonInfo(QMouseEvent *m) {
     CHECK_EXT(m, userActLog.error(QString("MouseEvent is NULL %1:%2").arg(__FILE__).arg(__LINE__)), "");
     switch (m->button()) {
     case Qt::RightButton: {
@@ -128,23 +129,23 @@ QString UserActionsWriter::getMouseButtonInfo(QMouseEvent* m) {
     }
 }
 
-QString UserActionsWriter::getTreeWidgetInfo(QMouseEvent* m, QWidget *parent) {
+QString UserActionsWriter::getTreeWidgetInfo(QMouseEvent *m, QWidget *parent) {
     CHECK_EXT(m, userActLog.error(QString("MouseEvent is NULL %1:%2").arg(__FILE__).arg(__LINE__)), "");
     CHECK_EXT(parent, userActLog.error(QString("Widget is NULL %1:%2").arg(__FILE__).arg(__LINE__)), "");
 
     QString message("");
     message.append("CLASS_NAME: ").append(parent->metaObject()->className());
-    QTreeWidget* tree = qobject_cast<QTreeWidget*>(parent);
+    QTreeWidget *tree = qobject_cast<QTreeWidget *>(parent);
     if (tree) {
-        QTreeWidgetItem* item = tree->itemAt(m->pos());
+        QTreeWidgetItem *item = tree->itemAt(m->pos());
         if (item) {
             message.append(" TREE_ITEM: " + item->text(0));
         }
     }
 
-    QListWidget* list = qobject_cast<QListWidget*>(parent);
+    QListWidget *list = qobject_cast<QListWidget *>(parent);
     if (list) {
-        QListWidgetItem* item = list->itemAt(list->mapFromGlobal(m->globalPos()));
+        QListWidgetItem *item = list->itemAt(list->mapFromGlobal(m->globalPos()));
         if (item) {
             message.append(" LIST_ITEM: " + item->text());
         }
@@ -152,7 +153,7 @@ QString UserActionsWriter::getTreeWidgetInfo(QMouseEvent* m, QWidget *parent) {
     return message;
 }
 
-QString UserActionsWriter::getAdditionalWidgetInfo(QMouseEvent* m, QWidget *w) {
+QString UserActionsWriter::getAdditionalWidgetInfo(QMouseEvent *m, QWidget *w) {
     CHECK_EXT(m, userActLog.error(QString("MouseEvent is NULL %1:%2").arg(__FILE__).arg(__LINE__)), "");
     CHECK_EXT(w, userActLog.error(QString("Widget is NULL %1:%2").arg(__FILE__).arg(__LINE__)), "");
 
@@ -168,46 +169,46 @@ QString UserActionsWriter::getAdditionalWidgetInfo(QMouseEvent* m, QWidget *w) {
     } else if (!objectName.isEmpty()) {
         message.append("OBJECT_NAME: " + objectName);
     }
-    QAbstractSpinBox* spin = qobject_cast<QAbstractSpinBox*>(w);
+    QAbstractSpinBox *spin = qobject_cast<QAbstractSpinBox *>(w);
     if (spin) {
         message.append(" " + spin->text());
     }
     return message;
 }
 
-QString UserActionsWriter::getWidgetText(QMouseEvent* m, QWidget* w) {
+QString UserActionsWriter::getWidgetText(QMouseEvent *m, QWidget *w) {
     CHECK_EXT(m, userActLog.error(QString("MouseEvent is NULL %1:%2").arg(__FILE__).arg(__LINE__)), "");
     CHECK_EXT(w, userActLog.error(QString("Widget is NULL %1:%2").arg(__FILE__).arg(__LINE__)), "");
 
     QString text("");
 
-    QLabel* l = qobject_cast<QLabel*>(w);
+    QLabel *l = qobject_cast<QLabel *>(w);
     if (l) {
         text.append(l->text());
     }
 
-    QAbstractButton* b = qobject_cast<QAbstractButton*>(w);
+    QAbstractButton *b = qobject_cast<QAbstractButton *>(w);
     if (b) {
         text.append(b->text());
     }
 
-    QMenu* menu = qobject_cast<QMenu*>(w);
+    QMenu *menu = qobject_cast<QMenu *>(w);
     if (menu) {
-        QAction* menuAct = menu->actionAt(menu->mapFromGlobal(m->globalPos()));
+        QAction *menuAct = menu->actionAt(menu->mapFromGlobal(m->globalPos()));
         if (menuAct) {
             text.append(menuAct->text());
         }
     }
 
-    QMenuBar* menuBar = qobject_cast<QMenuBar*>(w);
+    QMenuBar *menuBar = qobject_cast<QMenuBar *>(w);
     if (menuBar) {
-        QAction* menuBarAct = menuBar->actionAt(menuBar->mapFromGlobal(m->globalPos()));
+        QAction *menuBarAct = menuBar->actionAt(menuBar->mapFromGlobal(m->globalPos()));
         if (menuBarAct) {
             text.append(menuBarAct->text());
         }
     }
 
-    QLineEdit* lineEdit = qobject_cast<QLineEdit*>(w);
+    QLineEdit *lineEdit = qobject_cast<QLineEdit *>(w);
     if (lineEdit) {
         text.append(lineEdit->text());
     }
@@ -237,7 +238,6 @@ void UserActionsWriter::generateKeyMessage(QKeyEvent *k) {
 }
 
 void UserActionsWriter::filterMouseMessages(QString message) {
-
     if (message != prevMessage) {
         if (!buffer.isEmpty()) {
             userActLog.trace(QString("Typed string. Length=%1").arg(buffer.length()));
@@ -280,7 +280,8 @@ void UserActionsWriter::filterKeyboardMessages(QKeyEvent *k, QString message) {
 
         /*If one key pressed several times, count presses*/
         if (prevMessage.right(prevMessage.length() - typeMap.value(QEvent::KeyRelease).length()) ==
-            message.right(message.length() - typeMap.value(QEvent::KeyPress).length()) && !BUFFER_CONDITION(k)) {
+                message.right(message.length() - typeMap.value(QEvent::KeyPress).length()) &&
+            !BUFFER_CONDITION(k)) {
             prevMessage = message;
             counter++;
             return;
@@ -425,4 +426,4 @@ UserActionsWriter::UserActionsWriter() {
     keys.insert(Qt::Key_Z, "z");
 }
 
-}   // namespace U2
+}    // namespace U2

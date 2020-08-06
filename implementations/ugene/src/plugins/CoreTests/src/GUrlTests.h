@@ -22,8 +22,9 @@
 #ifndef _U2_GURL_TESTS_H_
 #define _U2_GURL_TESTS_H_
 
-#include <U2Test/XMLTestUtils.h>
 #include <QDomElement>
+
+#include <U2Test/XMLTestUtils.h>
 
 namespace U2 {
 
@@ -35,8 +36,8 @@ public:
     ReportResult report();
 
 private:
-    QString             originalUrl, result, expectedResult, platform;
-    bool                isFileUrl, runThisTest;
+    QString originalUrl, result, expectedResult, platform;
+    bool isFileUrl, runThisTest;
 };
 
 class GTest_CreateTmpDir : public XmlTest {
@@ -107,7 +108,7 @@ public:
     ReportResult report();
 
 private:
-    bool findRecursive(const QString& currentDirUrl);
+    bool findRecursive(const QString &currentDirUrl);
 
     QString storageUrl;
     QString fileName;
@@ -141,8 +142,8 @@ private:
 
 class GUrlTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-}//namespace
+}    // namespace U2
 #endif

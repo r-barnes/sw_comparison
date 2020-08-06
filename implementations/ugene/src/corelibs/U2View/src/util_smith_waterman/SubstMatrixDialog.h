@@ -22,19 +22,19 @@
 #ifndef _U2_SUBST_MATRIX_DIALOG_H_
 #define _U2_SUBST_MATRIX_DIALOG_H_
 
-#include "ui_SubstMatrixDialogBase.h"
-
-#include <U2Core/global.h>
-#include <U2Core/SMatrix.h>
-
 #include <QDialog>
+
+#include <U2Core/SMatrix.h>
+#include <U2Core/global.h>
+
+#include "ui_SubstMatrixDialogBase.h"
 
 namespace U2 {
 
-class U2VIEW_EXPORT SubstMatrixDialog: public QDialog, public Ui_SubstMatrixDialogBase {
+class U2VIEW_EXPORT SubstMatrixDialog : public QDialog, public Ui_SubstMatrixDialogBase {
     Q_OBJECT
 public:
-    SubstMatrixDialog(const SMatrix& m, QWidget* parent);
+    SubstMatrixDialog(const SMatrix &m, QWidget *parent);
 
 private slots:
     void sl_closeWindow();
@@ -42,7 +42,6 @@ private slots:
     void sl_mouseOnCell(int row, int column);
 
 private:
-
     void connectGUI();
     void prepareTable();
 
@@ -54,9 +53,9 @@ private:
 
     SMatrix m;
 
-    QPushButton* bttnClose;
+    QPushButton *bttnClose;
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

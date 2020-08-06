@@ -23,16 +23,17 @@
 #define _U2_BAM_BAI_WRITER_H_
 
 #include <U2Core/IOAdapter.h>
+
 #include "Index.h"
 
 namespace U2 {
 namespace BAM {
 
-class BaiWriter
-{
+class BaiWriter {
 public:
     BaiWriter(IOAdapter &ioAdapter);
     void writeIndex(const Index &index);
+
 private:
     void writeBytes(const char *buff, qint64 size);
     void writeBytes(const QByteArray &buffer);
@@ -43,7 +44,7 @@ private:
     IOAdapter &ioAdapter;
 };
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2
 
-#endif // _U2_BAM_BAI_WRITER_H_
+#endif    // _U2_BAM_BAI_WRITER_H_

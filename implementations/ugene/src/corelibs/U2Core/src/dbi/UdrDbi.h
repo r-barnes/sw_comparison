@@ -79,7 +79,7 @@ public:
      * The field must be BLOB.
      * Do not forget to release the memory.
      */
-    virtual InputStream * createInputStream(const UdrRecordId &recordId, int fieldNum, U2OpStatus &os) = 0;
+    virtual InputStream *createInputStream(const UdrRecordId &recordId, int fieldNum, U2OpStatus &os) = 0;
 
     /**
      * Returns the output stream for writing data to the specified field (@fieldNum)
@@ -88,11 +88,11 @@ public:
      * The field must be BLOB.
      * Do not forget to release the memory.
      */
-    virtual OutputStream * createOutputStream(const UdrRecordId &recordId, int fieldNum, qint64 size, U2OpStatus &os) = 0;
+    virtual OutputStream *createOutputStream(const UdrRecordId &recordId, int fieldNum, qint64 size, U2OpStatus &os) = 0;
 
-    virtual ModificationAction* getModificationAction(const U2DataId& id) = 0;
+    virtual ModificationAction *getModificationAction(const U2DataId &id) = 0;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_UDRDBI_H_
+#endif    // _U2_UDRDBI_H_

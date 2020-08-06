@@ -25,10 +25,9 @@
 #include <QObject>
 #include <QString>
 
-#include <U2Core/Task.h>
-
 #include <U2Core/PFMatrix.h>
 #include <U2Core/PWMatrix.h>
+#include <U2Core/Task.h>
 
 namespace U2 {
 
@@ -37,7 +36,6 @@ class IOAdapterFactory;
 class WeightMatrixIO : public QObject {
     Q_OBJECT
 public:
-
     //IDs for LastOpenDirHelper
     static const QString WEIGHT_MATRIX_ID;
     static const QString FREQUENCY_MATRIX_ID;
@@ -49,33 +47,45 @@ public:
     static QString getAllMatrixFileFilter(bool includeAll = true);
     static QString getPFMFileFilter(bool includeAll = true);
     static QString getPWMFileFilter(bool includeAll = true);
-    static PFMatrix readPFMatrix(IOAdapterFactory* iof, const QString& url, TaskStateInfo& si);
-    static PWMatrix readPWMatrix(IOAdapterFactory* iof, const QString& url, TaskStateInfo& si);
-    static void writePFMatrix(IOAdapterFactory* iof, const QString& url, TaskStateInfo& si, const PFMatrix& model);
-    static void writePWMatrix(IOAdapterFactory* iof, const QString& url, TaskStateInfo& si, const PWMatrix& model);
+    static PFMatrix readPFMatrix(IOAdapterFactory *iof, const QString &url, TaskStateInfo &si);
+    static PWMatrix readPWMatrix(IOAdapterFactory *iof, const QString &url, TaskStateInfo &si);
+    static void writePFMatrix(IOAdapterFactory *iof, const QString &url, TaskStateInfo &si, const PFMatrix &model);
+    static void writePWMatrix(IOAdapterFactory *iof, const QString &url, TaskStateInfo &si, const PWMatrix &model);
 };
 
-class PFMatrixReadTask: public Task {
+class PFMatrixReadTask : public Task {
     Q_OBJECT
 public:
-    PFMatrixReadTask(const QString& url)
-        : Task(tr("Read Frequency Matrix"), TaskFlag_None), url(url) {}
+    PFMatrixReadTask(const QString &url)
+        : Task(tr("Read Frequency Matrix"), TaskFlag_None), url(url) {
+    }
     void run();
-    PFMatrix getResult() const {return model;}
-    QString getURL() const {return url;}
+    PFMatrix getResult() const {
+        return model;
+    }
+    QString getURL() const {
+        return url;
+    }
+
 private:
     QString url;
     PFMatrix model;
 };
 
-class PWMatrixReadTask: public Task {
+class PWMatrixReadTask : public Task {
     Q_OBJECT
 public:
-    PWMatrixReadTask(const QString& url)
-        : Task(tr("Read Weight Matrix"), TaskFlag_None), url(url) {}
+    PWMatrixReadTask(const QString &url)
+        : Task(tr("Read Weight Matrix"), TaskFlag_None), url(url) {
+    }
     void run();
-    PWMatrix getResult() const {return model;}
-    QString getURL() const {return url;}
+    PWMatrix getResult() const {
+        return model;
+    }
+    QString getURL() const {
+        return url;
+    }
+
 private:
     QString url;
     PWMatrix model;
@@ -84,9 +94,11 @@ private:
 class PFMatrixWriteTask : public Task {
     Q_OBJECT
 public:
-    PFMatrixWriteTask(const QString& url, const PFMatrix& model, uint f = 0)
-        : Task(tr("Save position frequency matrix"), TaskFlag_None), url(url), model(model), fileMode(f) {}
+    PFMatrixWriteTask(const QString &url, const PFMatrix &model, uint f = 0)
+        : Task(tr("Save position frequency matrix"), TaskFlag_None), url(url), model(model), fileMode(f) {
+    }
     virtual void run();
+
 private:
     QString url;
     PFMatrix model;
@@ -96,15 +108,17 @@ private:
 class PWMatrixWriteTask : public Task {
     Q_OBJECT
 public:
-    PWMatrixWriteTask(const QString& url, const PWMatrix& model, uint f = 0)
-        : Task(tr("Save weight matrix"), TaskFlag_None), url(url), model(model), fileMode(f) {}
+    PWMatrixWriteTask(const QString &url, const PWMatrix &model, uint f = 0)
+        : Task(tr("Save weight matrix"), TaskFlag_None), url(url), model(model), fileMode(f) {
+    }
     virtual void run();
+
 private:
     QString url;
     PWMatrix model;
     uint fileMode;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

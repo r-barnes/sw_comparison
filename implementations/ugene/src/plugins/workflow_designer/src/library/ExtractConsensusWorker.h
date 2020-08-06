@@ -26,9 +26,9 @@
 #include <U2Lang/WorkflowUtils.h>
 
 namespace U2 {
-    class AssemblyConsensusAlgorithm;
-    class AssemblyModel;
-    class ExportConsensusTask;
+class AssemblyConsensusAlgorithm;
+class AssemblyModel;
+class ExportConsensusTask;
 namespace LocalWorkflow {
 using namespace Workflow;
 
@@ -38,7 +38,7 @@ public:
     ExtractConsensusWorker(Actor *actor);
 
     void init();
-    Task * tick();
+    Task *tick();
     void cleanup();
 
 private slots:
@@ -47,7 +47,7 @@ private slots:
 private:
     bool hasAssembly() const;
     U2EntityRef takeAssembly(U2OpStatus &os);
-    Task * createTask(const U2EntityRef &assembly);
+    Task *createTask(const U2EntityRef &assembly);
     void finish();
     void sendResult(const SharedDbiDataHandler &seqId);
 };
@@ -68,22 +68,22 @@ private:
     ExportConsensusTask *exportTask;
 
 private:
-    AssemblyConsensusAlgorithm * createAlgorithm();
-    AssemblyModel * createModel();
+    AssemblyConsensusAlgorithm *createAlgorithm();
+    AssemblyModel *createModel();
 };
 
 class ExtractConsensusWorkerFactory : public DomainFactory {
 public:
     ExtractConsensusWorkerFactory();
 
-    Worker * createWorker(Actor *actor);
+    Worker *createWorker(Actor *actor);
 
     static void init();
 
     static const QString ACTOR_ID;
 };
 
-class ExtractConsensusWorkerPrompter : public PrompterBase<ExtractConsensusWorkerPrompter>{
+class ExtractConsensusWorkerPrompter : public PrompterBase<ExtractConsensusWorkerPrompter> {
     Q_OBJECT
 public:
     ExtractConsensusWorkerPrompter(Actor *actor = NULL);
@@ -92,7 +92,7 @@ protected:
     QString composeRichDoc();
 };
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_EXTRACTCONSENSUSWORKER_H_
+#endif    // _U2_EXTRACTCONSENSUSWORKER_H_

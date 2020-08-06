@@ -35,17 +35,17 @@ class StateLocker;
 class U2VIEW_EXPORT RealignSequencesInAlignmentTask : public Task {
     Q_OBJECT
 public:
-    RealignSequencesInAlignmentTask(MultipleSequenceAlignmentObject* msaObject, const QSet<qint64>& sequencesToAlignIds, bool forceUseUgeneNativeAligner = false);
+    RealignSequencesInAlignmentTask(MultipleSequenceAlignmentObject *msaObject, const QSet<qint64> &sequencesToAlignIds, bool forceUseUgeneNativeAligner = false);
     ~RealignSequencesInAlignmentTask();
 
     Task::ReportResult report();
 
 protected:
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
 private:
-    MultipleSequenceAlignmentObject* originalMsaObject;
-    MultipleSequenceAlignmentObject* msaObject;
+    MultipleSequenceAlignmentObject *originalMsaObject;
+    MultipleSequenceAlignmentObject *msaObject;
     const QSet<qint64> rowsToAlignIds;
     QStringList originalRowOrder;
     Task *extractSequences;
@@ -53,6 +53,6 @@ private:
     StateLocker *locker;
 };
 
-}
+}    // namespace U2
 
 #endif

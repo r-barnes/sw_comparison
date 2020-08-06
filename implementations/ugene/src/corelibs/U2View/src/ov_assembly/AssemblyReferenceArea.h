@@ -22,9 +22,9 @@
 #ifndef __ASSEMBLY_REFERENCE_AREA_H__
 #define __ASSEMBLY_REFERENCE_AREA_H__
 
-#include <QWidget>
 #include <QMenu>
 #include <QSharedPointer>
+#include <QWidget>
 
 #include "AssemblyCellRenderer.h"
 #include "AssemblyModel.h"
@@ -39,23 +39,25 @@ class U2OpStatus;
 class AssemblySequenceArea : public QWidget {
     Q_OBJECT
 public:
-    AssemblySequenceArea(AssemblyBrowserUi * ui, char skipChar = '\0');
+    AssemblySequenceArea(AssemblyBrowserUi *ui, char skipChar = '\0');
 
 protected:
     virtual QByteArray getSequenceRegion(U2OpStatus &os) = 0;
     virtual bool canDrawSequence() = 0;
-    virtual void drawSequence(QPainter & p);
+    virtual void drawSequence(QPainter &p);
 
-    QSharedPointer<AssemblyModel> getModel() const { return model; }
+    QSharedPointer<AssemblyModel> getModel() const {
+        return model;
+    }
     bool areCellsVisible() const;
     U2Region getVisibleRegion() const;
 
     void setNormalCellRenderer();
     void setDiffCellRenderer();
 
-    void paintEvent(QPaintEvent * e);
-    void resizeEvent(QResizeEvent * e);
-    void mouseMoveEvent(QMouseEvent * e);
+    void paintEvent(QPaintEvent *e);
+    void resizeEvent(QResizeEvent *e);
+    void mouseMoveEvent(QMouseEvent *e);
 
 signals:
     void si_mouseMovedToPos(const QPoint &);
@@ -74,7 +76,7 @@ protected:
     AssemblyBrowser *browser;
 
 private:
-    AssemblyBrowserUi * ui;
+    AssemblyBrowserUi *ui;
     QSharedPointer<AssemblyModel> model;
 
     QPixmap cachedView;
@@ -86,17 +88,17 @@ private:
     const static int FIXED_HEIGHT = 25;
 };
 
-class AssemblyReferenceArea: public AssemblySequenceArea {
+class AssemblyReferenceArea : public AssemblySequenceArea {
     Q_OBJECT
 public:
-    AssemblyReferenceArea(AssemblyBrowserUi * ui);
+    AssemblyReferenceArea(AssemblyBrowserUi *ui);
 
 protected:
     virtual QByteArray getSequenceRegion(U2OpStatus &os);
     virtual bool canDrawSequence();
-    virtual void drawSequence(QPainter & p);
+    virtual void drawSequence(QPainter &p);
 
-    void mousePressEvent(QMouseEvent* e);
+    void mousePressEvent(QMouseEvent *e);
 
 signals:
     void si_unassociateReference();
@@ -105,10 +107,10 @@ private slots:
     void sl_onReferenceChanged();
 
 private:
-    QMenu * referenceAreaMenu;
-    QAction * unassociateReferenceAction;
+    QMenu *referenceAreaMenu;
+    QAction *unassociateReferenceAction;
 };
 
-} //ns
+}    // namespace U2
 
 #endif

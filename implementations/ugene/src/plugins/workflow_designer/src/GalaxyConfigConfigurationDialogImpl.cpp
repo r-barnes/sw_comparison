@@ -19,63 +19,64 @@
  * MA 02110-1301, USA.
  */
 
+#include "GalaxyConfigConfigurationDialogImpl.h"
+
 #include <U2Core/AppContext.h>
 
 #include <U2Gui/U2FileDialog.h>
 
-#include "GalaxyConfigConfigurationDialogImpl.h"
 #include "cmdline/GalaxyConfigTask.h"
 
 namespace U2 {
 namespace Workflow {
 
-GalaxyConfigConfigurationDialogImpl::GalaxyConfigConfigurationDialogImpl( const QString &_schemePath , QWidget * p ) : QDialog(p) {
+GalaxyConfigConfigurationDialogImpl::GalaxyConfigConfigurationDialogImpl(const QString &_schemePath, QWidget *p)
+    : QDialog(p) {
     setupUi(this);
 
-    ugenePathLineEdit->setText( QApplication::applicationDirPath() );
-    galaxyPathLineEdit->setText( "Set Galaxy folder" );
-    destinationPathLineEdit->setText( "Set destination folder" );
+    ugenePathLineEdit->setText(QApplication::applicationDirPath());
+    galaxyPathLineEdit->setText("Set Galaxy folder");
+    destinationPathLineEdit->setText("Set destination folder");
 
-    connect( cancelPushButton, SIGNAL(clicked()), SLOT( reject() ) );
-    connect( createPushButton, SIGNAL(clicked()), SLOT( accept() ) );
+    connect(cancelPushButton, SIGNAL(clicked()), SLOT(reject()));
+    connect(createPushButton, SIGNAL(clicked()), SLOT(accept()));
 
-    connect( ugenePathToolButton,       SIGNAL(clicked()), SLOT( sl_ugeneToolButtonClicked() ) );
-    connect( galaxyPathToolButton,      SIGNAL(clicked()), SLOT( sl_galaxyToolButtonClicked() ) );
-    connect( destinationPathToolButton, SIGNAL(clicked()), SLOT( sl_destinationToolButtonClicked() ) );
+    connect(ugenePathToolButton, SIGNAL(clicked()), SLOT(sl_ugeneToolButtonClicked()));
+    connect(galaxyPathToolButton, SIGNAL(clicked()), SLOT(sl_galaxyToolButtonClicked()));
+    connect(destinationPathToolButton, SIGNAL(clicked()), SLOT(sl_destinationToolButtonClicked()));
 
     schemePath = _schemePath;
-
 }
 
-void GalaxyConfigConfigurationDialogImpl::sl_ugeneToolButtonClicked( ) {
-    QString newDirectoryPath = U2FileDialog::getExistingDirectory(this, tr( "Set UGENE folder" ), ugenePathLineEdit->text() );
-    if( !newDirectoryPath.isEmpty() ) {
-        ugenePathLineEdit->setText( newDirectoryPath );
+void GalaxyConfigConfigurationDialogImpl::sl_ugeneToolButtonClicked() {
+    QString newDirectoryPath = U2FileDialog::getExistingDirectory(this, tr("Set UGENE folder"), ugenePathLineEdit->text());
+    if (!newDirectoryPath.isEmpty()) {
+        ugenePathLineEdit->setText(newDirectoryPath);
     }
 }
 
-void GalaxyConfigConfigurationDialogImpl::sl_galaxyToolButtonClicked( ) {
-    QString newDirectoryPath = U2FileDialog::getExistingDirectory(this, tr( "Set Galaxy folder" ), galaxyPathLineEdit->text() );
-    if( !newDirectoryPath.isEmpty() ) {
-        galaxyPathLineEdit->setText( newDirectoryPath );
+void GalaxyConfigConfigurationDialogImpl::sl_galaxyToolButtonClicked() {
+    QString newDirectoryPath = U2FileDialog::getExistingDirectory(this, tr("Set Galaxy folder"), galaxyPathLineEdit->text());
+    if (!newDirectoryPath.isEmpty()) {
+        galaxyPathLineEdit->setText(newDirectoryPath);
     }
 }
 
-void GalaxyConfigConfigurationDialogImpl::sl_destinationToolButtonClicked( ) {
-    QString newDirectoryPath = U2FileDialog::getExistingDirectory(this, tr( "Set destination folder" ), destinationPathLineEdit->text() );
-    if( !newDirectoryPath.isEmpty() ) {
-        destinationPathLineEdit->setText( newDirectoryPath );
+void GalaxyConfigConfigurationDialogImpl::sl_destinationToolButtonClicked() {
+    QString newDirectoryPath = U2FileDialog::getExistingDirectory(this, tr("Set destination folder"), destinationPathLineEdit->text());
+    if (!newDirectoryPath.isEmpty()) {
+        destinationPathLineEdit->setText(newDirectoryPath);
     }
 }
 
 bool GalaxyConfigConfigurationDialogImpl::createGalaxyConfigTask() {
-    Task *task = new GalaxyConfigTask( schemePath, ugenePathLineEdit->text(), galaxyPathLineEdit->text(), destinationPathLineEdit->text() );
-    if( task != NULL ) {
-        AppContext::getTaskScheduler()->registerTopLevelTask( task );
+    Task *task = new GalaxyConfigTask(schemePath, ugenePathLineEdit->text(), galaxyPathLineEdit->text(), destinationPathLineEdit->text());
+    if (task != NULL) {
+        AppContext::getTaskScheduler()->registerTopLevelTask(task);
         return true;
     }
     return false;
 }
 
-} //Workflow
-} //U2
+}    // namespace Workflow
+}    // namespace U2

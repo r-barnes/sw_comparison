@@ -19,10 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "GenomicLibraryDialogFiller.h"
+
 #include <QApplication>
 #include <QFileInfo>
 
-#include "GenomicLibraryDialogFiller.h"
 #include "GTUtilsWorkflowDesigner.h"
 
 namespace U2 {
@@ -30,9 +31,7 @@ using namespace HI;
 
 GenomicLibraryDialogFiller::GenomicLibraryDialogFiller(GUITestOpStatus &os, const QStringList &_urls)
     : Filler(os, "GenomicLibraryDialog"),
-      urls(_urls)
-{
-
+      urls(_urls) {
 }
 
 #define GT_CLASS_NAME "GenomicLibraryDialogFiller"
@@ -68,4 +67,4 @@ void GenomicLibraryDialogFiller::commonScenario() {
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-} // namespace U2
+}    // namespace U2

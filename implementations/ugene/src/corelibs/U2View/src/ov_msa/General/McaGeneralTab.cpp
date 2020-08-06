@@ -19,9 +19,10 @@
  * MA 02110-1301, USA.
  */
 
+#include "McaGeneralTab.h"
+
 #include <U2Gui/ShowHideSubgroupWidget.h>
 
-#include "McaGeneralTab.h"
 #include "ov_msa/McaEditor.h"
 
 namespace U2 {
@@ -30,8 +31,7 @@ McaGeneralTab::McaGeneralTab(McaEditor *mca)
     : mca(mca) {
     setupUi(this);
 
-    ShowHideSubgroupWidget* alignmentInfo = new ShowHideSubgroupWidget("ALIGNMENT_INFO", tr("Alignment info"),
-                                                                       alignmentInfoWgt, true);
+    ShowHideSubgroupWidget *alignmentInfo = new ShowHideSubgroupWidget("ALIGNMENT_INFO", tr("Alignment info"), alignmentInfoWgt, true);
 
     Ui_McaGeneralTab::verticalLayout->addWidget(alignmentInfo);
 
@@ -48,4 +48,4 @@ void McaGeneralTab::sl_alignmentChanged() {
     seqNumLabel->setText(QString::number(mca->getNumSequences()));
 }
 
-} // namespace
+}    // namespace U2

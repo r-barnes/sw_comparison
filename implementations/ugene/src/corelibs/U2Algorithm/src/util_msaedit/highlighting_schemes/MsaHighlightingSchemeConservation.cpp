@@ -19,20 +19,19 @@
  * MA 02110-1301, USA.
  */
 
+#include "MsaHighlightingSchemeConservation.h"
+
 #include <QColor>
 
 #include <U2Core/MultipleAlignmentObject.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "MsaHighlightingSchemeConservation.h"
 
 namespace U2 {
 
 MsaHighlightingSchemeConservation::MsaHighlightingSchemeConservation(QObject *parent, const MsaHighlightingSchemeFactory *factory, MultipleAlignmentObject *maObj)
     : MsaHighlightingScheme(parent, factory, maObj),
       threshold(50),
-      lessThenThreshold(false)
-{
+      lessThenThreshold(false) {
     connect(maObj, SIGNAL(si_alignmentChanged(const MultipleAlignment &, const MaModificationInfo &)), SLOT(sl_resetMap()));
 }
 
@@ -41,7 +40,7 @@ void MsaHighlightingSchemeConservation::process(const char refChar, char &seqCha
         calculateStatisticForColumn(refCharColumn);
     }
 
-    int neededThr = (int)((float)(threshold * maObj->getNumRows())/100.0 + 0.5);
+    int neededThr = (int)((float)(threshold * maObj->getNumRows()) / 100.0 + 0.5);
     if (lessThenThreshold) {
         highlight = (msaCharCountMap[refCharColumn][seqChar] <= neededThr);
     } else {
@@ -53,11 +52,11 @@ void MsaHighlightingSchemeConservation::process(const char refChar, char &seqCha
     MsaHighlightingScheme::process(refChar, seqChar, color, highlight, refCharColumn, refCharRow);
 }
 
-void MsaHighlightingSchemeConservation::applySettings(const QVariantMap &settings){
+void MsaHighlightingSchemeConservation::applySettings(const QVariantMap &settings) {
     QVariant thresholdQVar = settings.value(THRESHOLD_PARAMETER_NAME);
     if (!thresholdQVar.isNull()) {
         bool ok;
-        int  convertedThreshold = thresholdQVar.toInt(&ok);
+        int convertedThreshold = thresholdQVar.toInt(&ok);
         CHECK(ok, );
         threshold = convertedThreshold;
     }
@@ -91,13 +90,11 @@ void MsaHighlightingSchemeConservation::calculateStatisticForColumn(int refCharC
 }
 
 MsaHighlightingSchemeConservationFactory::MsaHighlightingSchemeConservationFactory(QObject *parent, const QString &id, const QString &name, const AlphabetFlags &supportedAlphabets)
-    : MsaHighlightingSchemeFactory(parent, id, name, supportedAlphabets, true, true)
-{
-
+    : MsaHighlightingSchemeFactory(parent, id, name, supportedAlphabets, true, true) {
 }
 
-MsaHighlightingScheme * MsaHighlightingSchemeConservationFactory::create(QObject *parent, MultipleAlignmentObject *maObj) const {
+MsaHighlightingScheme *MsaHighlightingSchemeConservationFactory::create(QObject *parent, MultipleAlignmentObject *maObj) const {
     return new MsaHighlightingSchemeConservation(parent, this, maObj);
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -19,33 +19,32 @@
  * MA 02110-1301, USA.
  */
 
-#include <QDir>
-#include <QFileInfo>
+#include "ExportCoverageDialogFiller.h"
+#include <base_dialogs/GTFileDialog.h>
+#include <base_dialogs/MessageBoxFiller.h>
+#include <primitives/GTCheckBox.h>
+#include <primitives/GTComboBox.h>
+#include <primitives/GTLineEdit.h>
+#include <primitives/GTSpinBox.h>
+#include <primitives/GTWidget.h>
 
 #include <QApplication>
+#include <QDir>
+#include <QFileInfo>
 #include <QGroupBox>
 #include <QLineEdit>
 #include <QSpinBox>
 
-#include "ExportCoverageDialogFiller.h"
-#include <primitives/GTCheckBox.h>
-#include <primitives/GTComboBox.h>
-#include <base_dialogs/GTFileDialog.h>
-#include <primitives/GTLineEdit.h>
-#include <primitives/GTSpinBox.h>
-#include <primitives/GTWidget.h>
-#include <base_dialogs/MessageBoxFiller.h>
 #include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::BranchSettingsDialogFiller"
 
-ExportCoverageDialogFiller::ExportCoverageDialogFiller(HI::GUITestOpStatus &os, const QList<Action> &actions) :
-    Filler(os, "ExportCoverageDialog"),
-    dialog(NULL),
-    actions(actions)
-{
+ExportCoverageDialogFiller::ExportCoverageDialogFiller(HI::GUITestOpStatus &os, const QList<Action> &actions)
+    : Filler(os, "ExportCoverageDialog"),
+      dialog(NULL),
+      actions(actions) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
@@ -54,67 +53,67 @@ void ExportCoverageDialogFiller::commonScenario() {
     GT_CHECK(dialog != NULL, "Active modal widget not found");
 
     foreach (const Action &action, actions) {
-    switch (action.first) {
-    case EnterFilePath:
-        enterFilePath(action.second);
-        break;
-    case SelectFile:
-        selectFile(action.second);
-        break;
-    case SetFormat:
-        setFormat(action.second);
-        break;
-    case SetCompress:
-        setCompress(action.second);
-        break;
-    case SetExportCoverage:
-        setExportCoverage(action.second);
-        break;
-    case SetExportBasesQuantity:
-        setExportBasesQuantity(action.second);
-        break;
-    case SetThreshold:
-        setThreshold(action.second);
-        break;
-    case CheckFilePath:
-        checkFilePath(action.second);
-        break;
-    case CheckFormat:
-        checkFormat(action.second);
-        break;
-    case CheckCompress:
-        checkCompress(action.second);
-        break;
-    case CheckOptionsVisibility:
-        checkOptionsVisibility(action.second);
-        break;
-    case CheckExportCoverage:
-        checkExportCoverage(action.second);
-        break;
-    case CheckExportBasesQuantity:
-        checkExportBasesQuantity(action.second);
-        break;
-    case CheckThreshold:
-        checkThreshold(action.second);
-        break;
-    case CheckThresholdBounds:
-        checkThresholdBounds(action.second);
-        break;
-    case ExpectMessageBox:
-        expectMessageBox();
-        break;
-    case ClickOk:
-        clickOk();
-        break;
-    case ClickCancel: {
-        clickCancel();
-        break;
-    }
-    default:
-        os.setError("An unexpected dialog action");
-        clickCancel();
-        break;
-    }
+        switch (action.first) {
+        case EnterFilePath:
+            enterFilePath(action.second);
+            break;
+        case SelectFile:
+            selectFile(action.second);
+            break;
+        case SetFormat:
+            setFormat(action.second);
+            break;
+        case SetCompress:
+            setCompress(action.second);
+            break;
+        case SetExportCoverage:
+            setExportCoverage(action.second);
+            break;
+        case SetExportBasesQuantity:
+            setExportBasesQuantity(action.second);
+            break;
+        case SetThreshold:
+            setThreshold(action.second);
+            break;
+        case CheckFilePath:
+            checkFilePath(action.second);
+            break;
+        case CheckFormat:
+            checkFormat(action.second);
+            break;
+        case CheckCompress:
+            checkCompress(action.second);
+            break;
+        case CheckOptionsVisibility:
+            checkOptionsVisibility(action.second);
+            break;
+        case CheckExportCoverage:
+            checkExportCoverage(action.second);
+            break;
+        case CheckExportBasesQuantity:
+            checkExportBasesQuantity(action.second);
+            break;
+        case CheckThreshold:
+            checkThreshold(action.second);
+            break;
+        case CheckThresholdBounds:
+            checkThresholdBounds(action.second);
+            break;
+        case ExpectMessageBox:
+            expectMessageBox();
+            break;
+        case ClickOk:
+            clickOk();
+            break;
+        case ClickCancel: {
+            clickCancel();
+            break;
+        }
+        default:
+            os.setError("An unexpected dialog action");
+            clickCancel();
+            break;
+        }
     }
 }
 #undef GT_METHOD_NAME
@@ -133,10 +132,7 @@ void ExportCoverageDialogFiller::selectFile(const QVariant &actionData) {
     GT_CHECK(actionData.canConvert<QString>(), "Can't a get file path from the action data");
     const QString dirPath = QFileInfo(actionData.toString()).dir().path();
     QDir().mkpath(dirPath);
-    GTUtilsDialog::waitForDialog(os, new GTFileDialogUtils(os,
-                                                           dirPath,
-                                                           QFileInfo(actionData.toString()).fileName(),
-                                                           GTFileDialogUtils::Save));
+    GTUtilsDialog::waitForDialog(os, new GTFileDialogUtils(os, dirPath, QFileInfo(actionData.toString()).fileName(), GTFileDialogUtils::Save));
     GTWidget::click(os, GTWidget::findWidget(os, "tbFilePath", dialog));
     GTGlobals::sleep(500);
 }
@@ -283,4 +279,4 @@ void ExportCoverageDialogFiller::clickCancel() {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

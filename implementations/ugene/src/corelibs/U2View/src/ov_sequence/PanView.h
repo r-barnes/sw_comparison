@@ -45,12 +45,16 @@ class PVRowData;
 
 class RulerInfo {
 public:
-    RulerInfo(): offset(0){}
-    RulerInfo(const QString& _name, int _offset, const QColor& _color) : name(_name), offset(_offset), color(_color) {}
+    RulerInfo()
+        : offset(0) {
+    }
+    RulerInfo(const QString &_name, int _offset, const QColor &_color)
+        : name(_name), offset(_offset), color(_color) {
+    }
 
     QString name;
-    int     offset;
-    QColor  color;
+    int offset;
+    QColor color;
 };
 
 class PanViewLinesSettings {
@@ -70,19 +74,18 @@ public:
 
     bool isRowVisible(int row) const;
 
-    int                 numLines;       // number of visible lines
-    int                 rowLinesOffset; // row number on the first row line
+    int numLines;    // number of visible lines
+    int rowLinesOffset;    // row number on the first row line
 
-    bool                showMainRuler;
-    bool                showCustomRulers;
-    QList<RulerInfo>    customRulers;
+    bool showMainRuler;
+    bool showCustomRulers;
+    QList<RulerInfo> customRulers;
 };
 
 class U2VIEW_EXPORT PanView : public GSequenceLineViewAnnotated {
     Q_OBJECT
 
 public:
-
     class U2VIEW_EXPORT ZoomUseObject {
     public:
         ZoomUseObject();
@@ -92,56 +95,81 @@ public:
         void useZoom();
         void releaseZoom();
         void setPanView(PanView *pv);
+
     private:
         bool usingZoom;
         PanView *panView;
     };
 
-    PanView(QWidget* p, SequenceObjectContext* ctx, const PanViewRenderAreaFactory &rendererFactory = PanViewRenderAreaFactory());
+    PanView(QWidget *p, SequenceObjectContext *ctx, const PanViewRenderAreaFactory &rendererFactory = PanViewRenderAreaFactory());
     ~PanView();
 
-    const U2Region& getFrameRange() const {return frameView->getVisibleRange();}
+    const U2Region &getFrameRange() const {
+        return frameView->getVisibleRange();
+    }
 
-    virtual QAction* getZoomInAction() const {return zoomInAction;}
+    virtual QAction *getZoomInAction() const {
+        return zoomInAction;
+    }
 
-    virtual QAction* getZoomOutAction() const {return zoomOutAction;}
+    virtual QAction *getZoomOutAction() const {
+        return zoomOutAction;
+    }
 
-    virtual QAction* getZoomToSelectionAction() const {return zoomToSelectionAction;}
+    virtual QAction *getZoomToSelectionAction() const {
+        return zoomToSelectionAction;
+    }
 
-    virtual QAction* getZoomToSequenceAction() const {return zoomToSequenceAction;}
+    virtual QAction *getZoomToSequenceAction() const {
+        return zoomToSequenceAction;
+    }
 
     // [0..seqLen)
-    virtual void setVisibleRange(const U2Region& reg, bool signal = true);
+    virtual void setVisibleRange(const U2Region &reg, bool signal = true);
 
-    PVRowsManager* getRowsManager() const {return rowsManager;}
+    PVRowsManager *getRowsManager() const {
+        return rowsManager;
+    }
 
     virtual void setNumBasesVisible(qint64 n);
 
     void setSyncOffset(int o);
 
-    int getSyncOffset() const {return syncOffset;}
+    int getSyncOffset() const {
+        return syncOffset;
+    }
 
     QList<RulerInfo> getCustomRulers() const;
 
-    void addCustomRuler(const RulerInfo& r);
+    void addCustomRuler(const RulerInfo &r);
 
-    void removeCustomRuler(const QString& name);
+    void removeCustomRuler(const QString &name);
 
     void removeAllCustomRulers();
 
-    QAction* getToggleMainRulerAction() const {return toggleMainRulerAction;}
+    QAction *getToggleMainRulerAction() const {
+        return toggleMainRulerAction;
+    }
 
-    QAction* getToggleCustomRulersAction() const {return toggleCustomRulersAction;}
+    QAction *getToggleCustomRulersAction() const {
+        return toggleCustomRulersAction;
+    }
 
     void hideEvent(QHideEvent *ev);
 
     void showEvent(QShowEvent *ev);
 
-    PanViewLinesSettings* getLinesSettings() const {return settings; }
+    PanViewLinesSettings *getLinesSettings() const {
+        return settings;
+    }
 
 protected:
-    virtual int getSingleStep() const {return qMax(1, int(visibleRange.length) / 10);}
-    virtual int getPageStep() const {return qMax(1, int(visibleRange.length) / 5);}
+    virtual int getSingleStep() const {
+        return qMax(1, int(visibleRange.length) / 10);
+    }
+    virtual int getPageStep() const {
+        return qMax(1, int(visibleRange.length) / 5);
+    }
     virtual void onVisibleRangeChanged(bool signal = true);
     virtual void pack();
 
@@ -163,8 +191,8 @@ private slots:
 
     void sl_onRangeChangeRequest(qint64 start, qint64 end);
 
-    virtual void sl_onDNASelectionChanged(LRegionsSelection* s, const QVector<U2Region>& added, const QVector<U2Region>& removed);
-    virtual void sl_onAnnotationSettingsChanged(const QStringList& changedSettings);
+    virtual void sl_onDNASelectionChanged(LRegionsSelection *s, const QVector<U2Region> &added, const QVector<U2Region> &removed);
+    virtual void sl_onAnnotationSettingsChanged(const QStringList &changedSettings);
 
     void sl_toggleMainRulerVisibility(bool visible);
     void sl_toggleCustomRulersVisibility(bool visible);
@@ -174,9 +202,9 @@ signals:
     void si_updateRows();
 
 public:
-    void setSelection(const U2Region& r);
+    void setSelection(const U2Region &r);
     void centerRow(int row);
-    int  calculateNumRowBarSteps() const;
+    int calculateNumRowBarSteps() const;
 
     void setNumVisibleRows(int numRows);
     void updateNumVisibleRows();
@@ -188,31 +216,30 @@ public:
     void useZoom();
     void releaseZoom();
 
-    PanViewRenderArea* getRenderArea() const;
+    PanViewRenderArea *getRenderArea() const;
 
 private:
     const U2Region getRegionToZoom() const;
 
 public:
-    U2Region            frameRange;
-    int                 minNuclsPerScreen;
+    U2Region frameRange;
+    int minNuclsPerScreen;
 
-    QAction*            zoomInAction;
-    QAction*            zoomOutAction;
-    QAction*            zoomToSelectionAction;
-    QAction*            zoomToSequenceAction;
-    QAction*            toggleMainRulerAction;
-    QAction*            toggleCustomRulersAction;
+    QAction *zoomInAction;
+    QAction *zoomOutAction;
+    QAction *zoomToSelectionAction;
+    QAction *zoomToSequenceAction;
+    QAction *toggleMainRulerAction;
+    QAction *toggleCustomRulersAction;
 
-    PVRowsManager*      rowsManager;
-    QScrollBar*         rowBar;
-    int                 syncOffset; //used by ADVSyncViewManager only
+    PVRowsManager *rowsManager;
+    QScrollBar *rowBar;
+    int syncOffset;    //used by ADVSyncViewManager only
 
-    PanViewLinesSettings*     settings;
+    PanViewLinesSettings *settings;
 
     int zoomUsing;
 };
-
 
 class PanViewRenderArea : public GSequenceLineViewAnnotatedRenderArea {
     friend class PanView;
@@ -221,7 +248,9 @@ public:
     PanViewRenderArea(PanView *d, PanViewRenderer *renderer);
     ~PanViewRenderArea();
 
-    PanViewRenderer* getRenderer() { return renderer; }
+    PanViewRenderer *getRenderer() {
+        return renderer;
+    }
 
     virtual U2Region getAnnotationYRange(Annotation *a, int region, const AnnotationSettings *as) const;
 
@@ -230,19 +259,21 @@ public:
     void setRenderer(PanViewRenderer *renderer);
 
 protected:
-    virtual void drawAll(QPaintDevice* pd);
+    virtual void drawAll(QPaintDevice *pd);
 
     void resizeEvent(QResizeEvent *e);
 
 private:
     bool isSequenceCharsVisible() const;
 
-    PanView* getPanView() const {return static_cast<PanView*>(view);}
+    PanView *getPanView() const {
+        return static_cast<PanView *>(view);
+    }
 
-    PanView*            panView;
-    PanViewRenderer*    renderer;
+    PanView *panView;
+    PanViewRenderer *renderer;
 };
 
-}//namespace;
+}    // namespace U2
 
 #endif

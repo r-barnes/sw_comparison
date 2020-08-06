@@ -20,19 +20,18 @@
  */
 
 #include "TaskStatusBar.h"
+#include <math.h>
 
-#include "TaskViewController.h"
+#include <QEvent>
+#include <QIcon>
+#include <QPainter>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/U2SafePoints.h>
+
 #include <U2Gui/MainWindow.h>
 
-#include <QEvent>
-
-#include <QPainter>
-#include <QIcon>
-
-#include <math.h>
+#include "TaskViewController.h"
 
 namespace U2 {
 
@@ -73,7 +72,6 @@ TaskStatusBar::TaskStatusBar() {
     l->addWidget(lampLabel);
     l->addWidget(notificationLabel);
 
-
 #ifdef Q_OS_MAC
     l->addSpacing(16);
 #endif
@@ -81,8 +79,8 @@ TaskStatusBar::TaskStatusBar() {
     iconOn = QIcon(":ugene/images/lightbulb.png").pixmap(16, 16);
     iconOff = QIcon(":ugene/images/lightbulb_off.png").pixmap(16, 16);
 
-    connect(AppContext::getTaskScheduler(), SIGNAL(si_stateChanged(Task*)), SLOT(sl_taskStateChanged(Task*)));
-    connect(AppContext::getTaskScheduler(), SIGNAL(si_topLevelTaskUnregistered(Task*)), SLOT(sl_newReport(Task*)));
+    connect(AppContext::getTaskScheduler(), SIGNAL(si_stateChanged(Task *)), SLOT(sl_taskStateChanged(Task *)));
+    connect(AppContext::getTaskScheduler(), SIGNAL(si_topLevelTaskUnregistered(Task *)), SLOT(sl_newReport(Task *)));
 
     nStack = AppContext::getMainWindow()->getNotificationStack();
     //nStack = new NotificationStack;
@@ -105,18 +103,18 @@ TaskStatusBar::TaskStatusBar() {
 }
 
 namespace {
-    NotificationType getNotificationType(const U2OpStatus &os) {
-        if (os.hasError()) {
-            return Error_Not;
-        }
-        if (os.hasWarnings()) {
-            return Warning_Not;
-        }
-        return Report_Not;
+NotificationType getNotificationType(const U2OpStatus &os) {
+    if (os.hasError()) {
+        return Error_Not;
     }
+    if (os.hasWarnings()) {
+        return Warning_Not;
+    }
+    return Report_Not;
 }
+}    // namespace
 
-void TaskStatusBar::sl_newReport(Task* task) {
+void TaskStatusBar::sl_newReport(Task *task) {
     Notification *t = NULL;
     if (task->isReportingEnabled()) {
         NotificationType nType = getNotificationType(task->getStateInfo());
@@ -133,9 +131,9 @@ void TaskStatusBar::sl_newReport(Task* task) {
     } else if (task->getStateInfo().hasWarnings()) {
         QStringList warnings = task->getWarnings();
         t = new Notification(tr("There %1:\n")
-                                           .arg(warnings.size() == 1
-                                                ? "was 1 warning"
-                                                : QString("were %1 warnings").arg(warnings.size())) + warnings.join("\n"), Warning_Not);
+                                     .arg(warnings.size() == 1 ? "was 1 warning" : QString("were %1 warnings").arg(warnings.size())) +
+                                 warnings.join("\n"),
+                             Warning_Not);
     }
     if (NULL != t) {
         nStack->addNotification(t);
@@ -143,32 +141,32 @@ void TaskStatusBar::sl_newReport(Task* task) {
 }
 
 void TaskStatusBar::sl_reportsCountChanged() {
-    TaskViewDockWidget* twd = qobject_cast<TaskViewDockWidget*>(sender());
+    TaskViewDockWidget *twd = qobject_cast<TaskViewDockWidget *>(sender());
     nReports = twd->countAvailableReports();
     updateState();
 }
 
 void TaskStatusBar::sl_showReport() {
-    QAction *a = qobject_cast<QAction*>(sender());
+    QAction *a = qobject_cast<QAction *>(sender());
     QString str = a->data().toString();
 
-    if(str.split("|").size() == 3) {
+    if (str.split("|").size() == 3) {
         QString taskName = str.split("|")[0];
-        MWMDIManager* mdi = AppContext::getMainWindow()->getMDIManager();
+        MWMDIManager *mdi = AppContext::getMainWindow()->getMDIManager();
 
         /*foreach(MWMDIWindow *wnd, mdi->getWindows()) {
             if(wnd->windowTitle() == TVReportWindow::genWindowName(taskName)) {
                 return;
             }
         }*/
-        MWMDIWindow* w = new TVReportWindow(taskName, str.split("|")[1].toInt(), str.split("|")[2]);
+        MWMDIWindow *w = new TVReportWindow(taskName, str.split("|")[1].toInt(), str.split("|")[2]);
         mdi->addMDIWindow(w);
     }
 }
 
 void TaskStatusBar::updateState() {
     QString reportsString = nReports == 0 ? QString("") : tr("Reports: %1").arg(nReports);
-    if (taskToTrack ==  NULL) {
+    if (taskToTrack == NULL) {
         taskInfoLabel->setText("");
         taskProgressBar->setVisible(false);
         if (nReports == 0) {
@@ -185,12 +183,12 @@ void TaskStatusBar::updateState() {
     if (taskToTrack->isCanceled() && !taskToTrack->isFinished()) {
         QString cancelStr = tr("canceling...");
         if (!desc.isEmpty()) {
-            cancelStr=", " + cancelStr;
+            cancelStr = ", " + cancelStr;
         }
-        desc+=cancelStr;
+        desc += cancelStr;
     }
     if (!desc.isEmpty()) {
-        text+=tr(": %1").arg(desc);
+        text += tr(": %1").arg(desc);
     }
     taskInfoLabel->setText(text);
     int nTasks = AppContext::getTaskScheduler()->getTopLevelTasks().size();
@@ -202,24 +200,24 @@ void TaskStatusBar::updateState() {
 
     taskProgressBar->setVisible(true);
     int progress = taskToTrack->getProgress();
-    if (progress != -1 ) {
+    if (progress != -1) {
         taskProgressBar->setValue(progress);
     }
 
     lampLabel->setPixmap(iconOn);
 }
 
-void TaskStatusBar::sl_taskStateChanged(Task* t) {
+void TaskStatusBar::sl_taskStateChanged(Task *t) {
     assert(taskToTrack == NULL);
     if (t->isFinished()) {
         return;
     }
     setTaskToTrack(t);
     //AppContext::getTaskScheduler()->disconnect(this);
-    disconnect(AppContext::getTaskScheduler(), SIGNAL(si_stateChanged(Task*)), this, SLOT(sl_taskStateChanged(Task*)));
+    disconnect(AppContext::getTaskScheduler(), SIGNAL(si_stateChanged(Task *)), this, SLOT(sl_taskStateChanged(Task *)));
 }
 
-void TaskStatusBar::setTaskToTrack(Task* t) {
+void TaskStatusBar::setTaskToTrack(Task *t) {
     assert(taskToTrack == NULL);
     if (Q_UNLIKELY(NULL != taskToTrack)) {
         disconnect(taskToTrack, NULL, this, NULL);
@@ -233,9 +231,9 @@ void TaskStatusBar::setTaskToTrack(Task* t) {
 
 void TaskStatusBar::sl_taskStateChanged() {
     if (!tvConnected) {
-        QWidget* w = AppContext::getMainWindow()->getDockManager()->findWidget(DOCK_TASK_VIEW);
-        if (w!=NULL) {
-            TaskViewDockWidget* twd = qobject_cast<TaskViewDockWidget*>(w);
+        QWidget *w = AppContext::getMainWindow()->getDockManager()->findWidget(DOCK_TASK_VIEW);
+        if (w != NULL) {
+            TaskViewDockWidget *twd = qobject_cast<TaskViewDockWidget *>(w);
             nReports = twd->countAvailableReports();
             connect(twd, SIGNAL(si_reportsCountChanged()), SLOT(sl_reportsCountChanged()));
             tvConnected = true;
@@ -250,14 +248,14 @@ void TaskStatusBar::sl_taskStateChanged() {
     taskToTrack = NULL;
     taskProgressBar->setValue(false);
 
-    foreach(Task* newT, AppContext::getTaskScheduler()->getTopLevelTasks()) {
+    foreach (Task *newT, AppContext::getTaskScheduler()->getTopLevelTasks()) {
         if (!newT->isFinished()) {
             setTaskToTrack(newT);
             break;
         }
     }
     if (taskToTrack == NULL) {
-        connect(AppContext::getTaskScheduler(), SIGNAL(si_stateChanged(Task*)), SLOT(sl_taskStateChanged(Task*)));
+        connect(AppContext::getTaskScheduler(), SIGNAL(si_stateChanged(Task *)), SLOT(sl_taskStateChanged(Task *)));
     }
     updateState();
 }
@@ -266,23 +264,23 @@ bool TaskStatusBar::eventFilter(QObject *o, QEvent *e) {
     Q_UNUSED(o);
     QEvent::Type t = e->type();
     if (t == QEvent::MouseButtonDblClick) {
-        if(o == notificationLabel) {
+        if (o == notificationLabel) {
             nStack->showStack();
         } else {
             AppContext::getMainWindow()->getDockManager()->toggleDock(DOCK_TASK_VIEW);
         }
-    } else if(t == QEvent::ToolTip && o == notificationLabel) {
-        QHelpEvent *hEvent = static_cast<QHelpEvent*>(e);
+    } else if (t == QEvent::ToolTip && o == notificationLabel) {
+        QHelpEvent *hEvent = static_cast<QHelpEvent *>(e);
         QToolTip::showText(hEvent->globalPos(), tr("%1 notification(s)").arg(nStack->count()));
     }
     return false;
 }
 
 void TaskStatusBar::mouseDoubleClickEvent(QMouseEvent *e) {
-    if (taskToTrack!=NULL) {
-        QWidget* w = AppContext::getMainWindow()->getDockManager()->activateDock(DOCK_TASK_VIEW);
-        if (w!=NULL) {
-            TaskViewDockWidget* twd = qobject_cast<TaskViewDockWidget*>(w);
+    if (taskToTrack != NULL) {
+        QWidget *w = AppContext::getMainWindow()->getDockManager()->activateDock(DOCK_TASK_VIEW);
+        if (w != NULL) {
+            TaskViewDockWidget *twd = qobject_cast<TaskViewDockWidget *>(w);
             twd->selectTask(taskToTrack);
         }
     }
@@ -290,12 +288,12 @@ void TaskStatusBar::mouseDoubleClickEvent(QMouseEvent *e) {
 }
 
 void TaskStatusBar::sl_notificationChanged() {
-    if(nStack->count() == 0) {
+    if (nStack->count() == 0) {
         notificationLabel->setPixmap(notificationEmpty);
-    } else  {
+    } else {
         QPixmap iconWithNumber;
 
-        if(nStack->hasError()) {
+        if (nStack->hasError()) {
             iconWithNumber = notificationError;
 
         } else {
@@ -307,7 +305,7 @@ void TaskStatusBar::sl_notificationChanged() {
         QFont font("Arial", 7);
         font.setBold(true);
         painter.setFont(font);
-        QRect rect(0,0,16,16);
+        QRect rect(0, 0, 16, 16);
         painter.drawText(rect, Qt::AlignRight, QString::number(nStack->count()));
         painter.end();
         notificationLabel->setPixmap(iconWithNumber);
@@ -325,11 +323,11 @@ void TaskStatusBar::sl_taskDescChanged() {
     updateState();
 }
 
-void TaskStatusBar::drawProgress(QLabel* label) {
+void TaskStatusBar::drawProgress(QLabel *label) {
     static QColor piecolor("#fdc689");
 
     int percent = taskToTrack->getStateInfo().progress;
-    int h = height()-2;
+    int h = height() - 2;
     //float radius = h / 2;
     QPixmap pix(h, h);
     QPainter p(&pix);
@@ -338,7 +336,7 @@ void TaskStatusBar::drawProgress(QLabel* label) {
 
     p.setPen(piecolor);
     p.setBrush(piecolor);
-    p.drawPie(pix.rect(), -90, qRound(- percent * 57.60));
+    p.drawPie(pix.rect(), -90, qRound(-percent * 57.60));
 
     p.setPen(Qt::black);
     p.drawText(pix.rect(), Qt::AlignCenter | Qt::TextDontClip, QString("%1").arg(percent));
@@ -346,4 +344,4 @@ void TaskStatusBar::drawProgress(QLabel* label) {
     label->setPixmap(pix);
 }
 
-} //namespace
+}    // namespace U2

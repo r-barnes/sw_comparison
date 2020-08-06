@@ -33,7 +33,7 @@ class U2OpStatus;
 
 class U2CORE_EXPORT MultipleChromatogramAlignmentImporter {
 public:
-    static MultipleChromatogramAlignmentObject * createAlignment(U2OpStatus &os, const U2DbiRef &dbiRef, const QString &folder, MultipleChromatogramAlignment &mca);
+    static MultipleChromatogramAlignmentObject *createAlignment(U2OpStatus &os, const U2DbiRef &dbiRef, const QString &folder, MultipleChromatogramAlignment &mca);
 
 private:
     static U2Mca importMcaObject(U2OpStatus &os, const DbiConnection &connection, const QString &folder, const MultipleChromatogramAlignment &mca);
@@ -46,6 +46,6 @@ private:
     static void createRelation(U2OpStatus &os, const DbiConnection &connection, const U2Sequence &sequence, const U2DataId &chromatogramId);
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MULTIPLE_CHROMATOGRAM_ALIGNMENT_IMPORTER_H_
+#endif    // _U2_MULTIPLE_CHROMATOGRAM_ALIGNMENT_IMPORTER_H_

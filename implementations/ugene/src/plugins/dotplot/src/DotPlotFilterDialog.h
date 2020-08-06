@@ -30,12 +30,12 @@ namespace U2 {
 
 class ADVSequenceObjectContext;
 
-enum FilterType{
+enum FilterType {
     All,
     Features
 };
 
-enum FilterIntersectionParameter{
+enum FilterIntersectionParameter {
     SequenceX,
     SequenceY,
     Both
@@ -49,15 +49,18 @@ public:
     virtual void accept();
 
     FilterType getFilterType();
-    QMultiMap<FilterIntersectionParameter, QString> getFeatureNames(){return featureNames;}
+    QMultiMap<FilterIntersectionParameter, QString> getFeatureNames() {
+        return featureNames;
+    }
 protected slots:
     void sl_filterTypeChanged(int);
     void sl_selectAll();
     void sl_selectDifferent();
     void sl_clearSelection();
     void sl_invertSelection();
+
 private:
-    ADVSequenceObjectContext    *xSeq, *ySeq;
+    ADVSequenceObjectContext *xSeq, *ySeq;
     FilterType fType;
     QMultiMap<FilterIntersectionParameter, QString> featureNames;
     QButtonGroup *filterGroup;
@@ -67,6 +70,6 @@ private:
     QSet<QString> getUniqueAnnotationNames(ADVSequenceObjectContext *seq);
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

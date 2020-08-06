@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "SharedDbUrlUtils.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/Folder.h>
 #include <U2Core/Settings.h>
@@ -28,8 +30,6 @@
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Lang/BaseTypes.h>
-
-#include "SharedDbUrlUtils.h"
 
 namespace U2 {
 
@@ -79,11 +79,10 @@ bool str2DataType(const QString &str, U2DataType &res) {
 QString objId2Str(const U2DataId &objId, const QString &objName) {
     const qint64 idNumber = U2DbiUtils::toDbiId(objId);
     const U2DataType objType = U2DbiUtils::toType(objId);
-    return QString::number(idNumber) + SharedDbUrlUtils::DB_OBJ_ID_SEP + QString::number(objType)
-        + SharedDbUrlUtils::DB_OBJ_ID_SEP + objName;
+    return QString::number(idNumber) + SharedDbUrlUtils::DB_OBJ_ID_SEP + QString::number(objType) + SharedDbUrlUtils::DB_OBJ_ID_SEP + objName;
 }
 
-}
+}    // namespace
 
 QString SharedDbUrlUtils::createDbUrl(const U2DbiRef &dbiRef) {
     SAFE_POINT(dbiRef.isValid(), "Invalid DBI reference", QString());
@@ -106,8 +105,7 @@ QString SharedDbUrlUtils::createDbFolderUrl(const Folder &folder, const U2DataTy
     const QString folderPath = folder.getFolderPath();
     CHECK(checkFolderPath(folderPath), QString());
 
-    return dbiRef.dbiFactoryId + DB_PROVIDER_SEP + dbiRef.dbiId + DB_URL_SEP
-        + QString::number(compatibleType) + DB_OBJ_ID_SEP + folderPath;
+    return dbiRef.dbiFactoryId + DB_PROVIDER_SEP + dbiRef.dbiId + DB_URL_SEP + QString::number(compatibleType) + DB_OBJ_ID_SEP + folderPath;
 }
 
 QString SharedDbUrlUtils::createDbFolderUrl(const QString &dbUrl, const QString &path, const U2DataType &compatibleType) {
@@ -171,7 +169,7 @@ bool getSeparatorIndices(const QString &entityUrl, int &dbProviderSepPos, int &d
     return true;
 }
 
-}
+}    // namespace
 
 bool SharedDbUrlUtils::isDbObjectUrl(const QString &url) {
     int dbProviderSepPos = -1;
@@ -309,7 +307,7 @@ QString getDbFolderDataTypeStr(const QString &url) {
     return typeStr;
 }
 
-}
+}    // namespace
 
 U2DataType SharedDbUrlUtils::getDbFolderDataTypeByUrl(const QString &url) {
     bool ok = false;
@@ -322,4 +320,4 @@ QString SharedDbUrlUtils::getDbFolderSerializedDataTypeByUrl(const QString &url)
     return BaseTypes::toTypeId(getDbFolderDataTypeByUrl(url));
 }
 
-} // namespace U2
+}    // namespace U2

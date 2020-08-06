@@ -22,11 +22,12 @@
 #ifndef _U2_CIRCULAR_VIEW_PLUGIN_H_
 #define _U2_CIRCULAR_VIEW_PLUGIN_H_
 
-#include <U2Core/PluginModel.h>
-#include <U2Gui/ObjectViewModel.h>
-
-#include <QMap>
 #include <QAction>
+#include <QMap>
+
+#include <U2Core/PluginModel.h>
+
+#include <U2Gui/ObjectViewModel.h>
 
 #include <U2View/ADVSequenceWidget.h>
 
@@ -68,27 +69,27 @@ struct CircularViewSettings {
 
     CircularViewSettings();
 
-    bool        showTitle;
-    bool        showLength;
-    int         titleFontSize;
-    QString     titleFont;
-    bool        titleBold;
+    bool showTitle;
+    bool showLength;
+    int titleFontSize;
+    QString titleFont;
+    bool titleBold;
 
-    bool        showRulerLine;
-    bool        showRulerCoordinates;
-    int         rulerFontSize;
+    bool showRulerLine;
+    bool showRulerCoordinates;
+    int rulerFontSize;
 
-    LabelMode   labelMode;
-    int         labelFontSize;
+    LabelMode labelMode;
+    int labelFontSize;
 };
 
-class CircularViewContext: public GObjectViewWindowContext {
+class CircularViewContext : public GObjectViewWindowContext {
     friend class CircularViewSettingsWidgetFactory;
     Q_OBJECT
 public:
     CircularViewContext(QObject *p);
 
-    CircularViewSettings * getSettings(AnnotatedDNAView *view);
+    CircularViewSettings *getSettings(AnnotatedDNAView *view);
 
 signals:
     void si_cvSplitterWasCreatedOrRemoved(CircularViewSplitter *, CircularViewSettings *);
@@ -105,7 +106,7 @@ protected slots:
 protected:
     virtual void initViewContext(GObjectView *view);
     void buildMenu(GObjectView *v, QMenu *m);
-    CircularViewSplitter * getView(GObjectView *view, bool create);
+    CircularViewSplitter *getView(GObjectView *view, bool create);
     void removeCircularView(GObjectView *view);
     void toggleViews(AnnotatedDNAView *view);
 
@@ -113,6 +114,6 @@ private:
     QMap<AnnotatedDNAView *, CircularViewSettings *> viewSettings;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

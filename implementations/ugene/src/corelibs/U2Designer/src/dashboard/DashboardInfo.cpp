@@ -19,22 +19,19 @@
  * MA 02110-1301, USA.
  */
 
-#include <QDir>
-
 #include "DashboardInfo.h"
+
+#include <QDir>
 
 namespace U2 {
 
 DashboardInfo::DashboardInfo()
-    : opened(false)
-{
-
+    : opened(false) {
 }
 
 DashboardInfo::DashboardInfo(const QString &dirPath, bool opened)
     : path(dirPath),
-      opened(opened)
-{
+      opened(opened) {
     dirName = QDir(path).dirName();
 }
 
@@ -46,4 +43,4 @@ bool DashboardInfo::operator==(const DashboardInfo &other) const {
     return path == other.path;
 }
 
-}   // namespace U2
+}    // namespace U2

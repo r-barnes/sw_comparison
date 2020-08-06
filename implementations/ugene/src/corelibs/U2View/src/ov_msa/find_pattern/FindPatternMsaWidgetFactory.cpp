@@ -19,48 +19,70 @@
  * MA 02110-1301, USA.
  */
 
+#include "FindPatternMsaWidgetFactory.h"
+
 #include <QPixmap>
 
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/HelpButton.h>
 
-#include <U2View/AnnotatedDNAView.h>
-
 #include "FindPatternMsaWidget.h"
-#include "FindPatternMsaWidgetFactory.h"
 
 namespace U2 {
 
-const QString FindPatternMsaWidgetFactory::GROUP_ID = "OP_MSA_FIND_PATTERN";
+const QString FindPatternMsaWidgetFactory::GROUP_ID = "OP_MSA_FIND_PATTERN_WIDGET";
 const QString FindPatternMsaWidgetFactory::GROUP_ICON_STR = ":core/images/find_dialog.png";
-const QString FindPatternMsaWidgetFactory::GROUP_DOC_PAGE = "invalid";
+const QString FindPatternMsaWidgetFactory::GROUP_DOC_PAGE = "46500005";
 
 FindPatternMsaWidgetFactory::FindPatternMsaWidgetFactory() {
     objectViewOfWidget = ObjViewType_AlignmentEditor;
 }
 
-QWidget * FindPatternMsaWidgetFactory::createWidget(GObjectView* objView) {
-    SAFE_POINT(NULL != objView,
-        QString("Internal error: unable to create widget for group '%1', object view is NULL.").arg(GROUP_ID),
-        NULL);
+#define SEARCH_MODE_OPTION_KEY "FindPatternMsaWidgetFactory_searchMode"
 
-    MSAEditor* msaeditor = qobject_cast<MSAEditor*>(objView);
-    SAFE_POINT(NULL != msaeditor,
-        QString("Internal error: unable to cast object view to MSAEditor for group '%1'.").arg(GROUP_ID),
-        NULL);
-    FindPatternMsaWidget* widget = new FindPatternMsaWidget(msaeditor);
-    widget->setObjectName("FindPatternMsaWidget");
+QWidget *FindPatternMsaWidgetFactory::createWidget(GObjectView *objView, const QVariantMap &options) {
+    SAFE_POINT(objView != nullptr,
+               QString("Internal error: unable to create widget for group '%1', object view is NULL.").arg(GROUP_ID),
+               nullptr);
 
-    return widget;
+    MSAEditor *msaEditor = qobject_cast<MSAEditor *>(objView);
+    SAFE_POINT(msaEditor != nullptr,
+               QString("Internal error: unable to cast object view to MSAEditor for group '%1'.").arg(GROUP_ID),
+               nullptr);
+
+    int searchMode = options.value(SEARCH_MODE_OPTION_KEY).toInt();
+    TriState searchInNamesTriState = searchMode == 2 ? TriState_Yes : (searchMode == 1 ? TriState_No : TriState_Unknown);
+    return new FindPatternMsaWidget(msaEditor, searchInNamesTriState);
 }
 
 OPGroupParameters FindPatternMsaWidgetFactory::getOPGroupParameters() {
     return OPGroupParameters(GROUP_ID, QPixmap(GROUP_ICON_STR), QObject::tr("Search in Alignment"), GROUP_DOC_PAGE);
 }
 
-const QString & FindPatternMsaWidgetFactory::getGroupId() {
+void FindPatternMsaWidgetFactory::applyOptionsToWidget(QWidget *widget, const QVariantMap &options) {
+    FindPatternMsaWidget *findPatternMsaWidget = qobject_cast<FindPatternMsaWidget *>(widget);
+    CHECK(findPatternMsaWidget != nullptr, )
+    int mode = options.value(SEARCH_MODE_OPTION_KEY).toInt();
+    if (mode == 1 || mode == 2) {
+        findPatternMsaWidget->setSearchInNamesMode(mode == 2);
+    }
+}
+
+const QString &FindPatternMsaWidgetFactory::getGroupId() {
     return GROUP_ID;
 }
 
-} // namespace U2
+const QVariantMap FindPatternMsaWidgetFactory::getOptionsToActivateSearchInSequences() {
+    QVariantMap options;
+    options[SEARCH_MODE_OPTION_KEY] = 1;
+    return options;
+}
+
+const QVariantMap FindPatternMsaWidgetFactory::getOptionsToActivateSearchInNames() {
+    QVariantMap options;
+    options[SEARCH_MODE_OPTION_KEY] = 2;
+    return options;
+}
+
+}    // namespace U2

@@ -19,31 +19,21 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportQualityScoresTask.h"
+
 #include <QFile>
 #include <QTextStream>
 
 #include <U2Formats/DNAQualityIOUtils.h>
 
-#include "ExportQualityScoresTask.h"
-
 namespace U2 {
 
-
-ExportPhredQualityScoresTask::ExportPhredQualityScoresTask( const U2SequenceObject* obj, const ExportQualityScoresConfig& cfg)
-: Task("ExportPhredQuality", TaskFlag_None), seqObj(obj), config(cfg)
-{
-
+ExportPhredQualityScoresTask::ExportPhredQualityScoresTask(const U2SequenceObject *obj, const ExportQualityScoresConfig &cfg)
+    : Task("ExportPhredQuality", TaskFlag_None), seqObj(obj), config(cfg) {
 }
 
 void ExportPhredQualityScoresTask::run() {
-
     DNAQualityIOUtils::writeDNAQuality(seqObj, config.dstFilePath, config.appendData, false, stateInfo);
-
 }
 
-
-
-
-
-
-} // namespace U2
+}    // namespace U2

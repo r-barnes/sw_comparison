@@ -29,19 +29,19 @@
 namespace U2 {
 
 class SQLiteObjectRelationsDbi : public U2ObjectRelationsDbi, public SQLiteChildDBICommon {
-public :
-                                SQLiteObjectRelationsDbi( SQLiteDbi *dbi );
+public:
+    SQLiteObjectRelationsDbi(SQLiteDbi *dbi);
 
-    void                        initSqlSchema( U2OpStatus &os );
+    void initSqlSchema(U2OpStatus &os);
 
-    void                        createObjectRelation( U2ObjectRelation &relation, U2OpStatus &os );
-    QList<U2ObjectRelation>     getObjectRelations( const U2DataId &object, U2OpStatus &os );
-    QList<U2DataId>             getReferenceRelatedObjects( const U2DataId &reference, GObjectRelationRole relationRole, U2OpStatus &os );
-    void                        removeObjectRelation( U2ObjectRelation &relation, U2OpStatus &os );
-    void                        removeAllObjectRelations( const U2DataId &object, U2OpStatus &os );
-    void                        removeReferencesForObject( const U2DataId &object, U2OpStatus &os );
+    void createObjectRelation(U2ObjectRelation &relation, U2OpStatus &os);
+    QList<U2ObjectRelation> getObjectRelations(const U2DataId &object, U2OpStatus &os);
+    QList<U2DataId> getReferenceRelatedObjects(const U2DataId &reference, GObjectRelationRole relationRole, U2OpStatus &os);
+    void removeObjectRelation(U2ObjectRelation &relation, U2OpStatus &os);
+    void removeAllObjectRelations(const U2DataId &object, U2OpStatus &os);
+    void removeReferencesForObject(const U2DataId &object, U2OpStatus &os);
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_MYSQL_OBJECT_RELATIONS_DBI_H_
+#endif    // _U2_MYSQL_OBJECT_RELATIONS_DBI_H_

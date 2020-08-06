@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ConvertSnpeffVariationsToAnnotationsWorker.h"
+
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/BaseDocumentFormats.h>
@@ -41,21 +43,17 @@
 #include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/WorkflowMonitor.h>
 
-#include "ConvertSnpeffVariationsToAnnotationsWorker.h"
-
 namespace U2 {
 namespace LocalWorkflow {
 
 static const QString IN_VARIATIONS_URL_PORT_ID = "in-variations-url";
 
 ConvertSnpeffVariationsToAnnotationsPrompter::ConvertSnpeffVariationsToAnnotationsPrompter(Actor *actor)
-    : PrompterBase<ConvertSnpeffVariationsToAnnotationsPrompter>(actor)
-{
-
+    : PrompterBase<ConvertSnpeffVariationsToAnnotationsPrompter>(actor) {
 }
 
 QString ConvertSnpeffVariationsToAnnotationsPrompter::composeRichDoc() {
-    IntegralBusPort *input = qobject_cast<IntegralBusPort*>(target->getPort(IN_VARIATIONS_URL_PORT_ID));
+    IntegralBusPort *input = qobject_cast<IntegralBusPort *>(target->getPort(IN_VARIATIONS_URL_PORT_ID));
     SAFE_POINT(NULL != input, "No input port", "");
     const Actor *producer = input->getProducer(BaseSlots::URL_SLOT().getId());
     const QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
@@ -66,12 +64,10 @@ QString ConvertSnpeffVariationsToAnnotationsPrompter::composeRichDoc() {
 const QString ConvertSnpeffVariationsToAnnotationsFactory::ACTOR_ID = "convert-snpeff-variations-to-annotations";
 
 ConvertSnpeffVariationsToAnnotationsFactory::ConvertSnpeffVariationsToAnnotationsFactory()
-    : DomainFactory(ACTOR_ID)
-{
-
+    : DomainFactory(ACTOR_ID) {
 }
 
-Worker * ConvertSnpeffVariationsToAnnotationsFactory::createWorker(Actor *actor) {
+Worker *ConvertSnpeffVariationsToAnnotationsFactory::createWorker(Actor *actor) {
     return new ConvertSnpeffVariationsToAnnotationsWorker(actor);
 }
 
@@ -131,16 +127,14 @@ void ConvertSnpeffVariationsToAnnotationsFactory::init() {
 
 ConvertSnpeffVariationsToAnnotationsWorker::ConvertSnpeffVariationsToAnnotationsWorker(Actor *actor)
     : BaseWorker(actor),
-      input(NULL)
-{
-
+      input(NULL) {
 }
 
 void ConvertSnpeffVariationsToAnnotationsWorker::init() {
     input = ports.value(IN_VARIATIONS_URL_PORT_ID);
 }
 
-Task * ConvertSnpeffVariationsToAnnotationsWorker::tick() {
+Task *ConvertSnpeffVariationsToAnnotationsWorker::tick() {
     if (input->hasMessage()) {
         return createTask(getMessageAndSetupScriptValues(input));
     } else if (input->isEnded()) {
@@ -150,7 +144,6 @@ Task * ConvertSnpeffVariationsToAnnotationsWorker::tick() {
 }
 
 void ConvertSnpeffVariationsToAnnotationsWorker::cleanup() {
-
 }
 
 void ConvertSnpeffVariationsToAnnotationsWorker::sl_taskFinished(Task *task) {
@@ -160,7 +153,7 @@ void ConvertSnpeffVariationsToAnnotationsWorker::sl_taskFinished(Task *task) {
     monitor()->addOutputFile(convertTask->getResultUrl(), getActorId());
 }
 
-Task * ConvertSnpeffVariationsToAnnotationsWorker::createTask(const Message &message) {
+Task *ConvertSnpeffVariationsToAnnotationsWorker::createTask(const Message &message) {
     QVariantMap data = message.getData().toMap();
     const QString variationsFileurl = data[BaseSlots::URL_SLOT().getId()].toString();
     const QString formatId = actor->getParameter(BaseAttributes::DOCUMENT_FORMAT_ATTRIBUTE().getId())->getAttributeValue<QString>(context);
@@ -175,5 +168,5 @@ Task * ConvertSnpeffVariationsToAnnotationsWorker::createTask(const Message &mes
     return task;
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

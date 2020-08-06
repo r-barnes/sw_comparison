@@ -31,5 +31,4 @@ int GTSequenceReadingModeDialog::numSymbolFiles = 10;
 bool GTSequenceReadingModeDialog::saveDocument = false;
 QString GTSequenceReadingModeDialog::newDocName = QString();
 
-} // namespace
-
+}    // namespace U2

@@ -19,27 +19,26 @@
  * MA 02110-1301, USA.
  */
 
+#include "BreakpointConditionChecker.h"
+
 #include <QMutexLocker>
 
 #include <U2Lang/Attribute.h>
 #include <U2Lang/WorkflowBreakpointSharedInfo.h>
 #include <U2Lang/WorkflowScriptEngine.h>
 
-#include "BreakpointConditionChecker.h"
-
 const int DEFAULT_CONDITION_EVAL_RESULT = -1;
 
 namespace U2 {
 
 BreakpointConditionChecker::BreakpointConditionChecker(const QString &initConditionText,
-    Workflow::WorkflowContext *context) :
-    conditionText(initConditionText),
-    engine((NULL == context) ? NULL : new WorkflowScriptEngine(context)),
-    enabled(false),
-    parameter(IS_TRUE),
-    lastConditionEvaluation(DEFAULT_CONDITION_EVAL_RESULT),
-    engineGuard()
-{
+                                                       Workflow::WorkflowContext *context)
+    : conditionText(initConditionText),
+      engine((NULL == context) ? NULL : new WorkflowScriptEngine(context)),
+      enabled(false),
+      parameter(IS_TRUE),
+      lastConditionEvaluation(DEFAULT_CONDITION_EVAL_RESULT),
+      engineGuard() {
     if (NULL != engine) {
         WorkflowScriptLibrary::initEngine(engine);
     }
@@ -54,8 +53,7 @@ void BreakpointConditionChecker::setContext(Workflow::WorkflowContext *context) 
     if (NULL == context) {
         delete engine;
         engine = NULL;
-    }
-    else if (NULL == engine) {
+    } else if (NULL == engine) {
         engine = new WorkflowScriptEngine(context);
         WorkflowScriptLibrary::initEngine(engine);
     }
@@ -74,26 +72,23 @@ bool BreakpointConditionChecker::evaluateCondition(const AttributeScript *condit
     }
 
     QMap<QString, QScriptValue> scriptVars;
-    foreach (const Descriptor & key, conditionContext->getScriptVars().uniqueKeys()) {
+    foreach (const Descriptor &key, conditionContext->getScriptVars().uniqueKeys()) {
         assert(!key.getId().isEmpty());
         scriptVars[key.getId()] = engine->newVariant(conditionContext->getScriptVars().value(key));
     }
     TaskStateInfo stateInfo;
-    QScriptValue evaluationResult = ScriptTask::runScript(engine, scriptVars, conditionText,
-        stateInfo);
+    QScriptValue evaluationResult = ScriptTask::runScript(engine, scriptVars, conditionText, stateInfo);
     if (stateInfo.hasError()) {
         coreLog.error("Breakpoint condition evaluation failed. Error:\n" + stateInfo.getError());
         return false;
     } else if (evaluationResult.isBool()) {
         bool evaluatedResult = evaluationResult.toBool();
         if (HAS_CHANGED == parameter) {
-            const bool returningValue = (DEFAULT_CONDITION_EVAL_RESULT == lastConditionEvaluation)
-                ? false : (static_cast<bool>(lastConditionEvaluation) != evaluatedResult);
+            const bool returningValue = (DEFAULT_CONDITION_EVAL_RESULT == lastConditionEvaluation) ? false : (static_cast<bool>(lastConditionEvaluation) != evaluatedResult);
             lastConditionEvaluation = static_cast<int>(evaluatedResult);
             evaluatedResult = returningValue;
         }
-        coreLog.trace(QString("Condition of breakpoint is %1").arg(evaluatedResult
-            ? "true" : "false"));
+        coreLog.trace(QString("Condition of breakpoint is %1").arg(evaluatedResult ? "true" : "false"));
         return evaluatedResult;
     } else {
         coreLog.error("Breakpoint condition's evaluation has provided no boolean value");
@@ -114,8 +109,7 @@ QString BreakpointConditionChecker::getConditionText() const {
 }
 
 void BreakpointConditionChecker::setConditionParameter(
-    BreakpointConditionParameter newParameter)
-{
+    BreakpointConditionParameter newParameter) {
     parameter = newParameter;
 }
 
@@ -127,4 +121,4 @@ void BreakpointConditionChecker::setConditionText(const QString &text) {
     conditionText = text;
 }
 
-} // namespace U2
+}    // namespace U2

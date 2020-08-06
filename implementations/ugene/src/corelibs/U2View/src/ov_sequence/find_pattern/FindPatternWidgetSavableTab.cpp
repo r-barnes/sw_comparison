@@ -20,16 +20,17 @@
  */
 
 #include "FindPatternWidgetSavableTab.h"
-#include "FindPatternWidget.h"
+
+#include <U2Core/DNASequenceObject.h>
 
 #include <U2Gui/U2WidgetStateStorage.h>
-#include <U2Core/DNASequenceObject.h>
+
+#include "FindPatternWidget.h"
 
 namespace U2 {
 
 FindPatternWidgetSavableTab::FindPatternWidgetSavableTab(QWidget *wrappedWidget, MWMDIWindow *contextWindow)
-    : U2SavableWidget(wrappedWidget, contextWindow)
-{
+    : U2SavableWidget(wrappedWidget, contextWindow) {
     SAFE_POINT(NULL != qobject_cast<FindPatternWidget *>(wrappedWidget), "Invalid widget provided", );
 }
 
@@ -41,15 +42,15 @@ FindPatternWidgetSavableTab::~FindPatternWidgetSavableTab() {
 void FindPatternWidgetSavableTab::setChildValue(const QString &childId, const QVariant &value) {
     SAFE_POINT(childExists(childId), "Child widget expected", );
     QVariant result = value;
-    if (regionWidgetIds.contains(childId)){
+    if (regionWidgetIds.contains(childId)) {
         bool ok = false;
         int intVal = value.toInt(&ok);
-        FindPatternWidget *parentWidget = qobject_cast<FindPatternWidget*>(wrappedWidget);
+        FindPatternWidget *parentWidget = qobject_cast<FindPatternWidget *>(wrappedWidget);
         SAFE_POINT(parentWidget != NULL, "Wrong casting", )
         int sequenceLength = parentWidget->getTargetSequenceLength();
         SAFE_POINT(ok, "Invalid conversion to int", );
         CHECK(regionWidgetIds.size() == 2, );
-        if(intVal > sequenceLength){
+        if (intVal > sequenceLength) {
             if (childId == regionWidgetIds.at(1)) {
                 result = QVariant(sequenceLength);
             } else {
@@ -67,4 +68,4 @@ void FindPatternWidgetSavableTab::setRegionWidgetIds(const QStringList &s) {
     regionWidgetIds.append(s);
 }
 
-}
+}    // namespace U2

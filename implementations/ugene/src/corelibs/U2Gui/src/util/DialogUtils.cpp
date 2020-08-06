@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DialogUtils.h"
+
 #include <QCoreApplication>
 #include <QDir>
 #include <QMessageBox>
@@ -34,31 +36,29 @@
 #include <U2Gui/LastUsedDirHelper.h>
 #include <U2Gui/U2FileDialog.h>
 
-#include "DialogUtils.h"
-
 namespace U2 {
 
-void DialogUtils::showProjectIsLockedWarning(QWidget* p) {
+void DialogUtils::showProjectIsLockedWarning(QWidget *p) {
     QMessageBox::critical(p, tr("Error"), tr("Project is locked"), QMessageBox::Ok, QMessageBox::NoButton);
 }
 
-QString DialogUtils::prepareFileFilter(const QString& name, const QStringList& exts, bool any, const QStringList& extra) {
+QString DialogUtils::prepareFileFilter(const QString &name, const QStringList &exts, bool any, const QStringList &extra) {
     return FormatUtils::prepareFileFilter(name, exts, any, extra);
 }
 
-QString DialogUtils::prepareDocumentsFileFilter(const DocumentFormatId& fid, bool any, const QStringList& extra) {
+QString DialogUtils::prepareDocumentsFileFilter(const DocumentFormatId &fid, bool any, const QStringList &extra) {
     return FormatUtils::prepareDocumentsFileFilter(fid, any, extra);
 }
 
-QString DialogUtils::prepareDocumentsFileFilter(bool any, const QStringList& extra) {
+QString DialogUtils::prepareDocumentsFileFilter(bool any, const QStringList &extra) {
     return FormatUtils::prepareDocumentsFileFilter(any, extra);
 }
 
-QString DialogUtils::prepareDocumentsFileFilter(const DocumentFormatConstraints& c, bool any) {
+QString DialogUtils::prepareDocumentsFileFilter(const DocumentFormatConstraints &c, bool any) {
     return FormatUtils::prepareDocumentsFileFilter(c, any);
 }
 
-QString DialogUtils::prepareDocumentsFileFilterByObjType(const GObjectType& t, bool any) {
+QString DialogUtils::prepareDocumentsFileFilterByObjType(const GObjectType &t, bool any) {
     return FormatUtils::prepareDocumentsFileFilterByObjType(t, any);
 }
 
@@ -72,7 +72,6 @@ void DialogUtils::setWizardMinimumSize(QWizard *wizard, const QSize &minimumSize
     wizard->setMinimumSize(bestSize);
     wizard->adjustSize();
 }
-
 
 /********************************
 * FileLineEdit
@@ -101,4 +100,4 @@ void FileLineEdit::sl_onBrowse() {
     setFocus();
 }
 
-} // namespace
+}    // namespace U2

@@ -43,28 +43,30 @@ public:
     // minimum UGENE version whose MySQL databases are compatible with this version
     static Version minVersionForMySQL();
 
-    static Version parseVersion(const QString& text);
+    static Version parseVersion(const QString &text);
 
-    bool operator  >  (const Version& v) const;
-    bool operator  >= (const Version& v) const;
-    bool operator  <  (const Version& v) const;
-    bool operator  <= (const Version& v) const;
-    bool operator  == (const Version& v) const;
-    bool operator  != (const Version& v) const {return !(v == *this);}
+    bool operator>(const Version &v) const;
+    bool operator>=(const Version &v) const;
+    bool operator<(const Version &v) const;
+    bool operator<=(const Version &v) const;
+    bool operator==(const Version &v) const;
+    bool operator!=(const Version &v) const {
+        return !(v == *this);
+    }
 
-    int         major;
-    int         minor;
-    int         patch;
+    int major;
+    int minor;
+    int patch;
 
-    bool        debug;
-    QString     text;
-    QString     suffix;
-    bool        isDevVersion;
-    const static int         appArchitecture;
-    const static QString     buildDate;
-    const static QString     distributionInfo;
+    bool debug;
+    QString text;
+    QString suffix;
+    bool isDevVersion;
+    const static int appArchitecture;
+    const static QString buildDate;
+    const static QString distributionInfo;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

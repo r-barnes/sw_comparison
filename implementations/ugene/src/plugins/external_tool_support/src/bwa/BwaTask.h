@@ -26,7 +26,6 @@
 
 #include <U2Core/ExternalToolRunTask.h>
 
-
 namespace U2 {
 
 class MultiTask;
@@ -37,6 +36,7 @@ public:
     BwaBuildIndexTask(const QString &referencePath, const QString &indexPath, const DnaAssemblyToRefTaskSettings &settings);
 
     void prepare();
+
 private:
     class LogParser : public ExternalToolLogParser {
     public:
@@ -54,7 +54,7 @@ private:
 class BwaAlignTask : public ExternalToolSupportTask {
     Q_OBJECT
 public:
-    BwaAlignTask(const QString &indexPath, const QList<ShortReadSet>& shortReadSets, const QString &resultPath, const DnaAssemblyToRefTaskSettings &settings);
+    BwaAlignTask(const QString &indexPath, const QList<ShortReadSet> &shortReadSets, const QString &resultPath, const DnaAssemblyToRefTaskSettings &settings);
     void prepare();
 
     class LogParser : public ExternalToolLogParser {
@@ -66,6 +66,7 @@ public:
 
 protected slots:
     QList<Task *> onSubTaskFinished(Task *subTask);
+
 private:
     QList<ShortReadSet> downStreamList;
     QList<ShortReadSet> upStreamList;
@@ -77,7 +78,7 @@ private:
     QList<ShortReadSet> readSets;
     QString resultPath;
     DnaAssemblyToRefTaskSettings settings;
-    inline QString getSAIPath(const QString& pathToReads);
+    inline QString getSAIPath(const QString &pathToReads);
 };
 
 class BwaSwAlignTask : public ExternalToolSupportTask {
@@ -99,6 +100,7 @@ public:
 
 protected slots:
     QList<Task *> onSubTaskFinished(Task *subTask);
+
 private:
     MultiTask *alignMultiTask;
     Task *mergeTask;
@@ -118,6 +120,7 @@ public:
     ReportResult report();
 protected slots:
     QList<Task *> onSubTaskFinished(Task *subTask);
+
 public:
     static const QString OPTION_INDEX_ALGORITHM;
     static const QString OPTION_N;
@@ -200,9 +203,10 @@ private:
 class BwaTaskFactory : public DnaAssemblyToRefTaskFactory {
 public:
     DnaAssemblyToReferenceTask *createTaskInstance(const DnaAssemblyToRefTaskSettings &settings, bool justBuildIndex = false);
+
 protected:
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_BWA_TASK_H_
+#endif    // _U2_BWA_TASK_H_

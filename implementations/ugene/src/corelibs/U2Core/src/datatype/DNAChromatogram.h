@@ -23,6 +23,7 @@
 #define _U2_DNA_CHROMATOGRAM_H_
 
 #include <QVector>
+
 #include <U2Core/global.h>
 
 namespace U2 {
@@ -54,12 +55,12 @@ public:
 
     ushort getValue(Trace trace, qint64 position) const;
 
-    bool operator ==(const DNAChromatogram &otherChromatogram) const;
+    bool operator==(const DNAChromatogram &otherChromatogram) const;
 
     static const ushort INVALID_VALUE;
-    static const char   DEFAULT_PROBABILITY;
+    static const char DEFAULT_PROBABILITY;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

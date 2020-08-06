@@ -19,38 +19,38 @@
  * MA 02110-1301, USA.
  */
 
+#include "UdrSchemaUnitTests.h"
+
 #include <U2Core/AppContext.h>
-#include <U2Core/UdrSchemaRegistry.h>
-#include <U2Core/UdrRecord.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "UdrSchemaUnitTests.h"
+#include <U2Core/UdrRecord.h>
+#include <U2Core/UdrSchemaRegistry.h>
 
 namespace U2 {
 
 namespace {
-    UdrSchema getTestSchema() {
-        U2OpStatusImpl os;
-        UdrSchema schema("id");
-        schema.addField(UdrSchema::FieldDesc("name1", UdrSchema::INTEGER, UdrSchema::INDEXED), os);
-        schema.addField(UdrSchema::FieldDesc("name2", UdrSchema::BLOB, UdrSchema::NOT_INDEXED), os);
-        schema.addField(UdrSchema::FieldDesc("name3", UdrSchema::STRING), os);
-        schema.addField(UdrSchema::FieldDesc("name4", UdrSchema::DOUBLE), os);
-        SAFE_POINT_OP(os, schema);
-        return schema;
-    }
-    UdrSchema getTestSchema2() {
-        U2OpStatusImpl os;
-        UdrSchema schema("id");
-        schema.addField(UdrSchema::FieldDesc("name1", UdrSchema::INTEGER, UdrSchema::INDEXED), os);
-        schema.addField(UdrSchema::FieldDesc("name2", UdrSchema::INTEGER, UdrSchema::NOT_INDEXED), os);
-        schema.addField(UdrSchema::FieldDesc("name3", UdrSchema::STRING), os);
-        schema.addField(UdrSchema::FieldDesc("name4", UdrSchema::DOUBLE), os);
-        SAFE_POINT_OP(os, schema);
-        return schema;
-    }
+UdrSchema getTestSchema() {
+    U2OpStatusImpl os;
+    UdrSchema schema("id");
+    schema.addField(UdrSchema::FieldDesc("name1", UdrSchema::INTEGER, UdrSchema::INDEXED), os);
+    schema.addField(UdrSchema::FieldDesc("name2", UdrSchema::BLOB, UdrSchema::NOT_INDEXED), os);
+    schema.addField(UdrSchema::FieldDesc("name3", UdrSchema::STRING), os);
+    schema.addField(UdrSchema::FieldDesc("name4", UdrSchema::DOUBLE), os);
+    SAFE_POINT_OP(os, schema);
+    return schema;
 }
+UdrSchema getTestSchema2() {
+    U2OpStatusImpl os;
+    UdrSchema schema("id");
+    schema.addField(UdrSchema::FieldDesc("name1", UdrSchema::INTEGER, UdrSchema::INDEXED), os);
+    schema.addField(UdrSchema::FieldDesc("name2", UdrSchema::INTEGER, UdrSchema::NOT_INDEXED), os);
+    schema.addField(UdrSchema::FieldDesc("name3", UdrSchema::STRING), os);
+    schema.addField(UdrSchema::FieldDesc("name4", UdrSchema::DOUBLE), os);
+    SAFE_POINT_OP(os, schema);
+    return schema;
+}
+}    // namespace
 
 IMPLEMENT_TEST(UdrSchemaUnitTests, addField_RecordId) {
     U2OpStatusImpl os;
@@ -143,7 +143,8 @@ IMPLEMENT_TEST(UdrSchemaUnitTests, addMultiIndex_DuplicateField_1) {
     U2OpStatusImpl os;
     UdrSchema schema = getTestSchema();
 
-    QList<int> index; index << 0 << 0;
+    QList<int> index;
+    index << 0 << 0;
     schema.addMultiIndex(index, os);
     CHECK_TRUE(os.hasError(), "duplicate fields");
 }
@@ -152,7 +153,8 @@ IMPLEMENT_TEST(UdrSchemaUnitTests, addMultiIndex_DuplicateField_2) {
     U2OpStatusImpl os;
     UdrSchema schema = getTestSchema();
 
-    QList<int> index; index << 0 << 2 << 0;
+    QList<int> index;
+    index << 0 << 2 << 0;
     schema.addMultiIndex(index, os);
     CHECK_TRUE(os.hasError(), "duplicate fields");
 }
@@ -161,7 +163,8 @@ IMPLEMENT_TEST(UdrSchemaUnitTests, addMultiIndex_OutOfRange_1) {
     U2OpStatusImpl os;
     UdrSchema schema = getTestSchema();
 
-    QList<int> index; index << 3 << 4;
+    QList<int> index;
+    index << 3 << 4;
     schema.addMultiIndex(index, os);
     CHECK_TRUE(os.hasError(), "out of range");
 }
@@ -170,7 +173,8 @@ IMPLEMENT_TEST(UdrSchemaUnitTests, addMultiIndex_OutOfRange_2) {
     U2OpStatusImpl os;
     UdrSchema schema = getTestSchema();
 
-    QList<int> index; index << 0 << 2 << 3 << 4;
+    QList<int> index;
+    index << 0 << 2 << 3 << 4;
     schema.addMultiIndex(index, os);
     CHECK_TRUE(os.hasError(), "out of range");
 }
@@ -179,7 +183,8 @@ IMPLEMENT_TEST(UdrSchemaUnitTests, addMultiIndex_OutOfRange_3_negative) {
     U2OpStatusImpl os;
     UdrSchema schema = getTestSchema();
 
-    QList<int> index; index << 2 << -1;
+    QList<int> index;
+    index << 2 << -1;
     schema.addMultiIndex(index, os);
     CHECK_TRUE(os.hasError(), "out of range");
 }
@@ -188,7 +193,8 @@ IMPLEMENT_TEST(UdrSchemaUnitTests, addMultiIndex_SingleColumn) {
     U2OpStatusImpl os;
     UdrSchema schema = getTestSchema();
 
-    QList<int> index; index << 0;
+    QList<int> index;
+    index << 0;
     schema.addMultiIndex(index, os);
     CHECK_NO_ERROR(os);
 }
@@ -197,7 +203,8 @@ IMPLEMENT_TEST(UdrSchemaUnitTests, addMultiIndex_AllColumns) {
     U2OpStatusImpl os;
     UdrSchema schema = getTestSchema2();
 
-    QList<int> index; index << 0 << 1 << 2 << 3;
+    QList<int> index;
+    index << 0 << 1 << 2 << 3;
     schema.addMultiIndex(index, os);
     CHECK_NO_ERROR(os);
 }
@@ -206,7 +213,8 @@ IMPLEMENT_TEST(UdrSchemaUnitTests, addMultiIndex_BackOrder) {
     U2OpStatusImpl os;
     UdrSchema schema = getTestSchema();
 
-    QList<int> index; index << 3 << 0;
+    QList<int> index;
+    index << 3 << 0;
     schema.addMultiIndex(index, os);
     CHECK_NO_ERROR(os);
 }
@@ -215,7 +223,8 @@ IMPLEMENT_TEST(UdrSchemaUnitTests, addMultiIndex_DuplicateIndex) {
     U2OpStatusImpl os;
     UdrSchema schema = getTestSchema();
 
-    QList<int> index; index << 3 << 0;
+    QList<int> index;
+    index << 3 << 0;
     schema.addMultiIndex(index, os);
     CHECK_NO_ERROR(os);
     schema.addMultiIndex(index, os);
@@ -226,7 +235,8 @@ IMPLEMENT_TEST(UdrSchemaUnitTests, addMultiIndex_BLOB) {
     U2OpStatusImpl os;
     UdrSchema schema = getTestSchema();
 
-    QList<int> index; index << 0 << 1;
+    QList<int> index;
+    index << 0 << 1;
     schema.addMultiIndex(index, os);
     CHECK_TRUE(os.hasError(), "indexed BLOB");
 }
@@ -315,4 +325,4 @@ IMPLEMENT_TEST(UdrSchemaUnitTests, UdrSchema_NoObjectReference) {
     CHECK_FALSE(schema.hasObjectReference(), "no object reference");
 }
 
-} // U2
+}    // namespace U2

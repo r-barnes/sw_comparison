@@ -22,11 +22,13 @@
 #ifndef _U2_SW_ALGORITHM_PLUGIN_H_
 #define _U2_SW_ALGORITHM_PLUGIN_H_
 
+#include <U2Algorithm/PairwiseAlignmentTask.h>
+
 #include <U2Core/PluginModel.h>
+
 #include <U2Gui/ObjectViewModel.h>
 
 #include <U2View/SmithWatermanDialog.h>
-#include <U2Algorithm/PairwiseAlignmentTask.h>
 
 namespace U2 {
 
@@ -40,29 +42,30 @@ public:
     SWAlgorithmPlugin();
 
 public slots:
-        void regDependedIMPLFromOtherPlugins();
+    void regDependedIMPLFromOtherPlugins();
 
 private:
-    QList<XMLTestFactory*>  fs;
-    SWAlgorithmADVContext * ctxADV;
-    SWAlgorithmMSAContext * ctxMSA;
+    QList<XMLTestFactory *> fs;
+    SWAlgorithmADVContext *ctxADV;
+    SWAlgorithmMSAContext *ctxMSA;
 };
-
 
 class SWAlgorithmTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-class SWAlgorithmADVContext: public GObjectViewWindowContext {
+class SWAlgorithmADVContext : public GObjectViewWindowContext {
     Q_OBJECT
 public:
-    SWAlgorithmADVContext(QObject* p);
+    SWAlgorithmADVContext(QObject *p);
 
-    protected slots:
+protected slots:
     void sl_search();
+
 protected:
-    virtual void initViewContext(GObjectView* view);
+    virtual void initViewContext(GObjectView *view);
+
 private:
     SWDialogConfig dialogConfig;
 };
@@ -73,6 +76,6 @@ public:
     bool checkAlphabet(const DNAAlphabet *alphabet) const;
 };
 
-} //namespace
+}    // namespace U2
 
-#endif  //_U2_SW_ALGORITHM_PLUGIN_H_
+#endif    //_U2_SW_ALGORITHM_PLUGIN_H_

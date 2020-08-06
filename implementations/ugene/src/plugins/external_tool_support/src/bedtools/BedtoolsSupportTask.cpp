@@ -19,23 +19,24 @@
  * MA 02110-1301, USA.
  */
 
-#include "BedtoolsSupport.h"
 #include "BedtoolsSupportTask.h"
 
-#include <U2Core/AppContext.h>
-#include <U2Core/ExternalToolRegistry.h>
-#include <U2Core/BaseDocumentFormats.h>
-#include <U2Core/GUrlUtils.h>
-#include <U2Core/ExternalToolRunTask.h>
-
 #include <QFileInfo>
+
+#include <U2Core/AppContext.h>
+#include <U2Core/BaseDocumentFormats.h>
+#include <U2Core/ExternalToolRegistry.h>
+#include <U2Core/ExternalToolRunTask.h>
+#include <U2Core/GUrlUtils.h>
+
+#include "BedtoolsSupport.h"
 
 namespace U2 {
 
 //////////////////////////////////////////////////////////////////////////
 //BAMBEDConvertFactory
-bool BAMBEDConvertFactory::isCustomFormatTask( const QString& detectedFormat, const QString& targetFormat ) {
-    if (detectedFormat == BaseDocumentFormats::BAM && targetFormat == BaseDocumentFormats::BED){
+bool BAMBEDConvertFactory::isCustomFormatTask(const QString &detectedFormat, const QString &targetFormat) {
+    if (detectedFormat == BaseDocumentFormats::BAM && targetFormat == BaseDocumentFormats::BED) {
         return true;
     }
     return false;
@@ -43,13 +44,11 @@ bool BAMBEDConvertFactory::isCustomFormatTask( const QString& detectedFormat, co
 
 //////////////////////////////////////////////////////////////////////////
 //BamBedConversionTask
-BamBedConversionTask::BamBedConversionTask( const GUrl &sourceURL, const QString &detectedFormat, const QString &targetFormat, const QString &dir )
-:ConvertFileTask(sourceURL, detectedFormat, targetFormat, dir)
-{
-
+BamBedConversionTask::BamBedConversionTask(const GUrl &sourceURL, const QString &detectedFormat, const QString &targetFormat, const QString &dir)
+    : ConvertFileTask(sourceURL, detectedFormat, targetFormat, dir) {
 }
 
-void BamBedConversionTask::prepare(){
+void BamBedConversionTask::prepare() {
     QString extension = ".bed";
     QString destURL = workingDir + QFileInfo(sourceURL.getURLString()).fileName() + extension;
     targetUrl = GUrlUtils::rollFileName(destURL, QSet<QString>());
@@ -59,13 +58,12 @@ void BamBedConversionTask::prepare(){
     args << "-i";
     args << sourceURL.getURLString();
 
-    ExternalToolRunTask* etTask = new ExternalToolRunTask(BedtoolsSupport::ET_BEDTOOLS_ID, args, new ExternalToolLogParser(), workingDir);
+    ExternalToolRunTask *etTask = new ExternalToolRunTask(BedtoolsSupport::ET_BEDTOOLS_ID, args, new ExternalToolLogParser(), workingDir);
     etTask->setStandartOutputFile(targetUrl);
     addSubTask(etTask);
 }
 
-void BamBedConversionTask::run(){
-
+void BamBedConversionTask::run() {
 }
 
-} //namespace U2
+}    //namespace U2

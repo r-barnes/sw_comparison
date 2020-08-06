@@ -19,31 +19,33 @@
  * MA 02110-1301, USA.
  */
 
+#include "FastqUnitTests.h"
+
 #include <QDir>
 
 #include <U2Core/AnnotationData.h>
-#include <U2Core/U2SafePoints.h>
-#include <U2Core/U2Region.h>
 #include <U2Core/AppContext.h>
-#include <U2Core/IOAdapter.h>
-#include <U2Formats/FastqFormat.h>
 #include <U2Core/AppSettings.h>
-#include <U2Test/TestRunnerSettings.h>
+#include <U2Core/IOAdapter.h>
+#include <U2Core/U2Region.h>
+#include <U2Core/U2SafePoints.h>
 
-#include "FastqUnitTests.h"
+#include <U2Formats/FastqFormat.h>
+
+#include <U2Test/TestRunnerSettings.h>
 
 namespace U2 {
 
-IOAdapter* FastqFormatTestData::ioAdapter = NULL;
-FastqFormat* FastqFormatTestData::format = NULL;
+IOAdapter *FastqFormatTestData::ioAdapter = NULL;
+FastqFormat *FastqFormatTestData::format = NULL;
 
 void FastqFormatTestData::init() {
-    TestRunnerSettings* trs = AppContext::getAppSettings()->getTestRunnerSettings();
+    TestRunnerSettings *trs = AppContext::getAppSettings()->getTestRunnerSettings();
     QString originalFile = trs->getVar("COMMON_DATA_DIR") + "/tmp.fastq";
     QString tmpFile = QDir::temp().absoluteFilePath(QFileInfo(originalFile).fileName());
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
     ioAdapter = iof->createIOAdapter();
-    /*bool open = */ioAdapter->open(tmpFile, IOAdapterMode_Append);
+    /*bool open = */ ioAdapter->open(tmpFile, IOAdapterMode_Append);
     //CHECK_EQUAL(true, open, "ioAdapter is not opened");
     format = qobject_cast<FastqFormat *>(AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::FASTQ));
     //CHECK_NOT_EQUAL(NULL, format, "Format is NULL");
@@ -56,7 +58,7 @@ IMPLEMENT_TEST(FasqUnitTests, checkRawData) {
     QByteArray rawData = "@SEQ_ID\nGATTTGGGGTTCAAAGCAGTATCGATCAAATAGTAAATCCATTTGTTCAACTCACAGTTT\n+\n!''*((((***+))%%%++)(%%%%).1***-+*''))**55CCF>>>>>>CCCCCCC65\n";
     FormatCheckResult res = FastqFormatTestData::format->checkRawData(rawData);
 
-    CHECK_NOT_EQUAL(FormatDetection_NotMatched, res.score,  "data is not sequence");
+    CHECK_NOT_EQUAL(FormatDetection_NotMatched, res.score, "data is not sequence");
     bool result = res.properties[RawDataCheckResult_Sequence].toBool();
     CHECK_TRUE(result, "data is not sequence");
     result = res.properties[RawDataCheckResult_MultipleSequences].toBool();
@@ -78,7 +80,7 @@ IMPLEMENT_TEST(FasqUnitTests, checkRawDataMultiple) {
     bool result = res.properties[RawDataCheckResult_Sequence].toBool();
     CHECK_TRUE(result, "data is not sequence");
     result = res.properties[RawDataCheckResult_MultipleSequences].toBool();
-    CHECK_TRUE(result , "sequence is not multiple");
+    CHECK_TRUE(result, "sequence is not multiple");
     result = res.properties[RawDataCheckResult_SequenceWithGaps].toBool();
     CHECK_FALSE(result, "sequence with gap");
 }
@@ -101,4 +103,4 @@ IMPLEMENT_TEST(FasqUnitTests, checkRawDataInvalidQualityHeaderStartWith) {
     CHECK_EQUAL(FormatDetection_NotMatched, res.score, "format is not matched");
 }
 
-} //namespace
+}    // namespace U2

@@ -22,23 +22,23 @@
 #include <qglobal.h>
 
 #ifdef Q_OS_WIN
-#include <intrin.h>
-#include <windows.h>
-#include <Psapi.h>
-#include <Winbase.h> //for IsProcessorFeaturePresent
+#    include <intrin.h>
+#    include <windows.h>
+#    include <Psapi.h>
+#    include <Winbase.h>    //for IsProcessorFeaturePresent
 
-#include "DetectWin10.h"
+#    include "DetectWin10.h"
 #endif
 #if defined(Q_OS_LINUX) || defined(Q_OS_FREEBSD)
-#include <unistd.h> // for sysconf(3)
+#    include <unistd.h>    // for sysconf(3)
 #endif
 
 #include <QBuffer>
 #include <QDate>
 #include <QDir>
 #include <QEventLoop>
-#include <QHostInfo>
 #include <QFile>
+#include <QHostInfo>
 #include <QHttpPart>
 #include <QMessageBox>
 #include <QNetworkAccessManager>
@@ -58,18 +58,20 @@
 #define HOST_URL "http://ugene.net"
 //#define HOST_URL "http://127.0.0.1:80"
 #ifdef Q_OS_LINUX
-#define DESTINATION_URL_KEEPER_PAGE "/crash_reports_dest_breakpad_lin.html"
+#    define DESTINATION_URL_KEEPER_PAGE "/crash_reports_dest_breakpad_lin.html"
 #elif defined(Q_OS_MAC)
-#define DESTINATION_URL_KEEPER_PAGE "/crash_reports_dest_breakpad_mac.html"
+#    define DESTINATION_URL_KEEPER_PAGE "/crash_reports_dest_breakpad_mac.html"
 #elif defined(Q_OS_UNIX)
-#define DESTINATION_URL_KEEPER_PAGE "/crash_reports_dest_breakpad_unx.html"
+#    define DESTINATION_URL_KEEPER_PAGE "/crash_reports_dest_breakpad_unx.html"
 #elif defined(Q_OS_WIN)
-#define DESTINATION_URL_KEEPER_PAGE "/crash_reports_dest_breakpad_win.html"
+#    define DESTINATION_URL_KEEPER_PAGE "/crash_reports_dest_breakpad_win.html"
 #else
-#define DESTINATION_URL_KEEPER_PAGE "/crash_reports_dest_breakpad.html"
+#    define DESTINATION_URL_KEEPER_PAGE "/crash_reports_dest_breakpad.html"
 #endif
 
-ReportSender::ReportSender(bool addGuiTestInfo) : report(""), addGuiTestInfo(addGuiTestInfo), failedTest("UNKNOWN TEST") {}
+ReportSender::ReportSender(bool addGuiTestInfo)
+    : report(""), addGuiTestInfo(addGuiTestInfo), failedTest("UNKNOWN TEST") {
+}
 
 void ReportSender::parse(const QString &htmlReport, const QString &dumpUrl) {
     report = "Exception with code ";
@@ -125,7 +127,7 @@ void ReportSender::parse(const QString &htmlReport, const QString &dumpUrl) {
         report += "Task tree:\n";
         report += list.takeFirst() + "\n";
 
-#if defined (Q_OS_WIN)
+#if defined(Q_OS_WIN)
         report += list.takeLast();
 #endif
     } else {
@@ -138,7 +140,7 @@ void ReportSender::parse(const QString &htmlReport, const QString &dumpUrl) {
             report += "Failed test: ";
             report += failedTest + "\n\n";
         }
-        foreach(const QString& str, list) {
+        foreach (const QString &str, list) {
             report += str + "\n";
         }
     }
@@ -163,11 +165,11 @@ void ReportSender::parse(const QString &htmlReport, const QString &dumpUrl) {
 bool ReportSender::send(const QString &additionalInfo, const QString &dumpUrl) {
     report += additionalInfo;
 
-    QNetworkAccessManager* netManager = new QNetworkAccessManager(this);
+    QNetworkAccessManager *netManager = new QNetworkAccessManager(this);
     QNetworkProxy proxy = QNetworkProxy::applicationProxy();
     netManager->setProxy(proxy);
 
-    connect(netManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(sl_replyFinished(QNetworkReply*)));
+    connect(netManager, SIGNAL(finished(QNetworkReply *)), this, SLOT(sl_replyFinished(QNetworkReply *)));
     //check destination availability
 
     QNetworkReply *reply = netManager->get(QNetworkRequest(QString(HOST_URL) + QString(DESTINATION_URL_KEEPER_PAGE)));
@@ -220,15 +222,14 @@ void ReportSender::sl_replyFinished(QNetworkReply *) {
     loop.exit();
 }
 
-SendReportDialog::SendReportDialog(const QString &report, const QString &dumpUrl, QDialog *d) :
-QDialog(d),
-dumpUrl(dumpUrl) {
+SendReportDialog::SendReportDialog(const QString &report, const QString &dumpUrl, QDialog *d)
+    : QDialog(d),
+      dumpUrl(dumpUrl) {
     setupUi(this);
     sender.parse(report, dumpUrl);
     errorEdit->setText(sender.getReport());
 
-    connect(additionalInfoTextEdit, SIGNAL(textChanged()),
-        SLOT(sl_onMaximumMessageSizeReached()));
+    connect(additionalInfoTextEdit, SIGNAL(textChanged()), SLOT(sl_onMaximumMessageSizeReached()));
     connect(sendButton, SIGNAL(clicked()), SLOT(sl_onOkClicked()));
     connect(cancelButton, SIGNAL(clicked()), SLOT(sl_onCancelClicked()));
 
@@ -252,7 +253,7 @@ void SendReportDialog::sl_onMaximumMessageSizeReached() {
         msgBox.setWindowTitle(tr("Warning"));
         msgBox.setText(tr("The \"Additional information\" message is too long."));
         msgBox.setInformativeText(tr("You can also send the description of the problem to UGENE team "
-            "by e-mail <a href=\"mailto:ugene@unipro.ru\">ugene@unipro.ru</a>."));
+                                     "by e-mail <a href=\"mailto:ugene@unipro.ru\">ugene@unipro.ru</a>."));
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setDefaultButton(QMessageBox::Ok);
         msgBox.exec();
@@ -426,32 +427,32 @@ QString ReportSender::getOSVersion() {
 }
 
 int ReportSender::getTotalPhysicalMemory() {
-    return getMemorySize() / (1024 * 1024);
+    return (int)(getMemorySize() / (1024 * 1024));
 }
 
 #ifndef Q_OS_MAC
 void cpuID(unsigned i, unsigned regs[4]) {
-#ifdef _WIN32
+#    ifdef _WIN32
     __cpuid((int *)regs, (int)i);
 
-#else
-#if !defined(UGENE_X86_64) && defined(__PIC__)
-    asm volatile (
+#    else
+#        if !defined(UGENE_X86_64) && defined(__PIC__)
+    asm volatile(
         "mov %%ebx, %%edi;"
         "cpuid;"
         "xchgl %%ebx, %%edi;"
-        : "=a" (regs[0]),
-        "=D" (regs[1]), /* edi */
-        "=c" (regs[2]),
-        "=d" (regs[3])
-        : "0" (i));
-#else
-    asm volatile
-        ("cpuid" : "=a" (regs[0]), "=b" (regs[1]), "=c" (regs[2]), "=d" (regs[3])
-        : "a" (i), "c" (0));
+        : "=a"(regs[0]),
+          "=D"(regs[1]), /* edi */
+          "=c"(regs[2]),
+          "=d"(regs[3])
+        : "0"(i));
+#        else
+    asm volatile("cpuid"
+                 : "=a"(regs[0]), "=b"(regs[1]), "=c"(regs[2]), "=d"(regs[3])
+                 : "a"(i), "c"(0));
     // ECX is set to zero for CPUID function 4
-#endif
-#endif
+#        endif
+#    endif
 }
 #endif
 
@@ -463,19 +464,19 @@ QString ReportSender::getCPUInfo() {
     // Get vendor
     char vendor[12];
     cpuID(0, regs);
-    ((unsigned *)vendor)[0] = regs[1]; // EBX
-    ((unsigned *)vendor)[1] = regs[3]; // EDX
-    ((unsigned *)vendor)[2] = regs[2]; // ECX
+    ((unsigned *)vendor)[0] = regs[1];    // EBX
+    ((unsigned *)vendor)[1] = regs[3];    // EDX
+    ((unsigned *)vendor)[2] = regs[2];    // ECX
     QString cpuVendor = QString(vendor);
     result += "\n  Vendor :" + cpuVendor;
 
     // Get CPU features
     cpuID(1, regs);
-    unsigned cpuFeatures = regs[3]; // EDX
+    unsigned cpuFeatures = regs[3];    // EDX
 
     // Logical core count per CPU
     cpuID(1, regs);
-    unsigned logical = (regs[1] >> 16) & 0xff; // EBX[23:16]
+    unsigned logical = (regs[1] >> 16) & 0xff;    // EBX[23:16]
 
     result += "\n  logical cpus: " + QString::number(logical);
     unsigned cores = 0;
@@ -483,12 +484,12 @@ QString ReportSender::getCPUInfo() {
     if (cpuVendor.contains("GenuineIntel")) {
         // Get DCP cache info
         cpuID(4, regs);
-        cores = ((regs[0] >> 26) & 0x3f) + 1; // EAX[31:26] + 1
+        cores = ((regs[0] >> 26) & 0x3f) + 1;    // EAX[31:26] + 1
 
     } else if (cpuVendor.contains("AuthenticAMD")) {
         // Get NC: Number of CPU cores - 1
         cpuID(0x80000008, regs);
-        cores = ((unsigned)(regs[2] & 0xff)) + 1; // ECX[7:0] + 1
+        cores = ((unsigned)(regs[2] & 0xff)) + 1;    // ECX[7:0] + 1
     }
 
     result += "\n  cpu cores: " + QString::number(cores);

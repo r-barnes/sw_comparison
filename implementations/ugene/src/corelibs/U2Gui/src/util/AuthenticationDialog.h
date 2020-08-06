@@ -22,8 +22,9 @@
 #ifndef _U2_AUTHENTIFICATION_DIALOG_H_
 #define _U2_AUTHENTIFICATION_DIALOG_H_
 
-#include <U2Core/global.h>
 #include <QDialog>
+
+#include <U2Core/global.h>
 
 class Ui_AuthenticationDialog;
 
@@ -34,11 +35,11 @@ class AuthenticationWidget;
 class U2GUI_EXPORT AuthenticationDialog : public QDialog {
     Q_OBJECT
 public:
-    AuthenticationDialog(const QString& text, QWidget* parent);
+    AuthenticationDialog(const QString &text, QWidget *parent);
     ~AuthenticationDialog();
 
-    void setLogin(const QString& login);
-    void setPassword(const QString& password);
+    void setLogin(const QString &login);
+    void setPassword(const QString &password);
     void setRemembered(bool isChecked);
 
     QString getLogin() const;
@@ -51,10 +52,10 @@ private slots:
     void accept();
 
 private:
-    Ui_AuthenticationDialog* ui;
-    AuthenticationWidget* authenticationWidget;
+    Ui_AuthenticationDialog *ui;
+    AuthenticationWidget *authenticationWidget;
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

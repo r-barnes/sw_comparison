@@ -24,29 +24,26 @@
 
 #include <QSharedDataPointer>
 #include <QVector>
+
 #include <U2Core/BioStruct3D.h>
 
 #include "BioStruct3DGLRender.h"
 
-
 namespace U2 {
 
-
 class TubeGLRenderer : public BioStruct3DGLRenderer {
-
-    typedef QVector< SharedAtom > AtomsVector;
+    typedef QVector<SharedAtom> AtomsVector;
 
     struct Tube {
         QMap<int, AtomsVector> modelsMap;
     };
 
-
     QMap<int, Tube> tubeMap;
 
-    void drawTubes(const BioStruct3DColorScheme* colorScheme);
+    void drawTubes(const BioStruct3DColorScheme *colorScheme);
 
 protected:
-    TubeGLRenderer(const BioStruct3D& struc, const BioStruct3DColorScheme* s, const QList<int> &shownModels, const BioStruct3DRendererSettings *settings);
+    TubeGLRenderer(const BioStruct3D &struc, const BioStruct3DColorScheme *s, const QList<int> &shownModels, const BioStruct3DRendererSettings *settings);
 
 public:
     void drawBioStruct3D();
@@ -62,6 +59,6 @@ public:
     RENDERER_FACTORY(TubeGLRenderer)
 };
 
-} //namespace
+}    // namespace U2
 
-#endif // _U2_BIOSTRUCT3D_TUBE_RENDERER_H_
+#endif    // _U2_BIOSTRUCT3D_TUBE_RENDERER_H_

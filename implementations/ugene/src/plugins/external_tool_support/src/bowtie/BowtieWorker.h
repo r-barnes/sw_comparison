@@ -39,19 +39,21 @@ protected:
     QVariantMap getCustomParameters() const;
     QString getDefaultFileName() const;
     QString getBaseSubdir() const;
-    void setGenomeIndex(DnaAssemblyToRefTaskSettings& settings);
-}; // BowtieWorker
+    void setGenomeIndex(DnaAssemblyToRefTaskSettings &settings);
+};    // BowtieWorker
 
 class BowtieWorkerFactory : public BaseShortReadsAlignerWorkerFactory {
 public:
     static const QString ACTOR_ID;
 
-    BowtieWorkerFactory() : BaseShortReadsAlignerWorkerFactory(ACTOR_ID) {}
+    BowtieWorkerFactory()
+        : BaseShortReadsAlignerWorkerFactory(ACTOR_ID) {
+    }
     static void init();
     virtual Worker *createWorker(Actor *a);
-}; // BowtieWorkerFactory
+};    // BowtieWorkerFactory
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_BOWTIE_SUPPORT_WORKER_
+#endif    // _U2_BOWTIE_SUPPORT_WORKER_

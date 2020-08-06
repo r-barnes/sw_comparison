@@ -25,12 +25,11 @@
 
 namespace U2 {
 
-PWMConversionAlgorithmFactoryLOD::PWMConversionAlgorithmFactoryLOD(QObject* p)
-: PWMConversionAlgorithmFactory(BuiltInPWMConversionAlgorithms::LOD_ALGO, p)
-{
+PWMConversionAlgorithmFactoryLOD::PWMConversionAlgorithmFactoryLOD(QObject *p)
+    : PWMConversionAlgorithmFactory(BuiltInPWMConversionAlgorithms::LOD_ALGO, p) {
 }
 
-PWMConversionAlgorithm* PWMConversionAlgorithmFactoryLOD::createAlgorithm(QObject* p){
+PWMConversionAlgorithm *PWMConversionAlgorithmFactoryLOD::createAlgorithm(QObject *p) {
     return new PWMConversionAlgorithmLOD(this, p);
 }
 
@@ -42,12 +41,12 @@ QString PWMConversionAlgorithmFactoryLOD::getDescription() const {
     return tr("log-odds weight function");
 }
 
-PWMatrix PWMConversionAlgorithmLOD::convert(const PFMatrix& matrix) {
+PWMatrix PWMConversionAlgorithmLOD::convert(const PFMatrix &matrix) {
     int size = (matrix.getType() == PFM_MONONUCLEOTIDE) ? 4 : 16;
     int length = matrix.getLength();
     float bj = 1.0 / size;
     int sum[16];
-    memset(sum, 0, size*sizeof(int));
+    memset(sum, 0, size * sizeof(int));
     int all_hits = 0;
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < length; j++) {
@@ -67,7 +66,7 @@ PWMatrix PWMConversionAlgorithmLOD::convert(const PFMatrix& matrix) {
         }
     }
 
-    QVarLengthArray<float> res(size*length);
+    QVarLengthArray<float> res(size * length);
     int N = all_hits / length;
 
     for (int i = 0; i < size; i++) {
@@ -80,9 +79,8 @@ PWMatrix PWMConversionAlgorithmLOD::convert(const PFMatrix& matrix) {
     return w;
 }
 
-PWMConversionAlgorithmLOD::PWMConversionAlgorithmLOD(PWMConversionAlgorithmFactory* factory, QObject* p)
-: PWMConversionAlgorithm(factory, p)
-{
+PWMConversionAlgorithmLOD::PWMConversionAlgorithmLOD(PWMConversionAlgorithmFactory *factory, QObject *p)
+    : PWMConversionAlgorithm(factory, p) {
 }
 
-}
+}    // namespace U2

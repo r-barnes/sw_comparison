@@ -22,22 +22,21 @@
 #ifndef _U2_HIGH_FLEX_RESULT_H_
 #define _U2_HIGH_FLEX_RESULT_H_
 
-
 #include <U2Core/U2Region.h>
-
 
 namespace U2 {
 
-
-class HighFlexResult
-{
+class HighFlexResult {
 public:
-    HighFlexResult() : averageThreshold(0.0), windowsNumber(0), totalThreshold(0) {}
-    HighFlexResult(const U2Region& _region, double _averageThreshold, int _windowsNumber, double _totalThreshold)
+    HighFlexResult()
+        : averageThreshold(0.0), windowsNumber(0), totalThreshold(0) {
+    }
+    HighFlexResult(const U2Region &_region, double _averageThreshold, int _windowsNumber, double _totalThreshold)
         : region(_region),
           averageThreshold(_averageThreshold),
           windowsNumber(_windowsNumber),
-          totalThreshold(_totalThreshold) {}
+          totalThreshold(_totalThreshold) {
+    }
 
     U2Region region;
     double averageThreshold;
@@ -45,8 +44,6 @@ public:
     double totalThreshold;
 };
 
-
-} // namespace
-
+}    // namespace U2
 
 #endif

@@ -19,13 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "GUITestBasePlugin.h"
+
 #include <U2Core/AppContext.h>
 
 #include <U2Gui/ToolsMenu.h>
 
 #include <U2Test/UGUITestBase.h>
 
-#include "GUITestBasePlugin.h"
 #include "tests/PosteriorActions.h"
 #include "tests/PosteriorChecks.h"
 #include "tests/PreliminaryActions.h"
@@ -70,7 +71,6 @@
 #include "tests/common_scenarios/project/relations/GTTestsProjectRelations.h"
 #include "tests/common_scenarios/project/remote_request/GTTestsProjectRemoteRequest.h"
 #include "tests/common_scenarios/project/sequence_exporting/GTTestsProjectSequenceExporting.h"
-#include "tests/common_scenarios/project/sequence_exporting/GTTestsProjectSequenceExporting.h"
 #include "tests/common_scenarios/project/sequence_exporting/from_project_view/GTTestsFromProjectView.h"
 #include "tests/common_scenarios/project/user_locking/GTTestsProjectUserLocking.h"
 #include "tests/common_scenarios/repeat_finder/GTTestsRepeatFinder.h"
@@ -101,26 +101,28 @@
 #include "tests/regression_scenarios/GTTestsRegressionScenarios_5001_6000.h"
 #include "tests/regression_scenarios/GTTestsRegressionScenarios_6001_7000.h"
 
-#define REGISTER_TEST(X) if (guiTestBase) guiTestBase->registerTest(new X())
+#define REGISTER_TEST(X) \
+    if (guiTestBase) \
+    guiTestBase->registerTest(new X())
 #define REGISTER_TEST_LABEL(X, LABEL) \
     if (guiTestBase) { \
         HI::GUITest *test = new X(); \
         test->setLabel(LABEL); \
         guiTestBase->registerTest(test); \
-        }
+    }
 #define REGISTER_TEST_WITH_TIMEOUT(X, TIMEOUT) \
     if (guiTestBase) { \
         HI::GUITest *test = new X(); \
         test->setTimeout(TIMEOUT); \
         guiTestBase->registerTest(test); \
-        }
+    }
 #define REGISTER_TEST_IGNORED_BY(X, BY, MESSAGE, reason) \
     if (guiTestBase) { \
         HI::GUITest *test = new X(); \
         test->setIgnored(BY, MESSAGE); \
         test->setReason(reason); \
         guiTestBase->registerTest(test); \
-        }
+    }
 
 #define REGISTER_TEST_IGNORED(X, MESSAGE) REGISTER_TEST_IGNORED_BY(X, HI::GUITest::Ignored, MESSAGE, HI::GUITest::Bug)
 #define REGISTER_TEST_IGNORED_LINUX(X, MESSAGE) REGISTER_TEST_IGNORED_BY(X, HI::GUITest::IgnoredLinux, MESSAGE, HI::GUITest::Bug)
@@ -131,27 +133,26 @@
 #define REGISTER_TEST_NOT_FOR_WINDOWS(X) REGISTER_TEST_IGNORED_BY(X, HI::GUITest::IgnoredWindows, "not for Windows", HI::GUITest::System)
 #define REGISTER_TEST_NOT_FOR_MAC(X) REGISTER_TEST_IGNORED_BY(X, HI::GUITest::IgnoredMac, "not for Mac", HI::GUITest::System)
 
-#define REGISTER_TEST_LINUX(X, MESSAGE) REGISTER_TEST_IGNORED_BY(X, HI::GUITest::IgnoredWindows|HI::GUITest::IgnoredMac, MESSAGE, HI::GUITest::Bug)
-#define REGISTER_TEST_WINDOWS(X, MESSAGE) REGISTER_TEST_IGNORED_BY(X, HI::GUITest::IgnoredMac|HI::GUITest::IgnoredLinux, MESSAGE, HI::GUITest::Bug)
-#define REGISTER_TEST_MAC(X, MESSAGE) REGISTER_TEST_IGNORED_BY(X, HI::GUITest::IgnoredWindows|HI::GUITest::IgnoredLinux, MESSAGE, HI::GUITest::Bug)
+#define REGISTER_TEST_LINUX(X, MESSAGE) REGISTER_TEST_IGNORED_BY(X, HI::GUITest::IgnoredWindows | HI::GUITest::IgnoredMac, MESSAGE, HI::GUITest::Bug)
+#define REGISTER_TEST_WINDOWS(X, MESSAGE) REGISTER_TEST_IGNORED_BY(X, HI::GUITest::IgnoredMac | HI::GUITest::IgnoredLinux, MESSAGE, HI::GUITest::Bug)
+#define REGISTER_TEST_MAC(X, MESSAGE) REGISTER_TEST_IGNORED_BY(X, HI::GUITest::IgnoredWindows | HI::GUITest::IgnoredLinux, MESSAGE, HI::GUITest::Bug)
 
-#define REGISTER_TEST_ONLY_LINUX(X) REGISTER_TEST_IGNORED_BY(X, HI::GUITest::IgnoredWindows|HI::GUITest::IgnoredMac, "only for Linux", HI::GUITest::System)
-#define REGISTER_TEST_ONLY_WINDOWS(X) REGISTER_TEST_IGNORED_BY(X, HI::GUITest::IgnoredMac|HI::GUITest::IgnoredLinux, "only for Windows", HI::GUITest::System)
-#define REGISTER_TEST_ONLY_MAC(X) REGISTER_TEST_IGNORED_BY(X, HI::GUITest::IgnoredWindows|HI::GUITest::IgnoredLinux, "only for Mac", HI::GUITest::System)
-
+#define REGISTER_TEST_ONLY_LINUX(X) REGISTER_TEST_IGNORED_BY(X, HI::GUITest::IgnoredWindows | HI::GUITest::IgnoredMac, "only for Linux", HI::GUITest::System)
+#define REGISTER_TEST_ONLY_WINDOWS(X) REGISTER_TEST_IGNORED_BY(X, HI::GUITest::IgnoredMac | HI::GUITest::IgnoredLinux, "only for Windows", HI::GUITest::System)
+#define REGISTER_TEST_ONLY_MAC(X) REGISTER_TEST_IGNORED_BY(X, HI::GUITest::IgnoredWindows | HI::GUITest::IgnoredLinux, "only for Mac", HI::GUITest::System)
 
 namespace U2 {
 
-extern "C" Q_DECL_EXPORT Plugin* U2_PLUGIN_INIT_FUNC() {
+extern "C" Q_DECL_EXPORT Plugin *U2_PLUGIN_INIT_FUNC() {
     if (AppContext::getMainWindow()) {
-        GUITestBasePlugin* plug = new GUITestBasePlugin();
+        GUITestBasePlugin *plug = new GUITestBasePlugin();
         return plug;
     }
     return NULL;
 }
 
-GUITestBasePlugin::GUITestBasePlugin() : Plugin(tr("GUITestBase"), tr("GUI Test Base")) {
-
+GUITestBasePlugin::GUITestBasePlugin()
+    : Plugin(tr("GUITestBase"), tr("GUI Test Base")) {
     UGUITestBase *guiTestBase = AppContext::getGUITestBase();
 
     registerTests(guiTestBase);
@@ -175,7 +176,6 @@ void GUITestBasePlugin::sl_showWindow() {
 }
 
 void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
-
     //////////////////////////////////////////////////////////////////////////
     // Regression scenarios/
     //////////////////////////////////////////////////////////////////////////
@@ -234,7 +234,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_0798);
 
     REGISTER_TEST(GUITest_regression_scenarios::test_0801);
-    REGISTER_TEST(GUITest_regression_scenarios::test_0807);
+    REGISTER_TEST_IGNORED(GUITest_regression_scenarios::test_0807, "The test is very outdated and have to be completely rewritten.");
     REGISTER_TEST(GUITest_regression_scenarios::test_0808);
     REGISTER_TEST(GUITest_regression_scenarios::test_0812);
     REGISTER_TEST(GUITest_regression_scenarios::test_0814);
@@ -264,8 +264,8 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_0882);
     REGISTER_TEST(GUITest_regression_scenarios::test_0886);
     REGISTER_TEST(GUITest_regression_scenarios::test_0888);
-    REGISTER_TEST_NOT_FOR_MAC(GUITest_regression_scenarios::test_0889);//"Spidey tool is not avaluable on mac"
-    REGISTER_TEST(GUITest_regression_scenarios::test_0896);
+    REGISTER_TEST_NOT_FOR_MAC(GUITest_regression_scenarios::test_0889);    //"Spidey tool is not avaluable on mac"
+    REGISTER_TEST_IGNORED(GUITest_regression_scenarios::test_0896, "UTI-302");
     REGISTER_TEST(GUITest_regression_scenarios::test_0898);
     REGISTER_TEST(GUITest_regression_scenarios::test_0899);
 
@@ -321,7 +321,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_1021_3);
     REGISTER_TEST(GUITest_regression_scenarios::test_1021_4);
     REGISTER_TEST(GUITest_regression_scenarios::test_1022);
-    REGISTER_TEST_IGNORED(GUITest_regression_scenarios::test_1029, "UGENE-4076");
+    REGISTER_TEST(GUITest_regression_scenarios::test_1029);
     REGISTER_TEST(GUITest_regression_scenarios::test_1037);
     REGISTER_TEST(GUITest_regression_scenarios::test_1038);
     REGISTER_TEST(GUITest_regression_scenarios::test_1044);
@@ -341,7 +341,6 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_1069);
     REGISTER_TEST(GUITest_regression_scenarios::test_1071);
     REGISTER_TEST(GUITest_regression_scenarios::test_1078);
-    REGISTER_TEST(GUITest_regression_scenarios::test_1079);
     REGISTER_TEST(GUITest_regression_scenarios::test_1080);
     REGISTER_TEST(GUITest_regression_scenarios::test_1083);
     REGISTER_TEST(GUITest_regression_scenarios::test_1093);
@@ -400,7 +399,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_1257);
     REGISTER_TEST(GUITest_regression_scenarios::test_1260);
     REGISTER_TEST(GUITest_regression_scenarios::test_1262);
-    REGISTER_TEST(GUITest_regression_scenarios::test_1263);
+    REGISTER_TEST_IGNORED(GUITest_regression_scenarios::test_1263, "UGENE-4101");
     REGISTER_TEST(GUITest_regression_scenarios::test_1266);
     REGISTER_TEST(GUITest_regression_scenarios::test_1274);
     REGISTER_TEST(GUITest_regression_scenarios::test_1273);
@@ -463,8 +462,8 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_1435);
     REGISTER_TEST(GUITest_regression_scenarios::test_1439);
     REGISTER_TEST(GUITest_regression_scenarios::test_1442_1);
-    REGISTER_TEST(GUITest_regression_scenarios::test_1442_2);
-    REGISTER_TEST(GUITest_regression_scenarios::test_1442_3);
+    REGISTER_TEST_IGNORED_WINDOWS(GUITest_regression_scenarios::test_1442_2, "UGENE-6082");
+    REGISTER_TEST_IGNORED_WINDOWS(GUITest_regression_scenarios::test_1442_3, "UGENE-6082");
     REGISTER_TEST(GUITest_regression_scenarios::test_1443);
     REGISTER_TEST(GUITest_regression_scenarios::test_1445);
     REGISTER_TEST(GUITest_regression_scenarios::test_1461_1);
@@ -474,7 +473,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_1483);
     REGISTER_TEST(GUITest_regression_scenarios::test_1491);
     REGISTER_TEST(GUITest_regression_scenarios::test_1497);
-    REGISTER_TEST(GUITest_regression_scenarios::test_1499);
+    REGISTER_TEST_IGNORED(GUITest_regression_scenarios::test_1499, "UGENE-4791");
 
     REGISTER_TEST(GUITest_regression_scenarios::test_1506);
     REGISTER_TEST(GUITest_regression_scenarios::test_1508);
@@ -488,7 +487,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_1529);
     REGISTER_TEST(GUITest_regression_scenarios::test_1531);
     REGISTER_TEST(GUITest_regression_scenarios::test_1537);
-    REGISTER_TEST(GUITest_regression_scenarios::test_1548);
+    REGISTER_TEST_IGNORED(GUITest_regression_scenarios::test_1548, "UGENE-4791");
     REGISTER_TEST_ONLY_MAC(GUITest_regression_scenarios::test_1551);
     REGISTER_TEST(GUITest_regression_scenarios::test_1554);
     REGISTER_TEST(GUITest_regression_scenarios::test_1560);
@@ -552,11 +551,11 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_1686);
     REGISTER_TEST(GUITest_regression_scenarios::test_1687);
     REGISTER_TEST_IGNORED(GUITest_regression_scenarios::test_1688, "big data");
-    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_regression_scenarios::test_1693);//no tuxedo for windows
+    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_regression_scenarios::test_1693);    //no tuxedo for windows
 
     REGISTER_TEST(GUITest_regression_scenarios::test_1700);
-    REGISTER_TEST_NOT_FOR_LINUX(GUITest_regression_scenarios::test_1701);//virtual display can not show 3d view
-    REGISTER_TEST(GUITest_regression_scenarios::test_1703);//, "UGENE-3693"
+    REGISTER_TEST_IGNORED(GUITest_regression_scenarios::test_1701, "The test stopped passing after http://ugene-teamcity.unipro.ru:8111/ugene-teamcity/viewLog.html?buildId=195968&tab=buildChangesDiv&buildTypeId=UgeneNightlyBuilds_GuiTests_WindowsSuites_GuiTestsSeparateWindows1032bitSuite2 change.");
+    REGISTER_TEST(GUITest_regression_scenarios::test_1703);    //, "UGENE-3693"
     REGISTER_TEST(GUITest_regression_scenarios::test_1704);
     REGISTER_TEST(GUITest_regression_scenarios::test_1708);
     REGISTER_TEST(GUITest_regression_scenarios::test_1710_1);
@@ -588,7 +587,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_1860);
     REGISTER_TEST(GUITest_regression_scenarios::test_1865);
     REGISTER_TEST(GUITest_regression_scenarios::test_1883);
-    REGISTER_TEST(GUITest_regression_scenarios::test_1884);//, "UGENE-3693"
+    REGISTER_TEST(GUITest_regression_scenarios::test_1884);    //, "UGENE-3693"
     REGISTER_TEST(GUITest_regression_scenarios::test_1886_1);
     REGISTER_TEST(GUITest_regression_scenarios::test_1886_2);
     REGISTER_TEST(GUITest_regression_scenarios::test_1897);
@@ -616,7 +615,6 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_2021_7);
     REGISTER_TEST(GUITest_regression_scenarios::test_2021_8);
     REGISTER_TEST(GUITest_regression_scenarios::test_2021_9);
-    REGISTER_TEST(GUITest_regression_scenarios::test_2024);
     REGISTER_TEST(GUITest_regression_scenarios::test_2026);
     REGISTER_TEST(GUITest_regression_scenarios::test_2030);
     REGISTER_TEST(GUITest_regression_scenarios::test_2032);
@@ -625,7 +623,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_2076);
     REGISTER_TEST(GUITest_regression_scenarios::test_2077);
     REGISTER_TEST(GUITest_regression_scenarios::test_2078);
-    REGISTER_TEST_ONLY_WINDOWS(GUITest_regression_scenarios::test_2089);//, "no forbidden folder characters on linux and mac");
+    REGISTER_TEST_ONLY_WINDOWS(GUITest_regression_scenarios::test_2089);    //, "no forbidden folder characters on linux and mac");
     REGISTER_TEST(GUITest_regression_scenarios::test_2093_1);
     REGISTER_TEST(GUITest_regression_scenarios::test_2091);
     REGISTER_TEST(GUITest_regression_scenarios::test_2093_2);
@@ -633,7 +631,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_2100_2);
     REGISTER_TEST(GUITest_regression_scenarios::test_2124);
     REGISTER_TEST(GUITest_regression_scenarios::test_2128);
-    REGISTER_TEST(GUITest_regression_scenarios::test_2128_1);
+    REGISTER_TEST_IGNORED_MAC(GUITest_regression_scenarios::test_2128_1, "It always fails on MacOS. Improve the test");
     REGISTER_TEST(GUITest_regression_scenarios::test_2138);
     REGISTER_TEST_NOT_FOR_MAC(GUITest_regression_scenarios::test_2140);
     REGISTER_TEST(GUITest_regression_scenarios::test_2144);
@@ -664,7 +662,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_2292);
     REGISTER_TEST(GUITest_regression_scenarios::test_2295);
     REGISTER_TEST(GUITest_regression_scenarios::test_2298);
-    REGISTER_TEST(GUITest_regression_scenarios::test_2293);
+    REGISTER_TEST_IGNORED_MAC(GUITest_regression_scenarios::test_2293, "It always fails on MacOS. Improve the test");
     REGISTER_TEST(GUITest_regression_scenarios::test_2306);
     REGISTER_TEST(GUITest_regression_scenarios::test_2309);
     REGISTER_TEST(GUITest_regression_scenarios::test_2314);
@@ -701,7 +699,6 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_2430);
     REGISTER_TEST(GUITest_regression_scenarios::test_2431);
     REGISTER_TEST(GUITest_regression_scenarios::test_2432);
-    REGISTER_TEST(GUITest_regression_scenarios::test_2437);
     REGISTER_TEST(GUITest_regression_scenarios::test_2449);
     REGISTER_TEST(GUITest_regression_scenarios::test_2451);
     REGISTER_TEST(GUITest_regression_scenarios::test_2459);
@@ -715,7 +712,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_2498);
     REGISTER_TEST(GUITest_regression_scenarios::test_2506);
     REGISTER_TEST(GUITest_regression_scenarios::test_2506_1);
-    REGISTER_TEST(GUITest_regression_scenarios::test_2513);
+    REGISTER_TEST_IGNORED(GUITest_regression_scenarios::test_2513, "UGENE-4527");
     REGISTER_TEST(GUITest_regression_scenarios::test_2519);
     REGISTER_TEST(GUITest_regression_scenarios::test_2538);
     REGISTER_TEST_IGNORED(GUITest_regression_scenarios::test_2540, "UGENE-4948");
@@ -729,7 +726,6 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_2567);
     REGISTER_TEST(GUITest_regression_scenarios::test_2568);
     REGISTER_TEST(GUITest_regression_scenarios::test_2569);
-    REGISTER_TEST(GUITest_regression_scenarios::test_2570);
     REGISTER_TEST(GUITest_regression_scenarios::test_2577);
     REGISTER_TEST(GUITest_regression_scenarios::test_2578);
     REGISTER_TEST(GUITest_regression_scenarios::test_2579);
@@ -756,9 +752,8 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_2690);
     REGISTER_TEST(GUITest_regression_scenarios::test_2701);
     REGISTER_TEST(GUITest_regression_scenarios::test_2709);
-    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_regression_scenarios::test_2711);
     REGISTER_TEST(GUITest_regression_scenarios::test_2713);
-    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_regression_scenarios::test_2721);// no cistrome data on windows servers
+    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_regression_scenarios::test_2721);    // no cistrome data on windows servers
     REGISTER_TEST(GUITest_regression_scenarios::test_2726);
     REGISTER_TEST(GUITest_regression_scenarios::test_2729);
     REGISTER_TEST(GUITest_regression_scenarios::test_2730);
@@ -816,7 +811,6 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_2991);
     REGISTER_TEST(GUITest_regression_scenarios::test_2998);
 
-    REGISTER_TEST(GUITest_regression_scenarios::test_3006);
     REGISTER_TEST(GUITest_regression_scenarios::test_3014);
     REGISTER_TEST(GUITest_regression_scenarios::test_3017);
     REGISTER_TEST(GUITest_regression_scenarios::test_3031);
@@ -856,10 +850,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_3170);
     REGISTER_TEST(GUITest_regression_scenarios::test_3175);
     REGISTER_TEST(GUITest_regression_scenarios::test_3180);
-    REGISTER_TEST(GUITest_regression_scenarios::test_3187);
     REGISTER_TEST(GUITest_regression_scenarios::test_3209_1);
-    REGISTER_TEST(GUITest_regression_scenarios::test_3209_2);
-    REGISTER_TEST(GUITest_regression_scenarios::test_3211);
     REGISTER_TEST(GUITest_regression_scenarios::test_3214);
     REGISTER_TEST(GUITest_regression_scenarios::test_3216_1);
     REGISTER_TEST(GUITest_regression_scenarios::test_3216_2);
@@ -928,7 +919,6 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_3472);
     REGISTER_TEST(GUITest_regression_scenarios::test_3473);
     REGISTER_TEST(GUITest_regression_scenarios::test_3477);
-    REGISTER_TEST(GUITest_regression_scenarios::test_3478);
     REGISTER_TEST(GUITest_regression_scenarios::test_3480);
     REGISTER_TEST(GUITest_regression_scenarios::test_3484);
     REGISTER_TEST(GUITest_regression_scenarios::test_3484_1);
@@ -938,12 +928,11 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_3519_1);
     REGISTER_TEST(GUITest_regression_scenarios::test_3519_2);
     REGISTER_TEST_IGNORED(GUITest_regression_scenarios::test_3545, "big data");
-    REGISTER_TEST(GUITest_regression_scenarios::test_3551);
     REGISTER_TEST(GUITest_regression_scenarios::test_3552);
     REGISTER_TEST(GUITest_regression_scenarios::test_3553);
     REGISTER_TEST(GUITest_regression_scenarios::test_3555);
     REGISTER_TEST(GUITest_regression_scenarios::test_3556);
-    REGISTER_TEST(GUITest_regression_scenarios::test_3557);
+    REGISTER_TEST_IGNORED_WINDOWS(GUITest_regression_scenarios::test_3557, "UTI-151");
     REGISTER_TEST(GUITest_regression_scenarios::test_3563_1);
     REGISTER_TEST(GUITest_regression_scenarios::test_3563_2);
     REGISTER_TEST(GUITest_regression_scenarios::test_3571_1);
@@ -999,7 +988,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_3772);
     REGISTER_TEST(GUITest_regression_scenarios::test_3773);
     REGISTER_TEST(GUITest_regression_scenarios::test_3773_1);
-    REGISTER_TEST(GUITest_regression_scenarios::test_3778);
+    REGISTER_TEST_IGNORED_WINDOWS(GUITest_regression_scenarios::test_3778, "UGENE-5735");
     REGISTER_TEST(GUITest_regression_scenarios::test_3779);
     REGISTER_TEST(GUITest_regression_scenarios::test_3785_1);
     REGISTER_TEST(GUITest_regression_scenarios::test_3785_2);
@@ -1009,7 +998,6 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_3805);
     REGISTER_TEST(GUITest_regression_scenarios::test_3809);
     REGISTER_TEST(GUITest_regression_scenarios::test_3813);
-    REGISTER_TEST(GUITest_regression_scenarios::test_3814);
     REGISTER_TEST(GUITest_regression_scenarios::test_3815);
     REGISTER_TEST(GUITest_regression_scenarios::test_3816);
     REGISTER_TEST(GUITest_regression_scenarios::test_3817);
@@ -1034,7 +1022,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_3927);
     REGISTER_TEST(GUITest_regression_scenarios::test_3928);
     REGISTER_TEST(GUITest_regression_scenarios::test_3938);
-    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_regression_scenarios::test_3950);//too long for windows test server
+    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_regression_scenarios::test_3950);    //too long for windows test server
     REGISTER_TEST(GUITest_regression_scenarios::test_3953);
     REGISTER_TEST(GUITest_regression_scenarios::test_3959);
     REGISTER_TEST(GUITest_regression_scenarios::test_3960);
@@ -1083,7 +1071,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_4106);
     REGISTER_TEST(GUITest_regression_scenarios::test_4110);
     REGISTER_TEST(GUITest_regression_scenarios::test_4111);
-    REGISTER_TEST(GUITest_regression_scenarios::test_4113);
+    REGISTER_TEST_IGNORED_WINDOWS(GUITest_regression_scenarios::test_4113, "UGENE-5810");
     REGISTER_TEST(GUITest_regression_scenarios::test_4116);
     REGISTER_TEST(GUITest_regression_scenarios::test_4117);
     REGISTER_TEST(GUITest_regression_scenarios::test_4118);
@@ -1094,7 +1082,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_4131);
     REGISTER_TEST(GUITest_regression_scenarios::test_4134);
     REGISTER_TEST(GUITest_regression_scenarios::test_4141);
-    REGISTER_TEST(GUITest_regression_scenarios::test_4148);
+    REGISTER_TEST_IGNORED_MAC(GUITest_regression_scenarios::test_4148, "It always fails on MacOS. Improve the test");
     REGISTER_TEST(GUITest_regression_scenarios::test_4150);
     REGISTER_TEST(GUITest_regression_scenarios::test_4151);
     REGISTER_TEST(GUITest_regression_scenarios::test_4153);
@@ -1192,6 +1180,8 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_4699);
 
     REGISTER_TEST(GUITest_regression_scenarios::test_4700);
+    REGISTER_TEST(GUITest_regression_scenarios::test_4701);
+    REGISTER_TEST(GUITest_regression_scenarios::test_4701_1);
     REGISTER_TEST(GUITest_regression_scenarios::test_4702_1);
     REGISTER_TEST(GUITest_regression_scenarios::test_4702_2);
     REGISTER_TEST(GUITest_regression_scenarios::test_4702_3);
@@ -1214,10 +1204,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_4764_2);
     REGISTER_TEST(GUITest_regression_scenarios::test_4764_3);
     REGISTER_TEST(GUITest_regression_scenarios::test_4782);
-    REGISTER_TEST(GUITest_regression_scenarios::test_4784_1);
     REGISTER_TEST(GUITest_regression_scenarios::test_4784_2);
-    REGISTER_TEST(GUITest_regression_scenarios::test_4784_3);
-    REGISTER_TEST(GUITest_regression_scenarios::test_4784_4);
     REGISTER_TEST(GUITest_regression_scenarios::test_4785_1);
     REGISTER_TEST(GUITest_regression_scenarios::test_4785_2);
     REGISTER_TEST(GUITest_regression_scenarios::test_4795);
@@ -1305,18 +1292,17 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_5252);
     REGISTER_TEST(GUITest_regression_scenarios::test_5268);
     REGISTER_TEST(GUITest_regression_scenarios::test_5278);
-    REGISTER_TEST(GUITest_regression_scenarios::test_5295);
+    REGISTER_TEST_IGNORED_WINDOWS(GUITest_regression_scenarios::test_5295, "Fails to grab OpenGL widget image on Windows");
 
     REGISTER_TEST(GUITest_regression_scenarios::test_5314);
     REGISTER_TEST(GUITest_regression_scenarios::test_5335);
     REGISTER_TEST(GUITest_regression_scenarios::test_5346);
     REGISTER_TEST(GUITest_regression_scenarios::test_5352);
     REGISTER_TEST(GUITest_regression_scenarios::test_5356);
-    REGISTER_TEST(GUITest_regression_scenarios::test_5360);
-    REGISTER_TEST(GUITest_regression_scenarios::test_5363_1);
+    REGISTER_TEST_IGNORED_WINDOWS(GUITest_regression_scenarios::test_5360, "UGENE-5371");
     REGISTER_TEST(GUITest_regression_scenarios::test_5363_2);
     REGISTER_TEST(GUITest_regression_scenarios::test_5367);
-    REGISTER_TEST(GUITest_regression_scenarios::test_5371);
+    REGISTER_TEST_IGNORED_WINDOWS(GUITest_regression_scenarios::test_5371, "UGENE-5371");
     REGISTER_TEST(GUITest_regression_scenarios::test_5377);
     REGISTER_TEST(GUITest_regression_scenarios::test_5382);
 
@@ -1332,7 +1318,6 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_5499);
 
     REGISTER_TEST(GUITest_regression_scenarios::test_5517);
-    REGISTER_TEST(GUITest_regression_scenarios::test_5520_1);
     REGISTER_TEST(GUITest_regression_scenarios::test_5520_2);
     REGISTER_TEST(GUITest_regression_scenarios::test_5550);
     REGISTER_TEST(GUITest_regression_scenarios::test_5562_1);
@@ -1360,7 +1345,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_5714_3);
     REGISTER_TEST(GUITest_regression_scenarios::test_5716);
     REGISTER_TEST(GUITest_regression_scenarios::test_5718);
-    REGISTER_TEST(GUITest_regression_scenarios::test_5739);
+    REGISTER_TEST_IGNORED(GUITest_regression_scenarios::test_5739, "UGENE-5886");
     REGISTER_TEST(GUITest_regression_scenarios::test_5747);
     REGISTER_TEST(GUITest_regression_scenarios::test_5750);
     REGISTER_TEST(GUITest_regression_scenarios::test_5751);
@@ -1479,6 +1464,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_6397);
     REGISTER_TEST(GUITest_regression_scenarios::test_6398);
 
+    REGISTER_TEST(GUITest_regression_scenarios::test_6455);
     REGISTER_TEST(GUITest_regression_scenarios::test_6459);
     REGISTER_TEST(GUITest_regression_scenarios::test_6475_1);
     REGISTER_TEST(GUITest_regression_scenarios::test_6475_2);
@@ -1507,10 +1493,13 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_6546_9);
     REGISTER_TEST(GUITest_regression_scenarios::test_6546_10);
     REGISTER_TEST(GUITest_regression_scenarios::test_6546_11);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6548_1);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6548_2);
     REGISTER_TEST(GUITest_regression_scenarios::test_6564);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6566);
     REGISTER_TEST(GUITest_regression_scenarios::test_6569);
     REGISTER_TEST(GUITest_regression_scenarios::test_6580);
-    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_regression_scenarios::test_6581); //old MAFFT version  v7.212 for Windows32
+    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_regression_scenarios::test_6581);    //old MAFFT version  v7.212 for Windows32
     REGISTER_TEST(GUITest_regression_scenarios::test_6586_1);
     REGISTER_TEST(GUITest_regression_scenarios::test_6586_2);
 
@@ -1543,6 +1532,14 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_6654);
     REGISTER_TEST(GUITest_regression_scenarios::test_6655);
     REGISTER_TEST(GUITest_regression_scenarios::test_6659);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6667_1);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6672);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6673);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6673_1);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6676_1);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6676_2);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6677);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6677_1);
     REGISTER_TEST(GUITest_regression_scenarios::test_6684);
     REGISTER_TEST(GUITest_regression_scenarios::test_6684_1);
     REGISTER_TEST(GUITest_regression_scenarios::test_6685_1);
@@ -1551,17 +1548,40 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_regression_scenarios::test_6685_4);
     REGISTER_TEST(GUITest_regression_scenarios::test_6685_5);
     REGISTER_TEST(GUITest_regression_scenarios::test_6689);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6691_1);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6691_2);
     REGISTER_TEST(GUITest_regression_scenarios::test_6692);
     REGISTER_TEST(GUITest_regression_scenarios::test_6692_1);
     REGISTER_TEST(GUITest_regression_scenarios::test_6692_2);
     REGISTER_TEST(GUITest_regression_scenarios::test_6692_3);
     REGISTER_TEST(GUITest_regression_scenarios::test_6693);
     REGISTER_TEST(GUITest_regression_scenarios::test_6697);
+
     REGISTER_TEST(GUITest_regression_scenarios::test_6705);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6706);
     REGISTER_TEST(GUITest_regression_scenarios::test_6707);
     REGISTER_TEST(GUITest_regression_scenarios::test_6710);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6711);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6712);
     REGISTER_TEST(GUITest_regression_scenarios::test_6714);
-
+    REGISTER_TEST(GUITest_regression_scenarios::test_6718);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6730);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6734);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6739);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6740);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6742);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6746);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6749);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6749_1);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6749_2);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6750);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6751);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6752);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6754);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6760);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6808);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6808_1);
+    REGISTER_TEST(GUITest_regression_scenarios::test_6809);
 
     //////////////////////////////////////////////////////////////////////////
     // Common scenarios/project/
@@ -1588,7 +1608,6 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_common_scenarios_project::test_0028);
     REGISTER_TEST(GUITest_common_scenarios_project::test_0030);
     REGISTER_TEST(GUITest_common_scenarios_project::test_0031);
-    REGISTER_TEST(GUITest_common_scenarios_project::test_0032);
     REGISTER_TEST(GUITest_common_scenarios_project::test_0033);
     REGISTER_TEST(GUITest_common_scenarios_project::test_0034);
     REGISTER_TEST(GUITest_common_scenarios_project::test_0035);
@@ -1598,7 +1617,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_common_scenarios_project::test_0038_1);
     REGISTER_TEST(GUITest_common_scenarios_project::test_0039);
     REGISTER_TEST_IGNORED(GUITest_common_scenarios_project::test_0040, "UGENE-5042");
-    REGISTER_TEST_NOT_FOR_MAC(GUITest_common_scenarios_project::test_0041);     // There is no "Shift + Insert" hotkey on mac
+    REGISTER_TEST_NOT_FOR_MAC(GUITest_common_scenarios_project::test_0041);    // There is no "Shift + Insert" hotkey on mac
     REGISTER_TEST(GUITest_common_scenarios_project::test_0042);
     REGISTER_TEST(GUITest_common_scenarios_project::test_0043);
     REGISTER_TEST(GUITest_common_scenarios_project::test_0045);
@@ -1733,7 +1752,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_common_scenarios_sequence_view::test_0027);
     REGISTER_TEST(GUITest_common_scenarios_sequence_view::test_0028);
     REGISTER_TEST(GUITest_common_scenarios_sequence_view::test_0029);
-    REGISTER_TEST_LABEL(GUITest_common_scenarios_sequence_view::test_0030, "mem");
+    REGISTER_TEST(GUITest_common_scenarios_sequence_view::test_0030);
     REGISTER_TEST(GUITest_common_scenarios_sequence_view::test_0031);
     REGISTER_TEST(GUITest_common_scenarios_sequence_view::test_0031_1);
     REGISTER_TEST(GUITest_common_scenarios_sequence_view::test_0031_2);
@@ -1785,7 +1804,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_common_scenarios_sequence_view::test_0071);
     REGISTER_TEST(GUITest_common_scenarios_sequence_view::test_0075);
     REGISTER_TEST(GUITest_common_scenarios_sequence_view::test_0076);
-    REGISTER_TEST(GUITest_common_scenarios_sequence_view::test_0077);
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_sequence_view::test_0077, "UGENE-5579");
     REGISTER_TEST(GUITest_common_scenarios_sequence_view::test_0078);
 
     //////////////////////////////////////////////////////////////////////////
@@ -1853,7 +1872,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     //////////////////////////////////////////////////////////////////////////
     // Common scenarios/remote request/
     //////////////////////////////////////////////////////////////////////////
-    REGISTER_TEST(GUITest_common_scenarios_project_remote_request::test_0001);
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_project_remote_request::test_0001, "runs > 8 mins and fails");
     REGISTER_TEST(GUITest_common_scenarios_project_remote_request::test_0002);
     REGISTER_TEST(GUITest_common_scenarios_project_remote_request::test_0003);
     REGISTER_TEST(GUITest_common_scenarios_project_remote_request::test_0004);
@@ -1920,7 +1939,6 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_common_scenarios_toggle_view::test_0015);
     REGISTER_TEST(GUITest_common_scenarios_toggle_view::test_0016);
 
-
     //////////////////////////////////////////////////////////////////////////
     // Common scenarios/project/sequence exporting/
     //////////////////////////////////////////////////////////////////////////
@@ -1962,15 +1980,15 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     /////////////////////////////////////////////////////////////////////////
     // Common scenarios/ngs_classification/metaphlan2
     /////////////////////////////////////////////////////////////////////////
-    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_common_scenarios_mg_metaphlan2_external_tool::test_0001);
-    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_common_scenarios_mg_metaphlan2_external_tool::test_0002);
-    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_common_scenarios_mg_metaphlan2_external_tool::test_0003);
-    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_common_scenarios_mg_metaphlan2_external_tool::test_0004);
-    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_common_scenarios_mg_metaphlan2_external_tool::test_0005);
-    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_common_scenarios_mg_metaphlan2_external_tool::test_0006);
-    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_common_scenarios_mg_metaphlan2_external_tool::test_0007);
-    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_common_scenarios_mg_metaphlan2_external_tool::test_0008);
-    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_common_scenarios_mg_metaphlan2_workflow_designer_element::test_0001);
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_mg_metaphlan2_external_tool::test_0001, "UGENE-6253. Tests should be run on CUDA server");
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_mg_metaphlan2_external_tool::test_0002, "UGENE-6253. Tests should be run on CUDA server");
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_mg_metaphlan2_external_tool::test_0003, "runs > 8 mins and fails");
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_mg_metaphlan2_external_tool::test_0004, "UGENE-6253. Tests should be run on CUDA server");
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_mg_metaphlan2_external_tool::test_0005, "UGENE-6253. Tests should be run on CUDA server");
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_mg_metaphlan2_external_tool::test_0006, "runs > 8 mins and fails");
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_mg_metaphlan2_external_tool::test_0007, "runs > 8 mins and fails");
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_mg_metaphlan2_external_tool::test_0008, "UGENE-6253. Tests should be run on CUDA server");
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_mg_metaphlan2_workflow_designer_element::test_0001, "UGENE-6253. Tests should be run on CUDA server");
     REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_common_scenarios_mg_metaphlan2_workflow_designer_element::test_0002);
     REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_common_scenarios_mg_metaphlan2_workflow_designer_element::test_0003);
     REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_common_scenarios_mg_metaphlan2_workflow_designer_element::test_0004);
@@ -1991,10 +2009,6 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0002_4);
 
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0003);
-    REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0003_1);
-    REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0003_2);
-    REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0003_3);
-    REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0003_4);
 
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0004);
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0004_1);
@@ -2133,14 +2147,13 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0042_2);
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0043);
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0044);
-    REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0045);
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_msa_editor::test_0045, "UGENE-4762");
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0045_1);
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0046);
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0047);
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0048);
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0049);
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0050);
-    REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0051);
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0052);
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0053);
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0053_1);
@@ -2158,7 +2171,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0059);
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0060);
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0061);
-    REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0062);
+    REGISTER_TEST_IGNORED_WINDOWS(GUITest_common_scenarios_msa_editor::test_0062, "UGENE-6674");
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0063);
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0064);
     REGISTER_TEST(GUITest_common_scenarios_msa_editor::test_0065);
@@ -2209,9 +2222,9 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     /////////////////////////////////////////////////////////////////////////
     // Common scenarios/msa_editor/colors
     /////////////////////////////////////////////////////////////////////////
-    REGISTER_TEST(GUITest_common_scenarios_msa_editor_colors::test_0001);
-    REGISTER_TEST(GUITest_common_scenarios_msa_editor_colors::test_0002);
-    REGISTER_TEST(GUITest_common_scenarios_msa_editor_colors::test_0003);
+    REGISTER_TEST_IGNORED_MAC(GUITest_common_scenarios_msa_editor_colors::test_0001, "It always fails on MacOS. Improve the test");
+    REGISTER_TEST_IGNORED_MAC(GUITest_common_scenarios_msa_editor_colors::test_0002, "It always fails on MacOS. Improve the test");
+    REGISTER_TEST_IGNORED_MAC(GUITest_common_scenarios_msa_editor_colors::test_0003, "It always fails on MacOS. Improve the test");
     REGISTER_TEST(GUITest_common_scenarios_msa_editor_colors::test_0004);
     REGISTER_TEST(GUITest_common_scenarios_msa_editor_colors::test_0006);
     REGISTER_TEST(GUITest_common_scenarios_msa_editor_colors::test_0007);
@@ -2500,7 +2513,6 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_common_scenarios_annotations_import::test_0009_1);
     REGISTER_TEST(GUITest_common_scenarios_annotations_import::test_0009_2);
 
-
     /////////////////////////////////////////////////////////////////////////
     // Common scenarios/annotations
     /////////////////////////////////////////////////////////////////////////
@@ -2573,7 +2585,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_common_scenarios_create_annotation_widget::test_0035);
     REGISTER_TEST(GUITest_common_scenarios_create_annotation_widget::test_0036);
     REGISTER_TEST(GUITest_common_scenarios_create_annotation_widget::test_0037);
-    REGISTER_TEST(GUITest_common_scenarios_create_annotation_widget::test_0038);
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_create_annotation_widget::test_0038, "UGENE-4419");
     REGISTER_TEST(GUITest_common_scenarios_create_annotation_widget::test_0039);
     REGISTER_TEST(GUITest_common_scenarios_create_annotation_widget::test_0040);
     REGISTER_TEST(GUITest_common_scenarios_create_annotation_widget::test_0041);
@@ -2698,7 +2710,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_common_scenarios_options_panel_MSA::highlighting_test_0004_7);
     REGISTER_TEST(GUITest_common_scenarios_options_panel_MSA::highlighting_test_0004_8);
     REGISTER_TEST(GUITest_common_scenarios_options_panel_MSA::highlighting_test_0004_9);
-    REGISTER_TEST(GUITest_common_scenarios_options_panel_MSA::highlighting_test_0005);
+    REGISTER_TEST_IGNORED_MAC(GUITest_common_scenarios_options_panel_MSA::highlighting_test_0005, "It always fails on MacOS. Improve the test");
     REGISTER_TEST(GUITest_common_scenarios_options_panel_MSA::highlighting_test_0005_1);
     REGISTER_TEST(GUITest_common_scenarios_options_panel_MSA::highlighting_test_0006);
     REGISTER_TEST(GUITest_common_scenarios_options_panel_MSA::highlighting_test_0007);
@@ -2732,7 +2744,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_common_scenarios_options_panel_MSA::tree_settings_test_0001);
     REGISTER_TEST(GUITest_common_scenarios_options_panel_MSA::tree_settings_test_0002);
     REGISTER_TEST(GUITest_common_scenarios_options_panel_MSA::tree_settings_test_0003);
-    REGISTER_TEST(GUITest_common_scenarios_options_panel_MSA::tree_settings_test_0004);
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_options_panel_MSA::tree_settings_test_0004, "UGENE-4835");
     REGISTER_TEST(GUITest_common_scenarios_options_panel_MSA::tree_settings_test_0005);
     REGISTER_TEST(GUITest_common_scenarios_options_panel_MSA::tree_settings_test_0006);
     REGISTER_TEST_IGNORED(GUITest_common_scenarios_options_panel_MSA::tree_settings_test_0007, "UGENE-5188");
@@ -2783,7 +2795,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST_IGNORED_WINDOWS(GUITest_Assembly_browser::test_0012, "permission setter issue");
     REGISTER_TEST(GUITest_Assembly_browser::test_0013);
     REGISTER_TEST(GUITest_Assembly_browser::test_0014);
-    REGISTER_TEST(GUITest_Assembly_browser::test_0015);
+    REGISTER_TEST_IGNORED(GUITest_Assembly_browser::test_0015, "UTI-306");
     REGISTER_TEST(GUITest_Assembly_browser::test_0016);
     REGISTER_TEST(GUITest_Assembly_browser::test_0017);
     REGISTER_TEST(GUITest_Assembly_browser::test_0018);
@@ -2813,7 +2825,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     // Common scenarios/Assembling/bowtie2
     /////////////////////////////////////////////////////////////////////////
     REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_Bowtie2::test_0001);
-    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_Bowtie2::test_0002);//"Restore when this tool becomes available");
+    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_Bowtie2::test_0002);    //"Restore when this tool becomes available");
     REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_Bowtie2::test_0003);
     REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_Bowtie2::test_0004);
     REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_Bowtie2::test_0005);
@@ -2828,7 +2840,6 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_dna_assembly::test_0004);
     REGISTER_TEST(GUITest_dna_assembly::test_0005);
     REGISTER_TEST(GUITest_dna_assembly::test_0006);
-
 
     /////////////////////////////////////////////////////////////////////////
     // Common scenarios/Assembling/index_reuse
@@ -2891,9 +2902,9 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     // Common scenarios/Workflow designer/Workflow parameters validation
     /////////////////////////////////////////////////////////////////////////
     REGISTER_TEST(GUITest_common_scenarios_workflow_parameters_validation::test_0001);
-    REGISTER_TEST_NOT_FOR_MAC(GUITest_common_scenarios_workflow_parameters_validation::test_0002);//, "qt dialog can't be shown");
+    REGISTER_TEST_NOT_FOR_MAC(GUITest_common_scenarios_workflow_parameters_validation::test_0002);    //, "qt dialog can't be shown");
     REGISTER_TEST(GUITest_common_scenarios_workflow_parameters_validation::test_0003);
-    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_common_scenarios_workflow_parameters_validation::test_0005);//, "Test should run not under admin user on WIN");
+    REGISTER_TEST_NOT_FOR_WINDOWS(GUITest_common_scenarios_workflow_parameters_validation::test_0005);    //, "Test should run not under admin user on WIN");
     REGISTER_TEST(GUITest_common_scenarios_workflow_parameters_validation::test_0006);
 
     /////////////////////////////////////////////////////////////////////////
@@ -2903,9 +2914,9 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::misc_test_0002);
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::misc_test_0003);
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::misc_test_0004);
-    REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::misc_test_0005);
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_workflow_dashboard::misc_test_0005, "UTI-263");
 
-    REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::tree_nodes_creation_test_0001);
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_workflow_dashboard::tree_nodes_creation_test_0001, "UGENE-5979");
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::tree_nodes_creation_test_0002);
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::tree_nodes_creation_test_0003);
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::tree_nodes_creation_test_0004);
@@ -2913,7 +2924,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::tool_launch_nodes_test_0001);
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::tool_launch_nodes_test_0002);
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::tool_launch_nodes_test_0003);
-    REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::tool_launch_nodes_test_0004);
+    REGISTER_TEST_IGNORED_MAC(GUITest_common_scenarios_workflow_dashboard::tool_launch_nodes_test_0004, "It always fails on MacOS. Improve the test");
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::tool_launch_nodes_test_0005);
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::tool_launch_nodes_test_0006);
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::tool_launch_nodes_test_0007);
@@ -2923,7 +2934,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::tool_launch_nodes_test_0011);
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::tool_launch_nodes_test_0012);
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::tool_launch_nodes_test_0013);
-    REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::tool_launch_nodes_test_0014);
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_workflow_dashboard::tool_launch_nodes_test_0014, "UGENE-5979");
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::tool_launch_nodes_test_0015);
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::tool_launch_nodes_test_0016);
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::tool_launch_nodes_test_0017);
@@ -2933,16 +2944,15 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::view_opening_test_0003);
     REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::view_opening_test_0004);
 
-    REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::output_dir_scanning_test_0001);
-    REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::output_dir_scanning_test_0002);
-    REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::output_dir_scanning_test_0003);
-    REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::output_dir_scanning_test_0004);
-    REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::output_dir_scanning_test_0005_1);
-    REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::output_dir_scanning_test_0005);
-    REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::output_dir_scanning_test_0006);
-    REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::output_dir_scanning_test_0007);
-    REGISTER_TEST(GUITest_common_scenarios_workflow_dashboard::output_dir_scanning_test_0008);
-
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_workflow_dashboard::output_dir_scanning_test_0001, "runs > 8 mins in teamcity");
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_workflow_dashboard::output_dir_scanning_test_0002, "runs > 8 mins in teamcity");
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_workflow_dashboard::output_dir_scanning_test_0003, "runs > 8 mins in teamcity");
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_workflow_dashboard::output_dir_scanning_test_0004, "runs > 8 mins in teamcity");
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_workflow_dashboard::output_dir_scanning_test_0005_1, "runs > 8 mins in teamcity");
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_workflow_dashboard::output_dir_scanning_test_0005, "runs > 8 mins in teamcity");
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_workflow_dashboard::output_dir_scanning_test_0006, "runs > 8 mins in teamcity");
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_workflow_dashboard::output_dir_scanning_test_0007, "runs > 8 mins in teamcity");
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_workflow_dashboard::output_dir_scanning_test_0008, "Very long test muted in the teamcity");
 
     /////////////////////////////////////////////////////////////////////////
     // Common scenarios/Workflow designer/Estimating
@@ -3033,7 +3043,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     // Common scenarios/shared_database
     /////////////////////////////////////////////////////////////////////////
     REGISTER_TEST(GUITest_common_scenarios_shared_database::cm_test_0001);
-    REGISTER_TEST(GUITest_common_scenarios_shared_database::cm_test_0002);
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_shared_database::cm_test_0002, "UGENE-4892");
     REGISTER_TEST(GUITest_common_scenarios_shared_database::cm_test_0003);
     REGISTER_TEST(GUITest_common_scenarios_shared_database::cm_test_0004);
     REGISTER_TEST(GUITest_common_scenarios_shared_database::cm_test_0005);
@@ -3056,21 +3066,21 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
 
     REGISTER_TEST(GUITest_common_scenarios_shared_database::import_test_0001);
     REGISTER_TEST(GUITest_common_scenarios_shared_database::import_test_0002);
-    REGISTER_TEST_IGNORED(GUITest_common_scenarios_shared_database::import_test_0003,"drag&drop");
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_shared_database::import_test_0003, "drag&drop");
     REGISTER_TEST(GUITest_common_scenarios_shared_database::import_test_0004);
     REGISTER_TEST(GUITest_common_scenarios_shared_database::import_test_0005);
-    REGISTER_TEST(GUITest_common_scenarios_shared_database::import_test_0006);
-    REGISTER_TEST(GUITest_common_scenarios_shared_database::import_test_0007);
-    REGISTER_TEST(GUITest_common_scenarios_shared_database::import_test_0008);
+    REGISTER_TEST_IGNORED_WINDOWS(GUITest_common_scenarios_shared_database::import_test_0006, "UTI-245");
+    REGISTER_TEST_IGNORED_WINDOWS(GUITest_common_scenarios_shared_database::import_test_0007, "UTI-245");
+    REGISTER_TEST_IGNORED_WINDOWS(GUITest_common_scenarios_shared_database::import_test_0008, "UTI-245");
     REGISTER_TEST(GUITest_common_scenarios_shared_database::import_test_0009);
     REGISTER_TEST(GUITest_common_scenarios_shared_database::import_test_0010);
     REGISTER_TEST(GUITest_common_scenarios_shared_database::import_test_0011);
-    REGISTER_TEST(GUITest_common_scenarios_shared_database::import_test_0012);
-    REGISTER_TEST(GUITest_common_scenarios_shared_database::import_test_0013);
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_shared_database::import_test_0012, "UGENE-4507");
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_shared_database::import_test_0013, "UGENE-4507");
     REGISTER_TEST(GUITest_common_scenarios_shared_database::import_test_0014);
     REGISTER_TEST(GUITest_common_scenarios_shared_database::import_test_0015);
-    REGISTER_TEST(GUITest_common_scenarios_shared_database::import_test_0016);
-    REGISTER_TEST(GUITest_common_scenarios_shared_database::import_test_0017);
+    REGISTER_TEST_IGNORED_WINDOWS(GUITest_common_scenarios_shared_database::import_test_0016, "UTI-245");
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_shared_database::import_test_0017, "UGENE-4507");
     REGISTER_TEST(GUITest_common_scenarios_shared_database::import_test_0018);
     REGISTER_TEST(GUITest_common_scenarios_shared_database::import_test_0019);
     REGISTER_TEST(GUITest_common_scenarios_shared_database::import_test_0020);
@@ -3090,7 +3100,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_common_scenarios_shared_database::export_test_0002);
     REGISTER_TEST(GUITest_common_scenarios_shared_database::export_test_0003);
     REGISTER_TEST(GUITest_common_scenarios_shared_database::export_test_0004);
-    REGISTER_TEST(GUITest_common_scenarios_shared_database::export_test_0005);
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_shared_database::export_test_0005, "UGENE-5616");
     REGISTER_TEST(GUITest_common_scenarios_shared_database::export_test_0006);
     REGISTER_TEST(GUITest_common_scenarios_shared_database::export_test_0007);
     REGISTER_TEST(GUITest_common_scenarios_shared_database::export_test_0008);
@@ -3158,7 +3168,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_common_scenarios_shared_db_wd::run_workflow_gui_test_0001_1);
     REGISTER_TEST(GUITest_common_scenarios_shared_db_wd::run_workflow_gui_test_0001_2);
     REGISTER_TEST(GUITest_common_scenarios_shared_db_wd::run_workflow_gui_test_0002);
-    REGISTER_TEST(GUITest_common_scenarios_shared_db_wd::run_workflow_gui_test_0003);
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_shared_db_wd::run_workflow_gui_test_0003, "names conflict in database");
     REGISTER_TEST(GUITest_common_scenarios_shared_db_wd::run_workflow_gui_test_0004);
     REGISTER_TEST(GUITest_common_scenarios_shared_db_wd::run_workflow_gui_test_0005_1);
     REGISTER_TEST(GUITest_common_scenarios_shared_db_wd::run_workflow_gui_test_0005_2);
@@ -3197,7 +3207,7 @@ void GUITestBasePlugin::registerTests(UGUITestBase *guiTestBase) {
     REGISTER_TEST(GUITest_common_scenarios_primer_library::test_0005);
     REGISTER_TEST(GUITest_common_scenarios_primer_library::test_0006);
     REGISTER_TEST(GUITest_common_scenarios_primer_library::test_0007);
-    REGISTER_TEST(GUITest_common_scenarios_primer_library::test_0008);
+    REGISTER_TEST_IGNORED(GUITest_common_scenarios_primer_library::test_0008, "UGENE-5609");
     REGISTER_TEST(GUITest_common_scenarios_primer_library::test_0009);
     REGISTER_TEST(GUITest_common_scenarios_primer_library::test_0010);
     REGISTER_TEST(GUITest_common_scenarios_primer_library::test_0011);
@@ -3248,4 +3258,4 @@ void GUITestBasePlugin::registerAdditionalActions(UGUITestBase *guiTestBase) {
     }
 }
 
-} //namespace
+}    // namespace U2

@@ -19,13 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "ace/AceImportUtils.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/TextUtils.h>
 #include <U2Core/U2AbstractDbi.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "ace/AceImportUtils.h"
 #include "DocumentFormatUtils.h"
 
 namespace U2 {
@@ -37,7 +38,7 @@ namespace U2 {
 Assembly::Assembly() {
 }
 
-const Assembly::Sequence & Assembly::getReference() {
+const Assembly::Sequence &Assembly::getReference() {
     return reference;
 }
 
@@ -77,7 +78,7 @@ void Assembly::setName(const QByteArray &_name) {
 
 bool Assembly::isValid() const {
     bool ok = reference.isValid();
-    foreach(Sequence read, reads) {
+    foreach (Sequence read, reads) {
         ok &= read.isValid();
     }
     return ok;
@@ -121,12 +122,12 @@ const QByteArray AceReader::QA = "QA";
 const QByteArray AceReader::COMPLEMENT = "C";
 const QByteArray AceReader::UNCOMPLEMENT = "U";
 
-AceReader::AceReader(IOAdapter& _io, U2OpStatus &_os) :
-    io(&_io),
-    os(&_os),
-    currentContig(0) {
+AceReader::AceReader(IOAdapter &_io, U2OpStatus &_os)
+    : io(&_io),
+      os(&_os),
+      currentContig(0) {
     QByteArray readBuff(DocumentFormat::READ_BUFF_SIZE + 1, 0);
-    char* buff = readBuff.data();
+    char *buff = readBuff.data();
     qint64 len = 0;
 
     skipBreaks(io, buff, &len);
@@ -144,7 +145,7 @@ Assembly AceReader::getAssembly() {
     Assembly::Sequence reference;
 
     QByteArray readBuff(DocumentFormat::READ_BUFF_SIZE + 1, 0);
-    char* buff = readBuff.data();
+    char *buff = readBuff.data();
     qint64 len = 0;
     int readsCount = 0;
     QByteArray headerLine;
@@ -305,9 +306,9 @@ QByteArray AceReader::getName(const QByteArray &line) {
 }
 
 bool AceReader::checkSeq(const QByteArray &seq) {
-    DNAAlphabetRegistry* alRegistry = AppContext::getDNAAlphabetRegistry();
+    DNAAlphabetRegistry *alRegistry = AppContext::getDNAAlphabetRegistry();
     SAFE_POINT(alRegistry, "Alphabet registry is NULL", false);
-    const DNAAlphabet* al = alRegistry->findById(BaseDNAAlphabetIds::NUCL_DNA_EXTENDED());
+    const DNAAlphabet *al = alRegistry->findById(BaseDNAAlphabetIds::NUCL_DNA_EXTENDED());
     SAFE_POINT(al, "Alphabet is NULL", false);
 
     return al->containsAll(seq.constData(), seq.length());
@@ -343,7 +344,7 @@ void AceReader::parseAfTag(U2::IOAdapter *io, char *buff, int count, QMap<QByteA
         // the first AF entry won't be found: it hasn't space before
         if (-1 != (afIndex = afBlock.indexOf(" " + AF))) {
             afLine = afBlock.mid(0, afIndex);
-            afBlock.remove(0, afIndex + 1);     // with space before AF
+            afBlock.remove(0, afIndex + 1);    // with space before AF
         } else {
             afBlock.clear();
         }
@@ -487,7 +488,7 @@ void AceReader::parseRdAndQaTag(U2::IOAdapter *io, char *buff, QSet<QByteArray> 
     CHECK_OP((*os), );
 
     CHECK_EXT(clearRangeStart <= clearRangeEnd &&
-              clearRangeEnd - clearRangeStart <= read.data.length(),
+                  clearRangeEnd - clearRangeStart <= read.data.length(),
               os->setError(DocumentFormatUtils::tr("QA error bad range")), );
 
     formatSequence(read.data);
@@ -513,7 +514,7 @@ int AceReader::getClearRangeEnd(const QByteArray &cur_line) {
     return result;
 }
 
-void AceReader::formatSequence(QByteArray& data) {
+void AceReader::formatSequence(QByteArray &data) {
     data = data.toUpper();
     data.replace('X', 'N');
     data.replace('*', 'N');
@@ -523,9 +524,9 @@ void AceReader::formatSequence(QByteArray& data) {
 //// AceIterator
 ///////////////////////////////////
 
-AceIterator::AceIterator(AceReader &_reader, U2OpStatus &_os) :
-    reader(&_reader),
-    os(&_os) {
+AceIterator::AceIterator(AceReader &_reader, U2OpStatus &_os)
+    : reader(&_reader),
+      os(&_os) {
 }
 
 bool AceIterator::hasNext() {
@@ -537,4 +538,4 @@ Assembly AceIterator::next() {
     return reader->getAssembly();
 }
 
-}   // namespace U2
+}    // namespace U2

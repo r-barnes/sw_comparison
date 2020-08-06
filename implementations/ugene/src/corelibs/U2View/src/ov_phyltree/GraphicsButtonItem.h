@@ -29,11 +29,12 @@
 
 #include "TreeSettings.h"
 
+#define NODE_TREE_ITEM_KIND_KEY 1
 namespace U2 {
 
 class PhyTreeObject;
 
-class U2VIEW_EXPORT GraphicsButtonItem: public QGraphicsEllipseItem {
+class U2VIEW_EXPORT GraphicsButtonItem : public QGraphicsEllipseItem {
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *e);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e);
@@ -52,17 +53,19 @@ public:
 
     void setSelected(bool selected);
 
-    void rerootTree(PhyTreeObject* treeObject);
+    void rerootTree(PhyTreeObject *treeObject);
 
-    void updateSettings(const OptionsMap& settings);
+    void updateSettings(const OptionsMap &settings);
 
-    virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0);
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
-    const QGraphicsSimpleTextItem* getLabel() const;
+    const QGraphicsSimpleTextItem *getLabel() const;
 
     virtual QRectF boundingRect() const;
 
-    qreal getNodeValue() {return nodeValue;}
+    qreal getNodeValue() {
+        return nodeValue;
+    }
 
 private:
     void setHighlighting(bool enabled);
@@ -72,11 +75,11 @@ private:
     static const QBrush highlightingBrush;
     static const QBrush ordinaryBrush;
     bool isSelected;
-    QGraphicsSimpleTextItem* nodeLabel;
+    QGraphicsSimpleTextItem *nodeLabel;
     qreal scaleFactor;
     qreal nodeValue;
 };
 
-}//namespace;
+}    // namespace U2
 
 #endif

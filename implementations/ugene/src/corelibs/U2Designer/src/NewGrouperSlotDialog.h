@@ -87,6 +87,6 @@ public:
     virtual GrouperSlotAction getAction() const;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _NEW_GROUPER_SLOT_DIALOG_H_
+#endif    // _NEW_GROUPER_SLOT_DIALOG_H_

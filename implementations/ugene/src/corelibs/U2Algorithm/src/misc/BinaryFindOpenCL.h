@@ -24,10 +24,10 @@
 
 #ifdef OPENCL_SUPPORT
 
-#include <U2Core/AppContext.h>
+#    include <U2Algorithm/OpenCLGpuRegistry.h>
+#    include <U2Algorithm/OpenCLHelper.h>
 
-#include <U2Algorithm/OpenCLGpuRegistry.h>
-#include <U2Algorithm/OpenCLHelper.h>
+#    include <U2Core/AppContext.h>
 
 namespace U2 {
 
@@ -35,10 +35,13 @@ typedef cl_long NumberType;
 
 class U2ALGORITHM_EXPORT BinaryFindOpenCL {
 public:
-    BinaryFindOpenCL(const NumberType* _haystack, const int _haystackSize, const NumberType* _needles, const int _needlesSize, const int *_windowSizes);
+    BinaryFindOpenCL(const NumberType *_haystack, const int _haystackSize, const NumberType *_needles, const int _needlesSize, const int *_windowSizes);
     ~BinaryFindOpenCL();
-    NumberType* launch();
-    bool hasError() {return isError;}
+    NumberType *launch();
+    bool hasError() {
+        return isError;
+    }
+
 private:
     int initOpenCL();
     int createBuffers();
@@ -52,13 +55,13 @@ private:
 
     bool isError;
 
-    OpenCLGpuModel* device;
+    OpenCLGpuModel *device;
     cl_ulong deviceGlobalMemSize;
     cl_ulong maxAllocateBufferSize;
 
-    const NumberType* haystack;
+    const NumberType *haystack;
     const int haystackSize;
-    const NumberType* needles;
+    const NumberType *needles;
     const size_t needlesSize;
     const int *windowSizes;
 
@@ -75,8 +78,8 @@ private:
     cl_mem buf_windowSizesArray;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif /*OPENCL_SUPPORT*/
 
-#endif // _U2_BINARYFINDOPENCL_H_
+#endif    // _U2_BINARYFINDOPENCL_H_

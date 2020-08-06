@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "WevoteWorker.h"
+
 #include <QFileInfo>
 
 #include <U2Core/FailTask.h>
@@ -31,7 +33,6 @@
 #include <U2Lang/WorkflowMonitor.h>
 
 #include "../ngs_reads_classification/src/NgsReadsClassificationUtils.h"
-#include "WevoteWorker.h"
 #include "WevoteWorkerFactory.h"
 
 namespace U2 {
@@ -42,9 +43,7 @@ const QString WevoteWorker::WEVOTE_DIR = "wevote";
 WevoteWorker::WevoteWorker(Actor *actor)
     : BaseWorker(actor),
       input(NULL),
-      output(NULL)
-{
-
+      output(NULL) {
 }
 
 void WevoteWorker::init() {
@@ -77,7 +76,6 @@ Task *WevoteWorker::tick() {
 }
 
 void WevoteWorker::cleanup() {
-
 }
 
 void WevoteWorker::sl_taskFinished(Task *task) {
@@ -96,8 +94,7 @@ void WevoteWorker::sl_taskFinished(Task *task) {
     context->getMonitor()->addOutputFile(classificationUrl, getActor()->getId());
 
     int classifiedCount = NgsReadsClassificationUtils::countClassified(classification);
-    context->getMonitor()->addInfo(tr("There were %1 input reads, %2 reads were classified.").arg(QString::number(classification.size())).arg(QString::number(classifiedCount))
-                                    , getActor()->getId(), WorkflowNotification::U2_INFO);
+    context->getMonitor()->addInfo(tr("There were %1 input reads, %2 reads were classified.").arg(QString::number(classification.size())).arg(QString::number(classifiedCount)), getActor()->getId(), WorkflowNotification::U2_INFO);
 }
 
 bool WevoteWorker::isReadyToRun() const {
@@ -121,7 +118,7 @@ WevoteTaskSettings WevoteWorker::getSettings(U2OpStatus &os) {
     CHECK_EXT(!settings.inputFileUrl.isEmpty(), os.setError(tr("Empty input file URL in the message")), settings);
 
     settings.workingDir = FileAndDirectoryUtils::createWorkingDir(context->workingDir(), FileAndDirectoryUtils::WORKFLOW_INTERNAL, "", context->workingDir());
-    settings.workingDir = GUrlUtils::createDirectory(settings.workingDir + WEVOTE_DIR , "_", os);
+    settings.workingDir = GUrlUtils::createDirectory(settings.workingDir + WEVOTE_DIR, "_", os);
 
     settings.outputFileUrl = getValue<QString>(WevoteWorkerFactory::OUTPUT_FILE_ATTR_ID);
     if (settings.outputFileUrl.isEmpty()) {
@@ -132,5 +129,5 @@ WevoteTaskSettings WevoteWorker::getSettings(U2OpStatus &os) {
     return settings;
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

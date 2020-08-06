@@ -20,6 +20,7 @@
  */
 
 #include "BaseBreakpointHitCounter.h"
+
 #include "BreakpointEqualHitCounter.h"
 #include "BreakpointGreaterOrEqualHitCounter.h"
 #include "BreakpointMultipleHitCounter.h"
@@ -30,13 +31,10 @@ const quint32 HIT_COUNTER_INITIAL_VALUE = 0;
 namespace U2 {
 
 BaseBreakpointHitCounter::BaseBreakpointHitCounter(BreakpointHitCountCondition initCondition)
-    : condition(initCondition), hitCount(HIT_COUNTER_INITIAL_VALUE)
-{
-
+    : condition(initCondition), hitCount(HIT_COUNTER_INITIAL_VALUE) {
 }
 
 BaseBreakpointHitCounter::~BaseBreakpointHitCounter() {
-
 }
 
 BreakpointHitCountCondition BaseBreakpointHitCounter::getCondition() const {
@@ -64,26 +62,26 @@ void BaseBreakpointHitCounter::reset() {
     hitCount = HIT_COUNTER_INITIAL_VALUE;
 }
 
-BaseBreakpointHitCounter * BaseBreakpointHitCounter::createInstance(
-    BreakpointHitCountCondition kindOfCondition, const QVariant &hitCounterParameter)
-{
+BaseBreakpointHitCounter *BaseBreakpointHitCounter::createInstance(
+    BreakpointHitCountCondition kindOfCondition,
+    const QVariant &hitCounterParameter) {
     BaseBreakpointHitCounter *result = NULL;
     bool conversionResult = true;
-    switch(kindOfCondition) {
+    switch (kindOfCondition) {
     case ALWAYS:
         result = new BaseBreakpointHitCounter(kindOfCondition);
         break;
     case HIT_COUNT_EQUAL:
         result = new BreakpointEqualHitCounter(kindOfCondition,
-            hitCounterParameter.toUInt(&conversionResult));
+                                               hitCounterParameter.toUInt(&conversionResult));
         break;
     case HIT_COUNT_MULTIPLE:
         result = new BreakpointMultipleHitCounter(kindOfCondition,
-            hitCounterParameter.toUInt(&conversionResult));
+                                                  hitCounterParameter.toUInt(&conversionResult));
         break;
     case HIT_COUNT_GREATER_OR_EQUAL:
         result = new BreakpointGreaterOrEqualHitCounter(kindOfCondition,
-            hitCounterParameter.toUInt(&conversionResult));
+                                                        hitCounterParameter.toUInt(&conversionResult));
         break;
     default:
         Q_ASSERT(false);
@@ -94,4 +92,4 @@ BaseBreakpointHitCounter * BaseBreakpointHitCounter::createInstance(
     return result;
 }
 
-} // namespace U2
+}    // namespace U2

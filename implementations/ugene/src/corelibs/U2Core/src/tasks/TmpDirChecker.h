@@ -22,8 +22,9 @@
 #ifndef TMPDIRCHECKER_H
 #define TMPDIRCHECKER_H
 
-#include <U2Core/Task.h>
 #include <QDir>
+
+#include <U2Core/Task.h>
 
 namespace U2 {
 
@@ -45,5 +46,5 @@ private:
     QString commonTempDirPath;
 };
 
-} // namespace
-#endif // TMPDIRCHECKER_H
+}    // namespace U2
+#endif    // TMPDIRCHECKER_H

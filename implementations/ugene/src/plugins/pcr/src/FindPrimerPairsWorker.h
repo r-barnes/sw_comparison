@@ -22,11 +22,11 @@
 #ifndef _U2_FIND_PRIMER_PAIRS_WORKER_H_
 #define _U2_FIND_PRIMER_PAIRS_WORKER_H_
 
+#include <U2Core/DNASequence.h>
+#include <U2Core/MultipleSequenceAlignment.h>
+
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
-
-#include <U2Core/MultipleSequenceAlignment.h>
-#include <U2Core/DNASequence.h>
 
 #include "PrimerStatistics.h"
 
@@ -36,7 +36,9 @@ namespace LocalWorkflow {
 class FindPrimerPairsPromter : public PrompterBase<FindPrimerPairsPromter> {
     Q_OBJECT
 public:
-    FindPrimerPairsPromter( Actor * p = 0 ) : PrompterBase<FindPrimerPairsPromter>(p) {};
+    FindPrimerPairsPromter(Actor *p = 0)
+        : PrompterBase<FindPrimerPairsPromter>(p) {};
+
 protected:
     QString composeRichDoc();
 };
@@ -44,16 +46,19 @@ protected:
 class FindPrimerPairsWorker : public BaseWorker {
     Q_OBJECT
 public:
-    FindPrimerPairsWorker( Actor * p ) : BaseWorker(p), inPort(NULL), outPort(NULL) {};
+    FindPrimerPairsWorker(Actor *p)
+        : BaseWorker(p), inPort(NULL), outPort(NULL) {};
 
     virtual void init();
-    virtual Task* tick();
+    virtual Task *tick();
     virtual void cleanup();
+
 private:
-    IntegralBus* inPort;
-    IntegralBus* outPort;
+    IntegralBus *inPort;
+    IntegralBus *outPort;
 private slots:
-    void sl_onTaskFinished(Task* t);
+    void sl_onTaskFinished(Task *t);
+
 private:
     QList<DNASequence> data;
 };
@@ -62,35 +67,41 @@ class FindPrimerPairsWorkerFactory : public DomainFactory {
 public:
     const static QString ACTOR_ID;
     const static QString OUT_FILE;
-    FindPrimerPairsWorkerFactory() : DomainFactory(ACTOR_ID) {};
+    FindPrimerPairsWorkerFactory()
+        : DomainFactory(ACTOR_ID) {};
     static void init();
-    virtual Worker* createWorker( Actor * a ) { return new FindPrimerPairsWorker(a); }
+    virtual Worker *createWorker(Actor *a) {
+        return new FindPrimerPairsWorker(a);
+    }
 };
 
-} //LocalWorkflow namespace
+}    // namespace LocalWorkflow
 
 class FindPrimersTask : public Task {
     Q_OBJECT
 public:
-    FindPrimersTask(const QString& outputFileUrl, const QList<DNASequence>& sequences);
+    FindPrimersTask(const QString &outputFileUrl, const QList<DNASequence> &sequences);
 
     void run();
-    QString getReport() const { return report; }
+    QString getReport() const {
+        return report;
+    }
 
 private:
     void createReport();
     void writeReportToFile();
 
-    QString createRow(const QString& forwardName, const QString& reverseName, double forwardTm, double reverseTm);
-    QString createCell(const QString& value);
-    QString createColumn(const QString& name);
+    QString createRow(const QString &forwardName, const QString &reverseName, double forwardTm, double reverseTm);
+    QString createCell(const QString &value);
+    QString createColumn(const QString &name);
+
 private:
     QList<DNASequence> sequences;
-    QString     report;
-    QString     outputUrl;
+    QString report;
+    QString outputUrl;
     QStringList rows;
 };
 
-} //U2 namespace
+}    // namespace U2
 
 #endif

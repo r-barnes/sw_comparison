@@ -27,40 +27,42 @@
 namespace U2 {
 using namespace HI;
 
-class GenerateAlignmentProfileDialogFiller : public Filler
-{
+class GenerateAlignmentProfileDialogFiller : public Filler {
 public:
-    enum saveFormat{NONE,HTML, CSV};
-    GenerateAlignmentProfileDialogFiller(HI::GUITestOpStatus &os, bool _counts=true, saveFormat _format=NONE,
-                                         QString _filePath = "") : Filler(os, "DNAStatMSAProfileDialog"),
-        counts(_counts),
-        gapScore(false),
-        symdolScore(false),
-        skipGaps(false),
-        format(_format),
-        filePath(_filePath)
-    {
+    enum saveFormat { NONE,
+                      HTML,
+                      CSV };
+    GenerateAlignmentProfileDialogFiller(HI::GUITestOpStatus &os, bool _counts = true, saveFormat _format = NONE, QString _filePath = "")
+        : Filler(os, "DNAStatMSAProfileDialog"),
+          counts(_counts),
+          gapScore(false),
+          symdolScore(false),
+          skipGaps(false),
+          format(_format),
+          filePath(_filePath) {
         checkBoxItems[NONE] = "NONE";
         checkBoxItems[HTML] = "htmlRB";
         checkBoxItems[CSV] = "csvRB";
     }
 
-    GenerateAlignmentProfileDialogFiller(HI::GUITestOpStatus &os, bool _gapsScore, bool _symbolScore, bool _skipGaps) : Filler(os, "DNAStatMSAProfileDialog"),
-        counts(true),
-        gapScore(_gapsScore),
-        symdolScore(_symbolScore),
-        skipGaps(_skipGaps),
-        format(NONE)
-        {}
+    GenerateAlignmentProfileDialogFiller(HI::GUITestOpStatus &os, bool _gapsScore, bool _symbolScore, bool _skipGaps)
+        : Filler(os, "DNAStatMSAProfileDialog"),
+          counts(true),
+          gapScore(_gapsScore),
+          symdolScore(_symbolScore),
+          skipGaps(_skipGaps),
+          format(NONE) {
+    }
 
     void commonScenario();
+
 private:
-    bool counts, gapScore,symdolScore, skipGaps;
+    bool counts, gapScore, symdolScore, skipGaps;
     saveFormat format;
-    QMap<saveFormat,QString> checkBoxItems;
+    QMap<saveFormat, QString> checkBoxItems;
     QString filePath;
 };
 
-}
+}    // namespace U2
 
-#endif // GENERATEALIGNMENTPROFILEDIALOGFILLER_H
+#endif    // GENERATEALIGNMENTPROFILEDIALOGFILLER_H

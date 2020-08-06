@@ -22,20 +22,20 @@
 #ifndef _U2_MWMENU_MANAGER_IMPL_H_
 #define _U2_MWMENU_MANAGER_IMPL_H_
 
-#include <U2Gui/MainWindow.h>
-
-#include <QMenuBar>
-#include <QMenu>
 #include <QEvent>
+#include <QMenu>
+#include <QMenuBar>
+
+#include <U2Gui/MainWindow.h>
 
 namespace U2 {
 
-class MWMenuManagerImpl: public QObject {
+class MWMenuManagerImpl : public QObject {
     Q_OBJECT
 public:
-    MWMenuManagerImpl(QObject* p, QMenuBar* mb);
+    MWMenuManagerImpl(QObject *p, QMenuBar *mb);
 
-    QMenu* getTopLevelMenu(const QString& sysName) const;
+    QMenu *getTopLevelMenu(const QString &sysName) const;
     void setMenuBarEnabled(bool enable);
     void registerAction(QAction *action);
 
@@ -43,15 +43,15 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event);
 
 private:
-    void unlinkTopLevelMenu(QMenu*);
-    void linkTopLevelMenu(QMenu*);
-    QMenu* createTopLevelMenu(const QString& sysName, const QString& title, const QString& afterSysName = QString::null);
-    void updateTopLevelMenuVisibility(QMenu* m);
-    QMenuBar* menuBar;
-    QList<QMenu*> toplevelMenus;
-    QList<QPointer<QAction> > additionalActions;
+    void unlinkTopLevelMenu(QMenu *);
+    void linkTopLevelMenu(QMenu *);
+    QMenu *createTopLevelMenu(const QString &sysName, const QString &title, const QString &afterSysName = QString::null);
+    void updateTopLevelMenuVisibility(QMenu *m);
+    QMenuBar *menuBar;
+    QList<QMenu *> toplevelMenus;
+    QList<QPointer<QAction>> additionalActions;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Export Nucleic Alignment to Amino Translation</string>
+   <string>Export Amino Acid Translation</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

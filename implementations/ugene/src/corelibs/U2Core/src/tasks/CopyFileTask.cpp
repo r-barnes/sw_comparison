@@ -19,21 +19,19 @@
  * MA 02110-1301, USA.
  */
 
+#include "CopyFileTask.h"
+
 #include <QFile>
 
 #include <U2Core/GUrlUtils.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "CopyFileTask.h"
 
 namespace U2 {
 
 CopyFileTask::CopyFileTask(const QString &sourceFilePath, const QString &targetFilePath)
     : Task(tr("File '%1' copy task").arg(sourceFilePath), TaskFlag_None),
       sourceFilePath(sourceFilePath),
-      targetFilePath(GUrlUtils::rollFileName(targetFilePath, "_"))
-{
-
+      targetFilePath(GUrlUtils::rollFileName(targetFilePath, "_")) {
 }
 
 QString CopyFileTask::getSourceFilePath() const {
@@ -51,4 +49,4 @@ void CopyFileTask::run() {
     CHECK_EXT(succeeded, setError(tr("File copy from '%1' to '%2' failed").arg(sourceFilePath).arg(targetFilePath)), );
 }
 
-}   // namespace U2
+}    // namespace U2

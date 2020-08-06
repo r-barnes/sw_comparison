@@ -40,11 +40,12 @@ public:
         Bedgraph = 2
     };
 
-    ExportCoverageSettings() :
-        compress(false),
-        exportCoverage(true),
-        exportBasesCount(true),
-        threshold(0) {}
+    ExportCoverageSettings()
+        : compress(false),
+          exportCoverage(true),
+          exportBasesCount(true),
+          threshold(0) {
+    }
 
     static QString getFormat(Format format);
     static QString getFormatExtension(Format format);
@@ -66,12 +67,16 @@ public:
 class GetAssemblyVisibleNameTask : public Task {
     Q_OBJECT
 public:
-    GetAssemblyVisibleNameTask(const U2DbiRef &dbiRef, const U2DataId &assemblyId):
-        Task(tr("Get visible name of Assembly"), TaskFlag_None), dbiRef(dbiRef), assemblyId(assemblyId) { }
+    GetAssemblyVisibleNameTask(const U2DbiRef &dbiRef, const U2DataId &assemblyId)
+        : Task(tr("Get visible name of Assembly"), TaskFlag_None), dbiRef(dbiRef), assemblyId(assemblyId) {
+    }
 
     void run();
 
-    const QString &getAssemblyVisibleName() const { return assemblyName; }
+    const QString &getAssemblyVisibleName() const {
+        return assemblyName;
+    }
+
 private:
     const U2DbiRef dbiRef;
     const U2DataId assemblyId;
@@ -96,7 +101,7 @@ protected:
     virtual void processRegion(const QVector<CoveragePerBaseInfo> *data) = 0;
     virtual void writeHeader();
     void write(const QByteArray &dataToWrite);
-    void identifyAlphabet(QVector<CoveragePerBaseInfo>* regionCoverage);
+    void identifyAlphabet(QVector<CoveragePerBaseInfo> *regionCoverage);
 
     const U2DbiRef dbiRef;
     const U2DataId assemblyId;
@@ -109,7 +114,7 @@ protected:
     qint64 alreadyProcessed;
     QList<char> alphabetChars;
 
-    static const QByteArray  SEPARATOR;
+    static const QByteArray SEPARATOR;
     static const QList<char> EXTENDED_CHARACTERS;
 };
 
@@ -140,7 +145,7 @@ protected:
     void writeHeader();
 
 private:
-    QByteArray toByteArray(const CoveragePerBaseInfo &info, int pos) const;         // pos - 1-based position
+    QByteArray toByteArray(const CoveragePerBaseInfo &info, int pos) const;    // pos - 1-based position
     void writeResult(const QVector<CoveragePerBaseInfo> *data);
 };
 
@@ -156,13 +161,13 @@ protected:
     void writeHeader();
 
 private:
-    QByteArray toByteArray() const;         // startpos - 0-based position, endpos - next after real end
+    QByteArray toByteArray() const;    // startpos - 0-based position, endpos - next after real end
     void writeRegion();
     QList<char> alphabet;
 
     QPair<U2Region, int> currentCoverage;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_EXPORT_COVERAGE_TASK_H_
+#endif    // _U2_EXPORT_COVERAGE_TASK_H_

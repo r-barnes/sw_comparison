@@ -19,31 +19,32 @@
  * MA 02110-1301, USA.
  */
 
-
 #ifndef _U2_GT_UTILS_START_PAGE_
 #define _U2_GT_UTILS_START_PAGE_
 
-#include "GTGlobals.h"
 #include <primitives/GTWebView.h>
 
-class QWebView;
-class QWebElement;
+#include <U2Designer/U2WebView.h>
+
+#include "GTGlobals.h"
 
 namespace U2 {
 using namespace HI;
 
-class GTUtilsStartPage
-{
+class GTUtilsStartPage {
 public:
-    enum Buttons{OpenFile, CreateSequence, CreateWorkflow, QuickStartGuide};
+    enum Buttons { OpenFile,
+                   CreateSequence,
+                   CreateWorkflow,
+                   QuickStartGuide };
     static void openStartPage(HI::GUITestOpStatus &os);
-    static QWebView* getStartPage(HI::GUITestOpStatus &os);
+    static U2WebView *getStartPage(HI::GUITestOpStatus &os);
     static HIWebElement getButton(HI::GUITestOpStatus &os, Buttons button);
     static void clickButton(HI::GUITestOpStatus &os, Buttons button);
     static void clickResentDocument(HI::GUITestOpStatus &os, QString text);
     static void clickResentProject(HI::GUITestOpStatus &os, QString text);
 };
 
-}
+}    // namespace U2
 
-#endif // _U2_GT_UTILS_START_PAGE_
+#endif    // _U2_GT_UTILS_START_PAGE_

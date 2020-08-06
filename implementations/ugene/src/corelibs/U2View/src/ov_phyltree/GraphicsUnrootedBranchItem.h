@@ -36,14 +36,15 @@ class PhyNode;
 
 class U2VIEW_EXPORT GraphicsUnrootedBranchItem : public GraphicsBranchItem {
 public:
-    GraphicsUnrootedBranchItem(QGraphicsItem* parent, qreal angle, GraphicsRectangularBranchItem* from, double nodeValue = -1.0);
+    GraphicsUnrootedBranchItem(QGraphicsItem *parent, qreal angle, GraphicsRectangularBranchItem *from, double nodeValue = -1.0);
 
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
 protected:
     void setLabelPositions();
 };
 
-}//namespace;
+}    // namespace U2
 
 #endif

@@ -22,8 +22,8 @@
 #ifndef _U2_IOADAPTER_UTILS_H_
 #define _U2_IOADAPTER_UTILS_H_
 
-#include <U2Core/global.h>
 #include <U2Core/IOAdapter.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -31,22 +31,18 @@ class U2OpStatus;
 
 class U2CORE_EXPORT IOAdapterUtils {
 public:
+    static IOAdapterId url2io(const GUrl &url);
 
-    static IOAdapterId url2io(const GUrl& url);
-
-    static QByteArray readFileHeader(const GUrl& url, int size = 65536);
+    static QByteArray readFileHeader(const GUrl &url, int size = 65536);
 
     // io - opened IO adapter. before and after the call pos in file the same
-    static QByteArray readFileHeader( IOAdapter* io, int size = 65536 );
+    static QByteArray readFileHeader(IOAdapter *io, int size = 65536);
 
-    static IOAdapter* open(const GUrl& url, U2OpStatus& os, IOAdapterMode mode = IOAdapterMode_Read, IOAdapterFactory* iof = NULL);
+    static IOAdapter *open(const GUrl &url, U2OpStatus &os, IOAdapterMode mode = IOAdapterMode_Read, IOAdapterFactory *iof = NULL);
 
-
-    static IOAdapterFactory* get(const IOAdapterId&);
-
-
+    static IOAdapterFactory *get(const IOAdapterId &);
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

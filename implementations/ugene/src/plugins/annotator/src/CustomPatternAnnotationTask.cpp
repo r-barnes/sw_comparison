@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CustomPatternAnnotationTask.h"
+
 #include <QFile>
 
 #include <U2Algorithm/SArrayBasedFindTask.h>
@@ -33,8 +35,6 @@
 #include <U2Core/TextUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "CustomPatternAnnotationTask.h"
-
 namespace U2 {
 
 //////////////////////////////////////////////////////////////////////////
@@ -48,16 +48,13 @@ const QString PlasmidFeatureTypes::PROMOTER("Promoter");
 const QString PlasmidFeatureTypes::REGULATORY("Regulatory");
 const QString PlasmidFeatureTypes::TERMINATOR("Terminator");
 
-CustomPatternAnnotationTask::CustomPatternAnnotationTask(AnnotationTableObject* aObj, const U2::U2EntityRef &entityRef,
-                                                         const SharedFeatureStore &store, const QStringList& filteredFeatureTypes)
+CustomPatternAnnotationTask::CustomPatternAnnotationTask(AnnotationTableObject *aObj, const U2::U2EntityRef &entityRef, const SharedFeatureStore &store, const QStringList &filteredFeatureTypes)
     : Task(tr("Custom pattern annotation"), TaskFlags_NR_FOSCOE), dnaObj("ref", entityRef), aTableObj(aObj),
-    featureStore(store), filteredFeatures(filteredFeatureTypes)
-{
+      featureStore(store), filteredFeatures(filteredFeatureTypes) {
     GCOUNTER(cvar, tvar, "CustomPatternAnnotationTask");
 }
 
-void CustomPatternAnnotationTask::prepare()
-{
+void CustomPatternAnnotationTask::prepare() {
     sequence = dnaObj.getWholeSequenceData(stateInfo);
     CHECK_OP(stateInfo, );
 
@@ -65,7 +62,7 @@ void CustomPatternAnnotationTask::prepare()
         sequence += sequence;
     }
 
-    const QList<FeaturePattern>& patterns = featureStore->getFeatures();
+    const QList<FeaturePattern> &patterns = featureStore->getFeatures();
 
     if (patterns.length() == 0) {
         return;
@@ -76,18 +73,16 @@ void CustomPatternAnnotationTask::prepare()
         return;
     }
 
-    index = QSharedPointer<SArrayIndex>(new SArrayIndex(sequence.constData(), quint32(sequence.length()),
-        quint32(featureStore->getMinFeatureSize()), stateInfo, unknownChar));
+    index = QSharedPointer<SArrayIndex>(new SArrayIndex(sequence.constData(), quint32(sequence.length()), quint32(featureStore->getMinFeatureSize()), stateInfo, unknownChar));
 
     if (hasError()) {
         return;
     }
 
-    DNATranslation* complTT = AppContext::getDNATranslationRegistry()->lookupComplementTranslation(dnaObj.getAlphabet());
+    DNATranslation *complTT = AppContext::getDNATranslationRegistry()->lookupComplementTranslation(dnaObj.getAlphabet());
     assert(complTT);
 
-    foreach (const FeaturePattern& pattern, patterns) {
-
+    foreach (const FeaturePattern &pattern, patterns) {
         if (filteredFeatures.contains(pattern.type)) {
             continue;
         }
@@ -100,29 +95,28 @@ void CustomPatternAnnotationTask::prepare()
         settings.unknownChar = unknownChar;
         settings.query = pattern.sequence;
 
-        SArrayBasedFindTask* task = new SArrayBasedFindTask(index.data(), settings);
+        SArrayBasedFindTask *task = new SArrayBasedFindTask(index.data(), settings);
         taskFeatureNames.insert(task, PatternInfo(pattern.name, true));
         addSubTask(task);
 
         complTT->translate(settings.query.data(), settings.query.size());
         TextUtils::reverse(settings.query.data(), settings.query.size());
 
-        SArrayBasedFindTask* revComplTask = new SArrayBasedFindTask(index.data(), settings);
+        SArrayBasedFindTask *revComplTask = new SArrayBasedFindTask(index.data(), settings);
         taskFeatureNames.insert(revComplTask, PatternInfo(pattern.name, false));
         addSubTask(revComplTask);
     }
 }
 
-
-QList<Task*> CustomPatternAnnotationTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> subTasks;
+QList<Task *> CustomPatternAnnotationTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> subTasks;
 
     if (!taskFeatureNames.contains(subTask)) {
         return subTasks;
     }
 
-    SArrayBasedFindTask* task = static_cast<SArrayBasedFindTask*> (subTask);
-    const QList<int>& results = task->getResults();
+    SArrayBasedFindTask *task = static_cast<SArrayBasedFindTask *>(subTask);
+    const QList<int> &results = task->getResults();
     PatternInfo info = taskFeatureNames.take(task);
 
     qint64 seqLen = dnaObj.getSequenceLength();
@@ -159,14 +153,12 @@ QList<Task*> CustomPatternAnnotationTask::onSubTaskFinished(Task* subTask) {
     }
 
     return subTasks;
-
 }
 
 //////////////////////////////////////////////////////////////////////////
 // FeatureStore
 
-void FeatureStore::load()
-{
+void FeatureStore::load() {
     QFile inputFile(path);
 
     if (!inputFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -208,32 +200,27 @@ void FeatureStore::load()
 //////////////////////////////////////////////////////////////////////////
 // CustomPatternAutoAnnotationUpdater
 
-CustomPatternAutoAnnotationUpdater::CustomPatternAutoAnnotationUpdater(const SharedFeatureStore& store)
-    : AutoAnnotationsUpdater(tr("Plasmid features"), store->getName(), true), featureStore(store)
-{
+CustomPatternAutoAnnotationUpdater::CustomPatternAutoAnnotationUpdater(const SharedFeatureStore &store)
+    : AutoAnnotationsUpdater(tr("Plasmid features"), store->getName(), true), featureStore(store) {
     assert(featureStore);
 }
 
-
-Task* CustomPatternAutoAnnotationUpdater::createAutoAnnotationsUpdateTask(const AutoAnnotationObject* aa)
-{
-
+Task *CustomPatternAutoAnnotationUpdater::createAutoAnnotationsUpdateTask(const AutoAnnotationObject *aa) {
     QStringList filteredFeatureTypes = AppContext::getSettings()->getValue(FILTERED_FEATURE_LIST, QStringList()).toStringList();
 
     AnnotationTableObject *aObj = aa->getAnnotationObject();
-    const U2EntityRef& dnaRef = aa->getSeqObject()->getEntityRef();
-    Task* task = new CustomPatternAnnotationTask(aObj, dnaRef, featureStore, filteredFeatureTypes);
+    const U2EntityRef &dnaRef = aa->getSeqObject()->getEntityRef();
+    Task *task = new CustomPatternAnnotationTask(aObj, dnaRef, featureStore, filteredFeatureTypes);
 
     return task;
 }
 
-bool CustomPatternAutoAnnotationUpdater::checkConstraints(const AutoAnnotationConstraints& constraints)
-{
-   if (constraints.alphabet == NULL) {
+bool CustomPatternAutoAnnotationUpdater::checkConstraints(const AutoAnnotationConstraints &constraints) {
+    if (constraints.alphabet == NULL) {
         return false;
-   }
+    }
 
     return constraints.alphabet->isNucleic();
 }
 
-} // namespace U2
+}    // namespace U2

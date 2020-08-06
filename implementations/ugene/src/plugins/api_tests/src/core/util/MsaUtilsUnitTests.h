@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-
 #ifndef _U2_MSA_UTILS_UNIT_TESTS_H_
 #define _U2_MSA_UTILS_UNIT_TESTS_H_
 
@@ -31,6 +30,6 @@ DECLARE_TEST(MsaUtilsUnitTests, one_name_with_spaces);
 DECLARE_TEST(MsaUtilsUnitTests, two_names_with_spaces);
 DECLARE_TEST(MsaUtilsUnitTests, all_names_with_spaces);
 
-} //ns
+}    // namespace U2
 
 #endif

@@ -20,27 +20,26 @@
  */
 
 #include "AboutDialogController.h"
+#include <assert.h>
 
-#include <U2Core/Version.h>
+#include <QAction>
+#include <QBrush>
+#include <QHBoxLayout>
+#include <QMessageBox>
+#include <QPainter>
+#include <QStyle>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/Settings.h>
-
-#include <QPainter>
-#include <QAction>
-#include <QBrush>
-#include <QStyle>
-#include <QHBoxLayout>
-#include <QMessageBox>
-#include <assert.h>
+#include <U2Core/Version.h>
 
 namespace U2 {
 
-
-AboutDialogController::AboutDialogController(QAction* visitWebAction, QWidget *p):QDialog(p) {
+AboutDialogController::AboutDialogController(QAction *visitWebAction, QWidget *p)
+    : QDialog(p) {
     setupUi(this);
 
-    QHBoxLayout* l = new QHBoxLayout();
+    QHBoxLayout *l = new QHBoxLayout();
     l->setMargin(0);
     l->addStretch(1);
     l->addStretch(1);
@@ -48,8 +47,8 @@ AboutDialogController::AboutDialogController(QAction* visitWebAction, QWidget *p
     frame->setLayout(l);
     tWidget = NULL;
     installAWidget();
-    connect(web_page_button, SIGNAL(clicked(bool)), visitWebAction,  SLOT(trigger()));
-    
+    connect(web_page_button, SIGNAL(clicked(bool)), visitWebAction, SLOT(trigger()));
+
 #ifdef Q_OS_WIN
     setWindowFlags(windowFlags() | Qt::MSWindowsFixedSizeDialogHint);
 #endif
@@ -57,8 +56,8 @@ AboutDialogController::AboutDialogController(QAction* visitWebAction, QWidget *p
 
 void AboutDialogController::installAWidget() {
     assert(tWidget == NULL);
-    AWidget* aWidget = new AWidget();
-    QVBoxLayout* l = (QVBoxLayout*)frame->layout();
+    AWidget *aWidget = new AWidget();
+    QVBoxLayout *l = (QVBoxLayout *)frame->layout();
     l->insertWidget(0, aWidget);
     l->setStretchFactor(aWidget, 100);
 }
@@ -66,14 +65,14 @@ void AboutDialogController::installAWidget() {
 void AboutDialogController::installTWidget() {
     assert(tWidget == NULL);
     tWidget = new TBoard();
-    QLabel* npLabel = new NextPieceLabel(tWidget);
+    QLabel *npLabel = new NextPieceLabel(tWidget);
     tWidget->setNextPieceLabel(npLabel);
 
-    QWidget* pan = new QWidget();
-    QVBoxLayout* vl = new QVBoxLayout(pan);
-    QLabel* topRecLabel = new QLabel(tr("Max score: %1").arg(tWidget->getMaxScore()));
-    QLabel* scoreLabel = new QLabel(pan);
-    QLabel* levelLabel = new QLabel(pan);
+    QWidget *pan = new QWidget();
+    QVBoxLayout *vl = new QVBoxLayout(pan);
+    QLabel *topRecLabel = new QLabel(tr("Max score: %1").arg(tWidget->getMaxScore()));
+    QLabel *scoreLabel = new QLabel(pan);
+    QLabel *levelLabel = new QLabel(pan);
     vl->addStretch();
     vl->addWidget(topRecLabel);
     vl->addStretch();
@@ -83,14 +82,14 @@ void AboutDialogController::installTWidget() {
     vl->addWidget(levelLabel);
     vl->addStretch();
 
-    QHBoxLayout* l = (QHBoxLayout*)frame->layout();
+    QHBoxLayout *l = (QHBoxLayout *)frame->layout();
     l->insertWidget(0, pan);
     l->insertWidget(0, tWidget);
     tWidget->setObjectName("tetris_widget");
     QRect cRect = frame->contentsRect();
     int height = tWidget->heightForWidth(cRect.width());
     tWidget->setFixedSize(cRect.width() * cRect.height() / height, cRect.height());
-    npLabel->setFixedSize(tWidget->squareWidth()*4, tWidget->squareHeight()*5);
+    npLabel->setFixedSize(tWidget->squareWidth() * 4, tWidget->squareHeight() * 5);
     l->setStretchFactor(tWidget, 100);
     connect(tWidget, SIGNAL(scoreChanged(int)), SLOT(sl_scoreChanged(int)));
     connect(tWidget, SIGNAL(levelChanged(int)), SLOT(sl_levelChanged(int)));
@@ -101,12 +100,12 @@ void AboutDialogController::installTWidget() {
 }
 
 void AboutDialogController::switchPages() {
-    QLayoutItem* li = NULL;
-    QLayout* l = frame->layout();
+    QLayoutItem *li = NULL;
+    QLayout *l = frame->layout();
     while ((li = l->takeAt(0)) && li->widget()) {
         li->widget()->deleteLater();
     }
-    if (tWidget==NULL) {
+    if (tWidget == NULL) {
         installTWidget();
     } else {
         tWidget = NULL;
@@ -123,7 +122,6 @@ void AboutDialogController::sl_levelChanged(int level) {
     emit si_levelChanged(tr("Level: %1").arg(level));
 }
 
-
 void AboutDialogController::updateTitle() {
     if (tWidget == NULL) {
         setWindowTitle(tr("About UGENE"));
@@ -135,7 +133,7 @@ void AboutDialogController::updateTitle() {
 void AboutDialogController::keyPressEvent(QKeyEvent *e) {
     if (e->key() == Qt::Key_T) {
         switchPages();
-    } else if (tWidget!=NULL && (e->key() == Qt::Key_P || e->key() == Qt::Key_Pause)) {
+    } else if (tWidget != NULL && (e->key() == Qt::Key_P || e->key() == Qt::Key_Pause)) {
         tWidget->pause();
     }
     QDialog::keyPressEvent(e);
@@ -160,7 +158,7 @@ AWidget::AWidget() {
     Version v = Version::appVersion();
     QString version = v.text;
     QString text = "Unipro UGENE v" + version + "\n" + QString("%1-bit version").arg(Version::appArchitecture) + "\n" + __DATE__;
-    p.drawText(QRect(10, 20, width()-10, 60), text);
+    p.drawText(QRect(10, 20, width() - 10, 60), text);
     p.end();
 
     image1 = image2 = image;
@@ -168,8 +166,8 @@ AWidget::AWidget() {
 
     int w = image1.width();
     int h = image1.height();
-    heightField1.resize(w*h);
-    heightField2.resize(w*h);
+    heightField1.resize(w * h);
+    heightField2.resize(w * h);
 
     density = 5;
     page = 0;
@@ -180,17 +178,16 @@ AWidget::AWidget() {
     startTimer(15);
 }
 
-
-void AWidget::timerEvent(QTimerEvent* e) {
-    drawWater((QRgb*)image1.bits(), (QRgb*)image2.bits());
+void AWidget::timerEvent(QTimerEvent *e) {
+    drawWater((QRgb *)image1.bits(), (QRgb *)image2.bits());
     calcWater(page, density);
     page ^= 1;
 
-    if (qrand()  % 128 == 0) {
+    if (qrand() % 128 == 0) {
         int r = 3 + qRound(qrand() * 4. / RAND_MAX);
         int h = 300 + qrand() * 200 / RAND_MAX;
-        int x = 1 + r + qrand()%(image1.width() -2*r-1);
-        int y = 1 + r + qrand()%(image1.height()-2*r-1);
+        int x = 1 + r + qrand() % (image1.width() - 2 * r - 1);
+        int y = 1 + r + qrand() % (image1.height() - 2 * r - 1);
         addBlob(x, y, r, h);
     }
 
@@ -198,30 +195,27 @@ void AWidget::timerEvent(QTimerEvent* e) {
     QObject::timerEvent(e);
 }
 
-
-void AWidget::paintEvent(QPaintEvent* e) {
+void AWidget::paintEvent(QPaintEvent *e) {
     QWidget::paintEvent(e);
-    
+
     QPainter p(this);
     p.drawImage(0, 0, image2);
 }
 
-void AWidget::mouseMoveEvent(QMouseEvent* e) {
+void AWidget::mouseMoveEvent(QMouseEvent *e) {
     QPoint point = e->pos();
     addBlob(point.x(), point.y(), 5, 400);
 }
 
-
-void AWidget::calcWater(int npage, int density) { 
+void AWidget::calcWater(int npage, int density) {
     int w = image1.width();
     int h = image1.height();
     int count = w + 1;
 
-
     // Set up the pointers
     int *newptr;
     int *oldptr;
-    if(npage == 0) {
+    if (npage == 0) {
         newptr = &heightField1.front();
         oldptr = &heightField2.front();
     } else {
@@ -229,20 +223,12 @@ void AWidget::calcWater(int npage, int density) {
         oldptr = &heightField1.front();
     }
 
-    for (int y = (h-1)*w; count < y; count += 2) {
-        for (int x = count+w-2; count < x; count++) {
+    for (int y = (h - 1) * w; count < y; count += 2) {
+        for (int x = count + w - 2; count < x; count++) {
             // This does the eight-pixel method.  It looks much better.
-            int newh  = ((oldptr[count + w]
-            + oldptr[count - w]
-            + oldptr[count + 1]
-            + oldptr[count - 1]
-            + oldptr[count - w - 1]
-            + oldptr[count - w + 1]
-            + oldptr[count + w - 1]
-            + oldptr[count + w + 1]
-            ) >> 2 ) - newptr[count];
+            int newh = ((oldptr[count + w] + oldptr[count - w] + oldptr[count + 1] + oldptr[count - 1] + oldptr[count - w - 1] + oldptr[count - w + 1] + oldptr[count + w - 1] + oldptr[count + w + 1]) >> 2) - newptr[count];
 
-            newptr[count] =  newh - (newh >> density);
+            newptr[count] = newh - (newh >> density);
         }
     }
 }
@@ -264,27 +250,30 @@ void AWidget::addBlob(int x, int y, int radius, int height) {
 
     int rquad = radius * radius;
 
-    int left=-radius, right = radius;
-    int top=-radius, bottom = radius;
+    int left = -radius, right = radius;
+    int top = -radius, bottom = radius;
 
     // Perform edge clipping...
-    if (x - radius < 1) left -= (x-radius-1);
-    if (y - radius < 1) top  -= (y-radius-1);
-    if (x + radius > w-1) right -= (x+radius-w+1);
-    if (y + radius > h-1) bottom-= (y+radius-h+1);
+    if (x - radius < 1)
+        left -= (x - radius - 1);
+    if (y - radius < 1)
+        top -= (y - radius - 1);
+    if (x + radius > w - 1)
+        right -= (x + radius - w + 1);
+    if (y + radius > h - 1)
+        bottom -= (y + radius - h + 1);
 
-    for(int cy = top; cy < bottom; cy++) {
-        int cyq = cy*cy;
-        for(int cx = left; cx < right; cx++) {
-            if (cx*cx + cyq < rquad) {
-                newptr[w*(cy+y) + (cx+x)] += height;
+    for (int cy = top; cy < bottom; cy++) {
+        int cyq = cy * cy;
+        for (int cx = left; cx < right; cx++) {
+            if (cx * cx + cyq < rquad) {
+                newptr[w * (cy + y) + (cx + x)] += height;
             }
         }
     }
 }
 
-
-void AWidget::drawWater(QRgb* srcImage,QRgb* dstImage) {
+void AWidget::drawWater(QRgb *srcImage, QRgb *dstImage) {
     int w = image1.width();
     int h = image1.height();
 
@@ -294,23 +283,23 @@ void AWidget::drawWater(QRgb* srcImage,QRgb* dstImage) {
 
     int *ptr = &heightField1.front();
 
-    for (int y = (h-1)*w; offset < y; offset += 2) {
-        for (int x = offset+w-2; offset < x; offset++) {
-            int dx = ptr[offset] - ptr[offset+1];
-            int dy = ptr[offset] - ptr[offset+w];
+    for (int y = (h - 1) * w; offset < y; offset += 2) {
+        for (int x = offset + w - 2; offset < x; offset++) {
+            int dx = ptr[offset] - ptr[offset + 1];
+            int dy = ptr[offset] - ptr[offset + w];
 
-            lIndex = offset + w*(dy>>3) + (dx>>3);
-            if(lIndex < lBreak && lIndex > 0) {
+            lIndex = offset + w * (dy >> 3) + (dx >> 3);
+            if (lIndex < lBreak && lIndex > 0) {
                 QRgb c = srcImage[lIndex];
                 c = shiftColor(c, dx);
                 dstImage[offset] = c;
             }
             offset++;
-            dx = ptr[offset] - ptr[offset+1];
-            dy = ptr[offset] - ptr[offset+w];
+            dx = ptr[offset] - ptr[offset + 1];
+            dy = ptr[offset] - ptr[offset + w];
 
-            lIndex = offset + w*(dy>>3) + (dx>>3);
-            if(lIndex < lBreak && lIndex > 0) {
+            lIndex = offset + w * (dy >> 3) + (dx >> 3);
+            if (lIndex < lBreak && lIndex > 0) {
                 QRgb c = srcImage[lIndex];
                 c = shiftColor(c, dx);
                 dstImage[offset] = c;
@@ -340,10 +329,9 @@ TBoard::~TBoard() {
     }
 }
 
-int TBoard::heightForWidth ( int w ) const {
-    return qRound(BoardHeight * float(w)/BoardWidth);
+int TBoard::heightForWidth(int w) const {
+    return qRound(BoardHeight * float(w) / BoardWidth);
 }
-
 
 void TBoard::start() {
     if (isPaused) {
@@ -385,18 +373,18 @@ void TBoard::paintEvent(QPaintEvent *event) {
     QWidget::paintEvent(event);
 
     QPainter painter(this);
-    
+
     painter.setPen(Qt::black);
-    painter.drawRect(frameRect());  
+    painter.drawRect(frameRect());
     QRect rect = boardRect();
     painter.fillRect(rect, Qt::white);
-    
+
     if (isPaused) {
         painter.drawText(rect, Qt::AlignCenter, tr("Pause"));
         return;
     }
 
-    int boardTop = rect.bottom() - BoardHeight*squareHeight();
+    int boardTop = rect.bottom() - BoardHeight * squareHeight();
 
     for (int i = 0; i < BoardHeight; ++i) {
         for (int j = 0; j < BoardWidth; ++j) {
@@ -595,7 +583,7 @@ bool TBoard::tryMove(const TPiece &newPiece, int newX, int newY) {
 }
 
 void TBoard::drawSquare(QPainter &painter, int x, int y, TPiece::Shape shape) {
-    static const QRgb colorTable[8] = { 0x000000, 0xCC6666, 0x66CC66, 0x6666CC, 0xCCCC66, 0xCC66CC, 0x66CCCC, 0xDAAA00};
+    static const QRgb colorTable[8] = {0x000000, 0xCC6666, 0x66CC66, 0x6666CC, 0xCCCC66, 0xCC66CC, 0x66CCCC, 0xDAAA00};
 
     QColor color = colorTable[int(shape)];
     painter.fillRect(x + 1, y + 1, squareWidth() - 2, squareHeight() - 2, color);
@@ -609,25 +597,22 @@ void TBoard::drawSquare(QPainter &painter, int x, int y, TPiece::Shape shape) {
     painter.drawLine(x + squareWidth() - 1, y + squareHeight() - 1, x + squareWidth() - 1, y + 1);
 }
 
-
 void TPiece::setRandomShape() {
     setShape(TPiece::Shape(qrand() % 7 + 1));
 }
 
-
 void TPiece::setShape(TPiece::Shape shape) {
     static const int coordsTable[8][4][2] = {
-        { { 0, 0 },   { 0, 0 },   { 0, 0 },   { 0, 0 } },
-        { { 0, -1 },  { 0, 0 },   { -1, 0 },  { -1, 1 } },
-        { { 0, -1 },  { 0, 0 },   { 1, 0 },   { 1, 1 } },
-        { { 0, -1 },  { 0, 0 },   { 0, 1 },   { 0, 2 } },
-        { { -1, 0 },  { 0, 0 },   { 1, 0 },   { 0, 1 } },
-        { { 0, 0 },   { 1, 0 },   { 0, 1 },   { 1, 1 } },
-        { { -1, -1 }, { 0, -1 },  { 0, 0 },   { 0, 1 } },
-        { { 1, -1 },  { 0, -1 },  { 0, 0 },   { 0, 1 } }
-    };
+        {{0, 0}, {0, 0}, {0, 0}, {0, 0}},
+        {{0, -1}, {0, 0}, {-1, 0}, {-1, 1}},
+        {{0, -1}, {0, 0}, {1, 0}, {1, 1}},
+        {{0, -1}, {0, 0}, {0, 1}, {0, 2}},
+        {{-1, 0}, {0, 0}, {1, 0}, {0, 1}},
+        {{0, 0}, {1, 0}, {0, 1}, {1, 1}},
+        {{-1, -1}, {0, -1}, {0, 0}, {0, 1}},
+        {{1, -1}, {0, -1}, {0, 0}, {0, 1}}};
 
-    for (int i = 0; i < 4 ; i++) {
+    for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 2; ++j) {
             coords[i][j] = coordsTable[shape][i][j];
         }
@@ -693,8 +678,8 @@ TPiece TPiece::rotatedRight() const {
     return result;
 }
 
-NextPieceLabel::NextPieceLabel( QWidget* parent /* = 0*/ ) : QLabel(parent)
-{
+NextPieceLabel::NextPieceLabel(QWidget *parent /* = 0*/)
+    : QLabel(parent) {
     QPalette p = palette();
     p.setColor(QPalette::Background, Qt::white);
     setPalette(p);
@@ -703,4 +688,4 @@ NextPieceLabel::NextPieceLabel( QWidget* parent /* = 0*/ ) : QLabel(parent)
     setAutoFillBackground(true);
 }
 
-}//namespace
+}    // namespace U2

@@ -20,6 +20,7 @@
  */
 
 #include "WorkflowBreakpoint.h"
+
 #include "BaseBreakpointHitCounter.h"
 
 namespace U2 {
@@ -28,9 +29,7 @@ WorkflowBreakpoint::WorkflowBreakpoint(const ActorId &actor, Workflow::WorkflowC
     : enabled(true),
       actorId(actor),
       hitCounter(BaseBreakpointHitCounter::createInstance()),
-      conditionChecker(QString(), context)
-{
-
+      conditionChecker(QString(), context) {
 }
 
 WorkflowBreakpoint::~WorkflowBreakpoint() {
@@ -57,21 +56,20 @@ QList<BreakpointLabel> WorkflowBreakpoint::getLabels() const {
     return labels;
 }
 
-void WorkflowBreakpoint::setHitCounter(BreakpointHitCountCondition typeOfCounter, quint32
-    parameter)
-{
-    if(typeOfCounter != hitCounter->getCondition()) {
+void WorkflowBreakpoint::setHitCounter(BreakpointHitCountCondition typeOfCounter, quint32 parameter) {
+    if (typeOfCounter != hitCounter->getCondition()) {
         delete hitCounter;
         hitCounter = BaseBreakpointHitCounter::createInstance(typeOfCounter,
-            QVariant::fromValue<quint32>(parameter));
-    } else if(parameter != hitCounter->getHitCountParameter()) {
+                                                              QVariant::fromValue<quint32>(parameter));
+    } else if (parameter != hitCounter->getHitCountParameter()) {
         hitCounter->setHitCountParameter(parameter);
     }
 }
 
 BreakpointConditionDump WorkflowBreakpoint::getConditionDump() const {
     BreakpointConditionDump result(conditionChecker.getConditionParameter(),
-        conditionChecker.getConditionText(), conditionChecker.isEnabled());
+                                   conditionChecker.getConditionText(),
+                                   conditionChecker.isEnabled());
     return result;
 }
 
@@ -88,8 +86,7 @@ void WorkflowBreakpoint::setConditionText(const QString &text) {
 }
 
 BreakpointHitCounterDump WorkflowBreakpoint::getHitCounterDump() const {
-    return BreakpointHitCounterDump(hitCounter->getCondition(), hitCounter->getHitCount(),
-        hitCounter->getHitCountParameter());
+    return BreakpointHitCounterDump(hitCounter->getCondition(), hitCounter->getHitCount(), hitCounter->getHitCountParameter());
 }
 
 quint32 WorkflowBreakpoint::getHitCount() const {
@@ -110,4 +107,4 @@ void WorkflowBreakpoint::setContext(Workflow::WorkflowContext *context) {
     conditionChecker.setContext(context);
 }
 
-} // namespace U2
+}    // namespace U2

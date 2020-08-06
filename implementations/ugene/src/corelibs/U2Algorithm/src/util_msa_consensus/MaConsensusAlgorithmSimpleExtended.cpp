@@ -19,19 +19,18 @@
  * MA 02110-1301, USA.
  */
 
+#include "MaConsensusAlgorithmSimpleExtended.h"
+
 #include <QMetaEnum>
 
 #include <U2Core/U2SafePoints.h>
 
 #include "BuiltInConsensusAlgorithms.h"
-#include "MaConsensusAlgorithmSimpleExtended.h"
 
 namespace U2 {
 
 MaConsensusAlgorithmSimpleExtended::MaConsensusAlgorithmSimpleExtended(MaConsensusAlgorithmFactorySimpleExtended *factory, bool ignoreTrailingLeadingGaps, QObject *parent)
-    : MSAConsensusAlgorithm(factory, ignoreTrailingLeadingGaps, parent)
-{
-
+    : MSAConsensusAlgorithm(factory, ignoreTrailingLeadingGaps, parent) {
 }
 
 MaConsensusAlgorithmSimpleExtended::Character MaConsensusAlgorithmSimpleExtended::character2Flag(char character) {
@@ -115,7 +114,7 @@ char MaConsensusAlgorithmSimpleExtended::flag2Character(Character flag) {
 char MaConsensusAlgorithmSimpleExtended::flags2Character(Characters flags) {
     const QMetaEnum characterMetaEnum = MaConsensusAlgorithmSimpleExtended::staticMetaObject.enumerator(0);
     for (int i = 0; i < characterMetaEnum.keyCount(); i++) {
-        const Characters currentFlags =  static_cast<Characters>(characterMetaEnum.value(i));
+        const Characters currentFlags = static_cast<Characters>(characterMetaEnum.value(i));
         if ((flags & currentFlags) == flags) {
             return flag2Character(static_cast<Character>(characterMetaEnum.value(i)));
         }
@@ -132,7 +131,7 @@ char MaConsensusAlgorithmSimpleExtended::mergeCharacters(const QVector<char> &ch
     return flags2Character(mergedFlag);
 }
 
-QVector<QVector<char> > getFrequences(const MultipleAlignment &ma, int column, QVector<int> seqIdx) {
+QVector<QVector<char>> getFrequences(const MultipleAlignment &ma, int column, QVector<int> seqIdx) {
     QVarLengthArray<int> frequencies(256);
     memset(frequencies.data(), 0, frequencies.size() * sizeof(int));
 
@@ -142,7 +141,7 @@ QVector<QVector<char> > getFrequences(const MultipleAlignment &ma, int column, Q
         frequencies[static_cast<int>(c)]++;
     }
 
-    QVector<QVector<char> > sortedFrequencies(seqIdx.isEmpty() ? ma->getNumRows() + 1 : seqIdx.size() + 1);
+    QVector<QVector<char>> sortedFrequencies(seqIdx.isEmpty() ? ma->getNumRows() + 1 : seqIdx.size() + 1);
     for (int c = 'A'; c <= 'Y'; c++) {
         sortedFrequencies[frequencies[c]] << static_cast<char>(c);
     }
@@ -153,7 +152,7 @@ QVector<QVector<char> > getFrequences(const MultipleAlignment &ma, int column, Q
 char MaConsensusAlgorithmSimpleExtended::getConsensusChar(const MultipleAlignment &ma, int column, QVector<int> seqIdx) const {
     CHECK(filterIdx(seqIdx, ma, column), INVALID_CONS_CHAR);
 
-    QVector<QVector<char> > frequencies = getFrequences(ma, column, seqIdx);
+    QVector<QVector<char>> frequencies = getFrequences(ma, column, seqIdx);
 
     char bestCharacter = INVALID_CONS_CHAR;
     const int thresholdCount = qRound(static_cast<double>((frequencies.size() - 1) * getThreshold()) / 100);
@@ -182,16 +181,14 @@ char MaConsensusAlgorithmSimpleExtended::getConsensusChar(const MultipleAlignmen
     return INVALID_CONS_CHAR;
 }
 
-U2::MaConsensusAlgorithmSimpleExtended* MaConsensusAlgorithmSimpleExtended::clone() const {
+U2::MaConsensusAlgorithmSimpleExtended *MaConsensusAlgorithmSimpleExtended::clone() const {
     return new MaConsensusAlgorithmSimpleExtended(*this);
 }
 
 MaConsensusAlgorithmFactorySimpleExtended::MaConsensusAlgorithmFactorySimpleExtended(QObject *parent)
     : MSAConsensusAlgorithmFactory(BuiltInConsensusAlgorithms::SIMPLE_EXTENDED_ALGO,
                                    ConsensusAlgorithmFlag_Nucleic | ConsensusAlgorithmFlag_SupportThreshold | ConsensusAlgorithmFlag_AvailableForChromatogram,
-                                   parent)
-{
-
+                                   parent) {
 }
 
 MSAConsensusAlgorithm *MaConsensusAlgorithmFactorySimpleExtended::createAlgorithm(const MultipleAlignment & /*ma*/, bool ignoreTrailingLeadingGaps, QObject *parent) {
@@ -227,4 +224,4 @@ bool MaConsensusAlgorithmFactorySimpleExtended::isSequenceLikeResult() const {
     return true;
 }
 
-}   // namespace U2
+}    // namespace U2

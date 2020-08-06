@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "RenameChromosomeInVariationTask.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/DocumentModel.h>
@@ -33,18 +35,15 @@
 #include <U2Core/U2VariantDbi.h>
 #include <U2Core/UserApplicationsSettings.h>
 
-#include "RenameChromosomeInVariationTask.h"
-
 namespace U2 {
 
 RenameChromosomeInVariationTask::RenameChromosomeInVariationTask(const QList<GObject *> &objects,
                                                                  const QStringList &prefixesToReplace,
-                                                                 const QString &prefixReplaceWith) :
-    Task(tr("Rename task"), TaskFlag_None),
-    objects(objects),
-    prefixesToReplace(prefixesToReplace),
-    prefixReplaceWith(prefixReplaceWith)
-{
+                                                                 const QString &prefixReplaceWith)
+    : Task(tr("Rename task"), TaskFlag_None),
+      objects(objects),
+      prefixesToReplace(prefixesToReplace),
+      prefixReplaceWith(prefixReplaceWith) {
     SAFE_POINT_EXT(!prefixesToReplace.isEmpty(), setError("Prefixes to replace are not defined"), );
 }
 
@@ -79,16 +78,15 @@ bool RenameChromosomeInVariationTask::replaceSequenceName(U2VariantTrack &varian
 RenameChromosomeInVariationFileTask::RenameChromosomeInVariationFileTask(const QString &srcFileUrl,
                                                                          const QString &dstFileUrl,
                                                                          const QStringList &prefixesToReplace,
-                                                                         const QString &prefixReplaceWith) :
-    Task(tr("Rename chomosome name file with variations"), TaskFlags_NR_FOSE_COSC),
-    srcFileUrl(srcFileUrl),
-    dstFileUrl(dstFileUrl),
-    prefixesToReplace(prefixesToReplace),
-    prefixReplaceWith(prefixReplaceWith),
-    loadTask(NULL),
-    renameTask(NULL),
-    saveTask(NULL)
-{
+                                                                         const QString &prefixReplaceWith)
+    : Task(tr("Rename chomosome name file with variations"), TaskFlags_NR_FOSE_COSC),
+      srcFileUrl(srcFileUrl),
+      dstFileUrl(dstFileUrl),
+      prefixesToReplace(prefixesToReplace),
+      prefixReplaceWith(prefixReplaceWith),
+      loadTask(NULL),
+      renameTask(NULL),
+      saveTask(NULL) {
     SAFE_POINT_EXT(!srcFileUrl.isEmpty(), L10N::badArgument("input file URL"), );
     SAFE_POINT_EXT(!dstFileUrl.isEmpty(), L10N::badArgument("input file URL"), );
     SAFE_POINT_EXT(!prefixesToReplace.isEmpty(), setError("Prefixes to replace are not defined"), );
@@ -125,12 +123,12 @@ QList<Task *> RenameChromosomeInVariationFileTask::onSubTaskFinished(Task *subTa
     return res;
 }
 
-Task * RenameChromosomeInVariationFileTask::initRenameTask() {
+Task *RenameChromosomeInVariationFileTask::initRenameTask() {
     renameTask = new RenameChromosomeInVariationTask(getVariantTrackObjects(), prefixesToReplace, prefixReplaceWith);
     return renameTask;
 }
 
-Task * RenameChromosomeInVariationFileTask::initSaveTask() {
+Task *RenameChromosomeInVariationFileTask::initSaveTask() {
     IOAdapterFactory *ioAdapterFactory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
     saveTask = new SaveDocumentTask(loadTask->getDocument(), ioAdapterFactory, GUrl(dstFileUrl), SaveDoc_Roll);
     return saveTask;
@@ -148,7 +146,7 @@ QList<GObject *> RenameChromosomeInVariationFileTask::getVariantTrackObjects() {
     return variantTrackObjects;
 }
 
-DocumentFormat * RenameChromosomeInVariationFileTask::getFormat() {
+DocumentFormat *RenameChromosomeInVariationFileTask::getFormat() {
     DocumentFormatConstraints constraints;
     constraints.supportedObjectTypes << GObjectTypes::VARIANT_TRACK;
 
@@ -158,4 +156,4 @@ DocumentFormat * RenameChromosomeInVariationFileTask::getFormat() {
     return formatDetectionResults.first().format;
 }
 
-}   // namespace U2
+}    // namespace U2

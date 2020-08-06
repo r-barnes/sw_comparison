@@ -22,10 +22,11 @@
 #ifndef _U2_BOWTIE_TASK_H_
 #define _U2_BOWTIE_TASK_H_
 
-#include <U2Algorithm/DnaAssemblyTask.h>
-#include <U2Core/ExternalToolRunTask.h>
-
 #include <QTemporaryFile>
+
+#include <U2Algorithm/DnaAssemblyTask.h>
+
+#include <U2Core/ExternalToolRunTask.h>
 
 namespace U2 {
 
@@ -35,6 +36,7 @@ public:
     BowtieBuildIndexTask(const QString &referencePath, const QString &indexPath, bool colorspace);
 
     void prepare();
+
 private:
     class LogParser : public ExternalToolLogParser {
     public:
@@ -53,6 +55,7 @@ private:
         void parseOutput(const QString &partOfLog);
         void parseErrOutput(const QString &partOfLog);
         int getProgress();
+
     private:
         Stage stage;
         Substage substage;
@@ -73,9 +76,10 @@ class BowtieAssembleTask : public ExternalToolSupportTask {
 public:
     BowtieAssembleTask(const DnaAssemblyToRefTaskSettings &settings);
 
-    bool hasResult()const;
+    bool hasResult() const;
 
     void prepare();
+
 private:
     class LogParser : public ExternalToolLogParser {
     public:
@@ -84,7 +88,8 @@ private:
         void parseOutput(const QString &partOfLog);
         void parseErrOutput(const QString &partOfLog);
 
-        bool hasResult()const;
+        bool hasResult() const;
+
     private:
         bool hasResults;
     };
@@ -103,6 +108,7 @@ public:
     ReportResult report();
 protected slots:
     QList<Task *> onSubTaskFinished(Task *subTask);
+
 public:
     static const QString OPTION_N_MISMATCHES;
     static const QString OPTION_V_MISMATCHES;
@@ -122,20 +128,22 @@ public:
 
     static const QStringList indexSuffixes;
     static const QStringList largeIndexSuffixes;
+
 private:
     BowtieBuildIndexTask *buildIndexTask;
     BowtieAssembleTask *assembleTask;
 
-    Task* unzipTask;
+    Task *unzipTask;
     QTemporaryFile temp;
 };
 
 class BowtieTaskFactory : public DnaAssemblyToRefTaskFactory {
 public:
     DnaAssemblyToReferenceTask *createTaskInstance(const DnaAssemblyToRefTaskSettings &settings, bool justBuildIndex = false);
+
 protected:
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_BOWTIE_TASK_H_
+#endif    // _U2_BOWTIE_TASK_H_

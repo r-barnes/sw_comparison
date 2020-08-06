@@ -26,24 +26,24 @@
 
 namespace U2 {
 
-class U2LANG_EXPORT PortRelationDescriptor{
+class U2LANG_EXPORT PortRelationDescriptor {
 public:
-    PortRelationDescriptor(const QString& portId, const QVariantList& valuesWithEnabledPort);
+    PortRelationDescriptor(const QString &portId, const QVariantList &valuesWithEnabledPort);
     virtual ~PortRelationDescriptor();
 
-    virtual bool isPortEnabled(const QVariant& attrValue) const;
+    virtual bool isPortEnabled(const QVariant &attrValue) const;
 
-    virtual PortRelationDescriptor* clone() const;
+    virtual PortRelationDescriptor *clone() const;
 
-    const QVariantList& getValuesWithEnabledPort() const;
+    const QVariantList &getValuesWithEnabledPort() const;
 
-    const QString& getPortId() const;
+    const QString &getPortId() const;
 
 private:
-    QString      portId;
+    QString portId;
     QVariantList valuesWithEnabledPort;
 };
 
-} // U2 namespace
+}    // namespace U2
 
-#endif // _U2_ATTRIBUTE_RELATION_H_
+#endif    // _U2_ATTRIBUTE_RELATION_H_

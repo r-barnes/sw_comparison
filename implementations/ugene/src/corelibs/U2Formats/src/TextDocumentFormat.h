@@ -30,18 +30,17 @@ namespace U2 {
 /* Base class for all non binary document formats that can be opened in a usual text editor. */
 class U2FORMATS_EXPORT TextDocumentFormat : public DocumentFormat {
 public:
-    TextDocumentFormat(QObject* p, const DocumentFormatId& id, DocumentFormatFlags _flags, const QStringList& fileExts = QStringList());
-    virtual FormatCheckResult checkRawData(const QByteArray& rawData, const GUrl& = GUrl()) const;
+    TextDocumentFormat(QObject *p, const DocumentFormatId &id, DocumentFormatFlags _flags, const QStringList &fileExts = QStringList());
+    virtual FormatCheckResult checkRawData(const QByteArray &rawData, const GUrl & = GUrl()) const;
 
 protected:
-    virtual DNASequence* loadSequence(IOAdapter* io, U2OpStatus& ti);
-    virtual Document* loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
-    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& = GUrl()) const = 0;
-    virtual DNASequence* loadTextSequence(IOAdapter* io, U2OpStatus& ti);
-    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os) = 0;
-
+    virtual DNASequence *loadSequence(IOAdapter *io, U2OpStatus &ti);
+    virtual Document *loadDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os);
+    virtual FormatCheckResult checkRawTextData(const QByteArray &rawData, const GUrl & = GUrl()) const = 0;
+    virtual DNASequence *loadTextSequence(IOAdapter *io, U2OpStatus &ti);
+    virtual Document *loadTextDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os) = 0;
 };
 
-}
+}    // namespace U2
 
 #endif

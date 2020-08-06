@@ -30,12 +30,12 @@
 #include <QString>
 #include <QVariant>
 
+#include <U2Core/IdRegistry.h>
+#include <U2Core/Task.h>
+
 #include <U2Lang/Schema.h>
 #include <U2Lang/WorkflowContext.h>
 #include <U2Lang/WorkflowTransport.h>
-
-#include <U2Core/IdRegistry.h>
-#include <U2Core/Task.h>
 
 namespace U2 {
 
@@ -51,8 +51,11 @@ namespace Workflow {
  */
 class U2LANG_EXPORT Worker {
 public:
-    Worker() : context(NULL) {}
-    virtual ~Worker() {}
+    Worker()
+        : context(NULL) {
+    }
+    virtual ~Worker() {
+    }
 
     // initialize input and output ports
     virtual void init() = 0;
@@ -61,18 +64,20 @@ public:
     // get data from actor and return task
     // if you want your worker support scripting:
     // use BaseWorker::getMessageAndSetupScriptValues to take data from port
-    virtual Task* tick() = 0;
+    virtual Task *tick() = 0;
     // nothing to do
     virtual bool isDone() const = 0;
     // opened files, etc...
     virtual void cleanup() = 0;
 
-    void setContext(WorkflowContext *newContext) {context = newContext;}
+    void setContext(WorkflowContext *newContext) {
+        context = newContext;
+    }
 
 protected:
     WorkflowContext *context;
 
-}; // Worker
+};    // Worker
 
 /**
 * runtime state of worker
@@ -83,7 +88,7 @@ enum WorkerState {
     WorkerRunning,
     WorkerDone,
     WorkerPaused
-}; // WorkerState
+};    // WorkerState
 
 /**
  * Worker for whole schema
@@ -91,9 +96,11 @@ enum WorkerState {
  */
 class U2LANG_EXPORT Scheduler : public Worker {
 public:
-    Scheduler(Schema *sch) : schema(sch), lastTask(NULL) {}
+    Scheduler(Schema *sch)
+        : schema(sch), lastTask(NULL) {
+    }
     virtual WorkerState getWorkerState(const ActorId &) = 0;
-    virtual Task * replayLastWorkerTick() = 0;
+    virtual Task *replayLastWorkerTick() = 0;
     // returning value indicates if current task was canceled
     virtual bool cancelCurrentTaskIfAllowed() = 0;
     virtual void makeOneTick(const ActorId &) = 0;
@@ -107,8 +114,8 @@ protected:
     Task *lastTask;
     WorkflowDebugStatus *debugInfo;
 
-    virtual WorkerState getWorkerState(const Actor*) = 0;
-}; // Scheduler
+    virtual WorkerState getWorkerState(const Actor *) = 0;
+};    // Scheduler
 
 /**
  * represents controller between actor and runtime realizations of actor (Worker)
@@ -120,37 +127,46 @@ protected:
  */
 class U2LANG_EXPORT DomainFactory : public IdRegistry<DomainFactory>, public Descriptor {
 public:
-    DomainFactory(const Descriptor& d) : Descriptor(d) {}
-    DomainFactory(const QString& id) : Descriptor(id) {}
-    virtual ~DomainFactory(){}
+    DomainFactory(const Descriptor &d)
+        : Descriptor(d) {
+    }
+    DomainFactory(const QString &id)
+        : Descriptor(id) {
+    }
+    virtual ~DomainFactory() {
+    }
 
     // computational tasks domain
-    virtual Worker* createWorker(Actor*) = 0;
+    virtual Worker *createWorker(Actor *) = 0;
 
     // execution domain
-    virtual CommunicationChannel* createConnection(Link*) {return NULL;}
-    virtual Scheduler* createScheduler(Schema*) {return NULL;}
-    virtual void destroy(Scheduler*, Schema*) {}
-    static void addParametersSetToMap(QVariantMap& map, const QString& attrValue, const QStringList& parametersList){
+    virtual CommunicationChannel *createConnection(Link *) {
+        return NULL;
+    }
+    virtual Scheduler *createScheduler(Schema *) {
+        return NULL;
+    }
+    virtual void destroy(Scheduler *, Schema *) {
+    }
+    static void addParametersSetToMap(QVariantMap &map, const QString &attrValue, const QStringList &parametersList) {
         QVariantMap parametersMap;
-        foreach(const QString& curStr, parametersList) {
+        foreach (const QString &curStr, parametersList) {
             parametersMap[curStr] = curStr;
         }
         map.insert(attrValue, parametersMap);
     }
 
-}; // DomainFactory
+};    // DomainFactory
 
 /**
  * standard registry of factories
  * Usage: register here execution domain factories (see usage of DomainFactory)
  */
 class U2LANG_EXPORT DomainFactoryRegistry : public IdRegistry<DomainFactory> {
-}; // DomainFactoryRegistry
+};    // DomainFactoryRegistry
 
-}//Workflow namespace
+}    // namespace Workflow
 
-}//GB2 namespace
-
+}    // namespace U2
 
 #endif

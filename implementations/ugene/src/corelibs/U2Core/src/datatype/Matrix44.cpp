@@ -25,21 +25,23 @@ namespace U2 {
 
 /* class Matrix44 */
 
-Matrix44::Matrix44() : m(16, 0.0)
-{
+Matrix44::Matrix44()
+    : m(16, 0.0) {
     loadIdentity();
 }
 
-Matrix44::Matrix44(const float *data) : m(16) {
+Matrix44::Matrix44(const float *data)
+    : m(16) {
     for (int i = 0; i < 16; ++i) {
         m[i] = data[i];
     }
 }
 
-Matrix44::Matrix44(const Matrix44 &other) : m(other.m)
-{}
+Matrix44::Matrix44(const Matrix44 &other)
+    : m(other.m) {
+}
 
-Matrix44& Matrix44::operator= (const Matrix44 &other) {
+Matrix44 &Matrix44::operator=(const Matrix44 &other) {
     m = other.m;
     return *this;
 }
@@ -51,23 +53,23 @@ void Matrix44::loadZero() {
 void Matrix44::loadIdentity() {
     m.fill(0.0);
     for (int i = 0; i < 4; ++i) {
-        m[i + i*4] = 1.0;
+        m[i + i * 4] = 1.0;
     }
 }
 
-float* Matrix44::data() {
+float *Matrix44::data() {
     return m.data();
 }
 
-const float* Matrix44::data() const {
+const float *Matrix44::data() const {
     return m.constData();
 }
 
-float& Matrix44::operator[] (unsigned int i) {
+float &Matrix44::operator[](unsigned int i) {
     return m[i];
 }
 
-float Matrix44::operator[] (unsigned int i) const {
+float Matrix44::operator[](unsigned int i) const {
     return m[i];
 }
 
@@ -80,7 +82,7 @@ void Matrix44::load(const QVariantList &values) {
 
 QVariantList Matrix44::store() {
     QVariantList values;
-    for (int i = 0; i < 16; ++i ) {
+    for (int i = 0; i < 16; ++i) {
         values.append(QVariant::fromValue(m[i]));
     }
     return values;
@@ -91,11 +93,11 @@ void Matrix44::transpose() {
 
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < i; ++j) {
-            float tmp = data[i + j*4];
-            data[i + j*4] = data[j + i*4];
-            data[j + i*4] = tmp;
+            float tmp = data[i + j * 4];
+            data[i + j * 4] = data[j + i * 4];
+            data[j + i * 4] = tmp;
         }
     }
 }
 
-}   // namespace U2
+}    // namespace U2

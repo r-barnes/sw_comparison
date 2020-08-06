@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "TestViewReporter.h"
+
 #include <QDesktopServices>
 #include <QTextStream>
 #include <QTreeWidget>
@@ -34,10 +36,8 @@
 
 #include "TestRunnerPlugin.h"
 #include "TestViewController.h"
-#include "TestViewReporter.h"
 
 namespace U2 {
-
 
 static QString generateHtmlWithNoTests() {
     return "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 //EN\" \"http://www.w3.org/TR/html401/loose.dtd\">\n<html>\n<head>\n<META http-equiv=\"Content-Type\" content=\"text/html; charset=US-ASCII\">\n<TITLE>UGENE Test Report</TITLE>\n</head>\n<body>\nNo Failed Tests</body>\n</html>";
@@ -131,50 +131,50 @@ static bool cleanupRunResultRichTextHtml(QString *runResult) {
     QString valueColor = " <font color=\"#FF3333\">\\1</font>=<font color=\"#0000CC\">\\2</font> ";
     QString deleteColor = "\\1\\2";
 
-    runResult->replace(QRegExp("(\\s[^\\s]*)=(\"[^\"]*\")"), valueColor);//first find all values
+    runResult->replace(QRegExp("(\\s[^\\s]*)=(\"[^\"]*\")"), valueColor);    //first find all values
 
     QRegExp rx("(&lt;!--.*--&gt;)");
     rx.setMinimal(true);
-    runResult->replace(rx, commentColor);//2- find all comments
+    runResult->replace(rx, commentColor);    //2- find all comments
 
     rx.setPattern("(&lt;!.*&gt;)");
-    runResult->replace(rx, mainCommentColor);//2- find all main comments
+    runResult->replace(rx, mainCommentColor);    //2- find all main comments
 
     rx.setPattern("(&lt;.*\\s)");
-    runResult->replace(rx, normalTagColor);//3- find all tag names
+    runResult->replace(rx, normalTagColor);    //3- find all tag names
     rx.setPattern("(&lt;[^\\s]*&gt;)");
-    runResult->replace(rx, normalTagColor);//3- find all tag names
+    runResult->replace(rx, normalTagColor);    //3- find all tag names
     rx.setPattern("(&gt;)");
-    runResult->replace(rx, normalTagColor);//3- find all tag names
+    runResult->replace(rx, normalTagColor);    //3- find all tag names
 
     rx.setPattern("(commentColorPoint.*)</font>(.*commentColorPointEnd)");
     while (rx.indexIn(*runResult) != -1) {
-        runResult->replace(rx, deleteColor);//4- find information to delete
+        runResult->replace(rx, deleteColor);    //4- find information to delete
     }
 
     rx.setPattern("(commentColorPoint.*)<font color=\".*\">(.*commentColorPointEnd)");
     while (rx.indexIn(*runResult) != -1) {
-        runResult->replace(rx, deleteColor);//4- find information to delete
+        runResult->replace(rx, deleteColor);    //4- find information to delete
     }
 
     rx.setPattern("(commentColorPoint.*)</font mainColorPointEnd>(.*commentColorPointEnd)");
     while (rx.indexIn(*runResult) != -1) {
-        runResult->replace(rx, deleteColor);//4- find information to delete
+        runResult->replace(rx, deleteColor);    //4- find information to delete
     }
 
     rx.setPattern("(commentColorPoint.*)<font color=\"#339966\" mainColorPoint>(.*commentColorPointEnd)");
     while (rx.indexIn(*runResult) != -1) {
-        runResult->replace(rx, deleteColor);//4- find information to delete
+        runResult->replace(rx, deleteColor);    //4- find information to delete
     }
 
     rx.setPattern("(mainColorPoint.*)</font>(.*mainColorPointEnd)");
     while (rx.indexIn(*runResult) != -1) {
-        runResult->replace(rx, deleteColor);//4- find information to delete
+        runResult->replace(rx, deleteColor);    //4- find information to delete
     }
 
     rx.setPattern("(mainColorPoint.*)<font color=\".*\">(.*mainColorPointEnd)");
     while (rx.indexIn(*runResult) != -1) {
-        runResult->replace(rx, deleteColor);//4- find information to delete
+        runResult->replace(rx, deleteColor);    //4- find information to delete
     }
 
     runResult->remove("commentColorPointEnd");
@@ -185,11 +185,10 @@ static bool cleanupRunResultRichTextHtml(QString *runResult) {
     return true;
 }
 
-
 static QString generateSuiteErrorsBlock(const QList<TVTestItem *> &failedTests, int *idGen) {
     QString html;
 
-    foreach(TVTestItem *curItem, failedTests) {
+    foreach (TVTestItem *curItem, failedTests) {
         html += "<div><a href='javascript:toggleTestDetails(display" + QString::number(*idGen) + ")' name='Test_" +
                 QString::number(*idGen) + "'>";
         html += curItem->testState->getTestRef()->getShortName();
@@ -232,8 +231,7 @@ static QString generateErrorsListBlock(QTreeWidget *tree) {
 
 void TestViewReporter::saveReportToFileAndOpenBrowser(QTreeWidget *tree, int runTime) {
     QString dir = AppContext::getSettings()->getValue(SETTINGS_ROOT + "lastDir", QString()).toString();
-    QString fileName = U2FileDialog::getSaveFileName(NULL, "Select save location for the report",
-                                                     dir + "/UGENE_test_runner_report.html", "*.html");
+    QString fileName = U2FileDialog::getSaveFileName(NULL, "Select save location for the report", dir + "/UGENE_test_runner_report.html", "*.html");
     if (fileName.isEmpty()) {
         return;
     }
@@ -322,7 +320,7 @@ QString TestViewReporter::generateHtmlReport(QTreeWidget *tree, int runTime) {
 }
 
 /* Keeping this method for compatibility. */
-void TestViewReporter::saveReport(const QString& url,const QString& data) {
+void TestViewReporter::saveReport(const QString &url, const QString &data) {
     if (url.isEmpty() || data.isEmpty()) {
         return;
     }
@@ -334,5 +332,4 @@ void TestViewReporter::saveReport(const QString& url,const QString& data) {
     io->writeBlock(data.toUtf8());
 }
 
-} // namespace
-
+}    // namespace U2

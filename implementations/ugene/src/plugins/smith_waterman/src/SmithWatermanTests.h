@@ -22,22 +22,21 @@
 #ifndef _U2_SW_ALHORITHM_TESTS_H_
 #define _U2_SW_ALHORITHM_TESTS_H_
 
+#include <QByteArray>
+#include <QDomElement>
+
+#include <U2Algorithm/SmithWatermanResult.h>
+#include <U2Algorithm/SmithWatermanSettings.h>
+
 #include <U2Core/GObject.h>
 #include <U2Core/U2Region.h>
 
 #include <U2Test/XMLTestUtils.h>
 
-#include <U2Algorithm/SmithWatermanSettings.h>
-#include <U2Algorithm/SmithWatermanResult.h>
-
-
-#include <QByteArray>
-#include <QDomElement>
-
 namespace U2 {
 
-struct SWresult{
-        U2Region sInterval;
+struct SWresult {
+    U2Region sInterval;
     int score;
 };
 
@@ -49,11 +48,12 @@ public:
     void prepare();
     Task::ReportResult report();
 
-    static void sortByScore(QList<SmithWatermanResult> & resultsForSort);
+    static void sortByScore(QList<SmithWatermanResult> &resultsForSort);
+
 private:
     SmithWatermanSettings s;
     bool parseExpected_res();
-    bool toInt(QString & str, int & num);
+    bool toInt(QString &str, int &num);
 
     QByteArray patternSeq;
     QByteArray searchSeq;
@@ -63,14 +63,14 @@ private:
     QString expected_res;
     QString pathToSubst;
     QString impl;
-        int gapOpen;
+    int gapOpen;
     int gapExtension;
-        float percentOfScore;
+    float percentOfScore;
 
-        QString resultDocContextName;
+    QString resultDocContextName;
     QList<SWresult> expectedRes;
 
-    Task * swAlgorithmTask;
+    Task *swAlgorithmTask;
 
     QString machinePath;
 };
@@ -100,11 +100,8 @@ private:
     QString resultDocContextName;
     QList<SWresult> expectedRes;
 
-    Task * swAlgorithmTask;
-
+    Task *swAlgorithmTask;
 };
 
-
-} //namespace
+}    // namespace U2
 #endif
-

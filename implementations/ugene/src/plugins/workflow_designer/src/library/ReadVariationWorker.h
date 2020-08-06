@@ -28,44 +28,45 @@
 namespace U2 {
 namespace LocalWorkflow {
 
-
-
 class ReadVariationProto : public GenericReadDocProto {
 public:
-    enum SplitAlleles{
+    enum SplitAlleles {
         NOSPLIT,
         SPLIT
     };
     static const QString SPLIT_ATTR;
 
     ReadVariationProto();
-}; // ReadVariationProto
+};    // ReadVariationProto
 
 class ReadVariationWorker : public GenericDocReader {
     Q_OBJECT
 public:
     ReadVariationWorker(Actor *p);
-    virtual void init() ;
+    virtual void init();
 
 protected:
     virtual void onTaskFinished(Task *task);
     virtual QString addReadDbObjectToData(const QString &objUrl, QVariantMap &data);
 
 protected:
-    virtual Task * createReadTask(const QString &url, const QString &datasetName);
+    virtual Task *createReadTask(const QString &url, const QString &datasetName);
+
 private:
     ReadVariationProto::SplitAlleles splitMode;
-}; // ReadVariationWorker
+};    // ReadVariationWorker
 
 class ReadVariationWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
 
-    ReadVariationWorkerFactory() : DomainFactory(ACTOR_ID) {}
+    ReadVariationWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
     static void init();
-    virtual Worker * createWorker(Actor *a);
+    virtual Worker *createWorker(Actor *a);
 
-}; // ReadVariationWorkerFactory
+};    // ReadVariationWorkerFactory
 
 class ReadVariationTask : public Task {
     Q_OBJECT
@@ -76,8 +77,8 @@ public:
     virtual void prepare();
     virtual void run();
 
-    const QString & getUrl() const;
-    const QString & getDatasetName() const;
+    const QString &getUrl() const;
+    const QString &getDatasetName() const;
     QList<QVariantMap> takeResults();
 
 private:
@@ -88,7 +89,7 @@ private:
     QList<QVariantMap> results;
 };
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _READ_VARIATION_LIST_WORKER_
+#endif    // _READ_VARIATION_LIST_WORKER_

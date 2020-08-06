@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "AnnotationTableObject.h"
+
 #include <QCoreApplication>
 
 #include <U2Core/AnnotationModification.h>
@@ -33,14 +35,12 @@
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "AnnotationTableObject.h"
 #include "GObjectTypes.h"
 
 namespace U2 {
 
 AnnotationTableObject::AnnotationTableObject(const QString &objectName, const U2DbiRef &dbiRef, const QVariantMap &hintsMap)
-    : GObject(GObjectTypes::ANNOTATION_TABLE, objectName, hintsMap)
-{
+    : GObject(GObjectTypes::ANNOTATION_TABLE, objectName, hintsMap) {
     U2OpStatusImpl os;
     const QString folder = hintsMap.value(DocumentFormat::DBI_FOLDER_HINT, U2ObjectDbi::ROOT_FOLDER).toString();
     U2AnnotationTable table = U2FeatureUtils::createAnnotationTable(objectName, dbiRef, folder, os);
@@ -52,8 +52,7 @@ AnnotationTableObject::AnnotationTableObject(const QString &objectName, const U2
 }
 
 AnnotationTableObject::AnnotationTableObject(const QString &objectName, const U2EntityRef &tableRef, const QVariantMap &hintsMap)
-    : GObject(GObjectTypes::ANNOTATION_TABLE, objectName, hintsMap), rootGroup(NULL)
-{
+    : GObject(GObjectTypes::ANNOTATION_TABLE, objectName, hintsMap), rootGroup(NULL) {
     entityRef = tableRef;
 }
 
@@ -71,12 +70,12 @@ bool AnnotationTableObject::hasAnnotations() const {
     return rootGroup->hasAnnotations();
 }
 
-AnnotationGroup * AnnotationTableObject::getRootGroup() {
+AnnotationGroup *AnnotationTableObject::getRootGroup() {
     ensureDataLoaded();
     return rootGroup;
 }
 
-typedef QPair<AnnotationGroup *, QList<SharedAnnotationData> > AnnotationGroupData;
+typedef QPair<AnnotationGroup *, QList<SharedAnnotationData>> AnnotationGroupData;
 
 QList<Annotation *> AnnotationTableObject::addAnnotations(const QList<SharedAnnotationData> &annotations, const QString &groupName) {
     QList<Annotation *> result;
@@ -108,7 +107,7 @@ QList<Annotation *> AnnotationTableObject::addAnnotations(const QList<SharedAnno
 void AnnotationTableObject::removeAnnotations(const QList<Annotation *> &annotations) {
     CHECK(!annotations.isEmpty(), );
 
-    QMap<AnnotationGroup *, QList<Annotation *> > group2Annotations;
+    QMap<AnnotationGroup *, QList<Annotation *>> group2Annotations;
     foreach (Annotation *ann, annotations) {
         SAFE_POINT(ann->getGObject() == this, "Unexpected annotation detected", );
         group2Annotations[ann->getGroup()].append(ann);
@@ -119,7 +118,7 @@ void AnnotationTableObject::removeAnnotations(const QList<Annotation *> &annotat
     }
 }
 
-GObject * AnnotationTableObject::clone(const U2DbiRef &ref, U2OpStatus &os, const QVariantMap &hints) const {
+GObject *AnnotationTableObject::clone(const U2DbiRef &ref, U2OpStatus &os, const QVariantMap &hints) const {
     ensureDataLoaded();
 
     GHintsDefaultImpl gHints(getGHintsMap());
@@ -185,7 +184,7 @@ bool annotationIntersectsRange(const Annotation *a, const U2Region &range, bool 
     }
 }
 
-}
+}    // namespace
 
 QList<Annotation *> AnnotationTableObject::getAnnotationsByRegion(const U2Region &region, bool contains) const {
     QList<Annotation *> result;
@@ -206,7 +205,7 @@ QList<Annotation *> AnnotationTableObject::getAnnotationsByType(const U2FeatureT
 
     ensureDataLoaded();
 
-    foreach(Annotation *a, getAnnotations()) {
+    foreach (Annotation *a, getAnnotations()) {
         if (a->getType() == featureType) {
             result.append(a);
         }
@@ -288,4 +287,4 @@ void AnnotationTableObject::loadDataCore(U2OpStatus &os) {
     rootGroup = U2FeatureUtils::loadAnnotationTable(table.rootFeature, entityRef.dbiRef, this, os);
 }
 
-} // namespace U2
+}    // namespace U2

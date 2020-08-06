@@ -32,7 +32,7 @@ public:
     };
     static OverviewScaleType getOverviewScaleType();
     static void setOverviewScaleType(OverviewScaleType t);
-    
+
     static bool getShowCoordsOnRuler();
     static void setShowCoordsOnRuler(bool what);
 
@@ -44,9 +44,9 @@ public:
 
     static bool getOptimizeRenderOnScroll();
     static void setOptimizeRenderOnScroll(bool what);
-    
-}; // AssemblyBrowserSettings
 
-} // U2
+};    // AssemblyBrowserSettings
 
-#endif // __ASSEMBLY_BROWSER_SETTINGS_H__
+}    // namespace U2
+
+#endif    // __ASSEMBLY_BROWSER_SETTINGS_H__

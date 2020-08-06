@@ -58,12 +58,12 @@ static const QString SCORE_ATTR("min-score");
 const QString PWMatrixSearchWorker::ACTOR_ID("wmatrix-search");
 
 void PWMatrixSearchWorker::registerProto() {
-    QList<PortDescriptor*> p; QList<Attribute*> a;
+    QList<PortDescriptor *> p;
+    QList<Attribute *> a;
     {
         Descriptor md(MODEL_PORT, PWMatrixSearchWorker::tr("Weight matrix"), PWMatrixSearchWorker::tr("Profile data to search with."));
         Descriptor sd(BasePorts::IN_SEQ_PORT_ID(), PWMatrixSearchWorker::tr("Sequence"), PWMatrixSearchWorker::tr("Input nucleotide sequence to search in."));
-        Descriptor od(BasePorts::OUT_ANNOTATIONS_PORT_ID(), PWMatrixSearchWorker::tr("Weight matrix annotations"),
-            PWMatrixSearchWorker::tr("Annotations marking found TFBS sites."));
+        Descriptor od(BasePorts::OUT_ANNOTATIONS_PORT_ID(), PWMatrixSearchWorker::tr("Weight matrix annotations"), PWMatrixSearchWorker::tr("Annotations marking found TFBS sites."));
 
         QMap<Descriptor, DataTypePtr> modelM;
         modelM[PWMatrixWorkerFactory::WMATRIX_SLOT] = PWMatrixWorkerFactory::WEIGHT_MATRIX_MODEL_TYPE();
@@ -76,25 +76,24 @@ void PWMatrixSearchWorker::registerProto() {
         p << new PortDescriptor(od, DataTypePtr(new MapDataType("wmatrix.search.out", outM)), false /*input*/, true /*multi*/);
     }
     {
-        Descriptor nd(NAME_ATTR, PWMatrixSearchWorker::tr("Result annotation"),
-            PWMatrixSearchWorker::tr("Annotation name for marking found regions."));
-        Descriptor scd(SCORE_ATTR, PWMatrixSearchWorker::tr("Min score"),
-            QApplication::translate("PWMSearchDialog", "Minimum score to detect transcription factor binding site", 0));
+        Descriptor nd(NAME_ATTR, PWMatrixSearchWorker::tr("Result annotation"), PWMatrixSearchWorker::tr("Annotation name for marking found regions."));
+        Descriptor scd(SCORE_ATTR, PWMatrixSearchWorker::tr("Min score"), QApplication::translate("PWMSearchDialog", "Minimum score to detect transcription factor binding site", 0));
 
         a << new Attribute(nd, BaseTypes::STRING_TYPE(), true, "misc_feature");
         a << new Attribute(BaseAttributes::STRAND_ATTRIBUTE(), BaseTypes::STRING_TYPE(), false, BaseAttributes::STRAND_BOTH());
         a << new Attribute(scd, BaseTypes::NUM_TYPE(), false, 85);
     }
 
-    Descriptor desc(ACTOR_ID, tr("Search for TFBS with Weight Matrix"),
-        tr("Searches each input sequence for transcription factor binding sites significantly similar to specified weight matrices."
-        " In case several profiles were supplied, searches with all profiles one by one and outputs merged set of annotations for each sequence.")
-       );
-    ActorPrototype* proto = new IntegralBusActorPrototype(desc, p, a);
-    QMap<QString, PropertyDelegate*> delegates;
+    Descriptor desc(ACTOR_ID, tr("Search for TFBS with Weight Matrix"), tr("Searches each input sequence for transcription factor binding sites significantly similar to specified weight matrices."
+                                                                           " In case several profiles were supplied, searches with all profiles one by one and outputs merged set of annotations for each sequence."));
+    ActorPrototype *proto = new IntegralBusActorPrototype(desc, p, a);
+    QMap<QString, PropertyDelegate *> delegates;
 
     {
-        QVariantMap m; m["minimum"] = 1; m["maximum"] = 100; m["suffix"] = "%";
+        QVariantMap m;
+        m["minimum"] = 1;
+        m["maximum"] = 100;
+        m["suffix"] = "%";
         delegates[SCORE_ATTR] = new SpinBoxDelegate(m);
     }
     delegates[BaseAttributes::STRAND_ATTRIBUTE().getId()] = new ComboBoxDelegate(BaseAttributes::STRAND_ATTRIBUTE_VALUES_MAP());
@@ -104,18 +103,18 @@ void PWMatrixSearchWorker::registerProto() {
     WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_TRANSCRIPTION(), proto);
 }
 
-static int getStrand(const QString & s) {
+static int getStrand(const QString &s) {
     QString str = s.toLower();
-    if(BaseAttributes::STRAND_BOTH().startsWith(str)) {
+    if (BaseAttributes::STRAND_BOTH().startsWith(str)) {
         return 0;
-    } else if(BaseAttributes::STRAND_DIRECT().startsWith(str)) {
+    } else if (BaseAttributes::STRAND_DIRECT().startsWith(str)) {
         return 1;
-    } else if(BaseAttributes::STRAND_COMPLEMENTARY().startsWith(str)) {
+    } else if (BaseAttributes::STRAND_COMPLEMENTARY().startsWith(str)) {
         return -1;
     } else {
         bool ok = false;
         int num = str.toInt(&ok);
-        if(ok) {
+        if (ok) {
             return num;
         } else {
             return 0;
@@ -124,10 +123,10 @@ static int getStrand(const QString & s) {
 }
 
 QString PWMatrixSearchPrompter::composeRichDoc() {
-    Actor* modelProducer = qobject_cast<IntegralBusPort*>(target->getPort(MODEL_PORT))->getProducer(PWMatrixWorkerFactory::WMATRIX_SLOT.getId());
-    Actor* seqProducer = qobject_cast<IntegralBusPort*>(target->getPort(BasePorts::IN_SEQ_PORT_ID()))->getProducer(BaseSlots::DNA_SEQUENCE_SLOT().getId());
+    Actor *modelProducer = qobject_cast<IntegralBusPort *>(target->getPort(MODEL_PORT))->getProducer(PWMatrixWorkerFactory::WMATRIX_SLOT.getId());
+    Actor *seqProducer = qobject_cast<IntegralBusPort *>(target->getPort(BasePorts::IN_SEQ_PORT_ID()))->getProducer(BaseSlots::DNA_SEQUENCE_SLOT().getId());
 
-    QString unsetStr = "<font color='red'>"+tr("unset")+"</font>";
+    QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
     QString seqName = tr("For each sequence from <u>%1</u>,").arg(seqProducer ? seqProducer->getLabel() : unsetStr);
     QString modelName = tr("with all profiles provided by <u>%1</u>,").arg(modelProducer ? modelProducer->getLabel() : unsetStr);
 
@@ -136,20 +135,26 @@ QString PWMatrixSearchPrompter::composeRichDoc() {
 
     QString strandName;
     switch (getStrand(getParameter(BaseAttributes::STRAND_ATTRIBUTE().getId()).value<QString>())) {
-    case 0: strandName = PWMatrixSearchWorker::tr("both strands"); break;
-    case 1: strandName = PWMatrixSearchWorker::tr("direct strand"); break;
-    case -1: strandName = PWMatrixSearchWorker::tr("complement strand"); break;
+    case 0:
+        strandName = PWMatrixSearchWorker::tr("both strands");
+        break;
+    case 1:
+        strandName = PWMatrixSearchWorker::tr("direct strand");
+        break;
+    case -1:
+        strandName = PWMatrixSearchWorker::tr("complement strand");
+        break;
     }
     strandName = getHyperlink(BaseAttributes::STRAND_ATTRIBUTE().getId(), strandName);
 
     QString doc = tr("%1 search transcription factor binding sites (TFBS) %2."
-        "<br>Recognize sites with <u>similarity %3%</u>, process <u>%4</u>."
-        "<br>Output the list of found regions annotated as <u>%5</u>.")
-        .arg(seqName)
-        .arg(modelName)
-        .arg(getHyperlink(SCORE_ATTR, getParameter(SCORE_ATTR).toInt()))
-        .arg(strandName)
-        .arg(resultName);
+                     "<br>Recognize sites with <u>similarity %3%</u>, process <u>%4</u>."
+                     "<br>Output the list of found regions annotated as <u>%5</u>.")
+                      .arg(seqName)
+                      .arg(modelName)
+                      .arg(getHyperlink(SCORE_ATTR, getParameter(SCORE_ATTR).toInt()))
+                      .arg(strandName)
+                      .arg(resultName);
 
     return doc;
 }
@@ -178,10 +183,9 @@ bool PWMatrixSearchWorker::isReady() const {
 }
 
 void PWMatrixSearchWorker::cleanup() {
-
 }
 
-Task* PWMatrixSearchWorker::tick() {
+Task *PWMatrixSearchWorker::tick() {
     while (modelPort->hasMessage()) {
         models << modelPort->get().getData().toMap().value(PWMatrixWorkerFactory::WMATRIX_SLOT.getId()).value<PWMatrix>();
     }
@@ -209,23 +213,23 @@ Task* PWMatrixSearchWorker::tick() {
             WeightMatrixSearchCfg config(cfg);
             config.complOnly = (strand < 0);
             if (strand <= 0) {
-                DNATranslation* compTT = AppContext::getDNATranslationRegistry()->
-                    lookupComplementTranslation(seq.alphabet);
-                if (compTT  != NULL) {
-                    config.complTT = compTT  ;
+                DNATranslation *compTT = AppContext::getDNATranslationRegistry()->lookupComplementTranslation(seq.alphabet);
+                if (compTT != NULL) {
+                    config.complTT = compTT;
                 }
             }
-            QList<Task*> subtasks;
-            foreach(PWMatrix model, models) {
+            QList<Task *> subtasks;
+            foreach (PWMatrix model, models) {
                 subtasks << new WeightMatrixSingleSearchTask(model, seq.seq, config, 0);
             }
-            Task* t = new MultiTask(tr("Find TFBS in %1").arg(seq.getName()), subtasks);
-            connect(new TaskSignalMapper(t), SIGNAL(si_taskFinished(Task*)), SLOT(sl_taskFinished(Task*)));
+            Task *t = new MultiTask(tr("Find TFBS in %1").arg(seq.getName()), subtasks);
+            connect(new TaskSignalMapper(t), SIGNAL(si_taskFinished(Task *)), SLOT(sl_taskFinished(Task *)));
             return t;
         }
         QString err = tr("Bad sequence supplied to Weight Matrix Search: %1").arg(seq.getName());
         return new FailTask(err);
-    } if (dataPort->isEnded()) {
+    }
+    if (dataPort->isEnded()) {
         setDone();
         output->setEnded();
     }
@@ -234,7 +238,7 @@ Task* PWMatrixSearchWorker::tick() {
 
 void PWMatrixSearchWorker::sl_taskFinished(Task *t) {
     QList<SharedAnnotationData> res;
-    SAFE_POINT(NULL != t, "Invalid task is encountered",);
+    SAFE_POINT(NULL != t, "Invalid task is encountered", );
     if (t->isCanceled()) {
         return;
     }
@@ -245,8 +249,8 @@ void PWMatrixSearchWorker::sl_taskFinished(Task *t) {
     const SharedDbiDataHandler tableId = context->getDataStorage()->putAnnotationTable(res);
     const QVariant v = qVariantFromValue<SharedDbiDataHandler>(tableId);
     output->put(Message(BaseTypes::ANNOTATION_TABLE_TYPE(), v));
-    algoLog.info(tr("Found %1 TFBS").arg(res.size())); //TODO set task description for report
+    algoLog.info(tr("Found %1 TFBS").arg(res.size()));    //TODO set task description for report
 }
 
-} //namespace LocalWorkflow
-} //namespace U2
+}    //namespace LocalWorkflow
+}    //namespace U2

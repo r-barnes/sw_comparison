@@ -22,6 +22,7 @@
 #define _U2_LINKDATA_SUPPORT_H_
 
 #include <U2Core/PluginModel.h>
+
 #include <U2Lang/ScriptLibrary.h>
 
 namespace U2 {
@@ -29,7 +30,7 @@ namespace U2 {
 class LinkDataSupportPlugin : public Plugin {
     Q_OBJECT
 public:
-    LinkDataSupportPlugin ();
+    LinkDataSupportPlugin();
     //~LinkDataSupportPlugin ();
 };
 
@@ -38,5 +39,5 @@ public:
     void createScript(WorkflowScriptEngine *engine);
 };
 
-} //U2
-#endif //_U2_LINKDATA_SUPPORT_H_
+}    // namespace U2
+#endif    //_U2_LINKDATA_SUPPORT_H_

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "GrouperEditor.h"
+
 #include <QHeaderView>
 #include <QSplitter>
 #include <QTableView>
@@ -27,8 +29,6 @@
 
 #include "GrouperEditorWidget.h"
 
-#include "GrouperEditor.h"
-
 namespace U2 {
 namespace Workflow {
 
@@ -36,8 +36,7 @@ namespace Workflow {
 /* GrouperEditor */
 /************************************************************************/
 GrouperEditor::GrouperEditor()
-: ActorConfigurationEditor(), grouperModel(NULL)
-{
+    : ActorConfigurationEditor(), grouperModel(NULL) {
 }
 
 GrouperEditor::~GrouperEditor() {
@@ -60,7 +59,7 @@ QWidget *GrouperEditor::createGUI() {
 
 void GrouperEditor::setConfiguration(Actor *actor) {
     ActorConfigurationEditor::setConfiguration(actor);
-    QMap<QString, Attribute*> attrs = cfg->getParameters();
+    QMap<QString, Attribute *> attrs = cfg->getParameters();
 
     GrouperOutSlotAttribute *gAttr = NULL;
     foreach (QString key, attrs.keys()) {
@@ -71,7 +70,7 @@ void GrouperEditor::setConfiguration(Actor *actor) {
                 gAttr = NULL;
                 break;
             }
-            gAttr = dynamic_cast<GrouperOutSlotAttribute*>(attr);
+            gAttr = dynamic_cast<GrouperOutSlotAttribute *>(attr);
         }
     }
 
@@ -100,7 +99,7 @@ void GrouperEditor::sl_onSlotAdded(const GrouperOutSlot &outSlot) {
     DataTypePtr type = ActionTypes::getDataTypeByAction(action->getType());
 
     outTypeMap[outSlot.getOutSlotId()] = type;
-    DataTypePtr newType(new MapDataType(dynamic_cast<Descriptor&>(*(outPort->getType())), outTypeMap));
+    DataTypePtr newType(new MapDataType(dynamic_cast<Descriptor &>(*(outPort->getType())), outTypeMap));
     outPort->setNewType(newType);
 }
 
@@ -111,9 +110,9 @@ void GrouperEditor::sl_onSlotRemoved(const QString &outSlotName) {
     QMap<Descriptor, DataTypePtr> outTypeMap = outPort->getOutputType()->getDatatypesMap();
 
     outTypeMap.remove(outSlotName);
-    DataTypePtr newType(new MapDataType(dynamic_cast<Descriptor&>(*(outPort->getType())), outTypeMap));
+    DataTypePtr newType(new MapDataType(dynamic_cast<Descriptor &>(*(outPort->getType())), outTypeMap));
     outPort->setNewType(newType);
 }
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

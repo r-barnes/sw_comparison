@@ -22,31 +22,30 @@
 #ifndef _U2_SWISS_PROT_PLAIN_TEXT_FORMAT_H_
 #define _U2_SWISS_PROT_PLAIN_TEXT_FORMAT_H_
 
-#include "EMBLGenbankAbstractDocument.h"
-
 #include <QDate>
+
+#include "EMBLGenbankAbstractDocument.h"
 
 namespace U2 {
 
 class U2FORMATS_EXPORT SwissProtPlainTextFormat : public EMBLGenbankAbstractDocument {
     Q_OBJECT
 public:
-    SwissProtPlainTextFormat(QObject* p);
+    SwissProtPlainTextFormat(QObject *p);
 
 protected:
-    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& = GUrl()) const;
+    virtual FormatCheckResult checkRawTextData(const QByteArray &rawData, const GUrl & = GUrl()) const;
 
-    bool readIdLine(ParserState*);
-    bool readEntry(ParserState*, U2SequenceImporter&,int& seqSize,int& fullSeqSize,bool merge, int gapSize,U2OpStatus&);
-    bool readSequence(ParserState*, U2SequenceImporter&, int&, int&, U2OpStatus&);
-    void readAnnotations(ParserState*, int offset);
+    bool readIdLine(ParserState *);
+    bool readEntry(ParserState *, U2SequenceImporter &, int &seqSize, int &fullSeqSize, bool merge, int gapSize, U2OpStatus &);
+    bool readSequence(ParserState *, U2SequenceImporter &, int &, int &, U2OpStatus &);
+    void readAnnotations(ParserState *, int offset);
     // SWISS-PROT presented new format rules 11.12.2019
     // If the file has been changed since this date, the following function will return true
     // Otherwise - false
     bool isNewAnnotationFormat(const QVariant &dateList, U2OpStatus &si);
     SharedAnnotationData readAnnotationOldFormat(IOAdapter *io, char *cbuff, int contentLen, int bufSize, U2OpStatus &si, int offset);
     SharedAnnotationData readAnnotationNewFormat(char *cbuff, U2OpStatus &si, int offset);
-
 
     QMap<QString, QString> tagMap;
 
@@ -60,8 +59,6 @@ private:
     static const QString ANNOTATION_QUALIFIERS_REGEXP;
 };
 
-
-}//namespace
+}    // namespace U2
 
 #endif
-

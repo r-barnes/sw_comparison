@@ -19,12 +19,10 @@
  * MA 02110-1301, USA.
  */
 
-#include <QFileInfo>
+#include "TBlastXPlusSupportTask.h"
 
 #include <QDomDocument>
-
-#include "TBlastXPlusSupportTask.h"
-#include "BlastPlusSupport.h"
+#include <QFileInfo>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppResources.h>
@@ -36,67 +34,67 @@
 #include <U2Core/ProjectModel.h>
 #include <U2Core/UserApplicationsSettings.h>
 
+#include "BlastPlusSupport.h"
+
 namespace U2 {
 
-ExternalToolRunTask* TBlastXPlusSupportTask::createBlastPlusTask(){
-
+ExternalToolRunTask *TBlastXPlusSupportTask::createBlastPlusTask() {
     QStringList arguments;
 
-    arguments <<"-db"<< settings.databaseNameAndPath;
-    arguments <<"-evalue"<< QString::number(settings.expectValue);
-    if(settings.wordSize <= 0){
-        arguments <<"-word_size"<< "3";
-    }else{
-        arguments <<"-word_size"<< QString::number(settings.wordSize);
+    arguments << "-db" << settings.databaseNameAndPath;
+    arguments << "-evalue" << QString::number(settings.expectValue);
+    if (settings.wordSize <= 0) {
+        arguments << "-word_size"
+                  << "3";
+    } else {
+        arguments << "-word_size" << QString::number(settings.wordSize);
     }
 
     if (settings.directStrand == TriState_Yes) {
-        arguments << "-strand" << "plus";
+        arguments << "-strand"
+                  << "plus";
     } else if (settings.directStrand == TriState_No) {
-        arguments << "-strand" << "minus";
+        arguments << "-strand"
+                  << "minus";
     }
 
-    if(settings.isNucleotideSeq && (!settings.isDefautScores)){
+    if (settings.isNucleotideSeq && (!settings.isDefautScores)) {
         assert(false);
         coreLog.error(tr("Unexpected settings combination"));
-    }else{
-        if(!settings.isDefaultMatrix){
-            arguments <<"-matrix"<< settings.matrix;
+    } else {
+        if (!settings.isDefaultMatrix) {
+            arguments << "-matrix" << settings.matrix;
         }
     }
-    if(settings.numberOfHits != 0){
-        arguments <<"-culling_limit" << QString::number(settings.numberOfHits); //???
+    if (settings.numberOfHits != 0) {
+        arguments << "-culling_limit" << QString::number(settings.numberOfHits);    //???
     }
-    arguments <<"-query"<< url;
+    arguments << "-query" << url;
 
-    if(settings.xDropoffUnGA != 7)
-    {
+    if (settings.xDropoffUnGA != 7) {
         arguments << "-xdrop_ungap" << QString::number(settings.xDropoffUnGA);
     }
-    if(!settings.isDefaultThreshold){
+    if (!settings.isDefaultThreshold) {
         arguments << "-threshold" << QString::number(settings.threshold);
     }
-    if(settings.windowSize !=40)
-    {
+    if (settings.windowSize != 40) {
         arguments << "-window_size" << QString::number(settings.windowSize);
     }
-    arguments <<"-num_threads"<< QString::number(settings.numberOfProcessors);
-    arguments <<"-outfmt"<< QString::number(settings.outputType);//"5";//Set output file format to xml
-    if(settings.outputOriginalFile.isEmpty()){
-        arguments <<"-out"<< url+".xml";
-        settings.outputOriginalFile = url+".xml";
-    }else{
-        arguments <<"-out"<< settings.outputOriginalFile;
+    arguments << "-num_threads" << QString::number(settings.numberOfProcessors);
+    arguments << "-outfmt" << QString::number(settings.outputType);    //"5";//Set output file format to xml
+    if (settings.outputOriginalFile.isEmpty()) {
+        arguments << "-out" << url + ".xml";
+        settings.outputOriginalFile = url + ".xml";
+    } else {
+        arguments << "-out" << settings.outputOriginalFile;
     }
 
+    algoLog.trace("TBlastX+ arguments: " + arguments.join(" "));
+    QString workingDirectory = QFileInfo(url).absolutePath();
 
-    algoLog.trace("TBlastX+ arguments: "+arguments.join(" "));
-    QString workingDirectory=QFileInfo(url).absolutePath();
-
-    ExternalToolRunTask* runTask = new ExternalToolRunTask(BlastPlusSupport::ET_TBLASTX_ID, arguments, new ExternalToolLogParser(), workingDirectory);
+    ExternalToolRunTask *runTask = new ExternalToolRunTask(BlastPlusSupport::ET_TBLASTX_ID, arguments, new ExternalToolLogParser(), workingDirectory);
     setListenerForTask(runTask);
     return runTask;
 }
 
-} // namespace U2
-
+}    // namespace U2

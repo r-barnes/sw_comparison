@@ -19,27 +19,26 @@
  * MA 02110-1301, USA.
  */
 
+#include "SpadesSettingsWidget.h"
+
 #include <QFile>
 
 #include <U2Core/AppContext.h>
-#include <U2Core/AppSettings.h>
 #include <U2Core/AppResources.h>
+#include <U2Core/AppSettings.h>
 #include <U2Core/L10n.h>
 
 #include <U2Gui/U2WidgetStateStorage.h>
 
-#include "SpadesSettingsWidget.h"
 #include "SpadesTask.h"
-
 
 namespace U2 {
 // SpadesSettingsWidget
 
 SpadesSettingsWidget::SpadesSettingsWidget(QWidget *parent)
-    :GenomeAssemblyAlgorithmMainWidget(parent), U2SavableWidget(this)
-{
+    : GenomeAssemblyAlgorithmMainWidget(parent), U2SavableWidget(this) {
     setupUi(this);
-    layout()->setContentsMargins(0,0,0,0);
+    layout()->setContentsMargins(0, 0, 0, 0);
 
     numThreadsSpinbox->setMaximum(AppContext::getAppSettings()->getAppResourcePool()->getIdealThreadCount());
     numThreadsSpinbox->setValue(AppContext::getAppSettings()->getAppResourcePool()->getIdealThreadCount());
@@ -47,7 +46,7 @@ SpadesSettingsWidget::SpadesSettingsWidget(QWidget *parent)
     U2WidgetStateStorage::restoreWidgetState(*this);
 }
 
-QMap<QString,QVariant> SpadesSettingsWidget::getGenomeAssemblyCustomSettings() {
+QMap<QString, QVariant> SpadesSettingsWidget::getGenomeAssemblyCustomSettings() {
     QMap<QString, QVariant> settings;
 
     settings.insert(SpadesTask::OPTION_DATASET_TYPE, typeCombo->currentText());
@@ -71,10 +70,8 @@ GenomeAssemblyAlgorithmMainWidget *SpadesGUIExtensionsFactory::createMainWidget(
     return new SpadesSettingsWidget(parent);
 }
 
-
 bool SpadesGUIExtensionsFactory::hasMainWidget() {
     return true;
 }
 
-} //namespace
-
+}    // namespace U2

@@ -24,15 +24,11 @@
 namespace U2 {
 
 McaRowMemoryData::McaRowMemoryData()
-    : rowLength(0)
-{
-
+    : rowLength(0) {
 }
 
 McaRowDatabaseData::McaRowDatabaseData()
-    : rowLength(0)
-{
-
+    : rowLength(0) {
 }
 
-}
+}    // namespace U2

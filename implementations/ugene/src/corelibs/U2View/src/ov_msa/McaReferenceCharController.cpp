@@ -19,27 +19,27 @@
  * MA 02110-1301, USA.
  */
 
-#include "McaEditor.h"
 #include "McaReferenceCharController.h"
 
 #include <U2Core/DNASequenceObject.h>
-#include <U2Core/U2SafePoints.h>
 #include <U2Core/U2OpStatusUtils.h>
+#include <U2Core/U2SafePoints.h>
 
 #include <U2View/SequenceObjectContext.h>
+
+#include "McaEditor.h"
 
 namespace U2 {
 
 OffsetRegions::OffsetRegions() {
-
 }
 
-void OffsetRegions::append(const U2Region& region, int offset) {
+void OffsetRegions::append(const U2Region &region, int offset) {
     regions.append(region);
     offsets.append(offset);
 }
 
-int OffsetRegions::findIntersectedRegion(const U2Region& region) const {
+int OffsetRegions::findIntersectedRegion(const U2Region &region) const {
     return region.findIntersectedRegion(regions);
 }
 
@@ -63,22 +63,21 @@ void OffsetRegions::clear() {
     offsets.clear();
 }
 
-McaReferenceCharController::McaReferenceCharController(QObject* p, McaEditor *editor)
+McaReferenceCharController::McaReferenceCharController(QObject *p, McaEditor *editor)
     : QObject(p),
-      refObject (NULL),
+      refObject(NULL),
       ungappedLength(-1) {
-    SequenceObjectContext* ctx = editor->getReferenceContext();
+    SequenceObjectContext *ctx = editor->getReferenceContext();
     SAFE_POINT(ctx != NULL, "SequenceObjectContext is NULL", );
     refObject = ctx->getSequenceObject();
     SAFE_POINT(ctx != NULL, "Reference U2SequenceObject is NULL", );
     initRegions();
 
     connect(refObject, SIGNAL(si_sequenceChanged()), SLOT(sl_update()));
-    connect(editor->getMaObject(), SIGNAL(si_alignmentChanged(MultipleAlignment,MaModificationInfo)),
-            SLOT(sl_update(MultipleAlignment,MaModificationInfo)));
+    connect(editor->getMaObject(), SIGNAL(si_alignmentChanged(MultipleAlignment, MaModificationInfo)), SLOT(sl_update(MultipleAlignment, MaModificationInfo)));
 }
 
-OffsetRegions McaReferenceCharController::getCharRegions(const U2Region& region) const {
+OffsetRegions McaReferenceCharController::getCharRegions(const U2Region &region) const {
     int i = charRegions.findIntersectedRegion(region);
     CHECK(i != -1, OffsetRegions());
 
@@ -110,9 +109,9 @@ int McaReferenceCharController::getUngappedPosition(int pos) const {
     return -1;
 }
 
- int McaReferenceCharController::getUngappedLength() const {
-     return ungappedLength;
- }
+int McaReferenceCharController::getUngappedLength() const {
+    return ungappedLength;
+}
 
 void McaReferenceCharController::sl_update() {
     initRegions();
@@ -159,4 +158,4 @@ void McaReferenceCharController::initRegions() {
     emit si_cacheUpdated();
 }
 
-} // namepspace
+}    // namespace U2

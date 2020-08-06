@@ -19,32 +19,31 @@
  * MA 02110-1301, USA.
  */
 
-
 #include "WorkflowMetadialogFiller.h"
-#include <primitives/GTWidget.h>
 #include <primitives/GTLineEdit.h>
+#include <primitives/GTWidget.h>
 
 #include <QApplication>
 #include <QDialogButtonBox>
 #include <QPushButton>
 
-namespace U2{
+namespace U2 {
 #define GT_CLASS_NAME "GTUtilsDialog::StartupDialogFiller"
 #define GT_METHOD_NAME "commonScenario"
-void WorkflowMetaDialogFiller::commonScenario(){
-     QWidget* dialog = QApplication::activeModalWidget();
-     GT_CHECK(dialog, "activeModalWidget is NULL");
+void WorkflowMetaDialogFiller::commonScenario() {
+    QWidget *dialog = QApplication::activeModalWidget();
+    GT_CHECK(dialog, "activeModalWidget is NULL");
 
-     QLineEdit* urlEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "urlEdit", dialog));
-     GT_CHECK(urlEdit, "urlEdit not found");
-     GTLineEdit::setText(os, urlEdit,url);
+    QLineEdit *urlEdit = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "urlEdit", dialog));
+    GT_CHECK(urlEdit, "urlEdit not found");
+    GTLineEdit::setText(os, urlEdit, url);
 
-     QLineEdit* nameEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "nameEdit", dialog));
-     GT_CHECK(nameEdit, "urlEdit not found");
-     GTLineEdit::setText(os, nameEdit,name);
+    QLineEdit *nameEdit = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "nameEdit", dialog));
+    GT_CHECK(nameEdit, "urlEdit not found");
+    GTLineEdit::setText(os, nameEdit, name);
 
-     GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
+    GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
 }
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
-}
+}    // namespace U2

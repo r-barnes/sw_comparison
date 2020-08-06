@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportPrimersToLocalFileTask.h"
+
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/DNASequenceObject.h>
@@ -31,16 +33,14 @@
 #include <U2Core/U2SequenceUtils.h>
 
 #include "ExportPrimersToDatabaseTask.h"
-#include "ExportPrimersToLocalFileTask.h"
 
 namespace U2 {
 
-ExportPrimersToLocalFileTask::ExportPrimersToLocalFileTask(const QList<Primer> &primers, const DocumentFormatId &formatId, const QString &localFilePath) :
-    Task(tr("Export primers"), TaskFlags_NR_FOSE_COSC | TaskFlag_OnlyNotificationReport),
-    primers(primers),
-    format(AppContext::getDocumentFormatRegistry()->getFormatById(formatId)),
-    url(localFilePath)
-{
+ExportPrimersToLocalFileTask::ExportPrimersToLocalFileTask(const QList<Primer> &primers, const DocumentFormatId &formatId, const QString &localFilePath)
+    : Task(tr("Export primers"), TaskFlags_NR_FOSE_COSC | TaskFlag_OnlyNotificationReport),
+      primers(primers),
+      format(AppContext::getDocumentFormatRegistry()->getFormatById(formatId)),
+      url(localFilePath) {
     SAFE_POINT_EXT(!primers.isEmpty(), setError(L10N::badArgument("primers list")), );
     SAFE_POINT_EXT(NULL != format, setError(L10N::badArgument("document format")), );
     SAFE_POINT_EXT(!localFilePath.isEmpty(), setError(L10N::badArgument("file path")), );
@@ -103,4 +103,4 @@ void ExportPrimersToLocalFileTask::addObjects(Document *document, ExportPrimersT
     }
 }
 
-}   // namespace U2
+}    // namespace U2

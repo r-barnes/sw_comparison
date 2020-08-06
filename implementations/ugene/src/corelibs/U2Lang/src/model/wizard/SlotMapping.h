@@ -34,10 +34,9 @@ class SlotMapping : public IdMapping {
 public:
     SlotMapping(const QString &srcSlotId, const QString &dstSlotId);
 
-    void validate(DataTypePtr srcSlotType, DataTypePtr dstSlotType,
-        U2OpStatus &os) const;
+    void validate(DataTypePtr srcSlotType, DataTypePtr dstSlotType, U2OpStatus &os) const;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_SLOTMAPPING_H_
+#endif    // _U2_SLOTMAPPING_H_

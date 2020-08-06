@@ -29,7 +29,7 @@ namespace U2 {
 class Peak2GeneSupport : public ExternalTool {
     Q_OBJECT
 public:
-    Peak2GeneSupport(const QString& id, const QString &name);
+    Peak2GeneSupport(const QString &id, const QString &name);
 
     static const QString ET_PEAK2GENE;
     static const QString ET_PEAK2GENE_ID;
@@ -37,10 +37,11 @@ public:
     static const QString REF_GENES_DATA_NAME;
     static const QString TRANSLATIONS_DIR_NAME;
     static const QString ENTREZ_TRANSLATION_DATA_NAME;
+
 private:
     void initialize();
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_PEAK2GENE_SUPPORT_
+#endif    // _U2_PEAK2GENE_SUPPORT_

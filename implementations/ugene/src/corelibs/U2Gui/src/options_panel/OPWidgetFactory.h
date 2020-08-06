@@ -22,9 +22,9 @@
 #ifndef _U2_OP_WIDGET_FACTORY_H_
 #define _U2_OP_WIDGET_FACTORY_H_
 
-#include <U2Gui/ObjectViewModel.h>
-
 #include <QPixmap>
+
+#include <U2Gui/ObjectViewModel.h>
 
 namespace U2 {
 
@@ -36,15 +36,22 @@ enum ObjectViewType {
     ObjViewType_ChromAlignmentEditor
 };
 
-struct U2GUI_EXPORT OPGroupParameters
-{
+struct U2GUI_EXPORT OPGroupParameters {
 public:
     OPGroupParameters(QString groupId, QPixmap headerImage, QString title, QString documentationPage);
 
-    inline QString getGroupId() { return groupId; }
-    inline QPixmap getIcon() { return groupIcon; }
-    inline QString getTitle() { return groupTitle; }
-    inline QString getDocumentationPage() { return groupDocumentationPage; }
+    inline QString getGroupId() {
+        return groupId;
+    }
+    inline QPixmap getIcon() {
+        return groupIcon;
+    }
+    inline QString getTitle() {
+        return groupTitle;
+    }
+    inline QString getDocumentationPage() {
+        return groupDocumentationPage;
+    }
 
 private:
     QString groupId;
@@ -53,88 +60,88 @@ private:
     QString groupDocumentationPage;
 };
 
-class U2GUI_EXPORT OPFactoryFilterVisitorInterface{
+class U2GUI_EXPORT OPFactoryFilterVisitorInterface {
 public:
-    OPFactoryFilterVisitorInterface(){}
+    OPFactoryFilterVisitorInterface() {
+    }
     virtual ~OPFactoryFilterVisitorInterface();
 
     virtual bool typePass(ObjectViewType factoryViewType) = 0;
     virtual bool alphabetPass(DNAAlphabetType factoryAlphabetType) = 0;
     virtual bool atLeastOneAlphabetPass(DNAAlphabetType factoryAlphabetType) = 0;
-
 };
 
-class U2GUI_EXPORT OPFactoryFilterVisitor : public OPFactoryFilterVisitorInterface{
+class U2GUI_EXPORT OPFactoryFilterVisitor : public OPFactoryFilterVisitorInterface {
 public:
     OPFactoryFilterVisitor(ObjectViewType _objectViewType)
-        :OPFactoryFilterVisitorInterface()
-        ,objectViewType(_objectViewType)
-        ,objectAlphabetType(DNAAlphabet_RAW){}
+        : OPFactoryFilterVisitorInterface(), objectViewType(_objectViewType), objectAlphabetType(DNAAlphabet_RAW) {
+    }
     OPFactoryFilterVisitor(DNAAlphabetType _objectAlphabetType)
-        :OPFactoryFilterVisitorInterface()
-        ,objectViewType(ObjViewType_SequenceView)
-        ,objectAlphabetType(_objectAlphabetType){}
+        : OPFactoryFilterVisitorInterface(), objectViewType(ObjViewType_SequenceView), objectAlphabetType(_objectAlphabetType) {
+    }
     OPFactoryFilterVisitor(ObjectViewType _objectViewType, DNAAlphabetType _objectAlphabetType)
-        :OPFactoryFilterVisitorInterface()
-        ,objectViewType(_objectViewType)
-        ,objectAlphabetType(_objectAlphabetType){}
+        : OPFactoryFilterVisitorInterface(), objectViewType(_objectViewType), objectAlphabetType(_objectAlphabetType) {
+    }
     OPFactoryFilterVisitor(ObjectViewType _objectViewType, QList<DNAAlphabetType> _objectListAlphabet)
-        :OPFactoryFilterVisitorInterface()
-        ,objectViewType(_objectViewType)
-        ,objectAlphabetType(DNAAlphabet_RAW)
-        ,objectAlphabets(_objectListAlphabet){}
+        : OPFactoryFilterVisitorInterface(), objectViewType(_objectViewType), objectAlphabetType(DNAAlphabet_RAW), objectAlphabets(_objectListAlphabet) {
+    }
 
-    virtual bool typePass(ObjectViewType factoryViewType){ return factoryViewType == objectViewType;}
-    virtual bool alphabetPass(DNAAlphabetType factoryAlphabetType) { return factoryAlphabetType == objectAlphabetType;}
+    virtual bool typePass(ObjectViewType factoryViewType) {
+        return factoryViewType == objectViewType;
+    }
+    virtual bool alphabetPass(DNAAlphabetType factoryAlphabetType) {
+        return factoryAlphabetType == objectAlphabetType;
+    }
     virtual bool atLeastOneAlphabetPass(DNAAlphabetType factoryAlphabetType);
 
 private:
     ObjectViewType objectViewType;
     DNAAlphabetType objectAlphabetType;
     QList<DNAAlphabetType> objectAlphabets;
-
 };
 
-
-class U2GUI_EXPORT OPWidgetFactory : public QObject
-{
+class U2GUI_EXPORT OPWidgetFactory : public QObject {
     Q_OBJECT
 
 public:
     OPWidgetFactory();
     virtual ~OPWidgetFactory();
 
-    virtual QWidget* createWidget(GObjectView* objView) = 0;
+    virtual QWidget *createWidget(GObjectView *objView, const QVariantMap &options) = 0;
 
     virtual OPGroupParameters getOPGroupParameters() = 0;
 
-    virtual bool passFiltration (OPFactoryFilterVisitorInterface* filter);
+    virtual bool passFiltration(OPFactoryFilterVisitorInterface *filter);
+
+    /** Called when existing widget is activated by API with a custom options set. */
+    virtual void applyOptionsToWidget(QWidget *widget, const QVariantMap &options);
 
 protected:
-    virtual ObjectViewType getObjectViewType() { return objectViewOfWidget; }
+    virtual ObjectViewType getObjectViewType() const {
+        return objectViewOfWidget;
+    }
 
 protected:
-    GObjectView*    objView;
-    ObjectViewType  objectViewOfWidget;
+    GObjectView *objView;
+    ObjectViewType objectViewOfWidget;
 };
 
-
-class U2GUI_EXPORT OPCommonWidgetFactory : public QObject
-{
+class U2GUI_EXPORT OPCommonWidgetFactory : public QObject {
     Q_OBJECT
 public:
     OPCommonWidgetFactory(QList<QString> groupIds);
     virtual ~OPCommonWidgetFactory();
 
-    virtual QWidget* createWidget(GObjectView *objView) = 0;
+    virtual QWidget *createWidget(GObjectView *objView, const QVariantMap &options) = 0;
 
-    bool isInGroup(QString groupId) { return groupIds.contains(groupId); }
+    bool isInGroup(QString groupId) {
+        return groupIds.contains(groupId);
+    }
 
 protected:
-    QList<QString> groupIds; // groups where the common widget is placed
+    QList<QString> groupIds;    // groups where the common widget is placed
 };
 
-} // namespace
+}    // namespace U2
 
 #endif
-

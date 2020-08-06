@@ -81,11 +81,11 @@ public:
     void run();
     QString generateReport() const;
 
-    const QList<InSilicoPcrProduct> & getResults() const;
-    const InSilicoPcrTaskSettings & getSettings() const;
+    const QList<InSilicoPcrProduct> &getResults() const;
+    const InSilicoPcrTaskSettings &getSettings() const;
 
 private:
-    struct  PrimerBind {
+    struct PrimerBind {
         PrimerBind();
 
         QByteArray primer;
@@ -95,15 +95,15 @@ private:
     };
     PrimerBind getPrimerBind(const FindAlgorithmResult &forward, const FindAlgorithmResult &reverse, U2Strand::Direction direction) const;
 
-    qint64 getProductSize(const PrimerBind& leftBind, const PrimerBind& rightBind) const;
+    qint64 getProductSize(const PrimerBind &leftBind, const PrimerBind &rightBind) const;
     FindAlgorithmTaskSettings getFindPatternSettings(U2Strand::Direction direction);
     bool isCorrectProductSize(qint64 productSize, qint64 minPrimerSize) const;
     bool filter(const PrimerBind &leftBind, const PrimerBind &rightBind, qint64 productSize) const;
     bool checkPerfectMatch(const PrimerBind &bind, U2Strand::Direction direction) const;
     QByteArray getSequence(const U2Region &region, U2Strand::Direction direction) const;
     InSilicoPcrProduct createResult(const PrimerBind &leftPrimer, const U2Region &product, const PrimerBind &rightPrimer, U2Strand::Direction direction) const;
-    bool updateSequenceByPrimers(const PrimerBind &leftPrimer, const PrimerBind &rightPrimer, QByteArray& productSequence) const;
-    void updateSequenceByPrimer(const PrimerBind &primer, QByteArray& productSequence) const;
+    bool updateSequenceByPrimers(const PrimerBind &leftPrimer, const PrimerBind &rightPrimer, QByteArray &productSequence) const;
+    void updateSequenceByPrimer(const PrimerBind &primer, QByteArray &productSequence) const;
 
 private:
     InSilicoPcrTaskSettings settings;
@@ -113,8 +113,8 @@ private:
     int minProductSize;
 };
 
-} // U2
+}    // namespace U2
 
 Q_DECLARE_METATYPE(U2::InSilicoPcrProduct)
 
-#endif // _U2_IN_SILICO_PCR_TASK_H_
+#endif    // _U2_IN_SILICO_PCR_TASK_H_

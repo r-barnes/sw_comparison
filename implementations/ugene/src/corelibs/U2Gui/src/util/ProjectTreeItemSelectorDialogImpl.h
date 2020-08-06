@@ -31,7 +31,7 @@ class ProjectTreeControllerModeSettings;
 class Document;
 class GObject;
 
-class ProjectTreeItemSelectorDialogImpl: public QDialog, public Ui_ProjectTreeItemSelectorDialogBase {
+class ProjectTreeItemSelectorDialogImpl : public QDialog, public Ui_ProjectTreeItemSelectorDialogBase {
     Q_OBJECT
 public:
     ~ProjectTreeItemSelectorDialogImpl();
@@ -39,14 +39,14 @@ public:
     bool acceptByDoubleClick;
 
 private slots:
-    void sl_objectClicked(GObject* obj);
+    void sl_objectClicked(GObject *obj);
 
 private:
     friend class ProjectTreeItemSelectorDialog;
-    ProjectTreeItemSelectorDialogImpl(QWidget* p, const ProjectTreeControllerModeSettings& s);
-    ProjectTreeController* controller;
+    ProjectTreeItemSelectorDialogImpl(QWidget *p, const ProjectTreeControllerModeSettings &s);
+    ProjectTreeController *controller;
 };
 
-} // namespace U2
+}    // namespace U2
 
 #endif

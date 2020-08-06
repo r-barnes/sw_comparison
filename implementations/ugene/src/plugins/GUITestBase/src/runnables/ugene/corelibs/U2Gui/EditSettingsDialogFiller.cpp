@@ -19,10 +19,10 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-
 #include <primitives/GTCheckBox.h>
 #include <primitives/GTRadioButton.h>
+
+#include <QApplication>
 
 #include "EditSettingsDialogFiller.h"
 
@@ -34,9 +34,7 @@ EditSettingsDialogFiller::EditSettingsDialogFiller(HI::GUITestOpStatus &_os,
                                                    bool _recalculateQualifiers)
     : Filler(_os, "EditSettingDialogForm"),
       policy(_policy),
-      recalculateQualifiers(_recalculateQualifiers)
-{
-
+      recalculateQualifiers(_recalculateQualifiers) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
@@ -72,4 +70,4 @@ void EditSettingsDialogFiller::commonScenario() {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

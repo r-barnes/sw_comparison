@@ -26,7 +26,7 @@
 
 namespace U2 {
 
-class U2ALGORITHM_EXPORT BitsTable  {
+class U2ALGORITHM_EXPORT BitsTable {
 public:
     quint32 NUCL_BITS[256];
     const static quint32 NUCL_BITS_SIZE;
@@ -38,13 +38,13 @@ public:
     const static quint32 RAW_BITS_SIZE;
 
     BitsTable();
-    virtual ~BitsTable(){}
+    virtual ~BitsTable() {
+    }
 
     quint32 getBitMaskCharBitsNum(DNAAlphabetType alType) const;
-    const quint32* getBitMaskCharBits(DNAAlphabetType alType) const;
-
+    const quint32 *getBitMaskCharBits(DNAAlphabetType alType) const;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "AprImportWidget.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/GUrlUtils.h>
@@ -27,13 +29,10 @@
 
 #include <U2Gui/SaveDocumentController.h>
 
-#include "AprImportWidget.h"
-
 namespace U2 {
 
-AprImportWidget::AprImportWidget(const GUrl& url, const QVariantMap& settings) :
-    ImportWidget()
-{
+AprImportWidget::AprImportWidget(const GUrl &url, const QVariantMap &settings)
+    : ImportWidget() {
     setupUi(this);
 
     DocumentFormatId formatId = getFormatId(settings);
@@ -55,7 +54,7 @@ QVariantMap AprImportWidget::getSettings() const {
     return settings;
 }
 
-void AprImportWidget::initSaveController(const QString& url, const DocumentFormatId defaultFormatId){
+void AprImportWidget::initSaveController(const QString &url, const DocumentFormatId defaultFormatId) {
     SaveDocumentControllerConfig config;
 
     config.defaultFormatId = defaultFormatId;
@@ -76,7 +75,7 @@ void AprImportWidget::initSaveController(const QString& url, const DocumentForma
     saveController = new SaveDocumentController(config, formats, this);
 }
 
-DocumentFormatId AprImportWidget::getFormatId(const QVariantMap& settings) {
+DocumentFormatId AprImportWidget::getFormatId(const QVariantMap &settings) {
     DocumentFormatId res = settings.value(ImportHint_FormatId).toString();
     if (res.isEmpty()) {
         res = BaseDocumentFormats::FASTA;
@@ -84,4 +83,4 @@ DocumentFormatId AprImportWidget::getFormatId(const QVariantMap& settings) {
     return res;
 }
 
-}   // namespace U2
+}    // namespace U2

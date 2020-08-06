@@ -29,12 +29,13 @@ namespace Workflow {
 
 class DatasetValidator : public ActorValidator {
 public:
-    virtual ~DatasetValidator() { }
+    virtual ~DatasetValidator() {
+    }
 
     virtual bool validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &options) const;
 };
 
-}   // namespace Workflow
-}   // namespace U2
+}    // namespace Workflow
+}    // namespace U2
 
-#endif // _U2_DATASET_VALIDATOR_H_
+#endif    // _U2_DATASET_VALIDATOR_H_

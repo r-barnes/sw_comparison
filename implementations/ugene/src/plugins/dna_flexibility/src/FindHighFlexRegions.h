@@ -22,15 +22,13 @@
 #ifndef _U2_FIND_HIGH_FLEX_REGIONS_H_
 #define _U2_FIND_HIGH_FLEX_REGIONS_H_
 
-#include "HighFlexSettings.h"
-#include "HighFlexResult.h"
-
-#include <U2Core/Task.h>
-#include <U2Core/GObjectReference.h>
-
-#include <U2Core/DNASequence.h>
 #include <U2Core/AnnotationData.h>
+#include <U2Core/DNASequence.h>
+#include <U2Core/GObjectReference.h>
+#include <U2Core/Task.h>
 
+#include "HighFlexResult.h"
+#include "HighFlexSettings.h"
 
 namespace U2 {
 
@@ -39,39 +37,35 @@ namespace U2 {
 * task (FindHighFlexRegionsAlgorithm) to the task that launches
 * the algorithm task (FindHighFlexRegions).
 */
-class FindHighFlexRegionsListener
-{
+class FindHighFlexRegionsListener {
 public:
-    virtual ~FindHighFlexRegionsListener(){}
-    virtual void onResult(const HighFlexResult& result) = 0;
+    virtual ~FindHighFlexRegionsListener() {
+    }
+    virtual void onResult(const HighFlexResult &result) = 0;
 };
-
 
 /**
 * The task processes the data selected / input by a user and
 * launches the algorithm task (FindHighFlexRegionsAlgorithm).
 */
-class FindHighFlexRegions : public Task, public FindHighFlexRegionsListener
-{
+class FindHighFlexRegions : public Task, public FindHighFlexRegionsListener {
     Q_OBJECT
 
 public:
-    FindHighFlexRegions(const DNASequence& sequence,
-                        const HighFlexSettings& settings);
+    FindHighFlexRegions(const DNASequence &sequence,
+                        const HighFlexSettings &settings);
 
     void run();
     QList<HighFlexResult> getResults() const;
 
-    virtual void onResult(const HighFlexResult& result);
+    virtual void onResult(const HighFlexResult &result);
 
 private:
-    const DNASequence       sequence;
-    const HighFlexSettings  settings;
-    QList<HighFlexResult>   results;
+    const DNASequence sequence;
+    const HighFlexSettings settings;
+    QList<HighFlexResult> results;
 };
 
-} // namespace
-
+}    // namespace U2
 
 #endif
-

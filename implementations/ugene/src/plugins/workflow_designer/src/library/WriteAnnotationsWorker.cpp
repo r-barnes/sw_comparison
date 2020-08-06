@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "WriteAnnotationsWorker.h"
+
 #include <QScopedPointer>
 
 #include <U2Core/AnnotationTableObject.h>
@@ -28,13 +30,18 @@
 #include <U2Core/DocumentUtils.h>
 #include <U2Core/FailTask.h>
 #include <U2Core/GUrlUtils.h>
-#include <U2Core/ImportObjectToDatabaseTask.h>
 #include <U2Core/IOAdapter.h>
 #include <U2Core/IOAdapterUtils.h>
+#include <U2Core/ImportObjectToDatabaseTask.h>
 #include <U2Core/MultiTask.h>
 #include <U2Core/QVariantUtils.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
+
+#include <U2Designer/DelegateEditors.h>
+
+#include <U2Gui/DialogUtils.h>
+#include <U2Gui/ExportAnnotations2CSVTask.h>
 
 #include <U2Lang/ActorPrototypeRegistry.h>
 #include <U2Lang/BaseActorCategories.h>
@@ -47,16 +54,8 @@
 #include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/WorkflowMonitor.h>
 
-#include <U2Designer/DelegateEditors.h>
-
-#include <U2Gui/DialogUtils.h>
-#include <U2Gui/ExportAnnotations2CSVTask.h>
-
 #include "BaseDocWriter.h"
-
 #include "util/WriteAnnotationsValidator.h"
-
-#include "WriteAnnotationsWorker.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -70,7 +69,7 @@ static const QString ANN_TABLE_NAME_4_LOCAL_ST("annotations-name");
 static const QString ANN_TABLE_NAME_4_SHARED_ST("ann-obj-name");
 static const QString ANNOTATIONS_NAME_DEF_VAL("Unknown features");
 static const QString SEPARATOR("separator");
-static const QString SEPARATOR_DEFAULT_VALUE (",");
+static const QString SEPARATOR_DEFAULT_VALUE(",");
 static const QString WRITE_NAMES("write_names");
 static const QString MERGE_TABLES_LOCAL("merge");
 static const QString MERGE_TABLES_SHARED("merge_in_shared_db");
@@ -87,19 +86,17 @@ void WriteAnnotationsWorker::init() {
 }
 
 namespace {
-    QString getExtension(const QString &formatId) {
-        CHECK(formatId != CSV_FORMAT_ID, "csv");
-        DocumentFormat *format = AppContext::getDocumentFormatRegistry()->getFormatById(formatId);
-        CHECK(NULL != format, "");
-        QStringList exts = format->getSupportedDocumentFileExtensions();
-        CHECK(!exts.isEmpty(), "");
-        return exts[0];
-    }
+QString getExtension(const QString &formatId) {
+    CHECK(formatId != CSV_FORMAT_ID, "csv");
+    DocumentFormat *format = AppContext::getDocumentFormatRegistry()->getFormatById(formatId);
+    CHECK(NULL != format, "");
+    QStringList exts = format->getSupportedDocumentFileExtensions();
+    CHECK(!exts.isEmpty(), "");
+    return exts[0];
 }
+}    // namespace
 
-Task * WriteAnnotationsWorker::takeParameters(QString &formatId, SaveDocFlags &fl, QString &resultPath, U2DbiRef &dstDbiRef,
-    WriteAnnotationsWorker::DataStorage &storage)
-{
+Task *WriteAnnotationsWorker::takeParameters(QString &formatId, SaveDocFlags &fl, QString &resultPath, U2DbiRef &dstDbiRef, WriteAnnotationsWorker::DataStorage &storage) {
     const QString storageStr = getValue<QString>(BaseAttributes::DATA_STORAGE_ATTRIBUTE().getId());
     if (BaseAttributes::LOCAL_FS_DATA_STORAGE() == storageStr) {
         storage = LocalFs;
@@ -132,7 +129,7 @@ void WriteAnnotationsWorker::updateResultPath(int metadataId, const QString &for
     resultPath = BaseDocWriter::generateUrl(metadata, byDataset, suffix, getExtension(formatId), defaultName);
 }
 
-Task * WriteAnnotationsWorker::tick() {
+Task *WriteAnnotationsWorker::tick() {
     QString formatId;
     SaveDocFlags fl;
     QString resultPath;
@@ -143,7 +140,7 @@ Task * WriteAnnotationsWorker::tick() {
     CHECK(NULL == failTask, failTask);
 
     bool merge = getValue<bool>(MERGE_TABLES_LOCAL);
-    while(annotationsPort->hasMessage()) {
+    while (annotationsPort->hasMessage()) {
         Message inputMessage = getMessageAndSetupScriptValues(annotationsPort);
         if (inputMessage.isEmpty()) {
             continue;
@@ -235,7 +232,6 @@ void WriteAnnotationsWorker::fetchIncomingAnnotations(const QVariantMap &incomin
     }
 }
 
-
 void WriteAnnotationsWorker::mergeAnnTablesIfNecessary(QList<AnnotationTableObject *> &annTables) const {
     CHECK(getMergeAttribute() == true, );
     QString mergedTableName = getAnnotationTableName();
@@ -258,7 +254,7 @@ void WriteAnnotationsWorker::mergeAnnTablesIfNecessary(QList<AnnotationTableObje
     annTables << mergedTable;
 }
 
-Task * WriteAnnotationsWorker::createWriteMultitask(const QList<Task *> &taskList) const {
+Task *WriteAnnotationsWorker::createWriteMultitask(const QList<Task *> &taskList) const {
     if (taskList.isEmpty()) {
         monitor()->addError(tr("Nothing to write"), getActorId(), WorkflowNotification::U2_WARNING);
         return NULL;
@@ -268,7 +264,7 @@ Task * WriteAnnotationsWorker::createWriteMultitask(const QList<Task *> &taskLis
     return new MultiTask(QObject::tr("Save annotations"), taskList);
 }
 
-Task * WriteAnnotationsWorker::getSaveObjTask(const U2DbiRef &dstDbiRef) const {
+Task *WriteAnnotationsWorker::getSaveObjTask(const U2DbiRef &dstDbiRef) const {
     QList<Task *> taskList;
     foreach (const QString &path, annotationsByUrl.keys()) {
         QList<AnnotationTableObject *> annTables = annotationsByUrl.value(path);
@@ -281,39 +277,39 @@ Task * WriteAnnotationsWorker::getSaveObjTask(const U2DbiRef &dstDbiRef) const {
 }
 
 namespace {
-    QString rollName(const QString &name, const QSet<QString> &usedNames) {
-        QString result = name;
-        int counter = 1;
-        while (usedNames.contains(result)) {
-            result = name + QString(" %1").arg(counter);
-            counter++;
-        }
-        return result;
+QString rollName(const QString &name, const QSet<QString> &usedNames) {
+    QString result = name;
+    int counter = 1;
+    while (usedNames.contains(result)) {
+        result = name + QString(" %1").arg(counter);
+        counter++;
     }
-
-    void updateAnnotationsName(AnnotationTableObject *object, QSet<QString> &usedNames) {
-        QString newName = rollName(object->getGObjectName(), usedNames);
-        usedNames << newName;
-        if (object->getGObjectName() != newName) {
-            object->setGObjectName(newName);
-        }
-    }
+    return result;
 }
 
-Task * WriteAnnotationsWorker::getSaveDocTask(const QString &formatId, SaveDocFlags &fl) {
+void updateAnnotationsName(AnnotationTableObject *object, QSet<QString> &usedNames) {
+    QString newName = rollName(object->getGObjectName(), usedNames);
+    usedNames << newName;
+    if (object->getGObjectName() != newName) {
+        object->setGObjectName(newName);
+    }
+}
+}    // namespace
+
+Task *WriteAnnotationsWorker::getSaveDocTask(const QString &formatId, SaveDocFlags &fl) {
     SAFE_POINT(!formatId.isEmpty(), "Invalid format ID", NULL);
 
-    QList<Task*> taskList;
+    QList<Task *> taskList;
     QSet<QString> excludeFileNames = DocumentUtils::getNewDocFileNameExcludesHint();
     foreach (const QString &filepath, annotationsByUrl.keys()) {
         QList<AnnotationTableObject *> annTables = annotationsByUrl.value(filepath);
         mergeAnnTablesIfNecessary(annTables);
 
         Task *task = NULL;
-        if(formatId == CSV_FORMAT_ID) {
-            createdAnnotationObjects << annTables; // will delete in destructor
+        if (formatId == CSV_FORMAT_ID) {
+            createdAnnotationObjects << annTables;    // will delete in destructor
             TaskStateInfo ti;
-            if(fl.testFlag(SaveDoc_Roll) && !GUrlUtils::renameFileWithNameRoll(filepath, ti, excludeFileNames, &coreLog)) {
+            if (fl.testFlag(SaveDoc_Roll) && !GUrlUtils::renameFileWithNameRoll(filepath, ti, excludeFileNames, &coreLog)) {
                 return new FailTask(ti.getError());
             }
 
@@ -322,18 +318,17 @@ Task * WriteAnnotationsWorker::getSaveDocTask(const QString &formatId, SaveDocFl
                 annotations << annTable->getAnnotations();
             }
 
-            task = new ExportAnnotations2CSVTask(annotations, QByteArray(), QString(), NULL, false,
-                   getValue<bool>(WRITE_NAMES), filepath, fl.testFlag(SaveDoc_Append), getValue<QString>(SEPARATOR));
+            task = new ExportAnnotations2CSVTask(annotations, QByteArray(), QString(), NULL, false, getValue<bool>(WRITE_NAMES), filepath, fl.testFlag(SaveDoc_Append), getValue<QString>(SEPARATOR));
         } else {
             fl |= SaveDoc_DestroyAfter;
-            IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(filepath));
-            DocumentFormat* df = AppContext::getDocumentFormatRegistry()->getFormatById(formatId);
+            IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(filepath));
+            DocumentFormat *df = AppContext::getDocumentFormatRegistry()->getFormatById(formatId);
             U2OpStatusImpl os;
             QVariantMap hints;
             U2DbiRef dbiRef = context->getDataStorage()->getDbiRef();
             hints[DocumentFormat::DBI_REF_HINT] = qVariantFromValue(dbiRef);
             hints[DocumentRemovalMode_Synchronous] = QString();
-            Document * doc = df->createNewLoadedDocument(iof, filepath, os, hints);
+            Document *doc = df->createNewLoadedDocument(iof, filepath, os, hints);
             CHECK_OP(os, new FailTask(os.getError()));
             doc->setDocumentOwnsDbiResources(false);
 
@@ -341,7 +336,7 @@ Task * WriteAnnotationsWorker::getSaveDocTask(const QString &formatId, SaveDocFl
             foreach (AnnotationTableObject *annTable, annTables) {
                 updateAnnotationsName(annTable, usedNames);
                 annTable->setModified(false);
-                doc->addObject(annTable); // savedoc task will delete doc -> doc will delete att
+                doc->addObject(annTable);    // savedoc task will delete doc -> doc will delete att
             }
             task = new SaveDocumentTask(doc, fl, excludeFileNames);
         }
@@ -353,11 +348,10 @@ Task * WriteAnnotationsWorker::getSaveDocTask(const QString &formatId, SaveDocFl
 }
 
 void WriteAnnotationsWorker::cleanup() {
-
 }
 
 void WriteAnnotationsWorker::sl_saveDocTaskFinished() {
-    Task *task = dynamic_cast<Task*>(sender());
+    Task *task = dynamic_cast<Task *>(sender());
     CHECK(NULL != task, );
     CHECK(task->isFinished(), );
     CHECK(!task->isCanceled() && !task->hasError(), );
@@ -372,30 +366,29 @@ void WriteAnnotationsWorker::sl_saveDocTaskFinished() {
  *******************************/
 void WriteAnnotationsWorkerFactory::init() {
     // ports description
-    QList<PortDescriptor*> portDescs;
+    QList<PortDescriptor *> portDescs;
     {
         QMap<Descriptor, DataTypePtr> inM;
         inM[BaseSlots::ANNOTATION_TABLE_SLOT()] = BaseTypes::ANNOTATION_TABLE_LIST_TYPE();
         inM[BaseSlots::URL_SLOT()] = BaseTypes::STRING_TYPE();
         inM[BaseSlots::DNA_SEQUENCE_SLOT()] = BaseTypes::DNA_SEQUENCE_TYPE();
         DataTypePtr inSet(new MapDataType(WRITE_ANNOTATIONS_IN_TYPE_ID, inM));
-        Descriptor inPortDesc(BasePorts::IN_ANNOTATIONS_PORT_ID(), WriteAnnotationsWorker::tr("Input annotations"),
-            WriteAnnotationsWorker::tr("Input annotations which will be written to output file"));
+        Descriptor inPortDesc(BasePorts::IN_ANNOTATIONS_PORT_ID(), WriteAnnotationsWorker::tr("Input annotations"), WriteAnnotationsWorker::tr("Input annotations which will be written to output file"));
         portDescs << new PortDescriptor(inPortDesc, inSet, true);
     }
     DocumentFormatConstraints constr;
-    constr.supportedObjectTypes.insert( GObjectTypes::ANNOTATION_TABLE );
+    constr.supportedObjectTypes.insert(GObjectTypes::ANNOTATION_TABLE);
     constr.addFlagToSupport(DocumentFormatFlag_SupportWriting);
     constr.addFlagToExclude(DocumentFormatFlag_CannotBeCreated);
     constr.formatsToExclude.insert(BaseDocumentFormats::VECTOR_NTI_SEQUENCE);
     QMap<DocumentFormatId, QString> supportedFormats;
-    foreach(const DocumentFormatId &id, AppContext::getDocumentFormatRegistry()->selectFormats(constr)) {
+    foreach (const DocumentFormatId &id, AppContext::getDocumentFormatRegistry()->selectFormats(constr)) {
         supportedFormats.insert(id, AppContext::getDocumentFormatRegistry()->getFormatById(id)->getFormatName());
     }
     supportedFormats.insert(CSV_FORMAT_ID, CSV_FORMAT_NAME);
     DocumentFormatId format = supportedFormats.contains(BaseDocumentFormats::PLAIN_GENBANK) ? BaseDocumentFormats::PLAIN_GENBANK : supportedFormats.first();
     // attributes description
-    QList<Attribute*> attrs;
+    QList<Attribute *> attrs;
     {
         attrs << new Attribute(BaseAttributes::DATA_STORAGE_ATTRIBUTE(), BaseTypes::STRING_TYPE(), false, BaseAttributes::LOCAL_FS_DATA_STORAGE());
         Attribute *dbAttr = new Attribute(BaseAttributes::DATABASE_ATTRIBUTE(), BaseTypes::STRING_TYPE(), true);
@@ -408,7 +401,7 @@ void WriteAnnotationsWorkerFactory::init() {
         Attribute *docFormatAttr = new Attribute(BaseAttributes::DOCUMENT_FORMAT_ATTRIBUTE(), BaseTypes::STRING_TYPE(), false, format);
         docFormatAttr->addRelation(new VisibilityRelation(BaseAttributes::DATA_STORAGE_ATTRIBUTE().getId(), BaseAttributes::LOCAL_FS_DATA_STORAGE()));
         attrs << docFormatAttr;
-        Attribute *urlAttr = new Attribute(BaseAttributes::URL_OUT_ATTRIBUTE(), BaseTypes::STRING_TYPE(), false );
+        Attribute *urlAttr = new Attribute(BaseAttributes::URL_OUT_ATTRIBUTE(), BaseTypes::STRING_TYPE(), false);
         urlAttr->addRelation(new VisibilityRelation(BaseAttributes::DATA_STORAGE_ATTRIBUTE().getId(), BaseAttributes::LOCAL_FS_DATA_STORAGE()));
         attrs << urlAttr;
         Attribute *suffixAttr = new Attribute(BaseAttributes::URL_SUFFIX(), BaseTypes::STRING_TYPE(), false);
@@ -419,57 +412,51 @@ void WriteAnnotationsWorkerFactory::init() {
         attrs << fileModeAttr;
 
         // Merge for Local storage
-        Descriptor mergeDesc(MERGE_TABLES_LOCAL, WriteAnnotationsWorker::tr("Merge annotation tables"),
-            WriteAnnotationsWorker::tr("If <i>true</i> all annotation tables from dataset will be merged into one. "
-                                       "The value of <i>Annotation table name</i> parameter will be used as the name of result annotation table."));
+        Descriptor mergeDesc(MERGE_TABLES_LOCAL, WriteAnnotationsWorker::tr("Merge annotation tables"), WriteAnnotationsWorker::tr("If <i>true</i> all annotation tables from dataset will be merged into one. "
+                                                                                                                                   "The value of <i>Annotation table name</i> parameter will be used as the name of result annotation table."));
         Attribute *mergeAttr = new Attribute(mergeDesc, BaseTypes::BOOL_TYPE(), false, false);
         mergeAttr->addRelation(new VisibilityRelation(BaseAttributes::DOCUMENT_FORMAT_ATTRIBUTE().getId(),
-            QVariantList()
-            << CSV_FORMAT_ID
-            << BaseDocumentFormats::PLAIN_EMBL
-            << BaseDocumentFormats::PLAIN_GENBANK
-            << BaseDocumentFormats::GFF
-            << BaseDocumentFormats::PLAIN_SWISS_PROT));
+                                                      QVariantList()
+                                                          << CSV_FORMAT_ID
+                                                          << BaseDocumentFormats::PLAIN_EMBL
+                                                          << BaseDocumentFormats::PLAIN_GENBANK
+                                                          << BaseDocumentFormats::GFF
+                                                          << BaseDocumentFormats::PLAIN_SWISS_PROT));
         attrs << mergeAttr;
 
-        Descriptor annotationsNameDesc(ANN_TABLE_NAME_4_LOCAL_ST, WriteAnnotationsWorker::tr("Annotation table name"),
-            WriteAnnotationsWorker::tr("The name for the result annotation table that contains merged annotation data from file or dataset."));
+        Descriptor annotationsNameDesc(ANN_TABLE_NAME_4_LOCAL_ST, WriteAnnotationsWorker::tr("Annotation table name"), WriteAnnotationsWorker::tr("The name for the result annotation table that contains merged annotation data from file or dataset."));
         Attribute *nameAttr = new Attribute(annotationsNameDesc, BaseTypes::STRING_TYPE(), false, ANNOTATIONS_NAME_DEF_VAL);
         nameAttr->addRelation(new VisibilityRelation(MERGE_TABLES_LOCAL, true));
         nameAttr->addRelation(new VisibilityRelation(BaseAttributes::DOCUMENT_FORMAT_ATTRIBUTE().getId(),
-            QVariantList()
-            << CSV_FORMAT_ID
-            << BaseDocumentFormats::PLAIN_EMBL
-            << BaseDocumentFormats::PLAIN_GENBANK
-            << BaseDocumentFormats::GFF
-            << BaseDocumentFormats::PLAIN_SWISS_PROT));
+                                                     QVariantList()
+                                                         << CSV_FORMAT_ID
+                                                         << BaseDocumentFormats::PLAIN_EMBL
+                                                         << BaseDocumentFormats::PLAIN_GENBANK
+                                                         << BaseDocumentFormats::GFF
+                                                         << BaseDocumentFormats::PLAIN_SWISS_PROT));
         attrs << nameAttr;
 
         // Merge for shared DB
-        Descriptor merge2Desc(MERGE_TABLES_SHARED, WriteAnnotationsWorker::tr("Merge annotation tables"),
-            WriteAnnotationsWorker::tr("If <i>true</i> all annotation tables from dataset will be merged into one annotation object. "
-                                       "The value of <i>Annotation object name</i> parameter will be used as the name of result annotation object."));
+        Descriptor merge2Desc(MERGE_TABLES_SHARED, WriteAnnotationsWorker::tr("Merge annotation tables"), WriteAnnotationsWorker::tr("If <i>true</i> all annotation tables from dataset will be merged into one annotation object. "
+                                                                                                                                     "The value of <i>Annotation object name</i> parameter will be used as the name of result annotation object."));
         Attribute *merge2Attr = new Attribute(merge2Desc, BaseTypes::BOOL_TYPE(), false, false);
         merge2Attr->addRelation(new VisibilityRelation(BaseAttributes::DATA_STORAGE_ATTRIBUTE().getId(), BaseAttributes::SHARED_DB_DATA_STORAGE()));
         attrs << merge2Attr;
 
-        Descriptor annObjNameDesc(ANN_TABLE_NAME_4_SHARED_ST, WriteAnnotationsWorker::tr("Annotation object name"),
-            WriteAnnotationsWorker::tr("Name of the saved annotation object."));
+        Descriptor annObjNameDesc(ANN_TABLE_NAME_4_SHARED_ST, WriteAnnotationsWorker::tr("Annotation object name"), WriteAnnotationsWorker::tr("Name of the saved annotation object."));
         Attribute *objNameAttr = new Attribute(annObjNameDesc, BaseTypes::STRING_TYPE(), false, ANNOTATIONS_NAME_DEF_VAL);
         objNameAttr->addRelation(new VisibilityRelation(BaseAttributes::DATA_STORAGE_ATTRIBUTE().getId(), BaseAttributes::SHARED_DB_DATA_STORAGE()));
         objNameAttr->addRelation(new VisibilityRelation(MERGE_TABLES_SHARED, true));
         attrs << objNameAttr;
 
         // Attributes for CSV format START
-        Descriptor separatorDesc(SEPARATOR, WriteAnnotationsWorker::tr("CSV separator"),
-            WriteAnnotationsWorker::tr("String which separates values in CSV files."));
+        Descriptor separatorDesc(SEPARATOR, WriteAnnotationsWorker::tr("CSV separator"), WriteAnnotationsWorker::tr("String which separates values in CSV files."));
         Attribute *csvSeparatorAttr = new Attribute(separatorDesc, BaseTypes::STRING_TYPE(), false, SEPARATOR_DEFAULT_VALUE);
         csvSeparatorAttr->addRelation(new VisibilityRelation(BaseAttributes::DATA_STORAGE_ATTRIBUTE().getId(), BaseAttributes::LOCAL_FS_DATA_STORAGE()));
         csvSeparatorAttr->addRelation(new VisibilityRelation(BaseAttributes::DOCUMENT_FORMAT_ATTRIBUTE().getId(), CSV_FORMAT_ID));
         attrs << csvSeparatorAttr;
 
-        Descriptor writeNamesDesc(WRITE_NAMES, WriteAnnotationsWorker::tr("Write sequence names"),
-            WriteAnnotationsWorker::tr("Add names of sequences into CSV file."));
+        Descriptor writeNamesDesc(WRITE_NAMES, WriteAnnotationsWorker::tr("Write sequence names"), WriteAnnotationsWorker::tr("Add names of sequences into CSV file."));
         Attribute *seqNamesAttr = new Attribute(writeNamesDesc, BaseTypes::BOOL_TYPE(), false, false);
         seqNamesAttr->addRelation(new VisibilityRelation(BaseAttributes::DATA_STORAGE_ATTRIBUTE().getId(), BaseAttributes::LOCAL_FS_DATA_STORAGE()));
         seqNamesAttr->addRelation(new VisibilityRelation(BaseAttributes::DOCUMENT_FORMAT_ATTRIBUTE().getId(), CSV_FORMAT_ID));
@@ -480,17 +467,17 @@ void WriteAnnotationsWorkerFactory::init() {
     }
 
     Descriptor protoDesc(WriteAnnotationsWorkerFactory::ACTOR_ID,
-        WriteAnnotationsWorker::tr("Write Annotations"),
-        WriteAnnotationsWorker::tr("The element gets message(s) with annotations data and saves the data"
-                                   " to the specified file(s) in one of the appropriate formats"
-                                   " (GenBank, GTF, etc.)."));
-    ActorPrototype * proto = new IntegralBusActorPrototype(protoDesc, portDescs, attrs);
+                         WriteAnnotationsWorker::tr("Write Annotations"),
+                         WriteAnnotationsWorker::tr("The element gets message(s) with annotations data and saves the data"
+                                                    " to the specified file(s) in one of the appropriate formats"
+                                                    " (GenBank, GTF, etc.)."));
+    ActorPrototype *proto = new IntegralBusActorPrototype(protoDesc, portDescs, attrs);
 
     // proto delegates
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
         QVariantMap m;
-        foreach(const QString &key, supportedFormats.keys()) {
+        foreach (const QString &key, supportedFormats.keys()) {
             m[supportedFormats.value(key)] = key;
         }
         delegates[BaseAttributes::DOCUMENT_FORMAT_ATTRIBUTE().getId()] = new ComboBoxDelegate(m);
@@ -514,7 +501,7 @@ void WriteAnnotationsWorkerFactory::init() {
     WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID)->registerEntry(new WriteAnnotationsWorkerFactory());
 }
 
-Worker * WriteAnnotationsWorkerFactory::createWorker(Actor* a) {
+Worker *WriteAnnotationsWorkerFactory::createWorker(Actor *a) {
     return new WriteAnnotationsWorker(a);
 }
 
@@ -522,8 +509,8 @@ Worker * WriteAnnotationsWorkerFactory::createWorker(Actor* a) {
  * WriteAnnotationsPrompter
  ***************************/
 QString WriteAnnotationsPrompter::composeRichDoc() {
-    const QString unsetStr = "<font color='red'>"+tr("unset")+"</font>";
-    IntegralBusPort * input = qobject_cast<IntegralBusPort*>(target->getPort(BasePorts::IN_ANNOTATIONS_PORT_ID()));
+    const QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
+    IntegralBusPort *input = qobject_cast<IntegralBusPort *>(target->getPort(BasePorts::IN_ANNOTATIONS_PORT_ID()));
     QString annName = getProducers(BasePorts::IN_ANNOTATIONS_PORT_ID(), BaseSlots::ANNOTATION_TABLE_SLOT().getId());
     annName = annName.isEmpty() ? unsetStr : annName;
 
@@ -557,11 +544,10 @@ QString WriteAnnotationsPrompter::composeRichDoc() {
     QString formatName = formatId == CSV_FORMAT_ID ? CSV_FORMAT_NAME : AppContext::getDocumentFormatRegistry()->getFormatById(formatId)->getFormatName();
 
     return tr("Save all annotations from <u>%1</u> to %2")
-        .arg(annName)
-        .arg(getHyperlink(BaseAttributes::URL_OUT_ATTRIBUTE().getId(), url))
-        + (storeToFs ? tr(" in %1 format.").arg(getHyperlink(BaseAttributes::DOCUMENT_FORMAT_ATTRIBUTE().getId(), formatName))
-        : tr(" in the ") + QString("<u>%1</u>").arg(dbName) + tr(" database."));
+               .arg(annName)
+               .arg(getHyperlink(BaseAttributes::URL_OUT_ATTRIBUTE().getId(), url)) +
+           (storeToFs ? tr(" in %1 format.").arg(getHyperlink(BaseAttributes::DOCUMENT_FORMAT_ATTRIBUTE().getId(), formatName)) : tr(" in the ") + QString("<u>%1</u>").arg(dbName) + tr(" database."));
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

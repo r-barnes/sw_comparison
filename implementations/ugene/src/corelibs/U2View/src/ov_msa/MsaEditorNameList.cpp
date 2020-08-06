@@ -19,16 +19,16 @@
  * MA 02110-1301, USA.
  */
 
+#include "MsaEditorNameList.h"
+
 #include <U2Gui/GUIUtils.h>
 
 #include "MSAEditor.h"
-#include "MsaEditorNameList.h"
 
 namespace U2 {
 
 MsaEditorNameList::MsaEditorNameList(MaEditorWgt *ui, QScrollBar *nhBar)
-    : MaEditorNameList(ui, nhBar)
-{
+    : MaEditorNameList(ui, nhBar) {
     connect(editor, SIGNAL(si_buildPopupMenu(GObjectView *, QMenu *)), SLOT(sl_buildContextMenu(GObjectView *, QMenu *)));
     connect(editor, SIGNAL(si_buildStaticMenu(GObjectView *, QMenu *)), SLOT(sl_buildStaticMenu(GObjectView *, QMenu *)));
 }
@@ -42,15 +42,15 @@ void MsaEditorNameList::sl_buildContextMenu(GObjectView *, QMenu *menu) {
 }
 
 void MsaEditorNameList::buildMenu(QMenu *menu) {
-    QMenu* editMenu = GUIUtils::findSubMenu(menu, MSAE_MENU_EDIT);
+    QMenu *editMenu = GUIUtils::findSubMenu(menu, MSAE_MENU_EDIT);
     SAFE_POINT(editMenu != NULL, "editMenu not found", );
 
     editMenu->insertAction(editMenu->actions().last(), removeSequenceAction);
 
-    CHECK(qobject_cast<MSAEditor*>(editor) != NULL, );
+    CHECK(qobject_cast<MSAEditor *>(editor) != NULL, );
     CHECK(rect().contains(mapFromGlobal(QCursor::pos())), );
 
-    QMenu* copyMenu = GUIUtils::findSubMenu(menu, MSAE_MENU_COPY);
+    QMenu *copyMenu = GUIUtils::findSubMenu(menu, MSAE_MENU_COPY);
     SAFE_POINT(copyMenu != NULL, "copyMenu not found", );
     copyMenu->addAction(copyCurrentSequenceAction);
 
@@ -58,8 +58,8 @@ void MsaEditorNameList::buildMenu(QMenu *menu) {
     editMenu->insertAction(editMenu->actions().first(), editSequenceNameAction);
 }
 
-MSAEditor* MsaEditorNameList::getEditor() const {
-    return qobject_cast<MSAEditor*>(editor);
+MSAEditor *MsaEditorNameList::getEditor() const {
+    return qobject_cast<MSAEditor *>(editor);
 }
 
-}   // namespace U2
+}    // namespace U2

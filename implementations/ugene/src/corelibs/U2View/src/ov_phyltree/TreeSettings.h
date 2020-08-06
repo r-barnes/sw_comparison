@@ -22,13 +22,15 @@
 #ifndef _U2_TREE_SETTINGS_H_
 #define _U2_TREE_SETTINGS_H_
 
-#include <QMap>
-#include <QVariant>
 #include <QDialog>
 #include <QFontInfo>
+#include <QMap>
+#include <QVariant>
 
 namespace U2 {
-enum TREE_TYPE {DEFAULT, PHYLOGRAM, CLADOGRAM};
+enum TREE_TYPE { DEFAULT,
+                 PHYLOGRAM,
+                 CLADOGRAM };
 
 enum TreeLayout {
     RECTANGULAR_LAYOUT,
@@ -64,5 +66,5 @@ enum TreeViewOption {
 };
 
 typedef QMap<TreeViewOption, QVariant> OptionsMap;
-} //namespace
+}    // namespace U2
 #endif

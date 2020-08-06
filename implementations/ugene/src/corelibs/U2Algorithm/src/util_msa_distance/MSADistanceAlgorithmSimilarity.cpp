@@ -25,12 +25,9 @@
 
 namespace U2 {
 
-MSADistanceAlgorithmFactorySimilarity::MSADistanceAlgorithmFactorySimilarity(QObject* p)
-: MSADistanceAlgorithmFactory(BuiltInDistanceAlgorithms::SIMILARITY_ALGO, DistanceAlgorithmFlags_NuclAmino, p)
-{
-
+MSADistanceAlgorithmFactorySimilarity::MSADistanceAlgorithmFactorySimilarity(QObject *p)
+    : MSADistanceAlgorithmFactory(BuiltInDistanceAlgorithms::SIMILARITY_ALGO, DistanceAlgorithmFlags_NuclAmino, p) {
 }
-
 
 QString MSADistanceAlgorithmFactorySimilarity::getDescription() const {
     return tr("Based on similarity distance between two sequences");
@@ -40,12 +37,11 @@ QString MSADistanceAlgorithmFactorySimilarity::getName() const {
     return tr("Similarity");
 }
 
-
-MSADistanceAlgorithm* MSADistanceAlgorithmFactorySimilarity::createAlgorithm(const MultipleSequenceAlignment& ma, QObject* ) {
-    MSADistanceAlgorithm* res = new MSADistanceAlgorithmSimilarity(this, ma);
-    if(flags.testFlag(DistanceAlgorithmFlag_ExcludeGaps)){
+MSADistanceAlgorithm *MSADistanceAlgorithmFactorySimilarity::createAlgorithm(const MultipleSequenceAlignment &ma, QObject *) {
+    MSADistanceAlgorithm *res = new MSADistanceAlgorithmSimilarity(this, ma);
+    if (flags.testFlag(DistanceAlgorithmFlag_ExcludeGaps)) {
         res->setExcludeGaps(true);
-    }else{
+    } else {
         res->setExcludeGaps(false);
     }
     return res;
@@ -65,12 +61,13 @@ void MSADistanceAlgorithmSimilarity::run() {
                 }
                 bool similar = (ma->charAt(i, k) == ma->charAt(j, k));
 
-                if(!excludeGaps){
-                    if (similar) sim++;
-                }else{
-                    if (similar && ma->charAt(i, k)!=U2Msa::GAP_CHAR) sim++;
+                if (!excludeGaps) {
+                    if (similar)
+                        sim++;
+                } else {
+                    if (similar && ma->charAt(i, k) != U2Msa::GAP_CHAR)
+                        sim++;
                 }
-
             }
             lock.lock();
             setDistanceValue(i, j, sim);
@@ -80,4 +77,4 @@ void MSADistanceAlgorithmSimilarity::run() {
     }
 }
 
-} //namespace
+}    // namespace U2

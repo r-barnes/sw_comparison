@@ -22,31 +22,28 @@
 #ifndef _SMITHWATERMANALGORITHM_H
 #define _SMITHWATERMANALGORITHM_H
 
-#include "PairAlignSequences.h"
+#include <QByteArray>
+#include <QVector>
 
-#include <U2Core/SMatrix.h>
 #include <U2Algorithm/SmithWatermanSettings.h>
 
-#include <QVector>
-#include <QByteArray>
+#include <U2Core/SMatrix.h>
+
+#include "PairAlignSequences.h"
 
 namespace U2 {
 
 class SmithWatermanAlgorithm {
-
 public:
     SmithWatermanAlgorithm();
-    virtual ~SmithWatermanAlgorithm() {}
+    virtual ~SmithWatermanAlgorithm() {
+    }
 
-    virtual void launch(const SMatrix& m, const QByteArray  & _patternSeq, const QByteArray & _searchSeq,
-        int _gapOpen, int _gapExtension, int _minScore, SmithWatermanSettings::SWResultView _resultView);
+    virtual void launch(const SMatrix &m, const QByteArray &_patternSeq, const QByteArray &_searchSeq, int _gapOpen, int _gapExtension, int _minScore, SmithWatermanSettings::SWResultView _resultView);
 
     QList<PairAlignSequences> getResults();
-    static void sortByScore(QList<PairAlignSequences> & pairAlignmentStrings);
-    static quint64 estimateNeededRamAmount(const qint32 gapOpen, const qint32 gapExtension,
-                                           const quint32 minScore, const quint32 maxScore,
-                                           const QByteArray & patternSeq, const QByteArray & searchSeq,
-                                           const SmithWatermanSettings::SWResultView resultView);
+    static void sortByScore(QList<PairAlignSequences> &pairAlignmentStrings);
+    static quint64 estimateNeededRamAmount(const qint32 gapOpen, const qint32 gapExtension, const quint32 minScore, const quint32 maxScore, const QByteArray &patternSeq, const QByteArray &searchSeq, const SmithWatermanSettings::SWResultView resultView);
     static const char STOP;
     static const char UP;
     static const char LEFT;
@@ -55,9 +52,13 @@ public:
 protected:
     bool calculateMatrixLength();
     bool isValidParams();
-    void setValues(const SMatrix& _substitutionMatrix,
-        const QByteArray & _patternSeq, const QByteArray & _searchSeq,
-        int _gapOpen, int _gapExtension, int _minScore, SmithWatermanSettings::SWResultView _resultView);
+    void setValues(const SMatrix &_substitutionMatrix,
+                   const QByteArray &_patternSeq,
+                   const QByteArray &_searchSeq,
+                   int _gapOpen,
+                   int _gapExtension,
+                   int _minScore,
+                   SmithWatermanSettings::SWResultView _resultView);
 
     QList<PairAlignSequences> pairAlignmentStrings;
 
@@ -72,11 +73,10 @@ protected:
     int matrixLength;
     SmithWatermanSettings::SWResultView resultView;
 
-    QVector<QVector<char> > directionMatrix;
+    QVector<QVector<char>> directionMatrix;
 
-    struct KeyOfPairAlignSeq
-    {
-        KeyOfPairAlignSeq(int _score, U2Region const & _intervalSeq1) {
+    struct KeyOfPairAlignSeq {
+        KeyOfPairAlignSeq(int _score, U2Region const &_intervalSeq1) {
             setValues(_score, _intervalSeq1);
         }
 
@@ -87,7 +87,7 @@ protected:
             intervalSeq1.length = 0;
         };
 
-        static void exchange(PairAlignSequences & a, PairAlignSequences & b) {
+        static void exchange(PairAlignSequences &a, PairAlignSequences &b) {
             PairAlignSequences bufKey;
 
             bufKey = a;
@@ -95,20 +95,17 @@ protected:
             b = bufKey;
         }
 
-        void setValues(int _score, U2Region const & _intervalSeq1) {
+        void setValues(int _score, U2Region const &_intervalSeq1) {
             score = _score;
             intervalSeq1 = _intervalSeq1;
         }
 
         int score;
         U2Region intervalSeq1;
-
     };
 
-
 private:
-
-    QVector<QVector<int> > matrix;
+    QVector<QVector<int>> matrix;
     QVector<int> EMatrix;
     QVector<int> FMatrix;
 
@@ -116,6 +113,6 @@ private:
     void calculateMatrixForAnnotationsResult();
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

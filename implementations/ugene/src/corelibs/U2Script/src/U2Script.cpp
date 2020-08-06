@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "U2Script.h"
+
 #include <QFileInfo>
 
 #include <U2Core/AppContext.h>
@@ -28,35 +30,33 @@
 #include "SchemeWrapper.h"
 #include "UgeneContextWrapper.h"
 
-#include "U2Script.h"
-
 static U2::UgeneContextWrapper *GLOBAL_CONTEXT = NULL;
 
-U2ErrorType processTask( U2::Task *task ) {
-    if ( NULL == GLOBAL_CONTEXT ) { // when script interface was used from inside UGENE
-                                    // now it's being used in unit tests
-        CHECK( U2::UgeneContextWrapper::isAppContextInitialized( ), U2_INVALID_CALL );
-        U2::TaskScheduler *scheduler = U2::AppContext::getTaskScheduler( );
-        CHECK( NULL != scheduler, U2_INVALID_CALL );
-        scheduler->registerTopLevelTask( task );
+U2ErrorType processTask(U2::Task *task) {
+    if (NULL == GLOBAL_CONTEXT) {    // when script interface was used from inside UGENE
+        // now it's being used in unit tests
+        CHECK(U2::UgeneContextWrapper::isAppContextInitialized(), U2_INVALID_CALL);
+        U2::TaskScheduler *scheduler = U2::AppContext::getTaskScheduler();
+        CHECK(NULL != scheduler, U2_INVALID_CALL);
+        scheduler->registerTopLevelTask(task);
     } else {
-        GLOBAL_CONTEXT->processTask( task );
+        GLOBAL_CONTEXT->processTask(task);
     }
     return U2_OK;
 }
 
 extern "C" {
 
-U2SCRIPT_EXPORT U2ErrorType initContext( const wchar_t *_workingDirectoryPath ) {
-    QString workingDirectoryPath = QString::fromWCharArray( _workingDirectoryPath );
-    QFileInfo info( workingDirectoryPath );
-    if ( NULL == workingDirectoryPath || !info.isDir( ) || !info.exists( ) ) {
+U2SCRIPT_EXPORT U2ErrorType initContext(const wchar_t *_workingDirectoryPath) {
+    QString workingDirectoryPath = QString::fromWCharArray(_workingDirectoryPath);
+    QFileInfo info(workingDirectoryPath);
+    if (NULL == workingDirectoryPath || !info.isDir() || !info.exists()) {
         return U2_INVALID_PATH;
     }
-    if ( NULL == GLOBAL_CONTEXT ) {
+    if (NULL == GLOBAL_CONTEXT) {
         try {
-            GLOBAL_CONTEXT = new U2::UgeneContextWrapper( workingDirectoryPath );
-        } catch ( const std::bad_alloc & ) {
+            GLOBAL_CONTEXT = new U2::UgeneContextWrapper(workingDirectoryPath);
+        } catch (const std::bad_alloc &) {
             delete GLOBAL_CONTEXT;
             return U2_NOT_ENOUGH_MEMORY;
         }
@@ -66,8 +66,8 @@ U2SCRIPT_EXPORT U2ErrorType initContext( const wchar_t *_workingDirectoryPath ) 
     return U2_OK;
 }
 
-U2SCRIPT_EXPORT U2ErrorType releaseContext( ) {
-    if ( NULL != GLOBAL_CONTEXT ) {
+U2SCRIPT_EXPORT U2ErrorType releaseContext() {
+    if (NULL != GLOBAL_CONTEXT) {
         delete GLOBAL_CONTEXT;
         GLOBAL_CONTEXT = NULL;
     } else {
@@ -75,5 +75,4 @@ U2SCRIPT_EXPORT U2ErrorType releaseContext( ) {
     }
     return U2_OK;
 }
-
 };

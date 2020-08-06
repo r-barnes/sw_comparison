@@ -19,17 +19,16 @@
  * MA 02110-1301, USA.
  */
 
+#include "DbObjectItem.h"
+
 #include <U2Core/GObjectTypes.h>
 
 #include <U2Lang/SharedDbUrlUtils.h>
 
-#include "DbObjectItem.h"
-
 namespace U2 {
 
 DbObjectItem::DbObjectItem(const QString &url, QListWidget *parent)
-    : FileItem(url, parent)
-{
+    : FileItem(url, parent) {
     QIcon fileIcon = GObjectTypes::getTypeInfo(SharedDbUrlUtils::getDbObjectTypeByUrl(url)).icon;
     setIcon(fileIcon);
 
@@ -38,4 +37,4 @@ DbObjectItem::DbObjectItem(const QString &url, QListWidget *parent)
     setToolTip("\"" + objectName + tr("\" is located in the database <b>") + SharedDbUrlUtils::getDbShortNameFromEntityUrl(url) + "</b>");
 }
 
-} // U2
+}    // namespace U2

@@ -20,10 +20,9 @@
  */
 
 #include "UHMM3PhmmerDialogFiller.h"
-
 #include <primitives/GTLineEdit.h>
-#include <primitives/GTWidget.h>
 #include <primitives/GTTabBar.h>
+#include <primitives/GTWidget.h>
 
 #include <QApplication>
 #include <QTabWidget>
@@ -33,15 +32,15 @@ namespace U2 {
 #define GT_CLASS_NAME "UHMM3PhmmerDialogFiller"
 #define GT_METHOD_NAME "commonScenario"
 
-void UHMM3PhmmerDialogFiller::commonScenario(){
+void UHMM3PhmmerDialogFiller::commonScenario() {
     QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog != NULL, "dialog not found");
 
     GTGlobals::sleep(1000);
-    QTabWidget* tabWidget = GTWidget::findExactWidget<QTabWidget*>(os, "mainTabWidget", dialog);
+    QTabWidget *tabWidget = GTWidget::findExactWidget<QTabWidget *>(os, "mainTabWidget", dialog);
 
     tabWidget->setCurrentIndex(0);
-    QLineEdit* queryLineEdit = GTWidget::findExactWidget<QLineEdit*>(os, "queryLineEdit", dialog);
+    QLineEdit *queryLineEdit = GTWidget::findExactWidget<QLineEdit *>(os, "queryLineEdit", dialog);
     GTLineEdit::setText(os, queryLineEdit, input);
 
     GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
@@ -50,4 +49,4 @@ void UHMM3PhmmerDialogFiller::commonScenario(){
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

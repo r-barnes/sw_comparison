@@ -33,7 +33,7 @@ class ProjectFilterProxyModel : public QSortFilterProxyModel {
 public:
     ProjectFilterProxyModel(const ProjectTreeControllerModeSettings &settings, QObject *p = NULL);
 
-    ProjectViewModel * sourceModel() const;
+    ProjectViewModel *sourceModel() const;
 
     void updateSettings(const ProjectTreeControllerModeSettings &settings);
     // wraps the ProjectViewModel's method with the same name
@@ -48,6 +48,6 @@ private:
     ProjectTreeControllerModeSettings settings;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_PROJECT_FILTER_PROXY_MODEL_H_
+#endif    // _U2_PROJECT_FILTER_PROXY_MODEL_H_

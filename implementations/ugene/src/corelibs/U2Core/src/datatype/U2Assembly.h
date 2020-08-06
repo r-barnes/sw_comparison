@@ -22,10 +22,10 @@
 #ifndef _U2_ASSEMBLY_H_
 #define _U2_ASSEMBLY_H_
 
-#include <U2Core/U2Sequence.h>
-#include <U2Core/U2Range.h>
 #include <QSharedData>
 
+#include <U2Core/U2Range.h>
+#include <U2Core/U2Sequence.h>
 
 namespace U2 {
 
@@ -77,27 +77,31 @@ namespace U2 {
  */
 enum U2CigarOp {
     U2CigarOp_Invalid = 0,
-    U2CigarOp_D = 1,  // deleted
-    U2CigarOp_I = 2,  // inserted
-    U2CigarOp_H = 3,  // hard-clipped
-    U2CigarOp_M = 4,  // alignment match
-    U2CigarOp_N = 5,  // skipped
-    U2CigarOp_P = 6,  // padded
-    U2CigarOp_S = 7,  // soft-clipped
-    U2CigarOp_EQ = 8, // sequence match
-    U2CigarOp_X = 9   // sequence mismatch
+    U2CigarOp_D = 1,    // deleted
+    U2CigarOp_I = 2,    // inserted
+    U2CigarOp_H = 3,    // hard-clipped
+    U2CigarOp_M = 4,    // alignment match
+    U2CigarOp_N = 5,    // skipped
+    U2CigarOp_P = 6,    // padded
+    U2CigarOp_S = 7,    // soft-clipped
+    U2CigarOp_EQ = 8,    // sequence match
+    U2CigarOp_X = 9    // sequence mismatch
 };
 
 /**
     CIGAR token: operation + count
 */
-class U2CORE_EXPORT U2CigarToken  {
+class U2CORE_EXPORT U2CigarToken {
 public:
-    U2CigarToken() : op (U2CigarOp_M), count(1){}
-    U2CigarToken(U2CigarOp _op, int _count) : op(_op), count(_count){}
+    U2CigarToken()
+        : op(U2CigarOp_M), count(1) {
+    }
+    U2CigarToken(U2CigarOp _op, int _count)
+        : op(_op), count(_count) {
+    }
 
     U2CigarOp op;
-    int       count;
+    int count;
 };
 
 /**
@@ -146,7 +150,9 @@ public:
   */
 class U2CORE_EXPORT U2AuxData {
 public:
-    U2AuxData() : type(0), subType(0) {}
+    U2AuxData()
+        : type(0), subType(0) {
+    }
     /** Two bytes for tag */
     char tag[2];
     /** One byte for type: AcCsSiIfZHB */
@@ -162,25 +168,26 @@ public:
 */
 class U2CORE_EXPORT U2AssemblyReadData : public U2Entity, public QSharedData {
 public:
-    U2AssemblyReadData() : leftmostPos(0), effectiveLen(0),
-        packedViewRow(0), mappingQuality(255), flags(0), rnext("*"), pnext(0){}
-
+    U2AssemblyReadData()
+        : leftmostPos(0), effectiveLen(0),
+          packedViewRow(0), mappingQuality(255), flags(0), rnext("*"), pnext(0) {
+    }
 
     /** Name of the read, ASCII string */
-    QByteArray          name;
+    QByteArray name;
 
     /**
         Zero-based left-most position of the read
     */
-    qint64              leftmostPos;
+    qint64 leftmostPos;
 
     /** Length of the read with CIGAR affect applied */
-    qint64              effectiveLen;
+    qint64 effectiveLen;
 
     /**
         Position of the read in packed view
     */
-    qint64              packedViewRow;
+    qint64 packedViewRow;
 
     /**
         CIGAR info for the read
@@ -191,16 +198,16 @@ public:
         Sequence of the read.
         The array is not empty only if sequence is embedded into the read
     */
-    QByteArray          readSequence;
+    QByteArray readSequence;
 
     /** Quality string */
-    QByteArray          quality;
+    QByteArray quality;
 
     /** Mapping quality */
-    quint8              mappingQuality;
+    quint8 mappingQuality;
 
     /** Read flags */
-    qint64              flags;
+    qint64 flags;
 
     /** Reference sequence name of the next mate read */
     QByteArray rnext;
@@ -219,18 +226,25 @@ typedef QSharedDataPointer<U2AssemblyReadData> U2AssemblyRead;
 */
 class U2CORE_EXPORT U2Assembly : public U2Object {
 public:
-    U2Assembly() {}
-    U2Assembly(U2DataId id, QString dbId, qint64 version) : U2Object(id, dbId, version) {}
+    U2Assembly() {
+    }
+    U2Assembly(U2DataId id, QString dbId, qint64 version)
+        : U2Object(id, dbId, version) {
+    }
 
-    U2DataId        referenceId;
+    U2DataId referenceId;
 
-    U2DataType getType() const { return U2Type::Assembly; }
+    U2DataType getType() const {
+        return U2Type::Assembly;
+    }
 };
 
 /** Statistics information collected during the reads packing algorithm */
 class U2AssemblyPackStat {
 public:
-    U2AssemblyPackStat() : maxProw(0), readsCount(0) {}
+    U2AssemblyPackStat()
+        : maxProw(0), readsCount(0) {
+    }
     /** Maximum packed row value after pack algorithm */
     int maxProw;
     /** Number of reads packed */
@@ -240,6 +254,6 @@ public:
 /** Statistics information collected during the reads packing algorithm */
 typedef QVector<qint32> U2AssemblyCoverageStat;
 
-} //namespace
+}    // namespace U2
 
 #endif

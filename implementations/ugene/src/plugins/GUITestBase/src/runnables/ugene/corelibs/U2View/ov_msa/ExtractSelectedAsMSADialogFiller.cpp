@@ -20,21 +20,21 @@
  */
 
 #include "ExtractSelectedAsMSADialogFiller.h"
-#include <primitives/GTComboBox.h>
-#include <primitives/GTWidget.h>
-#include <primitives/GTSpinBox.h>
-#include <primitives/GTLineEdit.h>
-#include <primitives/GTCheckBox.h>
-#include <drivers/GTMouseDriver.h>
 #include <drivers/GTKeyboardDriver.h>
+#include <drivers/GTMouseDriver.h>
+#include <primitives/GTCheckBox.h>
+#include <primitives/GTComboBox.h>
+#include <primitives/GTLineEdit.h>
+#include <primitives/GTSpinBox.h>
+#include <primitives/GTWidget.h>
 
 #include <QApplication>
-#include <QPushButton>
-#include <QComboBox>
-#include <QSpinBox>
 #include <QCheckBox>
-#include <QTableWidget>
+#include <QComboBox>
 #include <QDialogButtonBox>
+#include <QPushButton>
+#include <QSpinBox>
+#include <QTableWidget>
 
 namespace U2 {
 using namespace HI;
@@ -62,9 +62,7 @@ ExtractSelectedAsMSADialogFiller::ExtractSelectedAsMSADialogFiller(GUITestOpStat
       invertButtonPress(_invertButtonPress),
       allButtonPress(_allButtonPress),
       noneButtonPress(_noneButtonPress),
-      dontCheckFilepath(_dontCheckFilepath)
-{
-
+      dontCheckFilepath(_dontCheckFilepath) {
 }
 
 ExtractSelectedAsMSADialogFiller::ExtractSelectedAsMSADialogFiller(GUITestOpStatus &os, CustomScenario *c)
@@ -75,86 +73,82 @@ ExtractSelectedAsMSADialogFiller::ExtractSelectedAsMSADialogFiller(GUITestOpStat
       invertButtonPress(false),
       allButtonPress(false),
       noneButtonPress(false),
-      dontCheckFilepath(false)
-{
-
+      dontCheckFilepath(false) {
 }
 
 void ExtractSelectedAsMSADialogFiller::commonScenario() {
-
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
-    if(from){
-        QLineEdit *fromSpin = dialog->findChild<QLineEdit*>("startLineEdit");
-        GT_CHECK(fromSpin!=NULL, "fromSpin is NULL")
-                GTLineEdit::setText(os, fromSpin, QString::number(from));
+    if (from) {
+        QLineEdit *fromSpin = dialog->findChild<QLineEdit *>("startLineEdit");
+        GT_CHECK(fromSpin != NULL, "fromSpin is NULL")
+        GTLineEdit::setText(os, fromSpin, QString::number(from));
     }
 
-    if(to){
-        QLineEdit *toSpin = dialog->findChild<QLineEdit*>("endLineEdit");
-        GT_CHECK(toSpin!=NULL, "toSpin is NULL")
-                GTLineEdit::setText(os,toSpin, QString::number(to));
+    if (to) {
+        QLineEdit *toSpin = dialog->findChild<QLineEdit *>("endLineEdit");
+        GT_CHECK(toSpin != NULL, "toSpin is NULL")
+        GTLineEdit::setText(os, toSpin, QString::number(to));
     }
 
-    QLineEdit *filepathEdit=dialog->findChild<QLineEdit*>("filepathEdit");
-    GT_CHECK(filepathEdit!=NULL, "filepathEdit is NULL");
-    GTLineEdit::setText(os,filepathEdit,filepath, dontCheckFilepath);
+    QLineEdit *filepathEdit = dialog->findChild<QLineEdit *>("filepathEdit");
+    GT_CHECK(filepathEdit != NULL, "filepathEdit is NULL");
+    GTLineEdit::setText(os, filepathEdit, filepath, dontCheckFilepath);
     GTGlobals::sleep(300);
 
-    QWidget *noneButton = dialog->findChild<QWidget*>("noneButton");
-    GT_CHECK(noneButton!=NULL, "noneButton is NULL");
-    GTWidget::click(os,noneButton);
+    QWidget *noneButton = dialog->findChild<QWidget *>("noneButton");
+    GT_CHECK(noneButton != NULL, "noneButton is NULL");
+    GTWidget::click(os, noneButton);
 
-
-    if(invertButtonPress){
+    if (invertButtonPress) {
         GTGlobals::sleep(300);
-        QWidget *invertButton = dialog->findChild<QWidget*>("invertButton");
-        GT_CHECK(invertButton!=NULL, "invertButton is NULL");
-        GTWidget::click(os,invertButton);
+        QWidget *invertButton = dialog->findChild<QWidget *>("invertButton");
+        GT_CHECK(invertButton != NULL, "invertButton is NULL");
+        GTWidget::click(os, invertButton);
     }
 
-    if(allButtonPress){
+    if (allButtonPress) {
         GTGlobals::sleep(300);
-        QWidget *allButton = dialog->findChild<QWidget*>("allButton");
-        GT_CHECK(allButton!=NULL, "allButton is NULL");
-        GTWidget::click(os,allButton);
+        QWidget *allButton = dialog->findChild<QWidget *>("allButton");
+        GT_CHECK(allButton != NULL, "allButton is NULL");
+        GTWidget::click(os, allButton);
     }
 
-    if(noneButtonPress){
+    if (noneButtonPress) {
         GTGlobals::sleep(300);
-        QWidget *noneButton = dialog->findChild<QWidget*>("noneButton");
-        GT_CHECK(noneButton!=NULL, "noneButton is NULL");
-        GTWidget::click(os,noneButton);
+        QWidget *noneButton = dialog->findChild<QWidget *>("noneButton");
+        GT_CHECK(noneButton != NULL, "noneButton is NULL");
+        GTWidget::click(os, noneButton);
     }
 
-    if(addToProj){
+    if (addToProj) {
         GTGlobals::sleep(300);
-        QCheckBox *addToProjCheck = dialog->findChild<QCheckBox*>("addToProjBox");
-        GT_CHECK(addToProjCheck!=NULL, "addToProjBox is NULL");
-        GTCheckBox::setChecked(os,addToProjCheck,addToProj);
+        QCheckBox *addToProjCheck = dialog->findChild<QCheckBox *>("addToProjBox");
+        GT_CHECK(addToProjCheck != NULL, "addToProjBox is NULL");
+        GTCheckBox::setChecked(os, addToProjCheck, addToProj);
     }
 
-    if(!format.isEmpty()) {
+    if (!format.isEmpty()) {
         GTGlobals::sleep(300);
-        QComboBox *formatCombo = dialog->findChild<QComboBox*>("formatCombo");
+        QComboBox *formatCombo = dialog->findChild<QComboBox *>("formatCombo");
         GT_CHECK(formatCombo != NULL, "formatCombo is null");
         GTComboBox::setIndexWithText(os, formatCombo, format);
     }
 
-    QTableWidget *table=dialog->findChild<QTableWidget*>("sequencesTableWidget");
-    GT_CHECK(table!=NULL, "tableWidget is NULL");
-    QPoint p=table->geometry().topRight();
-    p.setX(p.x()-2);
-    p.setY(p.y()+2);
-    p=dialog->mapToGlobal(p);
+    QTableWidget *table = dialog->findChild<QTableWidget *>("sequencesTableWidget");
+    GT_CHECK(table != NULL, "tableWidget is NULL");
+    QPoint p = table->geometry().topRight();
+    p.setX(p.x() - 2);
+    p.setY(p.y() + 2);
+    p = dialog->mapToGlobal(p);
 
     GTMouseDriver::moveTo(p);
     GTMouseDriver::click();
-    for(int i=0; i<table->rowCount() ;i++){
-        foreach(QString s, list){
-            QCheckBox *box = qobject_cast<QCheckBox*>(table->cellWidget(i,0));
-            if (s==box->text()){
+    for (int i = 0; i < table->rowCount(); i++) {
+        foreach (QString s, list) {
+            QCheckBox *box = qobject_cast<QCheckBox *>(table->cellWidget(i, 0));
+            if (s == box->text()) {
                 GT_CHECK(box->isEnabled(), QString("%1 box is disabled").arg(box->text()));
                 box->setChecked(true);
             }
@@ -168,16 +162,16 @@ void ExtractSelectedAsMSADialogFiller::commonScenario() {
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getSelectedSequences"
-QStringList ExtractSelectedAsMSADialogFiller::getSequences(HI::GUITestOpStatus &os, bool selected){
-    QWidget* dialog = QApplication::activeModalWidget();
+QStringList ExtractSelectedAsMSADialogFiller::getSequences(HI::GUITestOpStatus &os, bool selected) {
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK_RESULT(dialog, "activeModalWidget is NULL", QStringList());
     QStringList result;
 
-    QTableWidget* sequencesTableWidget = GTWidget::findExactWidget<QTableWidget*>(os, "sequencesTableWidget", dialog);
-    for(int i = 0; i<sequencesTableWidget->rowCount(); i++){
-        QCheckBox* box = qobject_cast<QCheckBox*>(sequencesTableWidget->cellWidget(i, 0));
+    QTableWidget *sequencesTableWidget = GTWidget::findExactWidget<QTableWidget *>(os, "sequencesTableWidget", dialog);
+    for (int i = 0; i < sequencesTableWidget->rowCount(); i++) {
+        QCheckBox *box = qobject_cast<QCheckBox *>(sequencesTableWidget->cellWidget(i, 0));
         GT_CHECK_RESULT(box != NULL, "cell widget is not checkbox", QStringList());
-        if(box->isChecked() == selected){
+        if (box->isChecked() == selected) {
             result << box->text();
         }
     }
@@ -188,4 +182,4 @@ QStringList ExtractSelectedAsMSADialogFiller::getSequences(HI::GUITestOpStatus &
 
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

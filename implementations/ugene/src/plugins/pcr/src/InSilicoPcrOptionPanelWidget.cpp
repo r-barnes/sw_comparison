@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "InSilicoPcrOptionPanelWidget.h"
+
 #include <QMessageBox>
 
 #include <U2Core/AppContext.h>
@@ -27,18 +29,17 @@
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/L10n.h>
 #include <U2Core/MultiTask.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/Theme.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include <U2Core/QObjectScopedPointer.h>
 #include <U2Gui/U2WidgetStateStorage.h>
 
 #include <U2View/ADVSequenceObjectContext.h>
 #include <U2View/AnnotatedDNAView.h>
 
 #include "ExtractProductTask.h"
-#include "InSilicoPcrOptionPanelWidget.h"
 #include "InSilicoPcrTask.h"
 #include "PrimerGroupBox.h"
 #include "PrimerStatistics.h"
@@ -47,19 +48,18 @@
 namespace U2 {
 
 namespace {
-    const QString DETAILS_LINK = "details";
-    const QString FORWARD_SUBGROUP_ID = "forward";
-    const QString REVERSE_SUBGROUP_ID = "reverse";
-    const QString SETTINGS_SUBGROUP_ID = "settings";
-}
+const QString DETAILS_LINK = "details";
+const QString FORWARD_SUBGROUP_ID = "forward";
+const QString REVERSE_SUBGROUP_ID = "reverse";
+const QString SETTINGS_SUBGROUP_ID = "settings";
+}    // namespace
 
 InSilicoPcrOptionPanelWidget::InSilicoPcrOptionPanelWidget(AnnotatedDNAView *annotatedDnaView)
     : QWidget(),
       annotatedDnaView(annotatedDnaView),
       pcrTask(NULL),
       resultTableShown(false),
-      savableWidget(this, GObjectViewUtils::findViewByName(annotatedDnaView->getName()))
-{
+      savableWidget(this, GObjectViewUtils::findViewByName(annotatedDnaView->getName())) {
     GCOUNTER(cvar, tvar, "PCR options panel");
     setupUi(this);
     forwardPrimerBoxSubgroup->init(FORWARD_SUBGROUP_ID, tr("Forward primer"), forwardPrimerBox, true);
@@ -77,9 +77,9 @@ InSilicoPcrOptionPanelWidget::InSilicoPcrOptionPanelWidget(AnnotatedDNAView *ann
     connect(reversePrimerBox, SIGNAL(si_primerChanged()), SLOT(sl_onPrimerChanged()));
     connect(findProductButton, SIGNAL(clicked()), SLOT(sl_findProduct()));
     connect(extractProductButton, SIGNAL(clicked()), SLOT(sl_extractProduct()));
-    connect(annotatedDnaView, SIGNAL(si_sequenceModified(ADVSequenceObjectContext*)), SLOT(sl_onSequenceChanged(ADVSequenceObjectContext *)));
-    connect(annotatedDnaView, SIGNAL(si_sequenceRemoved(ADVSequenceObjectContext*)), SLOT(sl_onSequenceChanged(ADVSequenceObjectContext *)));
-    connect(annotatedDnaView, SIGNAL(si_focusChanged(ADVSequenceWidget*, ADVSequenceWidget*)), SLOT(sl_onFocusChanged()));
+    connect(annotatedDnaView, SIGNAL(si_sequenceModified(ADVSequenceObjectContext *)), SLOT(sl_onSequenceChanged(ADVSequenceObjectContext *)));
+    connect(annotatedDnaView, SIGNAL(si_sequenceRemoved(ADVSequenceObjectContext *)), SLOT(sl_onSequenceChanged(ADVSequenceObjectContext *)));
+    connect(annotatedDnaView, SIGNAL(si_focusChanged(ADVSequenceWidget *, ADVSequenceWidget *)), SLOT(sl_onFocusChanged()));
     connect(productsTable->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), SLOT(sl_onProductsSelectionChanged()));
     connect(productsTable, SIGNAL(doubleClicked(const QModelIndex &)), SLOT(sl_onProductDoubleClicked()));
     connect(detailsLinkLabel, SIGNAL(linkActivated(const QString &)), SLOT(sl_showDetails(const QString &)));
@@ -103,7 +103,7 @@ InSilicoPcrOptionPanelWidget::~InSilicoPcrOptionPanelWidget() {
     }
 }
 
-AnnotatedDNAView * InSilicoPcrOptionPanelWidget::getDnaView() const {
+AnnotatedDNAView *InSilicoPcrOptionPanelWidget::getDnaView() const {
     return annotatedDnaView;
 }
 
@@ -200,11 +200,11 @@ void InSilicoPcrOptionPanelWidget::sl_extractProduct() {
     ExtractProductSettings settings;
     settings.sequenceRef = sequenceContext->getSequenceRef();
     settings.annotationsExtraction = ExtractProductSettings::AnnotationsExtraction(annsComboBox->itemData(annsComboBox->currentIndex()).toInt());
-    foreach(AnnotationTableObject *annsObject, sequenceContext->getAnnotationObjects()) {
+    foreach (AnnotationTableObject *annsObject, sequenceContext->getAnnotationObjects()) {
         settings.annotationRefs << annsObject->getEntityRef();
     }
 
-    QList<Task*> tasks;
+    QList<Task *> tasks;
     foreach (const InSilicoPcrProduct &product, productsTable->getSelectedProducts()) {
         tasks << new ExtractProductWrapperTask(product, sequenceObject->getSequenceName(), sequenceObject->getSequenceLength(), settings);
     }
@@ -261,4 +261,4 @@ void InSilicoPcrOptionPanelWidget::sl_showDetails(const QString &link) {
     dlg->exec();
 }
 
-} // U2
+}    // namespace U2

@@ -19,10 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "McaEditorNameList.h"
+
 #include <U2Gui/GraphUtils.h>
 
 #include "McaEditor.h"
-#include "McaEditorNameList.h"
 #include "McaEditorSequenceArea.h"
 #include "helpers/RowHeightController.h"
 #include "view_rendering/MaEditorSelection.h"
@@ -35,12 +36,11 @@ const qreal McaEditorNameList::ARROW_LINE_WIDTH = 2;
 const qreal McaEditorNameList::ARROW_LENGTH = 25;
 const qreal McaEditorNameList::ARROW_HEAD_WIDTH = 6;
 const qreal McaEditorNameList::ARROW_HEAD_LENGTH = 7;
-const QColor McaEditorNameList::ARROW_DIRECT_COLOR = "blue"; // another possible color: "#4EADE1";
-const QColor McaEditorNameList::ARROW_REVERSE_COLOR = "green"; // another possible color: "#03c03c";
+const QColor McaEditorNameList::ARROW_DIRECT_COLOR = "blue";    // another possible color: "#4EADE1";
+const QColor McaEditorNameList::ARROW_REVERSE_COLOR = "green";    // another possible color: "#03c03c";
 
 McaEditorNameList::McaEditorNameList(McaEditorWgt *ui, QScrollBar *nhBar)
-    : MaEditorNameList(ui, nhBar)
-{
+    : MaEditorNameList(ui, nhBar) {
     setObjectName("mca_editor_name_list");
 
     editSequenceNameAction->setText(tr("Rename read"));
@@ -51,7 +51,7 @@ McaEditorNameList::McaEditorNameList(McaEditorWgt *ui, QScrollBar *nhBar)
     setMinimumWidth(getMinimumWidgetWidth());
 }
 
-void McaEditorNameList::sl_selectionChanged(const MaEditorSelection& current, const MaEditorSelection & /*oldSelection*/) {
+void McaEditorNameList::sl_selectionChanged(const MaEditorSelection &current, const MaEditorSelection & /*oldSelection*/) {
     sl_updateActions();
     sl_completeRedraw();
     emit si_selectionChanged();
@@ -68,8 +68,7 @@ void McaEditorNameList::sl_updateActions() {
     removeSequenceAction->setShortcut(isWholeReadSelected ? QKeySequence::Delete : QKeySequence());
 }
 
-void McaEditorNameList::drawCollapsibleSequenceItem(QPainter &painter, int rowIndex, const QString &name, const QRect &rect,
-                                                    bool isSelected, bool isCollapsed, bool isReference) {
+void McaEditorNameList::drawCollapsibleSequenceItem(QPainter &painter, int rowIndex, const QString &name, const QRect &rect, bool isSelected, bool isCollapsed, bool isReference) {
     const bool isReversed = isRowReversed(rowIndex);
     const QRectF arrowRect = calculateArrowRect(U2Region(rect.y(), rect.height()));
     MaEditorNameList::drawCollapsibleSequenceItem(painter, rowIndex, name, rect, isSelected, isCollapsed, isReference);
@@ -80,8 +79,8 @@ void McaEditorNameList::setSelection(int startSeq, int count) {
     ui->getSequenceArea()->setSelection(MaEditorSelection(0, startSeq, 0, count));
 }
 
-McaEditor* McaEditorNameList::getEditor() const {
-    return qobject_cast<McaEditor*>(editor);
+McaEditor *McaEditorNameList::getEditor() const {
+    return qobject_cast<McaEditor *>(editor);
 }
 
 bool McaEditorNameList::isRowReversed(int rowIndex) const {
@@ -127,4 +126,4 @@ int McaEditorNameList::getIconColumnWidth() const {
     return iconColumnWidth;
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -61,12 +61,12 @@ public:
         bool addResultToProject;
     };
 
-    AlignToReferenceBlastCmdlineTask(const Settings& settings);
+    AlignToReferenceBlastCmdlineTask(const Settings &settings);
 
 private:
     void prepare();
     QString generateReport() const;
-    QList<Task*> onSubTaskFinished(Task *subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
     void run();
     ReportResult report();
 
@@ -91,7 +91,7 @@ private:
 class AlignToReferenceBlastDialog : public QDialog, public Ui_AlignToReferenceBlastDialog {
     Q_OBJECT
 public:
-    AlignToReferenceBlastDialog(QWidget* parent);
+    AlignToReferenceBlastDialog(QWidget *parent);
     AlignToReferenceBlastCmdlineTask::Settings getSettings() const;
 
 public slots:
@@ -114,6 +114,6 @@ private:
     QString defaultOutputUrl;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_ALIGN_TO_REFERENCE_BLAST_DIALOG_H_
+#endif    // _U2_ALIGN_TO_REFERENCE_BLAST_DIALOG_H_

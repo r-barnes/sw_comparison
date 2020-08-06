@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ImportWidget.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/ProjectModel.h>
@@ -26,15 +28,14 @@
 
 #include <U2Gui/SaveDocumentController.h>
 
-#include "ImportWidget.h"
-
 namespace U2 {
 
-ImportWidget::ImportWidget() : QWidget(), saveController(NULL) {
+ImportWidget::ImportWidget()
+    : QWidget(), saveController(NULL) {
 }
 
 ImportWidget::~ImportWidget() {
     delete saveController;
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "WorkflowMetaDialog.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/Settings.h>
 
@@ -31,18 +33,17 @@
 #include <U2Lang/WorkflowUtils.h>
 
 #include "WorkflowDocument.h"
-#include "WorkflowMetaDialog.h"
 
 namespace U2 {
 
 #define LAST_DIR QString("workflowview/lastdir")
 
-WorkflowMetaDialog::WorkflowMetaDialog(QWidget * p, const Metadata& meta)
+WorkflowMetaDialog::WorkflowMetaDialog(QWidget *p, const Metadata &meta)
     : QDialog(p),
       meta(meta),
       saveController(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24740109");
+    new HelpButton(this, buttonBox, "46500283");
 
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
@@ -53,8 +54,8 @@ WorkflowMetaDialog::WorkflowMetaDialog(QWidget * p, const Metadata& meta)
 
     connect(cancelButton, SIGNAL(clicked()), SLOT(reject()));
     connect(okButton, SIGNAL(clicked()), SLOT(sl_onSave()));
-    connect(urlEdit, SIGNAL(textChanged(const QString & )), SLOT(sl_onURLChanged(const QString& )));
-    connect(urlEdit, SIGNAL(textEdited (const QString & )), SLOT(sl_onURLChanged(const QString& )));
+    connect(urlEdit, SIGNAL(textChanged(const QString &)), SLOT(sl_onURLChanged(const QString &)));
+    connect(urlEdit, SIGNAL(textEdited(const QString &)), SLOT(sl_onURLChanged(const QString &)));
 
     okButton->setDisabled(meta.url.isEmpty());
     nameEdit->setText(meta.name);
@@ -65,13 +66,13 @@ void WorkflowMetaDialog::sl_onSave() {
     assert(!WorkflowUtils::WD_FILE_EXTENSIONS.isEmpty());
     QString url = saveController->getSaveFileName();
     bool endsWithWDExt = false;
-    foreach( const QString & ext, WorkflowUtils::WD_FILE_EXTENSIONS ) {
+    foreach (const QString &ext, WorkflowUtils::WD_FILE_EXTENSIONS) {
         assert(!ext.isEmpty());
-        if(url.endsWith(ext)) {
+        if (url.endsWith(ext)) {
             endsWithWDExt = true;
         }
     }
-    if(!endsWithWDExt) {
+    if (!endsWithWDExt) {
         url.append("." + WorkflowUtils::WD_FILE_EXTENSIONS.first());
     }
     meta.url = url;
@@ -80,7 +81,7 @@ void WorkflowMetaDialog::sl_onSave() {
     accept();
 }
 
-void WorkflowMetaDialog::sl_onURLChanged(const QString & text) {
+void WorkflowMetaDialog::sl_onURLChanged(const QString &text) {
     okButton->setDisabled(text.isEmpty());
 }
 
@@ -100,4 +101,4 @@ void WorkflowMetaDialog::initSaveController() {
     saveController = new SaveDocumentController(config, formats, this);
 }
 
-}//namespace
+}    // namespace U2

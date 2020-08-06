@@ -19,25 +19,23 @@
  * MA 02110-1301, USA.
  */
 
+#include "FormatSettings.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/Settings.h>
 
-#include "FormatSettings.h"
-
 namespace U2 {
 
-#define SETTINGS_ROOT   QString("/format_settings/")
-#define CASE_ANNS_MODE   QString("case_anns_mode")
+#define SETTINGS_ROOT QString("/format_settings/")
+#define CASE_ANNS_MODE QString("case_anns_mode")
 #define LOWER_CASE_MODE QString("lower")
 #define UPPER_CASE_MODE QString("upper")
 #define NO_CASE_MODE QString("no")
 
 FormatAppsSettings::FormatAppsSettings() {
-
 }
 
 FormatAppsSettings::~FormatAppsSettings() {
-
 }
 
 CaseAnnotationsMode FormatAppsSettings::getCaseAnnotationsMode() {
@@ -54,16 +52,16 @@ CaseAnnotationsMode FormatAppsSettings::getCaseAnnotationsMode() {
 void FormatAppsSettings::setCaseAnnotationsMode(CaseAnnotationsMode mode) {
     QString modeStr;
     switch (mode) {
-        case LOWER_CASE:
-            modeStr = LOWER_CASE_MODE;
-            break;
-        case UPPER_CASE:
-            modeStr = UPPER_CASE_MODE;
-            break;
-        case NO_CASE_ANNS:
-            modeStr = NO_CASE_MODE;
+    case LOWER_CASE:
+        modeStr = LOWER_CASE_MODE;
+        break;
+    case UPPER_CASE:
+        modeStr = UPPER_CASE_MODE;
+        break;
+    case NO_CASE_ANNS:
+        modeStr = NO_CASE_MODE;
     }
     AppContext::getSettings()->setValue(SETTINGS_ROOT + CASE_ANNS_MODE, modeStr);
 }
 
-} // U2
+}    // namespace U2

@@ -19,15 +19,14 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/Task.h>
-
 #include "TaskWatchdog.h"
+
+#include <U2Core/Task.h>
 
 namespace U2 {
 
 TaskWatchdog::TaskWatchdog(QObject *resource, Task *task)
-: resource(resource), task(task), cancelWithError(false)
-{
+    : resource(resource), task(task), cancelWithError(false) {
     connect(resource, SIGNAL(destroyed()), SLOT(sl_onResourceDestroyed()));
 }
 
@@ -54,4 +53,4 @@ void TaskWatchdog::trackResourceExistence(QObject *resource, Task *task, const Q
     tracker->setCancelError(errorMessage);
 }
 
-} // U2
+}    // namespace U2

@@ -30,15 +30,10 @@ namespace U2 {
 //////////////////////////////////////////////////////////////////////////
 //ExtendedDNAlphabetComparator
 
-ExtendedDNAlphabetComparator::ExtendedDNAlphabetComparator(const DNAAlphabet* _al1, const DNAAlphabet* _al2) : DNAAlphabetComparator(_al1, _al2) {
+ExtendedDNAlphabetComparator::ExtendedDNAlphabetComparator(const DNAAlphabet *_al1, const DNAAlphabet *_al2)
+    : DNAAlphabetComparator(_al1, _al2) {
     assert(al1->isNucleic() && al2->isNucleic());
-    assert(al1->getId() == BaseDNAAlphabetIds::NUCL_DNA_EXTENDED()
-        || al2->getId() == BaseDNAAlphabetIds::NUCL_DNA_EXTENDED()
-        || al1->getId() == BaseDNAAlphabetIds::NUCL_RNA_DEFAULT()
-        || al2->getId() == BaseDNAAlphabetIds::NUCL_RNA_DEFAULT()
-        || al1->getId() == BaseDNAAlphabetIds::NUCL_RNA_EXTENDED()
-        || al2->getId() == BaseDNAAlphabetIds::NUCL_RNA_EXTENDED()
-        );
+    assert(al1->getId() == BaseDNAAlphabetIds::NUCL_DNA_EXTENDED() || al2->getId() == BaseDNAAlphabetIds::NUCL_DNA_EXTENDED() || al1->getId() == BaseDNAAlphabetIds::NUCL_RNA_DEFAULT() || al2->getId() == BaseDNAAlphabetIds::NUCL_RNA_DEFAULT() || al1->getId() == BaseDNAAlphabetIds::NUCL_RNA_EXTENDED() || al2->getId() == BaseDNAAlphabetIds::NUCL_RNA_EXTENDED());
     buildIndex();
 }
 
@@ -51,7 +46,6 @@ bool ExtendedDNAlphabetComparator::equals(char c1, char c2) const {
     bool match = (a1Mask & a2Mask) != 0;
     return match;
 }
-
 
 void ExtendedDNAlphabetComparator::buildIndex() {
     /*
@@ -68,32 +62,29 @@ void ExtendedDNAlphabetComparator::buildIndex() {
     N = A or C or G or T
     */
     qFill(index, index + DNA_AL_EX_INDEX_SIZE, 0);
-    index['A'-' '] = (1<<bit('A'));
-    index['C'-' '] = (1<<bit('C'));
-    index['G'-' '] = (1<<bit('G'));
-    index['T'-' '] = (1<<bit('T'));
-    index['U'-' '] = (1<<bit('T'));
-    index['R'-' '] = (1<<bit('G')) | (1<<bit('A'));
-    index['Y'-' '] = (1<<bit('C')) | (1<<bit('T'));
-    index['M'-' '] = (1<<bit('A')) | (1<<bit('C'));
-    index['K'-' '] = (1<<bit('G')) | (1<<bit('T'));
-    index['S'-' '] = (1<<bit('G')) | (1<<bit('C'));
-    index['W'-' '] = (1<<bit('A')) | (1<<bit('T'));
-    index['B'-' '] = (1<<bit('C')) | (1<<bit('G')) | (1<<bit('T'));
-    index['D'-' '] = (1<<bit('A')) | (1<<bit('G')) | (1<<bit('T'));
-    index['H'-' '] = (1<<bit('A')) | (1<<bit('C')) | (1<<bit('T'));
-    index['V'-' '] = (1<<bit('A')) | (1<<bit('C')) | (1<<bit('G'));
-    index['N'-' '] = (1<<bit('A')) | (1<<bit('C')) | (1<<bit('G')) | (1<<bit('T'));
+    index['A' - ' '] = (1 << bit('A'));
+    index['C' - ' '] = (1 << bit('C'));
+    index['G' - ' '] = (1 << bit('G'));
+    index['T' - ' '] = (1 << bit('T'));
+    index['U' - ' '] = (1 << bit('T'));
+    index['R' - ' '] = (1 << bit('G')) | (1 << bit('A'));
+    index['Y' - ' '] = (1 << bit('C')) | (1 << bit('T'));
+    index['M' - ' '] = (1 << bit('A')) | (1 << bit('C'));
+    index['K' - ' '] = (1 << bit('G')) | (1 << bit('T'));
+    index['S' - ' '] = (1 << bit('G')) | (1 << bit('C'));
+    index['W' - ' '] = (1 << bit('A')) | (1 << bit('T'));
+    index['B' - ' '] = (1 << bit('C')) | (1 << bit('G')) | (1 << bit('T'));
+    index['D' - ' '] = (1 << bit('A')) | (1 << bit('G')) | (1 << bit('T'));
+    index['H' - ' '] = (1 << bit('A')) | (1 << bit('C')) | (1 << bit('T'));
+    index['V' - ' '] = (1 << bit('A')) | (1 << bit('C')) | (1 << bit('G'));
+    index['N' - ' '] = (1 << bit('A')) | (1 << bit('C')) | (1 << bit('G')) | (1 << bit('T'));
 }
-
-
-
 
 //////////////////////////////////////////////////////////////////////////
 // U2AlphabetUtils
 
-bool U2AlphabetUtils::matches(const DNAAlphabet* al, const char* seq, qint64 len) {
-    GTIMER(cnt,tm,"U2AlphabetUtils::matches(al,seq)");
+bool U2AlphabetUtils::matches(const DNAAlphabet *al, const char *seq, qint64 len) {
+    GTIMER(cnt, tm, "U2AlphabetUtils::matches(al,seq)");
     bool rc = false;
     if (al->getType() == DNAAlphabet_RAW) {
         rc = true;
@@ -103,8 +94,8 @@ bool U2AlphabetUtils::matches(const DNAAlphabet* al, const char* seq, qint64 len
     return rc;
 }
 
-bool U2AlphabetUtils::matches(const DNAAlphabet* al, const char* seq, qint64 len, const U2Region& r) {
-    GTIMER(cnt,tm,"U2AlphabetUtils::matches(al,seq,reg)");
+bool U2AlphabetUtils::matches(const DNAAlphabet *al, const char *seq, qint64 len, const U2Region &r) {
+    GTIMER(cnt, tm, "U2AlphabetUtils::matches(al,seq,reg)");
     SAFE_POINT(r.endPos() <= len, "Illegal region end pos!", false);
     bool rc = false;
     if (al->getType() == DNAAlphabet_RAW) {
@@ -115,19 +106,18 @@ bool U2AlphabetUtils::matches(const DNAAlphabet* al, const char* seq, qint64 len
     return rc;
 }
 
-char U2AlphabetUtils::getDefaultSymbol(const U2AlphabetId& alphaId) {
-    const DNAAlphabet* al = AppContext::getDNAAlphabetRegistry()->findById(alphaId.id);
+char U2AlphabetUtils::getDefaultSymbol(const U2AlphabetId &alphaId) {
+    const DNAAlphabet *al = AppContext::getDNAAlphabetRegistry()->findById(alphaId.id);
     SAFE_POINT(al != NULL, "Alphabet is not found: " + alphaId.id, 'N');
     return al->getDefaultSymbol();
 }
 
-
-void U2AlphabetUtils::assignAlphabet(MultipleSequenceAlignment& ma) {
-    const DNAAlphabet* resAl = NULL;
-    for (int i = 0, n = ma->getNumRows();i<n; i++) {
+void U2AlphabetUtils::assignAlphabet(MultipleSequenceAlignment &ma) {
+    const DNAAlphabet *resAl = NULL;
+    for (int i = 0, n = ma->getNumRows(); i < n; i++) {
         const MultipleSequenceAlignmentRow item = ma->getMsaRow(i);
-        const QByteArray& itemSeq = item->getCore();
-        const DNAAlphabet* itemAl = findBestAlphabet(itemSeq);
+        const QByteArray &itemSeq = item->getCore();
+        const DNAAlphabet *itemAl = findBestAlphabet(itemSeq);
         if (resAl == NULL) {
             resAl = itemAl;
         } else {
@@ -143,17 +133,17 @@ void U2AlphabetUtils::assignAlphabet(MultipleSequenceAlignment& ma) {
     }
 }
 
-void U2AlphabetUtils::assignAlphabet(MultipleSequenceAlignment& ma, char ignore) {
-    const DNAAlphabet* resAl = NULL;
-    for (int i = 0, n = ma->getNumRows();i<n; i++) {
+void U2AlphabetUtils::assignAlphabet(MultipleSequenceAlignment &ma, char ignore) {
+    const DNAAlphabet *resAl = NULL;
+    for (int i = 0, n = ma->getNumRows(); i < n; i++) {
         const MultipleSequenceAlignmentRow item = ma->getMsaRow(i);
         QByteArray itemSeq = item->getCore();
         itemSeq.replace(ignore, U2Msa::GAP_CHAR);
-        const DNAAlphabet* itemAl = findBestAlphabet(itemSeq);
+        const DNAAlphabet *itemAl = findBestAlphabet(itemSeq);
         if (resAl == NULL) {
             resAl = itemAl;
         } else {
-            resAl= deriveCommonAlphabet(resAl, itemAl);
+            resAl = deriveCommonAlphabet(resAl, itemAl);
         }
         CHECK(resAl != NULL, );
     }
@@ -165,9 +155,9 @@ void U2AlphabetUtils::assignAlphabet(MultipleSequenceAlignment& ma, char ignore)
     }
 }
 
-const DNAAlphabet* U2AlphabetUtils::findBestAlphabet(const char* seq, qint64 len) {
-    QList<const DNAAlphabet*> alphabets = AppContext::getDNAAlphabetRegistry()->getRegisteredAlphabets();
-    foreach(const DNAAlphabet* al, alphabets) {
+const DNAAlphabet *U2AlphabetUtils::findBestAlphabet(const char *seq, qint64 len) {
+    QList<const DNAAlphabet *> alphabets = AppContext::getDNAAlphabetRegistry()->getRegisteredAlphabets();
+    foreach (const DNAAlphabet *al, alphabets) {
         if (matches(al, seq, len)) {
             return al;
         }
@@ -175,11 +165,10 @@ const DNAAlphabet* U2AlphabetUtils::findBestAlphabet(const char* seq, qint64 len
     return NULL;
 }
 
-
-QList<const DNAAlphabet*> U2AlphabetUtils::findAllAlphabets(const char* seq, qint64 len) {
-    QList<const DNAAlphabet*> res;
-    QList<const DNAAlphabet*> alphabets = AppContext::getDNAAlphabetRegistry()->getRegisteredAlphabets();
-    foreach(const DNAAlphabet* al, alphabets) {
+QList<const DNAAlphabet *> U2AlphabetUtils::findAllAlphabets(const char *seq, qint64 len) {
+    QList<const DNAAlphabet *> res;
+    QList<const DNAAlphabet *> alphabets = AppContext::getDNAAlphabetRegistry()->getRegisteredAlphabets();
+    foreach (const DNAAlphabet *al, alphabets) {
         if (matches(al, seq, len)) {
             res.push_back(al);
         }
@@ -187,12 +176,12 @@ QList<const DNAAlphabet*> U2AlphabetUtils::findAllAlphabets(const char* seq, qin
     return res;
 }
 
-QList<const DNAAlphabet*> U2AlphabetUtils::findAllAlphabets(const char* seq, qint64 len, const QVector<U2Region>& regionsToProcess) {
-    QList<const DNAAlphabet*> res;
-    QList<const DNAAlphabet*> alphabets = AppContext::getDNAAlphabetRegistry()->getRegisteredAlphabets();
-    foreach(const DNAAlphabet* al, alphabets) {
+QList<const DNAAlphabet *> U2AlphabetUtils::findAllAlphabets(const char *seq, qint64 len, const QVector<U2Region> &regionsToProcess) {
+    QList<const DNAAlphabet *> res;
+    QList<const DNAAlphabet *> alphabets = AppContext::getDNAAlphabetRegistry()->getRegisteredAlphabets();
+    foreach (const DNAAlphabet *al, alphabets) {
         bool err = false;
-        foreach (const U2Region& r, regionsToProcess) {
+        foreach (const U2Region &r, regionsToProcess) {
             if (!matches(al, seq, len, r)) {
                 err = true;
                 break;
@@ -205,11 +194,11 @@ QList<const DNAAlphabet*> U2AlphabetUtils::findAllAlphabets(const char* seq, qin
     return res;
 }
 
-const DNAAlphabet* U2AlphabetUtils::findBestAlphabet(const char* seq, qint64 len, const QVector<U2Region>& regionsToProcess) {
-    QList<const DNAAlphabet*> alphabets = AppContext::getDNAAlphabetRegistry()->getRegisteredAlphabets();
-    foreach(const DNAAlphabet* al, alphabets) {
+const DNAAlphabet *U2AlphabetUtils::findBestAlphabet(const char *seq, qint64 len, const QVector<U2Region> &regionsToProcess) {
+    QList<const DNAAlphabet *> alphabets = AppContext::getDNAAlphabetRegistry()->getRegisteredAlphabets();
+    foreach (const DNAAlphabet *al, alphabets) {
         bool err = false;
-        foreach (const U2Region& r, regionsToProcess) {
+        foreach (const U2Region &r, regionsToProcess) {
             if (!matches(al, seq, len, r)) {
                 err = true;
                 break;
@@ -223,7 +212,7 @@ const DNAAlphabet* U2AlphabetUtils::findBestAlphabet(const char* seq, qint64 len
 }
 
 // Note: never returns NULL.
-const DNAAlphabet* U2AlphabetUtils::deriveCommonAlphabet(const DNAAlphabet* al1, const DNAAlphabet* al2) {
+const DNAAlphabet *U2AlphabetUtils::deriveCommonAlphabet(const DNAAlphabet *al1, const DNAAlphabet *al2) {
     SAFE_POINT(al1 != NULL && al2 != NULL, "Alphabet is NULL", NULL);
 
     if (al1 == al2) {
@@ -248,11 +237,11 @@ const DNAAlphabet* U2AlphabetUtils::deriveCommonAlphabet(const DNAAlphabet* al1,
     }
 }
 
-const DNAAlphabet* U2AlphabetUtils::getById(const QString& id) {
+const DNAAlphabet *U2AlphabetUtils::getById(const QString &id) {
     return AppContext::getDNAAlphabetRegistry()->findById(id);
 }
 
-const U2::DNAAlphabet* U2AlphabetUtils::getExtendedAlphabet(const DNAAlphabet* al) {
+const U2::DNAAlphabet *U2AlphabetUtils::getExtendedAlphabet(const DNAAlphabet *al) {
     if (al->getId() == BaseDNAAlphabetIds::NUCL_RNA_DEFAULT()) {
         return AppContext::getDNAAlphabetRegistry()->findById(BaseDNAAlphabetIds::NUCL_RNA_EXTENDED());
     } else if (al->getId() == BaseDNAAlphabetIds::NUCL_DNA_DEFAULT()) {
@@ -264,4 +253,4 @@ const U2::DNAAlphabet* U2AlphabetUtils::getExtendedAlphabet(const DNAAlphabet* a
     }
 }
 
-} //namespace
+}    // namespace U2

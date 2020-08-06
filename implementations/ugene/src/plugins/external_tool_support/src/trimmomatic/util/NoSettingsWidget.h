@@ -40,7 +40,7 @@ public:
     static QVariantMap parseState(const QString &command);
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_NO_SETTINGS_WIDGET_H_
+#endif    // _U2_NO_SETTINGS_WIDGET_H_

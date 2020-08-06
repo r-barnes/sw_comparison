@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "URLLineEdit.h"
+
 #include <QFocusEvent>
 #include <QLayout>
 
@@ -34,16 +36,13 @@
 #include <U2Lang/SchemaConfig.h>
 
 #include "PropertyWidget.h"
-#include "URLLineEdit.h"
 
 namespace U2 {
 
 class FilenameCompletionFiller : public CompletionFiller {
 public:
     FilenameCompletionFiller(URLWidget *_widget)
-        :CompletionFiller(), widget(_widget)
-    {
-
+        : CompletionFiller(), widget(_widget) {
     }
 
     virtual QStringList getSuggestions(const QString &str) {
@@ -86,7 +85,7 @@ public:
             if (!curExt.isEmpty()) {
                 if (ext.startsWith(curExt, Qt::CaseInsensitive)) {
                     choices << baseName + "." + ext;
-                    if (ext != "gz"){
+                    if (ext != "gz") {
                         choices << baseName + "." + ext + ".gz";
                     }
                 }
@@ -138,15 +137,14 @@ URLLineEdit::URLLineEdit(const QString &type,
       multi(multi),
       isPath(isPath),
       saveFile(saveFile),
-      parent(_parent)
-{
+      parent(_parent) {
     if (saveFile && NULL != parent) {
         new BaseCompleter(new FilenameCompletionFiller(parent), this);
     }
     setPlaceholderText(DelegateTags::getString(parent->tags(), DelegateTags::PLACEHOLDER_TEXT));
 }
 
-CompletionFiller * URLLineEdit::getCompletionFillerInstance() {
+CompletionFiller *URLLineEdit::getCompletionFillerInstance() {
     if (saveFile && NULL != parent) {
         return new FilenameCompletionFiller(parent);
     }
@@ -168,7 +166,7 @@ void URLLineEdit::browse(bool addFiles) {
     }
     LastUsedDirHelper lod(type);
     QString lastDir = lod.dir;
-    if(!text().isEmpty()) {
+    if (!text().isEmpty()) {
         QString curPath(text());
         int slashPos = curPath.lastIndexOf("/");
         slashPos = qMax(slashPos, curPath.lastIndexOf("\\"));
@@ -181,7 +179,7 @@ void URLLineEdit::browse(bool addFiles) {
     }
 
     QString name;
-    if(isPath || multi){
+    if (isPath || multi) {
         QStringList lst;
         if (isPath) {
             QString dir = U2FileDialog::getExistingDirectory(NULL, tr("Select a folder"), lastDir, QFileDialog::Options());
@@ -201,16 +199,16 @@ void URLLineEdit::browse(bool addFiles) {
             lod.url = lst.first();
         }
     } else {
-        if(saveFile) {
+        if (saveFile) {
             lod.url = name = U2FileDialog::getSaveFileName(NULL, tr("Select a file"), lastDir, FileFilter, 0, QFileDialog::DontConfirmOverwrite);
             this->checkExtension(name);
         } else {
-            #ifdef Q_OS_MAC
-                if (qgetenv(ENV_GUI_TEST).toInt() == 1 && qgetenv(ENV_USE_NATIVE_DIALOGS).toInt() == 0) {
-                    lod.url = name = U2FileDialog::getOpenFileName(NULL, tr("Select a file"), lastDir, FileFilter, 0, QFileDialog::DontUseNativeDialog );
-                } else
-            #endif
-            lod.url = name = U2FileDialog::getOpenFileName(NULL, tr("Select a file"), lastDir, FileFilter );
+#ifdef Q_OS_MAC
+            if (qgetenv(ENV_GUI_TEST).toInt() == 1 && qgetenv(ENV_USE_NATIVE_DIALOGS).toInt() == 0) {
+                lod.url = name = U2FileDialog::getOpenFileName(NULL, tr("Select a file"), lastDir, FileFilter, 0, QFileDialog::DontUseNativeDialog);
+            } else
+#endif
+                lod.url = name = U2FileDialog::getOpenFileName(NULL, tr("Select a file"), lastDir, FileFilter);
         }
     }
     if (!name.isEmpty()) {
@@ -279,4 +277,4 @@ void URLLineEdit::sl_completionFinished() {
     emit si_finished();
 }
 
-} // U2
+}    // namespace U2

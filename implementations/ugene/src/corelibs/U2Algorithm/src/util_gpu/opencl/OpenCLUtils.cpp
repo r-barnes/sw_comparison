@@ -21,24 +21,25 @@
 
 #ifdef OPENCL_SUPPORT
 
-#include "OpenCLUtils.h"
+#    include "OpenCLUtils.h"
 
-#include <QFile>
-#include <QTextStream>
-#include <U2Core/GAutoDeleteList.h>
+#    include <QFile>
+#    include <QTextStream>
 
-#include <U2Core/Log.h>
+#    include <U2Core/GAutoDeleteList.h>
+#    include <U2Core/Log.h>
 
 namespace U2 {
 
-OpenCLUtils::OpenCLUtils(){}
+OpenCLUtils::OpenCLUtils() {
+}
 
 cl_program OpenCLUtils::createProgramByResource(
-                cl_context clContext,
-                cl_device_id deviceId,
-                const QString& resourceName,
-                const OpenCLHelper& openCLHelper,
-                cl_int& err) {
+    cl_context clContext,
+    cl_device_id deviceId,
+    const QString &resourceName,
+    const OpenCLHelper &openCLHelper,
+    cl_int &err) {
     //open and read file contains OPENCL code
     QByteArray file;
     QFile data(resourceName);
@@ -51,12 +52,11 @@ cl_program OpenCLUtils::createProgramByResource(
         return 0;
     }
 
-    const char* sourceCode = file.constData();
+    const char *sourceCode = file.constData();
     const size_t sourceLength = file.size();
-    cl_program clProgram = openCLHelper.clCreateProgramWithSource_p(clContext, 1, &sourceCode,
-        &sourceLength, &err);
+    cl_program clProgram = openCLHelper.clCreateProgramWithSource_p(clContext, 1, &sourceCode, &sourceLength, &err);
 
-    if(err != 0) {
+    if (err != 0) {
         coreLog.error(QString("OPENCL: clCreateProgramWithSource, Error code (%2)").arg(err));
         return 0;
     }
@@ -78,23 +78,21 @@ cl_program OpenCLUtils::createProgramByResource(
 }
 
 size_t OpenCLUtils::getPreferredWorkGroupSize(
-                cl_kernel kernel,
-                cl_device_id deviceId,
-                const OpenCLHelper& openCLHelper,
-                cl_int &/*err*/) {
-
+    cl_kernel kernel,
+    cl_device_id deviceId,
+    const OpenCLHelper &openCLHelper,
+    cl_int & /*err*/) {
     cl_int err2 = 0;
     size_t preferredWorkGroupSize = 0;
-    err2 |= openCLHelper.clGetKernelWorkGroupInfo_p(kernel, deviceId, CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE,
-        sizeof(size_t), &preferredWorkGroupSize, NULL);
+    err2 |= openCLHelper.clGetKernelWorkGroupInfo_p(kernel, deviceId, CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, sizeof(size_t), &preferredWorkGroupSize, NULL);
 
     if (err2 != CL_SUCCESS) {
-        preferredWorkGroupSize = 32; // set default value to prevent calculation error because of this "performance hint" error
+        preferredWorkGroupSize = 32;    // set default value to prevent calculation error because of this "performance hint" error
     }
 
     return preferredWorkGroupSize;
 }
 
-}//namespace
+}    // namespace U2
 
 #endif /*OPENCL_SUPPORT*/

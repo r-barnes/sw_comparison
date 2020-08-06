@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "FpkmTrackingFormat.h"
+
 #include <QScopedArrayPointer>
 
 #include <U2Core/AnnotationTableObject.h>
@@ -34,26 +36,21 @@
 #include <U2Core/U2OpStatus.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "FpkmTrackingFormat.h"
-
 namespace U2 {
 
 //-------------------------------------------------------------------
 // FpkmTrackingLineValidateFlags
 //-------------------------------------------------------------------
 FpkmTrackingLineValidateFlags::FpkmTrackingLineValidateFlags()
-     : emptyField(false),
-       incorrectNumberOfFields(false),
-       incorrectCoordinates(false),
-       emptyTrackingId(false),
-       incorrectLength(false),
-       incorrectCoverage(false)
-{
+    : emptyField(false),
+      incorrectNumberOfFields(false),
+      incorrectCoordinates(false),
+      emptyTrackingId(false),
+      incorrectLength(false),
+      incorrectCoverage(false) {
 }
 
-
-FormatDetectionScore FpkmTrackingLineValidateFlags::getFormatDetectionScore()
-{
+FormatDetectionScore FpkmTrackingLineValidateFlags::getFormatDetectionScore() {
     if (emptyField || incorrectNumberOfFields || incorrectCoordinates) {
         return FormatDetection_NotMatched;
     }
@@ -68,7 +65,6 @@ FormatDetectionScore FpkmTrackingLineValidateFlags::getFormatDetectionScore()
 
     return FormatDetection_Matched;
 }
-
 
 //-------------------------------------------------------------------
 //  FPKMTrackingFormat
@@ -85,32 +81,27 @@ const QString FpkmTrackingFormat::LOCUS_COLUMN = "locus";
 const QString FpkmTrackingFormat::LENGTH_COLUMN = "length";
 const QString FpkmTrackingFormat::COVERAGE_COLUMN = "coverage";
 
-
-FpkmTrackingFormat::FpkmTrackingFormat(QObject* parent)
-    : TextDocumentFormat(parent, BaseDocumentFormats::FPKM_TRACKING_FORMAT, DocumentFormatFlag_SupportWriting, QStringList("fpkm_tracking"))
-{
+FpkmTrackingFormat::FpkmTrackingFormat(QObject *parent)
+    : TextDocumentFormat(parent, BaseDocumentFormats::FPKM_TRACKING_FORMAT, DocumentFormatFlag_SupportWriting, QStringList("fpkm_tracking")) {
     formatName = tr("FPKM Tracking Format");
     formatDescription = tr("The FPKM (fragments per kilobase of exon model per million mapped fragments)"
-        " Tracking Format is a native Cufflinks format to output estimated expression values.");
+                           " Tracking Format is a native Cufflinks format to output estimated expression values.");
 
     supportedObjectTypes += GObjectTypes::ANNOTATION_TABLE;
 }
 
-
-Document* FpkmTrackingFormat::loadTextDocument(IOAdapter* io, const U2DbiRef&  dbiRef, const QVariantMap& hints, U2OpStatus& os)
-{
+Document *FpkmTrackingFormat::loadTextDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &hints, U2OpStatus &os) {
     CHECK_EXT(io != NULL && io->isOpen(), os.setError(L10N::badArgument("IO adapter")), NULL);
-    QList<GObject*> objects;
+    QList<GObject *> objects;
 
     load(io, objects, dbiRef, hints, os);
     CHECK_OP_EXT(os, qDeleteAll(objects), NULL);
 
-    Document* doc = new Document(this, io->getFactory(), io->getURL(), dbiRef, objects);
+    Document *doc = new Document(this, io->getFactory(), io->getURL(), dbiRef, objects);
     return doc;
 }
 
-
-int readFpkmTrLine(QString &buffer, IOAdapter* io, QScopedArrayPointer<char> &charbuff, U2OpStatus& os) {
+int readFpkmTrLine(QString &buffer, IOAdapter *io, QScopedArrayPointer<char> &charbuff, U2OpStatus &os) {
     int len;
     buffer.clear();
     do {
@@ -131,7 +122,7 @@ void FpkmTrackingFormat::addQualifierIfValuePresent(SharedAnnotationData &annotD
     }
 }
 
-QList<SharedAnnotationData> FpkmTrackingFormat::parseDocument(IOAdapter* io, QString& seqName, QString annotName, U2OpStatus &os) {
+QList<SharedAnnotationData> FpkmTrackingFormat::parseDocument(IOAdapter *io, QString &seqName, QString annotName, U2OpStatus &os) {
     QList<SharedAnnotationData> result;
 
     int length;
@@ -180,10 +171,10 @@ QList<SharedAnnotationData> FpkmTrackingFormat::parseDocument(IOAdapter* io, QSt
         if (!seqName.isEmpty()) {
             if (fpkmTrLineData.seqName != seqName) {
                 ioLog.trace(tr("FPKM Tracking Format parsing error: different sequence names were detected"
-                    " in an input file. Sequence name '%1' is used.").arg(seqName));
+                               " in an input file. Sequence name '%1' is used.")
+                                .arg(seqName));
             }
-        }
-        else {
+        } else {
             seqName = fpkmTrLineData.seqName;
         }
 
@@ -196,7 +187,8 @@ QList<SharedAnnotationData> FpkmTrackingFormat::parseDocument(IOAdapter* io, QSt
         if (validationStatus.isEmptyTrackingId()) {
             // Write the error to the log, but open the file
             ioLog.trace(tr("FPKM Tracking Format parsing error: tracking ID"
-                " value is empty at line %1!").arg(lineNumber));
+                           " value is empty at line %1!")
+                            .arg(lineNumber));
         } else {
             annotData->qualifiers.push_back(
                 U2Qualifier(TRACKING_ID_COLUMN, fpkmTrLineData.trackingId));
@@ -219,12 +211,14 @@ QList<SharedAnnotationData> FpkmTrackingFormat::parseDocument(IOAdapter* io, QSt
         // Additional warnings
         if (validationStatus.isIncorrectLength()) {
             ioLog.trace(tr("FPKM Tracking Format parsing error: incorrect"
-                " length value at line %1!").arg(lineNumber));
+                           " length value at line %1!")
+                            .arg(lineNumber));
         }
 
         if (validationStatus.isIncorrectCoverage()) {
             ioLog.trace(tr("FPKM Tracking Format parsing error: incorrect"
-                " coverage value at line %1!").arg(lineNumber));
+                           " coverage value at line %1!")
+                            .arg(lineNumber));
         }
 
         // Append the result
@@ -237,23 +231,22 @@ QList<SharedAnnotationData> FpkmTrackingFormat::parseDocument(IOAdapter* io, QSt
 
     if (!fileIsValid) {
         ioLog.error("FPKM Tracking Format parsing error: one or more errors occurred while parsing the input file,"
-            " see TRACE log for details!");
+                    " see TRACE log for details!");
     }
 
     return result;
 }
 
-void FpkmTrackingFormat::load(IOAdapter* io, QList<GObject*>& objects, const U2DbiRef& dbiRef, const QVariantMap &hints, U2OpStatus& os)
-{
+void FpkmTrackingFormat::load(IOAdapter *io, QList<GObject *> &objects, const U2DbiRef &dbiRef, const QVariantMap &hints, U2OpStatus &os) {
     QString sequenceName;
     QString annotName = "misc_feature";
     QList<SharedAnnotationData> annotations = parseDocument(io, sequenceName, annotName, os);
-    QMap<AnnotationTableObject *, QMap<QString, QList<SharedAnnotationData> > > annTable2anns;
+    QMap<AnnotationTableObject *, QMap<QString, QList<SharedAnnotationData>>> annTable2anns;
 
     foreach (const SharedAnnotationData &annotData, annotations) {
         QString annotTableName = sequenceName + FEATURES_TAG;
         AnnotationTableObject *annotTable = NULL;
-        foreach (GObject* object, objects) {
+        foreach (GObject *object, objects) {
             if (object->getGObjectName() == annotTableName) {
                 annotTable = dynamic_cast<AnnotationTableObject *>(object);
             }
@@ -268,7 +261,7 @@ void FpkmTrackingFormat::load(IOAdapter* io, QList<GObject*>& objects, const U2D
         // Assume that the group name is the same as the annotation name
         QString groupName = annotName;
         if (!AnnotationGroup::isValidGroupName(groupName, false)) {
-            groupName = "Group"; // or set this name if the annotation name is not appropriate
+            groupName = "Group";    // or set this name if the annotation name is not appropriate
         }
 
         annTable2anns[annotTable][groupName].append(annotData);
@@ -281,20 +274,19 @@ void FpkmTrackingFormat::load(IOAdapter* io, QList<GObject*>& objects, const U2D
     }
 }
 
-bool FpkmTrackingFormat::parseHeader(const QString& headerLine, QStringList& columns) const
-{
+bool FpkmTrackingFormat::parseHeader(const QString &headerLine, QStringList &columns) const {
     // All fields are separated by TAB
     QStringList fields = headerLine.split("\t");
 
     columns << TRACKING_ID_COLUMN
-        << CLASS_CODE_COLUMN
-        << NEAREST_REF_ID_COLUMN
-        << GENE_ID_COLUMN
-        << GENE_SHORT_NAME_COLUMN
-        << TSS_ID_COLUMN
-        << LOCUS_COLUMN
-        << LENGTH_COLUMN
-        << COVERAGE_COLUMN;
+            << CLASS_CODE_COLUMN
+            << NEAREST_REF_ID_COLUMN
+            << GENE_ID_COLUMN
+            << GENE_SHORT_NAME_COLUMN
+            << TSS_ID_COLUMN
+            << LOCUS_COLUMN
+            << LENGTH_COLUMN
+            << COVERAGE_COLUMN;
 
     int columnsWithFixedNamesCount = columns.size();
 
@@ -304,8 +296,7 @@ bool FpkmTrackingFormat::parseHeader(const QString& headerLine, QStringList& col
             if (columns[i] != fields[i]) {
                 return false;
             }
-        }
-        else {
+        } else {
             if (!fields[i].trimmed().isEmpty()) {
                 // Commonly, the fields could be: "FPKM", "FPKM_lo", "FPKM_hi", "FPKM_status"
                 // But also could be "status", "q0_FPKM", "q0_FPKM_lo", ... "qN_FPKM", ... (for different samples)
@@ -316,10 +307,8 @@ bool FpkmTrackingFormat::parseHeader(const QString& headerLine, QStringList& col
     return true;
 }
 
-
 /** Locus have the following format: "<chromosome or genome name>:<start>-<end>" */
-bool parseLocus(QString locus, QString& seqName, U2Region& region)
-{
+bool parseLocus(QString locus, QString &seqName, U2Region &region) {
     int lastColonCharIndex = locus.lastIndexOf(':');
     if (-1 == lastColonCharIndex) {
         return false;
@@ -327,7 +316,7 @@ bool parseLocus(QString locus, QString& seqName, U2Region& region)
 
     seqName = locus.left(lastColonCharIndex);
 
-    QString coordinatesStr = locus.mid(lastColonCharIndex + 1); // index is the next after ':'
+    QString coordinatesStr = locus.mid(lastColonCharIndex + 1);    // index is the next after ':'
     QStringList coordinates = coordinatesStr.split('-');
     if (2 != coordinates.size()) {
         return false;
@@ -345,9 +334,7 @@ bool parseLocus(QString locus, QString& seqName, U2Region& region)
     return true;
 }
 
-
-FpkmTrackingLineData FpkmTrackingFormat::parseAndValidateLine(QString line, QStringList columns, FpkmTrackingLineValidateFlags& status) const
-{
+FpkmTrackingLineData FpkmTrackingFormat::parseAndValidateLine(QString line, QStringList columns, FpkmTrackingLineValidateFlags &status) const {
     FpkmTrackingLineData parsedData;
 
     // All fields are separated by TAB
@@ -418,9 +405,8 @@ FpkmTrackingLineData FpkmTrackingFormat::parseAndValidateLine(QString line, QStr
     return parsedData;
 }
 
-FormatCheckResult FpkmTrackingFormat::checkRawTextData(const QByteArray& rawData, const GUrl& /* = GUrl */) const
-{
-    const char* data = rawData.constData();
+FormatCheckResult FpkmTrackingFormat::checkRawTextData(const QByteArray &rawData, const GUrl & /* = GUrl */) const {
+    const char *data = rawData.constData();
     int size = rawData.size();
 
     bool hasBinaryData = TextUtils::contains(TextUtils::BINARY, data, size);
@@ -440,14 +426,12 @@ FormatCheckResult FpkmTrackingFormat::checkRawTextData(const QByteArray& rawData
     QStringList columnsNames;
     if (!parseHeader(header, columnsNames)) {
         return FormatDetection_NotMatched;
-    }
-    else {
+    } else {
         int numToIterate;
         int HUGE_DATA = 65536;
         if (size < HUGE_DATA) {
             numToIterate = fileLines.size();
-        }
-        else {
+        } else {
             // Skip the last line as it can be incomplete
             numToIterate = fileLines.size() - 1;
         }
@@ -462,21 +446,19 @@ FormatCheckResult FpkmTrackingFormat::checkRawTextData(const QByteArray& rawData
     return validationStatus.getFormatDetectionScore();
 }
 
-
-QStringList FpkmTrackingFormat::writeHeader(QList<GObject*> annotTables, Document* doc, IOAdapter* io, U2OpStatus& os)
-{
+QStringList FpkmTrackingFormat::writeHeader(QList<GObject *> annotTables, Document *doc, IOAdapter *io, U2OpStatus &os) {
     QStringList columns;
     columns << TRACKING_ID_COLUMN
-        << CLASS_CODE_COLUMN
-        << NEAREST_REF_ID_COLUMN
-        << GENE_ID_COLUMN
-        << GENE_SHORT_NAME_COLUMN
-        << TSS_ID_COLUMN
-        << LOCUS_COLUMN
-        << LENGTH_COLUMN
-        << COVERAGE_COLUMN;
+            << CLASS_CODE_COLUMN
+            << NEAREST_REF_ID_COLUMN
+            << GENE_ID_COLUMN
+            << GENE_SHORT_NAME_COLUMN
+            << TSS_ID_COLUMN
+            << LOCUS_COLUMN
+            << LENGTH_COLUMN
+            << COVERAGE_COLUMN;
 
-    foreach (GObject* annotTable, annotTables) {
+    foreach (GObject *annotTable, annotTables) {
         AnnotationTableObject *annTable = dynamic_cast<AnnotationTableObject *>(annotTable);
         QList<Annotation *> annotationsList = annTable->getAnnotations();
 
@@ -493,7 +475,6 @@ QStringList FpkmTrackingFormat::writeHeader(QList<GObject*> annotTables, Documen
                     if (qualName == "status" || qualName.contains("FPKM", Qt::CaseInsensitive)) {
                         // Additionally, column "samplename_FPKM_lo" should go before column "samplename_FPKM_hi"
                         if (qualName.contains("FPKM_conf_lo") || qualName.contains("FPKM_lo")) {
-
                             // Try to replace both variants
                             QString fpkmHiForQualName = qualName;
                             fpkmHiForQualName.replace("FPKM_conf_lo", "FPKM_conf_hi");
@@ -503,17 +484,14 @@ QStringList FpkmTrackingFormat::writeHeader(QList<GObject*> annotTables, Documen
                             if (-1 != hiColumnIndex) {
                                 // So, insert the "samplename_FPKM_low" before
                                 columns.insert(hiColumnIndex, qualName);
-                            }
-                            else {
+                            } else {
                                 // Otherwise append the new column to the end
                                 columns << qualName;
                             }
-                        }
-                        else {
+                        } else {
                             columns << qualName;
                         }
-                    }
-                    else {
+                    } else {
                         ioLog.trace(tr("Skipped qualifier '%1' while saving a FPKM header.").arg(qualName));
                     }
                 }
@@ -533,31 +511,29 @@ QStringList FpkmTrackingFormat::writeHeader(QList<GObject*> annotTables, Documen
     return columns;
 }
 
-
-void FpkmTrackingFormat::storeDocument(Document* doc, IOAdapter* io, U2OpStatus& os)
-{
-    SAFE_POINT(NULL != doc, "Internal error: NULL Document during saving a FPKM Tracking Format file!",);
-    SAFE_POINT(NULL != io, "Internal error: NULL IOAdapter during saving a FPKM Tracking Format file!",);
+void FpkmTrackingFormat::storeDocument(Document *doc, IOAdapter *io, U2OpStatus &os) {
+    SAFE_POINT(NULL != doc, "Internal error: NULL Document during saving a FPKM Tracking Format file!", );
+    SAFE_POINT(NULL != io, "Internal error: NULL IOAdapter during saving a FPKM Tracking Format file!", );
 
     bool noErrorsDuringStoring = true;
-    QList<GObject*> annotTables = doc->findGObjectByType(GObjectTypes::ANNOTATION_TABLE);
+    QList<GObject *> annotTables = doc->findGObjectByType(GObjectTypes::ANNOTATION_TABLE);
     if (annotTables.isEmpty()) {
         return;
     }
 
     // Write the header
     QStringList columns = writeHeader(annotTables, doc, io, os);
-    CHECK_OP(os,);
+    CHECK_OP(os, );
 
     // Go through all annotations, writing each to the file
     QByteArray lineData;
 
-    foreach (GObject* annotTable, annotTables) {
+    foreach (GObject *annotTable, annotTables) {
         // Get the associated sequence name (to restore or verify locus)
         QString seqName;
         QList<GObjectRelation> rels = annotTable->findRelatedObjectsByRole(ObjectRole_Sequence);
         if (!rels.isEmpty()) {
-            const GObjectRelation& rel = rels.first();
+            const GObjectRelation &rel = rels.first();
             seqName = rel.ref.objName;
         }
 
@@ -568,15 +544,13 @@ void FpkmTrackingFormat::storeDocument(Document* doc, IOAdapter* io, U2OpStatus&
         foreach (Annotation *annot, annotationsList) {
             QString annotName = annot->getName();
             if (annotName == U1AnnotationUtils::lowerCaseAnnotationName ||
-                annotName == U1AnnotationUtils::upperCaseAnnotationName)
-            {
+                annotName == U1AnnotationUtils::upperCaseAnnotationName) {
                 continue;
             }
 
             QVector<U2Region> annotRegions = annot->getRegions();
 
-            foreach (const U2Region& region, annotRegions) {
-
+            foreach (const U2Region &region, annotRegions) {
                 // Fill in the values from the annotation qualifiers
                 QStringList lineFields;
                 foreach (const QString &columnName, columns) {
@@ -585,7 +559,7 @@ void FpkmTrackingFormat::storeDocument(Document* doc, IOAdapter* io, U2OpStatus&
                     // Also, validate some fields
                     if ((TRACKING_ID_COLUMN == columnName) && (columnValue.isEmpty())) {
                         ioLog.trace(tr("FPKM Tracking Format saving error: tracking ID"
-                            " shouldn't be empty!"));
+                                       " shouldn't be empty!"));
                         noErrorsDuringStoring = false;
                     }
 
@@ -593,9 +567,8 @@ void FpkmTrackingFormat::storeDocument(Document* doc, IOAdapter* io, U2OpStatus&
                         // If there is no "locus" qualifier, restore the column value
                         if (columnValue.isEmpty()) {
                             if (seqName.isEmpty()) {
-                                columnValue = "unknown_genome"; // use some name
-                            }
-                            else {
+                                columnValue = "unknown_genome";    // use some name
+                            } else {
                                 columnValue = seqName;
                             }
 
@@ -606,23 +579,24 @@ void FpkmTrackingFormat::storeDocument(Document* doc, IOAdapter* io, U2OpStatus&
                         }
                         // Otherwise verify the qualifier
                         else {
-                            QString seqNameFromLocusQual; // Currently, do not verify a sequence name in locus!
+                            QString seqNameFromLocusQual;    // Currently, do not verify a sequence name in locus!
                             U2Region regionFromLocusQual;
                             if (!parseLocus(columnValue, seqNameFromLocusQual, regionFromLocusQual)) {
                                 ioLog.trace(tr("FPKM Tracking Format saving error: failed"
-                                    " to parse locus qualifier '%1', writing it"
-                                    " to the output file anyway!").arg(columnValue));
+                                               " to parse locus qualifier '%1', writing it"
+                                               " to the output file anyway!")
+                                                .arg(columnValue));
                                 noErrorsDuringStoring = false;
                             }
 
                             if (regionFromLocusQual != region) {
                                 ioLog.trace(tr("FPKM Tracking Format saving error: an annotation"
-                                    " region (%1, %2) differs from the information stored in the 'locus'"
-                                    " qualifier (%3, %4). Writing the 'locus' qualifier to output!")
-                                    .arg(QString::number(region.startPos)
-                                    .arg(QString::number(region.endPos())
-                                    .arg(QString::number(regionFromLocusQual.startPos))
-                                    .arg(QString::number(regionFromLocusQual.endPos())))));
+                                               " region (%1, %2) differs from the information stored in the 'locus'"
+                                               " qualifier (%3, %4). Writing the 'locus' qualifier to output!")
+                                                .arg(QString::number(region.startPos)
+                                                         .arg(QString::number(region.endPos())
+                                                                  .arg(QString::number(regionFromLocusQual.startPos))
+                                                                  .arg(QString::number(regionFromLocusQual.endPos())))));
                                 noErrorsDuringStoring = false;
                             }
                         }
@@ -644,15 +618,14 @@ void FpkmTrackingFormat::storeDocument(Document* doc, IOAdapter* io, U2OpStatus&
                     os.setError(L10N::errorWritingFile(doc->getURL()));
                     return;
                 }
-
             }
         }
     }
 
     if (!noErrorsDuringStoring) {
         ioLog.error(tr("FPKM Tracking Format saving error: one or more errors occurred while saving a file,"
-            " see TRACE log for details!"));
+                       " see TRACE log for details!"));
     }
 }
 
-} // namespace U2
+}    // namespace U2

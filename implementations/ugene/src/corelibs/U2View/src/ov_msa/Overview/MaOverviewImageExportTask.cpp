@@ -19,37 +19,36 @@
  * MA 02110-1301, USA.
  */
 
-#include <QPainter>
-#include <QCheckBox>
-#include <QVBoxLayout>
-
 #include "MaOverviewImageExportTask.h"
-#include "MaSimpleOverview.h"
-#include "MaGraphOverview.h"
+
+#include <QCheckBox>
+#include <QPainter>
+#include <QVBoxLayout>
 
 #include <U2Core/U2SafePoints.h>
 
+#include "MaGraphOverview.h"
+#include "MaSimpleOverview.h"
+
 namespace U2 {
 
-
 MaOverviewImageExportToBitmapTask::MaOverviewImageExportToBitmapTask(MaSimpleOverview *simpleOverview,
-                                                                       MaGraphOverview *graphOverview,
-                                                                       const MaOverviewImageExportSettings &overviewSettings,
-                                                                       const ImageExportTaskSettings& settings)
+                                                                     MaGraphOverview *graphOverview,
+                                                                     const MaOverviewImageExportSettings &overviewSettings,
+                                                                     const ImageExportTaskSettings &settings)
     : ImageExportTask(settings),
       simpleOverview(simpleOverview),
       graphOverview(graphOverview),
-      overviewSettings(overviewSettings)
-{
+      overviewSettings(overviewSettings) {
     SAFE_POINT_EXT(simpleOverview != NULL, setError(tr("Overview is NULL")), );
     SAFE_POINT_EXT(graphOverview != NULL, setError(tr("Graph overview is NULL")), );
-    CHECK_EXT( overviewSettings.exportGraphOverview || overviewSettings.exportSimpleOverview,
-            setError(tr("Nothing to export. ") + EXPORT_FAIL_MESSAGE.arg(settings.fileName)), );
+    CHECK_EXT(overviewSettings.exportGraphOverview || overviewSettings.exportSimpleOverview,
+              setError(tr("Nothing to export. ") + EXPORT_FAIL_MESSAGE.arg(settings.fileName)), );
 }
 
 void MaOverviewImageExportToBitmapTask::run() {
-    SAFE_POINT_EXT( settings.isBitmapFormat(),
-                    setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("MSAOverviewImageExportToBitmapTask")), );
+    SAFE_POINT_EXT(settings.isBitmapFormat(),
+                   setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("MSAOverviewImageExportToBitmapTask")), );
     QPixmap pixmap(settings.imageSize.width(), settings.imageSize.height());
     QPainter p(&pixmap);
 
@@ -64,15 +63,14 @@ void MaOverviewImageExportToBitmapTask::run() {
     }
     p.end();
 
-    CHECK_EXT( pixmap.save(settings.fileName, qPrintable(settings.format), settings.imageQuality), setError(tr("FAIL")), );
+    CHECK_EXT(pixmap.save(settings.fileName, qPrintable(settings.format), settings.imageQuality), setError(tr("FAIL")), );
 }
 
 MaOverviewImageExportController::MaOverviewImageExportController(MaSimpleOverview *simpleOverview,
-                                                                     MaGraphOverview *graphOverview)
+                                                                 MaGraphOverview *graphOverview)
     : ImageExportController(),
       simpleOverview(simpleOverview),
-      graphOverview(graphOverview)
-{
+      graphOverview(graphOverview) {
     SAFE_POINT(simpleOverview != NULL, QObject::tr("Overview is NULL"), );
     SAFE_POINT(graphOverview != NULL, QObject::tr("Graph overview is NULL"), );
     shortDescription = tr("Alignment overview");
@@ -94,14 +92,13 @@ int MaOverviewImageExportController::getImageHeight() const {
     return h;
 }
 
-Task* MaOverviewImageExportController::getExportToBitmapTask(const ImageExportTaskSettings &settings) const {
+Task *MaOverviewImageExportController::getExportToBitmapTask(const ImageExportTaskSettings &settings) const {
     MaOverviewImageExportSettings overviewSettings(exportSimpleOverview->isChecked(),
-                                                    exportGraphOverview->isChecked());
+                                                   exportGraphOverview->isChecked());
     // overview has fixed size
     ImageExportTaskSettings copySettings = settings;
     copySettings.imageSize = QSize(getImageWidth(), getImageHeight());
-    return new MaOverviewImageExportToBitmapTask(simpleOverview, graphOverview,
-                                                  overviewSettings, copySettings);
+    return new MaOverviewImageExportToBitmapTask(simpleOverview, graphOverview, overviewSettings, copySettings);
 }
 
 void MaOverviewImageExportController::initSettingsWidget() {
@@ -112,7 +109,7 @@ void MaOverviewImageExportController::initSettingsWidget() {
     exportSimpleOverview->setObjectName("export_msa_simple_overview");
     exportGraphOverview->setObjectName("export_msa_graph_overview");
 
-    QVBoxLayout* layout = new QVBoxLayout(settingsWidget);
+    QVBoxLayout *layout = new QVBoxLayout(settingsWidget);
     layout->setSizeConstraint(QLayout::SetMinAndMaxSize);
     layout->setContentsMargins(0, 0, 0, 0);
 
@@ -129,4 +126,4 @@ void MaOverviewImageExportController::initSettingsWidget() {
     settingsWidget->setLayout(layout);
 }
 
-} // namespace
+}    // namespace U2

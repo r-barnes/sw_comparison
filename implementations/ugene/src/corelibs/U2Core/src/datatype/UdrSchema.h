@@ -107,12 +107,12 @@ public:
     /**
      * Returns the list of multi indexes.
      */
-    const QList< QList<int> > & getMultiIndexes() const;
+    const QList<QList<int>> &getMultiIndexes() const;
 
     /**
      * Returns the schema identifier.
      */
-    const UdrSchemaId & getId() const;
+    const UdrSchemaId &getId() const;
 
     /**
      * Return the count of fields.
@@ -151,13 +151,13 @@ public:
 private:
     const UdrSchemaId id;
     bool withObjectReference;
-    QList< QList<int> > multiIndexes;
+    QList<QList<int>> multiIndexes;
     QList<FieldDesc> fields;
 
 private:
     bool contains(const QByteArray &name) const;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_UDRSCHEMA_H_
+#endif    // _U2_UDRSCHEMA_H_

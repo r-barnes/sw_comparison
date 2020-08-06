@@ -30,7 +30,7 @@ bool _registerMeta() {
     return true;
 }
 
-}
+}    // namespace
 
 bool MaModificationInfo::registerMeta = _registerMeta();
 
@@ -40,9 +40,7 @@ MaModificationInfo::MaModificationInfo()
       alignmentLengthChanged(true),
       middleState(false),
       alphabetChanged(false),
-      type(MaModificationType_User)
-{
-
+      type(MaModificationType_User) {
 }
 
-}   // namespace U2
+}    // namespace U2

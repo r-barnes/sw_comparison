@@ -19,26 +19,28 @@
  * MA 02110-1301, USA.
  */
 
+#include "Bowtie2SettingsWidget.h"
+
 #include <QMessageBox>
 
 #include <U2Core/AppContext.h>
-#include <U2Core/AppSettings.h>
 #include <U2Core/AppResources.h>
+#include <U2Core/AppSettings.h>
 #include <U2Core/ExternalToolRegistry.h>
+
 #include <U2Gui/AppSettingsGUI.h>
-#include "Bowtie2SettingsWidget.h"
-#include "Bowtie2Task.h"
+
 #include "Bowtie2Support.h"
+#include "Bowtie2Task.h"
 
 namespace U2 {
 
 // Bowtie2SettingsWidget
 
-Bowtie2SettingsWidget::Bowtie2SettingsWidget(QWidget *parent):
-    DnaAssemblyAlgorithmMainWidget(parent)
-{
+Bowtie2SettingsWidget::Bowtie2SettingsWidget(QWidget *parent)
+    : DnaAssemblyAlgorithmMainWidget(parent) {
     setupUi(this);
-    layout()->setContentsMargins(0,0,0,0);
+    layout()->setContentsMargins(0, 0, 0, 0);
 
     threadsSpinBox->setMaximum(AppContext::getAppSettings()->getAppResourcePool()->getIdealThreadCount());
     threadsSpinBox->setValue(AppContext::getAppSettings()->getAppResourcePool()->getIdealThreadCount());
@@ -53,10 +55,10 @@ Bowtie2SettingsWidget::Bowtie2SettingsWidget(QWidget *parent):
     requiredExtToolIds << Bowtie2Support::ET_BOWTIE2_ALIGN_ID << Bowtie2Support::ET_BOWTIE2_BUILD_ID;
 }
 
-QMap<QString,QVariant> Bowtie2SettingsWidget::getDnaAssemblyCustomSettings() const {
+QMap<QString, QVariant> Bowtie2SettingsWidget::getDnaAssemblyCustomSettings() const {
     QMap<QString, QVariant> settings;
 
-    switch(modeComboBox->currentIndex()) {
+    switch (modeComboBox->currentIndex()) {
     case 0:
         settings.insert(Bowtie2Task::OPTION_MODE, "--end-to-end");
         break;
@@ -66,7 +68,7 @@ QMap<QString,QVariant> Bowtie2SettingsWidget::getDnaAssemblyCustomSettings() con
 
     settings.insert(Bowtie2Task::OPTION_MISMATCHES, mismatchesSpinBox->value());
 
-    if(seedlenCheckBox->isChecked()) {
+    if (seedlenCheckBox->isChecked()) {
         settings.insert(Bowtie2Task::OPTION_SEED_LEN, seedlenSpinBox->value());
     }
 
@@ -78,7 +80,7 @@ QMap<QString,QVariant> Bowtie2SettingsWidget::getDnaAssemblyCustomSettings() con
         settings.insert(Bowtie2Task::OPTION_GBAR, gbarSpinBox->value());
     }
 
-    if(seedCheckBox->isChecked()) {
+    if (seedCheckBox->isChecked()) {
         settings.insert(Bowtie2Task::OPTION_SEED, seedSpinBox->value());
     }
 
@@ -123,4 +125,4 @@ bool Bowtie2GUIExtensionsFactory::hasBuildIndexWidget() {
     return true;
 }
 
-} //namespace
+}    // namespace U2

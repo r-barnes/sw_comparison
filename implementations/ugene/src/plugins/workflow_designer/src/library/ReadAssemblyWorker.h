@@ -37,32 +37,34 @@ class ReadAssemblyWorker : public GenericDocReader {
     Q_OBJECT
 public:
     ReadAssemblyWorker(Actor *p);
-    virtual void init() ;
+    virtual void init();
 
 protected:
     virtual void onTaskFinished(Task *task);
     virtual QString addReadDbObjectToData(const QString &objUrl, QVariantMap &data);
 
 protected:
-    virtual Task * createReadTask(const QString &url, const QString &datasetName);
-}; // ReadAssemblyWorker
+    virtual Task *createReadTask(const QString &url, const QString &datasetName);
+};    // ReadAssemblyWorker
 
 class ReadAssemblyProto : public GenericReadDocProto {
 public:
     ReadAssemblyProto();
-}; // ReadAssemblyProto
+};    // ReadAssemblyProto
 
 class ReadAssemblyWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
 
-    ReadAssemblyWorkerFactory() : DomainFactory(ACTOR_ID) {}
+    ReadAssemblyWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
     static void init();
     virtual Worker *createWorker(Actor *a);
 
-}; // ReadAssemblyWorkerFactory
+};    // ReadAssemblyWorkerFactory
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _READ_ASSEMBLY_WORKER_
+#endif    // _READ_ASSEMBLY_WORKER_

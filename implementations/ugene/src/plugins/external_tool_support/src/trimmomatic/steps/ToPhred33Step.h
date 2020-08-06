@@ -32,7 +32,7 @@ class ToPhred33Step : public TrimmomaticStep {
 public:
     ToPhred33Step();
 
-    TrimmomaticStepSettingsWidget* createWidget() const;
+    TrimmomaticStepSettingsWidget *createWidget() const;
 
 private:
     QString serializeState(const QVariantMap &widgetState) const;
@@ -48,7 +48,7 @@ public:
     ToPhred33Step *createStep() const;
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_TO_PHRED_33_STEP_H_
+#endif    // _U2_TO_PHRED_33_STEP_H_

@@ -20,31 +20,27 @@
  */
 
 #include "CreateNewProjectWidgetFiller.h"
-#include <primitives/GTWidget.h>
 #include <primitives/GTLineEdit.h>
+#include <primitives/GTWidget.h>
 
-#include <QApplication>
-#include <QPushButton>
 #include <QAbstractButton>
+#include <QApplication>
 #include <QDialogButtonBox>
+#include <QPushButton>
 
 namespace U2 {
 using namespace HI;
 #define GT_CLASS_NAME "GTUtilsDialog::SaveProjectAsDialogFiller"
 #define GT_METHOD_NAME "commonScenario"
 void SaveProjectAsDialogFiller::commonScenario() {
-
     GTGlobals::sleep();
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
-    QLineEdit *projectNameEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "projectNameEdit", dialog));
+    QLineEdit *projectNameEdit = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "projectNameEdit", dialog));
     GTLineEdit::setText(os, projectNameEdit, projectName);
 
-    QLineEdit *projectFolderEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "projectFolderEdit", dialog));
-    GTLineEdit::setText(os, projectFolderEdit, projectFolder);
-
-    QLineEdit *projectFileEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "projectFileEdit", dialog));
+    QLineEdit *projectFileEdit = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "projectFilePathEdit", dialog));
     GTLineEdit::setText(os, projectFileEdit, projectFile);
 
     GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
@@ -52,4 +48,4 @@ void SaveProjectAsDialogFiller::commonScenario() {
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

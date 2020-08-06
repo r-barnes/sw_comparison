@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ScanDashboardsDirTask.h"
+
 #include <QDir>
 #include <QSettings>
 
@@ -27,13 +29,11 @@
 #include <U2Lang/WorkflowSettings.h>
 
 #include "Dashboard.h"
-#include "ScanDashboardsDirTask.h"
 
 namespace U2 {
 
 ScanDashboardsDirTask::ScanDashboardsDirTask()
-    : Task(tr("Scan dashboards folder"), TaskFlag_None)
-{
+    : Task(tr("Scan dashboards folder"), TaskFlag_None) {
     tpm = Progress_Manual;
 }
 
@@ -73,4 +73,4 @@ DashboardInfo ScanDashboardsDirTask::readDashboardInfo(const QString &dirPath) {
     return info;
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -19,10 +19,12 @@
  * MA 02110-1301, USA.
  */
 
+#include "MultipleSequenceAlignmentObject.h"
+
 #include <U2Core/GHints.h>
 #include <U2Core/GObjectTypes.h>
-#include <U2Core/MsaDbiUtils.h>
 #include <U2Core/MSAUtils.h>
+#include <U2Core/MsaDbiUtils.h>
 #include <U2Core/MultipleSequenceAlignmentExporter.h>
 #include <U2Core/MultipleSequenceAlignmentImporter.h>
 #include <U2Core/U2AlphabetUtils.h>
@@ -31,16 +33,13 @@
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "MultipleSequenceAlignmentObject.h"
-
 namespace U2 {
 
 MultipleSequenceAlignmentObject::MultipleSequenceAlignmentObject(const QString &name,
-    const U2EntityRef &msaRef,
-    const QVariantMap &hintsMap,
-    const MultipleSequenceAlignment &alnData)
+                                                                 const U2EntityRef &msaRef,
+                                                                 const QVariantMap &hintsMap,
+                                                                 const MultipleSequenceAlignment &alnData)
     : MultipleAlignmentObject(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT, name, msaRef, hintsMap, alnData) {
-
 }
 
 const MultipleSequenceAlignment MultipleSequenceAlignmentObject::getMsa() const {
@@ -51,7 +50,7 @@ const MultipleSequenceAlignment MultipleSequenceAlignmentObject::getMsaCopy() co
     return getMsa()->getExplicitCopy();
 }
 
-MultipleSequenceAlignmentObject* MultipleSequenceAlignmentObject::clone(const U2DbiRef &dstDbiRef, U2OpStatus &os, const QVariantMap &hints) const {
+MultipleSequenceAlignmentObject *MultipleSequenceAlignmentObject::clone(const U2DbiRef &dstDbiRef, U2OpStatus &os, const QVariantMap &hints) const {
     DbiOperationsBlock opBlock(dstDbiRef, os);
     Q_UNUSED(opBlock);
     CHECK_OP(os, NULL);
@@ -84,7 +83,7 @@ void MultipleSequenceAlignmentObject::updateGapModel(U2OpStatus &os, const U2Msa
 
     const QList<qint64> rowIds = msa->getRowsIds();
     QList<qint64> modifiedRowIds;
-    foreach(qint64 rowId, rowsGapModel.keys()) {
+    foreach (qint64 rowId, rowsGapModel.keys()) {
         if (!rowIds.contains(rowId)) {
             os.setError(QString("Can't update gaps of a multiple alignment: cannot find a row with the id %1").arg(rowId));
             return;
@@ -119,6 +118,10 @@ void MultipleSequenceAlignmentObject::updateGapModel(const QList<MultipleSequenc
 
 void MultipleSequenceAlignmentObject::insertGap(const U2Region &rows, int pos, int nGaps) {
     MultipleAlignmentObject::insertGap(rows, pos, nGaps, false);
+}
+
+void MultipleSequenceAlignmentObject::insertGapByRowIndexList(const QList<int> &rowIndexes, int pos, int nGaps) {
+    MultipleAlignmentObject::insertGapByRowIndexList(rowIndexes, pos, nGaps, false);
 }
 
 void MultipleSequenceAlignmentObject::crop(const U2Region &window, const QSet<QString> &rowNames) {
@@ -242,7 +245,7 @@ void MultipleSequenceAlignmentObject::updateCachedRows(U2OpStatus &os, const QLi
     MultipleSequenceAlignmentExporter msaExporter;
     QList<MsaRowReplacementData> rowsAndSeqs = msaExporter.getAlignmentRows(entityRef.dbiRef, entityRef.entityId, rowIds, os);
     SAFE_POINT_OP(os, );
-    foreach(const MsaRowReplacementData &data, rowsAndSeqs) {
+    foreach (const MsaRowReplacementData &data, rowsAndSeqs) {
         const int rowIndex = cachedMsa->getRowIndexByRowId(data.row.rowId, os);
         SAFE_POINT_OP(os, );
         cachedMsa->setRowContent(rowIndex, data.sequence.seq);
@@ -260,9 +263,8 @@ void MultipleSequenceAlignmentObject::removeRowPrivate(U2OpStatus &os, const U2E
     MsaDbiUtils::removeRow(msaRef, rowId, os);
 }
 
-void MultipleSequenceAlignmentObject::removeRegionPrivate(U2OpStatus &os, const U2EntityRef &maRef, const QList<qint64> &rows,
-    int startPos, int nBases) {
+void MultipleSequenceAlignmentObject::removeRegionPrivate(U2OpStatus &os, const U2EntityRef &maRef, const QList<qint64> &rows, int startPos, int nBases) {
     MsaDbiUtils::removeRegion(maRef, rows, startPos, nBases, os);
 }
 
-}   // namespace U2
+}    // namespace U2

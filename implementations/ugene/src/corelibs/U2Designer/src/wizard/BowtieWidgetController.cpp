@@ -19,19 +19,19 @@
  * MA 02110-1301, USA.
  */
 
+#include "BowtieWidgetController.h"
+
 #include <QPushButton>
 
 #include <U2Gui/LastUsedDirHelper.h>
 #include <U2Gui/U2FileDialog.h>
 
-#include "BowtieWidgetController.h"
 #include "PropertyWidget.h"
 
 namespace U2 {
 
 BowtieWidgetController::BowtieWidgetController(WizardController *wc, BowtieWidget *bw, int labelSize)
-: WidgetController(wc), bw(bw)
-{
+    : WidgetController(wc), bw(bw) {
     dirW = new AttributeWidget();
     dirW->setInfo(bw->idxDir);
     dirCtrl = new DefaultPropertyController(wc, dirW, labelSize);
@@ -51,7 +51,7 @@ BowtieWidgetController::~BowtieWidgetController() {
     delete nameW;
 }
 
-QWidget * BowtieWidgetController::createGUI(U2OpStatus &os) {
+QWidget *BowtieWidgetController::createGUI(U2OpStatus &os) {
     QScopedPointer<QWidget> result(new QWidget());
 
     QVBoxLayout *vl = new QVBoxLayout();
@@ -91,4 +91,4 @@ QString BowtieWidgetController::finalyze(const QString &url) {
     return NoFileURLWidget::finalyze(url, wc->getTags(bw->idxDir));
 }
 
-} // U2
+}    // namespace U2

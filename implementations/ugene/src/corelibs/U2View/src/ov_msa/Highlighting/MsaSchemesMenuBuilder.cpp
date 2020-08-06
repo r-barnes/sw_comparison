@@ -22,8 +22,8 @@
 #include "MsaSchemesMenuBuilder.h"
 
 #include <QLabel>
-#include <QWidgetAction>
 #include <QMenu>
+#include <QWidgetAction>
 
 #include <U2Algorithm/MsaColorScheme.h>
 #include <U2Algorithm/MsaHighlightingScheme.h>
@@ -33,12 +33,12 @@
 
 namespace U2 {
 
-void MsaSchemesMenuBuilder::createAndFillColorSchemeMenuActions(QList<QAction*> &actions, ColorSchemeType type, DNAAlphabetType alphabet, QObject *actionsParent) {
+void MsaSchemesMenuBuilder::createAndFillColorSchemeMenuActions(QList<QAction *> &actions, ColorSchemeType type, DNAAlphabetType alphabet, QObject *actionsParent) {
     MsaColorSchemeRegistry *msaColorSchemeRegistry = AppContext::getMsaColorSchemeRegistry();
     MsaColorSchemeFactory *noColorsFactory = msaColorSchemeRegistry->getSchemeFactoryById(MsaColorScheme::EMPTY);
 
     if (alphabet == DNAAlphabet_RAW) {
-        QMap<AlphabetFlags, QList<MsaColorSchemeFactory*> > factories;
+        QMap<AlphabetFlags, QList<MsaColorSchemeFactory *>> factories;
         if (type == Common) {
             factories = msaColorSchemeRegistry->getSchemesGrouped();
         } else if (type == Custom) {
@@ -60,7 +60,7 @@ void MsaSchemesMenuBuilder::createAndFillColorSchemeMenuActions(QList<QAction*> 
         fillColorMenuSectionForCurrentAlphabet(aminoColorSchemesFactories, actions, tr("Amino acid alphabet"), actionsParent);
         fillColorMenuSectionForCurrentAlphabet(nucleotideColorSchemesFactories, actions, tr("Nucleotide alphabet"), actionsParent);
     } else {
-        QList<MsaColorSchemeFactory*> factories;
+        QList<MsaColorSchemeFactory *> factories;
         if (type == Common) {
             factories = msaColorSchemeRegistry->getSchemes(alphabet);
             factories.removeAll(noColorsFactory);
@@ -74,12 +74,12 @@ void MsaSchemesMenuBuilder::createAndFillColorSchemeMenuActions(QList<QAction*> 
     }
 }
 
-void MsaSchemesMenuBuilder::createAndFillHighlightingMenuActions(QList<QAction*> &actions, DNAAlphabetType alphabet, QObject *actionsParent) {
-    MsaHighlightingSchemeRegistry* msaHighlightingSchemeRegistry = AppContext::getMsaHighlightingSchemeRegistry();
-    MsaHighlightingSchemeFactory* nohighlightingFactory = msaHighlightingSchemeRegistry->getEmptySchemeFactory();
+void MsaSchemesMenuBuilder::createAndFillHighlightingMenuActions(QList<QAction *> &actions, DNAAlphabetType alphabet, QObject *actionsParent) {
+    MsaHighlightingSchemeRegistry *msaHighlightingSchemeRegistry = AppContext::getMsaHighlightingSchemeRegistry();
+    MsaHighlightingSchemeFactory *nohighlightingFactory = msaHighlightingSchemeRegistry->getEmptySchemeFactory();
 
     if (alphabet == DNAAlphabet_RAW) {
-        QMap<AlphabetFlags, QList<MsaHighlightingSchemeFactory*> > highlightingSchemesFactories = msaHighlightingSchemeRegistry->getAllSchemesGrouped();
+        QMap<AlphabetFlags, QList<MsaHighlightingSchemeFactory *>> highlightingSchemesFactories = msaHighlightingSchemeRegistry->getAllSchemesGrouped();
         QList<MsaHighlightingSchemeFactory *> commonHighlightSchemesFactories = highlightingSchemesFactories[DNAAlphabet_RAW | DNAAlphabet_AMINO | DNAAlphabet_NUCL];
         QList<MsaHighlightingSchemeFactory *> aminoHighlightSchemesFactories = highlightingSchemesFactories[DNAAlphabet_RAW | DNAAlphabet_AMINO];
         QList<MsaHighlightingSchemeFactory *> nucleotideHighlightSchemesFactories = highlightingSchemesFactories[DNAAlphabet_RAW | DNAAlphabet_NUCL];
@@ -91,14 +91,14 @@ void MsaSchemesMenuBuilder::createAndFillHighlightingMenuActions(QList<QAction*>
         fillHighlightingMenuSectionForCurrentAlphabet(aminoHighlightSchemesFactories, actions, tr("Amino acid alphabet"), actionsParent);
         fillHighlightingMenuSectionForCurrentAlphabet(nucleotideHighlightSchemesFactories, actions, tr("Nucleotide alphabet"), actionsParent);
     } else {
-        QList<MsaHighlightingSchemeFactory*> highlightingSchemesFactories = msaHighlightingSchemeRegistry->getAllSchemes(alphabet);
+        QList<MsaHighlightingSchemeFactory *> highlightingSchemesFactories = msaHighlightingSchemeRegistry->getAllSchemes(alphabet);
         highlightingSchemesFactories.removeAll(nohighlightingFactory);
         highlightingSchemesFactories.prepend(nohighlightingFactory);
         fillHighlightingSchemeMenuActions(actions, highlightingSchemesFactories, actionsParent);
     }
 }
 
-void MsaSchemesMenuBuilder::addActionOrTextSeparatorToMenu(QAction* a, QMenu* colorsSchemeMenu) {
+void MsaSchemesMenuBuilder::addActionOrTextSeparatorToMenu(QAction *a, QMenu *colorsSchemeMenu) {
     if (a->text().contains(SECTION_TOKEN)) {
         QString text = a->text().replace(SECTION_TOKEN, QString());
         QLabel *pLabel = new QLabel(text);
@@ -112,8 +112,8 @@ void MsaSchemesMenuBuilder::addActionOrTextSeparatorToMenu(QAction* a, QMenu* co
     }
 }
 
-void MsaSchemesMenuBuilder::fillColorSchemeMenuActions(QList<QAction*> &actions, QList<MsaColorSchemeFactory*> colorFactories, QObject *actionsParent) {
-    foreach(MsaColorSchemeFactory *factory, colorFactories) {
+void MsaSchemesMenuBuilder::fillColorSchemeMenuActions(QList<QAction *> &actions, QList<MsaColorSchemeFactory *> colorFactories, QObject *actionsParent) {
+    foreach (MsaColorSchemeFactory *factory, colorFactories) {
         QString name = factory->getName();
         QAction *action = new QAction(name, actionsParent);
         action->setObjectName(name);
@@ -124,8 +124,8 @@ void MsaSchemesMenuBuilder::fillColorSchemeMenuActions(QList<QAction*> &actions,
     }
 }
 
-void MsaSchemesMenuBuilder::fillHighlightingSchemeMenuActions(QList<QAction*> &actions, const QList<MsaHighlightingSchemeFactory*> &highlightingSchemeFactories, QObject *actionsParent) {
-    foreach(MsaHighlightingSchemeFactory *factory, highlightingSchemeFactories) {
+void MsaSchemesMenuBuilder::fillHighlightingSchemeMenuActions(QList<QAction *> &actions, const QList<MsaHighlightingSchemeFactory *> &highlightingSchemeFactories, QObject *actionsParent) {
+    foreach (MsaHighlightingSchemeFactory *factory, highlightingSchemeFactories) {
         QString name = factory->getName();
         QAction *action = new QAction(name, actionsParent);
         action->setObjectName(name);
@@ -136,19 +136,18 @@ void MsaSchemesMenuBuilder::fillHighlightingSchemeMenuActions(QList<QAction*> &a
     }
 }
 
-void MsaSchemesMenuBuilder::fillColorMenuSectionForCurrentAlphabet(QList<MsaColorSchemeFactory *> &colorSchemesFactories, QList<QAction *> &actions, const QString& alphName, QObject * actionsParent) {
+void MsaSchemesMenuBuilder::fillColorMenuSectionForCurrentAlphabet(QList<MsaColorSchemeFactory *> &colorSchemesFactories, QList<QAction *> &actions, const QString &alphName, QObject *actionsParent) {
     if (!colorSchemesFactories.isEmpty()) {
         actions.append(new QAction(SECTION_TOKEN + alphName, actionsParent));
         fillColorSchemeMenuActions(actions, colorSchemesFactories, actionsParent);
     }
 }
 
-void MsaSchemesMenuBuilder::fillHighlightingMenuSectionForCurrentAlphabet(QList<MsaHighlightingSchemeFactory *> &highlightSchemesFactories, QList<QAction *> &actions, const QString& alphabet, QObject * actionsParent) {
+void MsaSchemesMenuBuilder::fillHighlightingMenuSectionForCurrentAlphabet(QList<MsaHighlightingSchemeFactory *> &highlightSchemesFactories, QList<QAction *> &actions, const QString &alphabet, QObject *actionsParent) {
     if (!highlightSchemesFactories.isEmpty()) {
         actions.append(new QAction(SECTION_TOKEN + alphabet, actionsParent));
         fillHighlightingSchemeMenuActions(actions, highlightSchemesFactories, actionsParent);
     }
 }
 
-
-}
+}    // namespace U2

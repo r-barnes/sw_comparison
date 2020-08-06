@@ -35,7 +35,6 @@
 #include "MaCollapseModel.h"
 #include "MsaEditorUserModStepController.h"
 #include "SaveSelectedSequenceFromMSADialogController.h"
-
 #include "view_rendering/MaEditorSequenceArea.h"
 
 namespace U2 {
@@ -61,20 +60,32 @@ public:
     static const int Complement = 3;
     static const int ReverseComplement = 7;
 
-    ModificationType(int _type = NoType) : type(_type) {}
+    ModificationType(int _type = NoType)
+        : type(_type) {
+    }
 
-    ModificationType operator + (const ModificationType & another) {
+    ModificationType operator+(const ModificationType &another) {
         switch (type + another.type) {
-        case NoType + NoType: return ModificationType(NoType);
-        case NoType + Reverse: return ModificationType(Reverse);
-        case NoType + Complement: return ModificationType(Complement);
-        case NoType + ReverseComplement: return ModificationType(ReverseComplement);
-        case Reverse + Reverse: return ModificationType(NoType);
-        case Reverse + Complement: return ModificationType(ReverseComplement);
-        case Reverse + ReverseComplement: return ModificationType(Complement);
-        case Complement + Complement: return ModificationType(NoType);
-        case Complement + ReverseComplement: return ModificationType(Reverse);
-        case ReverseComplement + ReverseComplement: return ModificationType(NoType);
+        case NoType + NoType:
+            return ModificationType(NoType);
+        case NoType + Reverse:
+            return ModificationType(Reverse);
+        case NoType + Complement:
+            return ModificationType(Complement);
+        case NoType + ReverseComplement:
+            return ModificationType(ReverseComplement);
+        case Reverse + Reverse:
+            return ModificationType(NoType);
+        case Reverse + Complement:
+            return ModificationType(ReverseComplement);
+        case Reverse + ReverseComplement:
+            return ModificationType(Complement);
+        case Complement + Complement:
+            return ModificationType(NoType);
+        case Complement + ReverseComplement:
+            return ModificationType(Reverse);
+        case ReverseComplement + ReverseComplement:
+            return ModificationType(NoType);
         }
         return ModificationType(NoType);
     }
@@ -83,23 +94,23 @@ public:
         return type;
     }
 
-    bool operator == (const ModificationType & another) {
+    bool operator==(const ModificationType &another) {
         return type == another.type;
     }
 
-    bool operator == (int _type) {
+    bool operator==(int _type) {
         return type == _type;
     }
 
-    bool operator != (const ModificationType & another) {
+    bool operator!=(const ModificationType &another) {
         return type != another.type;
     }
 
-    bool operator != (int _type) {
+    bool operator!=(int _type) {
         return type != _type;
     }
 
-    ModificationType & operator = (int _type) {
+    ModificationType &operator=(int _type) {
         type = _type;
         return *this;
     }
@@ -115,23 +126,23 @@ class U2VIEW_EXPORT MSAEditorSequenceArea : public MaEditorSequenceArea {
     friend class SequenceWithChromatogramAreaRenderer;
 
 public:
-    MSAEditorSequenceArea(MaEditorWgt* ui, GScrollBar* hb, GScrollBar* vb);
+    MSAEditorSequenceArea(MaEditorWgt *ui, GScrollBar *hb, GScrollBar *vb);
 
     MSAEditor *getEditor() const;
 
     bool hasAminoAlphabet();
 
-public:
-    QString exportHighlighting(int startPos, int endPos, int startingIndex, bool keepGaps, bool dots, bool transpose);
+public slots:
+    void sl_setCollapsingMode(bool enabled);
 
 protected:
-    void focusOutEvent(QFocusEvent* fe);
-    void focusInEvent(QFocusEvent* fe);
+    void focusOutEvent(QFocusEvent *fe);
+    void focusInEvent(QFocusEvent *fe);
 
 private slots:
-    void sl_buildStaticMenu(GObjectView* v, QMenu* m);
-    void sl_buildStaticToolbar(GObjectView* v, QToolBar* t);
-    void sl_buildContextMenu(GObjectView* v, QMenu* m);
+    void sl_buildStaticMenu(GObjectView *v, QMenu *m);
+    void sl_buildStaticToolbar(GObjectView *v, QToolBar *t);
+    void sl_buildContextMenu(GObjectView *v, QMenu *m);
     void sl_lockedStateChanged();
     void sl_addSeqFromFile();
     void sl_addSeqFromProject();
@@ -139,13 +150,11 @@ private slots:
     void sl_copyCurrentSelection();
     void sl_copyFormattedSelection();
     void sl_paste();
-    void sl_pasteFinished(Task* pasteTask);
-    void sl_addSequencesToAlignmentFinished(Task* task);
+    void sl_pasteFinished(Task *pasteTask);
+    void sl_addSequencesToAlignmentFinished(Task *task);
     void sl_delCol();
     void sl_goto();
     void sl_removeAllGaps();
-    void sl_sortByName();
-    void sl_setCollapsingMode(bool enabled);
     void sl_updateCollapsingMode();
     void sl_reverseComplementCurrentSelection();
     void sl_reverseCurrentSelection();
@@ -159,10 +168,7 @@ private slots:
 
     void sl_modelChanged();
 
-    void sl_showCustomSettings();
-
-    void sl_resetCollapsibleModel();
-    void sl_setCollapsingRegions(const QList<QStringList>&);
+    void sl_setCollapsingRegions(const QList<QStringList> &);
     void sl_fontChanged(QFont font);
 
     void sl_alphabetChanged(const MaModificationInfo &mi, const DNAAlphabet *prevAlphabet);
@@ -172,37 +178,37 @@ private slots:
 private:
     void initRenderer();
 
-    void buildMenu(QMenu* m);
+    void buildMenu(QMenu *m);
 
-    void reverseComplementModification(ModificationType& type);
+    void reverseComplementModification(ModificationType &type);
 
-    void updateCollapseModel(const MaModificationInfo& modInfo) override;
+    void updateCollapseModel(const MaModificationInfo &modInfo) override;
 
-    QAction*        delColAction;
-    QAction*        removeAllGapsAction;
-    QAction*        gotoAction;
-    QAction*        createSubaligniment;
-    QAction*        saveSequence;
-    QAction*        addSeqFromFileAction;
-    QAction*        addSeqFromProjectAction;
-    QAction*        sortByNameAction;
-    QAction*        collapseModeSwitchAction;
-    QAction*        collapseModeUpdateAction;
-    QAction*        reverseComplementAction;
-    QAction*        reverseAction;
-    QAction*        complementAction;
-    QAction*        lookMSASchemesSettingsAction;
+    QAction *delColAction;
+    QAction *removeAllGapsAction;
+
+    QAction *createSubaligniment;
+    QAction *saveSequence;
+    QAction *addSeqFromFileAction;
+    QAction *addSeqFromProjectAction;
+    QAction *collapseModeSwitchAction;
+    QAction *collapseModeUpdateAction;
+    QAction *reverseComplementAction;
+    QAction *reverseAction;
+    QAction *complementAction;
 };
 
 // SANGER_TODO: move to EditorTasks?
 class U2VIEW_EXPORT ExportHighligtningTask : public Task {
     Q_OBJECT
 public:
-    ExportHighligtningTask(ExportHighligtingDialogController *dialog, MaEditorSequenceArea *msaese_);
+    ExportHighligtningTask(ExportHighligtingDialogController *dialog, MaEditor *editor);
 
     void run();
     QString generateReport() const;
     Task::ReportResult report();
+
+    QString exportHighlighting(int startPos, int endPos, int startingIndex, bool keepGaps, bool dots, bool transpose);
 
 private:
     int startPos;
@@ -212,8 +218,8 @@ private:
     bool dots;
     bool transpose;
     GUrl url;
-    MaEditorSequenceArea *msaese;
+    MSAEditor *msaEditor;
 };
 
-}//namespace
+}    // namespace U2
 #endif

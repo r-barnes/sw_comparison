@@ -27,7 +27,7 @@
 namespace U2 {
 
 class DumpVersionTask : public Task {
-Q_OBJECT
+    Q_OBJECT
 public:
     static const QString VERSION_CMDLINE_OPTION;
     static const QString VERSION_CMDLINE_OPTION_SHORT;
@@ -37,8 +37,8 @@ public:
     DumpVersionTask();
     virtual void run();
 
-}; // DumpVersionTask
+};    // DumpVersionTask
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_DUMP_VERSION_TASK_H__
+#endif    // _U2_DUMP_VERSION_TASK_H__

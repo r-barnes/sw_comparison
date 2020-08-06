@@ -30,11 +30,12 @@ namespace U2 {
 
 class U2ALGORITHM_EXPORT StructuralAlignmentAlgorithmFactory {
 public:
-    virtual ~StructuralAlignmentAlgorithmFactory() {}
+    virtual ~StructuralAlignmentAlgorithmFactory() {
+    }
 
-    virtual StructuralAlignmentAlgorithm* create() = 0;
+    virtual StructuralAlignmentAlgorithm *create() = 0;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif  // #ifndef _U2_STRUCTURAL_ALIGNMENT_ALGORITHM_FACTORY_H_
+#endif    // #ifndef _U2_STRUCTURAL_ALIGNMENT_ALGORITHM_FACTORY_H_

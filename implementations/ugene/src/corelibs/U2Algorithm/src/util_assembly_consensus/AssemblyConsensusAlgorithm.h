@@ -22,10 +22,10 @@
 #ifndef _U2_ASSEMBLY_CONSENSUS_ALGORITHM_H_
 #define _U2_ASSEMBLY_CONSENSUS_ALGORITHM_H_
 
-#include <U2Core/global.h>
-#include <U2Core/U2Region.h>
 #include <U2Core/U2Assembly.h>
 #include <U2Core/U2OpStatus.h>
+#include <U2Core/U2Region.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -34,37 +34,53 @@ class AssemblyConsensusAlgorithm;
 class U2ALGORITHM_EXPORT AssemblyConsensusAlgorithmFactory : public QObject {
     Q_OBJECT
 public:
-    AssemblyConsensusAlgorithmFactory(const QString& algoId) : algorithmId(algoId) {}
+    AssemblyConsensusAlgorithmFactory(const QString &algoId)
+        : algorithmId(algoId) {
+    }
 
-    virtual QString getId() const { return algorithmId; }
+    virtual QString getId() const {
+        return algorithmId;
+    }
 
     virtual QString getDescription() const = 0;
     virtual QString getName() const = 0;
 
-    virtual AssemblyConsensusAlgorithm* createAlgorithm() = 0;
+    virtual AssemblyConsensusAlgorithm *createAlgorithm() = 0;
+
 private:
     QString algorithmId;
 };
 
 class U2ALGORITHM_EXPORT AssemblyConsensusAlgorithm {
 public:
-    AssemblyConsensusAlgorithm(AssemblyConsensusAlgorithmFactory* factory_) : factory(factory_) {}
+    AssemblyConsensusAlgorithm(AssemblyConsensusAlgorithmFactory *factory_)
+        : factory(factory_) {
+    }
     virtual ~AssemblyConsensusAlgorithm();
 
-    AssemblyConsensusAlgorithmFactory* getFactory() { return factory; }
+    AssemblyConsensusAlgorithmFactory *getFactory() {
+        return factory;
+    }
 
-    QString getDescription() const {return factory->getDescription();}
-    QString getName() const {return factory->getName();}
-    QString getId() const {return factory->getId();}
+    QString getDescription() const {
+        return factory->getDescription();
+    }
+    QString getName() const {
+        return factory->getName();
+    }
+    QString getId() const {
+        return factory->getId();
+    }
 
-    virtual QByteArray getConsensusRegion(const U2Region &region, U2DbiIterator<U2AssemblyRead>* reads, QByteArray referenceFragment, U2OpStatus &os) = 0;
+    virtual QByteArray getConsensusRegion(const U2Region &region, U2DbiIterator<U2AssemblyRead> *reads, QByteArray referenceFragment, U2OpStatus &os) = 0;
 
     /** The character that will be placed in consensus array if it is undefined (no bases covered current position) */
     static const char EMPTY_CHAR = '-';
+
 private:
-    AssemblyConsensusAlgorithmFactory* factory;
+    AssemblyConsensusAlgorithmFactory *factory;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

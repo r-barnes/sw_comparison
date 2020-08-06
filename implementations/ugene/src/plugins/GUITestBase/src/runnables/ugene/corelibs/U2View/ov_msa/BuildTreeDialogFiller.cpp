@@ -19,16 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-#include <QPushButton>
-#include <QComboBox>
-#include <QSpinBox>
-#include <QGroupBox>
-#include <QCheckBox>
-#include <QDoubleSpinBox>
-#include <QRadioButton>
-#include <QDialogButtonBox>
-
 #include "BuildTreeDialogFiller.h"
 #include <primitives/GTCheckBox.h>
 #include <primitives/GTComboBox.h>
@@ -38,24 +28,33 @@
 #include <primitives/GTSpinBox.h>
 #include <primitives/GTTabWidget.h>
 #include <primitives/GTWidget.h>
+
+#include <QApplication>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDialogButtonBox>
+#include <QDoubleSpinBox>
+#include <QGroupBox>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QSpinBox>
+
 #include "runnables/ugene/corelibs/U2View/ov_msa/LicenseAgreementDialogFiller.h"
 
 namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::BuildTreeDialogFiller"
 
-BuildTreeDialogFiller::BuildTreeDialogFiller(HI::GUITestOpStatus &os, const QString &saveTree, int model, double alpha, bool displayWithMsa) :
-    Filler(os, "CreatePhyTree"),
-    saveTree(saveTree),
-    model(model),
-    replicates(0),
-    seed(0),
-    alpha(alpha),
-    fraction(0),
-    type(MAJORITYEXT),
-    displayWithMsa(displayWithMsa)
-{
-
+BuildTreeDialogFiller::BuildTreeDialogFiller(HI::GUITestOpStatus &os, const QString &saveTree, int model, double alpha, bool displayWithMsa)
+    : Filler(os, "CreatePhyTree"),
+      saveTree(saveTree),
+      model(model),
+      replicates(0),
+      seed(0),
+      alpha(alpha),
+      fraction(0),
+      type(MAJORITYEXT),
+      displayWithMsa(displayWithMsa) {
 }
 
 BuildTreeDialogFiller::BuildTreeDialogFiller(HI::GUITestOpStatus &os,
@@ -63,43 +62,38 @@ BuildTreeDialogFiller::BuildTreeDialogFiller(HI::GUITestOpStatus &os,
                                              const QString &saveTree,
                                              int seed,
                                              BuildTreeDialogFiller::ConsensusType type,
-                                             double fraction) :
-    Filler(os, "CreatePhyTree"),
-    saveTree(saveTree),
-    model(0),
-    replicates(replicates),
-    seed(seed),
-    alpha(0),
-    fraction(fraction),
-    type(type),
-    displayWithMsa(false)
-{
-
+                                             double fraction)
+    : Filler(os, "CreatePhyTree"),
+      saveTree(saveTree),
+      model(0),
+      replicates(replicates),
+      seed(seed),
+      alpha(0),
+      fraction(fraction),
+      type(type),
+      displayWithMsa(false) {
 }
 
 BuildTreeDialogFiller::BuildTreeDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario)
     : Filler(os, "CreatePhyTree", scenario),
-    model(0),
-    replicates(0),
-    seed(0),
-    alpha(0),
-    fraction(0),
-    type(MAJORITYEXT),
-    displayWithMsa(false)
-{
-
+      model(0),
+      replicates(0),
+      seed(0),
+      alpha(0),
+      fraction(0),
+      type(MAJORITYEXT),
+      displayWithMsa(false) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
 void BuildTreeDialogFiller::commonScenario() {
-
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
     GTUtilsDialog::waitForDialogWhichMayRunOrNot(os, new LicenseAgreementDialogFiller(os));
-    if(saveTree!="default"){
-        QLineEdit* saveLineEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os,"fileNameEdit"));
-        GTLineEdit::setText(os,saveLineEdit, saveTree);
+    if (saveTree != "default") {
+        QLineEdit *saveLineEdit = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "fileNameEdit"));
+        GTLineEdit::setText(os, saveLineEdit, saveTree);
     }
 
     if (0 != model) {
@@ -138,9 +132,7 @@ void BuildTreeDialogFiller::commonScenario() {
 #define GT_CLASS_NAME "GTUtilsDialog::BuildTreeDialogFiller"
 
 BuildTreeDialogFillerPhyML::BuildTreeDialogFillerPhyML(HI::GUITestOpStatus &os, bool _freqOptimRadioPressed, int bootstrap)
-    : Filler(os, "CreatePhyTree"), freqOptimRadioPressed(_freqOptimRadioPressed), bootstrap(bootstrap)
-{
-
+    : Filler(os, "CreatePhyTree"), freqOptimRadioPressed(_freqOptimRadioPressed), bootstrap(bootstrap) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
@@ -150,10 +142,10 @@ void BuildTreeDialogFillerPhyML::commonScenario() {
 
     GTUtilsDialog::waitForDialogWhichMayRunOrNot(os, new LicenseAgreementDialogFiller(os));
 
-    GTComboBox::setIndexWithText(os, GTWidget::findExactWidget<QComboBox*>(os, "algorithmBox", dialog), "PhyML Maximum Likelihood");
+    GTComboBox::setIndexWithText(os, GTWidget::findExactWidget<QComboBox *>(os, "algorithmBox", dialog), "PhyML Maximum Likelihood");
 
     if (freqOptimRadioPressed) {
-        GTRadioButton::click(os, GTWidget::findExactWidget<QRadioButton*>(os, "freqOptimRadio", dialog));
+        GTRadioButton::click(os, GTWidget::findExactWidget<QRadioButton *>(os, "freqOptimRadio", dialog));
     }
 
     if (bootstrap >= 0) {
@@ -168,4 +160,4 @@ void BuildTreeDialogFillerPhyML::commonScenario() {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

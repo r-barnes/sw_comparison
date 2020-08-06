@@ -23,6 +23,7 @@
 #define _U2_WORKFLOW_CMDLINE_TASKS_H_
 
 #include <U2Core/Task.h>
+
 #include <U2Lang/WorkflowIOTasks.h>
 
 namespace U2 {
@@ -32,32 +33,32 @@ class WorkflowRunFromCMDLineBase : public Task {
 public:
     WorkflowRunFromCMDLineBase();
     virtual ~WorkflowRunFromCMDLineBase();
-    QList<Task*> onSubTaskFinished( Task* subTask );
+    QList<Task *> onSubTaskFinished(Task *subTask);
     void run();
 
 protected:
-    virtual Task * getWorkflowRunTask() const = 0;
+    virtual Task *getWorkflowRunTask() const = 0;
 
 private:
-    LoadWorkflowTask * prepareLoadSchemaTask( const QString & schemaName );
-    void processLoadSchemaTask( const QString & schemaName, int optionIdx );
+    LoadWorkflowTask *prepareLoadSchemaTask(const QString &schemaName);
+    void processLoadSchemaTask(const QString &schemaName, int optionIdx);
 
 protected:
-    Schema*             schema;
-    int                 optionsStartAt;
-    LoadWorkflowTask *  loadTask;
-    Task *              workflowRunTask;
-    QString             schemaName;
+    Schema *schema;
+    int optionsStartAt;
+    LoadWorkflowTask *loadTask;
+    Task *workflowRunTask;
+    QString schemaName;
     QMap<ActorId, ActorId> remapping;
 
-}; // WorkflowRunFromCMDLineBase
+};    // WorkflowRunFromCMDLineBase
 
 class WorkflowRunFromCMDLineTask : public WorkflowRunFromCMDLineBase {
     Q_OBJECT
 public:
-    virtual Task * getWorkflowRunTask() const;
-}; // WorkflowRunFromCMDLineTask
+    virtual Task *getWorkflowRunTask() const;
+};    // WorkflowRunFromCMDLineTask
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_WORKFLOW_CMDLINE_TASKS_H_
+#endif    // _U2_WORKFLOW_CMDLINE_TASKS_H_

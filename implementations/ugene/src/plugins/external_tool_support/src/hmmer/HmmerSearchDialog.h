@@ -36,15 +36,15 @@ class U2SequenceObject;
 
 class HmmerSearchDialogModel {
 public:
-    HmmerSearchSettings         searchSettings;
-    QPointer<U2SequenceObject>  sequence;
+    HmmerSearchSettings searchSettings;
+    QPointer<U2SequenceObject> sequence;
 };
 
 class HmmerSearchDialog : public QDialog, public Ui_HmmerSearchDialog {
     Q_OBJECT
 public:
     HmmerSearchDialog(U2SequenceObject *seqObj, QWidget *parent = NULL);
-    HmmerSearchDialog(ADVSequenceObjectContext* seqCtx, QWidget *parent = NULL);
+    HmmerSearchDialog(ADVSequenceObjectContext *seqCtx, QWidget *parent = NULL);
 
     static const QString DOM_E_PLUS_PREFIX;
     static const QString DOM_E_MINUS_PREFIX;
@@ -67,12 +67,12 @@ private:
     void init(U2SequenceObject *seqObj);
     QString checkModel();
 
-    QButtonGroup                        useScoreTresholdGroup;
-    CreateAnnotationWidgetController *  annotationsWidgetController;
-    HmmerSearchDialogModel              model;
-    ADVSequenceObjectContext*           seqCtx;
+    QButtonGroup useScoreTresholdGroup;
+    CreateAnnotationWidgetController *annotationsWidgetController;
+    HmmerSearchDialogModel model;
+    ADVSequenceObjectContext *seqCtx;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_HMMER_SEARCH_DIALOG_H_
+#endif    // _U2_HMMER_SEARCH_DIALOG_H_

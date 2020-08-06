@@ -34,28 +34,26 @@ class MaGraphOverview;
 class MaOverviewImageExportSettings {
 public:
     MaOverviewImageExportSettings(bool exportSimpleOverview = false,
-                                   bool exportGraphOverview = true)
+                                  bool exportGraphOverview = true)
         : exportSimpleOverview(exportSimpleOverview),
-          exportGraphOverview(exportGraphOverview) {}
+          exportGraphOverview(exportGraphOverview) {
+    }
 
     bool exportSimpleOverview;
     bool exportGraphOverview;
 };
 
-
 class MaOverviewImageExportToBitmapTask : public ImageExportTask {
     Q_OBJECT
 public:
-    MaOverviewImageExportToBitmapTask(MaSimpleOverview *simpleOverview, MaGraphOverview *graphOverview,
-                                       const MaOverviewImageExportSettings &overviewSettings,
-                                       const ImageExportTaskSettings& settings);
+    MaOverviewImageExportToBitmapTask(MaSimpleOverview *simpleOverview, MaGraphOverview *graphOverview, const MaOverviewImageExportSettings &overviewSettings, const ImageExportTaskSettings &settings);
     void run();
-private:
-    MaSimpleOverview*  simpleOverview;
-    MaGraphOverview*   graphOverview;
-    MaOverviewImageExportSettings  overviewSettings;
-};
 
+private:
+    MaSimpleOverview *simpleOverview;
+    MaGraphOverview *graphOverview;
+    MaOverviewImageExportSettings overviewSettings;
+};
 
 class MaOverviewImageExportController : public ImageExportController {
     Q_OBJECT
@@ -68,16 +66,16 @@ public:
 protected:
     void initSettingsWidget();
 
-    Task* getExportToBitmapTask(const ImageExportTaskSettings &settings) const;
+    Task *getExportToBitmapTask(const ImageExportTaskSettings &settings) const;
 
 private:
-    MaSimpleOverview*  simpleOverview;
-    MaGraphOverview*   graphOverview;
+    MaSimpleOverview *simpleOverview;
+    MaGraphOverview *graphOverview;
 
-    QCheckBox*   exportSimpleOverview;
-    QCheckBox*   exportGraphOverview;
+    QCheckBox *exportSimpleOverview;
+    QCheckBox *exportGraphOverview;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_MSA_OVERVIEW_IMAGE_EXPORT_TASK_H_
+#endif    // _U2_MSA_OVERVIEW_IMAGE_EXPORT_TASK_H_

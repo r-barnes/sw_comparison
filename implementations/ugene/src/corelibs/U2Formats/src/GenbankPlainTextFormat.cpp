@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "GenbankPlainTextFormat.h"
+
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/DNAAlphabet.h>
@@ -39,22 +41,23 @@
 
 #include "DocumentFormatUtils.h"
 #include "GenbankLocationParser.h"
-#include "GenbankPlainTextFormat.h"
 
 namespace U2 {
 
-GenbankPlainTextFormat::GenbankPlainTextFormat(QObject* p)
-: EMBLGenbankAbstractDocument(BaseDocumentFormats::PLAIN_GENBANK, tr("GenBank"), 79, DocumentFormatFlags_SW, p)
-{
+GenbankPlainTextFormat::GenbankPlainTextFormat(QObject *p)
+    : EMBLGenbankAbstractDocument(BaseDocumentFormats::PLAIN_GENBANK, tr("GenBank"), 79, DocumentFormatFlags_SW, p) {
     formatDescription = tr("GenBank Flat File Format is a rich format for storing sequences and associated annotations");
-    fileExtensions << "gb" << "gbk" << "gen" << "genbank";
+    fileExtensions << "gb"
+                   << "gbk"
+                   << "gen"
+                   << "genbank";
     sequenceStartPrefix = "ORIGIN";
     fPrefix = "  ";
 }
 
-FormatCheckResult GenbankPlainTextFormat::checkRawTextData(const QByteArray& rawData, const GUrl&) const {
+FormatCheckResult GenbankPlainTextFormat::checkRawTextData(const QByteArray &rawData, const GUrl &) const {
     //TODO: improve handling
-    const char* data = rawData.constData();
+    const char *data = rawData.constData();
     int size = rawData.size();
     bool textOnly = !TextUtils::contains(TextUtils::BINARY, data, size);
     if (!textOnly || size < 100) {
@@ -81,8 +84,7 @@ bool GenbankPlainTextFormat::isStreamingSupport() {
     return true;
 }
 
-
-bool GenbankPlainTextFormat::readIdLine(ParserState* st) {
+bool GenbankPlainTextFormat::readIdLine(ParserState *st) {
     if (!st->hasKey("LOCUS")) {
         QByteArray rawData(st->buff);
         int locusStartPos = rawData.indexOf("\nLOCUS");
@@ -90,7 +92,7 @@ bool GenbankPlainTextFormat::readIdLine(ParserState* st) {
             st->si.setError(tr("LOCUS is not the first line"));
             return false;
         } else {
-            while(locusStartPos >= st->len) {
+            while (locusStartPos >= st->len) {
                 st->readNextLine();
                 rawData = QByteArray(st->buff);
                 locusStartPos = rawData.indexOf("\nLOCUS");
@@ -100,7 +102,7 @@ bool GenbankPlainTextFormat::readIdLine(ParserState* st) {
     }
 
     QString locusStr = st->value();
-    QStringList tokens = locusStr.split(QRegExp("(\t| )"), QString::SkipEmptyParts); //separators: tabs and spaces
+    QStringList tokens = locusStr.split(QRegExp("(\t| )"), QString::SkipEmptyParts);    //separators: tabs and spaces
     if (tokens.isEmpty()) {
         st->si.setError(tr("Error parsing LOCUS line"));
         return false;
@@ -131,8 +133,8 @@ bool GenbankPlainTextFormat::readIdLine(ParserState* st) {
     return true;
 }
 
-bool GenbankPlainTextFormat::readEntry(ParserState* st, U2SequenceImporter& seqImporter, int& sequenceLen,int& fullSequenceLen,bool merge, int gapSize, U2OpStatus& os) {
-    U2OpStatus& si = st->si;
+bool GenbankPlainTextFormat::readEntry(ParserState *st, U2SequenceImporter &seqImporter, int &sequenceLen, int &fullSequenceLen, bool merge, int gapSize, U2OpStatus &os) {
+    U2OpStatus &si = st->si;
     QString lastTagName;
     bool hasLine = false;
     savedInUgene = false;
@@ -177,15 +179,7 @@ bool GenbankPlainTextFormat::readEntry(ParserState* st, U2SequenceImporter& seqI
         if (st->hasKey("REFERENCE")) {
             DNAReferenceInfo ri;
             ri.referencesRecord.append(st->value());
-            while (st->readNextLine()
-                && (st->hasContinuation()
-                    || st->hasKey("REFERENCE")
-                    || st->hasKey("  AUTHORS")
-                    || st->hasKey("  TITLE")
-                    || st->hasKey("  JOURNAL")
-                    || st->hasKey("  MEDLINE")
-                    || st->hasKey("   PUBMED")
-                    || (st->hasValue() && st->buff[0] == ' '))){   //read until the end of the references record
+            while (st->readNextLine() && (st->hasContinuation() || st->hasKey("REFERENCE") || st->hasKey("  AUTHORS") || st->hasKey("  TITLE") || st->hasKey("  JOURNAL") || st->hasKey("  MEDLINE") || st->hasKey("   PUBMED") || (st->hasValue() && st->buff[0] == ' '))) {    //read until the end of the references record
                 ri.referencesRecord.append("\n" + QByteArray(st->buff, st->len));
             }
 
@@ -228,14 +222,14 @@ bool GenbankPlainTextFormat::readEntry(ParserState* st, U2SequenceImporter& seqI
                     break;
                 }
             } else {
-                if (st->len >0) {
+                if (st->len > 0) {
                     st->io->skip(-st->len - 1);
                 }
-                if(merge && gapSize){
-                    seqImporter.addDefaultSymbolsBlock(gapSize,os);
-                    CHECK_OP(os,false);
+                if (merge && gapSize) {
+                    seqImporter.addDefaultSymbolsBlock(gapSize, os);
+                    CHECK_OP(os, false);
                 }
-                readSequence(st,seqImporter,sequenceLen,fullSequenceLen,os);
+                readSequence(st, seqImporter, sequenceLen, fullSequenceLen, os);
                 if (fullSequenceLen != st->entry->seqLen && !si.getWarnings().contains(EMBLGenbankAbstractDocument::SEQ_LEN_WARNING_MESSAGE)) {
                     si.addWarning(EMBLGenbankAbstractDocument::SEQ_LEN_WARNING_MESSAGE);
                 }
@@ -259,19 +253,18 @@ bool GenbankPlainTextFormat::readEntry(ParserState* st, U2SequenceImporter& seqI
     return false;
 }
 
-void GenbankPlainTextFormat::readHeaderAttributes(QVariantMap& tags, DbiConnection& con, U2SequenceObject* so) {
+void GenbankPlainTextFormat::readHeaderAttributes(QVariantMap &tags, DbiConnection &con, U2SequenceObject *so) {
     QString headerAttrString;
 
     QList<StrPair> lst(formatKeywords(tags, true));
-    foreach (const StrPair& p, lst) {
+    foreach (const StrPair &p, lst) {
         int klen = p.first.length();
-        assert(klen<VAL_OFF);
+        assert(klen < VAL_OFF);
         headerAttrString.append(p.first);
-        for(int i = 0; i < VAL_OFF - klen; i++){
+        for (int i = 0; i < VAL_OFF - klen; i++) {
             headerAttrString.append(" ");
         }
         headerAttrString.append(p.second + "\n");
-
     }
 
     U2StringAttribute headerAttr(so->getSequenceRef().entityId, DNAInfo::GENBANK_HEADER, headerAttrString);
@@ -311,7 +304,7 @@ void GenbankPlainTextFormat::readHeaderAttributes(QVariantMap& tags, DbiConnecti
         }
     }
 
-    tags.insert(UGENE_MARK, ""); //to allow writing
+    tags.insert(UGENE_MARK, "");    //to allow writing
 }
 
 bool GenbankPlainTextFormat::isNcbiLikeFormat() const {
@@ -361,32 +354,32 @@ const QMap<U2FeatureType, GBFeatureKey> GenbankPlainTextFormat::additionalFeatur
 
 QMap<U2FeatureType, GBFeatureKey> GenbankPlainTextFormat::initAdditionalFeatureTypes() {
     QMap<U2FeatureType, GBFeatureKey> result;
-    result.insert(U2FeatureTypes::PromoterEukaryotic,   GBFeatureKey_promoter);
-    result.insert(U2FeatureTypes::PromoterProkaryotic,  GBFeatureKey_promoter);
+    result.insert(U2FeatureTypes::PromoterEukaryotic, GBFeatureKey_promoter);
+    result.insert(U2FeatureTypes::PromoterProkaryotic, GBFeatureKey_promoter);
     return result;
 }
 
 //////////////////////////////////////////////////////////////////////////
 /// saving
 
-bool GenbankPlainTextFormat::writeKeyword(IOAdapter* io, U2OpStatus& os, const QString& key, const QString& value, bool wrap) {
+bool GenbankPlainTextFormat::writeKeyword(IOAdapter *io, U2OpStatus &os, const QString &key, const QString &value, bool wrap) {
     Q_UNUSED(wrap);
     try {
         assert(key.length() < VAL_OFF);
         int klen = qMin(VAL_OFF - 1, key.length());
         qint64 len = io->writeBlock(key.left(klen).toLocal8Bit());
-        if (len!=klen) {
+        if (len != klen) {
             throw 0;
         }
-        static char spaces[] = {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '};
+        static char spaces[] = {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '};
         int slen = VAL_OFF - klen;
         len = io->writeBlock(spaces, slen);
-        if (len!=slen) {
+        if (len != slen) {
             throw 0;
         }
 
         len = io->writeBlock(value.toLocal8Bit());
-        if (len!=value.size()) {
+        if (len != value.size()) {
             throw 0;
         }
 
@@ -395,27 +388,29 @@ bool GenbankPlainTextFormat::writeKeyword(IOAdapter* io, U2OpStatus& os, const Q
             throw 0;
         }
 
-    } catch( int ) {
+    } catch (int) {
         os.setError(GenbankPlainTextFormat::tr("Error writing document"));
         return false;
     }
     return true;
 }
 
-void GenbankPlainTextFormat::storeDocument(Document* doc, IOAdapter* io, U2OpStatus& os) {
+void GenbankPlainTextFormat::storeDocument(Document *doc, IOAdapter *io, U2OpStatus &os) {
     SAFE_POINT(doc != NULL, "GenbankPlainTextFormat::storeDocument::no document", );
-    QList<GObject*> seqs = doc->findGObjectByType(GObjectTypes::SEQUENCE);
-    QList<GObject*> anns = doc->findGObjectByType(GObjectTypes::ANNOTATION_TABLE);
+    QList<GObject *> seqs = doc->findGObjectByType(GObjectTypes::SEQUENCE);
+    QList<GObject *> anns = doc->findGObjectByType(GObjectTypes::ANNOTATION_TABLE);
 
     while (!seqs.isEmpty() || !anns.isEmpty()) {
-
-        U2SequenceObject* so = seqs.isEmpty() ? NULL : static_cast<U2SequenceObject*>(seqs.takeFirst());
-        QList<GObject*> aos;
+        U2SequenceObject *so = seqs.isEmpty() ? NULL : static_cast<U2SequenceObject *>(seqs.takeFirst());
+        QList<GObject *> aos;
         if (so) {
             if (!anns.isEmpty()) {
                 aos = GObjectUtils::findObjectsRelatedToObjectByRole(so,
-                    GObjectTypes::ANNOTATION_TABLE, ObjectRole_Sequence, anns, UOF_LoadedOnly);
-                foreach(GObject* o, aos) {
+                                                                     GObjectTypes::ANNOTATION_TABLE,
+                                                                     ObjectRole_Sequence,
+                                                                     anns,
+                                                                     UOF_LoadedOnly);
+                foreach (GObject *o, aos) {
                     anns.removeAll(o);
                 }
             }
@@ -424,10 +419,11 @@ void GenbankPlainTextFormat::storeDocument(Document* doc, IOAdapter* io, U2OpSta
             aos << anns.takeFirst();
         }
 
-        QMap< GObjectType, QList<GObject*> > objectsMap;
+        QMap<GObjectType, QList<GObject *>> objectsMap;
         {
             if (NULL != so) {
-                QList<GObject*> seqs; seqs << so;
+                QList<GObject *> seqs;
+                seqs << so;
                 objectsMap[GObjectTypes::SEQUENCE] = seqs;
             }
             if (!aos.isEmpty()) {
@@ -439,14 +435,14 @@ void GenbankPlainTextFormat::storeDocument(Document* doc, IOAdapter* io, U2OpSta
     }
 }
 
-void GenbankPlainTextFormat::storeEntry(IOAdapter *io, const QMap< GObjectType, QList<GObject*> > &objectsMap, U2OpStatus &os) {
+void GenbankPlainTextFormat::storeEntry(IOAdapter *io, const QMap<GObjectType, QList<GObject *>> &objectsMap, U2OpStatus &os) {
     U2SequenceObject *seq = NULL;
-    QList<GObject*> anns;
+    QList<GObject *> anns;
     if (objectsMap.contains(GObjectTypes::SEQUENCE)) {
-        const QList<GObject*> &seqs = objectsMap[GObjectTypes::SEQUENCE];
+        const QList<GObject *> &seqs = objectsMap[GObjectTypes::SEQUENCE];
         SAFE_POINT(1 >= seqs.size(), "Genbank entry storing: sequence objects count error", );
         if (1 == seqs.size()) {
-            seq = dynamic_cast<U2SequenceObject*>(seqs.first());
+            seq = dynamic_cast<U2SequenceObject *>(seqs.first());
             SAFE_POINT(NULL != seq, "Genbank entry storing: NULL sequence object", );
         }
     }
@@ -464,15 +460,15 @@ void GenbankPlainTextFormat::storeEntry(IOAdapter *io, const QMap< GObjectType, 
         CHECK_OP(os, );
         U2AttributeDbi *attributeDbi = con.dbi->getAttributeDbi();
         U2StringAttribute attr = U2AttributeUtils::findStringAttribute(attributeDbi, seq->getSequenceRef().entityId, DNAInfo::GENBANK_HEADER, os);
-        if(attr.hasValidId()) {
+        if (attr.hasValidId()) {
             gbHeader = attr.value;
         }
 
-        if(gbHeader.startsWith("LOCUS")){ //trim the first line
+        if (gbHeader.startsWith("LOCUS")) {    //trim the first line
             int locusStringEndIndex = gbHeader.indexOf("\n");
             assert(locusStringEndIndex != -1);
             locusFromAttributes = gbHeader.left(locusStringEndIndex);
-            gbHeader = gbHeader.mid(locusStringEndIndex+1);
+            gbHeader = gbHeader.mid(locusStringEndIndex + 1);
         }
     }
     // write mandatory locus string
@@ -487,17 +483,17 @@ void GenbankPlainTextFormat::storeEntry(IOAdapter *io, const QMap< GObjectType, 
     }
 
     //write tool mark
-    QList<GObject*> annsAndSeqObjs;
+    QList<GObject *> annsAndSeqObjs;
     annsAndSeqObjs << anns;
-    if (seq!=NULL) {
-        annsAndSeqObjs<<seq;
+    if (seq != NULL) {
+        annsAndSeqObjs << seq;
     }
     if (!annsAndSeqObjs.isEmpty()) {
         QString unimark = annsAndSeqObjs[0]->getGObjectName();
         if (!writeKeyword(io, os, UGENE_MARK, unimark, false)) {
             return;
         }
-        for (int x=1; x < annsAndSeqObjs.size(); x++) {
+        for (int x = 1; x < annsAndSeqObjs.size(); x++) {
             if (!writeKeyword(io, os, QString(), annsAndSeqObjs[x]->getGObjectName(), false)) {
                 return;
             }
@@ -520,28 +516,28 @@ void GenbankPlainTextFormat::storeEntry(IOAdapter *io, const QMap< GObjectType, 
     // write last line marker
     QByteArray lastLine("//\n");
     qint64 len = io->writeBlock(lastLine);
-    if (len!=lastLine.size()) {
+    if (len != lastLine.size()) {
         os.setError(L10N::errorWritingFile(io->getURL()));
         return;
     }
 }
 
-bool GenbankPlainTextFormat::checkCircularity(const GUrl& filePath, U2OpStatus& os) {
+bool GenbankPlainTextFormat::checkCircularity(const GUrl &filePath, U2OpStatus &os) {
     SAFE_POINT_EXT(AppContext::getIOAdapterRegistry() != NULL, os.setError(tr("There is no IOAdapter registry yet")), false);
-    IOAdapterFactory* factory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
-    SAFE_POINT_EXT( factory != NULL, os.setError(tr("IOAdapterFactory is NULL")), false);
-    IOAdapter* io = factory->createIOAdapter();
-    SAFE_POINT_EXT( io != NULL, os.setError(tr("IOAdapter is NULL")), false);
+    IOAdapterFactory *factory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
+    SAFE_POINT_EXT(factory != NULL, os.setError(tr("IOAdapterFactory is NULL")), false);
+    IOAdapter *io = factory->createIOAdapter();
+    SAFE_POINT_EXT(io != NULL, os.setError(tr("IOAdapter is NULL")), false);
     io->setFormatMode(IOAdapter::TextMode);
     bool ok = io->open(filePath, IOAdapterMode_Read);
-    CHECK_EXT( ok, os.setError(L10N::errorOpeningFileRead(filePath)), false);
+    CHECK_EXT(ok, os.setError(L10N::errorOpeningFileRead(filePath)), false);
 
     QByteArray readBuffer(READ_BUFF_SIZE, '\0');
     ParserState st(12, io, NULL, os);
     st.buff = readBuffer.data();
     EMBLGenbankDataEntry data;
     st.entry = &data;
-    st.readNextLine(true); // all information is in the first line!
+    st.readNextLine(true);    // all information is in the first line!
 
     if (readIdLine(&st)) {
         return st.entry->circular;
@@ -550,14 +546,14 @@ bool GenbankPlainTextFormat::checkCircularity(const GUrl& filePath, U2OpStatus& 
     return false;
 }
 
-static QString getDate(){
-    const char* MonthsInEng[] = {" ", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
+static QString getDate() {
+    const char *MonthsInEng[] = {" ", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
     return QDate::currentDate().toString("dd-") +
-        MonthsInEng[QDate::currentDate().month()] +
-        QDate::currentDate().toString("-yyyy");
+           MonthsInEng[QDate::currentDate().month()] +
+           QDate::currentDate().toString("-yyyy");
 }
 
-static QString padToLen(const QString& s, int width) {
+static QString padToLen(const QString &s, int width) {
     if (width > s.length()) {
         return s.leftJustified(width);
     } else {
@@ -565,7 +561,7 @@ static QString padToLen(const QString& s, int width) {
     }
 }
 
-static QString detectTopology(const QString& savedTopology, U2SequenceObject* so) {
+static QString detectTopology(const QString &savedTopology, U2SequenceObject *so) {
     CHECK(!savedTopology.isEmpty(), QString());
     SAFE_POINT(so != NULL, "U2SequenceObject is NULL", QString());
 
@@ -584,7 +580,7 @@ static QString detectTopology(const QString& savedTopology, U2SequenceObject* so
     }
 }
 
-QString GenbankPlainTextFormat::genLocusString(const QList<GObject*> &aos, U2SequenceObject* so, const QString& locusStrFromAttr) {
+QString GenbankPlainTextFormat::genLocusString(const QList<GObject *> &aos, U2SequenceObject *so, const QString &locusStrFromAttr) {
     QString loc, date;
     if (so) {
         QString len = QString::number(so->getSequenceLength());
@@ -598,22 +594,22 @@ QString GenbankPlainTextFormat::genLocusString(const QList<GObject*> &aos, U2Seq
         if (so->getSequenceInfo().contains(DNAInfo::LOCUS)) {
             DNALocusInfo loi = so->getSequenceInfo().value(DNAInfo::LOCUS).value<DNALocusInfo>();
             assert(!loi.name.isEmpty());
-            QString& mol = loi.molecule;
-            if (mol.size() >= 3 && mol.at(2) != '-') loc.append("   ");
+            QString &mol = loi.molecule;
+            if (mol.size() >= 3 && mol.at(2) != '-')
+                loc.append("   ");
             loc = padToLen(loc.append(mol), 43);
-            loc = padToLen(loc.append( detectTopology(loi.topology, so) ), 52);
+            loc = padToLen(loc.append(detectTopology(loi.topology, so)), 52);
             loc = loc.append(loi.division);
             date = loi.date;
-        } else if (!locusStrFromAttr.isEmpty()){
-
+        } else if (!locusStrFromAttr.isEmpty()) {
             QStringList tokens = locusStrFromAttr.split(" ", QString::SkipEmptyParts);
             SAFE_POINT(tokens.size() >= 5, QString("Incorrect number of tokens for attribute %1").arg(locusStrFromAttr), loc);
             loc = padToLen(loc.append(tokens[2]), 43);
-            loc = padToLen(loc.append( detectTopology(tokens[4], so) ), 52);
+            loc = padToLen(loc.append(detectTopology(tokens[4], so)), 52);
             loc = loc.append(tokens[3]);
         } else if (so->isCircular()) {
-                loc = loc.append(" ");
-                loc = loc.append(EMBLGenbankAbstractDocument::LOCUS_TAG_CIRCULAR);
+            loc = loc.append(" ");
+            loc = loc.append(EMBLGenbankAbstractDocument::LOCUS_TAG_CIRCULAR);
         }
     } else {
         assert(!aos.isEmpty());
@@ -627,7 +623,7 @@ QString GenbankPlainTextFormat::genLocusString(const QList<GObject*> &aos, U2Seq
     return loc;
 }
 
-void GenbankPlainTextFormat::writeQualifier(const QString& name, const QString& val, IOAdapter* io, U2OpStatus& si, const char* spaceLine) {
+void GenbankPlainTextFormat::writeQualifier(const QString &name, const QString &val, IOAdapter *io, U2OpStatus &si, const char *spaceLine) {
     int len = io->writeBlock(spaceLine, 21);
     if (len != 21) {
         si.setError(GenbankPlainTextFormat::tr("Error writing document"));
@@ -672,7 +668,7 @@ QList<GenbankPlainTextFormat::StrPair> GenbankPlainTextFormat::formatKeywords(co
 
     QMultiMap<QString, QVariant> tags(varMap);
 
-    if(!withLocus){
+    if (!withLocus) {
         tags.remove(DNAInfo::LOCUS);
     }
     tags.remove(DNAInfo::ID);
@@ -687,18 +683,18 @@ QList<GenbankPlainTextFormat::StrPair> GenbankPlainTextFormat::formatKeywords(co
 
     {
         QString key = DNAInfo::LOCUS;
-        while (tags.contains(key)){
+        while (tags.contains(key)) {
             QVariant v = tags.take(key);
             DNALocusInfo li = v.value<DNALocusInfo>();
-            QString locusVal = li.name+" "+li.molecule+" "+li.division+" "+li.topology+" "+li.date;
-            res<< qMakePair(key, locusVal);
+            QString locusVal = li.name + " " + li.molecule + " " + li.division + " " + li.topology + " " + li.date;
+            res << qMakePair(key, locusVal);
         }
     }
 
     QStringList order;
     order << DNAInfo::DEFINITION << DNAInfo::ACCESSION << DNAInfo::VERSION;
     order << DNAInfo::PROJECT << DNAInfo::KEYWORDS << DNAInfo::SEGMENT;
-    foreach(const QString& key, order) {
+    foreach (const QString &key, order) {
         while (tags.contains(key)) {
             QVariant v = tags.take(key);
             if (v.canConvert(QVariant::String)) {
@@ -711,7 +707,7 @@ QList<GenbankPlainTextFormat::StrPair> GenbankPlainTextFormat::formatKeywords(co
                 }
 
                 res << qMakePair(key, l.takeFirst());
-                foreach(const QString& s, l) {
+                foreach (const QString &s, l) {
                     res << qMakePair(QString(), s);
                 }
             } else {
@@ -729,7 +725,7 @@ QList<GenbankPlainTextFormat::StrPair> GenbankPlainTextFormat::formatKeywords(co
                 res[res.size() - 1].second += " " + soi.organelle;
             }
             res << qMakePair(QString("  ORGANISM"), soi.organism);
-            foreach(const QString& s, soi.taxonomy) {
+            foreach (const QString &s, soi.taxonomy) {
                 res << qMakePair(QString(), s);
             }
         }
@@ -739,15 +735,14 @@ QList<GenbankPlainTextFormat::StrPair> GenbankPlainTextFormat::formatKeywords(co
         while (tags.contains(key)) {
             QVariant v = tags.take(key);
             DNAReferenceInfo ri = v.value<DNAReferenceInfo>();
-            res<< qMakePair(key, ri.referencesRecord);
+            res << qMakePair(key, ri.referencesRecord);
         }
     }
 
     res << processCommentKeys(tags);
 
     QMapIterator<QString, QVariant> it(tags);
-    while (it.hasNext())
-    {
+    while (it.hasNext()) {
         it.next();
         if (it.value().type() == QVariant::String) {
             res << qMakePair(it.key(), it.value().toString());
@@ -758,7 +753,7 @@ QList<GenbankPlainTextFormat::StrPair> GenbankPlainTextFormat::formatKeywords(co
                 continue;
             }
             res << qMakePair(it.key(), l.takeFirst());
-            foreach(const QString& s, l) {
+            foreach (const QString &s, l) {
                 res << qMakePair(QString(), s);
             }
         } else {
@@ -781,21 +776,21 @@ QList<GenbankPlainTextFormat::StrPair> GenbankPlainTextFormat::processCommentKey
     return res;
 }
 
-void GenbankPlainTextFormat::writeAnnotations(IOAdapter* io, const QList<GObject *> &aos, U2OpStatus& si) {
+void GenbankPlainTextFormat::writeAnnotations(IOAdapter *io, const QList<GObject *> &aos, U2OpStatus &si) {
     assert(!aos.isEmpty());
     QByteArray header("FEATURES             Location/Qualifiers\n");
 
     //write "FEATURES"
     qint64 len = io->writeBlock(header);
-    if (len!=header.size()) {
+    if (len != header.size()) {
         si.setError(GenbankPlainTextFormat::tr("Error writing document"));
         return;
     }
 
     //write every feature
-    const char* spaceLine = TextUtils::SPACE_LINE.data();
-    const QByteArray& nameQ = GBFeatureUtils::QUALIFIER_NAME;
-    const QByteArray& groupQ = GBFeatureUtils::QUALIFIER_GROUP;
+    const char *spaceLine = TextUtils::SPACE_LINE.data();
+    const QByteArray &nameQ = GBFeatureUtils::QUALIFIER_NAME;
+    const QByteArray &groupQ = GBFeatureUtils::QUALIFIER_GROUP;
 
     QList<Annotation *> sortedAnnotations;
     foreach (GObject *o, aos) {
@@ -823,14 +818,14 @@ void GenbankPlainTextFormat::writeAnnotations(IOAdapter* io, const QList<GObject
 
         const QString keyStr = getFeatureTypeString(a->getType(), false);
         len = io->writeBlock(keyStr.toLocal8Bit());
-        if (len!=keyStr.length()) {
+        if (len != keyStr.length()) {
             si.setError(GenbankPlainTextFormat::tr("Error writing document"));
             return;
         }
         int nspaces = 22 - keyStr.length() - 6;
         assert(nspaces > 0);
         len = io->writeBlock(spaceLine, nspaces);
-        if (len !=nspaces) {
+        if (len != nspaces) {
             si.setError(GenbankPlainTextFormat::tr("Error writing document"));
             return;
         }
@@ -869,19 +864,19 @@ void GenbankPlainTextFormat::writeAnnotations(IOAdapter* io, const QList<GObject
         const bool storeGroups = !ag->isTopLevelGroup() || ag->getName() != aName;
 
         if (storeGroups) {
-            writeQualifier(groupQ, ag->getGroupPath( ), io, si, spaceLine);
+            writeQualifier(groupQ, ag->getGroupPath(), io, si, spaceLine);
         }
     }
 }
 
-void GenbankPlainTextFormat::writeSequence(IOAdapter* io, U2SequenceObject* ao, const QList<U2Region> &lowerCaseRegs, U2OpStatus& si) {
+void GenbankPlainTextFormat::writeSequence(IOAdapter *io, U2SequenceObject *ao, const QList<U2Region> &lowerCaseRegs, U2OpStatus &si) {
     static const int charsInLine = 60;
     static const int DB_BLOCK_SIZE = charsInLine * 3000;
 
     QByteArray seq;
     qint64 slen = ao->getSequenceLength();
-    const char* sequence = NULL;
-    const char* spaces = TextUtils::SPACE_LINE.constData();
+    const char *sequence = NULL;
+    const char *spaces = TextUtils::SPACE_LINE.constData();
     QByteArray num;
     bool ok = true;
     qint64 blen = io->writeBlock(QByteArray("ORIGIN\n"));
@@ -890,18 +885,18 @@ void GenbankPlainTextFormat::writeSequence(IOAdapter* io, U2SequenceObject* ao, 
         return;
     }
 
-    for (qint64 pos = 0; pos < slen; pos+=charsInLine) {
-        if( (pos % DB_BLOCK_SIZE) == 0){
+    for (qint64 pos = 0; pos < slen; pos += charsInLine) {
+        if ((pos % DB_BLOCK_SIZE) == 0) {
             seq.clear();
             seq = ao->getSequenceData(U2Region(pos, qMin((qint64)DB_BLOCK_SIZE, slen - pos)));
             sequence = U1AnnotationUtils::applyLowerCaseRegions(seq.data(), 0, seq.size(), pos, lowerCaseRegs);
         }
-        num.setNum(pos+1);
+        num.setNum(pos + 1);
 
         //right spaces
-        blen = 10 - num.length()-1;
+        blen = 10 - num.length() - 1;
         qint64 l = io->writeBlock(QByteArray::fromRawData(spaces, blen));
-        if (l!=blen) {
+        if (l != blen) {
             ok = false;
             break;
         }
@@ -914,7 +909,7 @@ void GenbankPlainTextFormat::writeSequence(IOAdapter* io, U2SequenceObject* ao, 
         }
 
         //sequence
-        qint64 last = qMin(pos+charsInLine, slen);
+        qint64 last = qMin(pos + charsInLine, slen);
         for (qint64 j = pos; j < last; j += 10) {
             l = io->writeBlock(QByteArray::fromRawData(" ", 1));
             if (l != 1) {
@@ -922,8 +917,8 @@ void GenbankPlainTextFormat::writeSequence(IOAdapter* io, U2SequenceObject* ao, 
                 break;
             }
             qint64 chunkLen = qMin((qint64)10, slen - j);
-            l = io->writeBlock(QByteArray::fromRawData(sequence + (j % DB_BLOCK_SIZE) , chunkLen));
-            if (l!=chunkLen) {
+            l = io->writeBlock(QByteArray::fromRawData(sequence + (j % DB_BLOCK_SIZE), chunkLen));
+            if (l != chunkLen) {
                 ok = false;
                 break;
             }
@@ -946,10 +941,10 @@ void GenbankPlainTextFormat::writeSequence(IOAdapter* io, U2SequenceObject* ao, 
 
 // splits line into multiple lines adding 'spacesOnLineStart' to every line except first one
 // and '\n' to the end of every new line
-void GenbankPlainTextFormat::prepareMultiline(QString& line, int spacesOnLineStart, bool lineBreakOnlyOnSpace, bool newLineAtTheEnd, int maxLineLen) {
+void GenbankPlainTextFormat::prepareMultiline(QString &line, int spacesOnLineStart, bool lineBreakOnlyOnSpace, bool newLineAtTheEnd, int maxLineLen) {
     Q_ASSERT(spacesOnLineStart < maxLineLen);
     line.replace('\n', ';');
-    const int len = line.length() ;
+    const int len = line.length();
     if (spacesOnLineStart + len > maxLineLen) {
         QByteArray spacesPrefix(spacesOnLineStart, ' ');
         QString newLine;
@@ -962,28 +957,28 @@ void GenbankPlainTextFormat::prepareMultiline(QString& line, int spacesOnLineSta
                 newLine.append(spacesPrefix);
             }
             skipLineBreak = false;
-            int pos2 =  pos + charsInLine - 1;
-            if (pos2 < len) { //not the last line
+            int pos2 = pos + charsInLine - 1;
+            if (pos2 < len) {    //not the last line
                 while (pos2 > pos && !line[pos2].isSpace() && lineBreakOnlyOnSpace) {
                     pos2--;
                 }
-                if (pos == pos2) { //we failed to find word end
+                if (pos == pos2) {    //we failed to find word end
                     pos2 = pos + charsInLine - 1;
                     if (lineBreakOnlyOnSpace) {
                         skipLineBreak = true;
                     }
                 }
                 newLine.append(line.mid(pos, pos2 - pos + (!lineBreakOnlyOnSpace || skipLineBreak)));
-            } else { //last line
+            } else {    //last line
                 newLine.append(line.mid(pos, len - pos));
             }
             pos = pos2 + 1;
-        } while (pos<len);
+        } while (pos < len);
         line = newLine;
     }
     if (newLineAtTheEnd) {
-        line+="\n";
+        line += "\n";
     }
 }
 
-}//namespace
+}    // namespace U2

@@ -22,11 +22,11 @@
 #ifndef _U2_EXTERNAL_TOOL_CONFIG_H_
 #define _U2_EXTERNAL_TOOL_CONFIG_H_
 
-#include <U2Lang/ConfigurationEditor.h>
-
-#include <QString>
-#include <QObject>
 #include <QMap>
+#include <QObject>
+#include <QString>
+
+#include <U2Lang/ConfigurationEditor.h>
 
 namespace U2 {
 
@@ -48,7 +48,7 @@ public:
     bool isAlignment() const;
     bool isText() const;
 
-    bool operator ==(const DataConfig &other) const;
+    bool operator==(const DataConfig &other) const;
 
     static const DocumentFormatId STRING_VALUE;
     static const DocumentFormatId OUTPUT_FILE_URL;
@@ -58,8 +58,8 @@ class U2LANG_EXPORT AttributeConfig {
 public:
     enum Flag {
         None,
-        AddToDashboard,         // only for output URLs
-        OpenWithUgene           // only for file URLs that are added to a dashboard
+        AddToDashboard,    // only for output URLs
+        OpenWithUgene    // only for file URLs that are added to a dashboard
     };
     Q_DECLARE_FLAGS(Flags, Flag)
 
@@ -88,7 +88,7 @@ public:
     bool isOutputUrl() const;
     bool isFile() const;
     bool isFolder() const;
-    bool operator ==(const AttributeConfig &other) const;
+    bool operator==(const AttributeConfig &other) const;
 };
 
 class U2LANG_EXPORT ExternalProcessConfig {
@@ -108,11 +108,11 @@ public:
     QString customToolPath;
     QString integratedToolId;
 
-    bool operator ==(const ExternalProcessConfig &other) const;
-    bool operator !=(const ExternalProcessConfig &other) const;
+    bool operator==(const ExternalProcessConfig &other) const;
+    bool operator!=(const ExternalProcessConfig &other) const;
 };
 
-class U2LANG_EXPORT ExternalToolCfgRegistry: public QObject {
+class U2LANG_EXPORT ExternalToolCfgRegistry : public QObject {
     Q_OBJECT
 public:
     ExternalToolCfgRegistry(QObject *parent = nullptr);
@@ -120,17 +120,17 @@ public:
     bool registerExternalTool(ExternalProcessConfig *cfg);
     void unregisterConfig(const QString &id);
 
-    ExternalProcessConfig *getConfigById(const QString& id) const;
+    ExternalProcessConfig *getConfigById(const QString &id) const;
     QList<ExternalProcessConfig *> getConfigs() const;
 
 private:
     QMap<QString, ExternalProcessConfig *> configs;
 };
 
-}
+}    // namespace U2
 
 Q_DECLARE_METATYPE(U2::AttributeConfig)
 Q_DECLARE_METATYPE(U2::DataConfig)
 Q_DECLARE_OPERATORS_FOR_FLAGS(U2::AttributeConfig::Flags)
 
-#endif // _U2_EXTERNAL_TOOL_CONFIG_H_
+#endif    // _U2_EXTERNAL_TOOL_CONFIG_H_

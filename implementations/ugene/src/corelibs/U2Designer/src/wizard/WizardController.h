@@ -53,13 +53,14 @@ public:
         ACTORS_REPLACED,
         BROKEN
     };
+
 public:
     WizardController(Schema *s, const Wizard *w);
     virtual ~WizardController();
 
-    QWizard * createGui();
+    QWizard *createGui();
     ApplyResult applyChanges(Metadata &meta);
-    const QList<Actor*> & getCurrentActors() const;
+    const QList<Actor *> &getCurrentActors() const;
     bool isRunAfterApply() const;
 
     QVariant getVariableValue(const QString &var);
@@ -72,7 +73,7 @@ public:
      * @hrId - human-readable id of the page.
      */
     int getQtPageId(const QString &hrId) const;
-    const QMap<QString, Variable> & getVariables() const;
+    const QMap<QString, Variable> &getVariables() const;
 
     /** Wizard pages are validated in runtime. If some page is not validated
      * then wizard becomes broken
@@ -86,13 +87,13 @@ public:
     void clearControllers();
 
     // SchemaConfig
-    virtual RunFileSystem * getRFS();
+    virtual RunFileSystem *getRFS();
     QVariant getAttributeValue(const AttributeInfo &info) const;
     void setAttributeValue(const AttributeInfo &info, const QVariant &value);
 
-    Attribute * getAttribute(const AttributeInfo &info) const;
-    DelegateTags * getTags(const AttributeInfo &info, bool returnNewTags = false);
-    DelegateTags * getTagsWithoutController(const AttributeInfo &info) const;
+    Attribute *getAttribute(const AttributeInfo &info) const;
+    DelegateTags *getTags(const AttributeInfo &info, bool returnNewTags = false);
+    DelegateTags *getTagsWithoutController(const AttributeInfo &info) const;
 
     bool eventFilter(QObject *watched, QEvent *event);
 
@@ -101,19 +102,19 @@ private:
     bool broken;
     Schema *schema;
     const Wizard *wizard;
-    QList<WizardPageController*> pageControllers;
-    QList<Actor*> currentActors;
-    QMap<QString, int> pageIdMap; // hr-id <-> qt-id
+    QList<WizardPageController *> pageControllers;
+    QList<Actor *> currentActors;
+    QMap<QString, int> pageIdMap;    // hr-id <-> qt-id
     QMap<QString, Variable> vars;
-    QMap<QString, SelectorActors> selectors; // varName <-> actors
+    QMap<QString, SelectorActors> selectors;    // varName <-> actors
     QVariantMap values;
-    QMap<QString, PropertyWizardController*> propertyControllers;
-    QMap<QString, DelegateTags*> tagsWithoutController;
+    QMap<QString, PropertyWizardController *> propertyControllers;
+    QMap<QString, DelegateTags *> tagsWithoutController;
     bool runAfterApply;
 
 private:
     void setupButtons(QWizard *wizard);
-    QWizardPage * createPage(WizardPage *page);
+    QWizardPage *createPage(WizardPage *page);
     void registerSelector(ElementSelectorWidget *widget);
     void replaceCurrentActor(const QString &actorId, const QString &selectorValue);
     void assignParameters();
@@ -121,7 +122,7 @@ private:
     void saveDelegateTags();
     void run();
     void defaults(QWizardPage *wPage);
-    WizardPage * findPage(QWizardPage *wPage);
+    WizardPage *findPage(QWizardPage *wPage);
 
 private slots:
     void sl_customButtonClicked(int num);
@@ -150,9 +151,9 @@ public:
     virtual void visit(TophatSamplesWidget *tsw);
     virtual void visit(LabelWidget *lw);
 
-    QWidget * getResult();
-    QList<WidgetController*> & getControllers();
-    QBoxLayout * getLayout();
+    QWidget *getResult();
+    QList<WidgetController *> &getControllers();
+    QBoxLayout *getLayout();
 
     bool hasFullWidth();
 
@@ -160,7 +161,7 @@ private:
     WizardController *wc;
     int labelSize;
     QWidget *result;
-    QList<WidgetController*> controllers;
+    QList<WidgetController *> controllers;
     QBoxLayout *layout;
     QScrollArea *widgetsArea;
     bool fullWidth;
@@ -175,16 +176,16 @@ public:
     PageContentCreator(WizardController *wc);
 
     virtual void visit(DefaultPageContent *content);
-    void setPageTitle(const QString& title);
-    void setPageSubtitle(const QString& subtitle);
+    void setPageTitle(const QString &title);
+    void setPageSubtitle(const QString &subtitle);
 
-    QLayout * getResult();
-    QList<WidgetController*> & getControllers();
+    QLayout *getResult();
+    QList<WidgetController *> &getControllers();
 
 private:
     WizardController *wc;
     QLayout *result;
-    QList<WidgetController*> controllers;
+    QList<WidgetController *> controllers;
     QLabel *pageTitle;
     QLabel *pageSubtitle;
 
@@ -220,6 +221,6 @@ private:
     void changeView(const QString &buttonText, const QString &showHide);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_WIZARDCONTROLLER_H_
+#endif    // _U2_WIZARDCONTROLLER_H_

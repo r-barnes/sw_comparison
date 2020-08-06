@@ -29,17 +29,15 @@ namespace U2 {
 class ADVSequenceWidget;
 class ADVSequenceObjectContext;
 
-class SetSequenceOriginDialog : public QDialog, Ui_SetSequenceOriginDialog
-{
+class SetSequenceOriginDialog : public QDialog, Ui_SetSequenceOriginDialog {
     Q_OBJECT
-    ADVSequenceObjectContext* seqContext;
+    ADVSequenceObjectContext *seqContext;
+
 public:
-    SetSequenceOriginDialog(ADVSequenceWidget* parent);
+    SetSequenceOriginDialog(ADVSequenceWidget *parent);
     int getSequenceShift();
-
-
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

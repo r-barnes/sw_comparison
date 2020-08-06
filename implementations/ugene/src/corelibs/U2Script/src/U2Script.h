@@ -49,7 +49,7 @@ extern "C" {
  * since they use undefined elements.
  *
  */
-U2SCRIPT_EXPORT U2ErrorType         initContext(    const wchar_t *        workingDirectoryPath );
+U2SCRIPT_EXPORT U2ErrorType initContext(const wchar_t *workingDirectoryPath);
 
 /*
  * This function deallocates all resources acquired by UGENE environment.
@@ -63,10 +63,10 @@ U2SCRIPT_EXPORT U2ErrorType         initContext(    const wchar_t *        worki
  * If returning value is not U2_OK the environment is not affected by the invocation.
  *
  */
-U2SCRIPT_EXPORT U2ErrorType         releaseContext( );
+U2SCRIPT_EXPORT U2ErrorType releaseContext();
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // _U2_SCRIPT_H_
+#endif    // _U2_SCRIPT_H_

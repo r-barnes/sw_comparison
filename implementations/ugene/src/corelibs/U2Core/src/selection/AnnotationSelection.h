@@ -35,11 +35,11 @@ class U2EntityRef;
 class U2OpStatus;
 
 class U2CORE_EXPORT AnnotationSelection : public GSelection {
-Q_OBJECT
+    Q_OBJECT
 public:
     AnnotationSelection(QObject *p = NULL);
 
-    const QList<Annotation*>& getAnnotations() const;
+    const QList<Annotation *> &getAnnotations() const;
 
     /** Adds annotation to selection. Does nothing if annotation is already in the selection. */
     void add(Annotation *a);
@@ -54,24 +54,21 @@ public:
 
     bool contains(Annotation *a) const;
 
-    static void getAnnotationSequence(QByteArray &res, const Annotation* annotation, char gapSym,
-                                      const U2EntityRef &ref, const DNATranslation *complTT,
-                                      const DNATranslation *aminoTT, U2OpStatus &os);
+    static void getAnnotationSequence(QByteArray &res, const Annotation *annotation, char gapSym, const U2EntityRef &ref, const DNATranslation *complTT, const DNATranslation *aminoTT, U2OpStatus &os);
 
 signals:
 
-    void si_selectionChanged(AnnotationSelection *thiz, const QList<Annotation *> &added,
-                             const QList<Annotation *> &removed);
+    void si_selectionChanged(AnnotationSelection *thiz, const QList<Annotation *> &added, const QList<Annotation *> &removed);
 
 private:
-    QList<Annotation*> selection;
+    QList<Annotation *> selection;
 };
 
 //////////////////////////////////////////////////////////////////////////
 // AnnotationGroupSelection
 
 class U2CORE_EXPORT AnnotationGroupSelection : public GSelection {
-Q_OBJECT
+    Q_OBJECT
 public:
     AnnotationGroupSelection(QObject *p = NULL);
 
@@ -89,15 +86,12 @@ public:
 
 signals:
 
-    void si_selectionChanged(AnnotationGroupSelection *thiz, const QList<AnnotationGroup *> &added,
-                             const QList<AnnotationGroup *> &removed);
+    void si_selectionChanged(AnnotationGroupSelection *thiz, const QList<AnnotationGroup *> &added, const QList<AnnotationGroup *> &removed);
 
 private:
     QList<AnnotationGroup *> selection;
 };
 
-
-}//namespace
+}    // namespace U2
 
 #endif
-

@@ -48,38 +48,34 @@
 
 namespace U2 {
 
-
 //////////////////////////////////////////////////////////////////////////
 // ExportAlignmentViewItemsController
 
-ExportAlignmentViewItemsController::ExportAlignmentViewItemsController(QObject* p)
-    : GObjectViewWindowContext(p, MsaEditorFactory::ID)
-{
+ExportAlignmentViewItemsController::ExportAlignmentViewItemsController(QObject *p)
+    : GObjectViewWindowContext(p, MsaEditorFactory::ID) {
 }
 
-
-void ExportAlignmentViewItemsController::initViewContext(GObjectView* v) {
-    MSAEditor* msaed = qobject_cast<MSAEditor*>(v);
+void ExportAlignmentViewItemsController::initViewContext(GObjectView *v) {
+    MSAEditor *msaed = qobject_cast<MSAEditor *>(v);
     SAFE_POINT(msaed != NULL, "Invalid GObjectView", );
-    MSAExportContext* mc= new MSAExportContext(msaed);
+    MSAExportContext *mc = new MSAExportContext(msaed);
     addViewResource(msaed, mc);
 }
 
-
-void ExportAlignmentViewItemsController::buildMenu(GObjectView* v, QMenu* m) {
-    QList<QObject*> resources = viewResources.value(v);
+void ExportAlignmentViewItemsController::buildMenu(GObjectView *v, QMenu *m) {
+    QList<QObject *> resources = viewResources.value(v);
     assert(resources.size() == 1);
-    QObject* r = resources.first();
-    MSAExportContext* mc = qobject_cast<MSAExportContext*>(r);
-    assert(mc!=NULL);
+    QObject *r = resources.first();
+    MSAExportContext *mc = qobject_cast<MSAExportContext *>(r);
+    assert(mc != NULL);
     mc->buildMenu(m);
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 // MSA view context
 
-MSAExportContext::MSAExportContext(MSAEditor* e) : editor(e) {
+MSAExportContext::MSAExportContext(MSAEditor *e)
+    : editor(e) {
     translateMSAAction = new QAction(tr("Amino translation..."), this);
     translateMSAAction->setObjectName("amino_translation_of_alignment_rows");
     translateMSAAction->setEnabled(!e->isAlignmentEmpty());
@@ -92,10 +88,10 @@ void MSAExportContext::updateActions() {
                                    !editor->isAlignmentEmpty());
 }
 
-void MSAExportContext::buildMenu(QMenu* m) {
-    QMenu* exportMenu = GUIUtils::findSubMenu(m, MSAE_MENU_EXPORT);
-    SAFE_POINT(exportMenu != NULL, "exportMenu", );
-    MultipleSequenceAlignmentObject* mObject = editor->getMaObject();
+void MSAExportContext::buildMenu(QMenu *m) {
+    QMenu *exportMenu = GUIUtils::findSubMenu(m, MSAE_MENU_EXPORT);
+    SAFE_POINT(exportMenu != nullptr, "exportMenu is not found", );
+    MultipleSequenceAlignmentObject *mObject = editor->getMaObject();
     if (mObject->getAlphabet()->isNucleic()) {
         exportMenu->addAction(translateMSAAction);
     }
@@ -103,7 +99,7 @@ void MSAExportContext::buildMenu(QMenu* m) {
 
 void MSAExportContext::sl_exportNucleicMsaToAmino() {
     const MultipleSequenceAlignment ma = editor->getMaObject()->getMultipleAlignment();
-    assert(ma->getAlphabet()->isNucleic());
+    SAFE_POINT(ma->getAlphabet()->isNucleic(), "Alignment alphabet is not nucleic", );
 
     GUrl msaUrl = editor->getMaObject()->getDocument()->getURL();
     QString defaultUrl = GUrlUtils::getNewLocalUrlByFormat(msaUrl, editor->getMaObject()->getGObjectName(), BaseDocumentFormats::CLUSTAL_ALN, "_transl");
@@ -117,14 +113,14 @@ void MSAExportContext::sl_exportNucleicMsaToAmino() {
         return;
     }
 
-    QList<DNATranslation*> trans;
+    QList<DNATranslation *> trans;
     trans << AppContext::getDNATranslationRegistry()->lookupTranslation(d->translationTable);
 
     int offset = d->exportWholeAlignment ? 0 : editor->getSelectionRect().top();
     int len = d->exportWholeAlignment ? ma->getNumRows() : editor->getSelectionRect().height();
 
-    Task* t = ExportUtils::wrapExportTask(new ExportMSA2MSATask(ma, offset, len, d->file, trans, d->formatId), d->addToProjectFlag);
+    Task *t = ExportUtils::wrapExportTask(new ExportMSA2MSATask(ma, offset, len, d->file, trans, d->formatId), d->addToProjectFlag);
     AppContext::getTaskScheduler()->registerTopLevelTask(t);
 }
 
-} //namespace
+}    // namespace U2

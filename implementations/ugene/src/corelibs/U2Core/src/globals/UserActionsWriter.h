@@ -24,11 +24,11 @@
 
 #include <QEvent>
 #include <QMouseEvent>
-#include <QObject>
 #include <QMutex>
+#include <QObject>
 
-#include <U2Core/global.h>
 #include <U2Core/AppContext.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -41,11 +41,11 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event);
 
 private:
-    void generateMouseMessage(QMouseEvent* m);
-    QString getTreeWidgetInfo(QMouseEvent* m, QWidget* parent);
-    QString getAdditionalWidgetInfo(QMouseEvent* m, QWidget* w);
-    QString getMouseButtonInfo(QMouseEvent* m);
-    QString getWidgetText(QMouseEvent* m, QWidget* w);
+    void generateMouseMessage(QMouseEvent *m);
+    QString getTreeWidgetInfo(QMouseEvent *m, QWidget *parent);
+    QString getAdditionalWidgetInfo(QMouseEvent *m, QWidget *w);
+    QString getMouseButtonInfo(QMouseEvent *m);
+    QString getWidgetText(QMouseEvent *m, QWidget *w);
 
     void generateKeyMessage(QKeyEvent *k);
     QString getKeyModifiersInfo(QKeyEvent *k);
@@ -63,6 +63,6 @@ private:
     QPoint prevWindowSize;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_USER_ACTIONS_WRITER_H_
+#endif    // _U2_USER_ACTIONS_WRITER_H_

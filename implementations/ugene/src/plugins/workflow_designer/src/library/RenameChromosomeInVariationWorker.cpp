@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "RenameChromosomeInVariationWorker.h"
+
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Designer/DelegateEditors.h>
@@ -30,7 +32,6 @@
 #include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/WorkflowMonitor.h>
 
-#include "RenameChromosomeInVariationWorker.h"
 #include "tasks/RenameChromosomeInVariationTask.h"
 
 namespace U2 {
@@ -43,15 +44,13 @@ const QString REPLACE_WITH_ATTR = "prefix-replace-with";
 
 const QString INPUT_PORT = "in-file";
 const QString OUTPUT_PORT = "out-file";
-}
+}    // namespace
 
 /************************************************************************/
 /* Prompter */
 /************************************************************************/
-RenameChomosomeInVariationPrompter::RenameChomosomeInVariationPrompter(Actor *actor) :
-    RenameChomosomeInVariationBase(actor)
-{
-
+RenameChomosomeInVariationPrompter::RenameChomosomeInVariationPrompter(Actor *actor)
+    : RenameChomosomeInVariationBase(actor) {
 }
 
 QString RenameChomosomeInVariationPrompter::composeRichDoc() {
@@ -65,7 +64,10 @@ QString RenameChomosomeInVariationPrompter::composeRichDoc() {
     const QString producerName = tr("<u>%1</u>").arg(producer ? producer->getLabel() : unsetStr);
 
     return tr("For each variation from %1 replace chromosome prefix%2 %3 with %4 prefix.")
-            .arg(producerName).arg(prefixesToReplace.size() > 1 ? "es" : "").arg(prefixesToReplace.join(", ")).arg(prefixReplaceWith);
+        .arg(producerName)
+        .arg(prefixesToReplace.size() > 1 ? "es" : "")
+        .arg(prefixesToReplace.join(", "))
+        .arg(prefixReplaceWith);
 }
 
 const QString RenameChomosomeInVariationWorkerFactory::ACTOR_ID("rename-chromosome-in-variation");
@@ -77,9 +79,7 @@ const QString RenameChomosomeInVariationWorkerFactory::ACTOR_ID("rename-chromoso
 RenameChomosomeInVariationWorker::RenameChomosomeInVariationWorker(Actor *actor)
     : BaseThroughWorker(actor, INPUT_PORT, OUTPUT_PORT),
       inputUrlPort(NULL),
-      outputUrlPort(NULL)
-{
-
+      outputUrlPort(NULL) {
 }
 
 QList<Message> RenameChomosomeInVariationWorker::fetchResult(Task *task, U2OpStatus &os) {
@@ -97,7 +97,7 @@ QList<Message> RenameChomosomeInVariationWorker::fetchResult(Task *task, U2OpSta
     return messages;
 }
 
-Task * RenameChomosomeInVariationWorker::createTask(const Message &message, U2OpStatus &os) {
+Task *RenameChomosomeInVariationWorker::createTask(const Message &message, U2OpStatus &os) {
     const QStringList prefixesToReplace = getValue<QString>(TO_REPLACE_ATTR).split(SEPARATOR, QString::SkipEmptyParts);
     const QString prefixReplaceWith = getValue<QString>(REPLACE_WITH_ATTR);
     QString dstFileUrl = monitor()->outputDir() + QFileInfo(context->getMetadataStorage().get(message.getMetadataId()).getFileUrl()).fileName();
@@ -116,22 +116,17 @@ Task * RenameChomosomeInVariationWorker::createTask(const Message &message, U2Op
 /************************************************************************/
 /* Factory */
 /************************************************************************/
-RenameChomosomeInVariationWorkerFactory::RenameChomosomeInVariationWorkerFactory() :
-    DomainFactory(ACTOR_ID)
-{
-
+RenameChomosomeInVariationWorkerFactory::RenameChomosomeInVariationWorkerFactory()
+    : DomainFactory(ACTOR_ID) {
 }
 
 void RenameChomosomeInVariationWorkerFactory::init() {
-    Descriptor desc(ACTOR_ID, RenameChomosomeInVariationWorker::tr("Change Chromosome Notation for VCF"),
-        RenameChomosomeInVariationWorker::tr("Changes chromosome notation for each variant from the input VCF or other variation files."));
+    Descriptor desc(ACTOR_ID, RenameChomosomeInVariationWorker::tr("Change Chromosome Notation for VCF"), RenameChomosomeInVariationWorker::tr("Changes chromosome notation for each variant from the input VCF or other variation files."));
 
-    QList<PortDescriptor*> p;
+    QList<PortDescriptor *> p;
     {
-        Descriptor inD(INPUT_PORT, RenameChomosomeInVariationWorker::tr("Input file URL"),
-            RenameChomosomeInVariationWorker::tr("Input files(s) with variations, usually in VCF format."));
-        Descriptor outD(OUTPUT_PORT, RenameChomosomeInVariationWorker::tr("Output file URL"),
-            RenameChomosomeInVariationWorker::tr("Output file(s) with annotated variations."));
+        Descriptor inD(INPUT_PORT, RenameChomosomeInVariationWorker::tr("Input file URL"), RenameChomosomeInVariationWorker::tr("Input files(s) with variations, usually in VCF format."));
+        Descriptor outD(OUTPUT_PORT, RenameChomosomeInVariationWorker::tr("Output file URL"), RenameChomosomeInVariationWorker::tr("Output file(s) with annotated variations."));
 
         QMap<Descriptor, DataTypePtr> inM;
         inM[BaseSlots::URL_SLOT()] = BaseTypes::STRING_TYPE();
@@ -143,19 +138,17 @@ void RenameChomosomeInVariationWorkerFactory::init() {
         p << new PortDescriptor(outD, DataTypePtr(new MapDataType("renameChr.output-url", outM)), false, true);
     }
 
-    QList<Attribute*> a;
+    QList<Attribute *> a;
     {
-        Descriptor prefixesToReplace(TO_REPLACE_ATTR, RenameChomosomeInVariationWorker::tr("Replace prefixes"),
-            RenameChomosomeInVariationWorker::tr("Input the list of chromosome prefixes that you would like to replace, for example \"NC_000\". Separate different prefixes by semicolons."));
+        Descriptor prefixesToReplace(TO_REPLACE_ATTR, RenameChomosomeInVariationWorker::tr("Replace prefixes"), RenameChomosomeInVariationWorker::tr("Input the list of chromosome prefixes that you would like to replace, for example \"NC_000\". Separate different prefixes by semicolons."));
 
-        Descriptor prefixReplaceWith(REPLACE_WITH_ATTR, RenameChomosomeInVariationWorker::tr("Replace by"),
-            RenameChomosomeInVariationWorker::tr("Input the prefix that should be set instead, for example \"chr\"."));
+        Descriptor prefixReplaceWith(REPLACE_WITH_ATTR, RenameChomosomeInVariationWorker::tr("Replace by"), RenameChomosomeInVariationWorker::tr("Input the prefix that should be set instead, for example \"chr\"."));
 
         a << new Attribute(prefixesToReplace, BaseTypes::STRING_TYPE(), true);
         a << new Attribute(prefixReplaceWith, BaseTypes::STRING_TYPE(), false);
     }
 
-    ActorPrototype* proto = new IntegralBusActorPrototype(desc, p, a);
+    ActorPrototype *proto = new IntegralBusActorPrototype(desc, p, a);
     proto->setPrompter(new RenameChomosomeInVariationPrompter());
 
     WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_VARIATION_ANALYSIS(), proto);
@@ -163,9 +156,9 @@ void RenameChomosomeInVariationWorkerFactory::init() {
     localDomain->registerEntry(new RenameChomosomeInVariationWorkerFactory());
 }
 
-Worker * RenameChomosomeInVariationWorkerFactory::createWorker(Actor *actor) {
+Worker *RenameChomosomeInVariationWorkerFactory::createWorker(Actor *actor) {
     return new RenameChomosomeInVariationWorker(actor);
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

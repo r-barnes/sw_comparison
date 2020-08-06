@@ -23,6 +23,7 @@
 #define _U2_MYSQL_BLOB_INPUT_STREAM_H_
 
 #include <U2Core/InputStream.h>
+#include <U2Core/U2Type.h>
 
 namespace U2 {
 
@@ -31,8 +32,7 @@ class MysqlDbRef;
 class MysqlBlobInputStream : public InputStream {
     Q_DISABLE_COPY(MysqlBlobInputStream)
 public:
-    MysqlBlobInputStream(MysqlDbRef *db, const QByteArray &tableId, const QByteArray &columnId,
-        const U2DataId &rowId, U2OpStatus &os);
+    MysqlBlobInputStream(MysqlDbRef *db, const QByteArray &tableId, const QByteArray &columnId, const U2DataId &rowId, U2OpStatus &os);
 
     qint64 available();
     void close();
@@ -45,6 +45,6 @@ private:
     qint64 offset;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_MYSQL_BLOB_INPUT_STREAM_H_
+#endif    // _U2_MYSQL_BLOB_INPUT_STREAM_H_

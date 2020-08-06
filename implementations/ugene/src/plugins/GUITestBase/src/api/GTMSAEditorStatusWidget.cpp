@@ -38,8 +38,8 @@ QWidget *GTMSAEditorStatusWidget::getStatusWidget(GUITestOpStatus &os) {
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "length"
-int GTMSAEditorStatusWidget::length(HI::GUITestOpStatus& os, QWidget* w) {
-    QLabel* label = qobject_cast<QLabel*>(GTWidget::findWidget(os, "Column", w));
+int GTMSAEditorStatusWidget::length(HI::GUITestOpStatus &os, QWidget *w) {
+    QLabel *label = qobject_cast<QLabel *>(GTWidget::findWidget(os, "Column", w));
     GT_CHECK_RESULT(label != NULL, "label is NULL", -1);
 
     QString labelText = label->text();
@@ -55,7 +55,7 @@ int GTMSAEditorStatusWidget::length(HI::GUITestOpStatus& os, QWidget* w) {
 
 #define GT_METHOD_NAME "getSequencesCount"
 int GTMSAEditorStatusWidget::getSequencesCount(HI::GUITestOpStatus &os, QWidget *w) {
-    QLabel* label = GTWidget::findExactWidget<QLabel *>(os, "Line", w);
+    QLabel *label = GTWidget::findExactWidget<QLabel *>(os, "Line", w);
     GT_CHECK_RESULT(label != NULL, "label is NULL", -1);
 
     QString labelText = label->text();
@@ -131,4 +131,4 @@ QString GTMSAEditorStatusWidget::getSequenceUngappedLengthString(GUITestOpStatus
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

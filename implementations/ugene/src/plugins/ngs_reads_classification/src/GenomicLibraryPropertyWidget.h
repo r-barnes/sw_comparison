@@ -51,7 +51,7 @@ private:
     Dataset dataset;
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_GENOMIC_LIBRARY_PROPERTY_WIDGET_H_
+#endif    // _U2_GENOMIC_LIBRARY_PROPERTY_WIDGET_H_

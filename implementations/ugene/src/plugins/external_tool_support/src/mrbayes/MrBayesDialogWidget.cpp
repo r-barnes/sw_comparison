@@ -19,12 +19,15 @@
  * MA 02110-1301, USA.
  */
 
+#include "MrBayesDialogWidget.h"
+
 #include <QMainWindow>
 #include <QMessageBox>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/DNAAlphabet.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/Settings.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
@@ -33,14 +36,12 @@
 #include <U2Gui/DialogUtils.h>
 #include <U2Gui/GUIUtils.h>
 #include <U2Gui/MainWindow.h>
-#include <U2Core/QObjectScopedPointer.h>
 
 #include <U2View/MSAEditor.h>
 #include <U2View/MaEditorFactory.h>
 
 #include "ExternalToolSupportSettings.h"
 #include "ExternalToolSupportSettingsController.h"
-#include "MrBayesDialogWidget.h"
 #include "MrBayesSupport.h"
 
 namespace U2 {
@@ -55,33 +56,32 @@ namespace U2 {
 #define MR_BAYES_TEMPR "/mb_tempr"
 #define MR_BAYES_SEED "/mb_seed"
 
-MrBayesWidget::MrBayesWidget(const MultipleSequenceAlignment &ma, QWidget *parent) :
-    CreatePhyTreeWidget(parent)
-{
+MrBayesWidget::MrBayesWidget(const MultipleSequenceAlignment &ma, QWidget *parent)
+    : CreatePhyTreeWidget(parent) {
     setupUi(this);
     DNAAlphabetType alphabetType = ma->getAlphabet()->getType();
-    if ((alphabetType == DNAAlphabet_RAW) || (alphabetType == DNAAlphabet_NUCL)){
+    if ((alphabetType == DNAAlphabet_RAW) || (alphabetType == DNAAlphabet_NUCL)) {
         isAminoAcidAlphabet = false;
         modelLabel1->setText(tr("Substitution model"));
-        modelTypeCombo->addItems( MrBayesModelTypes::getSubstitutionModelTypes() );
+        modelTypeCombo->addItems(MrBayesModelTypes::getSubstitutionModelTypes());
     } else {
         isAminoAcidAlphabet = true;
         modelLabel1->setText(tr("Rate Matrix (fixed)"));
-        modelTypeCombo->addItems( MrBayesModelTypes::getAAModelTypes() );
+        modelTypeCombo->addItems(MrBayesModelTypes::getAAModelTypes());
     }
 
-    connect(rateVariationCombo, SIGNAL(currentIndexChanged(const QString&)), SLOT(sl_onRateChanged(const QString&)));
+    connect(rateVariationCombo, SIGNAL(currentIndexChanged(const QString &)), SLOT(sl_onRateChanged(const QString &)));
     rateVariationCombo->addItems(MrBayesVariationTypes::getVariationTypes());
 
     seedSpin->setValue(getRandomSeed());
 
     gammaCategoriesSpin->setValue(AppContext::getSettings()->getValue(CreatePhyTreeWidget::settingsPath() + MR_BAYES_GAMMA, 4).toInt());
-    ngenSpin->setValue(AppContext::getSettings()->getValue(CreatePhyTreeWidget::settingsPath() +  MR_BAYES_CHAIN_LENGTH, 10000).toInt());
-    sfreqSpin->setValue(AppContext::getSettings()->getValue(CreatePhyTreeWidget::settingsPath() +  MR_BAYES_SUBSEMPL_FREQ, 1000).toInt());
-    burninSpin->setValue(AppContext::getSettings()->getValue(CreatePhyTreeWidget::settingsPath() +  MR_BAYES_BURNIN, 10).toInt());
-    nheatedSpin->setValue(AppContext::getSettings()->getValue(CreatePhyTreeWidget::settingsPath() +  MR_BAYES_HEATED, 4).toInt());
-    tempSpin->setValue(AppContext::getSettings()->getValue(CreatePhyTreeWidget::settingsPath() +  MR_BAYES_TEMPR, 0.4).toDouble());
-    seedSpin->setValue(AppContext::getSettings()->getValue(CreatePhyTreeWidget::settingsPath() +  MR_BAYES_SEED, getRandomSeed()).toInt());
+    ngenSpin->setValue(AppContext::getSettings()->getValue(CreatePhyTreeWidget::settingsPath() + MR_BAYES_CHAIN_LENGTH, 10000).toInt());
+    sfreqSpin->setValue(AppContext::getSettings()->getValue(CreatePhyTreeWidget::settingsPath() + MR_BAYES_SUBSEMPL_FREQ, 1000).toInt());
+    burninSpin->setValue(AppContext::getSettings()->getValue(CreatePhyTreeWidget::settingsPath() + MR_BAYES_BURNIN, 10).toInt());
+    nheatedSpin->setValue(AppContext::getSettings()->getValue(CreatePhyTreeWidget::settingsPath() + MR_BAYES_HEATED, 4).toInt());
+    tempSpin->setValue(AppContext::getSettings()->getValue(CreatePhyTreeWidget::settingsPath() + MR_BAYES_TEMPR, 0.4).toDouble());
+    seedSpin->setValue(AppContext::getSettings()->getValue(CreatePhyTreeWidget::settingsPath() + MR_BAYES_SEED, getRandomSeed()).toInt());
 
     QString comboText = AppContext::getSettings()->getValue(CreatePhyTreeWidget::settingsPath() + MR_BAYES_MODEL_TYPE, isAminoAcidAlphabet ? modelTypeCombo->itemText(0) : MrBayesModelTypes::HKY85).toString();
     setComboText(modelTypeCombo, comboText);
@@ -90,42 +90,42 @@ MrBayesWidget::MrBayesWidget(const MultipleSequenceAlignment &ma, QWidget *paren
     setComboText(rateVariationCombo, comboText);
 }
 
-void MrBayesWidget::sl_onRateChanged(const QString& modelName){
-    if(modelName == MrBayesVariationTypes::equal || modelName == MrBayesVariationTypes::propinv){
+void MrBayesWidget::sl_onRateChanged(const QString &modelName) {
+    if (modelName == MrBayesVariationTypes::equal || modelName == MrBayesVariationTypes::propinv) {
         gammaCategoriesSpin->setEnabled(false);
-    }else{
+    } else {
         gammaCategoriesSpin->setEnabled(true);
     }
 }
 
-void MrBayesWidget::fillSettings(CreatePhyTreeSettings& settings) {
+void MrBayesWidget::fillSettings(CreatePhyTreeSettings &settings) {
     settings.mb_ngen = ngenSpin->value();
     settings.mrBayesSettingsScript = generateMrBayesSettingsScript();
     displayOptions->fillSettings(settings);
 }
 
-void MrBayesWidget::storeSettings(){
+void MrBayesWidget::storeSettings() {
     AppContext::getSettings()->setValue(CreatePhyTreeWidget::settingsPath() + MR_BAYES_MODEL_TYPE, modelTypeCombo->currentText());
     AppContext::getSettings()->setValue(CreatePhyTreeWidget::settingsPath() + MR_BAYES_RATE_VATIATION, rateVariationCombo->currentText());
     AppContext::getSettings()->setValue(CreatePhyTreeWidget::settingsPath() + MR_BAYES_GAMMA, gammaCategoriesSpin->value());
-    AppContext::getSettings()->setValue(CreatePhyTreeWidget::settingsPath() +  MR_BAYES_CHAIN_LENGTH, ngenSpin->value());
-    AppContext::getSettings()->setValue(CreatePhyTreeWidget::settingsPath() +  MR_BAYES_SUBSEMPL_FREQ, sfreqSpin->value());
-    AppContext::getSettings()->setValue(CreatePhyTreeWidget::settingsPath() +  MR_BAYES_BURNIN, burninSpin->value());
-    AppContext::getSettings()->setValue(CreatePhyTreeWidget::settingsPath() +  MR_BAYES_HEATED, nheatedSpin->value());
-    AppContext::getSettings()->setValue(CreatePhyTreeWidget::settingsPath() +  MR_BAYES_TEMPR, tempSpin->value());
-    AppContext::getSettings()->setValue(CreatePhyTreeWidget::settingsPath() +  MR_BAYES_SEED, seedSpin->value());
+    AppContext::getSettings()->setValue(CreatePhyTreeWidget::settingsPath() + MR_BAYES_CHAIN_LENGTH, ngenSpin->value());
+    AppContext::getSettings()->setValue(CreatePhyTreeWidget::settingsPath() + MR_BAYES_SUBSEMPL_FREQ, sfreqSpin->value());
+    AppContext::getSettings()->setValue(CreatePhyTreeWidget::settingsPath() + MR_BAYES_BURNIN, burninSpin->value());
+    AppContext::getSettings()->setValue(CreatePhyTreeWidget::settingsPath() + MR_BAYES_HEATED, nheatedSpin->value());
+    AppContext::getSettings()->setValue(CreatePhyTreeWidget::settingsPath() + MR_BAYES_TEMPR, tempSpin->value());
+    AppContext::getSettings()->setValue(CreatePhyTreeWidget::settingsPath() + MR_BAYES_SEED, seedSpin->value());
     displayOptions->storeSettings();
 }
-void MrBayesWidget::restoreDefault(){
+void MrBayesWidget::restoreDefault() {
     AppContext::getSettings()->remove(CreatePhyTreeWidget::settingsPath() + MR_BAYES_MODEL_TYPE);
     AppContext::getSettings()->remove(CreatePhyTreeWidget::settingsPath() + MR_BAYES_RATE_VATIATION);
     AppContext::getSettings()->remove(CreatePhyTreeWidget::settingsPath() + MR_BAYES_GAMMA);
-    AppContext::getSettings()->remove(CreatePhyTreeWidget::settingsPath() +  MR_BAYES_CHAIN_LENGTH);
-    AppContext::getSettings()->remove(CreatePhyTreeWidget::settingsPath() +  MR_BAYES_SUBSEMPL_FREQ);
-    AppContext::getSettings()->remove(CreatePhyTreeWidget::settingsPath() +  MR_BAYES_BURNIN);
-    AppContext::getSettings()->remove(CreatePhyTreeWidget::settingsPath() +  MR_BAYES_HEATED);
-    AppContext::getSettings()->remove(CreatePhyTreeWidget::settingsPath() +  MR_BAYES_TEMPR);
-    AppContext::getSettings()->remove(CreatePhyTreeWidget::settingsPath() +  MR_BAYES_SEED);
+    AppContext::getSettings()->remove(CreatePhyTreeWidget::settingsPath() + MR_BAYES_CHAIN_LENGTH);
+    AppContext::getSettings()->remove(CreatePhyTreeWidget::settingsPath() + MR_BAYES_SUBSEMPL_FREQ);
+    AppContext::getSettings()->remove(CreatePhyTreeWidget::settingsPath() + MR_BAYES_BURNIN);
+    AppContext::getSettings()->remove(CreatePhyTreeWidget::settingsPath() + MR_BAYES_HEATED);
+    AppContext::getSettings()->remove(CreatePhyTreeWidget::settingsPath() + MR_BAYES_TEMPR);
+    AppContext::getSettings()->remove(CreatePhyTreeWidget::settingsPath() + MR_BAYES_SEED);
 
     setComboText(modelTypeCombo, MrBayesModelTypes::HKY85);
     setComboText(rateVariationCombo, MrBayesVariationTypes::gamma);
@@ -140,9 +140,9 @@ void MrBayesWidget::restoreDefault(){
     displayOptions->restoreDefault();
 }
 
-void MrBayesWidget::setComboText(QComboBox* combo, const QString& text){
-    for(int i = 0; i<combo->count(); i++){
-        if(combo->itemText(i) == text){
+void MrBayesWidget::setComboText(QComboBox *combo, const QString &text) {
+    for (int i = 0; i < combo->count(); i++) {
+        if (combo->itemText(i) == text) {
             combo->setCurrentIndex(i);
             break;
         }
@@ -152,14 +152,14 @@ void MrBayesWidget::setComboText(QComboBox* combo, const QString& text){
 #define SEED_MIN 5
 #define SEED_MAX 32765
 
-int MrBayesWidget::getRandomSeed(){
+int MrBayesWidget::getRandomSeed() {
     int seed = 0;
-    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+    qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
     seed = qAbs(qrand());
 
-    while(!((seed >= SEED_MIN) && (seed <=SEED_MAX))){
+    while (!((seed >= SEED_MIN) && (seed <= SEED_MAX))) {
         seed++;
-        if(seed >=SEED_MAX){
+        if (seed >= SEED_MAX) {
             seed = SEED_MIN;
         }
     }
@@ -169,12 +169,12 @@ int MrBayesWidget::getRandomSeed(){
 
 bool MrBayesWidget::checkSettings(QString &messsage, const CreatePhyTreeSettings &settings) {
     //Check that MrBayes and tempory folder path defined
-    ExternalToolRegistry* reg = AppContext::getExternalToolRegistry();
-    ExternalTool* mb= reg->getById(MrBayesSupport::ET_MRBAYES_ID);
+    ExternalToolRegistry *reg = AppContext::getExternalToolRegistry();
+    ExternalTool *mb = reg->getById(MrBayesSupport::ET_MRBAYES_ID);
     assert(mb);
-    const QString& path = mb->getPath();
-    const QString& name = mb->getName();
-    if (path.isEmpty()){
+    const QString &path = mb->getPath();
+    const QString &name = mb->getName();
+    if (path.isEmpty()) {
         QObjectScopedPointer<QMessageBox> msgBox = new QMessageBox;
         msgBox->setWindowTitle(name);
         msgBox->setText(tr("Path for %1 tool not selected.").arg(name));
@@ -185,18 +185,18 @@ bool MrBayesWidget::checkSettings(QString &messsage, const CreatePhyTreeSettings
         CHECK(!msgBox.isNull(), false);
 
         switch (ret) {
-           case QMessageBox::Yes:
-               AppContext::getAppSettingsGUI()->showSettingsDialog(ExternalToolSupportSettingsPageId);
-               break;
-           case QMessageBox::No:
-               return false;
-               break;
-           default:
-               assert(false);
-               break;
+        case QMessageBox::Yes:
+            AppContext::getAppSettingsGUI()->showSettingsDialog(ExternalToolSupportSettingsPageId);
+            break;
+        case QMessageBox::No:
+            return false;
+            break;
+        default:
+            assert(false);
+            break;
         }
     }
-    if (path.isEmpty()){
+    if (path.isEmpty()) {
         return false;
     }
     U2OpStatus2Log os(LogLevel_DETAILS);
@@ -206,36 +206,36 @@ bool MrBayesWidget::checkSettings(QString &messsage, const CreatePhyTreeSettings
     return displayOptions->checkSettings(messsage, settings);
 }
 
-QString MrBayesWidget::generateMrBayesSettingsScript(){
+QString MrBayesWidget::generateMrBayesSettingsScript() {
     QString script;
     script.append("Begin MrBayes;\n");
 
     script.append("lset ");
-    if(!isAminoAcidAlphabet){
+    if (!isAminoAcidAlphabet) {
         int nst = 0;
 
         QString currentNst = modelTypeCombo->currentText();
-        if(currentNst == MrBayesModelTypes::JC69){
+        if (currentNst == MrBayesModelTypes::JC69) {
             nst = 1;
-        }else if(currentNst == MrBayesModelTypes::HKY85){
+        } else if (currentNst == MrBayesModelTypes::HKY85) {
             nst = 2;
-        }else if(currentNst == MrBayesModelTypes::GTR){
+        } else if (currentNst == MrBayesModelTypes::GTR) {
             nst = 6;
-        }else{
-            nst = 2; //by default
+        } else {
+            nst = 2;    //by default
         }
 
         script = script.append("Nst=%1 ").arg(nst);
     }
     QString rates = rateVariationCombo->currentText();
     script = script.append("rates=%1").arg(rates);
-    if(rates == MrBayesVariationTypes::gamma || rates == MrBayesVariationTypes::invgamma){
+    if (rates == MrBayesVariationTypes::gamma || rates == MrBayesVariationTypes::invgamma) {
         int gvar = gammaCategoriesSpin->value();
         script = script.append(" ngammacat=%1 ").arg(gvar);
     }
     script.append(";\n");
 
-    if(isAminoAcidAlphabet){
+    if (isAminoAcidAlphabet) {
         QString model = modelTypeCombo->currentText();
         script = script.append("prset aamodelpr=fixed(%1);\n").arg(model);
     }
@@ -251,9 +251,16 @@ QString MrBayesWidget::generateMrBayesSettingsScript(){
     burnin = burninSpin->value();
 
     script = script.append("mcmc ngen=%1 samplefreq=%2 printfreq=%3 nchains=%4 temp=%5 savebrlens=yes "
-        "starttree=random;\n").arg(ngen).arg(sfreq).arg(printfreq).arg(nchains).arg(temp).arg(seed);
+                           "starttree=random;\n")
+                 .arg(ngen)
+                 .arg(sfreq)
+                 .arg(printfreq)
+                 .arg(nchains)
+                 .arg(temp)
+                 .arg(seed);
 
-    if(sfreq < burnin) burnin = 0;
+    if (sfreq < burnin)
+        burnin = 0;
     script = script.append("sumt burnin=%1;\n").arg(burnin);
 
     script = script.append("set seed=%1;\n").arg(seed);
@@ -262,4 +269,4 @@ QString MrBayesWidget::generateMrBayesSettingsScript(){
     return script;
 }
 
-}//namespace
+}    // namespace U2

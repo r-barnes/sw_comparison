@@ -19,13 +19,15 @@
  * MA 02110-1301, USA.
  */
 
+#include "QueryDesignerPlugin.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/GAutoDeleteList.h>
+#include <U2Core/QObjectScopedPointer.h>
 
 #include <U2Gui/LastUsedDirHelper.h>
 #include <U2Gui/ObjectViewModel.h>
 #include <U2Gui/ToolsMenu.h>
-#include <U2Core/QObjectScopedPointer.h>
 
 #include <U2Test/GTestFrameworkComponents.h>
 
@@ -39,7 +41,6 @@
 #include "QDSceneIOTasks.h"
 #include "QDTests.h"
 #include "QDWorker.h"
-#include "QueryDesignerPlugin.h"
 #include "QueryViewController.h"
 #include "library/QDFindActor.h"
 #include "library/QDFindPolyRegionsActor.h"
@@ -47,8 +48,8 @@
 
 namespace U2 {
 
-extern "C" Q_DECL_EXPORT Plugin* U2_PLUGIN_INIT_FUNC() {
-    QueryDesignerPlugin * plug = new QueryDesignerPlugin();
+extern "C" Q_DECL_EXPORT Plugin *U2_PLUGIN_INIT_FUNC() {
+    QueryDesignerPlugin *plug = new QueryDesignerPlugin();
     return plug;
 }
 
@@ -67,23 +68,24 @@ QueryDesignerPlugin::QueryDesignerPlugin()
     registerLibFactories();
     AppContext::getDocumentFormatRegistry()->registerFormat(new QDDocFormat(this));
 
-    QString defaultDir = QDir::searchPaths( PATH_PREFIX_DATA ).first() + "/query_samples";
+    QString defaultDir = QDir::searchPaths(PATH_PREFIX_DATA).first() + "/query_samples";
 
     if (LastUsedDirHelper::getLastUsedDir(QUERY_DESIGNER_ID).isEmpty()) {
         LastUsedDirHelper::setLastUsedDir(defaultDir, QUERY_DESIGNER_ID);
     }
 
     //tests
-    GTestFormatRegistry* tfr = AppContext::getTestFramework()->getTestFormatRegistry();
-    XMLTestFormat *xmlTestFormat = qobject_cast<XMLTestFormat*>(tfr->findFormat("XML"));
-    assert(xmlTestFormat!=NULL);
+    GTestFormatRegistry *tfr = AppContext::getTestFramework()->getTestFormatRegistry();
+    XMLTestFormat *xmlTestFormat = qobject_cast<XMLTestFormat *>(tfr->findFormat("XML"));
+    assert(xmlTestFormat != NULL);
 
-    GAutoDeleteList<XMLTestFactory>* l = new GAutoDeleteList<XMLTestFactory>(this);
+    GAutoDeleteList<XMLTestFactory> *l = new GAutoDeleteList<XMLTestFactory>(this);
     l->qlist = QDTests::createTestFactories();
 
-    foreach(XMLTestFactory* f, l->qlist) {
+    foreach (XMLTestFactory *f, l->qlist) {
         bool res = xmlTestFormat->registerTestFactory(f);
-        assert(res); Q_UNUSED(res);
+        assert(res);
+        Q_UNUSED(res);
     }
 
     LocalWorkflow::QDWorkerFactory::init();
@@ -96,46 +98,51 @@ void QueryDesignerPlugin::registerLibFactories() {
 }
 
 QueryDesignerViewContext::QueryDesignerViewContext(QObject *p)
-: GObjectViewWindowContext(p, ANNOTATED_DNA_VIEW_FACTORY_ID) {}
+    : GObjectViewWindowContext(p, ANNOTATED_DNA_VIEW_FACTORY_ID) {
+}
 
-void QueryDesignerViewContext::initViewContext(GObjectView* view) {
-    AnnotatedDNAView* av = qobject_cast<AnnotatedDNAView*>(view);
-    ADVGlobalAction* a = new ADVGlobalAction(av,
-        QIcon(":query_designer/images/query_designer.png"),
-        tr("Analyze with query schema..."), 50, ADVGlobalActionFlag_AddToAnalyseMenu);
+void QueryDesignerViewContext::initViewContext(GObjectView *view) {
+    AnnotatedDNAView *av = qobject_cast<AnnotatedDNAView *>(view);
+    ADVGlobalAction *a = new ADVGlobalAction(av,
+                                             QIcon(":query_designer/images/query_designer.png"),
+                                             tr("Analyze with query schema..."),
+                                             50,
+                                             ADVGlobalActionFlag_AddToAnalyseMenu);
     connect(a, SIGNAL(triggered()), SLOT(sl_showDialog()));
 }
 
 void QueryDesignerViewContext::sl_showDialog() {
-    GObjectViewAction* viewAction = qobject_cast<GObjectViewAction*>(sender());
-    AnnotatedDNAView* av = qobject_cast<AnnotatedDNAView*>(viewAction->getObjectView());
+    GObjectViewAction *viewAction = qobject_cast<GObjectViewAction *>(sender());
+    AnnotatedDNAView *av = qobject_cast<AnnotatedDNAView *>(viewAction->getObjectView());
     assert(av);
-    ADVSequenceObjectContext* seqCtx = av->getSequenceInFocus();
+    ADVSequenceObjectContext *seqCtx = av->getSequenceInFocus();
     QObjectScopedPointer<QDDialog> d = new QDDialog(seqCtx);
     d->exec();
 }
 
 class CloseDesignerTask : public Task {
 public:
-    CloseDesignerTask(QueryDesignerService* s) :
-      Task(U2::QueryDesignerPlugin::tr("Close Designer"), TaskFlag_NoRun),
-          service(s) {}
-      virtual void prepare();
+    CloseDesignerTask(QueryDesignerService *s)
+        : Task(U2::QueryDesignerPlugin::tr("Close Designer"), TaskFlag_NoRun),
+          service(s) {
+    }
+    virtual void prepare();
+
 private:
-    QueryDesignerService* service;
+    QueryDesignerService *service;
 };
 
 void CloseDesignerTask::prepare() {
     if (!service->closeViews()) {
-        stateInfo.setError(  U2::QueryDesignerPlugin::tr("Close Designer canceled") );
+        stateInfo.setError(U2::QueryDesignerPlugin::tr("Close Designer canceled"));
     }
 }
 
 bool QueryDesignerService::closeViews() {
-    MWMDIManager* wm = AppContext::getMainWindow()->getMDIManager();
+    MWMDIManager *wm = AppContext::getMainWindow()->getMDIManager();
     assert(wm);
-    foreach(MWMDIWindow* w, wm->getWindows()) {
-        QueryViewController* view = qobject_cast<QueryViewController*>(w);
+    foreach (MWMDIWindow *w, wm->getWindows()) {
+        QueryViewController *view = qobject_cast<QueryViewController *>(w);
         if (view) {
             if (!AppContext::getMainWindow()->getMDIManager()->closeMDIWindow(view)) {
                 return false;
@@ -146,7 +153,7 @@ bool QueryDesignerService::closeViews() {
 }
 
 void QueryDesignerService::sl_startQDPlugin() {
-    QAction* action = new QAction(QIcon(":query_designer/images/query_designer.png"), tr("Query Designer..."), this);
+    QAction *action = new QAction(QIcon(":query_designer/images/query_designer.png"), tr("Query Designer..."), this);
     //action->setObjectName("Query Designer");
     connect(action, SIGNAL(triggered()), SLOT(sl_showDesignerWindow()));
 
@@ -156,32 +163,32 @@ void QueryDesignerService::sl_startQDPlugin() {
 
 void QueryDesignerService::sl_showDesignerWindow() {
     assert(isEnabled());
-    QueryViewController* view = new QueryViewController;
+    QueryViewController *view = new QueryViewController;
     view->setWindowIcon(QIcon(":query_designer/images/query_designer.png"));
     AppContext::getMainWindow()->getMDIManager()->addMDIWindow(view);
     AppContext::getMainWindow()->getMDIManager()->activateWindow(view);
 }
 
-Task* QueryDesignerService::createServiceEnablingTask() {
-    QString defaultDir = QDir::searchPaths( PATH_PREFIX_DATA ).first() + QUERY_SAMPLES_PATH;
+Task *QueryDesignerService::createServiceEnablingTask() {
+    QString defaultDir = QDir::searchPaths(PATH_PREFIX_DATA).first() + QUERY_SAMPLES_PATH;
     return new QDLoadSamplesTask(QStringList(defaultDir));
 }
 
-Task* QueryDesignerService::createServiceDisablingTask() {
+Task *QueryDesignerService::createServiceDisablingTask() {
     return new CloseDesignerTask(this);
 }
 
-void QueryDesignerService::serviceStateChangedCallback(ServiceState , bool enabledStateChanged) {
+void QueryDesignerService::serviceStateChangedCallback(ServiceState, bool enabledStateChanged) {
     if (!enabledStateChanged) {
         return;
     }
     if (isEnabled()) {
-        if(!AppContext::getPluginSupport()->isAllPluginsLoaded()) {
-            connect(AppContext::getPluginSupport(),SIGNAL(si_allStartUpPluginsLoaded()),SLOT(sl_startQDPlugin()));
+        if (!AppContext::getPluginSupport()->isAllPluginsLoaded()) {
+            connect(AppContext::getPluginSupport(), SIGNAL(si_allStartUpPluginsLoaded()), SLOT(sl_startQDPlugin()));
         } else {
             sl_startQDPlugin();
         }
     }
 }
 
-}//namespace
+}    // namespace U2

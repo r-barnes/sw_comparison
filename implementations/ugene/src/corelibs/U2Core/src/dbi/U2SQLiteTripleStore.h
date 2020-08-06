@@ -22,9 +22,9 @@
 #ifndef _U2_QSLITE_TRIPLESTORE_
 #define _U2_QSLITE_TRIPLESTORE_
 
-#include <U2Core/global.h>
 #include <U2Core/U2Dbi.h>
 #include <U2Core/U2OpStatus.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -33,12 +33,14 @@ class U2SQLiteTripleStore;
 
 class U2CORE_EXPORT U2Triplet {
     friend class U2SQLiteTripleStore;
+
 public:
     U2Triplet(const QString &key, const QString &role, const QString &value);
-    U2Triplet(const U2Triplet& other);
+    U2Triplet(const U2Triplet &other);
     QString getKey() const;
     QString getRole() const;
     QString getValue() const;
+
 private:
     qint64 id;
 
@@ -49,10 +51,12 @@ private:
 
 class U2CORE_EXPORT Owner {
     friend class U2SQLiteTripleStore;
+
 public:
     Owner(const QString &name);
     Owner(const Owner &owner);
     QString getName() const;
+
 private:
     qint64 id;
     QString name;
@@ -93,6 +97,6 @@ class TripleStoreL10N : public QObject {
     Q_OBJECT
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_QSLITE_TRIPLESTORE_
+#endif    // _U2_QSLITE_TRIPLESTORE_

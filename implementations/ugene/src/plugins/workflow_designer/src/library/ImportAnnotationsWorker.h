@@ -22,8 +22,9 @@
 #ifndef __IMPORT_ANNOTATIONS_WORKER_H_
 #define __IMPORT_ANNOTATIONS_WORKER_H_
 
-#include <U2Lang/LocalDomain.h>
 #include <U2Core/AnnotationData.h>
+
+#include <U2Lang/LocalDomain.h>
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -31,35 +32,39 @@ namespace LocalWorkflow {
 class ImportAnnotationsWorker : public BaseWorker {
     Q_OBJECT
 public:
-    ImportAnnotationsWorker(Actor * p) : BaseWorker(p), inPort(NULL), outPort(NULL) {}
+    ImportAnnotationsWorker(Actor *p)
+        : BaseWorker(p), inPort(NULL), outPort(NULL) {
+    }
 
     virtual void init();
-    virtual Task * tick();
+    virtual Task *tick();
     virtual void cleanup();
 
 private slots:
     void sl_docsLoaded(Task *);
 
 private:
-    IntegralBus * inPort;
-    IntegralBus * outPort;
-    QMap<Task *, QList<SharedAnnotationData> > annsMap;
+    IntegralBus *inPort;
+    IntegralBus *outPort;
+    QMap<Task *, QList<SharedAnnotationData>> annsMap;
 
 private:
     void addTaskAnnotations(const QVariant &data, Task *t);
-}; // ImportAnnotationsWorker
+};    // ImportAnnotationsWorker
 
 class ImportAnnotationsWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
 
-    ImportAnnotationsWorkerFactory() : DomainFactory(ACTOR_ID) {}
+    ImportAnnotationsWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
     static void init();
-    virtual Worker * createWorker(Actor* a);
+    virtual Worker *createWorker(Actor *a);
 
-}; // ImportAnnotationsWorkerFactory
+};    // ImportAnnotationsWorkerFactory
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // __IMPORT_ANNOTATIONS_WORKER_H_
+#endif    // __IMPORT_ANNOTATIONS_WORKER_H_

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DNAChromatogramObjectUnitTests.h"
+
 #include <U2Core/DNAChromatogramObject.h>
 #include <U2Core/DatatypeSerializeUtils.h>
 #include <U2Core/RawDataUdrSchema.h>
@@ -27,8 +29,6 @@
 #include <U2Core/UdrDbi.h>
 
 #include "../util/DatatypeSerializeUtilsUnitTest.h"
-
-#include "DNAChromatogramObjectUnitTests.h"
 
 namespace U2 {
 
@@ -52,21 +52,21 @@ U2EntityRef DNAChromatogramObjectTestData::getObjRef() {
     return objRef;
 }
 
-U2ObjectDbi * DNAChromatogramObjectTestData::getObjDbi() {
+U2ObjectDbi *DNAChromatogramObjectTestData::getObjDbi() {
     if (!inited) {
         init();
     }
     return dbiProvider.getDbi()->getObjectDbi();
 }
 
-UdrDbi * DNAChromatogramObjectTestData::getUdrDbi() {
+UdrDbi *DNAChromatogramObjectTestData::getUdrDbi() {
     if (!inited) {
         init();
     }
     return dbiProvider.getDbi()->getUdrDbi();
 }
 
-const DNAChromatogram & DNAChromatogramObjectTestData::getChromatogram() {
+const DNAChromatogram &DNAChromatogramObjectTestData::getChromatogram() {
     if (!inited) {
         init();
     }
@@ -75,7 +75,7 @@ const DNAChromatogram & DNAChromatogramObjectTestData::getChromatogram() {
 
 void DNAChromatogramObjectTestData::init() {
     bool ok = dbiProvider.init(UDR_DB_URL, true);
-    SAFE_POINT(ok, "dbi provider failed to initialize",);
+    SAFE_POINT(ok, "dbi provider failed to initialize", );
 
     initData();
 
@@ -154,7 +154,7 @@ IMPLEMENT_TEST(DNAChromatogramObjectUnitTests, clone) {
 
     U2OpStatusImpl os;
     GObject *clonedGObj = object.clone(DNAChromatogramObjectTestData::getDbiRef(), os);
-    QScopedPointer<DNAChromatogramObject> cloned(dynamic_cast<DNAChromatogramObject*>(clonedGObj));
+    QScopedPointer<DNAChromatogramObject> cloned(dynamic_cast<DNAChromatogramObject *>(clonedGObj));
     CHECK_NO_ERROR(os);
 
     CompareUtils::checkEqual(object.getChromatogram(), cloned->getChromatogram(), os);
@@ -199,4 +199,4 @@ IMPLEMENT_TEST(DNAChromatogramObjectUnitTests, remove) {
     CHECK_TRUE(records.isEmpty(), "records");
 }
 
-} // U2
+}    // namespace U2

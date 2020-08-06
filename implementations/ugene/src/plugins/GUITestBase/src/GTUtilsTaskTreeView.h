@@ -47,30 +47,29 @@ private:
 
 class GTUtilsTaskTreeView {
 public:
-    static void waitTaskFinished(HI::GUITestOpStatus &os, long timeout=180000);
+    static void waitTaskFinished(HI::GUITestOpStatus &os, long timeoutMillis = 180000);
     static void click(HI::GUITestOpStatus &os, const QString &itemName, Qt::MouseButton b = Qt::LeftButton);
-    static void openView(HI::GUITestOpStatus& os);
-    static void toggleView(HI::GUITestOpStatus& os);
-    static void cancelTask(HI::GUITestOpStatus& os, const QString &itemName);
-    static QTreeWidgetItem* getTreeWidgetItem(HI::GUITestOpStatus &os, const QString &itemName, bool failOnNull = true);
-    static QTreeWidget* getTreeWidget(HI::GUITestOpStatus &os);
-    static void moveToOpenedView(HI::GUITestOpStatus& os, const QString &itemName);
+    static void openView(HI::GUITestOpStatus &os);
+    static void toggleView(HI::GUITestOpStatus &os);
+    static void cancelTask(HI::GUITestOpStatus &os, const QString &itemName);
+    static QTreeWidgetItem *getTreeWidgetItem(HI::GUITestOpStatus &os, const QString &itemName, bool failOnNull = true);
+    static QTreeWidget *getTreeWidget(HI::GUITestOpStatus &os);
+    static void moveToOpenedView(HI::GUITestOpStatus &os, const QString &itemName);
     static QPoint getTreeViewItemPosition(HI::GUITestOpStatus &os, const QString &itemName);
-    static void moveTo(HI::GUITestOpStatus &os,const QString &itemName);
+    static void moveTo(HI::GUITestOpStatus &os, const QString &itemName);
     static int getTopLevelTasksCount(HI::GUITestOpStatus &os);
-    static bool checkTask(HI::GUITestOpStatus& os, const QString &itemName);
-    static int countTasks(HI::GUITestOpStatus& os, const QString &itemName);
-    static QString getTaskStatus(HI::GUITestOpStatus& os, const QString &itemName);
+    static bool checkTask(HI::GUITestOpStatus &os, const QString &itemName);
+    static int countTasks(HI::GUITestOpStatus &os, const QString &itemName);
+    static QString getTaskStatus(HI::GUITestOpStatus &os, const QString &itemName);
 
     static const QString widgetName;
 
 private:
-    static QTreeWidgetItem* getTreeWidgetItem(QTreeWidget* tree, const QString &itemName);
-    static QList<QTreeWidgetItem*> getTaskTreeViewItems(QTreeWidgetItem* root, bool recursively = true);
+    static QTreeWidgetItem *getTreeWidgetItem(QTreeWidget *tree, const QString &itemName);
+    static QList<QTreeWidgetItem *> getTaskTreeViewItems(QTreeWidgetItem *root, bool recursively = true);
     static QString getTasksInfo(QList<U2::Task *> tasks, int level);
-
 };
 
-} //ns
+}    // namespace U2
 
 #endif

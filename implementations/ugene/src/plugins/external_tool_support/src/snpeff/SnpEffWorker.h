@@ -22,9 +22,10 @@
 #ifndef _U2_SNPEFF_WORKER_H_
 #define _U2_SNPEFF_WORKER_H_
 
+#include <U2Core/GUrl.h>
+
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
-#include <U2Core/GUrl.h>
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -35,18 +36,20 @@ typedef PrompterBase<SnpEffPrompter> SnpEffBase;
 class SnpEffPrompter : public SnpEffBase {
     Q_OBJECT
 public:
-    SnpEffPrompter(Actor* p = 0) : SnpEffBase(p) {}
+    SnpEffPrompter(Actor *p = 0)
+        : SnpEffBase(p) {
+    }
+
 protected:
     QString composeRichDoc();
-}; //SnpEffPrompter
+};    //SnpEffPrompter
 
-
-class SnpEffWorker: public BaseWorker {
+class SnpEffWorker : public BaseWorker {
     Q_OBJECT
 public:
     SnpEffWorker(Actor *a);
     void init();
-    Task * tick();
+    Task *tick();
     void cleanup();
 
     static const QString BASE_SNPEFF_SUBDIR;
@@ -72,21 +75,25 @@ private:
     IntegralBus *outputUrlPort;
 
 public slots:
-    void sl_taskFinished( Task *task );
+    void sl_taskFinished(Task *task);
 
 private:
     QString takeUrl();
     void sendResult(const QString &url);
-}; //SnpEffWorker
+};    //SnpEffWorker
 
 class SnpEffFactory : public DomainFactory {
     static const QString ACTOR_ID;
+
 public:
     static void init();
-    SnpEffFactory() : DomainFactory(ACTOR_ID) {}
-    Worker* createWorker(Actor* a) { return new SnpEffWorker(a); }
-}; //RmdupBamWorkerFactory
-
+    SnpEffFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    Worker *createWorker(Actor *a) {
+        return new SnpEffWorker(a);
+    }
+};    //RmdupBamWorkerFactory
 
 class SnpEffLogProcessor : public ExternalToolLogProcessor {
 public:
@@ -106,7 +113,7 @@ private:
     static const QMap<QString, QRegExp> messageCatchers;
 };
 
-} //LocalWorkflow
-} //U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif //_U2_SNPEFF_WORKER_H_
+#endif    //_U2_SNPEFF_WORKER_H_

@@ -22,8 +22,8 @@
 #ifndef _U2_WEIGHT_MATRIX_VIEW_MATRIX_DIALOG_CONTROLLER_H_
 #define _U2_WEIGHT_MATRIX_VIEW_MATRIX_DIALOG_CONTROLLER_H_
 
-#include <ui_ViewMatrixDialog.h>
 #include <ui_MatrixAndLogoWidget.h>
+#include <ui_ViewMatrixDialog.h>
 
 #include <QDialog>
 
@@ -41,19 +41,20 @@ class MatrixAndLogoController : public QWidget, public Ui_MatrixAndLogoWidget {
 public:
     MatrixAndLogoController(PFMatrix matrix, QWidget *parent = NULL);
     MatrixAndLogoController(PWMatrix matrix, QWidget *parent = NULL);
-private:
-    AlignmentLogoRenderArea*    logoArea;
-};
 
+private:
+    AlignmentLogoRenderArea *logoArea;
+};
 
 class ViewMatrixDialogController : public QDialog, public Ui_ViewMatrixDialog {
     Q_OBJECT
 
 public:
-    ViewMatrixDialogController(PFMatrix matrix, QWidget* w = NULL);
-    ViewMatrixDialogController(PWMatrix matrix, QWidget* w = NULL);
+    ViewMatrixDialogController(PFMatrix matrix, QWidget *w = NULL);
+    ViewMatrixDialogController(PWMatrix matrix, QWidget *w = NULL);
 private slots:
     void sl_onCloseButton();
+
 private:
     MatrixAndLogoController *ml;
 };
@@ -63,10 +64,11 @@ class MatrixViewController : public MWMDIWindow {
 public:
     MatrixViewController(PFMatrix matrix);
     MatrixViewController(PWMatrix matrix);
+
 private:
     QWidget *d;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

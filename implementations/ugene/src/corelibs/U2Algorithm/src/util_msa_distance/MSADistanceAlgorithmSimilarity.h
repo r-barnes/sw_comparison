@@ -22,8 +22,8 @@
 #ifndef _U2_MSA_DISTANCE_ALGORITHM_SIMILARITY_H_
 #define _U2_MSA_DISTANCE_ALGORITHM_SIMILARITY_H_
 
-#include "MSADistanceAlgorithm.h"
 #include "BuiltInDistanceAlgorithms.h"
+#include "MSADistanceAlgorithm.h"
 
 namespace U2 {
 
@@ -34,29 +34,29 @@ namespace U2 {
 // w("-", "-") = 1 or 0 (depends on "Exclude gaps" option)
 // w("A", "A") = 1
 
-class U2ALGORITHM_EXPORT MSADistanceAlgorithmFactorySimilarity: public MSADistanceAlgorithmFactory {
+class U2ALGORITHM_EXPORT MSADistanceAlgorithmFactorySimilarity : public MSADistanceAlgorithmFactory {
     Q_OBJECT
 public:
-    MSADistanceAlgorithmFactorySimilarity(QObject* p = NULL);
+    MSADistanceAlgorithmFactorySimilarity(QObject *p = NULL);
 
-    virtual MSADistanceAlgorithm* createAlgorithm(const MultipleSequenceAlignment& ma, QObject* parent);
+    virtual MSADistanceAlgorithm *createAlgorithm(const MultipleSequenceAlignment &ma, QObject *parent);
 
     virtual QString getDescription() const;
 
     virtual QString getName() const;
-
 };
-
 
 class U2ALGORITHM_EXPORT MSADistanceAlgorithmSimilarity : public MSADistanceAlgorithm {
     Q_OBJECT
 public:
-    MSADistanceAlgorithmSimilarity(MSADistanceAlgorithmFactorySimilarity* f, const MultipleSequenceAlignment& ma)
-        : MSADistanceAlgorithm(f, ma){isSimilarity = true;}
+    MSADistanceAlgorithmSimilarity(MSADistanceAlgorithmFactorySimilarity *f, const MultipleSequenceAlignment &ma)
+        : MSADistanceAlgorithm(f, ma) {
+        isSimilarity = true;
+    }
 
     virtual void run();
 };
 
-}//namespace
+}    // namespace U2
 
-#endif //_U2_MSA_DISTANCE_ALGORITHM_SIMILARITY_H_
+#endif    //_U2_MSA_DISTANCE_ALGORITHM_SIMILARITY_H_

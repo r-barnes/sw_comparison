@@ -21,9 +21,9 @@
 
 #include "Metaphlan2Support.h"
 
-#include <U2Core/U2SafePoints.h>
-
 #include <QFileInfo>
+
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
@@ -37,7 +37,8 @@ const QString Metaphlan2Support::ET_PYTHON_ID = "USUPP_PYTHON2";
 const QString Metaphlan2Support::ET_PYTHON_BIO_ID = "BIO";
 const QString Metaphlan2Support::ET_PYTHON_NUMPY_ID = "NUMPY";
 
-Metaphlan2Support::Metaphlan2Support(const QString& id, const QString& name, const QString& path) : ExternalTool(id, name, path) {
+Metaphlan2Support::Metaphlan2Support(const QString &id, const QString &name, const QString &path)
+    : ExternalTool(id, name, path) {
     validationArguments << "--version";
 
     toolKitName = TOOL_NAME;
@@ -52,7 +53,7 @@ Metaphlan2Support::Metaphlan2Support(const QString& id, const QString& name, con
     versionRegExp = QRegExp("MetaPhlAn version (\\d+\\.\\d+(\\.\\d+)?(\\-[a-zA-Z]*)?)");
 }
 
-void Metaphlan2Support::performAdditionalChecks(const QString& toolPath) {
+void Metaphlan2Support::performAdditionalChecks(const QString &toolPath) {
     QFileInfo file(toolPath);
     QString utilScriptFullPath = QString("%1/%2").arg(file.absolutePath()).arg(UTIL_SCRIPT);
     if (!QFileInfo::exists(utilScriptFullPath)) {
@@ -60,4 +61,4 @@ void Metaphlan2Support::performAdditionalChecks(const QString& toolPath) {
     }
 }
 
-}//namespace
+}    // namespace U2

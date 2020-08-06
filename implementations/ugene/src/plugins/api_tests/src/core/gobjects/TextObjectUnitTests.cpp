@@ -19,14 +19,14 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/UdrDbi.h>
+#include "TextObjectUnitTests.h"
+
 #include <U2Core/RawDataUdrSchema.h>
 #include <U2Core/TextObject.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "TextObjectUnitTests.h"
+#include <U2Core/UdrDbi.h>
 
 namespace U2 {
 
@@ -49,14 +49,14 @@ U2EntityRef TextObjectTestData::getObjRef() {
     return objRef;
 }
 
-U2ObjectDbi * TextObjectTestData::getObjDbi() {
+U2ObjectDbi *TextObjectTestData::getObjDbi() {
     if (!inited) {
         init();
     }
     return dbiProvider.getDbi()->getObjectDbi();
 }
 
-UdrDbi * TextObjectTestData::getUdrDbi() {
+UdrDbi *TextObjectTestData::getUdrDbi() {
     if (!inited) {
         init();
     }
@@ -65,7 +65,7 @@ UdrDbi * TextObjectTestData::getUdrDbi() {
 
 void TextObjectTestData::init() {
     bool ok = dbiProvider.init(UDR_DB_URL, true);
-    SAFE_POINT(ok, "dbi provider failed to initialize",);
+    SAFE_POINT(ok, "dbi provider failed to initialize", );
 
     inited = true;
 
@@ -135,7 +135,7 @@ IMPLEMENT_TEST(TextObjectUnitTests, clone) {
 
     U2OpStatusImpl os;
     GObject *clonedGObj = object.clone(TextObjectTestData::getDbiRef(), os);
-    QScopedPointer<TextObject> cloned(dynamic_cast<TextObject*>(clonedGObj));
+    QScopedPointer<TextObject> cloned(dynamic_cast<TextObject *>(clonedGObj));
     CHECK_NO_ERROR(os);
 
     cloned->setText("cloned text");
@@ -178,4 +178,4 @@ IMPLEMENT_TEST(TextObjectUnitTests, remove) {
     CHECK_TRUE(records.isEmpty(), "records");
 }
 
-} // U2
+}    // namespace U2

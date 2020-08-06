@@ -21,14 +21,14 @@
 
 #include "LastUsedDirHelper.h"
 
+#include <QDir>
+
 #include <U2Core/AppContext.h>
 #include <U2Core/Settings.h>
 
-#include <QDir>
-
 namespace U2 {
 
-LastUsedDirHelper::LastUsedDirHelper(const QString& d, const QString& defaultVal) {
+LastUsedDirHelper::LastUsedDirHelper(const QString &d, const QString &defaultVal) {
     domain = d;
     dir = getLastUsedDir(domain, defaultVal);
 }
@@ -40,7 +40,7 @@ LastUsedDirHelper::~LastUsedDirHelper() {
 void LastUsedDirHelper::saveLastUsedDir() {
     if (!url.isEmpty()) {
         QFileInfo fi(url);
-        if (fi.isDir()) { // sometimes 'url' points to a dir, not a file.
+        if (fi.isDir()) {    // sometimes 'url' points to a dir, not a file.
             dir = fi.absoluteFilePath();
         } else {
             dir = fi.absoluteDir().absolutePath();
@@ -53,11 +53,11 @@ void LastUsedDirHelper::saveLastUsedDir() {
 
 #define SETTINGS_ROOT QString("gui/")
 
-QString LastUsedDirHelper::getLastUsedDir(const QString& toolType, const QString& defaultVal) {
+QString LastUsedDirHelper::getLastUsedDir(const QString &toolType, const QString &defaultVal) {
     QString key = SETTINGS_ROOT + (toolType.isEmpty() ? "" : toolType + "/") + "lastDir";
     QString defDir = defaultVal;
     if (defDir.isEmpty() && toolType.isEmpty()) {
-        QStringList dataDirs = QDir::searchPaths( PATH_PREFIX_DATA );
+        QStringList dataDirs = QDir::searchPaths(PATH_PREFIX_DATA);
         if (!dataDirs.isEmpty()) {
             defDir = dataDirs.first() + "/samples";
         }
@@ -66,10 +66,9 @@ QString LastUsedDirHelper::getLastUsedDir(const QString& toolType, const QString
     return res;
 }
 
-void LastUsedDirHelper::setLastUsedDir(const QString& ld, const QString& toolType) {
+void LastUsedDirHelper::setLastUsedDir(const QString &ld, const QString &toolType) {
     QString key = SETTINGS_ROOT + (toolType.isEmpty() ? "" : toolType + "/") + "lastDir";
     AppContext::getSettings()->setValue(key, ld);
 }
 
-
-}//namespace
+}    // namespace U2

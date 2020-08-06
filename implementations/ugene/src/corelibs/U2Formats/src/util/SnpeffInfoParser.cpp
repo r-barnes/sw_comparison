@@ -19,19 +19,18 @@
  * MA 02110-1301, USA.
  */
 
+#include "SnpeffInfoParser.h"
+
 #include <U2Core/SnpeffDictionary.h>
 #include <U2Core/U2OpStatus.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "SnpeffInfoParser.h"
 
 namespace U2 {
 
 const QString SnpeffInfoParser::PAIRS_SEPARATOR = ";";
 const QString SnpeffInfoParser::KEY_VALUE_SEPARATOR = "=";
 
-SnpeffInfoParser::SnpeffInfoParser()
-{
+SnpeffInfoParser::SnpeffInfoParser() {
     initPartParsers();
 }
 
@@ -39,8 +38,8 @@ SnpeffInfoParser::~SnpeffInfoParser() {
     qDeleteAll(partParsers.values());
 }
 
-QList<QList<U2Qualifier> > SnpeffInfoParser::parse(U2OpStatus &os, const QString &snpeffInfo) const {
-    QList<QList<U2Qualifier> > qualifiers;
+QList<QList<U2Qualifier>> SnpeffInfoParser::parse(U2OpStatus &os, const QString &snpeffInfo) const {
+    QList<QList<U2Qualifier>> qualifiers;
     const QStringList keyValuePairs = snpeffInfo.split(PAIRS_SEPARATOR, QString::SkipEmptyParts);
     foreach (const QString &keyValuePair, keyValuePairs) {
         const QStringList splittedKeyValuePair = keyValuePair.split(KEY_VALUE_SEPARATOR);
@@ -82,17 +81,15 @@ const QString InfoPartParser::SNPEFF_TAG = "SnpEff_tag";
 
 InfoPartParser::InfoPartParser(const QString &keyWord, bool canStoreMessages)
     : keyWord(keyWord),
-      canStoreMessages(canStoreMessages)
-{
-
+      canStoreMessages(canStoreMessages) {
 }
 
-const QString & InfoPartParser::getKeyWord() const {
+const QString &InfoPartParser::getKeyWord() const {
     return keyWord;
 }
 
-QList<QList<U2Qualifier> > InfoPartParser::parse(U2OpStatus &os, const QString &infoPart) const {
-    QList<QList<U2Qualifier> > qualifiers;
+QList<QList<U2Qualifier>> InfoPartParser::parse(U2OpStatus &os, const QString &infoPart) const {
+    QList<QList<U2Qualifier>> qualifiers;
     const QStringList entries = infoPart.split(ANNOTATION_SEPARATOR);
     foreach (const QString &entry, entries) {
         qualifiers << parseEntry(os, entry);
@@ -145,9 +142,7 @@ const QString AnnParser::PUTATIVE_IMPACT = "Putative_impact";
 const QString AnnParser::PUTATIVE_IMPACT_DESCRIPTION = "Putative_imp_desc";
 
 AnnParser::AnnParser()
-    : InfoPartParser(KEY_WORD, true)
-{
-
+    : InfoPartParser(KEY_WORD, true) {
 }
 
 QStringList AnnParser::getQualifierNames() const {
@@ -195,9 +190,7 @@ const QString EffParser::EFFECT_IMPACT = "Effect_impact";
 const QString EffParser::EFFECT_IMPACT_DESCRIPTION = "Effect_impact_desc";
 
 EffParser::EffParser()
-    : InfoPartParser(KEY_WORD, true)
-{
-
+    : InfoPartParser(KEY_WORD, true) {
 }
 
 QStringList EffParser::getQualifierNames() const {
@@ -238,9 +231,7 @@ const QString LofParser::KEY_WORD = "LOF";
 const QString LofParser::VALUES_SEPARATOR = "|";
 
 LofParser::LofParser()
-    : InfoPartParser(KEY_WORD)
-{
-
+    : InfoPartParser(KEY_WORD) {
 }
 
 QStringList LofParser::getQualifierNames() const {
@@ -258,9 +249,7 @@ const QString NmdParser::KEY_WORD = "NMD";
 const QString NmdParser::VALUES_SEPARATOR = "|";
 
 NmdParser::NmdParser()
-    : InfoPartParser(KEY_WORD)
-{
-
+    : InfoPartParser(KEY_WORD) {
 }
 
 QStringList NmdParser::getQualifierNames() const {
@@ -274,4 +263,4 @@ QStringList NmdParser::getValues(const QString &entry) const {
     return entry.mid(1, entry.length() - 2).split(VALUES_SEPARATOR);
 }
 
-}   // namespace U2
+}    // namespace U2

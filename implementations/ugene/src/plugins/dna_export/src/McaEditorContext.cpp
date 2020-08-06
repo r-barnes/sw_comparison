@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "McaEditorContext.h"
+
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/GUIUtils.h>
@@ -27,14 +29,11 @@
 #include <U2View/McaEditor.h>
 
 #include "ExportUtils.h"
-#include "McaEditorContext.h"
 
 namespace U2 {
 
 McaEditorContext::McaEditorContext(QObject *parent)
-    : GObjectViewWindowContext(parent, McaEditorFactory::ID)
-{
-
+    : GObjectViewWindowContext(parent, McaEditorFactory::ID) {
 }
 
 void McaEditorContext::sl_exportMca2Msa() {
@@ -70,4 +69,4 @@ void McaEditorContext::buildMenu(GObjectView *view, QMenu *menu) {
     alignmentMenu->addAction(list.first());
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -28,8 +28,8 @@ namespace U2 {
 
 struct Nucleotide {
     Nucleotide(const char c);
-    bool operator<(const Nucleotide& other) const;
-    bool operator==(const Nucleotide& other) const;
+    bool operator<(const Nucleotide &other) const;
+    bool operator==(const Nucleotide &other) const;
 
     char character;
     int frequency;
@@ -46,7 +46,7 @@ public:
     //const int getIndexOfNucleotideWithCharacter(const char c) const;
     bool hasGaps() const;
     bool hasNonAlphabetCharsNumber() const;
-    bool hasPercentageMoreThen(const double& threshold) const;
+    bool hasPercentageMoreThen(const double &threshold) const;
     void sortNucleotideList();
     //bool hasEqualPercentage() const;
 
@@ -60,7 +60,6 @@ private:
     int nonAlphabetCharsNumber;
 };
 
+}    // namespace U2
 
-}
-
-#endif // _U2_COLUMN_CHARS_COUNTER_H_
+#endif    // _U2_COLUMN_CHARS_COUNTER_H_

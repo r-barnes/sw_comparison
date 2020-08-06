@@ -22,18 +22,18 @@
 #ifndef _U2_WEIGHT_MATRIX_SEARCH_DIALOG_H_
 #define _U2_WEIGHT_MATRIX_SEARCH_DIALOG_H_
 
-#include <U2Core/global.h>
-#include <U2Core/U2Region.h>
-
 #include <ui_PWMSearchDialog.h>
 
-#include <QList>
-#include <QTreeWidgetItem>
 #include <QCloseEvent>
+#include <QList>
 #include <QTimer>
+#include <QTreeWidgetItem>
 
 #include <U2Core/PFMatrix.h>
 #include <U2Core/PWMatrix.h>
+#include <U2Core/U2Region.h>
+#include <U2Core/global.h>
+
 #include <U2Gui/RegionSelector.h>
 
 #include "WeightMatrixSearchTask.h"
@@ -50,7 +50,7 @@ class WeightMatrixQueueItem;
 class PWMSearchDialogController : public QDialog, public Ui_PWMSearchDialog {
     Q_OBJECT
 public:
-    PWMSearchDialogController(ADVSequenceObjectContext* ctx, QWidget *p = NULL);
+    PWMSearchDialogController(ADVSequenceObjectContext *ctx, QWidget *p = NULL);
 
 public slots:
     virtual void reject();
@@ -82,13 +82,13 @@ private slots:
     void sl_onTaskFinished();
     void sl_onTimer();
 
-    void sl_onResultActivated(QTreeWidgetItem* i, int col);
+    void sl_onResultActivated(QTreeWidgetItem *i, int col);
 
 private:
     void connectGUI();
     void updateState();
     void updateStatus();
-    void updateModel(const PWMatrix& m);
+    void updateModel(const PWMatrix &m);
     void loadFile(QString filename);
     void addToQueue();
 
@@ -99,24 +99,23 @@ private:
     void importResults();
 
 private:
-    ADVSequenceObjectContext*                           ctx;
-    U2Region                                            initialSelection;
+    ADVSequenceObjectContext *ctx;
+    U2Region initialSelection;
 
-    PFMatrix                                            intermediate;
-    PWMatrix                                            model;
+    PFMatrix intermediate;
+    PWMatrix model;
 
-    QList< QPair<PWMatrix, WeightMatrixSearchCfg> >     queue;
+    QList<QPair<PWMatrix, WeightMatrixSearchCfg>> queue;
 
-    WeightMatrixSearchTask*                             task;
-    QTimer*                                             timer;
-    RegionSelector*                                     rs;
+    WeightMatrixSearchTask *task;
+    QTimer *timer;
+    RegionSelector *rs;
 
-    QPushButton*                                        pbSearch;
-    QPushButton*                                        pbClose;
-    QPushButton*                                        queueButton;
-
+    QPushButton *pbSearch;
+    QPushButton *pbClose;
+    QPushButton *queueButton;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

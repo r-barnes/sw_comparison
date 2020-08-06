@@ -19,9 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-#include "../ProjectFilterNames.h"
-
 #include "ObjectNameFilterTask.h"
+
+#include "../ProjectFilterNames.h"
 
 namespace U2 {
 
@@ -29,9 +29,8 @@ namespace U2 {
 /// ObjectNameFilterTask
 //////////////////////////////////////////////////////////////////////////
 
-ObjectNameFilterTask::ObjectNameFilterTask(const ProjectTreeControllerModeSettings &settings, const QList<QPointer<Document> > &docs)
-    : AbstractProjectFilterTask(settings, ProjectFilterNames::OBJ_NAME_FILTER_NAME, docs)
-{
+ObjectNameFilterTask::ObjectNameFilterTask(const ProjectTreeControllerModeSettings &settings, const QList<QPointer<Document>> &docs)
+    : AbstractProjectFilterTask(settings, ProjectFilterNames::OBJ_NAME_FILTER_NAME, docs) {
     filteredObjCountPerIteration = 50;
 }
 
@@ -43,10 +42,9 @@ bool ObjectNameFilterTask::filterAcceptsObject(GObject *obj) {
 /// ObjectNameFilterTaskFactory
 //////////////////////////////////////////////////////////////////////////
 
-AbstractProjectFilterTask * ObjectNameFilterTaskFactory::createNewTask(const ProjectTreeControllerModeSettings &settings,
-    const QList<QPointer<Document> > &docs) const
-{
+AbstractProjectFilterTask *ObjectNameFilterTaskFactory::createNewTask(const ProjectTreeControllerModeSettings &settings,
+                                                                      const QList<QPointer<Document>> &docs) const {
     return new ObjectNameFilterTask(settings, docs);
 }
 
-} // namespace U2
+}    // namespace U2

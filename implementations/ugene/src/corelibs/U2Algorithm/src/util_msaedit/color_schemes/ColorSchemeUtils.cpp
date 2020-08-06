@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ColorSchemeUtils.h"
+
 #include <QColor>
 #include <QDir>
 
@@ -27,8 +29,6 @@
 #include <U2Core/IOAdapterUtils.h>
 #include <U2Core/Log.h>
 #include <U2Core/Settings.h>
-
-#include "ColorSchemeUtils.h"
 
 namespace U2 {
 
@@ -71,7 +71,7 @@ QByteArray uniteAlphabetChars(const QByteArray &firstAlphabetChars, const QByteA
     return unitedAlphabetChars;
 }
 
-}
+}    // namespace
 
 bool ColorSchemeUtils::getSchemaColors(ColorSchemeData &customScheme) {
     QMap<char, QColor> &alphColors = customScheme.alpColors;
@@ -103,7 +103,6 @@ bool ColorSchemeUtils::getSchemaColors(ColorSchemeData &customScheme) {
         line.remove(lineLength, line.size() - lineLength);
         if (line.isEmpty()) {
             continue;
-
         }
 
         if (line == COLOR_SCHEME_AMINO_KEYWORD) {
@@ -112,7 +111,7 @@ bool ColorSchemeUtils::getSchemaColors(ColorSchemeData &customScheme) {
             type = DNAAlphabet_NUCL;
             if (line == COLOR_SCHEME_NUCL_DEFAULT_KEYWORD) {
                 defaultAlpType = true;
-            } else if(line == COLOR_SCHEME_NUCL_EXTENDED_KEYWORD) {
+            } else if (line == COLOR_SCHEME_NUCL_EXTENDED_KEYWORD) {
                 defaultAlpType = false;
             } else {
                 coreLog.info(QString("%1: mode of nucleic alphabet of scheme not defined, use default mode").arg(customScheme.name));
@@ -136,7 +135,6 @@ bool ColorSchemeUtils::getSchemaColors(ColorSchemeData &customScheme) {
         line.remove(lineLength, line.size() - lineLength);
         if (line.isEmpty()) {
             continue;
-
         }
         QStringList properties = line.split(QString("="), QString::SkipEmptyParts);
 
@@ -216,10 +214,10 @@ void ColorSchemeUtils::getDefaultUgeneColors(DNAAlphabetType type, QMap<char, QC
         alphColors['K'] = "#0000ff";
         alphColors['R'] = "#0000ff";
     } else if (type == DNAAlphabet_NUCL) {
-        alphColors['A'] = "#FCFF92"; // yellow
-        alphColors['C'] = "#70F970"; // green
-        alphColors['T'] = "#FF99B1"; // light red
-        alphColors['G'] = "#4EADE1"; // light blue
+        alphColors['A'] = "#FCFF92";    // yellow
+        alphColors['C'] = "#70F970";    // green
+        alphColors['T'] = "#FF99B1";    // light red
+        alphColors['G'] = "#4EADE1";    // light blue
         alphColors['U'] = alphColors['T'].lighter(120);
         alphColors['N'] = "#FCFCFC";
     }
@@ -227,10 +225,10 @@ void ColorSchemeUtils::getDefaultUgeneColors(DNAAlphabetType type, QMap<char, QC
 
 QMap<char, QColor> ColorSchemeUtils::getDefaultSchemaColors(DNAAlphabetType type, bool defaultAlpType) {
     QList<const DNAAlphabet *> alphabets = AppContext::getDNAAlphabetRegistry()->getRegisteredAlphabets();
-    QMap<DNAAlphabetType, QByteArray > alphabetChars;
-    foreach (const DNAAlphabet* alphabet, alphabets){ // default initialization
+    QMap<DNAAlphabetType, QByteArray> alphabetChars;
+    foreach (const DNAAlphabet *alphabet, alphabets) {    // default initialization
         if (defaultAlpType == alphabet->isDefault()) {
-            alphabetChars[alphabet->getType()] = uniteAlphabetChars(alphabetChars.value(alphabet->getType()) ,alphabet->getAlphabetChars());
+            alphabetChars[alphabet->getType()] = uniteAlphabetChars(alphabetChars.value(alphabet->getType()), alphabet->getAlphabetChars());
         }
     }
 
@@ -256,8 +254,14 @@ QMap<char, QColor> ColorSchemeUtils::getDefaultSchemaColors(DNAAlphabetType type
 void ColorSchemeUtils::setColorsDir(const QString &colorsDir) {
     QString settingsFile = AppContext::getSettings()->fileName();
     QString settingsDir = QFileInfo(settingsFile).absolutePath();
-    if (settingsDir != colorsDir) {
-        AppContext::getSettings()->setValue(COLOR_SCHEME_SETTINGS_ROOT + COLOR_SCHEME_COLOR_SCHEMA_DIR, colorsDir, true);
+    QString finalColorDir = colorsDir;
+    QFileInfo info(colorsDir);
+    if (!info.isDir()) {
+        finalColorDir = info.dir().absolutePath();
+        coreLog.trace(QString("%1: the file location was trimmed to the file directory.").arg(colorsDir));
+    }
+    if (settingsDir != finalColorDir) {
+        AppContext::getSettings()->setValue(COLOR_SCHEME_SETTINGS_ROOT + COLOR_SCHEME_COLOR_SCHEMA_DIR, finalColorDir, true);
     }
 }
 
@@ -265,5 +269,4 @@ void ColorSchemeUtils::fillEmptyColorScheme(QVector<QColor> &colorsPerChar) {
     colorsPerChar.fill(QColor(), 256);
 }
 
-
-}   // namespace U2
+}    // namespace U2

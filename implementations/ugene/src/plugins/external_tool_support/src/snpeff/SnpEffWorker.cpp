@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "SnpEffWorker.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DataPathRegistry.h>
@@ -53,12 +55,10 @@
 #include "SnpEffDatabaseDelegate.h"
 #include "SnpEffSupport.h"
 #include "SnpEffTask.h"
-#include "SnpEffWorker.h"
 #include "java/JavaSupport.h"
 
 namespace U2 {
 namespace LocalWorkflow {
-
 
 const QString SnpEffWorker::BASE_SNPEFF_SUBDIR = "snpeff";
 const QString SnpEffWorker::INPUT_PORT = "in-file";
@@ -82,9 +82,9 @@ const QString SnpEffFactory::ACTOR_ID("seff");
 // SnpEffPrompter
 
 QString SnpEffPrompter::composeRichDoc() {
-    IntegralBusPort* input = qobject_cast<IntegralBusPort*>(target->getPort(SnpEffWorker::INPUT_PORT));
-    const Actor* producer = input->getProducer(BaseSlots::URL_SLOT().getId());
-    QString unsetStr = "<font color='red'>"+tr("unset")+"</font>";
+    IntegralBusPort *input = qobject_cast<IntegralBusPort *>(target->getPort(SnpEffWorker::INPUT_PORT));
+    const Actor *producer = input->getProducer(BaseSlots::URL_SLOT().getId());
+    QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
     QString producerName = tr(" from <u>%1</u>").arg(producer ? producer->getLabel() : unsetStr);
 
     QString doc = tr("Annotates and filters variations %1 with SnpEff.").arg(producerName);
@@ -94,15 +94,12 @@ QString SnpEffPrompter::composeRichDoc() {
 ////////////////////////////////////////
 //SnpEffFactory
 void SnpEffFactory::init() {
-    Descriptor desc( ACTOR_ID, SnpEffWorker::tr("SnpEff Annotation and Filtration"),
-        SnpEffWorker::tr("Annotates and filters variations with SnpEff.") );
+    Descriptor desc(ACTOR_ID, SnpEffWorker::tr("SnpEff Annotation and Filtration"), SnpEffWorker::tr("Annotates and filters variations with SnpEff."));
 
-    QList<PortDescriptor*> p;
+    QList<PortDescriptor *> p;
     {
-        Descriptor inD(SnpEffWorker::INPUT_PORT, SnpEffWorker::tr("Variations"),
-            SnpEffWorker::tr("Set of variations"));
-        Descriptor outD(SnpEffWorker::OUTPUT_PORT, SnpEffWorker::tr("Annotated variations"),
-            SnpEffWorker::tr("Annotated variations"));
+        Descriptor inD(SnpEffWorker::INPUT_PORT, SnpEffWorker::tr("Variations"), SnpEffWorker::tr("Set of variations"));
+        Descriptor outD(SnpEffWorker::OUTPUT_PORT, SnpEffWorker::tr("Annotated variations"), SnpEffWorker::tr("Annotated variations"));
 
         QMap<Descriptor, DataTypePtr> inM;
         inM[BaseSlots::URL_SLOT()] = BaseTypes::STRING_TYPE();
@@ -113,60 +110,47 @@ void SnpEffFactory::init() {
         p << new PortDescriptor(outD, DataTypePtr(new MapDataType("seff.output-url", outM)), false, true);
     }
 
-    QList<Attribute*> a;
+    QList<Attribute *> a;
     {
+        Descriptor outDir(SnpEffWorker::OUT_MODE_ID, SnpEffWorker::tr("Output folder"), SnpEffWorker::tr("Select an output folder. <b>Custom</b> - specify the output folder in the 'Custom folder' parameter. "
+                                                                                                         "<b>Workflow</b> - internal workflow folder. "
+                                                                                                         "<b>Input file</b> - the folder of the input file."));
 
-        Descriptor outDir(SnpEffWorker::OUT_MODE_ID, SnpEffWorker::tr("Output folder"),
-            SnpEffWorker::tr("Select an output folder. <b>Custom</b> - specify the output folder in the 'Custom folder' parameter. "
-            "<b>Workflow</b> - internal workflow folder. "
-            "<b>Input file</b> - the folder of the input file."));
+        Descriptor customDir(SnpEffWorker::CUSTOM_DIR_ID, SnpEffWorker::tr("Custom folder"), SnpEffWorker::tr("Select the custom output folder."));
 
-        Descriptor customDir(SnpEffWorker::CUSTOM_DIR_ID, SnpEffWorker::tr("Custom folder"),
-            SnpEffWorker::tr("Select the custom output folder."));
+        Descriptor inpFormat(SnpEffWorker::INPUT_FORMAT, SnpEffWorker::tr("Input format"), SnpEffWorker::tr("Select the input format of variations."));
 
-        Descriptor inpFormat(SnpEffWorker::INPUT_FORMAT, SnpEffWorker::tr("Input format"),
-            SnpEffWorker::tr("Select the input format of variations."));
+        Descriptor outFormat(SnpEffWorker::OUTPUT_FORMAT, SnpEffWorker::tr("Output format"), SnpEffWorker::tr("Select the format of annotated output files."));
 
-        Descriptor outFormat(SnpEffWorker::OUTPUT_FORMAT, SnpEffWorker::tr("Output format"),
-            SnpEffWorker::tr("Select the format of annotated output files."));
+        Descriptor genome(SnpEffWorker::GENOME, SnpEffWorker::tr("Genome"), SnpEffWorker::tr("Select the target genome. Genome data will be downloaded if it is not found."));
 
-        Descriptor genome(SnpEffWorker::GENOME, SnpEffWorker::tr("Genome"),
-            SnpEffWorker::tr("Select the target genome. Genome data will be downloaded if it is not found."));
+        Descriptor updownLength(SnpEffWorker::UPDOWN_LENGTH, SnpEffWorker::tr("Upstream/downstream length"), SnpEffWorker::tr("Upstream and downstream interval size. Eliminate any upstream and downstream effect by using 0 length"));
 
-        Descriptor updownLength(SnpEffWorker::UPDOWN_LENGTH, SnpEffWorker::tr("Upstream/downstream length"),
-            SnpEffWorker::tr("Upstream and downstream interval size. Eliminate any upstream and downstream effect by using 0 length"));
+        Descriptor canon(SnpEffWorker::CANON, SnpEffWorker::tr("Canonical transcripts"), SnpEffWorker::tr("Use only canonical transcripts"));
 
-        Descriptor canon(SnpEffWorker::CANON, SnpEffWorker::tr("Canonical transcripts"),
-            SnpEffWorker::tr("Use only canonical transcripts"));
+        Descriptor hgvs(SnpEffWorker::HGVS, SnpEffWorker::tr("HGVS nomenclature"), SnpEffWorker::tr("Annotate using HGVS nomenclature"));
 
-        Descriptor hgvs(SnpEffWorker::HGVS, SnpEffWorker::tr("HGVS nomenclature"),
-            SnpEffWorker::tr("Annotate using HGVS nomenclature"));
+        Descriptor lof(SnpEffWorker::LOF, SnpEffWorker::tr("Annotate Loss of function variations"), SnpEffWorker::tr("Annotate Loss of function variations (LOF) and Nonsense mediated decay (NMD)"));
 
-        Descriptor lof(SnpEffWorker::LOF, SnpEffWorker::tr("Annotate Loss of function variations"),
-            SnpEffWorker::tr("Annotate Loss of function variations (LOF) and Nonsense mediated decay (NMD)"));
-
-        Descriptor motif(SnpEffWorker::MOTIF, SnpEffWorker::tr("Annotate TFBSs motifs"),
-            SnpEffWorker::tr("Annotate transcription factor binding site motifs (only available for latest GRCh37)"));
-
+        Descriptor motif(SnpEffWorker::MOTIF, SnpEffWorker::tr("Annotate TFBSs motifs"), SnpEffWorker::tr("Annotate transcription factor binding site motifs (only available for latest GRCh37)"));
 
         a << new Attribute(outDir, BaseTypes::NUM_TYPE(), false, QVariant(FileAndDirectoryUtils::WORKFLOW_INTERNAL));
-        Attribute* customDirAttr = new Attribute(customDir, BaseTypes::STRING_TYPE(), false, QVariant(""));
+        Attribute *customDirAttr = new Attribute(customDir, BaseTypes::STRING_TYPE(), false, QVariant(""));
         customDirAttr->addRelation(new VisibilityRelation(SnpEffWorker::OUT_MODE_ID, FileAndDirectoryUtils::CUSTOM));
         a << customDirAttr;
 
-        a << new Attribute( inpFormat, BaseTypes::STRING_TYPE(), false, "vcf");
-        a << new Attribute( outFormat, BaseTypes::STRING_TYPE(), false, "vcf");
-        a << new Attribute( genome, BaseTypes::STRING_TYPE(), true);
-        a << new Attribute( updownLength, BaseTypes::STRING_TYPE(), false, "0");
-        a << new Attribute( canon, BaseTypes::BOOL_TYPE(), false, false);
-        a << new Attribute( hgvs, BaseTypes::BOOL_TYPE(), false, false);
-        a << new Attribute( lof, BaseTypes::BOOL_TYPE(), false, false);
-        a << new Attribute( motif, BaseTypes::BOOL_TYPE(), false, false);
+        a << new Attribute(inpFormat, BaseTypes::STRING_TYPE(), false, "vcf");
+        a << new Attribute(outFormat, BaseTypes::STRING_TYPE(), false, "vcf");
+        a << new Attribute(genome, BaseTypes::STRING_TYPE(), true);
+        a << new Attribute(updownLength, BaseTypes::STRING_TYPE(), false, "0");
+        a << new Attribute(canon, BaseTypes::BOOL_TYPE(), false, false);
+        a << new Attribute(hgvs, BaseTypes::BOOL_TYPE(), false, false);
+        a << new Attribute(lof, BaseTypes::BOOL_TYPE(), false, false);
+        a << new Attribute(motif, BaseTypes::BOOL_TYPE(), false, false);
     }
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
-
         QVariantMap directoryMap;
         QString fileDir = SnpEffWorker::tr("Input file");
         QString workflowDir = SnpEffWorker::tr("Workflow");
@@ -208,7 +192,7 @@ void SnpEffFactory::init() {
         }
     }
 
-    ActorPrototype* proto = new IntegralBusActorPrototype(desc, p, a);
+    ActorPrototype *proto = new IntegralBusActorPrototype(desc, p, a);
     proto->setEditor(new DelegateEditor(delegates));
     proto->setPrompter(new SnpEffPrompter());
     proto->addExternalTool(JavaSupport::ET_JAVA_ID);
@@ -222,11 +206,7 @@ void SnpEffFactory::init() {
 //////////////////////////////////////////////////////////////////////////
 //SnpEffWorker
 SnpEffWorker::SnpEffWorker(Actor *a)
-:BaseWorker(a)
-,inputUrlPort(NULL)
-,outputUrlPort(NULL)
-{
-
+    : BaseWorker(a), inputUrlPort(NULL), outputUrlPort(NULL) {
 }
 
 void SnpEffWorker::init() {
@@ -234,8 +214,7 @@ void SnpEffWorker::init() {
     outputUrlPort = ports.value(OUTPUT_PORT);
 }
 
-Task * SnpEffWorker::tick() {
-
+Task *SnpEffWorker::tick() {
     if (inputUrlPort->hasMessage()) {
         const QString url = takeUrl();
         CHECK(!url.isEmpty(), NULL);
@@ -256,8 +235,8 @@ Task * SnpEffWorker::tick() {
         setting.lof = getValue<bool>(LOF);
         setting.motif = getValue<bool>(MOTIF);
 
-        SnpEffTask *t = new SnpEffTask (setting);
-        connect(new TaskSignalMapper(t), SIGNAL(si_taskFinished(Task*)), SLOT(sl_taskFinished(Task*)));
+        SnpEffTask *t = new SnpEffTask(setting);
+        connect(new TaskSignalMapper(t), SIGNAL(si_taskFinished(Task *)), SLOT(sl_taskFinished(Task *)));
 
         QList<ExternalToolListener *> listeners = createLogListeners();
         listeners[0]->setLogProcessor(new SnpEffLogProcessor(monitor(), getActorId()));
@@ -273,27 +252,26 @@ Task * SnpEffWorker::tick() {
     return NULL;
 }
 
-void SnpEffWorker::cleanup(){
-
+void SnpEffWorker::cleanup() {
 }
 
 namespace {
-    QString getTargetTaskUrl(Task * task) {
-        SnpEffTask *curtask = dynamic_cast<SnpEffTask*>(task);
-        if (NULL != curtask) {
-            return curtask->getResult();
-        }
-        return "";
+QString getTargetTaskUrl(Task *task) {
+    SnpEffTask *curtask = dynamic_cast<SnpEffTask *>(task);
+    if (NULL != curtask) {
+        return curtask->getResult();
     }
-
-    QString getSummaryUrl(Task * task) {
-        SnpEffTask *curtask = dynamic_cast<SnpEffTask*>(task);
-        if (NULL != curtask) {
-            return curtask->getSummaryUrl();
-        }
-        return "";
-    }
+    return "";
 }
+
+QString getSummaryUrl(Task *task) {
+    SnpEffTask *curtask = dynamic_cast<SnpEffTask *>(task);
+    if (NULL != curtask) {
+        return curtask->getSummaryUrl();
+    }
+    return "";
+}
+}    // namespace
 
 void SnpEffWorker::sl_taskFinished(Task *task) {
     CHECK(!task->hasError(), );
@@ -329,12 +307,10 @@ void SnpEffWorker::sendResult(const QString &url) {
 const StrStrMap SnpEffLogProcessor::wellKnownMessages = SnpEffLogProcessor::initWellKnownMessages();
 const QMap<QString, QRegExp> SnpEffLogProcessor::messageCatchers = SnpEffLogProcessor::initWellKnownCatchers();
 
-SnpEffLogProcessor::SnpEffLogProcessor(WorkflowMonitor *monitor, const QString &actor) :
-    ExternalToolLogProcessor(),
-    monitor(monitor),
-    actor(actor)
-{
-
+SnpEffLogProcessor::SnpEffLogProcessor(WorkflowMonitor *monitor, const QString &actor)
+    : ExternalToolLogProcessor(),
+      monitor(monitor),
+      actor(actor) {
 }
 
 void SnpEffLogProcessor::processLogMessage(const QString &message) {
@@ -365,5 +341,5 @@ QMap<QString, QRegExp> SnpEffLogProcessor::initWellKnownCatchers() {
     return result;
 }
 
-} //LocalWorkflow
-} //U2
+}    // namespace LocalWorkflow
+}    // namespace U2

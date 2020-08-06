@@ -24,8 +24,7 @@
 namespace U2 {
 
 WorkflowScriptEngine::WorkflowScriptEngine(Workflow::WorkflowContext *context)
-: QScriptEngine()
-{
+    : QScriptEngine() {
     this->context = context;
 }
 
@@ -33,4 +32,4 @@ Workflow::WorkflowContext *WorkflowScriptEngine::getWorkflowContext() {
     return context;
 }
 
-} // U2
+}    // namespace U2

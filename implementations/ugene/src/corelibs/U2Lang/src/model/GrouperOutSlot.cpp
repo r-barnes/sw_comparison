@@ -19,22 +19,22 @@
  * MA 02110-1301, USA.
  */
 
+#include "GrouperOutSlot.h"
+
 #include <QVariant>
 
 #include <U2Lang/BaseTypes.h>
-
-#include "GrouperOutSlot.h"
 
 namespace U2 {
 
 /************************************************************************/
 /* ActionTypes */
 /************************************************************************/
-const QString ActionTypes::MERGE_SEQUENCE       = QString("merge-sequence");
-const QString ActionTypes::SEQUENCE_TO_MSA      = QString("sequence-to-msa");
-const QString ActionTypes::MERGE_MSA            = QString("merge-msa");
-const QString ActionTypes::MERGE_STRING         = QString("merge-string");
-const QString ActionTypes::MERGE_ANNS           = QString("merge-annotations");
+const QString ActionTypes::MERGE_SEQUENCE = QString("merge-sequence");
+const QString ActionTypes::SEQUENCE_TO_MSA = QString("sequence-to-msa");
+const QString ActionTypes::MERGE_MSA = QString("merge-msa");
+const QString ActionTypes::MERGE_STRING = QString("merge-string");
+const QString ActionTypes::MERGE_ANNS = QString("merge-annotations");
 
 bool ActionTypes::isValidType(const QString &type) {
     bool result = false;
@@ -68,12 +68,12 @@ DataTypePtr ActionTypes::getDataTypeByAction(const QString &actionType) {
 /************************************************************************/
 /* ActionParameters */
 /************************************************************************/
-const QString ActionParameters::GAP             = QString("gap");
-const QString ActionParameters::UNIQUE          = QString("unique");
-const QString ActionParameters::SEPARATOR       = QString("separator");
-const QString ActionParameters::MSA_NAME        = QString("msa-name");
-const QString ActionParameters::SEQ_NAME        = QString("seq-name");
-const QString ActionParameters::SEQ_SLOT        = QString("seq-slot");
+const QString ActionParameters::GAP = QString("gap");
+const QString ActionParameters::UNIQUE = QString("unique");
+const QString ActionParameters::SEPARATOR = QString("separator");
+const QString ActionParameters::MSA_NAME = QString("msa-name");
+const QString ActionParameters::SEQ_NAME = QString("seq-name");
+const QString ActionParameters::SEQ_SLOT = QString("seq-slot");
 
 ActionParameters::ParameterType ActionParameters::getType(const QString &parameter) {
     if (GAP == parameter) {
@@ -119,15 +119,11 @@ bool ActionParameters::isValidParameter(const QString &actionType, const QString
 /* GrouperSlotAction */
 /************************************************************************/
 GrouperSlotAction::GrouperSlotAction(const QString &type)
-: type(type)
-{
-
+    : type(type) {
 }
 
 GrouperSlotAction::GrouperSlotAction(const GrouperSlotAction &other)
-: type(other.type), parameters(other.parameters)
-{
-
+    : type(other.type), parameters(other.parameters) {
 }
 
 QString GrouperSlotAction::getType() const {
@@ -169,9 +165,7 @@ Descriptor GroupOperations::BY_ID() {
 /* GrouperOutSlot */
 /************************************************************************/
 GrouperOutSlot::GrouperOutSlot(const QString &outSlotId, const QString &inSlotStr)
-: outSlotId(outSlotId), inSlotStr(inSlotStr), action(NULL)
-{
-
+    : outSlotId(outSlotId), inSlotStr(inSlotStr), action(NULL) {
 }
 
 GrouperOutSlot::GrouperOutSlot(const GrouperOutSlot &another) {
@@ -249,4 +243,4 @@ QString GrouperOutSlot::busMap2readable(const QString &busMapSlotStr) {
     return result;
 }
 
-} // U2
+}    // namespace U2

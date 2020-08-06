@@ -20,42 +20,40 @@
  */
 
 #include "CoverageInfo.h"
+#include <algorithm>
+#include <limits>
 
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
-#include "AssemblyModel.h"
 
-#include <algorithm>
-#include <limits>
+#include "AssemblyModel.h"
 
 namespace U2 {
 
 void CoverageInfo::updateStats() {
-    CHECK(!coverageInfo.isEmpty(),)
+    CHECK(!coverageInfo.isEmpty(), )
     maxCoverage = minCoverage = coverageInfo[0];
 
     qint64 sum = 0;
 
-    for(int regionIndex = 0; regionIndex < coverageInfo.size(); ++regionIndex) {
+    for (int regionIndex = 0; regionIndex < coverageInfo.size(); ++regionIndex) {
         maxCoverage = std::max(maxCoverage, coverageInfo[regionIndex]);
         minCoverage = std::min(maxCoverage, coverageInfo[regionIndex]);
         sum += coverageInfo[regionIndex];
     }
-    averageCoverage = (double)sum/coverageInfo.size();
+    averageCoverage = (double)sum / coverageInfo.size();
 }
 
-CalcCoverageInfoTask::CalcCoverageInfoTask(const CalcCoverageInfoTaskSettings & settings_) :
-BackgroundTask<CoverageInfo>("Calculate assembly coverage", TaskFlag_None), settings(settings_)
-{
+CalcCoverageInfoTask::CalcCoverageInfoTask(const CalcCoverageInfoTaskSettings &settings_)
+    : BackgroundTask<CoverageInfo>("Calculate assembly coverage", TaskFlag_None), settings(settings_) {
     tpm = Progress_Manual;
 }
 
 void CalcCoverageInfoTask::run() {
-
     U2AssemblyCoverageStat cachedCoverageStat;
     {
         cachedCoverageStat = settings.model->getCoverageStat(stateInfo);
-        if(stateInfo.isCoR()) {
+        if (stateInfo.isCoR()) {
             return;
         }
     }
@@ -64,36 +62,36 @@ void CalcCoverageInfoTask::run() {
     {
         U2OpStatusImpl status;
         modelLength = settings.model->getModelLength(status);
-        if(status.hasError()) {
+        if (status.hasError()) {
             stateInfo.setError(status.getError());
             return;
         }
     }
-    double basesPerRegion = (double)settings.visibleRange.length/settings.regions;
-    double coverageStatBasesPerRegion = (double)modelLength/cachedCoverageStat.size();
+    double basesPerRegion = (double)settings.visibleRange.length / settings.regions;
+    double coverageStatBasesPerRegion = (double)modelLength / cachedCoverageStat.size();
 
     result.coverageInfo.resize(settings.regions);
     result.region = settings.visibleRange;
 
-    if(cachedCoverageStat.isEmpty() || (coverageStatBasesPerRegion > basesPerRegion)) {
+    if (cachedCoverageStat.isEmpty() || (coverageStatBasesPerRegion > basesPerRegion)) {
         U2AssemblyCoverageStat coverageStat;
         coverageStat.resize(settings.regions);
         {
             settings.model->calculateCoverageStat(settings.visibleRange, coverageStat, stateInfo);
-            if(stateInfo.isCoR()) {
+            if (stateInfo.isCoR()) {
                 return;
             }
         }
         assert(coverageStat.size() == settings.regions);
-        for(int regionIndex = 0;regionIndex < settings.regions;regionIndex++) {
+        for (int regionIndex = 0; regionIndex < settings.regions; regionIndex++) {
             result.coverageInfo[regionIndex] = coverageStat[regionIndex];
         }
     } else {
-        for(int regionIndex = 0;regionIndex < settings.regions;regionIndex++) {
-            int startPosition = qRound((settings.visibleRange.startPos + basesPerRegion*regionIndex)/coverageStatBasesPerRegion);
-            int endPosition = qRound((settings.visibleRange.startPos + basesPerRegion*(regionIndex + 1))/coverageStatBasesPerRegion);
+        for (int regionIndex = 0; regionIndex < settings.regions; regionIndex++) {
+            int startPosition = qRound((settings.visibleRange.startPos + basesPerRegion * regionIndex) / coverageStatBasesPerRegion);
+            int endPosition = qRound((settings.visibleRange.startPos + basesPerRegion * (regionIndex + 1)) / coverageStatBasesPerRegion);
             result.coverageInfo[regionIndex] = 0;
-            for(int i = startPosition;i < endPosition;i++) {
+            for (int i = startPosition; i < endPosition; i++) {
                 result.coverageInfo[regionIndex] = std::max(result.coverageInfo[regionIndex], cachedCoverageStat[i]);
             }
         }
@@ -101,4 +99,4 @@ void CalcCoverageInfoTask::run() {
     result.updateStats();
 }
 
-}
+}    // namespace U2

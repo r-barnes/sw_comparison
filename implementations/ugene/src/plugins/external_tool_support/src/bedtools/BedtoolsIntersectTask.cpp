@@ -20,7 +20,10 @@
  */
 
 #include "BedtoolsIntersectTask.h"
-#include "BedtoolsSupport.h"
+
+#include <QDir>
+#include <QFileInfo>
+#include <QTemporaryFile>
 
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
@@ -37,20 +40,18 @@
 
 #include <U2Lang/DbiDataStorage.h>
 
-#include <QDir>
-#include <QFileInfo>
-#include <QTemporaryFile>
+#include "BedtoolsSupport.h"
 
 namespace U2 {
 
-double const BedtoolsIntersectSettings::DEFAULT_MIN_OVERLAP=1E-9;
+double const BedtoolsIntersectSettings::DEFAULT_MIN_OVERLAP = 1E-9;
 
 //////////////////////////////////////////////////////////////////////////
 //BedtoolIntersectTask
 BedtoolsIntersectLogParser::BedtoolsIntersectLogParser(const QString &resultFile)
     : ExternalToolLogParser() {
     result.setFileName(resultFile);
-    SAFE_POINT( result.open(QIODevice::WriteOnly), "Output file open error", );
+    SAFE_POINT(result.open(QIODevice::WriteOnly), "Output file open error", );
     result.close();
 }
 
@@ -62,8 +63,8 @@ void BedtoolsIntersectLogParser::parseOutput(const QString &partOfLog) {
 
 BedtoolsIntersectTask::BedtoolsIntersectTask(const BedtoolsIntersectFilesSettings &settings)
     : ExternalToolSupportTask(tr("BedtoolsIntersect task"), TaskFlags_NR_FOSE_COSC),
-      settings(settings)
-{}
+      settings(settings) {
+}
 
 void BedtoolsIntersectTask::prepare() {
     CHECK_EXT(!settings.inputA.isEmpty(), setError(tr("No input A URL")), );
@@ -72,13 +73,13 @@ void BedtoolsIntersectTask::prepare() {
 
     for (int i = 0; i < settings.inputB.size(); i++) {
         settings.inputB[i] = QFileInfo(settings.inputB[i]).absoluteFilePath();
-        if (settings.inputB.size() != 1 && i != settings.inputB.size() - 1){
+        if (settings.inputB.size() != 1 && i != settings.inputB.size() - 1) {
             settings.inputB[i] += ",";
         }
     }
 
     const QStringList args = getParameters();
-    ExternalToolRunTask* etTask = new ExternalToolRunTask(BedtoolsSupport::ET_BEDTOOLS_ID, args, new BedtoolsIntersectLogParser(settings.out));
+    ExternalToolRunTask *etTask = new ExternalToolRunTask(BedtoolsSupport::ET_BEDTOOLS_ID, args, new BedtoolsIntersectLogParser(settings.out));
     setListenerForTask(etTask);
     addSubTask(etTask);
 }
@@ -116,11 +117,11 @@ BedtoolsIntersectAnnotationsByEntityTask::BedtoolsIntersectAnnotationsByEntityTa
       settings(settings),
       saveAnnotationsTask(NULL),
       intersectTask(NULL),
-      loadResultTask(NULL)
-{}
+      loadResultTask(NULL) {
+}
 
 void BedtoolsIntersectAnnotationsByEntityTask::prepare() {
-    QList<Document*> docs;
+    QList<Document *> docs;
 
     const QString tmpDir = AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath("intersect_annotations") + QDir::separator();
     QDir().mkpath(tmpDir);
@@ -137,10 +138,10 @@ void BedtoolsIntersectAnnotationsByEntityTask::prepare() {
         tmpUrlB = b->fileName();
         b->close();
 
-        Document* docA = createAnnotationsDocument(tmpUrlA, settings.entitiesA);
+        Document *docA = createAnnotationsDocument(tmpUrlA, settings.entitiesA);
         CHECK(docA != NULL, );
 
-        Document* docB = createAnnotationsDocument(tmpUrlB, settings.entitiesB);
+        Document *docB = createAnnotationsDocument(tmpUrlB, settings.entitiesB);
         CHECK(docB != NULL, );
 
         docs << docA << docB;
@@ -150,57 +151,54 @@ void BedtoolsIntersectAnnotationsByEntityTask::prepare() {
     addSubTask(saveAnnotationsTask);
 }
 
-QList<Task*> BedtoolsIntersectAnnotationsByEntityTask::onSubTaskFinished(Task *subTask) {
-    QList<Task*> res;
+QList<Task *> BedtoolsIntersectAnnotationsByEntityTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> res;
 
     const QString tmpDir = AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath("intersect_annotations") + QDir::separator();
 
     if (subTask == saveAnnotationsTask) {
-        QTemporaryFile* outputFile = new QTemporaryFile(tmpDir + "Intersect-XXXXXX.gff", this);
+        QTemporaryFile *outputFile = new QTemporaryFile(tmpDir + "Intersect-XXXXXX.gff", this);
         outputFile->open();
         tmpUrlResult = outputFile->fileName();
         outputFile->close();
 
-        BedtoolsIntersectFilesSettings stngs(tmpUrlA, QStringList() << tmpUrlB, tmpUrlResult,
-                                             settings.minOverlap,
-                                             settings.unique,
-                                             settings.report);
+        BedtoolsIntersectFilesSettings stngs(tmpUrlA, QStringList() << tmpUrlB, tmpUrlResult, settings.minOverlap, settings.unique, settings.report);
         intersectTask = new BedtoolsIntersectTask(stngs);
         intersectTask->addListeners(getListeners());
         res << intersectTask;
     }
 
     if (subTask == intersectTask) {
-        IOAdapterFactory* ioFactory = IOAdapterUtils::get(BaseIOAdapters::LOCAL_FILE);
+        IOAdapterFactory *ioFactory = IOAdapterUtils::get(BaseIOAdapters::LOCAL_FILE);
         CHECK_EXT(ioFactory != NULL, setError(tr("Failed to get IOAdapterFactory")), res);
 
         loadResultTask = new LoadDocumentTask(BaseDocumentFormats::GFF, GUrl(tmpUrlResult), ioFactory);
         res << loadResultTask;
     }
     if (subTask == loadResultTask) {
-        Document* resultDoc = loadResultTask->getDocument();
+        Document *resultDoc = loadResultTask->getDocument();
         CHECK_EXT(resultDoc != NULL, setError(tr("Result document is NULL")), res);
         result = resultDoc->findGObjectByType(GObjectTypes::ANNOTATION_TABLE);
     }
     return res;
 }
 
-Document* BedtoolsIntersectAnnotationsByEntityTask::createAnnotationsDocument(const QString &url, const QList<U2EntityRef> &entities) {
+Document *BedtoolsIntersectAnnotationsByEntityTask::createAnnotationsDocument(const QString &url, const QList<U2EntityRef> &entities) {
     CHECK(!entities.isEmpty(), NULL);
 
-    DocumentFormat* bed = BaseDocumentFormats::get(BaseDocumentFormats::GFF);
+    DocumentFormat *bed = BaseDocumentFormats::get(BaseDocumentFormats::GFF);
     CHECK_EXT(bed != NULL, setError(tr("Failed to get BED format")), NULL);
 
-    IOAdapterFactory* ioFactory = IOAdapterUtils::get(BaseIOAdapters::LOCAL_FILE);
+    IOAdapterFactory *ioFactory = IOAdapterUtils::get(BaseIOAdapters::LOCAL_FILE);
     CHECK_EXT(ioFactory != NULL, setError(tr("Failed to get IOAdapterFactory")), NULL);
 
     U2OpStatusImpl os;
-    Document* doc = new Document(bed, ioFactory, GUrl(url), AppContext::getDbiRegistry()->getSessionTmpDbiRef(os));
+    Document *doc = new Document(bed, ioFactory, GUrl(url), AppContext::getDbiRegistry()->getSessionTmpDbiRef(os));
     CHECK_OP(os, NULL);
 
-    foreach (const U2EntityRef& enRef, entities) {
+    foreach (const U2EntityRef &enRef, entities) {
         U2AnnotationTable t = U2FeatureUtils::getAnnotationTable(enRef, os);
-        AnnotationTableObject* table = new AnnotationTableObject(t.visualName, enRef);
+        AnnotationTableObject *table = new AnnotationTableObject(t.visualName, enRef);
         doc->setLoaded(true);
         doc->addObject(table);
     }
@@ -208,4 +206,4 @@ Document* BedtoolsIntersectAnnotationsByEntityTask::createAnnotationsDocument(co
     return doc;
 }
 
-} // namespace
+}    // namespace U2

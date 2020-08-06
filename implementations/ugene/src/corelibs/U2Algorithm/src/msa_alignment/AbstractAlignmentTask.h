@@ -22,42 +22,38 @@
 #ifndef _U2_ABSTRACT_ALIGNMENT_TASK_H_
 #define _U2_ABSTRACT_ALIGNMENT_TASK_H_
 
-#include <U2Core/global.h>
-#include <U2Core/U2Type.h>
-#include <U2Core/Task.h>
-#include <U2Core/GUrl.h>
-#include <U2Core/U2Alphabet.h>
-
 #include <QByteArray>
 #include <QString>
 #include <QVariantMap>
 
 #include <U2Core/DNASequence.h>
+#include <U2Core/GUrl.h>
+#include <U2Core/Task.h>
+#include <U2Core/U2Alphabet.h>
+#include <U2Core/U2Type.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
 class U2ALGORITHM_EXPORT AbstractAlignmentTaskSettings {
 public:
     AbstractAlignmentTaskSettings();
-    AbstractAlignmentTaskSettings(const QVariantMap& someSettings);
+    AbstractAlignmentTaskSettings(const QVariantMap &someSettings);
     AbstractAlignmentTaskSettings(const AbstractAlignmentTaskSettings &s);
     virtual ~AbstractAlignmentTaskSettings();
 
-    void setCustomSettings(const QVariantMap& settings);
-    void appendCustomSettings(const QVariantMap& settings);
-    QVariant getCustomValue(const QString& optionName, const QVariant& defaultVal) const;
-    void setCustomValue(const QString& optionName, const QVariant& val);
+    void appendCustomSettings(const QVariantMap &settings);
+    QVariant getCustomValue(const QString &optionName, const QVariant &defaultVal) const;
+    void setCustomValue(const QString &optionName, const QVariant &val);
     virtual bool convertCustomSettings();
-    bool containsValue(const QString& optionName) const;
-    void setResultFileName(const QString& newFileName);
     virtual bool isValid() const;
 
     QString algorithmName;
     QString realizationName;
     bool inNewWindow;
-    U2EntityRef msaRef;                     //couldn't be in customSettings. Set manually.
-    U2AlphabetId alphabet;                  //couldn't be in customSettings. Set manually.
-    GUrl resultFileName;                    //could be in customSettings as a string only.
+    U2EntityRef msaRef;    //couldn't be in customSettings. Set manually.
+    U2AlphabetId alphabet;    //couldn't be in customSettings. Set manually.
+    GUrl resultFileName;    //could be in customSettings as a string only.
 
     static const QString RESULT_FILE_NAME;
     static const QString ALGORITHM_NAME;
@@ -73,16 +69,15 @@ class U2ALGORITHM_EXPORT AbstractAlignmentTask : public Task {
     Q_OBJECT
 
 public:
-    AbstractAlignmentTask(const QString& taskName, TaskFlags flags);
+    AbstractAlignmentTask(const QString &taskName, TaskFlags flags);
 };
 
 class U2ALGORITHM_EXPORT AbstractAlignmentTaskFactory {
 public:
-    virtual AbstractAlignmentTask* getTaskInstance(AbstractAlignmentTaskSettings* settings) const = 0;
+    virtual AbstractAlignmentTask *getTaskInstance(AbstractAlignmentTaskSettings *settings) const = 0;
     virtual ~AbstractAlignmentTaskFactory();
-
 };
 
-}   //namespace
+}    // namespace U2
 
-#endif // _U2_ABSTRACT_ALIGNMENT_TASK_H_
+#endif    // _U2_ABSTRACT_ALIGNMENT_TASK_H_

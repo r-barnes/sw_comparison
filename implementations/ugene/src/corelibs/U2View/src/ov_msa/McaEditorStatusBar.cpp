@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "McaEditorStatusBar.h"
+
 #include <QHBoxLayout>
 
 #include <U2Core/DNASequenceSelection.h>
@@ -30,22 +32,21 @@
 #include "McaEditor.h"
 #include "McaEditorNameList.h"
 #include "McaEditorReferenceArea.h"
-#include "McaEditorStatusBar.h"
 #include "McaReferenceCharController.h"
 #include "view_rendering/MaEditorSelection.h"
 #include "view_rendering/MaEditorSequenceArea.h"
 
 namespace U2 {
 
-McaEditorStatusBar::McaEditorStatusBar(MultipleAlignmentObject* mobj,
-                                       MaEditorSequenceArea* seqArea,
-                                       McaEditorNameList* nameList,
-                                       McaReferenceCharController* refCharController)
+McaEditorStatusBar::McaEditorStatusBar(MultipleAlignmentObject *mobj,
+                                       MaEditorSequenceArea *seqArea,
+                                       McaEditorNameList *nameList,
+                                       McaReferenceCharController *refCharController)
     : MaEditorStatusBar(mobj, seqArea),
       refCharController(refCharController),
-      nameList(nameList)
-{
+      nameList(nameList) {
     setObjectName("mca_editor_status_bar");
+    setStatusBarStyle();
 
     colomnLabel->setPatterns(tr("RefPos %1 / %2"),
                              tr("Reference position %1 of %2"));
@@ -71,9 +72,9 @@ void McaEditorStatusBar::updateLabels() {
     updateLineLabel();
     updatePositionLabel();
 
-    McaEditor* editor = qobject_cast<McaEditor*>(seqArea->getEditor());
+    McaEditor *editor = qobject_cast<McaEditor *>(seqArea->getEditor());
     SAFE_POINT(editor->getReferenceContext() != NULL, "Reference context is NULL", );
-    DNASequenceSelection* selection = editor->getReferenceContext()->getSequenceSelection();
+    DNASequenceSelection *selection = editor->getReferenceContext()->getSequenceSelection();
     SAFE_POINT(selection != NULL, "Reference selection is NULL", );
 
     QString ungappedRefLen = QString::number(refCharController->getUngappedLength());
@@ -109,4 +110,4 @@ void McaEditorStatusBar::updatePositionLabel() {
     positionLabel->updateMinWidth(QString::number(aliObj->getLength()));
 }
 
-} // namespace
+}    // namespace U2

@@ -22,10 +22,10 @@
 #ifndef _U2_WORKFLOW_URL_H_
 #define _U2_WORKFLOW_URL_H_
 
+#include <QAction>
 #include <QComboBox>
 #include <QCoreApplication>
 #include <QDialog>
-#include <QAction>
 #include <QHBoxLayout>
 #include <QKeyEvent>
 #include <QLineEdit>
@@ -53,24 +53,39 @@ namespace U2 {
 class U2DESIGNER_EXPORT DelegateEditor : public ConfigurationEditor {
     Q_OBJECT
 public:
-    DelegateEditor(const QMap<QString, PropertyDelegate*>& map) : delegates(map) {}
-    DelegateEditor(const QString& s, PropertyDelegate* d) {delegates.insert(s,d);}
+    DelegateEditor(const QMap<QString, PropertyDelegate *> &map)
+        : delegates(map) {
+    }
+    DelegateEditor(const QString &s, PropertyDelegate *d) {
+        delegates.insert(s, d);
+    }
     DelegateEditor(const DelegateEditor &other);
-    virtual ~DelegateEditor() {qDeleteAll(delegates.values());}
-    virtual PropertyDelegate* getDelegate(const QString& name) {return delegates.value(name);}
-    virtual PropertyDelegate* removeDelegate( const QString & name ) {return delegates.take( name );}
+    virtual ~DelegateEditor() {
+        qDeleteAll(delegates.values());
+    }
+    virtual PropertyDelegate *getDelegate(const QString &name) {
+        return delegates.value(name);
+    }
+    virtual PropertyDelegate *removeDelegate(const QString &name) {
+        return delegates.take(name);
+    }
     virtual void updateDelegates();
-    virtual void updateDelegate( const QString & name );
-    virtual void addDelegate( PropertyDelegate * del, const QString & name ) { delegates.insert( name, del ); }
-    virtual void commit() {}
-    virtual ConfigurationEditor *clone() {return new DelegateEditor(*this);}
+    virtual void updateDelegate(const QString &name);
+    virtual void addDelegate(PropertyDelegate *del, const QString &name) {
+        delegates.insert(name, del);
+    }
+    virtual void commit() {
+    }
+    virtual ConfigurationEditor *clone() {
+        return new DelegateEditor(*this);
+    }
 
 protected:
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
 
 private:
-    DelegateEditor& operator = (const DelegateEditor&);
-}; // DelegateEditor
+    DelegateEditor &operator=(const DelegateEditor &);
+};    // DelegateEditor
 
 /**
  * filter - a file filter string in the format for QFileDialog.
@@ -86,18 +101,18 @@ class U2DESIGNER_EXPORT URLDelegate : public PropertyDelegate {
 public:
     enum Option {
         None = 0,
-        AllowSelectSeveralFiles = 1 << 0,            // allows to select several files. Ignored, if AllowSelectOnlyExistingDir is set.
-        AllowSelectOnlyExistingDir = 1 << 1,         // allows to select only existing directory. Otherwise, files can be selected (existing or not).
-        SelectFileToSave = 1 << 2,                   // allows to select file to save. File can be existing or not. Ignored, if AllowSelectOnlyExistingDir or AllowSelectSeveralFiles is set.
-        SelectParentDirInsteadSelectedFile = 1 << 3, // user can select files, but the directory will be committed as the selected item. It is not possible to select the directory in this mode, AllowSelectOnlyExistingDir flag is ignored.
-        DoNotUseWorkflowOutputFolder = 1 << 4        // do not offer to save file to the workflow output folder, show the default save dialog. Only if SelectFileToSave flag is set.
+        AllowSelectSeveralFiles = 1 << 0,    // allows to select several files. Ignored, if AllowSelectOnlyExistingDir is set.
+        AllowSelectOnlyExistingDir = 1 << 1,    // allows to select only existing directory. Otherwise, files can be selected (existing or not).
+        SelectFileToSave = 1 << 2,    // allows to select file to save. File can be existing or not. Ignored, if AllowSelectOnlyExistingDir or AllowSelectSeveralFiles is set.
+        SelectParentDirInsteadSelectedFile = 1 << 3,    // user can select files, but the directory will be committed as the selected item. It is not possible to select the directory in this mode, AllowSelectOnlyExistingDir flag is ignored.
+        DoNotUseWorkflowOutputFolder = 1 << 4    // do not offer to save file to the workflow output folder, show the default save dialog. Only if SelectFileToSave flag is set.
     };
     Q_DECLARE_FLAGS(Options, Option)
 
-    URLDelegate(const QString& filter, const QString &type, const Options &options, QObject *parent = nullptr, const QString &format = "");
-    URLDelegate(const DelegateTags& tags, const QString &type, const Options &options, QObject *parent = nullptr);
-    URLDelegate(const QString& filter, const QString& type, bool multi = false, bool isPath = false, bool saveFile = true, QObject *parent = nullptr, const QString &format = "", bool noFilesMode = false, bool doNotUseWorkflowOutputFolder = false);
-    URLDelegate(const DelegateTags& tags, const QString& type, bool multi = false, bool isPath = false, bool saveFile = true, QObject *parent = nullptr, bool noFilesMode = false, bool doNotUseWorkflowOutputFolder = false);
+    URLDelegate(const QString &filter, const QString &type, const Options &options, QObject *parent = nullptr, const QString &format = "");
+    URLDelegate(const DelegateTags &tags, const QString &type, const Options &options, QObject *parent = nullptr);
+    URLDelegate(const QString &filter, const QString &type, bool multi = false, bool isPath = false, bool saveFile = true, QObject *parent = nullptr, const QString &format = "", bool noFilesMode = false, bool doNotUseWorkflowOutputFolder = false);
+    URLDelegate(const DelegateTags &tags, const QString &type, bool multi = false, bool isPath = false, bool saveFile = true, QObject *parent = nullptr, bool noFilesMode = false, bool doNotUseWorkflowOutputFolder = false);
 
     QVariant getDisplayValue(const QVariant &v) const;
 
@@ -114,7 +129,7 @@ private slots:
     void sl_commit();
 
 private:
-    URLWidget * createWidget(QWidget *parent) const;
+    URLWidget *createWidget(QWidget *parent) const;
 
     QString lastDirType;
     Options options;
@@ -124,26 +139,26 @@ private:
 class U2DESIGNER_EXPORT SpinBoxDelegate : public PropertyDelegate {
     Q_OBJECT
 public:
-    SpinBoxDelegate(const QVariantMap& props = QVariantMap(), QObject *parent = 0) :
-      PropertyDelegate(parent), spinProperties(props), currentEditor(NULL) {}
-    virtual ~SpinBoxDelegate() {}
+    SpinBoxDelegate(const QVariantMap &props = QVariantMap(), QObject *parent = 0)
+        : PropertyDelegate(parent), spinProperties(props), currentEditor(NULL) {
+    }
+    virtual ~SpinBoxDelegate() {
+    }
 
-    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-        const QModelIndex &index) const;
-    virtual PropertyWidget * createWizardWidget(U2OpStatus &os, QWidget *parent) const;
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    virtual PropertyWidget *createWizardWidget(U2OpStatus &os, QWidget *parent) const;
 
     void setEditorData(QWidget *editor, const QModelIndex &index) const;
-    void setModelData(QWidget *editor, QAbstractItemModel *model,
-        const QModelIndex &index) const;
-    QVariant getDisplayValue(const QVariant&) const;
+    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
+    QVariant getDisplayValue(const QVariant &) const;
 
-    void setEditorProperty(const char* name, const QVariant& val);
+    void setEditorProperty(const char *name, const QVariant &val);
 
     virtual PropertyDelegate *clone() {
         return new SpinBoxDelegate(spinProperties, parent());
     }
 
-    void getItems( QVariantMap &items ) const;
+    void getItems(QVariantMap &items) const;
 
     QVariantMap getProperties() const;
 
@@ -151,6 +166,7 @@ signals:
     void si_valueChanged(int);
 private slots:
     void sl_commit();
+
 private:
     QVariantMap spinProperties;
     mutable QPointer<SpinBoxWidget> currentEditor;
@@ -159,28 +175,28 @@ private:
 class U2DESIGNER_EXPORT DoubleSpinBoxDelegate : public PropertyDelegate {
     Q_OBJECT
 public:
-    DoubleSpinBoxDelegate(const QVariantMap& props = QVariantMap(), QObject *parent = 0);
-    virtual ~DoubleSpinBoxDelegate() {}
+    DoubleSpinBoxDelegate(const QVariantMap &props = QVariantMap(), QObject *parent = 0);
+    virtual ~DoubleSpinBoxDelegate() {
+    }
 
-    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-          const QModelIndex &index) const;
-    virtual PropertyWidget * createWizardWidget(U2OpStatus &os, QWidget *parent) const;
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    virtual PropertyWidget *createWizardWidget(U2OpStatus &os, QWidget *parent) const;
 
     void setEditorData(QWidget *editor, const QModelIndex &index) const;
-    void setModelData(QWidget *editor, QAbstractItemModel *model,
-          const QModelIndex &index) const;
-    QVariant getDisplayValue(const QVariant&) const;
+    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
+    QVariant getDisplayValue(const QVariant &) const;
 
     virtual PropertyDelegate *clone() {
         return new DoubleSpinBoxDelegate(spinProperties, parent());
     }
 
-    void getItems(QVariantMap &items ) const;
+    void getItems(QVariantMap &items) const;
 
     static const int DEFAULT_DECIMALS_VALUE;
 
 private slots:
     void sl_commit();
+
 private:
     QVariantMap spinProperties;
 };
@@ -188,30 +204,29 @@ private:
 class U2DESIGNER_EXPORT ComboBoxDelegate : public PropertyDelegate {
     Q_OBJECT
 public:
-    ComboBoxDelegate(const QVariantMap& comboItems, QObject *parent = 0);    // items: visible name -> value
-    ComboBoxDelegate(const QList<ComboItem>& comboItems, QObject *parent = 0);    // items: visible name -> value
-    virtual ~ComboBoxDelegate() {}
+    ComboBoxDelegate(const QVariantMap &comboItems, QObject *parent = 0);    // items: visible name -> value
+    ComboBoxDelegate(const QList<ComboItem> &comboItems, QObject *parent = 0);    // items: visible name -> value
+    virtual ~ComboBoxDelegate() {
+    }
 
-      QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-          const QModelIndex &index) const;
-      virtual PropertyWidget * createWizardWidget(U2OpStatus &os, QWidget *parent) const;
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    virtual PropertyWidget *createWizardWidget(U2OpStatus &os, QWidget *parent) const;
 
-      void setEditorData(QWidget *editor, const QModelIndex &index) const;
-      void setModelData(QWidget *editor, QAbstractItemModel *model,
-          const QModelIndex &index) const;
-      QVariant getDisplayValue(const QVariant&) const;
+    void setEditorData(QWidget *editor, const QModelIndex &index) const;
+    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
+    QVariant getDisplayValue(const QVariant &) const;
 
-      virtual PropertyDelegate *clone() {
-          return new ComboBoxDelegate(comboItems, parent());
-      }
+    virtual PropertyDelegate *clone() {
+        return new ComboBoxDelegate(comboItems, parent());
+    }
 
-      void getItems( QVariantMap &items ) const;
+    void getItems(QVariantMap &items) const;
 
 protected:
-      QVariantMap getAvailableItems() const;
+    QVariantMap getAvailableItems() const;
 
 signals:
-    void si_valueChanged( const QString & newVal ) const;
+    void si_valueChanged(const QString &newVal) const;
 
 private slots:
     void sl_commit();
@@ -223,25 +238,26 @@ protected:
 class U2DESIGNER_EXPORT ComboBoxEditableDelegate : public PropertyDelegate {
     Q_OBJECT
 public:
-    ComboBoxEditableDelegate(const QVariantMap& items, QObject *parent = 0) : PropertyDelegate(parent), items(items) {}
-    virtual ~ComboBoxEditableDelegate() {}
+    ComboBoxEditableDelegate(const QVariantMap &items, QObject *parent = 0)
+        : PropertyDelegate(parent), items(items) {
+    }
+    virtual ~ComboBoxEditableDelegate() {
+    }
 
-    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-        const QModelIndex &index) const;
-    virtual PropertyWidget * createWizardWidget(U2OpStatus &os, QWidget *parent) const;
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    virtual PropertyWidget *createWizardWidget(U2OpStatus &os, QWidget *parent) const;
 
     void setEditorData(QWidget *editor, const QModelIndex &index) const;
-    void setModelData(QWidget *editor, QAbstractItemModel *model,
-        const QModelIndex &index) const;
+    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
 
-    QVariant getDisplayValue(const QVariant&) const;
+    QVariant getDisplayValue(const QVariant &) const;
 
     virtual PropertyDelegate *clone() {
         return new ComboBoxEditableDelegate(items, parent());
     }
 
 signals:
-    void si_valueChanged( const QString & newVal ) const;
+    void si_valueChanged(const QString &newVal) const;
 
 private slots:
     void sl_valueChanged(const QString &newVal);
@@ -250,28 +266,28 @@ protected:
     QVariantMap items;
 };
 
-
 class U2DESIGNER_EXPORT ComboBoxWithUrlsDelegate : public PropertyDelegate {
     Q_OBJECT
 public:
-    ComboBoxWithUrlsDelegate(const QVariantMap& items, bool _isPath = false, QObject *parent = 0) : PropertyDelegate(parent), items(items), isPath(_isPath) {}
-    virtual ~ComboBoxWithUrlsDelegate() {}
+    ComboBoxWithUrlsDelegate(const QVariantMap &items, bool _isPath = false, QObject *parent = 0)
+        : PropertyDelegate(parent), items(items), isPath(_isPath) {
+    }
+    virtual ~ComboBoxWithUrlsDelegate() {
+    }
 
-    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-        const QModelIndex &index) const;
-    virtual PropertyWidget * createWizardWidget(U2OpStatus &os, QWidget *parent) const;
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    virtual PropertyWidget *createWizardWidget(U2OpStatus &os, QWidget *parent) const;
 
     void setEditorData(QWidget *editor, const QModelIndex &index) const;
-    void setModelData(QWidget *editor, QAbstractItemModel *model,
-        const QModelIndex &index) const;
-    QVariant getDisplayValue(const QVariant&) const;
+    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
+    QVariant getDisplayValue(const QVariant &) const;
 
     virtual PropertyDelegate *clone() {
         return new ComboBoxWithUrlsDelegate(items, isPath, parent());
     }
 
 signals:
-    void si_valueChanged( const QString & newVal ) const;
+    void si_valueChanged(const QString &newVal) const;
 
 private slots:
     void sl_valueChanged(const QString &newVal);
@@ -287,11 +303,11 @@ public:
     ComboBoxWithDbUrlsDelegate(QObject *parent = NULL);
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    virtual PropertyWidget * createWizardWidget(U2OpStatus &os, QWidget *parent) const;
+    virtual PropertyWidget *createWizardWidget(U2OpStatus &os, QWidget *parent) const;
 
     void setEditorData(QWidget *editor, const QModelIndex &index) const;
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
-    QVariant getDisplayValue(const QVariant&) const;
+    QVariant getDisplayValue(const QVariant &) const;
 
     virtual PropertyDelegate *clone();
     virtual Type type() const;
@@ -306,35 +322,36 @@ private:
     QVariantMap items;
 };
 
-class U2DESIGNER_EXPORT ComboBoxWithChecksDelegate: public PropertyDelegate{
+class U2DESIGNER_EXPORT ComboBoxWithChecksDelegate : public PropertyDelegate {
     Q_OBJECT
 public:
-    ComboBoxWithChecksDelegate(const QVariantMap& items, QObject *parent = 0) : PropertyDelegate(parent), items(items){}
-    virtual ~ComboBoxWithChecksDelegate() {}
+    ComboBoxWithChecksDelegate(const QVariantMap &items, QObject *parent = 0)
+        : PropertyDelegate(parent), items(items) {
+    }
+    virtual ~ComboBoxWithChecksDelegate() {
+    }
 
-    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-        const QModelIndex &index) const;
-    virtual PropertyWidget * createWizardWidget(U2OpStatus &os, QWidget *parent) const;
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    virtual PropertyWidget *createWizardWidget(U2OpStatus &os, QWidget *parent) const;
 
     void setEditorData(QWidget *editor, const QModelIndex &index) const;
-    void setModelData(QWidget *editor, QAbstractItemModel *model,
-        const QModelIndex &index) const;
-    QVariant getDisplayValue(const QVariant&) const;
+    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
+    QVariant getDisplayValue(const QVariant &) const;
 
     virtual PropertyDelegate *clone() {
         return new ComboBoxWithChecksDelegate(items, parent());
     }
 
-    void getItems( QVariantMap &items ) const;
+    void getItems(QVariantMap &items) const;
 
 signals:
-    void si_valueChanged( const QString & newVal ) const;
+    void si_valueChanged(const QString &newVal) const;
 
 protected:
     QVariantMap items;
 };
 
-class U2DESIGNER_EXPORT ComboBoxWithBoolsDelegate: public ComboBoxDelegate {
+class U2DESIGNER_EXPORT ComboBoxWithBoolsDelegate : public ComboBoxDelegate {
     Q_OBJECT
 public:
     ComboBoxWithBoolsDelegate(QObject *parent = 0);
@@ -349,7 +366,8 @@ private:
 class U2DESIGNER_EXPORT FileModeDelegate : public ComboBoxDelegate {
 public:
     FileModeDelegate(bool appendSupported, QObject *parent = 0);
-    virtual ~FileModeDelegate() {}
+    virtual ~FileModeDelegate() {
+    }
 
     virtual PropertyDelegate *clone() {
         return new FileModeDelegate(3 == comboItems.size(), parent());
@@ -363,20 +381,21 @@ private:
     QString remoteComputerOption;
 
 public:
-    SchemaRunModeDelegate(QObject * parent = 0);
-    virtual ~SchemaRunModeDelegate() {}
+    SchemaRunModeDelegate(QObject *parent = 0);
+    virtual ~SchemaRunModeDelegate() {
+    }
 
     virtual PropertyDelegate *clone() {
         return new SchemaRunModeDelegate(parent());
     }
 
 public slots:
-    void sl_valueChanged( const QString & val );
+    void sl_valueChanged(const QString &val);
 
 signals:
-    void si_showOpenFileButton( bool show );
+    void si_showOpenFileButton(bool show);
 
-}; // SchemaRunModeDelegate
+};    // SchemaRunModeDelegate
 
 class ScriptSelectionWidget : public PropertyWidget {
     Q_OBJECT
@@ -388,7 +407,7 @@ public slots:
     void setValue(const QVariant &value);
 
 private slots:
-    void sl_comboActivated(int itemId);
+    void sl_comboCurrentIndexChanged(int itemId);
 
 signals:
     void si_finished();
@@ -406,7 +425,7 @@ public:
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     void setEditorData(QWidget *editor, const QModelIndex &index) const;
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
-    QVariant getDisplayValue(const QVariant&) const;
+    QVariant getDisplayValue(const QVariant &) const;
 
     static QString createScriptHeader(const AttributeScript &attrScript);
 
@@ -416,13 +435,15 @@ public:
 
 private slots:
     void sl_commit();
-}; // AttributeScriptDelegate
+};    // AttributeScriptDelegate
 
 class U2DESIGNER_EXPORT StingListEdit : public QLineEdit {
     Q_OBJECT
 
 public:
-    StingListEdit(QWidget *parent) : QLineEdit(parent) {}
+    StingListEdit(QWidget *parent)
+        : QLineEdit(parent) {
+    }
 
 protected:
     void focusOutEvent(QFocusEvent *event);
@@ -453,12 +474,14 @@ class U2DESIGNER_EXPORT StringListDelegate : public PropertyDelegate {
     Q_OBJECT
 
 public:
-    StringListDelegate(QObject *parent = 0) : PropertyDelegate(parent), currentEditor(NULL) {}
-    virtual ~StringListDelegate() {}
+    StringListDelegate(QObject *parent = 0)
+        : PropertyDelegate(parent), currentEditor(NULL) {
+    }
+    virtual ~StringListDelegate() {
+    }
 
-    virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-                                    const QModelIndex &index) const;
-    virtual PropertyWidget * createWizardWidget(U2OpStatus &os, QWidget *parent) const;
+    virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    virtual PropertyWidget *createWizardWidget(U2OpStatus &os, QWidget *parent) const;
 
     void setEditorData(QWidget *editor, const QModelIndex &index) const;
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
@@ -476,23 +499,23 @@ private:
 
 class SelectorDialogHandler {
 public:
-    virtual QDialog *createSelectorDialog(const QString& init) = 0;
+    virtual QDialog *createSelectorDialog(const QString &init) = 0;
     virtual QString getSelectedString(QDialog *dlg) = 0;
 };
 
-
-class U2DESIGNER_EXPORT StringSelectorDelegate: public PropertyDelegate {
+class U2DESIGNER_EXPORT StringSelectorDelegate : public PropertyDelegate {
     Q_OBJECT
 public:
-    StringSelectorDelegate(const QString& _initValue, SelectorDialogHandler *_f, QObject *o = NULL):
-        PropertyDelegate(o), valueEdit(NULL), currentEditor(NULL), initValue(_initValue), multipleSelection(false), f(_f) {}
-    virtual ~StringSelectorDelegate() {}
+    StringSelectorDelegate(const QString &_initValue, SelectorDialogHandler *_f, QObject *o = NULL)
+        : PropertyDelegate(o), valueEdit(NULL), currentEditor(NULL), initValue(_initValue), multipleSelection(false), f(_f) {
+    }
+    virtual ~StringSelectorDelegate() {
+    }
 
-    virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-        const QModelIndex &index) const;
+    virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
     void setEditorData(QWidget *editor, const QModelIndex &index) const;
-    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const ;
+    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
 
     virtual PropertyDelegate *clone() {
         return new StringSelectorDelegate(initValue, f, parent());
@@ -513,11 +536,14 @@ private:
 class U2DESIGNER_EXPORT CharacterDelegate : public PropertyDelegate {
     Q_OBJECT
 public:
-    CharacterDelegate(QObject *parent = 0) : PropertyDelegate(parent) {}
-    virtual ~CharacterDelegate() {}
+    CharacterDelegate(QObject *parent = 0)
+        : PropertyDelegate(parent) {
+    }
+    virtual ~CharacterDelegate() {
+    }
 
-    virtual QWidget * createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    virtual PropertyWidget * createWizardWidget(U2OpStatus &os, QWidget *parent) const;
+    virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    virtual PropertyWidget *createWizardWidget(U2OpStatus &os, QWidget *parent) const;
     virtual void setEditorData(QWidget *editor, const QModelIndex &index) const;
     virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
 
@@ -525,7 +551,7 @@ public:
         return new CharacterDelegate(parent());
     }
 
-}; // CharacterDelegate
+};    // CharacterDelegate
 
 class U2DESIGNER_EXPORT LineEditWithValidatorDelegate : public PropertyDelegate {
     Q_OBJECT
@@ -545,7 +571,7 @@ private:
     const QRegularExpression regExp;
 };
 
-}   // namespace U2
+}    // namespace U2
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(U2::URLDelegate::Options)
 

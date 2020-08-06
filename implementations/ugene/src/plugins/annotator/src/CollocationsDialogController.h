@@ -22,17 +22,18 @@
 #ifndef _U2_COLLOCATION_DIALOG_CONTROLLER_H_
 #define _U2_COLLOCATION_DIALOG_CONTROLLER_H_
 
-#include "CollocationsSearchAlgorithm.h"
-
 #include <ui_FindAnnotationCollocationsDialog.h>
+
+#include <QDialog>
+#include <QMutex>
+#include <QTimer>
+#include <QToolButton>
+
+#include <U2Core/AnnotationData.h>
 #include <U2Core/Task.h>
 #include <U2Core/U2Region.h>
-#include <U2Core/AnnotationData.h>
 
-#include <QTimer>
-#include <QMutex>
-#include <QDialog>
-#include <QToolButton>
+#include "CollocationsSearchAlgorithm.h"
 
 namespace U2 {
 
@@ -44,7 +45,7 @@ class CollocationSearchTask;
 class CollocationsDialogController : public QDialog, Ui_FindAnnotationCollocationsDialog {
     Q_OBJECT
 public:
-    CollocationsDialogController(QStringList names, ADVSequenceObjectContext* ctx);
+    CollocationsDialogController(QStringList names, ADVSequenceObjectContext *ctx);
 
 public slots:
     void reject();
@@ -55,9 +56,9 @@ private slots:
     void sl_plusClicked();
     void sl_minusClicked();
     void sl_addName();
-    void sl_onTaskFinished(Task*);
+    void sl_onTaskFinished(Task *);
     void sl_onTimer();
-    void sl_onResultActivated(QListWidgetItem * item );
+    void sl_onResultActivated(QListWidgetItem *item);
     void sl_clearClicked();
     void sl_saveClicked();
 
@@ -66,53 +67,51 @@ private:
     void updateStatus();
     void importResults();
 
-    QStringList                 allNames;
-    QSet<QString>               usedNames;
-    ADVSequenceObjectContext*   ctx;
-    QToolButton*                plusButton;
-    CollocationSearchTask*      task;
-    QTimer*                     timer;
-    QPushButton*                searchButton;
-    QPushButton*                cancelButton;
-
+    QStringList allNames;
+    QSet<QString> usedNames;
+    ADVSequenceObjectContext *ctx;
+    QToolButton *plusButton;
+    CollocationSearchTask *task;
+    QTimer *timer;
+    QPushButton *searchButton;
+    QPushButton *cancelButton;
 };
 
 class CDCResultItem : public QListWidgetItem {
 public:
-    CDCResultItem(const U2Region& _r);
+    CDCResultItem(const U2Region &_r);
     U2Region r;
 };
 
 //////////////////////////////////////////////////////////////////////////
 // task
 
-class CollocationSearchTask : public Task , public CollocationsAlgorithmListener{
+class CollocationSearchTask : public Task, public CollocationsAlgorithmListener {
     Q_OBJECT
 public:
-    CollocationSearchTask(const QList<AnnotationTableObject *> &table, const QSet<QString>& names, const CollocationsAlgorithmSettings& cfg);
-    CollocationSearchTask(const QList<SharedAnnotationData> &table, const QSet<QString>& names, const CollocationsAlgorithmSettings& cfg,
-        bool keepSourceAnns = false);
+    CollocationSearchTask(const QList<AnnotationTableObject *> &table, const QSet<QString> &names, const CollocationsAlgorithmSettings &cfg);
+    CollocationSearchTask(const QList<SharedAnnotationData> &table, const QSet<QString> &names, const CollocationsAlgorithmSettings &cfg, bool keepSourceAnns = false);
     void run();
 
     QVector<U2Region> popResults();
     QList<SharedAnnotationData> popResultAnnotations();
 
-    virtual void onResult(const U2Region& r);
+    virtual void onResult(const U2Region &r);
 
 private:
-    CollocationsAlgorithmItem& getItem(const QString& name);
+    CollocationsAlgorithmItem &getItem(const QString &name);
     bool isSuitableRegion(const U2Region &r, const QVector<U2Region> &resultRegions) const;
     U2Region cutResult(const U2Region &res) const;
 
     QMap<QString, CollocationsAlgorithmItem> items;
     CollocationsAlgorithmSettings cfg;
-    QVector<U2Region>  results;
-    QMutex          lock;
+    QVector<U2Region> results;
+    QMutex lock;
 
     const bool keepSourceAnns;
     QList<SharedAnnotationData> sourceAnns;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

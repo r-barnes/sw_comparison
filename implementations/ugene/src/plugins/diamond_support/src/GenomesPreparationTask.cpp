@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "GenomesPreparationTask.h"
+
 #include <U2Core/L10n.h>
 #include <U2Core/LoadDocumentTask.h>
 #include <U2Core/U2SafePoints.h>
@@ -26,15 +28,12 @@
 #include <U2Formats/StreamSequenceReader.h>
 #include <U2Formats/StreamSequenceWriter.h>
 
-#include "GenomesPreparationTask.h"
-
 namespace U2 {
 
 GenomesPreparationTask::GenomesPreparationTask(const QStringList &_genomesUrls, const QString &_preparedGenomesFileUrl)
     : Task(tr("Genomes preparation"), TaskFlag_None),
       genomesUrls(_genomesUrls),
-      preparedGenomesFileUrl(_preparedGenomesFileUrl)
-{
+      preparedGenomesFileUrl(_preparedGenomesFileUrl) {
     CHECK_EXT(genomesUrls.count() > 0, setError(tr("Genomes URLs are not set")), );
     CHECK_EXT(!preparedGenomesFileUrl.isEmpty(), setError(tr("File URL to write prepared genomes is empty")), );
 }
@@ -66,4 +65,4 @@ void GenomesPreparationTask::run() {
     }
 }
 
-}   // namespace U2
+}    // namespace U2

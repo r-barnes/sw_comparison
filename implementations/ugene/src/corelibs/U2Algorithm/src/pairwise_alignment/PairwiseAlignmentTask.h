@@ -22,8 +22,9 @@
 #ifndef _U2_PAIRWISE_ALIGNMENT_TASK_H_
 #define _U2_PAIRWISE_ALIGNMENT_TASK_H_
 
-#include "../msa_alignment/AbstractAlignmentTask.h"
 #include <U2Algorithm/AlignmentAlgorithmsRegistry.h>
+
+#include "../msa_alignment/AbstractAlignmentTask.h"
 
 namespace U2 {
 
@@ -33,13 +34,13 @@ class PairwiseAlignmentTask;
 class U2ALGORITHM_EXPORT PairwiseAlignmentTaskSettings : public AbstractAlignmentTaskSettings {
 public:
     PairwiseAlignmentTaskSettings();
-    PairwiseAlignmentTaskSettings(const QVariantMap& someSettings);
+    PairwiseAlignmentTaskSettings(const QVariantMap &someSettings);
     PairwiseAlignmentTaskSettings(const PairwiseAlignmentTaskSettings &s);
 
     virtual bool isValid() const;
 
-    U2EntityRef firstSequenceRef;           //couldn't be in customSettings. Set manually.
-    U2EntityRef secondSequenceRef;          //couldn't be in customSettings. Set manually.
+    U2EntityRef firstSequenceRef;    //couldn't be in customSettings. Set manually.
+    U2EntityRef secondSequenceRef;    //couldn't be in customSettings. Set manually.
 
     static const QString PA_FIRST_SEQUENCE_REF;
     static const QString PA_SECOND_SEQUENCE_REF;
@@ -56,6 +57,6 @@ protected:
     QByteArray first;
     QByteArray second;
 };
-}   //namespace
+}    // namespace U2
 
-#endif // _U2_PAIRWISE_ALIGNMENT_TASK_H_
+#endif    // _U2_PAIRWISE_ALIGNMENT_TASK_H_

@@ -33,8 +33,9 @@ class GenbankLocationValidator : public QValidator {
 public:
     GenbankLocationValidator(QPushButton *okButton, int length, bool isCircular, QLineEdit *le);
     ~GenbankLocationValidator();
-    
+
     State validate(QString &str, int &ii) const;
+
 private:
     State failValidate() const;
 
@@ -44,5 +45,5 @@ private:
     QLineEdit *le;
 };
 
-}//namespace
+}    // namespace U2
 #endif

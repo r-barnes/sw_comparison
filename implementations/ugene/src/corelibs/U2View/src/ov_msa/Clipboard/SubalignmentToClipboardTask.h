@@ -24,16 +24,16 @@
 
 #include <U2Algorithm/CreateSubalignmentTask.h>
 
-#include <U2Core/Task.h>
-#include <U2Core/GUrl.h>
-#include <U2Core/U2Region.h>
-#include <U2Core/MultipleSequenceAlignmentObject.h>
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentProviderTask.h>
+#include <U2Core/GUrl.h>
+#include <U2Core/MultipleSequenceAlignmentObject.h>
+#include <U2Core/Task.h>
+#include <U2Core/U2Region.h>
 
 #include <U2View/MSAEditor.h>
 
-namespace U2{
+namespace U2 {
 
 ////////////////////////////////////////////////////////////////////////////////
 class PrepareMsaClipboardDataTask : public Task {
@@ -58,11 +58,11 @@ public:
     void run();
 
 protected:
-    QList<Task*> onSubTaskFinished(Task* subTask);
-    CreateSubalignmentSettings defineSettings(const QStringList &names, const U2Region &window, const DocumentFormatId &formatId, U2OpStatus& os);
+    QList<Task *> onSubTaskFinished(Task *subTask);
+    CreateSubalignmentSettings defineSettings(const QStringList &names, const U2Region &window, const DocumentFormatId &formatId, U2OpStatus &os);
 
 private:
-    CreateSubalignmentTask* createSubalignmentTask;
+    CreateSubalignmentTask *createSubalignmentTask;
     MultipleSequenceAlignmentObject *msaObj;
     DocumentFormatId formatId;
 };
@@ -79,13 +79,12 @@ private:
 ////////////////////////////////////////////////////////////////////////////////
 class MsaClipboardDataTaskFactory {
 public:
-    static PrepareMsaClipboardDataTask * getInstance(MSAEditor *context, const QRect &selection, const DocumentFormatId &formatId);
+    static PrepareMsaClipboardDataTask *getInstance(MSAEditor *context, const QRect &selection, const DocumentFormatId &formatId);
 
 private:
     static U2Region getWindowBySelection(const QRect &selection);
     static QStringList getNamesBySelection(MaEditor *context, const QRect &selection);
 };
-
 
 ////////////////////////////////////////////////////////////////////////////////
 class SubalignmentToClipboardTask : public Task {
@@ -94,13 +93,13 @@ public:
     SubalignmentToClipboardTask(MSAEditor *context, const QRect &selection, const DocumentFormatId &formatId);
 
 protected:
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
 private:
     DocumentFormatId formatId;
     PrepareMsaClipboardDataTask *prepareDataTask;
 };
 
-}
+}    // namespace U2
 
 #endif

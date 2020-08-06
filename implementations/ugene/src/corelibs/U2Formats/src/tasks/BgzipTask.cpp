@@ -20,43 +20,48 @@
  */
 
 #include "BgzipTask.h"
-#include "bgzf.h"
+
+#include <QDir>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/IOAdapter.h>
 #include <U2Core/IOAdapterUtils.h>
 #include <U2Core/U2SafePoints.h>
-#include <QDir>
 
+#include "bgzf.h"
 
 namespace U2 {
 
 class BGZF_wrapper {
 public:
-    BGZF_wrapper(BGZF *adapter) : adapter(adapter) {}
-    ~BGZF_wrapper(){ bgzf_close(adapter); }
+    BGZF_wrapper(BGZF *adapter)
+        : adapter(adapter) {
+    }
+    ~BGZF_wrapper() {
+        bgzf_close(adapter);
+    }
+
 private:
     BGZF *adapter;
 };
 
-BgzipTask::BgzipTask(const GUrl& fileUrl, const GUrl& bgzfUrl)
+BgzipTask::BgzipTask(const GUrl &fileUrl, const GUrl &bgzfUrl)
     : Task(tr("Bgzip Compression task"), TaskFlag_ReportingIsSupported | TaskFlag_ReportingIsEnabled),
       fileUrl(fileUrl),
-      bgzfUrl(bgzfUrl)
-{
+      bgzfUrl(bgzfUrl) {
 }
 
 void BgzipTask::run() {
     taskLog.details(tr("Start bgzip compression '%1'").arg(fileUrl.getURLString()));
 
     SAFE_POINT_EXT(AppContext::getIOAdapterRegistry() != NULL, setError(tr("IOAdapterRegistry is NULL!")), );
-    IOAdapterFactory* ioFactory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
+    IOAdapterFactory *ioFactory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
 
     SAFE_POINT_EXT(ioFactory != NULL, setError(tr("IOAdapterFactory is NULL!")), );
     QScopedPointer<IOAdapter> in(ioFactory->createIOAdapter());
     SAFE_POINT_EXT(!in.isNull(), setError(tr("Can not create IOAdapter!")), );
 
-    bool res = in->open( fileUrl, IOAdapterMode_Read);
+    bool res = in->open(fileUrl, IOAdapterMode_Read);
     if (!res) {
         Task::setError(tr("Can not open input file '%1'").arg(fileUrl.getURLString()));
         return;
@@ -65,7 +70,7 @@ void BgzipTask::run() {
         bgzfUrl = GUrl(fileUrl.getURLString() + ".gz");
     }
 
-    BGZF* out = bgzf_open( bgzfUrl.getURLString().toLatin1().data(), "w");
+    BGZF *out = bgzf_open(bgzfUrl.getURLString().toLatin1().data(), "w");
     BGZF_wrapper out_wr(out);
     if (out == NULL) {
         Task::setError(tr("Can not open output file '%2'").arg(bgzfUrl.getURLString()));
@@ -74,10 +79,10 @@ void BgzipTask::run() {
 
     const int BUFFER_SIZE = 2097152;
     QByteArray readBuffer(BUFFER_SIZE, '\0');
-    char* buffer = readBuffer.data();
+    char *buffer = readBuffer.data();
 
-    while ( !in->isEof() ) {
-        if ( isCanceled() ) {
+    while (!in->isEof()) {
+        if (isCanceled()) {
             return;
         }
         int len = in->readBlock(buffer, BUFFER_SIZE);
@@ -91,7 +96,7 @@ void BgzipTask::run() {
             return;
         }
 
-        stateInfo.setProgress( in->getProgress() );
+        stateInfo.setProgress(in->getProgress());
     }
 
     taskLog.details(tr("Bgzip compression finished"));
@@ -116,11 +121,10 @@ bool BgzipTask::checkBgzf(const GUrl &fileUrl) {
     return bgzf_check_bgzf(fileUrl.getURLString().toLatin1().constData());
 }
 
-GzipDecompressTask::GzipDecompressTask(const GUrl& zipUrl, const GUrl& fileUrl)
+GzipDecompressTask::GzipDecompressTask(const GUrl &zipUrl, const GUrl &fileUrl)
     : Task(tr("Decompression task"), TaskFlag_ReportingIsSupported | TaskFlag_ReportingIsEnabled),
       zippedUrl(zipUrl),
-      unzippedUrl(fileUrl)
-{
+      unzippedUrl(fileUrl) {
     if (!checkZipped(zippedUrl)) {
         setError(tr("'%1' is not zipped file").arg(zippedUrl.getURLString()));
     }
@@ -131,9 +135,9 @@ void GzipDecompressTask::run() {
 
     SAFE_POINT_EXT(AppContext::getIOAdapterRegistry() != NULL, setError(tr("IOAdapterRegistry is NULL!")), );
 
-    IOAdapterFactory* inFactory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::GZIPPED_LOCAL_FILE);
+    IOAdapterFactory *inFactory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::GZIPPED_LOCAL_FILE);
     SAFE_POINT_EXT(inFactory != NULL, setError(tr("IOAdapterFactory is NULL!")), );
-    IOAdapterFactory* outFactory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
+    IOAdapterFactory *outFactory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
     SAFE_POINT_EXT(outFactory != NULL, setError(tr("IOAdapterFactory is NULL!")), );
 
     QScopedPointer<IOAdapter> in(inFactory->createIOAdapter());
@@ -150,13 +154,13 @@ void GzipDecompressTask::run() {
         unzippedUrl = GUrl(unzippedUrlString);
     }
 
-    bool res = out->open( unzippedUrl, IOAdapterMode_Write);
+    bool res = out->open(unzippedUrl, IOAdapterMode_Write);
     if (!res) {
         Task::setError(tr("Can not open output file '%1'").arg(unzippedUrl.getURLString()));
         return;
     }
 
-    res = in->open( zippedUrl, IOAdapterMode_Read);
+    res = in->open(zippedUrl, IOAdapterMode_Read);
     if (!res) {
         Task::setError(tr("Can not open input file '%1'").arg(zippedUrl.getURLString()));
         return;
@@ -164,10 +168,10 @@ void GzipDecompressTask::run() {
 
     const int BUFFER_SIZE = 2097152;
     QByteArray readBuffer(BUFFER_SIZE, '\0');
-    char* buffer = readBuffer.data();
+    char *buffer = readBuffer.data();
 
     do {
-        if ( isCanceled() ) {
+        if (isCanceled()) {
             return;
         }
 
@@ -182,7 +186,7 @@ void GzipDecompressTask::run() {
             stateInfo.setError(tr("Error writing to file"));
             return;
         }
-    } while ( !in->isEof() );
+    } while (!in->isEof());
 
     taskLog.details(tr("Decompression finished"));
 }
@@ -203,7 +207,7 @@ Task::ReportResult GzipDecompressTask::report() {
 }
 
 bool GzipDecompressTask::checkZipped(const GUrl &fileUrl) {
-    return (IOAdapterUtils::url2io( fileUrl ) == BaseIOAdapters::GZIPPED_LOCAL_FILE);
+    return (IOAdapterUtils::url2io(fileUrl) == BaseIOAdapters::GZIPPED_LOCAL_FILE);
 }
 
-} // namespace
+}    // namespace U2

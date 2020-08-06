@@ -28,8 +28,8 @@
 
 namespace U2 {
 
-typedef QMap<QString, QQueue<QString> > WorkflowInvestigationData;
+typedef QMap<QString, QQueue<QString>> WorkflowInvestigationData;
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_WORKFLOW_INVESTIGATION_DATA_H_
+#endif    // _U2_WORKFLOW_INVESTIGATION_DATA_H_

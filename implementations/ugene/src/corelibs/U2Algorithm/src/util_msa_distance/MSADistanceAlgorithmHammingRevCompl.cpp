@@ -28,15 +28,11 @@
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-
 namespace U2 {
 
-MSADistanceAlgorithmFactoryHammingRevCompl::MSADistanceAlgorithmFactoryHammingRevCompl(QObject* p)
-: MSADistanceAlgorithmFactory(BuiltInDistanceAlgorithms::HAMMING_REVCOMPL_ALGO, DistanceAlgorithmFlag_Nucleic, p)
-{
-
+MSADistanceAlgorithmFactoryHammingRevCompl::MSADistanceAlgorithmFactoryHammingRevCompl(QObject *p)
+    : MSADistanceAlgorithmFactory(BuiltInDistanceAlgorithms::HAMMING_REVCOMPL_ALGO, DistanceAlgorithmFlag_Nucleic, p) {
 }
-
 
 QString MSADistanceAlgorithmFactoryHammingRevCompl::getDescription() const {
     return tr("Based on Hamming distance between two sequences");
@@ -46,8 +42,7 @@ QString MSADistanceAlgorithmFactoryHammingRevCompl::getName() const {
     return tr("Hamming reverse-complement");
 }
 
-
-MSADistanceAlgorithm* MSADistanceAlgorithmFactoryHammingRevCompl::createAlgorithm(const MultipleSequenceAlignment& ma, QObject* ) {
+MSADistanceAlgorithm *MSADistanceAlgorithmFactoryHammingRevCompl::createAlgorithm(const MultipleSequenceAlignment &ma, QObject *) {
     return new MSADistanceAlgorithmHammingRevCompl(this, ma);
 }
 
@@ -55,11 +50,11 @@ MSADistanceAlgorithm* MSADistanceAlgorithmFactoryHammingRevCompl::createAlgorith
 // Algorithm
 
 void MSADistanceAlgorithmHammingRevCompl::run() {
-    DNATranslation* compTT = AppContext::getDNATranslationRegistry()->lookupComplementTranslation(ma->getAlphabet());
+    DNATranslation *compTT = AppContext::getDNATranslationRegistry()->lookupComplementTranslation(ma->getAlphabet());
 
-    assert (compTT != NULL);
+    assert(compTT != NULL);
 
-    DNATranslation* trans = compTT ;
+    DNATranslation *trans = compTT;
     int nSeq = ma->getNumRows();
     MultipleSequenceAlignment revtransl;
     revtransl->setAlphabet(ma->getAlphabet());
@@ -75,7 +70,7 @@ void MSADistanceAlgorithmHammingRevCompl::run() {
         revtransl->addRow(ma->getMsaRow(i)->getName(), arr);
 
         CHECK_OP_EXT(os, setError(tr("An unexpected error has occurred during running"
-                                      " the Hamming reverse-complement algorithm.")),);
+                                     " the Hamming reverse-complement algorithm.")), );
     }
 
     for (int i = 0; i < nSeq; i++) {
@@ -97,4 +92,4 @@ void MSADistanceAlgorithmHammingRevCompl::run() {
     }
 }
 
-} //namespace
+}    // namespace U2

@@ -24,16 +24,16 @@
 
 namespace U2 {
 namespace Workflow {
-bool ActorPrototypeRegistry::registerProto(const Descriptor& group, ActorPrototype* proto) {
+bool ActorPrototypeRegistry::registerProto(const Descriptor &group, ActorPrototype *proto) {
     // debug check for proto name
     const QString id = proto->getId();
     assert(WorkflowEntityValidator::ACCEPTABLE_ID.match(id).isValid());
     ActorPrototype *existingProto = getProto(id);
     if (nullptr != existingProto) {
         coreLog.error(tr("Can't register element config with ID '%1'%2. There is already registered element with this ID%3.")
-                      .arg(id)
-                      .arg(proto->getFilePath().isEmpty() ? QString() : " (" + proto->getFilePath() + ")")
-                      .arg(existingProto->getFilePath().isEmpty() ? QString() : " (" + existingProto->getFilePath() + ")"));
+                          .arg(id)
+                          .arg(proto->getFilePath().isEmpty() ? QString() : " (" + proto->getFilePath() + ")")
+                          .arg(existingProto->getFilePath().isEmpty() ? QString() : " (" + existingProto->getFilePath() + ")"));
         return false;
     }
 
@@ -42,9 +42,9 @@ bool ActorPrototypeRegistry::registerProto(const Descriptor& group, ActorPrototy
     return true;
 }
 
-ActorPrototype * ActorPrototypeRegistry::unregisterProto(const QString &id) {
-    foreach(const Descriptor &desc, groups.keys()) {
-        QList<ActorPrototype*> &l = groups[desc];
+ActorPrototype *ActorPrototypeRegistry::unregisterProto(const QString &id) {
+    foreach (const Descriptor &desc, groups.keys()) {
+        QList<ActorPrototype *> &l = groups[desc];
         foreach (ActorPrototype *p, l) {
             if (p->getId() == id) {
                 l.removeAll(p);
@@ -59,9 +59,9 @@ ActorPrototype * ActorPrototypeRegistry::unregisterProto(const QString &id) {
     return NULL;
 }
 
-ActorPrototype* ActorPrototypeRegistry::getProto(const QString& id) const {
-    foreach(QList<ActorPrototype*> l, groups.values()) {
-        foreach(ActorPrototype* p, l) {
+ActorPrototype *ActorPrototypeRegistry::getProto(const QString &id) const {
+    foreach (QList<ActorPrototype *> l, groups.values()) {
+        foreach (ActorPrototype *p, l) {
             if (p->getId() == id) {
                 return p;
             }
@@ -70,12 +70,11 @@ ActorPrototype* ActorPrototypeRegistry::getProto(const QString& id) const {
     return NULL;
 }
 
-ActorPrototypeRegistry::~ActorPrototypeRegistry()
-{
-    foreach(QList<ActorPrototype*> l, groups) {
+ActorPrototypeRegistry::~ActorPrototypeRegistry() {
+    foreach (QList<ActorPrototype *> l, groups) {
         qDeleteAll(l);
     }
     groups.clear();
 }
-}//namespace Workflow
-}//namespace U2
+}    //namespace Workflow
+}    //namespace U2

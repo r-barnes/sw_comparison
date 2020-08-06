@@ -19,35 +19,34 @@
  * MA 02110-1301, USA.
  */
 
+#include "CreateRectangularBranchesTask.h"
+
 #include <QStack>
 
 #include <U2Core/PhyTreeObject.h>
 #include <U2Core/U2SafePoints.h>
 
-#include <U2Core/PhyTreeObject.h>
-#include <U2Core/U2SafePoints.h>
-
-#include "CreateRectangularBranchesTask.h"
 #include "GraphicsRectangularBranchItem.h"
 #include "TreeViewerUtils.h"
 
 namespace U2 {
 
-CreateRectangularBranchesTask::CreateRectangularBranchesTask(const PhyNode *n): size(0), current(0), node(n) {}
+CreateRectangularBranchesTask::CreateRectangularBranchesTask(const PhyNode *n)
+    : size(0), current(0), node(n) {
+}
 
-GraphicsRectangularBranchItem* CreateRectangularBranchesTask::getBranch(const PhyNode *node) {
+GraphicsRectangularBranchItem *CreateRectangularBranchesTask::getBranch(const PhyNode *node) {
     if (isCanceled() || stateInfo.hasError())
         return NULL;
 
-
     int branches = node->branchCount();
-    if (branches == 1 && (node->getName()=="" || node->getName()=="ROOT")) {
+    if (branches == 1 && (node->getName() == "" || node->getName() == "ROOT")) {
         assert(node != node->getSecondNodeOfBranch(0));
         return getBranch(node->getSecondNodeOfBranch(0));
     }
     if (branches > 1) {
-        stateInfo.progress = 100 * ++size / 100; // <- number of sequences
-        QList<GraphicsRectangularBranchItem*> items;
+        stateInfo.progress = 100 * ++size / 100;    // <- number of sequences
+        QList<GraphicsRectangularBranchItem *> items;
         int ind = -1;
         for (int i = 0; i < branches; ++i) {
             if (isCanceled() || stateInfo.hasError()) {
@@ -63,12 +62,11 @@ GraphicsRectangularBranchItem* CreateRectangularBranchesTask::getBranch(const Ph
         }
 
         GraphicsRectangularBranchItem *item = NULL;
-        if (ind<0) {
+        if (ind < 0) {
             item = new GraphicsRectangularBranchItem();
-        }
-        else {
-            const PhyBranch* parentBranch = node->getParentBranch();
-            if(parentBranch != NULL) {
+        } else {
+            const PhyBranch *parentBranch = node->getParentBranch();
+            if (parentBranch != NULL) {
                 item = new GraphicsRectangularBranchItem(node->getBranchesDistance(ind), node->getBranch(ind), parentBranch->nodeValue);
             }
         }
@@ -121,9 +119,9 @@ GraphicsRectangularBranchItem* CreateRectangularBranchesTask::getBranch(const Ph
     } else {
         int y = (current++ + 0.5) * GraphicsRectangularBranchItem::DEFAULT_HEIGHT;
         GraphicsRectangularBranchItem *item = NULL;
-        if(branches != 1){
+        if (branches != 1) {
             item = new GraphicsRectangularBranchItem(0, y, node->getName());
-        }else{
+        } else {
             item = new GraphicsRectangularBranchItem(0, y, node->getName(), node->getBranchesDistance(0), node->getBranch(0));
         }
 
@@ -137,17 +135,17 @@ void CreateRectangularBranchesTask::run() {
     }
     minDistance = -2;
     maxDistance = 0;
-    GraphicsRectangularBranchItem* item = getBranch(node); // modifies minDistance and maxDistance
+    GraphicsRectangularBranchItem *item = getBranch(node);    // modifies minDistance and maxDistance
     CHECK(item != NULL, );
     item->setWidthW(0);
     item->setDist(0);
     item->setHeightW(0);
     root = item;
 
-    if(minDistance == 0){
+    if (minDistance == 0) {
         minDistance = GraphicsRectangularBranchItem::EPSILON;
     }
-    if(maxDistance == 0){
+    if (maxDistance == 0) {
         maxDistance = GraphicsRectangularBranchItem::EPSILON;
     }
     qreal minDistScale = GraphicsRectangularBranchItem::DEFAULT_WIDTH / (qreal)minDistance;
@@ -155,13 +153,13 @@ void CreateRectangularBranchesTask::run() {
 
     scale = qMin(minDistScale, maxDistScale);
 
-    QStack<GraphicsRectangularBranchItem*> stack;
+    QStack<GraphicsRectangularBranchItem *> stack;
     stack.push(item);
     while (!stack.empty()) {
         GraphicsRectangularBranchItem *item = stack.pop();
         item->setWidth(item->getWidth() * scale);
-        foreach (QGraphicsItem* ci, item->childItems()) {
-            GraphicsRectangularBranchItem* gbi = dynamic_cast<GraphicsRectangularBranchItem*>(ci);
+        foreach (QGraphicsItem *ci, item->childItems()) {
+            GraphicsRectangularBranchItem *gbi = dynamic_cast<GraphicsRectangularBranchItem *>(ci);
             if (gbi != NULL) {
                 stack.push(gbi);
             }
@@ -169,4 +167,4 @@ void CreateRectangularBranchesTask::run() {
     }
 }
 
-}
+}    // namespace U2

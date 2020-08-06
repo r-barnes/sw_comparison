@@ -19,22 +19,18 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-
 #include "CreateFragmentDialogFiller.h"
+
+#include <QApplication>
 
 namespace U2 {
 
 CreateFragmentDialogFiller::CreateFragmentDialogFiller(HI::GUITestOpStatus &os)
-:  Filler(os, "CreateFragmentDialog")
-{
-
+    : Filler(os, "CreateFragmentDialog") {
 }
 
-CreateFragmentDialogFiller::CreateFragmentDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario) :
-    Filler(os, "CreateFragmentDialog", scenario)
-{
-
+CreateFragmentDialogFiller::CreateFragmentDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario)
+    : Filler(os, "CreateFragmentDialog", scenario) {
 }
 
 #define GT_CLASS_NAME "GTUtilsDialog::CreateFragmentDialogFiller"
@@ -48,4 +44,4 @@ void CreateFragmentDialogFiller::commonScenario() {
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-} // U2
+}    // namespace U2

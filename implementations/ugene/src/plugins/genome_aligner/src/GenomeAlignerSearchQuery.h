@@ -26,6 +26,7 @@
 
 #include <U2Core/DNASequence.h>
 #include <U2Core/U2AssemblyUtils.h>
+
 #include "GenomeAlignerIndexPart.h"
 
 #define BinarySearchResult qint64
@@ -66,13 +67,22 @@ public:
     SAType firstResult() const;
     quint32 firstMCount() const;
     bool contains(SAType result) const;
-    const QVector<SAType>& getResults() const;
-    bool isWroteResult() const { return wroteResult; }
-    void writeResult() { wroteResult = true; }
-    SearchQuery *getRevCompl() { return revCompl; }
-    void setRevCompl(SearchQuery *rc) { revCompl = rc; }
+    const QVector<SAType> &getResults() const;
+    bool isWroteResult() const {
+        return wroteResult;
+    }
+    void writeResult() {
+        wroteResult = true;
+    }
+    SearchQuery *getRevCompl() {
+        return revCompl;
+    }
+    void setRevCompl(SearchQuery *rc) {
+        revCompl = rc;
+    }
 
     qint64 memoryHint() const;
+
 private:
     //U2AssemblyRead assRead;
     DNAQuality *quality;
@@ -106,5 +116,5 @@ private:
     static const quint64 reallocSize;
 };
 
-} //U2
-#endif //_U2_GENOME_ALIGNER_SEARCH_QUERY_H_
+}    // namespace U2
+#endif    //_U2_GENOME_ALIGNER_SEARCH_QUERY_H_

@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-
 #ifndef _U2_FOREVER_TASK_H_
 #define _U2_FOREVER_TASK_H_
 
@@ -36,8 +35,8 @@ public:
 
     virtual void run();
 
-}; // ForeverTask
+};    // ForeverTask
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_FOREVER_TASK_H_
+#endif    // _U2_FOREVER_TASK_H_

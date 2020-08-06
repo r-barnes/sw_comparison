@@ -25,10 +25,10 @@
 #include <QList>
 #include <QString>
 
+#include <U2Core/DNASequence.h>
+#include <U2Core/DNASequenceObject.h>
 #include <U2Core/GUrl.h>
 #include <U2Core/Task.h>
-#include <U2Core/DNASequenceObject.h>
-#include <U2Core/DNASequence.h>
 
 namespace U2 {
 
@@ -48,10 +48,13 @@ class IOAdapter;
 */
 
 class U2FORMATS_EXPORT StreamSequenceReader : public QObject {
+    Q_OBJECT
     struct ReaderContext {
-        ReaderContext() : io(NULL), format(NULL) {}
-        IOAdapter* io;
-        DocumentFormat* format;
+        ReaderContext()
+            : io(NULL), format(NULL) {
+        }
+        IOAdapter *io;
+        DocumentFormat *format;
     };
     QList<ReaderContext> readers;
     int currentReaderIndex;
@@ -64,22 +67,23 @@ public:
     StreamSequenceReader();
     ~StreamSequenceReader();
 
-    bool init(const QStringList& urls);
-    bool init(const QList<GUrl>& urls);
+    bool init(const QStringList &urls);
+    bool init(const QList<GUrl> &urls);
 
-    const IOAdapter* getIO() const;
-    DocumentFormat* getFormat() const;
+    const IOAdapter *getIO() const;
+    DocumentFormat *getFormat() const;
 
     bool hasNext();
-    bool hasError() { return !errorMessage.isEmpty(); }
+    bool hasError() {
+        return !errorMessage.isEmpty();
+    }
     int getProgress();
     QString getErrorMessage();
-    DNASequence* getNextSequenceObject();
+    DNASequence *getNextSequenceObject();
 
-    static int getNumberOfSequences(const QString& url, U2OpStatus& os);
+    static int getNumberOfSequences(const QString &url, U2OpStatus &os);
 };
 
+}    // namespace U2
 
-} //namespace
-
-#endif //_U2_STREAM_SEQUENCE_READER_H_
+#endif    //_U2_STREAM_SEQUENCE_READER_H_

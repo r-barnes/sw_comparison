@@ -26,9 +26,8 @@ namespace U2 {
 const QString DiamondSupport::TOOL_NAME = "DIAMOND";
 const QString DiamondSupport::TOOL_ID = "USUPP_DIAMOND";
 
-DiamondSupport::DiamondSupport(const QString& id, const QString &name)
-    : ExternalTool(id, name, "")
-{
+DiamondSupport::DiamondSupport(const QString &id, const QString &name)
+    : ExternalTool(id, name, "") {
     validationArguments << "--version";
     validMessage = "diamond version ";
     versionRegExp = QRegExp("diamond version (\\d+\\.\\d+\\.\\d+)");
@@ -37,4 +36,4 @@ DiamondSupport::DiamondSupport(const QString& id, const QString &name)
                      "In UGENE it is integrated as one of the taxonomic classification tool.");
 }
 
-}   // namesapce U2
+}    // namespace U2

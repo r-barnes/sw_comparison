@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "MultiplexerWorker.h"
+
 #include <U2Core/L10n.h>
 #include <U2Core/U2SafePoints.h>
 
@@ -29,8 +31,6 @@
 #include <U2Lang/BaseTypes.h>
 #include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/WorkflowMonitor.h>
-
-#include "MultiplexerWorker.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -48,9 +48,8 @@ static const QString RULE_ID("multiplexing-rule");
  * MultiplexerWorker
  *******************************/
 MultiplexerWorker::MultiplexerWorker(Actor *p)
-: BaseWorker(p, false), inChannel1(NULL), inChannel2(NULL), outChannel(NULL), rule(ONE_TO_ONE),
-hasMultiData(false), multiMetadataId(-1), messagesInited(false)
-{
+    : BaseWorker(p, false), inChannel1(NULL), inChannel2(NULL), outChannel(NULL), rule(ONE_TO_ONE),
+      hasMultiData(false), multiMetadataId(-1), messagesInited(false) {
 }
 
 void MultiplexerWorker::init() {
@@ -185,7 +184,7 @@ void MultiplexerWorker::multiplexManyMode() {
             Message m = inChannel1->look();
             m1 = m.getData().toMap();
             metadataId = m.getMetadataId();
-            inChannel1->get(); // pop last message
+            inChannel1->get();    // pop last message
         } else {
             shutDown();
         }
@@ -208,7 +207,7 @@ void MultiplexerWorker::multiplexManyMode() {
     } else {
         while (inChannel2->hasMessage()) {
             QVariantMap m2 = inChannel2->look().getData().toMap();
-            inChannel2->get(); // pop last message
+            inChannel2->get();    // pop last message
             messages << m2;
 
             sendUnitedMessage(m1, m2, metadataId);
@@ -223,7 +222,7 @@ void MultiplexerWorker::multiplexManyMode() {
             multiMetadataId = -1;
         }
     }
-    if (!hasMultiData && inChannel1->isEnded()) { // nothing else to multiplex
+    if (!hasMultiData && inChannel1->isEnded()) {    // nothing else to multiplex
         outChannel->setEnded();
         setDone();
     }
@@ -243,7 +242,10 @@ QString MultiplexerWorker::getMessagesMismatchError() const {
     QString inputName1 = getInputActorName(inChannel1);
     QString inputName2 = getInputActorName(inChannel2);
     return tr("The number of messages, received from \"%1\" (%2), does not correspond to the number of messages, received from \"%3\" (%4). Redundant messages were skipped.")
-        .arg(inputName1).arg(messages1).arg(inputName2).arg(messages2);
+        .arg(inputName1)
+        .arg(messages1)
+        .arg(inputName2)
+        .arg(messages2);
 }
 
 void MultiplexerWorker::cleanup() {
@@ -253,44 +255,40 @@ void MultiplexerWorker::cleanup() {
  * MultiplexerWorkerFactory
  *******************************/
 void MultiplexerWorkerFactory::init() {
-    QList<PortDescriptor*> portDescs;
+    QList<PortDescriptor *> portDescs;
     {
         QMap<Descriptor, DataTypePtr> emptyTypeMap;
         DataTypePtr emptyTypeSet(new MapDataType(Descriptor(DataType::EMPTY_TYPESET_ID), emptyTypeMap));
 
         // input ports
-        Descriptor inputDesc1(INPUT_PORT_1, MultiplexerWorker::tr("First input port"), MultiplexerWorker::tr(
-            "One of the two input ports of the <i>Multiplexer</i> element. When rule \"1 to many\" is set up,"
-            " each message from this port is concatenated with messages from the other port."));
-        Descriptor inputDesc2(INPUT_PORT_2, MultiplexerWorker::tr("Second input port"), MultiplexerWorker::tr(
-            "One of the two input ports of the <i>Multiplexer</i> element. When rule \"1 to many\" is set up,"
-            " each message from the other port is concatenated with messages from this port."));
+        Descriptor inputDesc1(INPUT_PORT_1, MultiplexerWorker::tr("First input port"), MultiplexerWorker::tr("One of the two input ports of the <i>Multiplexer</i> element. When rule \"1 to many\" is set up,"
+                                                                                                             " each message from this port is concatenated with messages from the other port."));
+        Descriptor inputDesc2(INPUT_PORT_2, MultiplexerWorker::tr("Second input port"), MultiplexerWorker::tr("One of the two input ports of the <i>Multiplexer</i> element. When rule \"1 to many\" is set up,"
+                                                                                                              " each message from the other port is concatenated with messages from this port."));
         portDescs << new PortDescriptor(inputDesc1, emptyTypeSet, true);
         portDescs << new PortDescriptor(inputDesc2, emptyTypeSet, true);
 
         // output port
-        Descriptor outputDesc(OUTPUT_PORT, MultiplexerWorker::tr("Multiplexed Output"),
-            MultiplexerWorker::tr("The port outputs multiplexed messages."));
+        Descriptor outputDesc(OUTPUT_PORT, MultiplexerWorker::tr("Multiplexed Output"), MultiplexerWorker::tr("The port outputs multiplexed messages."));
         portDescs << new PortDescriptor(outputDesc, emptyTypeSet, false, true);
     }
 
-    QList<Attribute*> attrs;
+    QList<Attribute *> attrs;
     {
         // attributes
-        Descriptor ruleDesc(RULE_ID, MultiplexerWorker::tr("Multiplexing rule"),
-            MultiplexerWorker::tr("Specifies how to multiplex the input messages:"
-                " <li><b>1 to 1</b> - the multiplexer gets one message from the first input port"
-                " and one message from the second input port, joins them into a single message, and transfers it to the"
-                " output. This procedure is repeated while there are available messages in both input ports.</li>"
-                " <li><b>1 to many</b> - the multiplexer gets one message from the first input port, joins it with each"
-                " message from the second input port, and transfers the joined messages to the output. This procedure"
-                " is repeated for each message from the first input port.</li>"
-                " <br/>"));
+        Descriptor ruleDesc(RULE_ID, MultiplexerWorker::tr("Multiplexing rule"), MultiplexerWorker::tr("Specifies how to multiplex the input messages:"
+                                                                                                       " <li><b>1 to 1</b> - the multiplexer gets one message from the first input port"
+                                                                                                       " and one message from the second input port, joins them into a single message, and transfers it to the"
+                                                                                                       " output. This procedure is repeated while there are available messages in both input ports.</li>"
+                                                                                                       " <li><b>1 to many</b> - the multiplexer gets one message from the first input port, joins it with each"
+                                                                                                       " message from the second input port, and transfers the joined messages to the output. This procedure"
+                                                                                                       " is repeated for each message from the first input port.</li>"
+                                                                                                       " <br/>"));
 
         attrs << new Attribute(ruleDesc, BaseTypes::STRING_TYPE(), true, ONE_TO_ONE);
     }
 
-    QMap<QString, PropertyDelegate*> delegateMap;
+    QMap<QString, PropertyDelegate *> delegateMap;
     {
         // delegates
         QVariantMap rules;
@@ -301,10 +299,10 @@ void MultiplexerWorkerFactory::init() {
     }
 
     Descriptor protoDesc(MultiplexerWorkerFactory::ACTOR_ID,
-        MultiplexerWorker::tr("Multiplexer"),
-        MultiplexerWorker::tr("The element allows one to join two data flows into a single data flow,"
-            " i.e. to join messages from two input ports into concatenated messages and send them to the output."
-            " The concatenation approach is determined by the <i>Multiplexing rule</i> parameter."));
+                         MultiplexerWorker::tr("Multiplexer"),
+                         MultiplexerWorker::tr("The element allows one to join two data flows into a single data flow,"
+                                               " i.e. to join messages from two input ports into concatenated messages and send them to the output."
+                                               " The concatenation approach is determined by the <i>Multiplexing rule</i> parameter."));
 
     ActorPrototype *proto = new IntegralBusActorPrototype(protoDesc, portDescs, attrs);
 
@@ -316,7 +314,7 @@ void MultiplexerWorkerFactory::init() {
     WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID)->registerEntry(new MultiplexerWorkerFactory());
 }
 
-Worker *MultiplexerWorkerFactory::createWorker(Actor* a) {
+Worker *MultiplexerWorkerFactory::createWorker(Actor *a) {
     return new MultiplexerWorker(a);
 }
 
@@ -326,8 +324,8 @@ Worker *MultiplexerWorkerFactory::createWorker(Actor* a) {
 QString MultiplexerPrompter::composeRichDoc() {
     uint rule = getParameter(RULE_ID).toUInt();
 
-    IntegralBusPort* input1 = qobject_cast<IntegralBusPort*>(target->getPort(INPUT_PORT_1));
-    IntegralBusPort* input2 = qobject_cast<IntegralBusPort*>(target->getPort(INPUT_PORT_2));
+    IntegralBusPort *input1 = qobject_cast<IntegralBusPort *>(target->getPort(INPUT_PORT_1));
+    IntegralBusPort *input2 = qobject_cast<IntegralBusPort *>(target->getPort(INPUT_PORT_2));
 
     QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
     QString inputName1 = unsetStr;
@@ -343,14 +341,18 @@ QString MultiplexerPrompter::composeRichDoc() {
 
     if (ONE_TO_ONE == rule) {
         return tr("Gets one message from <u>%1</u> and one message from <u>%2</u>,"
-            " joins them into a single message, and transfers it to the output."
-            " Repeats this while there are available messages in both input ports.").arg(inputName1).arg(inputName2);
+                  " joins them into a single message, and transfers it to the output."
+                  " Repeats this while there are available messages in both input ports.")
+            .arg(inputName1)
+            .arg(inputName2);
     } else {
         return tr("Gets one message from <u>%1</u>, joins it with each message from <u>%2</u>,"
-            " and transfers the joined messages to the output."
-            " Repeats this for each message from <u>%1</u>.").arg(inputName1).arg(inputName2);
+                  " and transfers the joined messages to the output."
+                  " Repeats this for each message from <u>%1</u>.")
+            .arg(inputName1)
+            .arg(inputName2);
     }
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

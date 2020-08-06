@@ -26,7 +26,7 @@
 
 #include "ADVGraphModel.h"
 
-namespace U2{
+namespace U2 {
 
 struct SaveCutoffsTaskSettings {
     enum Location {
@@ -45,11 +45,12 @@ public:
     void prepare();
     void run();
     Task::ReportResult report();
+
 private:
     SaveCutoffsTaskSettings settings;
     QList<U2Region> regions;
 };
 
-}
+}    // namespace U2
 
 #endif

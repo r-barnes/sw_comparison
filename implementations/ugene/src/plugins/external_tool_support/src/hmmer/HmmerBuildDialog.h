@@ -38,18 +38,18 @@ public:
     UHMM3BuildDialogModel();
 
     HmmerBuildSettings buildSettings;
-    
+
     /* one of this is used */
-    QString                 inputFile;
+    QString inputFile;
     MultipleSequenceAlignment alignment;
-    bool                    alignmentUsing;
+    bool alignmentUsing;
 };
 
 class HmmerBuildDialog : public QDialog, public Ui_HmmerBuildDialog {
     Q_OBJECT
 public:
     HmmerBuildDialog(const MultipleSequenceAlignment &ma, QWidget *parent = NULL);
-    
+
     static const QString MA_FILES_DIR_ID;
     static const QString HMM_FILES_DIR_ID;
 
@@ -66,15 +66,15 @@ private slots:
 private:
     void setModelValues();
     void getModelValues();
-    QString checkModel();       // returns error or empty string
+    QString checkModel();    // returns error or empty string
     void setSignalsAndSlots();
     void initialize();
     void initSaveController();
 
-    UHMM3BuildDialogModel   model;
+    UHMM3BuildDialogModel model;
     SaveDocumentController *saveController;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_HMMER_BUILD_DIALOG_H_
+#endif    // _U2_HMMER_BUILD_DIALOG_H_

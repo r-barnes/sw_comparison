@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "FormatDBSubTask.h"
+
 #include <QDir>
 #include <QTemporaryDir>
 
@@ -33,9 +35,8 @@
 
 #include <U2Lang/DbiDataStorage.h>
 
-#include "FormatDBSubTask.h"
-#include "blast/FormatDBSupport.h"
-#include "blast/FormatDBSupportTask.h"
+#include "blast_plus/FormatDBSupport.h"
+#include "blast_plus/FormatDBSupportTask.h"
 
 namespace U2 {
 namespace Workflow {
@@ -46,9 +47,7 @@ FormatDBSubTask::FormatDBSubTask(const QString &referenceUrl,
     : Task(tr("Format DB task wrapper"), TaskFlags_NR_FOSE_COSC),
       referenceUrl(referenceUrl),
       referenceDbHandler(referenceDbHandler),
-      storage(storage)
-{
-
+      storage(storage) {
 }
 
 void FormatDBSubTask::prepare() {
@@ -71,13 +70,13 @@ void FormatDBSubTask::prepare() {
     settings.outputPath = workingDir + QFileInfo(referenceUrl).completeBaseName();
     CHECK_OP(stateInfo, );
 
-    FormatDBSupportTask* formatTask = new FormatDBSupportTask(FormatDBSupport::ET_MAKEBLASTDB_ID, settings);
+    FormatDBSupportTask *formatTask = new FormatDBSupportTask(FormatDBSupport::ET_MAKEBLASTDB_ID, settings);
     addSubTask(formatTask);
 
     databaseNameAndPath = settings.outputPath;
 }
 
-const QString& FormatDBSubTask::getResultPath() const {
+const QString &FormatDBSubTask::getResultPath() const {
     return databaseNameAndPath;
 }
 
@@ -90,7 +89,7 @@ bool isTempDirAcceptable(const QString &tempDir) {
     return true;
 }
 
-}
+}    // namespace
 
 QString FormatDBSubTask::getAcceptableTempDir() const {
     QString tempDirPath = AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath();
@@ -103,9 +102,9 @@ QString FormatDBSubTask::getAcceptableTempDir() const {
         return tempDirPath;
     }
 
-#if defined (Q_OS_WIN)
+#if defined(Q_OS_WIN)
     tempDirPath = "C:/ugene_tmp";
-#elif defined (Q_OS_UNIX)
+#elif defined(Q_OS_UNIX)
     tempDirPath = "/tmp/ugene_tmp";
 #else
     return QString();
@@ -119,5 +118,5 @@ QString FormatDBSubTask::getAcceptableTempDir() const {
     return QString();
 }
 
-} // namespace Workflow
-} // namespace U2
+}    // namespace Workflow
+}    // namespace U2

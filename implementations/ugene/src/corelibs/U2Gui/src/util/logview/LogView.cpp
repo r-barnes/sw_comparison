@@ -20,33 +20,36 @@
  */
 
 #include "LogView.h"
-#include <U2Core/LogCache.h>
 
-#include <U2Gui/MainWindow.h>
-#include <U2Core/AppContext.h>
-#include <U2Gui/AppSettingsGUI.h>
-#include <U2Core/Timer.h>
-#include <U2Core/Counter.h>
-
-#include <QDate>
-#include <QThread>
-#include <QApplication>
 #include <QAction>
+#include <QApplication>
+#include <QDate>
 #include <QMenu>
+#include <QThread>
 #include <QVBoxLayout>
+
+#include <U2Core/AppContext.h>
+#include <U2Core/Counter.h>
+#include <U2Core/LogCache.h>
+#include <U2Core/Timer.h>
+
+#include <U2Gui/AppSettingsGUI.h>
+#include <U2Gui/MainWindow.h>
 
 namespace U2 {
 
 #define MAX_VISIBLE_MESSAGES 1000
 
-LogViewWidget::LogViewWidget(const LogFilter& filter) : messageCounter(0), connected(false) {
+LogViewWidget::LogViewWidget(const LogFilter &filter)
+    : messageCounter(0), connected(false) {
     cache = new LogCache(MAX_VISIBLE_MESSAGES);
     cache->filter = filter;
     cache->setParent(this);
     init();
 }
 
-LogViewWidget::LogViewWidget(LogCache* c) : messageCounter(0), connected(false) {
+LogViewWidget::LogViewWidget(LogCache *c)
+    : messageCounter(0), connected(false) {
     cache = c;
     init();
 }
@@ -72,7 +75,7 @@ void LogViewWidget::init() {
     showSettingsAction = new QAction(tr("Settings..."), this);
     showSettingsAction->setIcon(QIcon(":ugene/images/log_settings.png"));
     connect(showSettingsAction, SIGNAL(triggered()), SLOT(sl_openSettingsDialog()));
-    
+
     dumpCountersAction = new QAction(tr("Dump performance counters"), this);
     connect(dumpCountersAction, SIGNAL(triggered()), SLOT(sl_dumpCounters()));
 
@@ -81,22 +84,22 @@ void LogViewWidget::init() {
     clearAction = new QAction(tr("Clear log"), this);
     connect(clearAction, SIGNAL(triggered()), SLOT(sl_clear()));
 
-    QVBoxLayout* l = new QVBoxLayout();
+    QVBoxLayout *l = new QVBoxLayout();
     l->setSpacing(0);
     l->setMargin(0);
     l->setContentsMargins(0, 0, 0, 0);
     setLayout(l);
 
-    edit = new QPlainTextEdit(); 
+    edit = new QPlainTextEdit();
     edit->setUndoRedoEnabled(false);
     edit->setReadOnly(true);
     edit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
     edit->setContextMenuPolicy(Qt::CustomContextMenu);
-    edit->setTextInteractionFlags(Qt::NoTextInteraction|Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard);
+    edit->setTextInteractionFlags(Qt::NoTextInteraction | Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
     edit->setMaximumBlockCount(MAX_VISIBLE_MESSAGES);
     edit->installEventFilter(this);
 
-    searchEdit = new QLineEdit(); 
+    searchEdit = new QLineEdit();
     searchEdit->setContextMenuPolicy(Qt::CustomContextMenu);
     shortcut = new QShortcut(QString("/"), this, 0, 0, Qt::WidgetWithChildrenShortcut);
     highlighter = new SearchHighlighter(edit->document());
@@ -104,10 +107,10 @@ void LogViewWidget::init() {
     l->addWidget(edit);
     l->addWidget(searchEdit);
 
-    QObject::connect(edit, SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(popupMenu(const QPoint &)));
-    QObject::connect(searchEdit, SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(searchPopupMenu(const QPoint &)));
-    QObject::connect(shortcut, SIGNAL(activated()),this,SLOT(sl_showHideEdit()));
-    QObject::connect(searchEdit, SIGNAL(textEdited(const QString &)),this,SLOT(sl_onTextEdited(const QString &)));
+    QObject::connect(edit, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(popupMenu(const QPoint &)));
+    QObject::connect(searchEdit, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(searchPopupMenu(const QPoint &)));
+    QObject::connect(shortcut, SIGNAL(activated()), this, SLOT(sl_showHideEdit()));
+    QObject::connect(searchEdit, SIGNAL(textEdited(const QString &)), this, SLOT(sl_onTextEdited(const QString &)));
     resetView();
 }
 
@@ -119,18 +122,18 @@ bool LogViewWidget::eventFilter(QObject *object, QEvent *event) {
     return false;
 }
 
-void LogViewWidget::popupMenu(const QPoint& pos) {
+void LogViewWidget::popupMenu(const QPoint &pos) {
     Q_UNUSED(pos);
 
     QMenu popup;
-    QAction* copyAction = popup.addAction(tr("Copy"), edit, SLOT(copy()));
+    QAction *copyAction = popup.addAction(tr("Copy"), edit, SLOT(copy()));
     copyAction->setShortcut(QKeySequence::Copy);
     copyAction->setEnabled(edit->textCursor().hasSelection());
     popup.addAction(dumpCountersAction);
     popup.addAction(addSeparatorAction);
     popup.addAction(clearAction);
-    
-    if (cache == LogCache::getAppGlobalInstance()) { //customization is allowed only for global cache today
+
+    if (cache == LogCache::getAppGlobalInstance()) {    //customization is allowed only for global cache today
         popup.addAction(showSettingsAction);
     }
 
@@ -164,7 +167,7 @@ void LogViewWidget::sl_showHideEdit() {
     }
 }
 
-void LogViewWidget::sl_onTextEdited(const QString & text) {
+void LogViewWidget::sl_onTextEdited(const QString &text) {
     QRegExp re(text);
     if (highlighter->reg_exp.patternSyntax() == QRegExp::RegExp && !re.isValid())
         return;
@@ -173,7 +176,7 @@ void LogViewWidget::sl_onTextEdited(const QString & text) {
     resetView();
 }
 
-bool LogViewWidget::isShown(const QString & txt) {
+bool LogViewWidget::isShown(const QString &txt) {
     if (highlighter->reg_exp.indexIn(txt, 0) < 0) {
         return false;
     }
@@ -250,7 +253,7 @@ void LogViewWidget::sl_showNewMessages() {
     messageCounter = 0;
 
     int count = 0;
-    foreach(const LogMessage& m, newMessagesToShow) {
+    foreach (const LogMessage &m, newMessagesToShow) {
         addMessage(m);
         if (count++ > MAX_VISIBLE_MESSAGES) {
             break;
@@ -258,24 +261,24 @@ void LogViewWidget::sl_showNewMessages() {
     }
 }
 
-void LogViewWidget::onMessage(const LogMessage& /*msg*/) {
+void LogViewWidget::onMessage(const LogMessage & /*msg*/) {
     messageCounter++;
 }
 
-bool LogViewWidget::isShown(const LogMessage& msg)  {
+bool LogViewWidget::isShown(const LogMessage &msg) {
     QString category = getEffectiveCategory(msg);
     return !category.isEmpty();
 }
 
-QString LogViewWidget::getEffectiveCategory(const LogMessage& msg) const {
+QString LogViewWidget::getEffectiveCategory(const LogMessage &msg) const {
     QString result;
     if (cache->filter.isEmpty()) {
         if (!settings.activeLevelGlobalFlag[msg.level]) {
             return QString();
         }
 
-        foreach (const QString& category, msg.categories) {
-            const LoggerSettings& cs = settings.getLoggerSettings(category);
+        foreach (const QString &category, msg.categories) {
+            const LoggerSettings &cs = settings.getLoggerSettings(category);
             if (cs.activeLevelFlag[msg.level]) {
                 result = category;
                 break;
@@ -288,7 +291,7 @@ QString LogViewWidget::getEffectiveCategory(const LogMessage& msg) const {
     return result;
 }
 
-void LogViewWidget::setSettings(const LogSettings& s) {
+void LogViewWidget::setSettings(const LogSettings &s) {
     if (settings == s) {
         return;
     }
@@ -297,14 +300,13 @@ void LogViewWidget::setSettings(const LogSettings& s) {
     resetView();
 }
 
-
-QString LogViewWidget::prepareText(const LogMessage& msg) const {
-    QString color = settings.enableColor? settings.levelColors[msg.level] : QString();
+QString LogViewWidget::prepareText(const LogMessage &msg) const {
+    QString color = settings.enableColor ? settings.levelColors[msg.level] : QString();
 
     QString prefix = "[" + settings.logPattern + "]";
     QString category = settings.showCategory ? "[" + getEffectiveCategory(msg) + "]" : QString();
     QString level = settings.showLevel ? "[" + LogCategories::getLocalizedLevelName(msg.level) + "]" : QString();
-    QStringList date =  GTimer::createDateTime(msg.time).toString("yyyy:yy:MM:dd:hh:mm:ss:zz").split(":");
+    QStringList date = GTimer::createDateTime(msg.time).toString("yyyy:yy:MM:dd:hh:mm:ss:zz").split(":");
     prefix.replace("YYYY", date[0]);
     prefix.replace("YY", date[1]);
     prefix.replace("MM", date[2]);
@@ -316,20 +318,19 @@ QString LogViewWidget::prepareText(const LogMessage& msg) const {
     prefix.prepend(level);
     prefix.prepend(category);
     QString spacing = prefix.isEmpty() ? QString() : QString(" ");
-    QString text = "<font color="+color+">" + prefix + spacing + msg.text +"</font><br/>";
+    QString text = "<font color=" + color + ">" + prefix + spacing + msg.text + "</font><br/>";
 
     return text;
 }
 
-
-void LogViewWidget::addMessage(const LogMessage& msg) {
+void LogViewWidget::addMessage(const LogMessage &msg) {
     if (!isShown(msg)) {
         return;
     }
     addText(prepareText(msg));
 }
 
-void LogViewWidget::addText(const QString& txt) {
+void LogViewWidget::addText(const QString &txt) {
     if (!isShown(txt)) {
         return;
     }
@@ -339,7 +340,7 @@ void LogViewWidget::addText(const QString& txt) {
 void LogViewWidget::sl_dumpCounters() {
     QString text = "Counters report start ***********************\n";
     addText(text);
-    foreach(GCounter* c, GCounter::allCounters()) {
+    foreach (GCounter *c, GCounter::allCounters()) {
         double val = c->scaledTotal();
         text = c->name + " " + QString::number(val) + " " + c->suffix;
         addText(text);
@@ -355,7 +356,7 @@ void LogViewWidget::sl_addSeparator() {
 
 void LogViewWidget::sl_clear() {
     cache->messages.clear();
-    edit->clear(); 
+    edit->clear();
 }
 
 void LogViewWidget::setSearchBoxMode(LogViewSearchBoxMode mode) {
@@ -365,5 +366,4 @@ void LogViewWidget::setSearchBoxMode(LogViewSearchBoxMode mode) {
         searchEdit->setVisible(false);
     }
 }
-}//namespace
-
+}    // namespace U2

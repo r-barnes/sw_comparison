@@ -36,8 +36,8 @@
 
 #include <U2Gui/MainWindow.h>
 
-#include "PreliminaryActions.h"
 #include "GTUtilsTaskTreeView.h"
+#include "PreliminaryActions.h"
 
 namespace U2 {
 namespace GUITest_preliminary_actions {
@@ -52,7 +52,7 @@ PRELIMINARY_ACTION_DEFINITION(pre_action_0000) {
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
 #ifdef Q_OS_WIN
-    QProcess::execute("closeAllErrors.exe"); //this exe file, compiled Autoit script
+    QProcess::execute("closeAllErrors.exe");    //this exe file, compiled Autoit script
 #endif
 
     GTUtilsDialog::cleanup(os, GTUtilsDialog::NoFailOnUnfinished);
@@ -60,7 +60,7 @@ PRELIMINARY_ACTION_DEFINITION(pre_action_0000) {
 #ifndef Q_OS_WIN
     GTMouseDriver::release(Qt::RightButton);
     GTMouseDriver::release();
-    GTKeyboardDriver::keyRelease( Qt::Key_Control);
+    GTKeyboardDriver::keyRelease(Qt::Key_Control);
     GTKeyboardDriver::keyRelease(Qt::Key_Shift);
     GTKeyboardDriver::keyRelease(Qt::Key_Alt);
     uiLog.trace(QString("pre_action_0000: next keyboard modifiers are pressed before test: %1").arg(QGuiApplication::queryKeyboardModifiers()));
@@ -71,8 +71,7 @@ PRELIMINARY_ACTION_DEFINITION(pre_action_0000) {
 
 PRELIMINARY_ACTION_DEFINITION(pre_action_0001) {
     // Ensure there is no opened project
-
-    CHECK_SET_ERR(AppContext::getProjectView() == NULL && AppContext::getProject() == NULL, "There is a project");
+    CHECK_SET_ERR(AppContext::getProjectView() == nullptr && AppContext::getProject() == nullptr, "pre_action_0001: There is a project");
 }
 
 PRELIMINARY_ACTION_DEFINITION(pre_action_0002) {
@@ -89,8 +88,10 @@ PRELIMINARY_ACTION_DEFINITION(pre_action_0002) {
 }
 
 PRELIMINARY_ACTION_DEFINITION(pre_action_0003) {
-    // backup some files
-
+    if (qgetenv("UGENE_TEST_SKIP_BACKUP_AND_RESTORE") == "1") {    // Restored by the parent process
+        return;
+    }
+    // Backup some files used in tests directly.
     if (QDir(testDir).exists()) {
         GTFile::backup(os, testDir + "_common_data/scenarios/project/proj1.uprj");
         GTFile::backup(os, testDir + "_common_data/scenarios/project/proj2-1.uprj");
@@ -98,6 +99,9 @@ PRELIMINARY_ACTION_DEFINITION(pre_action_0003) {
         GTFile::backup(os, testDir + "_common_data/scenarios/project/proj3.uprj");
         GTFile::backup(os, testDir + "_common_data/scenarios/project/proj4.uprj");
         GTFile::backup(os, testDir + "_common_data/scenarios/project/proj5.uprj");
+
+        // Files from the projects above.
+        GTFile::backup(os, testDir + "_common_data/scenarios/project/1.gb");
     }
 }
 
@@ -114,12 +118,12 @@ PRELIMINARY_ACTION_DEFINITION(pre_action_0004) {
 PRELIMINARY_ACTION_DEFINITION(pre_action_0005) {
     // Click somewhere to the main window in mac to be sure that the focus is on the application
 
-    QMainWindow* mw = AppContext::getMainWindow()->getQMainWindow();
+    QMainWindow *mw = AppContext::getMainWindow()->getQMainWindow();
     CHECK_SET_ERR(mw != NULL, "main window is NULL");
 #ifdef Q_OS_MAC
     GTWidget::click(os, mw, Qt::LeftButton, QPoint(200, 200));
 #endif
 }
 
-}   // namespace GUITest_preliminary_actions
-}   // namespace U2
+}    // namespace GUITest_preliminary_actions
+}    // namespace U2

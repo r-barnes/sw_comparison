@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "InSilicoPcrTask.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/Counter.h>
 #include <U2Core/DNAAlphabet.h>
@@ -30,24 +32,18 @@
 #include "Primer.h"
 #include "PrimerStatistics.h"
 
-#include "InSilicoPcrTask.h"
-
 namespace U2 {
 
-const qint64 InSilicoPcrTaskSettings::MAX_SEQUENCE_LENGTH = 500*1024*1024; // 500 Mb
+const qint64 InSilicoPcrTaskSettings::MAX_SEQUENCE_LENGTH = 500 * 1024 * 1024;    // 500 Mb
 
 InSilicoPcrTaskSettings::InSilicoPcrTaskSettings()
-: isCircular(false), forwardMismatches(0), reverseMismatches(0), maxProductSize(0), perfectMatch(0)
-{
-
+    : isCircular(false), forwardMismatches(0), reverseMismatches(0), maxProductSize(0), perfectMatch(0) {
 }
 
 InSilicoPcrProduct::InSilicoPcrProduct()
     : ta(Primer::INVALID_TM),
       forwardPrimerMatchLength(0),
-      reversePrimerMatchLength(0)
-{
-
+      reversePrimerMatchLength(0) {
 }
 
 bool InSilicoPcrProduct::isValid() const {
@@ -55,15 +51,14 @@ bool InSilicoPcrProduct::isValid() const {
 }
 
 InSilicoPcrTask::InSilicoPcrTask(const InSilicoPcrTaskSettings &settings)
-: Task(tr("In Silico PCR"), TaskFlags(TaskFlag_ReportingIsSupported) | TaskFlag_ReportingIsEnabled | TaskFlags_FOSE_COSC),
-settings(settings), forwardSearch(NULL), reverseSearch(NULL), minProductSize(0)
-{
+    : Task(tr("In Silico PCR"), TaskFlags(TaskFlag_ReportingIsSupported) | TaskFlag_ReportingIsEnabled | TaskFlags_FOSE_COSC),
+      settings(settings), forwardSearch(NULL), reverseSearch(NULL), minProductSize(0) {
     GCOUNTER(cvar, tvar, "InSilicoPcrTask");
     minProductSize = qMax(settings.forwardPrimer.length(), settings.reversePrimer.length());
 }
 
 namespace {
-int getMaxError(const InSilicoPcrTaskSettings& settings, U2Strand::Direction direction) {
+int getMaxError(const InSilicoPcrTaskSettings &settings, U2Strand::Direction direction) {
     int res = 0;
     if (direction == U2Strand::Direct) {
         res = qMin(settings.forwardMismatches, settings.forwardPrimer.length() - settings.perfectMatch);
@@ -75,7 +70,7 @@ int getMaxError(const InSilicoPcrTaskSettings& settings, U2Strand::Direction dir
     return qMax(0, res);
 }
 
-}
+}    // namespace
 
 FindAlgorithmTaskSettings InSilicoPcrTask::getFindPatternSettings(U2Strand::Direction direction) {
     FindAlgorithmTaskSettings result;
@@ -162,9 +157,6 @@ InSilicoPcrTask::PrimerBind InSilicoPcrTask::getPrimerBind(const FindAlgorithmRe
         const qint64 sequenceSize = settings.sequence.size();
         if (reverseRegionEndPos > sequenceSize) {
             result.region = U2Region(reverse.region.startPos, sequenceSize - reverse.region.startPos);
-            if (!settings.isCircular) {
-                result.region.length -= reverse.region.startPos;
-            }
             result.ledge = reverseRegionEndPos - sequenceSize;
         } else {
             result.region = reverse.region;
@@ -250,15 +242,16 @@ QString InSilicoPcrTask::generateReport() const {
     if (PrimerStatistics::validate(settings.forwardPrimer) && PrimerStatistics::validate(settings.reversePrimer)) {
         PrimersPairStatistics calc(settings.forwardPrimer, settings.reversePrimer);
         return tr("Products found: %1").arg(results.size()) +
-                "<br>" +
-                spaces +
-                "<br>" +
-                tr("Primers details:") +
-                calc.generateReport();
+               "<br>" +
+               spaces +
+               "<br>" +
+               tr("Primers details:") +
+               calc.generateReport();
     }
 
     return tr("Products found: %1. <br><br>"
-              "The detailed information about primers is not available as primers or sequence contain a character from the Extended DNA alphabet.").arg(results.size());
+              "The detailed information about primers is not available as primers or sequence contain a character from the Extended DNA alphabet.")
+        .arg(results.size());
 }
 
 InSilicoPcrProduct InSilicoPcrTask::createResult(const PrimerBind &leftPrimer, const U2Region &product, const PrimerBind &rightPrimer, U2Strand::Direction direction) const {
@@ -289,10 +282,10 @@ InSilicoPcrProduct InSilicoPcrTask::createResult(const PrimerBind &leftPrimer, c
     return result;
 }
 
-bool InSilicoPcrTask::updateSequenceByPrimers(const PrimerBind &leftPrimer, const PrimerBind &rightPrimer, QByteArray& productSequence) const {
+bool InSilicoPcrTask::updateSequenceByPrimers(const PrimerBind &leftPrimer, const PrimerBind &rightPrimer, QByteArray &productSequence) const {
     SAFE_POINT((leftPrimer.ledge > 0 || rightPrimer.ledge > 0),
-        "Error: at least one primer should has a ledge on one side",
-        false);
+               "Error: at least one primer should has a ledge on one side",
+               false);
 
     updateSequenceByPrimer(leftPrimer, productSequence);
     updateSequenceByPrimer(rightPrimer, productSequence);
@@ -300,7 +293,7 @@ bool InSilicoPcrTask::updateSequenceByPrimers(const PrimerBind &leftPrimer, cons
     return true;
 }
 
-void InSilicoPcrTask::updateSequenceByPrimer(const PrimerBind &primer, QByteArray& productSequence) const {
+void InSilicoPcrTask::updateSequenceByPrimer(const PrimerBind &primer, QByteArray &productSequence) const {
     if (primer.region.startPos == 0) {
         QByteArray primerPart = primer.primer.left(primer.ledge);
         productSequence.insert(0, primerPart);
@@ -310,7 +303,7 @@ void InSilicoPcrTask::updateSequenceByPrimer(const PrimerBind &primer, QByteArra
     }
 }
 
-qint64 InSilicoPcrTask::getProductSize(const PrimerBind& leftBind, const PrimerBind& rightBind) const {
+qint64 InSilicoPcrTask::getProductSize(const PrimerBind &leftBind, const PrimerBind &rightBind) const {
     const qint64 ledge = rightBind.ledge + leftBind.ledge;
     qint64 result = rightBind.region.endPos() - leftBind.region.startPos + ledge;
     if (result < 0 && settings.isCircular) {
@@ -319,11 +312,11 @@ qint64 InSilicoPcrTask::getProductSize(const PrimerBind& leftBind, const PrimerB
     return result;
 }
 
-const QList<InSilicoPcrProduct> & InSilicoPcrTask::getResults() const {
+const QList<InSilicoPcrProduct> &InSilicoPcrTask::getResults() const {
     return results;
 }
 
-const InSilicoPcrTaskSettings & InSilicoPcrTask::getSettings() const {
+const InSilicoPcrTaskSettings &InSilicoPcrTask::getSettings() const {
     return settings;
 }
 
@@ -332,4 +325,4 @@ InSilicoPcrTask::PrimerBind::PrimerBind() {
     ledge = 0;
 }
 
-} // U2
+}    // namespace U2

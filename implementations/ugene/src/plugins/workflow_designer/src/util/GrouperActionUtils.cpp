@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "GrouperActionUtils.h"
+
 #include <QScopedPointer>
 
 #include <U2Core/AnnotationTableObject.h>
@@ -27,8 +29,6 @@
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Lang/BaseTypes.h>
-
-#include "GrouperActionUtils.h"
 
 namespace U2 {
 namespace Workflow {
@@ -114,8 +114,7 @@ bool GrouperActionUtils::equalData(const QString &groupOp, const QVariant &data1
 
             return seq1 == seq2;
         }
-    }
-    else if (BaseTypes::MULTIPLE_ALIGNMENT_TYPE() == dataType) {
+    } else if (BaseTypes::MULTIPLE_ALIGNMENT_TYPE() == dataType) {
         SharedDbiDataHandler alId1 = data1.value<SharedDbiDataHandler>();
         SharedDbiDataHandler alId2 = data2.value<SharedDbiDataHandler>();
 
@@ -125,13 +124,12 @@ bool GrouperActionUtils::equalData(const QString &groupOp, const QVariant &data1
         QScopedPointer<MultipleSequenceAlignmentObject> alObj2(StorageUtils::getMsaObject(context->getDataStorage(), alId2));
         SAFE_POINT(NULL != alObj2.data(), "NULL MSA Object!", false);
 
-
         const MultipleSequenceAlignment al1 = alObj1->getMultipleAlignment();
         const MultipleSequenceAlignment al2 = alObj2->getMultipleAlignment();
 
         if (GroupOperations::BY_NAME() == groupOp) {
             return al1->getName() == al2->getName();
-        } else { // id or value
+        } else {    // id or value
             if (al1->getMsaRows().size() != al2->getMsaRows().size()) {
                 return false;
             }
@@ -147,8 +145,7 @@ bool GrouperActionUtils::equalData(const QString &groupOp, const QVariant &data1
             }
             return true;
         }
-    }
-    else if (BaseTypes::STRING_TYPE() == dataType) {
+    } else if (BaseTypes::STRING_TYPE() == dataType) {
         return data1.toString() == data2.toString();
     }
 
@@ -161,13 +158,13 @@ void GrouperActionUtils::applyActions(WorkflowContext *context, QList<GrouperOut
         if (mData.keys().contains(key)) {
             if (!perfs.contains(slot.getOutSlotId())) {
                 ActionPerformer *p = getActionPerformer(slot, context, perfs);
-                SAFE_POINT(NULL != p, "GrouperActionUtils::applyActions - performer is NULL",);
+                SAFE_POINT(NULL != p, "GrouperActionUtils::applyActions - performer is NULL", );
 
                 perfs[slot.getOutSlotId()] = p;
             }
         }
     }
-    QList<ActionPerformer*> perfList = perfs.values();
+    QList<ActionPerformer *> perfList = perfs.values();
 
     while (!outSlots.isEmpty()) {
         foreach (const GrouperOutSlot &slot, outSlots) {
@@ -196,9 +193,7 @@ void GrouperActionUtils::applyActions(WorkflowContext *context, QList<GrouperOut
 /* Action performers */
 /************************************************************************/
 ActionPerformer::ActionPerformer(const QString &outSlot, const GrouperSlotAction &action, WorkflowContext *context)
-: outSlot(outSlot), action(action), context(context), started(false), parent(NULL)
-{
-
+    : outSlot(outSlot), action(action), context(context), started(false), parent(NULL) {
 }
 
 QString ActionPerformer::getOutSlot() const {
@@ -206,7 +201,6 @@ QString ActionPerformer::getOutSlot() const {
 }
 
 void ActionPerformer::setParameters(const QVariantMap &) {
-
 }
 
 QVariantMap ActionPerformer::getParameters() const {
@@ -218,9 +212,7 @@ QString ActionPerformer::getActionType() const {
 }
 
 MergeSequencePerformer::MergeSequencePerformer(const QString &outSlot, const GrouperSlotAction &action, WorkflowContext *context)
-: ActionPerformer(outSlot, action, context), prevSeqLen(0)
-{
-
+    : ActionPerformer(outSlot, action, context), prevSeqLen(0) {
 }
 
 bool MergeSequencePerformer::applyAction(const QVariant &newData) {
@@ -271,9 +263,7 @@ QVariantMap MergeSequencePerformer::getParameters() const {
 QString MergeSequencePerformer::PREV_SEQ_LENGTH = QString("prev-seq-length");
 
 Sequence2MSAPerformer::Sequence2MSAPerformer(const QString &outSlot, const GrouperSlotAction &action, WorkflowContext *context)
-    : ActionPerformer(outSlot, action, context)
-{
-
+    : ActionPerformer(outSlot, action, context) {
 }
 
 bool Sequence2MSAPerformer::applyAction(const QVariant &newData) {
@@ -309,7 +299,7 @@ bool Sequence2MSAPerformer::applyAction(const QVariant &newData) {
         foreach (const MultipleSequenceAlignmentRow &currRow, result->getMsaRows()) {
             if ((currRow->getName() == rowName) &&
                 (currRow->getData() == bytes)) {
-                    return true;
+                return true;
             }
         }
     }
@@ -325,9 +315,7 @@ QVariant Sequence2MSAPerformer::finishAction(U2OpStatus &) {
 }
 
 MergerMSAPerformer::MergerMSAPerformer(const QString &outSlot, const GrouperSlotAction &action, WorkflowContext *context)
-    : ActionPerformer(outSlot, action, context)
-{
-
+    : ActionPerformer(outSlot, action, context) {
 }
 
 bool MergerMSAPerformer::applyAction(const QVariant &newData) {
@@ -374,9 +362,7 @@ QVariant MergerMSAPerformer::finishAction(U2OpStatus &) {
 }
 
 MergerStringPerformer::MergerStringPerformer(const QString &outSlot, const GrouperSlotAction &action, WorkflowContext *context)
-: ActionPerformer(outSlot, action, context)
-{
-
+    : ActionPerformer(outSlot, action, context) {
 }
 
 bool MergerStringPerformer::applyAction(const QVariant &newData) {
@@ -397,8 +383,7 @@ QVariant MergerStringPerformer::finishAction(U2OpStatus &) {
 }
 
 MergeAnnotationPerformer::MergeAnnotationPerformer(const QString &outSlot, const GrouperSlotAction &action, WorkflowContext *context)
-: ActionPerformer(outSlot, action, context), offset(0)
-{
+    : ActionPerformer(outSlot, action, context), offset(0) {
     started = true;
 }
 
@@ -461,5 +446,5 @@ void MergeAnnotationPerformer::setParameters(const QVariantMap &map) {
     offset = map.value(MergeSequencePerformer::PREV_SEQ_LENGTH, 0).toLongLong();
 }
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

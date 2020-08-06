@@ -19,19 +19,17 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
-
 #include "MarkerAttribute.h"
+
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
-MarkerAttribute::MarkerAttribute(const Descriptor& d, const DataTypePtr type, bool required, const QVariant & defaultValue)
-: Attribute(d, type, required, defaultValue)
-{
-
+MarkerAttribute::MarkerAttribute(const Descriptor &d, const DataTypePtr type, bool required, const QVariant &defaultValue)
+    : Attribute(d, type, required, defaultValue) {
 }
 
-void MarkerAttribute::setAttributeValue(const QVariant &/*newVal*/) {
+void MarkerAttribute::setAttributeValue(const QVariant & /*newVal*/) {
     FAIL("marker set value", );
 }
 
@@ -40,7 +38,7 @@ const QVariant &MarkerAttribute::getAttributePureValue() const {
     foreach (Marker *marker, markers) {
         names << marker->getName();
     }
-    const_cast<QVariant&>(value) = names.join(",");
+    const_cast<QVariant &>(value) = names.join(",");
     return value;
 }
 
@@ -56,7 +54,7 @@ AttributeGroup MarkerAttribute::getGroup() {
     return MARKER_GROUP;
 }
 
-QList<Marker*> & MarkerAttribute::getMarkers() {
+QList<Marker *> &MarkerAttribute::getMarkers() {
     return markers;
 }
 
@@ -72,4 +70,4 @@ bool MarkerAttribute::contains(const QString &markerId) const {
     return false;
 }
 
-} //U2
+}    // namespace U2

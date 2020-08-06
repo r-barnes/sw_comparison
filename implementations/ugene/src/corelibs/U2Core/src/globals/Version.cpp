@@ -22,23 +22,23 @@
 #include "Version.h"
 
 #ifndef U2_APP_VERSION
-#error U2_APP_VERSION is not set!
+#    error U2_APP_VERSION is not set!
 #endif
 
 #ifndef UGENE_MIN_VERSION_SQLITE
-#error UGENE_MIN_VERSION_SQLITE is not set!
+#    error UGENE_MIN_VERSION_SQLITE is not set!
 #else
-#define U2_APP_MIN_VERSION_SQLITE_STRING TOSTRING(UGENE_MIN_VERSION_SQLITE)
+#    define U2_APP_MIN_VERSION_SQLITE_STRING TOSTRING(UGENE_MIN_VERSION_SQLITE)
 #endif
 
 #ifndef UGENE_MIN_VERSION_MYSQL
-#error UGENE_MIN_VERSION_MYSQL is not set!
+#    error UGENE_MIN_VERSION_MYSQL is not set!
 #else
-#define U2_APP_MIN_VERSION_MYSQL_STRING TOSTRING(UGENE_MIN_VERSION_MYSQL)
+#    define U2_APP_MIN_VERSION_MYSQL_STRING TOSTRING(UGENE_MIN_VERSION_MYSQL)
 #endif
 
 #ifndef U2_DISTRIBUTION_INFO
-#define U2_DISTRIBUTION_INFO "sources"
+#    define U2_DISTRIBUTION_INFO "sources"
 #endif
 
 namespace U2 {
@@ -51,7 +51,7 @@ namespace U2 {
 
 const QString Version::buildDate = __DATE__;
 const int Version::appArchitecture = QT_POINTER_SIZE * 8;
-const QString Version::distributionInfo = QString(TOSTRING(U2_DISTRIBUTION_INFO)).replace("_"," ");
+const QString Version::distributionInfo = QString(TOSTRING(U2_DISTRIBUTION_INFO)).replace("_", " ");
 
 Version::Version() {
     major = minor = patch = 0;
@@ -59,7 +59,7 @@ Version::Version() {
     text = "unknown";
 }
 
-Version Version::parseVersion(const QString& text) {
+Version Version::parseVersion(const QString &text) {
     Version v;
     v.text = text;
 
@@ -67,7 +67,7 @@ Version Version::parseVersion(const QString& text) {
     int versionType = 0;
     QString currentNum;
     int textPos = 0;
-    for (; textPos < v.text.length(); textPos++ ) {
+    for (; textPos < v.text.length(); textPos++) {
         QChar c = v.text.at(textPos);
         if (c.isNumber()) {
             currentNum += c;
@@ -91,7 +91,7 @@ Version Version::parseVersion(const QString& text) {
     }
     v.suffix = v.text.mid(textPos);
     v.isDevVersion = v.suffix.contains(VERSION_DEV_SUFFIX);
-    if(v.suffix.isEmpty()){//See issue UGENE-870 (https://ugene.net/tracker/browse/UGENE-870)
+    if (v.suffix.isEmpty()) {    //See issue UGENE-870 (https://ugene.net/tracker/browse/UGENE-870)
         bool ok;
         int val = currentNum.toInt(&ok);
         if (ok) {
@@ -124,16 +124,15 @@ Version Version::minVersionForMySQL() {
     return parseVersion(U2_APP_MIN_VERSION_MYSQL_STRING);
 }
 
-
-bool Version::operator  >  (const Version& v) const {
+bool Version::operator>(const Version &v) const {
     return v < *this;
 }
 
-bool Version::operator  >= (const Version& v) const {
+bool Version::operator>=(const Version &v) const {
     return v <= *this;
 }
 
-bool Version::operator  <  (const Version& v) const {
+bool Version::operator<(const Version &v) const {
     if (v.major != major) {
         return v.major > major;
     }
@@ -147,17 +146,14 @@ bool Version::operator  <  (const Version& v) const {
     }
 
     return false;
-
 }
 
-bool Version::operator  <= (const Version& v) const {
+bool Version::operator<=(const Version &v) const {
     return *this < v || *this == v;
 }
 
-bool Version::operator  == (const Version& v) const {
+bool Version::operator==(const Version &v) const {
     return major == v.major && minor == v.minor && patch == v.patch;
 }
 
-
-} //namespace
-
+}    // namespace U2

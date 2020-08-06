@@ -19,20 +19,18 @@
  * MA 02110-1301, USA.
  */
 
+#include "SchemaWorker.h"
+
 #include <U2Lang/ActorPrototypeRegistry.h>
 #include <U2Lang/BaseActorCategories.h>
 #include <U2Lang/IncludedProtoFactory.h>
 #include <U2Lang/WorkflowEnv.h>
 
-#include "SchemaWorker.h"
-
 namespace U2 {
 namespace LocalWorkflow {
 
 SchemaWorker::SchemaWorker(Actor *a)
-: BaseWorker(a)
-{
-
+    : BaseWorker(a) {
 }
 
 bool SchemaWorker::isReady() const {
@@ -48,11 +46,9 @@ Task *SchemaWorker::tick() {
 }
 
 void SchemaWorker::init() {
-
 }
 
 void SchemaWorker::cleanup() {
-
 }
 
 QString SchemaWorkerPrompter::composeRichDoc() {
@@ -65,5 +61,5 @@ bool SchemaWorkerFactory::init(Schema *schema, const QString &name, const QStrin
     return true;
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

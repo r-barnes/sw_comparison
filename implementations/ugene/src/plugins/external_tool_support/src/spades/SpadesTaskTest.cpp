@@ -19,12 +19,13 @@
 * MA 02110-1301, USA.
 */
 
+#include "SpadesTaskTest.h"
+
 #include <QDomElement>
 #include <QFile>
 
 #include <U2Core/L10n.h>
 
-#include "SpadesTaskTest.h"
 #include "SpadesWorker.h"
 #include "utils/OutputCollector.h"
 
@@ -56,7 +57,7 @@ const QString GTest_SpadesTaskTest::UNTRUSTED_CONTIGS = "untrusted_contigs";
 const QString GTest_SpadesTaskTest::OUTPUT_DIR = "out";
 const QString GTest_SpadesTaskTest::DESIRED_PARAMETERS = "desired_parameters";
 
-void GTest_SpadesTaskTest::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_SpadesTaskTest::init(XMLTestFormat *tf, const QDomElement &el) {
     QVariantMap inputDataSettings;
     QString elementStr = el.attribute(SEQUENCING_PLATFORM);
     if (elementStr == "iontorrent") {
@@ -244,7 +245,7 @@ void GTest_SpadesTaskTest::init(XMLTestFormat *tf, const QDomElement& el) {
     //generate read urls
     int counter = 1;
     QList<AssemblyReads>::iterator it(taskSettings.reads.begin());
-    for (;it != taskSettings.reads.end(); it++) {
+    for (; it != taskSettings.reads.end(); it++) {
         AssemblyReads &reads = *it;
         if ((reads.libName.contains("mate") || reads.libName.contains("pair")) && reads.readType != TYPE_INTERLACED) {
             reads.left.append(GUrl(QString::number(counter++) + "_left_" + reads.libName + "_read"));
@@ -258,17 +259,17 @@ void GTest_SpadesTaskTest::init(XMLTestFormat *tf, const QDomElement& el) {
 
 void GTest_SpadesTaskTest::prepare() {
     collector = new OutputCollector(false);
-    taskSettings.listeners = QList<ExternalToolListener*>() << collector;
+    taskSettings.listeners = QList<ExternalToolListener *>() << collector;
     spadesTask = new SpadesTask(taskSettings);
     addSubTask(spadesTask);
 }
 
-QList<Task*> GTest_SpadesTaskTest::onSubTaskFinished(Task* subTask) {
-    QList<Task*> res;
+QList<Task *> GTest_SpadesTaskTest::onSubTaskFinished(Task *subTask) {
+    QList<Task *> res;
     if (subTask == spadesTask) {
         QString log = collector->getLog();
         delete collector;
-        foreach(const QString& el, desiredParameters) {
+        foreach (const QString &el, desiredParameters) {
             if (!log.contains(el)) {
                 stateInfo.setError(QString("Desired parameter %1 not found").arg(el));
                 return res;
@@ -281,7 +282,7 @@ QList<Task*> GTest_SpadesTaskTest::onSubTaskFinished(Task* subTask) {
 const QString GTest_CheckYAMLFile::STRINGS_TO_CHECK = "strings_to_check";
 const QString GTest_CheckYAMLFile::INPUT_DIR = "input_dir";
 
-void GTest_CheckYAMLFile::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_CheckYAMLFile::init(XMLTestFormat *tf, const QDomElement &el) {
     QVariantMap inputDataSettings;
     QString elementStr = el.attribute(STRINGS_TO_CHECK);
     if (elementStr.isEmpty()) {
@@ -313,8 +314,8 @@ void GTest_CheckYAMLFile::prepare() {
     }
     f.close();
 
-    foreach(const QString& el, desiredStrings) {
-        foreach(const QString& fileLane, fileLines) {
+    foreach (const QString &el, desiredStrings) {
+        foreach (const QString &fileLane, fileLines) {
             if (fileLane.contains(el.trimmed())) {
                 desiredStrings.removeAll(el);
             }
@@ -325,13 +326,12 @@ void GTest_CheckYAMLFile::prepare() {
     }
 }
 
-QList<XMLTestFactory*> SpadesTaskTest::createTestFactories() {
-    QList<XMLTestFactory*> res;
+QList<XMLTestFactory *> SpadesTaskTest::createTestFactories() {
+    QList<XMLTestFactory *> res;
     res.append(GTest_SpadesTaskTest::createFactory());
     res.append(GTest_CheckYAMLFile::createFactory());
 
     return res;
 }
 
-
-}
+}    // namespace U2

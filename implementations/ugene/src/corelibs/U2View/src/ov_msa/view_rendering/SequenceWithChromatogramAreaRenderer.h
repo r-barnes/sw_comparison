@@ -22,9 +22,9 @@
 #ifndef _U2_SEQUENCE_WITH_CHROMATOGRAM_AREA_RENDERER_H_
 #define _U2_SEQUENCE_WITH_CHROMATOGRAM_AREA_RENDERER_H_
 
-#include "SequenceAreaRenderer.h"
-
 #include <U2Core/MultipleChromatogramAlignmentRow.h>
+
+#include "SequenceAreaRenderer.h"
 
 namespace U2 {
 
@@ -34,7 +34,7 @@ class McaEditorSequenceArea;
 class SequenceWithChromatogramAreaRenderer : public SequenceAreaRenderer {
     Q_OBJECT
 public:
-    SequenceWithChromatogramAreaRenderer(MaEditorWgt *ui, McaEditorSequenceArea* seqAreaWgt);
+    SequenceWithChromatogramAreaRenderer(MaEditorWgt *ui, McaEditorSequenceArea *seqAreaWgt);
 
     void drawReferenceSelection(QPainter &painter) const;
     void drawNameListSelection(QPainter &painter) const;
@@ -54,33 +54,31 @@ private:
 
     QColor getBaseColor(char base) const;
 
-    void drawChromatogramTrace(const DNAChromatogram& chroma, qreal x, qreal y, qreal h, QPainter& p,
-                               const U2Region& visible) const;
-    void drawOriginalBaseCalls(qreal h, QPainter& p, const U2Region& visible, const QByteArray& ba) const;
-    void drawQualityValues(const DNAChromatogram& chroma, qreal w, qreal h,
-                           QPainter& p, const U2Region& visible, const QByteArray& ba) const;
-    void drawChromatogramBaseCallsLines(const DNAChromatogram& chroma, qreal h,
-                                        QPainter& p, const U2Region& visible, const QByteArray& ba) const;
+    void drawChromatogramTrace(const DNAChromatogram &chroma, qreal x, qreal y, qreal h, QPainter &p, const U2Region &visible) const;
+    void drawOriginalBaseCalls(qreal h, QPainter &p, const U2Region &visible, const QByteArray &ba) const;
+    void drawQualityValues(const DNAChromatogram &chroma, qreal w, qreal h, QPainter &p, const U2Region &visible, const QByteArray &ba) const;
+    void drawChromatogramBaseCallsLines(const DNAChromatogram &chroma, qreal h, QPainter &p, const U2Region &visible, const QByteArray &ba) const;
+
 private:
-    McaEditorSequenceArea* getSeqArea() const;
-    const ChromatogramViewSettings& getSettings() const;
+    McaEditorSequenceArea *getSeqArea() const;
+    const ChromatogramViewSettings &getSettings() const;
     static int getChromatogramHeight();
-    void completePolygonsWithLastBaseCallTrace(QPolygonF& polylineA, QPolygonF& polylineC, QPolygonF& polylineG, QPolygonF& polylineT, const DNAChromatogram& chroma, qreal columnWidth, const U2Region& visible, qreal h) const;
+    void completePolygonsWithLastBaseCallTrace(QPolygonF &polylineA, QPolygonF &polylineC, QPolygonF &polylineG, QPolygonF &polylineT, const DNAChromatogram &chroma, qreal columnWidth, const U2Region &visible, qreal h) const;
 
 private:
-    qreal   charWidth;
-    qreal   charHeight;
+    qreal charWidth;
+    qreal charHeight;
 
-    mutable int     chromaMax;
-    QPen            linePen;
-    int             heightPD;
-    int             heightBC;
-    int             heightQuality;
-    int             maxTraceHeight;
+    mutable int chromaMax;
+    QPen linePen;
+    int heightPD;
+    int heightBC;
+    int heightQuality;
+    int maxTraceHeight;
 
     static const qreal TRACE_OR_BC_LINES_DIVIDER;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_SEQUENCE_WITH_CHROMATOGRAM_AREA_RENDERER_H_
+#endif    // _U2_SEQUENCE_WITH_CHROMATOGRAM_AREA_RENDERER_H_

@@ -211,7 +211,7 @@
     <message>
         <location filename="../src/ProfileToProfileWorker.cpp" line="122"/>
         <source>Align profile to profile with MUSCLE</source>
-        <translation type="unfinished"></translation>
+        <translation>Выравнивание при помощи MUSCLE</translation>
     </message>
 </context>
 <context>
@@ -342,7 +342,7 @@
     <message>
         <location filename="../src/MuscleTask.cpp" line="274"/>
         <source>A problem occurred during aligning profile to profile with MUSCLE. The original alignment is no more available.</source>
-        <translation type="unfinished"></translation>
+        <translation>A problem occurred during aligning profile to profile with MUSCLE. The original alignment is no more available.</translation>
     </message>
     <message>
         <location filename="../src/MuscleTask.cpp" line="307"/>
@@ -520,39 +520,35 @@
     <message>
         <location filename="../src/MuscleTask.cpp" line="414"/>
         <source>MultipleSequenceAlignment object has been changed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MAlignment object has been changed</source>
-        <translation type="vanished">Объект множественного выравнивания был изменен</translation>
+        <translation>MultipleSequenceAlignment object has been changed</translation>
     </message>
 </context>
 <context>
     <name>U2::MuscleMSAEditorContext</name>
     <message>
-        <location filename="../src/MusclePlugin.cpp" line="140"/>
+        <location filename="../src/MusclePlugin.cpp" line="137"/>
         <source>Align with MUSCLE...</source>
         <translation>Выравнивание с помощью MUSCLE...</translation>
     </message>
     <message>
-        <location filename="../src/MusclePlugin.cpp" line="149"/>
+        <location filename="../src/MusclePlugin.cpp" line="146"/>
         <source>Align sequences to profile with MUSCLE...</source>
         <translation>Выровнять последовательности на профиль при помощи MUSCLE...</translation>
     </message>
     <message>
-        <location filename="../src/MusclePlugin.cpp" line="158"/>
+        <location filename="../src/MusclePlugin.cpp" line="155"/>
         <source>Align profile to profile with MUSCLE...</source>
         <translation>Выровнять профиль на профиль при помощи MUSCLE...</translation>
     </message>
     <message>
+        <location filename="../src/MusclePlugin.cpp" line="234"/>
         <location filename="../src/MusclePlugin.cpp" line="237"/>
-        <location filename="../src/MusclePlugin.cpp" line="240"/>
         <source>Select file with sequences</source>
         <translation>Выбор файла последовательностей</translation>
     </message>
     <message>
-        <location filename="../src/MusclePlugin.cpp" line="265"/>
-        <location filename="../src/MusclePlugin.cpp" line="269"/>
+        <location filename="../src/MusclePlugin.cpp" line="262"/>
+        <location filename="../src/MusclePlugin.cpp" line="266"/>
         <source>Select file with alignment</source>
         <translation>Выбор файла выравнивания</translation>
     </message>
@@ -567,23 +563,23 @@
     <message>
         <location filename="../src/MuscleParallel.cpp" line="57"/>
         <source>There is not enough memory to align these sequences with MUSCLE.</source>
-        <translation type="unfinished"></translation>
+        <translation>There is not enough memory to align these sequences with MUSCLE.</translation>
     </message>
 </context>
 <context>
     <name>U2::MusclePlugin</name>
     <message>
-        <location filename="../src/MusclePlugin.cpp" line="61"/>
+        <location filename="../src/MusclePlugin.cpp" line="58"/>
         <source>MUSCLE</source>
         <translation>MUSCLE</translation>
     </message>
     <message>
-        <location filename="../src/MusclePlugin.cpp" line="62"/>
+        <location filename="../src/MusclePlugin.cpp" line="59"/>
         <source>A port of MUSCLE package for multiple sequence alignment. Check http://www.drive5.com/muscle/ for the original version</source>
         <translation>Порт пакета MUSCLE для выравнивания множественных последовательностей. ￼Сайт оригинального пакета http://www.drive5.com/muscle/</translation>
     </message>
     <message>
-        <location filename="../src/MusclePlugin.cpp" line="70"/>
+        <location filename="../src/MusclePlugin.cpp" line="67"/>
         <source>Align with MUSCLE...</source>
         <translation>Выравнивание с помощью MUSCLE...</translation>
     </message>
@@ -636,11 +632,7 @@
     <message>
         <location filename="../src/MuscleTask.cpp" line="109"/>
         <source>Stopping MUSCLE task, because of error in MultipleSequenceAlignment::mid function</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stopping MUSCLE task, because of error in MAlignment::mid function</source>
-        <translation type="vanished">Stopping MUSCLE task, because of error in MAlignment::mid function</translation>
+        <translation>Stopping MUSCLE task, because of error in MultipleSequenceAlignment::mid function</translation>
     </message>
     <message>
         <location filename="../src/MuscleTask.cpp" line="128"/>
@@ -704,7 +696,7 @@
     <message>
         <location filename="../src/MuscleParallel.cpp" line="597"/>
         <source>Can&apos;t allocate enough memory to perform aligning, try to use 64bit UGENE version</source>
-        <translation type="unfinished"></translation>
+        <translation>Can&apos;t allocate enough memory to perform aligning, try to use 64bit UGENE version</translation>
     </message>
 </context>
 <context>
@@ -730,7 +722,7 @@
     <message>
         <location filename="../src/MuscleParallel.cpp" line="654"/>
         <source>Can&apos;t allocate enough memory to perform aligning, try to use 64bit UGENE version</source>
-        <translation type="unfinished"></translation>
+        <translation>Can&apos;t allocate enough memory to perform aligning, try to use 64bit UGENE version</translation>
     </message>
 </context>
 </TS>

@@ -25,14 +25,11 @@ namespace U2 {
 namespace Workflow {
 
 ActorConfigurationEditor::ActorConfigurationEditor()
-: ConfigurationEditor(), cfg(NULL)
-{
-
+    : ConfigurationEditor(), cfg(NULL) {
 }
 
 ActorConfigurationEditor::ActorConfigurationEditor(const ActorConfigurationEditor &other)
-: ConfigurationEditor(other)
-{
+    : ConfigurationEditor(other) {
     cfg = other.cfg;
 }
 
@@ -40,9 +37,9 @@ void ActorConfigurationEditor::setConfiguration(Actor *actor) {
     cfg = actor;
 }
 
-ConfigurationEditor * ActorConfigurationEditor::clone() {
+ConfigurationEditor *ActorConfigurationEditor::clone() {
     return new ActorConfigurationEditor(*this);
 }
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

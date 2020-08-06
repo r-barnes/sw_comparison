@@ -22,8 +22,8 @@
 #ifndef _U2_DATASET_H_
 #define _U2_DATASET_H_
 
-#include <U2Core/global.h>
 #include <U2Core/FilesIterator.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -36,20 +36,20 @@ public:
     Dataset(const Dataset &other);
     ~Dataset();
 
-    const QString & getName() const;
+    const QString &getName() const;
     void setName(const QString &value);
 
     void addUrl(URLContainer *url);
     void removeUrl(URLContainer *url);
-    QList<URLContainer*> getUrls() const;
-    QList<URLContainer*> & getUrls();
+    QList<URLContainer *> getUrls() const;
+    QList<URLContainer *> &getUrls();
 
     bool contains(const QString &url) const;
     void clear();
 
     static QList<Dataset> getDefaultDatasetList();
 
-    Dataset &operator =(const Dataset &other);
+    Dataset &operator=(const Dataset &other);
 
 public:
     static const QString DEFAULT_NAME;
@@ -58,7 +58,7 @@ private:
     void copy(const Dataset &other);
 
     QString name;
-    QList<URLContainer*> urls;
+    QList<URLContainer *> urls;
 };
 
 class U2LANG_EXPORT DatasetFilesIterator : public QObject, public FilesIterator {
@@ -82,8 +82,8 @@ private:
     QString lastDatasetName;
 };
 
-} // U2
+}    // namespace U2
 
 Q_DECLARE_METATYPE(QList<U2::Dataset>);
 
-#endif // _U2_DATASET_H_
+#endif    // _U2_DATASET_H_

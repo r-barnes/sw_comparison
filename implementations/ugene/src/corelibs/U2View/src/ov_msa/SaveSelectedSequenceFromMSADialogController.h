@@ -28,16 +28,16 @@
 
 #include <U2Gui/SaveDocumentController.h>
 
-class Ui_SaveSelectedSequenceFromMSADialog;
 
 namespace U2 {
 
+class Ui_SaveSelectedSequenceFromMSADialog;
 class SaveDocumentInFolderController;
 
 class SaveSelectedSequenceFromMSADialogController : public QDialog {
     Q_OBJECT
 public:
-    SaveSelectedSequenceFromMSADialogController(QWidget* p, const QString& defaultCustomFilename);
+    SaveSelectedSequenceFromMSADialogController(QWidget *p, const QString &defaultCustomFilename);
     ~SaveSelectedSequenceFromMSADialogController();
 
     virtual void accept();
@@ -47,17 +47,18 @@ public:
     QString getCustomFileName() const;
     bool getTrimGapsFlag() const;
     bool getAddToProjectFlag() const;
+
 private:
     void initSaveController();
 
-    QString             url;
-    QString             defaultDir;
-    DocumentFormatId    formatId;
-    QString             customFileName;
-    bool                trimGapsFlag;
-    bool                addToProjectFlag;
-    SaveDocumentInFolderController* saveController;
-    Ui_SaveSelectedSequenceFromMSADialog* ui;
+    QString url;
+    QString defaultDir;
+    DocumentFormatId formatId;
+    QString customFileName;
+    bool trimGapsFlag;
+    bool addToProjectFlag;
+    SaveDocumentInFolderController *saveController;
+    Ui_SaveSelectedSequenceFromMSADialog *ui;
 };
 
 class SaveDocumentInFolderControllerConfig : public SaveDocumentControllerConfig {
@@ -70,27 +71,28 @@ public:
 class SaveDocumentInFolderController : public QObject {
     Q_OBJECT
 public:
-    SaveDocumentInFolderController(const SaveDocumentInFolderControllerConfig& config,
-                            const DocumentFormatConstraints& formatConstraints,
-                            QObject* parent);
+    SaveDocumentInFolderController(const SaveDocumentInFolderControllerConfig &config,
+                                   const DocumentFormatConstraints &formatConstraints,
+                                   QObject *parent);
 
     QString getSaveDirName() const;
 signals:
     void si_pathChanged(const QString &path);
 private slots:
     void sl_fileDialogButtonClicked();
+
 private:
     void init();
     void setPath(const QString &path);
     void initFormatComboBox();
 
-    SaveDocumentInFolderControllerConfig        conf;
-    SaveDocumentController::SimpleFormatsInfo   formatsInfo;
+    SaveDocumentInFolderControllerConfig conf;
+    SaveDocumentController::SimpleFormatsInfo formatsInfo;
     //QString                                     currentFormat;
 
     static const QString HOME_DIR_IDENTIFIER;
 };
 
-}
+}    // namespace U2
 
 #endif

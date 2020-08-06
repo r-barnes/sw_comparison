@@ -20,15 +20,16 @@
  */
 
 #include "IntegralBus.h"
-#include "IntegralBusType.h"
+#include <limits.h>
+
+#include <QMutexLocker>
 
 #include <U2Core/L10n.h>
 #include <U2Core/Log.h>
 
 #include <U2Lang/WorkflowUtils.h>
 
-#include <limits.h>
-#include <QMutexLocker>
+#include "IntegralBusType.h"
 
 namespace U2 {
 namespace Workflow {
@@ -40,13 +41,11 @@ static const QString PATH_SEPARATOR = QString(">");
 static const QString PATH_LIST_SEPARATOR = QString(",");
 
 BusMap::BusMap(const StrStrMap &busMap, const QMap<QString, QStringList> &listMap, const SlotPathMap &paths)
-: input(true), busMap(busMap), listMap(listMap), paths(paths)
-{
+    : input(true), busMap(busMap), listMap(listMap), paths(paths) {
 }
 
 BusMap::BusMap(const StrStrMap &busMap, bool breaksDataflow, const QString &actorId)
-: input(false), busMap(busMap), breaksDataflow(breaksDataflow), actorId(actorId)
-{
+    : input(false), busMap(busMap), breaksDataflow(breaksDataflow), actorId(actorId) {
 }
 
 void BusMap::parseSource(const QString &src, QString &srcId, QStringList &path) {
@@ -106,20 +105,19 @@ QVariantMap BusMap::getMessageData(const Message &m) const {
     QString ikey;
 
     QVariantMap result;
-    foreach(QString src, imap.uniqueKeys()) {
+    foreach (QString src, imap.uniqueKeys()) {
         QVariant ival = imap.value(src);
 
         parseSource(src, ikey, ipath);
-        foreach(QString rkey, busMap.keys(ikey)) {
+        foreach (QString rkey, busMap.keys(ikey)) {
             if (equalPaths(paths, ipath, rkey, ikey)) {
-                coreLog.trace("reducing bus from key="+ikey+" to="+rkey);
+                coreLog.trace("reducing bus from key=" + ikey + " to=" + rkey);
                 result[rkey] = ival;
             }
         }
 
-        QMapIterator<QString,QStringList> lit(listMap);
-        while (lit.hasNext())
-        {
+        QMapIterator<QString, QStringList> lit(listMap);
+        while (lit.hasNext()) {
             lit.next();
             QString rkey = lit.key();
             assert(!lit.value().isEmpty());
@@ -127,10 +125,10 @@ QVariantMap BusMap::getMessageData(const Message &m) const {
                 QVariantList vl = result[rkey].toList();
                 if (m.getType()->getDatatypeByDescriptor(src)->isList()) {
                     vl += ival.toList();
-                    coreLog.trace("reducing bus key="+src+" to list of "+rkey);
+                    coreLog.trace("reducing bus key=" + src + " to list of " + rkey);
                 } else {
                     vl.append(ival);
-                    coreLog.trace("reducing bus key="+src+" to list element of "+rkey);
+                    coreLog.trace("reducing bus key=" + src + " to list element of " + rkey);
                 }
                 result[rkey] = vl;
             }
@@ -167,7 +165,7 @@ QVariantMap BusMap::composeMessageMap(const Message &m, const QVariantMap &conte
         while (it.hasNext()) {
             it.next();
             QString key = busMap.value(it.key());
-            coreLog.trace("putting key="+key+" remapped from="+it.key());
+            coreLog.trace("putting key=" + key + " remapped from=" + it.key());
             data.insert(key, it.value());
         }
     } else {
@@ -181,7 +179,7 @@ QVariantMap BusMap::composeMessageMap(const Message &m, const QVariantMap &conte
 /* IntegralBus */
 /************************************************************************/
 
-static QMap<QString, QStringList> getListMappings(const StrStrMap& busMap, const SlotPathMap &pathMap, const Port* p) {
+static QMap<QString, QStringList> getListMappings(const StrStrMap &busMap, const SlotPathMap &pathMap, const Port *p) {
     StrStrMap bm = busMap;
     WorkflowUtils::applyPathsToBusMap(bm, pathMap);
     assert(p->isInput());
@@ -192,7 +190,7 @@ static QMap<QString, QStringList> getListMappings(const StrStrMap& busMap, const
             res.insert(p->getId(), bm.value(p->getId()).split(";"));
         }
     } else if (dt->isMap()) {
-        foreach(Descriptor d, dt->getAllDescriptors()) {
+        foreach (Descriptor d, dt->getAllDescriptors()) {
             if (dt->getDatatypeByDescriptor(d)->isList() && bm.contains(d.getId())) {
                 res.insert(d.getId(), bm.value(d.getId()).split(";"));
             }
@@ -201,15 +199,14 @@ static QMap<QString, QStringList> getListMappings(const StrStrMap& busMap, const
     return res;
 }
 
-
-IntegralBus::IntegralBus(Port* p)
-: busType(p->getType()), contextMetadataId(-1), complement(NULL), portId(p->getId()), takenMsgs(0), workflowContext(NULL) {
+IntegralBus::IntegralBus(Port *p)
+    : busType(p->getType()), contextMetadataId(-1), complement(NULL), portId(p->getId()), takenMsgs(0), workflowContext(NULL) {
     actorId = p->owner()->getId();
-    QString name = p->owner()->getLabel() + "[" + p->owner()->getId()+"]";
+    QString name = p->owner()->getLabel() + "[" + p->owner()->getId() + "]";
     contextMutex = new QMutex();
     if (p->isInput()) {
-        Attribute* a = p->getParameter(IntegralBusPort::BUS_MAP_ATTR_ID);
-        if(a == NULL) {
+        Attribute *a = p->getParameter(IntegralBusPort::BUS_MAP_ATTR_ID);
+        if (a == NULL) {
             assert(false);
             return;
         }
@@ -226,16 +223,16 @@ IntegralBus::IntegralBus(Port* p)
             coreLog.trace(QString("%1 - input bus map key=%2 val=%3").arg(name).arg(it.key()).arg(it.value()));
         }
 
-        IntegralBusPort *busPort = qobject_cast<IntegralBusPort*>(p);
+        IntegralBusPort *busPort = qobject_cast<IntegralBusPort *>(p);
         SlotPathMap pathMap = busPort->getPaths();
         QMap<QString, QStringList> listMap = getListMappings(map, pathMap, p);
         busMap = new BusMap(map, listMap, pathMap);
-    } else { // p is output
+    } else {    // p is output
         StrStrMap map;
-        IntegralBusPort* bp = qobject_cast<IntegralBusPort*>(p);
+        IntegralBusPort *bp = qobject_cast<IntegralBusPort *>(p);
         DataTypePtr t = bp ? bp->getOwnType() : p->getType();
         if (t->isMap()) {
-            foreach(Descriptor d, t->getAllDescriptors()) {
+            foreach (Descriptor d, t->getAllDescriptors()) {
                 QString key = d.getId();
                 QString val = IntegralBusType::assignSlotDesc(d, p).getId();
                 map.insert(key, val);
@@ -256,12 +253,12 @@ IntegralBus::IntegralBus(Port* p)
     }
 }
 
-bool IntegralBus::addCommunication(const QString& id, CommunicationChannel* ch) {
+bool IntegralBus::addCommunication(const QString &id, CommunicationChannel *ch) {
     outerChannels.insertMulti(id, ch);
     return true;
 }
 
-CommunicationChannel * IntegralBus::getCommunication(const QString& id) {
+CommunicationChannel *IntegralBus::getCommunication(const QString &id) {
     return outerChannels.value(id);
 }
 
@@ -313,19 +310,17 @@ Message IntegralBus::get() {
 QQueue<Message> IntegralBus::getMessages(int startIndex, int endIndex) const {
     QQueue<Message> result;
 
-    QMap<CommunicationChannel *, QQueue<Message> > messagesFromChannels;
-    foreach(CommunicationChannel* channel, outerChannels) {
+    QMap<CommunicationChannel *, QQueue<Message>> messagesFromChannels;
+    foreach (CommunicationChannel *channel, outerChannels) {
         assert(channel != NULL);
         QQueue<Message> channelMessages = channel->getMessages(startIndex, endIndex);
         messagesFromChannels[channel] = channelMessages;
     }
 
-    for(qint32 messageCount = 0; messageCount
-        < messagesFromChannels[messagesFromChannels.keys().first()].size(); ++messageCount)
-    {
+    for (qint32 messageCount = 0; messageCount < messagesFromChannels[messagesFromChannels.keys().first()].size(); ++messageCount) {
         QVariantMap resultingMessageMap;
         int metadataId = -1;
-        foreach(CommunicationChannel *channel, messagesFromChannels.keys()) {
+        foreach (CommunicationChannel *channel, messagesFromChannels.keys()) {
             Message message = messagesFromChannels[channel][messageCount];
             if (message.getData().type() != QVariant::Map) {
                 coreLog.error(L10N::internalError("No message map"));
@@ -345,7 +340,7 @@ QQueue<Message> IntegralBus::getMessages(int startIndex, int endIndex) const {
 Message IntegralBus::look() const {
     QVariantMap result;
     int metadataId = -1;
-    foreach(CommunicationChannel* channel, outerChannels) {
+    foreach (CommunicationChannel *channel, outerChannels) {
         assert(channel != NULL);
         Message message = channel->look();
         assert(message.getData().type() == QVariant::Map);
@@ -360,7 +355,7 @@ Message IntegralBus::look() const {
 Message IntegralBus::lookMessage() const {
     QVariantMap result;
     int metadataId = -1;
-    foreach (CommunicationChannel* ch, outerChannels) {
+    foreach (CommunicationChannel *ch, outerChannels) {
         Message message = busMap->lookMessageMap(ch);
         result.unite(message.getData().toMap());
         if (1 == outerChannels.size()) {
@@ -376,22 +371,22 @@ Message IntegralBus::lookMessage() const {
     return Message(busType, data, metadataId);
 }
 
-Message IntegralBus::composeMessage(const Message& m) {
+Message IntegralBus::composeMessage(const Message &m) {
     QVariantMap data(busMap->composeMessageMap(m, getContext()));
     context.clear();
     int metadataId = m.getMetadataId();
     if (-1 != contextMetadataId) {
-        metadataId =  contextMetadataId;
+        metadataId = contextMetadataId;
     }
     return Message(busType, data, metadataId);
 }
 
-void IntegralBus::put(const Message& m, bool isMessageRestored) {
+void IntegralBus::put(const Message &m, bool isMessageRestored) {
     Message busMessage = composeMessage(m);
-    foreach(CommunicationChannel* ch, outerChannels) {
+    foreach (CommunicationChannel *ch, outerChannels) {
         ch->put(busMessage, isMessageRestored);
     }
-    if ( !printSlots.isEmpty() && (m.getData().type() == QVariant::Map) ) {
+    if (!printSlots.isEmpty() && (m.getData().type() == QVariant::Map)) {
         QVariantMap map = m.getData().toMap();
         foreach (const QString &key, map.keys()) {
             if (printSlots.contains(key)) {
@@ -405,7 +400,7 @@ void IntegralBus::put(const Message& m, bool isMessageRestored) {
         }
     }
 
-    if(isMessageRestored) {
+    if (isMessageRestored) {
         --takenMsgs;
     }
 }
@@ -414,8 +409,8 @@ void IntegralBus::transit() {
     this->put(Message::getEmptyMapMessage());
 }
 
-void IntegralBus::putWithoutContext(const Message& m) {
-    foreach(CommunicationChannel* ch, outerChannels) {
+void IntegralBus::putWithoutContext(const Message &m) {
+    foreach (CommunicationChannel *ch, outerChannels) {
         ch->put(m);
     }
 }
@@ -425,7 +420,7 @@ int IntegralBus::hasMessage() const {
         return 0;
     }
     int num = INT_MAX;
-    foreach(CommunicationChannel* ch, outerChannels) {
+    foreach (CommunicationChannel *ch, outerChannels) {
         num = qMin(num, ch->hasMessage());
     }
     return num;
@@ -435,22 +430,22 @@ int IntegralBus::takenMessages() const {
     return takenMsgs;
 }
 
-int IntegralBus::hasRoom(const DataType*) const {
+int IntegralBus::hasRoom(const DataType *) const {
     if (outerChannels.isEmpty()) {
         return 0;
     }
     int num = INT_MAX;
-    foreach(CommunicationChannel* ch, outerChannels) {
+    foreach (CommunicationChannel *ch, outerChannels) {
         num = qMin(num, ch->hasRoom());
     }
     return num;
 }
 
 bool IntegralBus::isEnded() const {
-    foreach(CommunicationChannel* ch, outerChannels) {
+    foreach (CommunicationChannel *ch, outerChannels) {
         if (ch->isEnded()) {
 #ifdef _DEBUG
-            foreach(CommunicationChannel* dbg, outerChannels) {
+            foreach (CommunicationChannel *dbg, outerChannels) {
                 assert(dbg->isEnded());
             }
 #endif
@@ -461,7 +456,7 @@ bool IntegralBus::isEnded() const {
 }
 
 void IntegralBus::setEnded() {
-    foreach(CommunicationChannel* ch, outerChannels) {
+    foreach (CommunicationChannel *ch, outerChannels) {
         ch->setEnded();
     }
 }
@@ -490,5 +485,5 @@ int IntegralBus::getContextMetadataId() const {
     return contextMetadataId;
 }
 
-}//namespace Workflow
-}//namespace U2
+}    //namespace Workflow
+}    //namespace U2

@@ -20,14 +20,13 @@
  */
 
 #include "MaStateCheck.h"
+
 #include "MultipleAlignment.h"
 
 namespace U2 {
 
 MaStateCheck::MaStateCheck(const MultipleAlignmentData *maData)
-    : maData(maData)
-{
-
+    : maData(maData) {
 }
 
 MaStateCheck::~MaStateCheck() {
@@ -38,4 +37,4 @@ MaStateCheck::~MaStateCheck() {
 #endif
 }
 
-}   // namespace U2
+}    // namespace U2

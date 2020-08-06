@@ -44,8 +44,8 @@ public:
     void setCaseAnnotationsMode(CaseAnnotationsMode mode);
 };
 
-} // U2
+}    // namespace U2
 
 Q_DECLARE_METATYPE(U2::CaseAnnotationsMode)
 
-#endif // _U2_ADVANCED_APPLICATIONS_SETTINGS_H_
+#endif    // _U2_ADVANCED_APPLICATIONS_SETTINGS_H_

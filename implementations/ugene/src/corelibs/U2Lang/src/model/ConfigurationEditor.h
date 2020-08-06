@@ -22,12 +22,12 @@
 #ifndef _U2_WORKFLOW_CFG_EDITOR_H_
 #define _U2_WORKFLOW_CFG_EDITOR_H_
 
+#include <QItemDelegate>
+
 #include <U2Core/U2OpStatus.h>
 
 #include <U2Lang/Attribute.h>
 #include <U2Lang/SchemaConfig.h>
-
-#include <QItemDelegate>
 
 class QWidget;
 
@@ -47,35 +47,53 @@ public:
     enum ItemValueRole {
         ItemValueRole = Qt::UserRole + 2,
         ItemListValueRole
-    }; // ItemValueRole
+    };    // ItemValueRole
 
 public:
-    ConfigurationEditor() {}
-    ConfigurationEditor(const ConfigurationEditor&) : QObject() {}
-    virtual ~ConfigurationEditor() {}
+    ConfigurationEditor() {
+    }
+    ConfigurationEditor(const ConfigurationEditor &)
+        : QObject() {
+    }
+    virtual ~ConfigurationEditor() {
+    }
 
     // editing widget
-    virtual QWidget* getWidget() { return NULL; }
+    virtual QWidget *getWidget() {
+        return NULL;
+    }
 
     // this controller is a container of delegates
-    virtual PropertyDelegate* getDelegate(const QString&) { return NULL; }
-    virtual PropertyDelegate* removeDelegate( const QString&) { return NULL; }
-    virtual void updateDelegates() {}
-    virtual void updateDelegate( const QString&) {}
-    virtual void addDelegate( PropertyDelegate * , const QString & ) {}
+    virtual PropertyDelegate *getDelegate(const QString &) {
+        return NULL;
+    }
+    virtual PropertyDelegate *removeDelegate(const QString &) {
+        return NULL;
+    }
+    virtual void updateDelegates() {
+    }
+    virtual void updateDelegate(const QString &) {
+    }
+    virtual void addDelegate(PropertyDelegate *, const QString &) {
+    }
 
     // commit data to model
-    virtual void commit() {}
+    virtual void commit() {
+    }
 
     // make another editor
-    virtual ConfigurationEditor *clone() {return new ConfigurationEditor(*this);}
+    virtual ConfigurationEditor *clone() {
+        return new ConfigurationEditor(*this);
+    }
 
-    virtual bool isEmpty() const {return false;}
+    virtual bool isEmpty() const {
+        return false;
+    }
 
 signals:
     void si_configurationChanged();
 
-}; // ConfigurationEditor
+};    // ConfigurationEditor
 
 /**
  * Abstract class for property widgets: spin box, url line...
@@ -94,15 +112,16 @@ public:
      * Returns the widget that can be registered as a field of wizard pages.
      * Returns NULL if there is no such widget.
      */
-    virtual QWidget * getField();
+    virtual QWidget *getField();
 
     void setDelegateTags(const DelegateTags *value);
-    const DelegateTags * tags() const;
+    const DelegateTags *tags() const;
     void setSchemaConfig(SchemaConfig *value);
 
 public slots:
     virtual void setValue(const QVariant &value) = 0;
-    virtual void processDelegateTags() {}
+    virtual void processDelegateTags() {
+    }
 
 signals:
     void si_valueChanged(const QVariant &value);
@@ -133,19 +152,21 @@ public:
     PropertyDelegate(QObject *parent = 0);
     virtual ~PropertyDelegate();
     virtual QVariant getDisplayValue(const QVariant &v) const;
-    virtual PropertyDelegate * clone();
-    virtual PropertyWidget * createWizardWidget(U2OpStatus &os, QWidget *parent) const;
-    virtual void getItems( QVariantMap & ) const {}
+    virtual PropertyDelegate *clone();
+    virtual PropertyWidget *createWizardWidget(U2OpStatus &os, QWidget *parent) const;
+    virtual void getItems(QVariantMap &) const {
+    }
     virtual Type type() const;
-    virtual void update() {}
+    virtual void update() {
+    }
 
-    DelegateTags * tags() const;
+    DelegateTags *tags() const;
     void setSchemaConfig(SchemaConfig *value);
 
 protected:
     DelegateTags *_tags;
     SchemaConfig *schemaConfig;
-}; // PropertyDelegate
+};    // PropertyDelegate
 
 class U2LANG_EXPORT DelegateTags : public QObject {
 public:
@@ -160,16 +181,16 @@ public:
     static QString getString(const DelegateTags *tags, const QString &name);
     static QStringList getStringList(const DelegateTags *tags, const QString &name);
 
-    DelegateTags &operator =(const DelegateTags &other);
+    DelegateTags &operator=(const DelegateTags &other);
 
-    static const QString PLACEHOLDER_TEXT;      // placeholder (like in QLineEdit)
-    static const QString FILTER;                // file filter (like in QFileDialog)
-    static const QString FORMAT;                // document format ID
+    static const QString PLACEHOLDER_TEXT;    // placeholder (like in QLineEdit)
+    static const QString FILTER;    // file filter (like in QFileDialog)
+    static const QString FORMAT;    // document format ID
 
 private:
     QVariantMap tags;
 };
 
-}//GB2 namespace
+}    // namespace U2
 
 #endif

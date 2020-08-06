@@ -19,12 +19,12 @@
  * MA 02110-1301, USA.
  */
 
+#include "FileAndDirectoryUtils.h"
+
 #include <QDir>
 
 #include <U2Core/Log.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "FileAndDirectoryUtils.h"
 
 static const QString OUTPUT_SUBDIR = "run";
 
@@ -32,7 +32,7 @@ namespace U2 {
 
 int FileAndDirectoryUtils::MIN_LENGTH_TO_WRITE = 32768;
 
-#if defined(Q_OS_LINUX) | defined (Q_OS_MAC)
+#if defined(Q_OS_LINUX) | defined(Q_OS_MAC)
 const QString FileAndDirectoryUtils::HOME_DIR_IDENTIFIER = "~/";
 #else
 const QString FileAndDirectoryUtils::HOME_DIR_IDENTIFIER = "%UserProfile%/";
@@ -90,17 +90,16 @@ QString FileAndDirectoryUtils::getWorkingDir(const QString &fileUrl, int dirMode
     return result;
 }
 
-QString FileAndDirectoryUtils::createWorkingDir(const QString &fileUrl, int dirMode, const QString &customDir, const QString &workingDir){
+QString FileAndDirectoryUtils::createWorkingDir(const QString &fileUrl, int dirMode, const QString &customDir, const QString &workingDir) {
     const QString result = getWorkingDir(fileUrl, dirMode, customDir, workingDir);
     QDir dir(result);
     if (!dir.exists(result)) {
         dir.mkdir(result);
     }
     return result;
-
 }
 
-QString FileAndDirectoryUtils::detectFormat(const QString &url){
+QString FileAndDirectoryUtils::detectFormat(const QString &url) {
     FormatDetectionConfig cfg;
     cfg.bestMatchesOnly = false;
     cfg.useImporters = true;
@@ -114,15 +113,15 @@ QString FileAndDirectoryUtils::detectFormat(const QString &url){
     return getFormatId(formats.first());
 }
 
-bool FileAndDirectoryUtils::isFileEmpty(const QString& url){
-   QFile file(url);
-   if (!file.exists()) {
-       return true;
-   }
-   if (file.size() == 0) {
-       return true;
-   }
-   return false;
+bool FileAndDirectoryUtils::isFileEmpty(const QString &url) {
+    QFile file(url);
+    if (!file.exists()) {
+        return true;
+    }
+    if (file.size() == 0) {
+        return true;
+    }
+    return false;
 }
 
 void FileAndDirectoryUtils::dumpStringToFile(QFile *f, QString &str) {
@@ -133,7 +132,7 @@ void FileAndDirectoryUtils::dumpStringToFile(QFile *f, QString &str) {
     str.clear();
 }
 
-QString FileAndDirectoryUtils::getAbsolutePath(const QString& filePath) {
+QString FileAndDirectoryUtils::getAbsolutePath(const QString &filePath) {
     CHECK(!filePath.isEmpty(), filePath);
     QString result = QDir::fromNativeSeparators(filePath);
     if (result.startsWith(HOME_DIR_IDENTIFIER, Qt::CaseInsensitive)) {
@@ -143,4 +142,4 @@ QString FileAndDirectoryUtils::getAbsolutePath(const QString& filePath) {
     return QFileInfo(result).absoluteFilePath();
 }
 
-} // U2
+}    // namespace U2

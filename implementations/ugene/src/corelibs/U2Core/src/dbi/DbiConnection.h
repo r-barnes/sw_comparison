@@ -62,14 +62,14 @@ public:
 
     bool isOpen() const;
 
-    DbiConnection & operator=(DbiConnection const &dbiConnection);
+    DbiConnection &operator=(DbiConnection const &dbiConnection);
 
-    U2Dbi*          dbi;
+    U2Dbi *dbi;
 
 private:
     void copy(const DbiConnection &dbiConnection);
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_DBI_CONNECTION_H_
+#endif    // _U2_DBI_CONNECTION_H_

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "GenomeAlignerSettingsWidget.h"
+
 #include <U2Algorithm/OpenCLGpuRegistry.h>
 
 #include <U2Core/AppContext.h>
@@ -32,7 +34,6 @@
 
 #include "GenomeAlignerIndex.h"
 #include "GenomeAlignerSettingsController.h"
-#include "GenomeAlignerSettingsWidget.h"
 #include "GenomeAlignerTask.h"
 
 namespace U2 {
@@ -41,10 +42,11 @@ static const int MIN_READ_SIZE = 10;
 static const int MIN_PART_SIZE = 1;
 static const int DEFAULT_PART_SIZE = 10;
 
-GenomeAlignerSettingsWidget::GenomeAlignerSettingsWidget(QWidget* parent) : DnaAssemblyAlgorithmMainWidget(parent) {
+GenomeAlignerSettingsWidget::GenomeAlignerSettingsWidget(QWidget *parent)
+    : DnaAssemblyAlgorithmMainWidget(parent) {
     setupUi(this);
     tabWidget->setCurrentIndex(0);
-    layout()->setContentsMargins(0,0,0,0);
+    layout()->setContentsMargins(0, 0, 0, 0);
 
     connect(buildIndexFileButton, SIGNAL(clicked()), SLOT(sl_onSetIndexDirButtonClicked()));
     connect(partSlider, SIGNAL(valueChanged(int)), SLOT(sl_onPartSliderChanged(int)));
@@ -63,7 +65,7 @@ GenomeAlignerSettingsWidget::GenomeAlignerSettingsWidget(QWidget* parent) : DnaA
     partSlider->setEnabled(false);
     readSlider->setMinimum(MIN_READ_SIZE);
     readSlider->setMaximum(systemSize);
-    readSlider->setValue(systemSize*2/3);
+    readSlider->setValue(systemSize * 2 / 3);
 
     QString indexDirPath = GenomeAlignerSettingsUtils::getIndexDir();
     QDir indexDir(indexDirPath);
@@ -72,13 +74,13 @@ GenomeAlignerSettingsWidget::GenomeAlignerSettingsWidget(QWidget* parent) : DnaA
     indexDirEdit->setText(indexDirPath);
 
     partSizeLabel->setText(QByteArray::number(partSlider->value()) + " Mb");
-    indexSizeLabel->setText(QByteArray::number(partSlider->value()*13) + " Mb");
-    totalSizeLabel->setText(QByteArray::number(partSlider->value()*13 + readSlider->value()) + " Mb");
+    indexSizeLabel->setText(QByteArray::number(partSlider->value() * 13) + " Mb");
+    totalSizeLabel->setText(QByteArray::number(partSlider->value() * 13 + readSlider->value()) + " Mb");
     systemSizeLabel->setText(QByteArray::number(systemSize) + " Mb");
 }
 
-QMap<QString,QVariant> GenomeAlignerSettingsWidget::getDnaAssemblyCustomSettings() const {
-    QMap<QString,QVariant> settings;
+QMap<QString, QVariant> GenomeAlignerSettingsWidget::getDnaAssemblyCustomSettings() const {
+    QMap<QString, QVariant> settings;
 
     settings.insert(GenomeAlignerTask::OPTION_ALIGN_REVERSED, reverseBox->isChecked());
     settings.insert(GenomeAlignerTask::OPTION_OPENCL, gpuBox->isChecked());
@@ -87,7 +89,7 @@ QMap<QString,QVariant> GenomeAlignerSettingsWidget::getDnaAssemblyCustomSettings
     settings.insert(GenomeAlignerTask::OPTION_SEQ_PART_SIZE, partSlider->value());
     settings.insert(GenomeAlignerTask::OPTION_INDEX_DIR, indexDirEdit->text());
     if (omitQualitiesBox->isChecked()) {
-        settings.insert(GenomeAlignerTask::OPTION_QUAL_THRESHOLD, qualThresholdBox->value() );
+        settings.insert(GenomeAlignerTask::OPTION_QUAL_THRESHOLD, qualThresholdBox->value());
     }
     if (groupBox_mismatches->isChecked()) {
         settings.insert(GenomeAlignerTask::OPTION_MISMATCHES, mismatchesAllowedSpinBox->value());
@@ -102,7 +104,7 @@ QMap<QString,QVariant> GenomeAlignerSettingsWidget::getDnaAssemblyCustomSettings
     return settings;
 }
 
-bool GenomeAlignerSettingsWidget::buildIndexUrl(const GUrl& url, bool prebuiltIndex, QString &error) const {
+bool GenomeAlignerSettingsWidget::buildIndexUrl(const GUrl &url, bool prebuiltIndex, QString &error) const {
     if (prebuiltIndex) {
         GenomeAlignerIndex index;
         index.baseFileName = url.dirPath() + "/" + url.baseFileName();
@@ -121,8 +123,8 @@ bool GenomeAlignerSettingsWidget::buildIndexUrl(const GUrl& url, bool prebuiltIn
         QString refUrl = url.getURLString();
         QFile file(refUrl);
         if (file.exists()) {
-            int fileSize = 1 + (int)(file.size()/(1024*1024));
-            int maxPartSize = qMin(fileSize*13, systemSize - MIN_READ_SIZE)/13;
+            int fileSize = 1 + (int)(file.size() / (1024 * 1024));
+            int maxPartSize = qMin(fileSize * 13, systemSize - MIN_READ_SIZE) / 13;
             partSlider->setMinimum(MIN_PART_SIZE);
             partSlider->setMaximum(maxPartSize);
             partSlider->setEnabled(true);
@@ -134,8 +136,8 @@ bool GenomeAlignerSettingsWidget::buildIndexUrl(const GUrl& url, bool prebuiltIn
 }
 
 bool GenomeAlignerSettingsWidget::isParametersOk(QString &error) const {
-    bool gpuOk = (gpuBox->isChecked() == false) || ((gpuBox->isChecked() == true) && (partSlider->value() <= 10)); // 128MB is the minimum size for a buffer, according to CL_DEVICE_MAX_MEM_ALLOC_SIZE OpenCL documentation
-    if ((systemSize < readSlider->value() + 13*partSlider->value()) || !gpuOk) {
+    bool gpuOk = (gpuBox->isChecked() == false) || ((gpuBox->isChecked() == true) && (partSlider->value() <= 10));    // 128MB is the minimum size for a buffer, according to CL_DEVICE_MAX_MEM_ALLOC_SIZE OpenCL documentation
+    if ((systemSize < readSlider->value() + 13 * partSlider->value()) || !gpuOk) {
         error = "There is no enough memory for the aligning on your computer. Try to reduce a memory size for short reads or for the reference fragment.";
         return false;
     }
@@ -145,7 +147,7 @@ bool GenomeAlignerSettingsWidget::isParametersOk(QString &error) const {
 
 bool GenomeAlignerSettingsWidget::isIndexOk(const GUrl &refName, QString &error) const {
     GenomeAlignerIndex index;
-    if (indexTab->isEnabled()) { //prebuiltIndex is not checked
+    if (indexTab->isEnabled()) {    //prebuiltIndex is not checked
         index.baseFileName = indexDirEdit->text() + "/" + refName.baseFileName();
     } else {
         index.baseFileName = refName.dirPath() + "/" + refName.baseFileName();
@@ -154,7 +156,7 @@ bool GenomeAlignerSettingsWidget::isIndexOk(const GUrl &refName, QString &error)
     QByteArray e;
     bool res = index.deserialize(e);
 
-    if (indexTab->isEnabled()) { //prebuiltIndex is not checked
+    if (indexTab->isEnabled()) {    //prebuiltIndex is not checked
         if (!res) {
             return true;
         }
@@ -163,7 +165,9 @@ bool GenomeAlignerSettingsWidget::isIndexOk(const GUrl &refName, QString &error)
         }
         error = tr("The index folder has already contain the prebuilt index. But its reference fragmentation parameter is %1 and it doesn't equal to \
 the parameter you have chosen (%2).\n\nPress \"Ok\" to delete this index file and create a new during the aligning.\nPress \"Cancel\" to change this parameter \
-or the index folder.").arg(index.seqPartSize).arg(partSlider->value());
+or the index folder.")
+                    .arg(index.seqPartSize)
+                    .arg(partSlider->value());
         return false;
     } else {
         if (!res || refName.lastFileSuffix() != GenomeAlignerIndex::HEADER_EXTENSION) {
@@ -186,20 +190,20 @@ void GenomeAlignerSettingsWidget::sl_onSetIndexDirButtonClicked() {
 
 void GenomeAlignerSettingsWidget::sl_onPartSliderChanged(int value) {
     partSizeLabel->setText(QByteArray::number(value) + " Mb");
-    indexSizeLabel->setText(QByteArray::number(value*13) + " Mb");
+    indexSizeLabel->setText(QByteArray::number(value * 13) + " Mb");
 
-    if (systemSize - 13*value >= MIN_READ_SIZE) {
-        readSlider->setMaximum(systemSize - 13*value);
+    if (systemSize - 13 * value >= MIN_READ_SIZE) {
+        readSlider->setMaximum(systemSize - 13 * value);
     } else {
         readSlider->setMaximum(MIN_READ_SIZE);
     }
 
-    totalSizeLabel->setText(QByteArray::number(value*13 + readSlider->value()) + " Mb");
+    totalSizeLabel->setText(QByteArray::number(value * 13 + readSlider->value()) + " Mb");
 }
 
 void GenomeAlignerSettingsWidget::sl_onReadSliderChanged(int value) {
     readSizeLabel->setText(QByteArray::number(value) + " Mb");
-    totalSizeLabel->setText(QByteArray::number(partSlider->value()*13 + value) + " Mb");
+    totalSizeLabel->setText(QByteArray::number(partSlider->value() * 13 + value) + " Mb");
 }
 
-} //namespace
+}    // namespace U2

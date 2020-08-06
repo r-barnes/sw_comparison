@@ -29,12 +29,12 @@ namespace U2 {
 class DiamondSupport : public ExternalTool {
     Q_OBJECT
 public:
-    DiamondSupport(const QString& id, const QString &name);
+    DiamondSupport(const QString &id, const QString &name);
 
     static const QString TOOL_NAME;
     static const QString TOOL_ID;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_DIAMOND_SUPPORT_H_
+#endif    // _U2_DIAMOND_SUPPORT_H_

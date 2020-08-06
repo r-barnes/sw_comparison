@@ -48,8 +48,8 @@ public:
 
     void init(GScrollBar *hScrollBar, GScrollBar *vScrollBar);
 
-    QPoint getScreenPosition() const;       // in pixels
-    QPoint getGlobalMousePosition(const QPoint& mousePos) const;
+    QPoint getScreenPosition() const;    // in pixels
+    QPoint getGlobalMousePosition(const QPoint &mousePos) const;
 
     void updateVerticalScrollBar();
 
@@ -84,13 +84,12 @@ public:
     int getFirstVisibleViewRowIndex(bool countClipped = false) const;
     int getLastVisibleViewRowIndex(int widgetHeight, bool countClipped = false) const;
 
-
     /*
      * Maps screen coordinates into QPoint(row, column).
      * Returns QPoint(-1, -1) if geom. position can't be mapped to any base and reportOverflow is false.
      * If reportOverflow is true and one of the coordinates has overflow, returns rowCount/columnsCount for it.
      */
-    QPoint getViewPosByScreenPoint(const QPoint& point, bool reportOverflow = true) const;
+    QPoint getViewPosByScreenPoint(const QPoint &point, bool reportOverflow = true) const;
 
     GScrollBar *getHorizontalScrollBar() const;
     GScrollBar *getVerticalScrollBar() const;
@@ -107,11 +106,11 @@ private slots:
     void sl_collapsibleModelChanged();
 
 private:
-    int getAdditionalXOffset() const;       // in pixels;
-    int getAdditionalYOffset() const;       // in pixels;
+    int getAdditionalXOffset() const;    // in pixels;
+    int getAdditionalYOffset() const;    // in pixels;
 
-    U2Region getHorizontalRangeToDrawIn(int widgetWidth) const;     // in pixels
-    U2Region getVerticalRangeToDrawIn(int widgetHeight) const;       // in pixels
+    U2Region getHorizontalRangeToDrawIn(int widgetWidth) const;    // in pixels
+    U2Region getVerticalRangeToDrawIn(int widgetHeight) const;    // in pixels
 
     void zoomHorizontalScrollBarPrivate();
     void zoomVerticalScrollBarPrivate();
@@ -130,6 +129,6 @@ private:
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(ScrollController::Directions)
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_SCROLL_CONTROLLER_H_
+#endif    // _U2_SCROLL_CONTROLLER_H_

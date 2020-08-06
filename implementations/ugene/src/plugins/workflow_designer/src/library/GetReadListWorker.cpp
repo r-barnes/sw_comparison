@@ -19,7 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "GetReadListWorker.h"
+
 #include <U2Core/AppContext.h>
+
+#include <U2Designer/DelegateEditors.h>
+
+#include <U2Gui/GUIUtils.h>
 
 #include <U2Lang/ActorPrototypeRegistry.h>
 #include <U2Lang/BaseActorCategories.h>
@@ -30,11 +36,6 @@
 #include <U2Lang/Dataset.h>
 #include <U2Lang/URLAttribute.h>
 #include <U2Lang/WorkflowEnv.h>
-
-#include <U2Designer/DelegateEditors.h>
-#include <U2Gui/GUIUtils.h>
-
-#include "GetReadListWorker.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -50,13 +51,11 @@ static const QString OUT_PORT_ID("out");
 static const QString SE_URL_ATTR("url1");
 static const QString PE_URL_ATTR("url2");
 
-const Descriptor GetReadsListWorkerFactory::SE_SLOT()
-{
+const Descriptor GetReadsListWorkerFactory::SE_SLOT() {
     return Descriptor(SE_SLOT_ID, GetReadsListWorker::tr("Source URL 1"), GetReadsListWorker::tr("Source URL 1"));
 }
 
-const Descriptor GetReadsListWorkerFactory::PE_SLOT()
-{
+const Descriptor GetReadsListWorkerFactory::PE_SLOT() {
     return Descriptor(PE_SLOT_ID, GetReadsListWorker::tr("Source URL 2"), GetReadsListWorker::tr("Source URL 2"));
 }
 
@@ -64,25 +63,23 @@ const Descriptor GetReadsListWorkerFactory::PE_SLOT()
 /* Worker */
 /************************************************************************/
 GetReadsListWorker::GetReadsListWorker(Actor *p)
-: BaseWorker(p), outChannel(NULL), files(NULL), pairedFiles(NULL)
-{
-
+    : BaseWorker(p), outChannel(NULL), files(NULL), pairedFiles(NULL) {
 }
 
 void GetReadsListWorker::init() {
     outChannel = ports.value(OUT_PORT_ID);
 
-    QList<Dataset> sets = getValue< QList<Dataset> >(SE_URL_ATTR);
+    QList<Dataset> sets = getValue<QList<Dataset>>(SE_URL_ATTR);
     files = new DatasetFilesIterator(sets);
 
     algoLog.info(QString("GetReadsListWorker %1").arg(actor->getProto()->getId()));
     if (actor->getProto()->getId() == GetReadsListWorkerFactory::PE_ACTOR_ID) {
-        QList<Dataset> sets2 = getValue< QList<Dataset> >(PE_URL_ATTR);
+        QList<Dataset> sets2 = getValue<QList<Dataset>>(PE_URL_ATTR);
         pairedFiles = new DatasetFilesIterator(sets2);
     }
 }
 
-Task * GetReadsListWorker::tick() {
+Task *GetReadsListWorker::tick() {
     if (files->hasNext()) {
         QVariantMap m;
         QString url = files->getNextFile();
@@ -120,7 +117,7 @@ void GetReadsListWorker::cleanup() {
 /************************************************************************/
 void GetReadsListWorkerFactory::init() {
     {
-        QList<PortDescriptor*> portDescs;
+        QList<PortDescriptor *> portDescs;
         {
             QMap<Descriptor, DataTypePtr> outTypeMap;
             outTypeMap[SE_SLOT()] = BaseTypes::STRING_TYPE();
@@ -128,23 +125,26 @@ void GetReadsListWorkerFactory::init() {
 
             portDescs << new PortDescriptor(Descriptor(OUT_PORT_ID,
                                                        GetReadsListWorker::tr("Output File"),
-                                                       GetReadsListWorker::tr("The port outputs one or several URLs.")), outTypeSet, false, true);
+                                                       GetReadsListWorker::tr("The port outputs one or several URLs.")),
+                                            outTypeSet,
+                                            false,
+                                            true);
         }
 
-        QList<Attribute*> attrs;
+        QList<Attribute *> attrs;
         {
             Descriptor seUrl(SE_URL_ATTR, GetReadsListWorker::tr("Input URL"), GetReadsListWorker::tr("Input URL"));
 
             attrs << new URLAttribute(seUrl, BaseTypes::URL_DATASETS_TYPE(), true);
         }
         Descriptor protoDesc(GetReadsListWorkerFactory::SE_ACTOR_ID,
-            GetReadsListWorker::tr("Read FASTQ File with SE Reads"),
-            GetReadsListWorker::tr("Input one or several files with NGS single-end reads in FASTQ format. The element outputs the file(s) URL(s)."));
+                             GetReadsListWorker::tr("Read FASTQ File with SE Reads"),
+                             GetReadsListWorker::tr("Input one or several files with NGS single-end reads in FASTQ format. The element outputs the file(s) URL(s)."));
 
         ActorPrototype *proto = new IntegralBusActorPrototype(protoDesc, portDescs, attrs);
-        proto->setEditor(new DelegateEditor(QMap<QString, PropertyDelegate*>()));
+        proto->setEditor(new DelegateEditor(QMap<QString, PropertyDelegate *>()));
         proto->setPrompter(new GetReadsListPrompter());
-        if(AppContext::isGUIMode()) {
+        if (AppContext::isGUIMode()) {
             proto->setIcon(QIcon(":/U2Designer/images/blue_circle.png"));
         }
         WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_DATASRC(), proto);
@@ -152,7 +152,7 @@ void GetReadsListWorkerFactory::init() {
     }
     ///////////////////////// PE reads //////////////////////////////
     {
-        QList<PortDescriptor*> portDescs;
+        QList<PortDescriptor *> portDescs;
         {
             QMap<Descriptor, DataTypePtr> outTypeMap;
             outTypeMap[SE_SLOT()] = BaseTypes::STRING_TYPE();
@@ -161,10 +161,13 @@ void GetReadsListWorkerFactory::init() {
 
             portDescs << new PortDescriptor(Descriptor(OUT_PORT_ID,
                                                        GetReadsListWorker::tr("Output File"),
-                                                       GetReadsListWorker::tr("The port outputs one or several pairs of URL(s).")), outTypeSet, false, true);
+                                                       GetReadsListWorker::tr("The port outputs one or several pairs of URL(s).")),
+                                            outTypeSet,
+                                            false,
+                                            true);
         }
 
-        QList<Attribute*> attrs;
+        QList<Attribute *> attrs;
         {
             Descriptor seUrl(SE_URL_ATTR, GetReadsListWorker::tr("Left PE reads"), GetReadsListWorker::tr("Left PE reads"));
             Descriptor peUrl(PE_URL_ATTR, GetReadsListWorker::tr("Right PE reads"), GetReadsListWorker::tr("Right PE reads"));
@@ -173,13 +176,13 @@ void GetReadsListWorkerFactory::init() {
             attrs << new URLAttribute(peUrl, BaseTypes::URL_DATASETS_TYPE(), true);
         }
         Descriptor protoDesc(GetReadsListWorkerFactory::PE_ACTOR_ID,
-            GetReadsListWorker::tr("Read FASTQ Files with PE Reads"),
-            GetReadsListWorker::tr("Input one or several pairs of files with NGS paired-end reads in FASTQ format. The element outputs the corresponding pairs of URLs."));
+                             GetReadsListWorker::tr("Read FASTQ Files with PE Reads"),
+                             GetReadsListWorker::tr("Input one or several pairs of files with NGS paired-end reads in FASTQ format. The element outputs the corresponding pairs of URLs."));
 
         ActorPrototype *proto = new IntegralBusActorPrototype(protoDesc, portDescs, attrs);
-        proto->setEditor(new DelegateEditor(QMap<QString, PropertyDelegate*>()));
+        proto->setEditor(new DelegateEditor(QMap<QString, PropertyDelegate *>()));
         proto->setPrompter(new GetReadsListPrompter());
-        if(AppContext::isGUIMode()) {
+        if (AppContext::isGUIMode()) {
             proto->setIcon(QIcon(":/U2Designer/images/blue_circle.png"));
         }
         WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_DATASRC(), proto);
@@ -214,9 +217,7 @@ QString GetReadsListPrompter::composeRichDoc() {
 const QString SeReadsListSplitter::ID = "se-reads";
 
 SeReadsListSplitter::SeReadsListSplitter()
-    : CandidatesSplitter(ID)
-{
-
+    : CandidatesSplitter(ID) {
 }
 
 bool SeReadsListSplitter::canSplit(const Descriptor &toDesc, DataTypePtr toDatatype) {
@@ -233,9 +234,7 @@ bool SeReadsListSplitter::isMain(const QString &candidateSlotId) {
 const QString PeReadsListSplitter::ID = "pe-reads";
 
 PeReadsListSplitter::PeReadsListSplitter()
-    : CandidatesSplitter(ID)
-{
-
+    : CandidatesSplitter(ID) {
 }
 
 bool PeReadsListSplitter::canSplit(const Descriptor &toDesc, DataTypePtr toDatatype) {
@@ -246,5 +245,5 @@ bool PeReadsListSplitter::isMain(const QString &candidateSlotId) {
     return (candidateSlotId == GetReadsListWorkerFactory::PE_SLOT().getId());
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

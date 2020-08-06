@@ -19,9 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Lang/WorkflowTransport.h>
-
 #include "InvestigationDataModel.h"
+
+#include <U2Lang/WorkflowTransport.h>
 
 const int DEFAULT_COUNT = -1;
 
@@ -29,13 +29,10 @@ namespace U2 {
 
 InvestigationDataModel::InvestigationDataModel(const Workflow::Link *bus, QObject *parent)
     : QAbstractTableModel(parent), investigatedLink(bus), cachedData(), countOfRows(DEFAULT_COUNT),
-    hiddenColumns()
-{
-
+      hiddenColumns() {
 }
 
 InvestigationDataModel::~InvestigationDataModel() {
-
 }
 
 int InvestigationDataModel::loadedRowCount() const {
@@ -48,18 +45,14 @@ bool InvestigationDataModel::isAnyColumnHidden() const {
 
 void InvestigationDataModel::showAllHiddenColumns() {
     int insertedColumnCounter = 0;
-    while(hiddenColumns.testBit(insertedColumnCounter)
-        && insertedColumnCounter < hiddenColumns.size())
-    {
+    while (hiddenColumns.testBit(insertedColumnCounter) && insertedColumnCounter < hiddenColumns.size()) {
         insertColumn(insertedColumnCounter);
         ++insertedColumnCounter;
     }
-    for(int columnCounter = insertedColumnCounter; columnCounter < hiddenColumns.size(); ) {
-        if(!hiddenColumns.testBit(columnCounter)) {
+    for (int columnCounter = insertedColumnCounter; columnCounter < hiddenColumns.size();) {
+        if (!hiddenColumns.testBit(columnCounter)) {
             insertedColumnCounter = columnCounter + 1;
-            while(hiddenColumns.size() > insertedColumnCounter
-                && hiddenColumns.testBit(insertedColumnCounter))
-            {
+            while (hiddenColumns.size() > insertedColumnCounter && hiddenColumns.testBit(insertedColumnCounter)) {
                 insertColumn(insertedColumnCounter);
                 ++insertedColumnCounter;
             }
@@ -78,7 +71,7 @@ QBitArray InvestigationDataModel::getColumnsVisibility() const {
 
 int InvestigationDataModel::rowCount(const QModelIndex &parent) const {
     Q_UNUSED(parent);
-    if(DEFAULT_COUNT == countOfRows) {
+    if (DEFAULT_COUNT == countOfRows) {
         emit si_countOfMessagesRequested(investigatedLink);
     }
     return countOfRows;
@@ -86,9 +79,9 @@ int InvestigationDataModel::rowCount(const QModelIndex &parent) const {
 
 int InvestigationDataModel::columnCount(const QModelIndex &parent) const {
     Q_UNUSED(parent);
-    if(hiddenColumns.isNull()) {
+    if (hiddenColumns.isNull()) {
         emit si_investigationRequested(investigatedLink);
-        if(!cachedData.isEmpty()) {
+        if (!cachedData.isEmpty()) {
             emit si_columnsVisibilityRequested();
         }
     }
@@ -100,15 +93,12 @@ QVariant InvestigationDataModel::data(const QModelIndex &index, int role) const 
     const QList<QString> headerLabelList = cachedData.keys();
     const int requestedRow = index.row();
     const int absoluteColumnNumber = getAbsoluteNumberOfVisibleColumn(index.column());
-    if ( Qt::DisplayRole == role && requestedRow < countOfRows
-        && index.column() < hiddenColumns.count(false)
-        && headerLabelList.size() > absoluteColumnNumber)
-    {
+    if (Qt::DisplayRole == role && requestedRow < countOfRows && index.column() < hiddenColumns.count(false) && headerLabelList.size() > absoluteColumnNumber) {
         const QString key = headerLabelList[absoluteColumnNumber];
-        if(cachedData[key].size() <= requestedRow) {
+        if (cachedData[key].size() <= requestedRow) {
             emit si_investigationRequested(investigatedLink, requestedRow);
         }
-        if(cachedData[key].size() > requestedRow) {
+        if (cachedData[key].size() > requestedRow) {
             result.setValue<QString>(cachedData[key][requestedRow]);
         }
     }
@@ -116,13 +106,12 @@ QVariant InvestigationDataModel::data(const QModelIndex &index, int role) const 
 }
 
 QVariant InvestigationDataModel::headerData(int section, Qt::Orientation orientation, int role)
-    const
-{
+    const {
     QVariant result;
-    if(Qt::DisplayRole == role) {
-        switch(orientation) {
+    if (Qt::DisplayRole == role) {
+        switch (orientation) {
         case Qt::Horizontal:
-            if(section < hiddenColumns.count(false) && !cachedData.isEmpty()) {
+            if (section < hiddenColumns.count(false) && !cachedData.isEmpty()) {
                 const int absNumberOfVisibleColumn = getAbsoluteNumberOfVisibleColumn(section);
                 const QList<QString> headerLabelList = cachedData.keys();
                 if (headerLabelList.size() > absNumberOfVisibleColumn) {
@@ -133,7 +122,7 @@ QVariant InvestigationDataModel::headerData(int section, Qt::Orientation orienta
             }
             break;
         case Qt::Vertical:
-            if(section < countOfRows) {
+            if (section < countOfRows) {
                 result.setValue<QString>(QString::number(section + 1));
             }
             break;
@@ -144,13 +133,11 @@ QVariant InvestigationDataModel::headerData(int section, Qt::Orientation orienta
     return result;
 }
 
-bool InvestigationDataModel::setHeaderData(int section, Qt::Orientation orientation,
-    const QVariant & value, int role)
-{
-    if(Qt::DisplayRole == role && Qt::Horizontal == orientation && value.isValid()) {
+bool InvestigationDataModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role) {
+    if (Qt::DisplayRole == role && Qt::Horizontal == orientation && value.isValid()) {
         cachedData[value.toString()] = QQueue<QString>();
         const int columnCount = hiddenColumns.size();
-        if(section >= columnCount) {
+        if (section >= columnCount) {
             hiddenColumns.resize(columnCount + 1);
         }
         return true;
@@ -175,9 +162,9 @@ bool InvestigationDataModel::insertRows(int position, int rows, const QModelInde
 bool InvestigationDataModel::removeRows(int position, int rows, const QModelIndex &index) {
     Q_UNUSED(index);
     beginRemoveRows(QModelIndex(), position, position + rows - 1);
-    if(!cachedData.isEmpty()) {
-        foreach(QString columnName, cachedData.keys()) {
-            for(int row = 0; row < rows; ++row) {
+    if (!cachedData.isEmpty()) {
+        foreach (QString columnName, cachedData.keys()) {
+            for (int row = 0; row < rows; ++row) {
                 cachedData[columnName].removeAt(position);
             }
         }
@@ -188,12 +175,10 @@ bool InvestigationDataModel::removeRows(int position, int rows, const QModelInde
 }
 
 bool InvestigationDataModel::setData(const QModelIndex &index, const QVariant &value, int role) {
-    if (index.isValid() && hiddenColumns.size() > index.column() && countOfRows > index.row()
-        && value.isValid() && role == Qt::DisplayRole)
-    {
+    if (index.isValid() && hiddenColumns.size() > index.column() && countOfRows > index.row() && value.isValid() && role == Qt::DisplayRole) {
         const QString data = value.toString();
         cachedData[cachedData.keys()[index.column()]].enqueue(data);
-        if(!hiddenColumns.testBit(index.column())) {
+        if (!hiddenColumns.testBit(index.column())) {
             QModelIndex changedIndex(this->index(index.row(), getVisibleNumberOfAbsoluteColumn(index.column())));
             emit dataChanged(changedIndex, changedIndex);
         }
@@ -204,12 +189,12 @@ bool InvestigationDataModel::setData(const QModelIndex &index, const QVariant &v
 
 bool InvestigationDataModel::removeColumns(int column, int count, const QModelIndex &parent) {
     Q_UNUSED(parent);
-    if(hiddenColumns.count(false) > (column + count - 1) && 0 <= column && 0 < count) {
+    if (hiddenColumns.count(false) > (column + count - 1) && 0 <= column && 0 < count) {
         beginRemoveColumns(QModelIndex(), column, column + count - 1);
         const int absoluteFirstColumnNumber = getAbsoluteNumberOfVisibleColumn(column);
-        for(int columnCounter = absoluteFirstColumnNumber;
-            columnCounter < absoluteFirstColumnNumber + count; ++columnCounter)
-        {
+        for (int columnCounter = absoluteFirstColumnNumber;
+             columnCounter < absoluteFirstColumnNumber + count;
+             ++columnCounter) {
             hiddenColumns.setBit(columnCounter, true);
         }
         endRemoveColumns();
@@ -220,9 +205,9 @@ bool InvestigationDataModel::removeColumns(int column, int count, const QModelIn
 
 bool InvestigationDataModel::insertColumns(int column, int count, const QModelIndex &parent) {
     Q_UNUSED(parent);
-    if(hiddenColumns.count(true) >= count && 0 <= column && 0 < count) {
+    if (hiddenColumns.count(true) >= count && 0 <= column && 0 < count) {
         beginInsertColumns(QModelIndex(), column, column + count - 1);
-        for(int columnCounter = column; columnCounter < column + count; ++columnCounter) {
+        for (int columnCounter = column; columnCounter < column + count; ++columnCounter) {
             hiddenColumns.setBit(columnCounter, false);
         }
         endInsertColumns();
@@ -233,10 +218,10 @@ bool InvestigationDataModel::insertColumns(int column, int count, const QModelIn
 
 int InvestigationDataModel::getAbsoluteNumberOfVisibleColumn(int column) const {
     int result = 0;
-    if(!hiddenColumns.isEmpty()) {
+    if (!hiddenColumns.isEmpty()) {
         Q_ASSERT(hiddenColumns.count(false) > column);
-        for(int columnCounter = -1; columnCounter < column; ++result) {
-            if(!hiddenColumns.testBit(result)) {
+        for (int columnCounter = -1; columnCounter < column; ++result) {
+            if (!hiddenColumns.testBit(result)) {
                 ++columnCounter;
             }
         }
@@ -247,10 +232,10 @@ int InvestigationDataModel::getAbsoluteNumberOfVisibleColumn(int column) const {
 
 int InvestigationDataModel::getVisibleNumberOfAbsoluteColumn(int column) const {
     int result = 0;
-    if(!hiddenColumns.isEmpty()) {
+    if (!hiddenColumns.isEmpty()) {
         Q_ASSERT(hiddenColumns.count() > column);
-        for(int columnCounter = 0; columnCounter < column; ++columnCounter) {
-            if(!hiddenColumns.testBit(columnCounter)) {
+        for (int columnCounter = 0; columnCounter < column; ++columnCounter) {
+            if (!hiddenColumns.testBit(columnCounter)) {
                 ++result;
             }
         }
@@ -258,4 +243,4 @@ int InvestigationDataModel::getVisibleNumberOfAbsoluteColumn(int column) const {
     return result;
 }
 
-} // namespace U2
+}    // namespace U2

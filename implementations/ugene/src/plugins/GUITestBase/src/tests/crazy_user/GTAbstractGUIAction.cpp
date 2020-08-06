@@ -25,8 +25,6 @@ namespace U2 {
 
 namespace GUITest_crazy_user {
 
-
-
 }
 
-}
+}    // namespace U2

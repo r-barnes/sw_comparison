@@ -19,10 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "SlidingWindowStep.h"
+
 #include <U2Core/U2SafePoints.h>
 
 #include "trimmomatic/util/LineEditHighlighter.h"
-#include "SlidingWindowStep.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -30,8 +31,7 @@ namespace LocalWorkflow {
 const QString SlidingWindowStepFactory::ID = "SLIDINGWINDOW";
 
 SlidingWindowStep::SlidingWindowStep()
-    : TrimmomaticStep(SlidingWindowStepFactory::ID)
-{
+    : TrimmomaticStep(SlidingWindowStepFactory::ID) {
     name = "SLIDINGWINDOW";
     description = tr("<html><head></head><body>"
                      "<h4>SLIDINGWINDOW</h4>"
@@ -136,14 +136,12 @@ void SlidingWindowSettingsWidget::setState(const QVariantMap &state) {
 }
 
 SlidingWindowStepFactory::SlidingWindowStepFactory()
-    : TrimmomaticStepFactory(ID)
-{
-
+    : TrimmomaticStepFactory(ID) {
 }
 
 SlidingWindowStep *SlidingWindowStepFactory::createStep() const {
     return new SlidingWindowStep();
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

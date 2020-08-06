@@ -19,18 +19,17 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/AppContext.h>
-
 #include "BcfToolsSupport.h"
+
+#include <U2Core/AppContext.h>
 
 namespace U2 {
 
 const QString BcfToolsSupport::ET_BCFTOOLS = "BCFtools";
 const QString BcfToolsSupport::ET_BCFTOOLS_ID = "USUPP_BCFTOOLS";
 
-BcfToolsSupport::BcfToolsSupport(const QString& id, const QString &name)
-: ExternalTool(id, name, "")
-{
+BcfToolsSupport::BcfToolsSupport(const QString &id, const QString &name)
+    : ExternalTool(id, name, "") {
     if (AppContext::getMainWindow()) {
         icon = QIcon(":external_tool_support/images/cmdline.png");
         grayIcon = QIcon(":external_tool_support/images/cmdline_gray.png");
@@ -52,4 +51,4 @@ BcfToolsSupport::BcfToolsSupport(const QString& id, const QString &name)
     muted = true;
 }
 
-} // U2
+}    // namespace U2

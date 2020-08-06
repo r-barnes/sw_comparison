@@ -22,9 +22,9 @@
 #ifndef _U2_DASHBOARD_PAGE_CONTROLLER_H_
 #define _U2_DASHBOARD_PAGE_CONTROLLER_H_
 
-#include <U2Gui/SimpleWebViewBasedWidgetController.h>
-
 #include <U2Lang/WorkflowMonitor.h>
+
+#include "./webview/SimpleWebViewBasedWidgetController.h"
 
 namespace U2 {
 
@@ -35,7 +35,7 @@ class WebViewController;
 class DashboardPageController : public SimpleWebViewBasedWidgetController {
     Q_OBJECT
 public:
-    DashboardPageController(Dashboard *dashboard);
+    DashboardPageController(Dashboard *dashboard, U2WebView *webView);
 
     DashboardJsAgent *getAgent();
 
@@ -71,6 +71,6 @@ private:
     const QPointer<const WorkflowMonitor> monitor;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_DASHBOARD_PAGE_CONTROLLER_H_
+#endif    // _U2_DASHBOARD_PAGE_CONTROLLER_H_

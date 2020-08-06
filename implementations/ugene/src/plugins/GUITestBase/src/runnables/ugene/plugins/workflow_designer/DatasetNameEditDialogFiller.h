@@ -27,15 +27,17 @@
 namespace U2 {
 using namespace HI;
 
-class DatasetNameEditDialogFiller : public Filler
-{
+class DatasetNameEditDialogFiller : public Filler {
 public:
-    DatasetNameEditDialogFiller(HI::GUITestOpStatus& os, QString _datasetName = ""):Filler(os, ""),
-        datasetName(_datasetName){}
+    DatasetNameEditDialogFiller(HI::GUITestOpStatus &os, QString _datasetName = "")
+        : Filler(os, ""),
+          datasetName(_datasetName) {
+    }
     void commonScenario();
+
 private:
     QString datasetName;
 };
-}
+}    // namespace U2
 
-#endif // DATASETNAMEEDITDIALOGFILLER_H
+#endif    // DATASETNAMEEDITDIALOGFILLER_H

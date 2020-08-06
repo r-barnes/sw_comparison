@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DbiConnection.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/U2Dbi.h>
 #include <U2Core/U2DbiRegistry.h>
@@ -26,19 +28,19 @@
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/U2Type.h>
 
-#include "DbiConnection.h"
-
 namespace U2 {
 
-DbiConnection::DbiConnection(const U2DbiRef& ref,  U2OpStatus& os) : dbi(NULL) {
+DbiConnection::DbiConnection(const U2DbiRef &ref, U2OpStatus &os)
+    : dbi(NULL) {
     open(ref, os);
 }
 
-DbiConnection::DbiConnection(const U2DbiRef& ref,  bool create, U2OpStatus& os, const QHash<QString, QString> &properties) : dbi(NULL) {
+DbiConnection::DbiConnection(const U2DbiRef &ref, bool create, U2OpStatus &os, const QHash<QString, QString> &properties)
+    : dbi(NULL) {
     open(ref, create, os, properties);
 }
 
-DbiConnection::DbiConnection(const DbiConnection& dbiConnection) {
+DbiConnection::DbiConnection(const DbiConnection &dbiConnection) {
     copy(dbiConnection);
 }
 
@@ -47,12 +49,12 @@ DbiConnection::~DbiConnection() {
     close(os);
 }
 
-void DbiConnection::open(const U2DbiRef& ref,  U2OpStatus& os)  {
+void DbiConnection::open(const U2DbiRef &ref, U2OpStatus &os) {
     open(ref, false, os);
 }
 
 namespace {
-U2DbiPool * getDbiPool(U2OpStatus &os) {
+U2DbiPool *getDbiPool(U2OpStatus &os) {
     U2DbiRegistry *dbiReg = AppContext::getDbiRegistry();
     CHECK_EXT(NULL != dbiReg, os.setError("DBI registry is not initialized"), NULL);
 
@@ -60,16 +62,16 @@ U2DbiPool * getDbiPool(U2OpStatus &os) {
     CHECK_EXT(NULL != pool, os.setError("DBI pool is not initialized"), NULL);
     return pool;
 }
-}
+}    // namespace
 
-void DbiConnection::open(const U2DbiRef& ref,  bool create, U2OpStatus& os, const QHash<QString, QString> &properties) {
+void DbiConnection::open(const U2DbiRef &ref, bool create, U2OpStatus &os, const QHash<QString, QString> &properties) {
     SAFE_POINT_EXT(!isOpen(), os.setError(QString("Connection is already opened! %1").arg(dbi->getDbiId())), );
     U2DbiPool *pool = getDbiPool(os);
     SAFE_POINT_OP(os, );
     dbi = pool->openDbi(ref, create, os, properties);
 }
 
-void DbiConnection::close(U2OpStatus& os) {
+void DbiConnection::close(U2OpStatus &os) {
     if (dbi != NULL) {
         U2DbiPool *pool = getDbiPool(os);
         SAFE_POINT_OP(os, );
@@ -82,7 +84,7 @@ bool DbiConnection::isOpen() const {
     return dbi != NULL;
 }
 
-DbiConnection & DbiConnection::operator=(DbiConnection const& dbiConnection) {
+DbiConnection &DbiConnection::operator=(DbiConnection const &dbiConnection) {
     if (this == &dbiConnection) {
         return *this;
     }
@@ -93,7 +95,7 @@ DbiConnection & DbiConnection::operator=(DbiConnection const& dbiConnection) {
     return *this;
 }
 
-void DbiConnection::copy(DbiConnection const& dbiConnection) {
+void DbiConnection::copy(DbiConnection const &dbiConnection) {
     dbi = dbiConnection.dbi;
     if (dbiConnection.dbi != NULL) {
         U2OpStatus2Log os;
@@ -103,8 +105,8 @@ void DbiConnection::copy(DbiConnection const& dbiConnection) {
     }
 }
 
-DbiConnection::DbiConnection() : dbi(NULL) {
-
+DbiConnection::DbiConnection()
+    : dbi(NULL) {
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -27,16 +27,19 @@
 namespace U2 {
 using namespace HI;
 
-class CAP3SupportDialogFiller : public Filler
-{
+class CAP3SupportDialogFiller : public Filler {
 public:
-    CAP3SupportDialogFiller(HI::GUITestOpStatus &os, QStringList _input, const QString& _output):
-    Filler(os, "CAP3SupportDialog"), input(_input), output(_output){}
-    CAP3SupportDialogFiller(HI::GUITestOpStatus &os, CustomScenario* c): Filler(os, "CAP3SupportDialog", c){}
+    CAP3SupportDialogFiller(HI::GUITestOpStatus &os, QStringList _input, const QString &_output)
+        : Filler(os, "CAP3SupportDialog"), input(_input), output(_output) {
+    }
+    CAP3SupportDialogFiller(HI::GUITestOpStatus &os, CustomScenario *c)
+        : Filler(os, "CAP3SupportDialog", c) {
+    }
     void commonScenario();
+
 private:
     QStringList input;
     QString output;
 };
-}
-#endif // CAP3SUPPORTDIALOGFILLER_H
+}    // namespace U2
+#endif    // CAP3SUPPORTDIALOGFILLER_H

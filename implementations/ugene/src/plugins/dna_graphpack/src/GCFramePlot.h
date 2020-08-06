@@ -22,13 +22,13 @@
 #ifndef _U2_GC_FRAME_PLOT_H_
 #define _U2_GC_FRAME_PLOT_H_
 
-#include "DNAGraphPackPlugin.h"
+#include <QAction>
+#include <QBitArray>
+#include <QList>
 
 #include <U2View/GSequenceGraphView.h>
 
-#include <QAction>
-#include <QList>
-#include <QBitArray>
+#include "DNAGraphPackPlugin.h"
 
 namespace U2 {
 
@@ -37,26 +37,25 @@ class AnnotatedDNAView;
 class GCFramePlotFactory : public GSequenceGraphFactory {
     Q_OBJECT
 public:
-    GCFramePlotFactory(QObject* p);
-    QList<QSharedPointer<GSequenceGraphData> > createGraphs(GSequenceGraphView* v);
-    GSequenceGraphDrawer* getDrawer(GSequenceGraphView* v);
-    bool isEnabled(const U2SequenceObject* o) const;
+    GCFramePlotFactory(QObject *p);
+    QList<QSharedPointer<GSequenceGraphData>> createGraphs(GSequenceGraphView *v);
+    GSequenceGraphDrawer *getDrawer(GSequenceGraphView *v);
+    bool isEnabled(const U2SequenceObject *o) const;
 };
 
 class GCFramePlotAlgorithm : public GSequenceGraphAlgorithm {
 public:
     GCFramePlotAlgorithm(int offset);
 
-    void calculate(QVector<float>& res, U2SequenceObject* o, const U2Region& r, const GSequenceGraphWindowData* d, U2OpStatus &os);
+    void calculate(QVector<float> &res, U2SequenceObject *o, const U2Region &r, const GSequenceGraphWindowData *d, U2OpStatus &os);
 
 private:
-    void windowStrategyWithoutMemorize(QVector<float>& res, const QByteArray& seq,
-        int startPos, const GSequenceGraphWindowData* d, int nSteps, U2OpStatus &os);
+    void windowStrategyWithoutMemorize(QVector<float> &res, const QByteArray &seq, int startPos, const GSequenceGraphWindowData *d, int nSteps, U2OpStatus &os);
 
     QBitArray map;
     int offset;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_GC_FRAME_PLOT_H_
+#endif    // _U2_GC_FRAME_PLOT_H_

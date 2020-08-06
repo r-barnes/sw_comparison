@@ -34,10 +34,9 @@ namespace GUITest_common_scenarios_NIAID_pipelines {
 GUI_TEST_CLASS_DECLARATION(test_0001)
 GUI_TEST_CLASS_DECLARATION(test_0002)
 
-
 #undef GUI_TEST_SUITE
-} // namespace U2
+}    // namespace GUITest_common_scenarios_NIAID_pipelines
 
-} //namespace
+}    // namespace U2
 
-#endif // GTTESTS_NIAID_PIPELINES_H_
+#endif    // GTTESTS_NIAID_PIPELINES_H_

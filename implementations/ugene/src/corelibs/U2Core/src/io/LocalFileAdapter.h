@@ -22,58 +22,67 @@
 #ifndef _U2_LOCAL_FILE_ADAPTER_H_
 #define _U2_LOCAL_FILE_ADAPTER_H_
 
-#include <U2Core/IOAdapter.h>
-
 #include <QFileInfo>
+
+#include <U2Core/IOAdapter.h>
 
 namespace U2 {
 
-class U2CORE_EXPORT LocalFileAdapterFactory: public IOAdapterFactory {
+class U2CORE_EXPORT LocalFileAdapterFactory : public IOAdapterFactory {
     Q_OBJECT
 public:
-    LocalFileAdapterFactory(QObject* p = NULL);
+    LocalFileAdapterFactory(QObject *p = NULL);
 
-    virtual IOAdapter* createIOAdapter();
+    virtual IOAdapter *createIOAdapter();
 
-    virtual IOAdapterId getAdapterId() const {return BaseIOAdapters::LOCAL_FILE;}
+    virtual IOAdapterId getAdapterId() const {
+        return BaseIOAdapters::LOCAL_FILE;
+    }
 
-    virtual const QString& getAdapterName() const {return name;}
+    virtual const QString &getAdapterName() const {
+        return name;
+    }
 
-    virtual bool isIOModeSupported(IOAdapterMode m)  const {Q_UNUSED(m); return true;} //files can be read and be written
+    virtual bool isIOModeSupported(IOAdapterMode m) const {
+        Q_UNUSED(m);
+        return true;
+    }    //files can be read and be written
 
-    virtual TriState isResourceAvailable(const GUrl& url) const {return QFileInfo(url.getURLString()).exists() ? TriState_Yes : TriState_No;}
+    virtual TriState isResourceAvailable(const GUrl &url) const {
+        return QFileInfo(url.getURLString()).exists() ? TriState_Yes : TriState_No;
+    }
 
 protected:
     QString name;
 };
 
-class U2CORE_EXPORT GzippedLocalFileAdapterFactory: public LocalFileAdapterFactory {
+class U2CORE_EXPORT GzippedLocalFileAdapterFactory : public LocalFileAdapterFactory {
     Q_OBJECT
 public:
-    GzippedLocalFileAdapterFactory(QObject* p = NULL);
+    GzippedLocalFileAdapterFactory(QObject *p = NULL);
 
-    virtual IOAdapter* createIOAdapter();
+    virtual IOAdapter *createIOAdapter();
 
-    virtual IOAdapterId getAdapterId() const {return BaseIOAdapters::GZIPPED_LOCAL_FILE;}
+    virtual IOAdapterId getAdapterId() const {
+        return BaseIOAdapters::GZIPPED_LOCAL_FILE;
+    }
 };
 
-
-
-class U2CORE_EXPORT LocalFileAdapter: public IOAdapter {
+class U2CORE_EXPORT LocalFileAdapter : public IOAdapter {
     Q_OBJECT
 public:
-    LocalFileAdapter(LocalFileAdapterFactory* f, QObject* o = NULL, bool bufferOptimization = false);
+    LocalFileAdapter(LocalFileAdapterFactory *f, QObject *o = NULL, bool bufferOptimization = false);
     ~LocalFileAdapter();
 
-    virtual bool open(const GUrl& url, IOAdapterMode m);
+    virtual bool open(const GUrl &url, IOAdapterMode m);
 
     virtual bool isOpen() const;
 
     virtual void close();
 
-    virtual qint64 readBlock(char* data, qint64 maxSize);
+    virtual qint64 readBlock(char *data, qint64 maxSize);
 
-    virtual qint64 writeBlock(const char* data, qint64 size);
+    virtual qint64 writeBlock(const char *data, qint64 size);
 
     virtual bool skip(qint64 nBytes);
 
@@ -87,9 +96,8 @@ public:
 
     virtual QString errorString() const;
 
-
 private:
-    QFile* f;
+    QFile *f;
     quint64 fileSize;
 
     bool bufferOptimization;
@@ -100,7 +108,6 @@ private:
     static const quint64 BUF_SIZE;
 };
 
-
-}//namespace
+}    // namespace U2
 
 #endif

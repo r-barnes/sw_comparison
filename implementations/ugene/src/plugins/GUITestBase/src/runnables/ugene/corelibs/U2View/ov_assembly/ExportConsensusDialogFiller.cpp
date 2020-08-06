@@ -22,7 +22,7 @@
 #include "ExportConsensusDialogFiller.h"
 
 namespace U2 {
-void ExportConsensusDialogFiller::commonScenario(){
+void ExportConsensusDialogFiller::commonScenario() {
     //not implemented jet
 }
-}
+}    // namespace U2

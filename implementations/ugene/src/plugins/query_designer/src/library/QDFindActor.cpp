@@ -21,22 +21,22 @@
 
 #include "QDFindActor.h"
 
-#include <U2Core/Log.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/DNASequenceObject.h>
-#include <U2Core/TaskSignalMapper.h>
-#include <U2Core/FailTask.h>
 #include <U2Core/DNATranslation.h>
+#include <U2Core/FailTask.h>
+#include <U2Core/Log.h>
+#include <U2Core/TaskSignalMapper.h>
 #include <U2Core/U2AlphabetUtils.h>
 
 #include <U2Lang/BaseTypes.h>
-
 
 namespace U2 {
 
 static const QString PATTERN_ATTR("pattern");
 
-QDFindActor::QDFindActor(QDActorPrototype const* proto) : QDActor(proto) {
+QDFindActor::QDFindActor(QDActorPrototype const *proto)
+    : QDActor(proto) {
     units["find"] = new QDSchemeUnit(this);
 }
 
@@ -53,42 +53,40 @@ QString QDFindActor::getText() const {
 
     if (hypPtrn.isEmpty()) {
         hypPtrn = QString("&lt;<a href=%1>pattern</a>&gt;").arg(PATTERN_ATTR);
-    }
-    else {
+    } else {
         hypPtrn = QString("<a href=%1>%2</a>")
-            .arg(PATTERN_ATTR)
-            .arg(hypPtrn);
+                      .arg(PATTERN_ATTR)
+                      .arg(hypPtrn);
     }
 
     return hypPtrn;
 }
 
-Task* QDFindActor::getAlgorithmTask(const QVector<U2Region>& location) {
-    Task* t = new Task(tr("Find"), TaskFlag_NoRun);
+Task *QDFindActor::getAlgorithmTask(const QVector<U2Region> &location) {
+    Task *t = new Task(tr("Find"), TaskFlag_NoRun);
     settings.sequence = scheme->getSequence().seq;
     settings.pattern = cfg->getParameter(PATTERN_ATTR)->getAttributeValueWithoutScript<QString>().toLatin1().toUpper();
     settings.maxResult2Find = FindAlgorithmSettings::MAX_RESULT_TO_FIND_UNLIMITED;
 
-    switch(getStrandToRun()) {
-        case QDStrand_Both:
-            settings.strand = FindAlgorithmStrand_Both;
-            break;
-        case QDStrand_DirectOnly:
-            settings.strand = FindAlgorithmStrand_Direct;
-            break;
-        case QDStrand_ComplementOnly:
-            settings.strand = FindAlgorithmStrand_Complement;
-            break;
+    switch (getStrandToRun()) {
+    case QDStrand_Both:
+        settings.strand = FindAlgorithmStrand_Both;
+        break;
+    case QDStrand_DirectOnly:
+        settings.strand = FindAlgorithmStrand_Direct;
+        break;
+    case QDStrand_ComplementOnly:
+        settings.strand = FindAlgorithmStrand_Complement;
+        break;
     }
 
     if (settings.strand != FindAlgorithmStrand_Direct) {
-        DNATranslation* compTT = NULL;
+        DNATranslation *compTT = NULL;
         if (scheme->getSequence().alphabet->isNucleic()) {
-            compTT = AppContext::getDNATranslationRegistry()->
-                lookupComplementTranslation(scheme->getSequence().alphabet);
+            compTT = AppContext::getDNATranslationRegistry()->lookupComplementTranslation(scheme->getSequence().alphabet);
         }
-        if (compTT  != NULL) {
-            settings.complementTT = compTT ;
+        if (compTT != NULL) {
+            settings.complementTT = compTT;
         } else {
             QString err = tr("%1: can not find complement translation.").arg(getParameters()->getLabel());
             return new FailTask(err);
@@ -100,31 +98,31 @@ Task* QDFindActor::getAlgorithmTask(const QVector<U2Region>& location) {
         return new FailTask(err);
     }
 
-    const DNAAlphabet* ptrnAl = U2AlphabetUtils::findBestAlphabet(settings.pattern);
-    if (ptrnAl->getType()!=DNAAlphabet_NUCL) {
+    const DNAAlphabet *ptrnAl = U2AlphabetUtils::findBestAlphabet(settings.pattern);
+    if (ptrnAl->getType() != DNAAlphabet_NUCL) {
         QString err = tr("%1: pattern has to be nucleic").arg(getParameters()->getLabel());
         return new FailTask(err);
     }
 
-    foreach(const U2Region& r, location) {
+    foreach (const U2Region &r, location) {
         FindAlgorithmTaskSettings s(settings);
         s.searchRegion = r;
-        FindAlgorithmTask* findTask = new FindAlgorithmTask(s);
-        connect(new TaskSignalMapper(findTask), SIGNAL(si_taskFinished(Task*)), SLOT(sl_onFindTaskFinished(Task*)));
+        FindAlgorithmTask *findTask = new FindAlgorithmTask(s);
+        connect(new TaskSignalMapper(findTask), SIGNAL(si_taskFinished(Task *)), SLOT(sl_onFindTaskFinished(Task *)));
         t->addSubTask(findTask);
     }
     return t;
 }
 
-void QDFindActor::sl_onFindTaskFinished(Task* t) {
-    FindAlgorithmTask* findTask = qobject_cast<FindAlgorithmTask*>(t);
+void QDFindActor::sl_onFindTaskFinished(Task *t) {
+    FindAlgorithmTask *findTask = qobject_cast<FindAlgorithmTask *>(t);
     QList<FindAlgorithmResult> res = findTask->popResults();
-    foreach(const FindAlgorithmResult& r, res) {
+    foreach (const FindAlgorithmResult &r, res) {
         QDResultUnit ru(new QDResultUnitData);
         ru->strand = r.strand;
         ru->region = r.region;
         ru->owner = units.value("find");
-        QDResultGroup* g = new QDResultGroup(QDStrand_DirectOnly);
+        QDResultGroup *g = new QDResultGroup(QDStrand_DirectOnly);
         g->add(ru);
         results.append(g);
     }
@@ -139,4 +137,4 @@ QDFindActorPrototype::QDFindActorPrototype() {
     attributes << new Attribute(pd, BaseTypes::STRING_TYPE(), true);
 }
 
-}//namespace
+}    // namespace U2

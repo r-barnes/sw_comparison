@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "IlluminaClipStep.h"
+
 #include <QMainWindow>
 
 #include <U2Core/AppContext.h>
@@ -32,7 +34,6 @@
 #include <U2Gui/MainWindow.h>
 #include <U2Gui/U2FileDialog.h>
 
-#include "IlluminaClipStep.h"
 #include "trimmomatic/util/LineEditHighlighter.h"
 
 namespace U2 {
@@ -41,8 +42,7 @@ namespace LocalWorkflow {
 const QString IlluminaClipStepFactory::ID = "ILLUMINACLIP";
 
 IlluminaClipStep::IlluminaClipStep()
-    : TrimmomaticStep(IlluminaClipStepFactory::ID)
-{
+    : TrimmomaticStep(IlluminaClipStepFactory::ID) {
     name = "ILLUMINACLIP";
     description = tr("<html><head></head><body>"
                      "<h4>ILLUMINACLIP</h4>"
@@ -117,7 +117,8 @@ QString IlluminaClipStep::serializeState(const QVariantMap &widgetState) const {
 QVariantMap IlluminaClipStep::parseState(const QString &command) const {
     QVariantMap state;
     QRegExp regExp(id + ":" + "\\\'([^\\\']*)\\'" + ":" + "(\\d*)" + ":" + "(\\d*)" + ":" + "(\\d*)" +
-                   "(:" + "(\\d*)" + ":" + "((true|false){0,1})" + ")?", Qt::CaseInsensitive);
+                       "(:" + "(\\d*)" + ":" + "((true|false){0,1})" + ")?",
+                   Qt::CaseInsensitive);
 
     const bool matched = regExp.exactMatch(command);
     CHECK(matched, state);
@@ -258,10 +259,11 @@ const QString IlluminaClipAdditionalSettingsDialog::ADDITIONAL_SETTINGS_ENABLED 
 const QString IlluminaClipAdditionalSettingsDialog::MIN_ADAPTER_LENGTH = "minAdapterLength";
 const QString IlluminaClipAdditionalSettingsDialog::KEEP_BOTH_READS = "keepBothReads";
 
-IlluminaClipAdditionalSettingsDialog::IlluminaClipAdditionalSettingsDialog(const QVariantMap &widgetState, QWidget* parent) : QDialog(parent) {
+IlluminaClipAdditionalSettingsDialog::IlluminaClipAdditionalSettingsDialog(const QVariantMap &widgetState, QWidget *parent)
+    : QDialog(parent) {
     setupUi(this);
 
-    new HelpButton(this, buttonBox, "24740268");
+    new HelpButton(this, buttonBox, "46500506");
 
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Apply"));
 
@@ -290,14 +292,12 @@ QVariantMap IlluminaClipAdditionalSettingsDialog::getState() const {
 }
 
 IlluminaClipStepFactory::IlluminaClipStepFactory()
-    : TrimmomaticStepFactory(ID)
-{
-
+    : TrimmomaticStepFactory(ID) {
 }
 
 IlluminaClipStep *IlluminaClipStepFactory::createStep() const {
     return new IlluminaClipStep();
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

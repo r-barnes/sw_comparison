@@ -174,10 +174,6 @@ p, li { white-space: pre-wrap; }
         <translation>Директория для индексных файлов:</translation>
     </message>
     <message>
-        <source>Folder for index files:</source>
-        <translation type="vanished">Папка для индексных файлов:</translation>
-    </message>
-    <message>
         <location filename="../src/GenomeAlignerSettings.ui" line="201"/>
         <location filename="../src/GenomeAlignerSettings.ui" line="227"/>
         <source>Omit reads with qualities lower than the specified value. Reads that have no qualities are not omited.</source>
@@ -216,10 +212,6 @@ p, li { white-space: pre-wrap; }
              количество памяти, используемое для выравнивания.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <source>You can choose a temporary folder for saving index files for the reference that will be built during the alignment. If you need to run this algorithm one more time with the same reference and with the same reference fragmentation parameter, you can use this prebuilt index that will be located in the temporary folder.</source>
-        <translation type="vanished">Вы можете задать временную папку для сохранения индексных файлов для референса, которые будут построены в процессе выравнивания. Если необходимо запустить этот алгоритм снова с той же референсной последовательностью и с тем же параметром разбиения, вы можете использовать этот индексный файл, который будет сохранен во временной папки.</translation>
-    </message>
-    <message>
         <location filename="../src/GenomeAlignerSettings.ui" line="535"/>
         <source>Specify an index to build during execution of the selected short reads aligning algorithm. If this option is selected, the value is &lt;b&gt;required&lt;/b&gt;.</source>
         <translation>Укажите индексный файл для выравнивания выбранным алгоритмом. Если опция выбрана, то значение &lt;b&gt;обязательно&lt;/b&gt;.</translation>
@@ -247,19 +239,11 @@ p, li { white-space: pre-wrap; }
         <source>Genome aligner settings</source>
         <translation>Настройки</translation>
     </message>
-    <message>
-        <source>Folders</source>
-        <translation type="vanished">Папки</translation>
-    </message>
-    <message>
-        <source>Folder for built indexes</source>
-        <translation type="vanished">Папка для сохранения индекса</translation>
-    </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/GenomeAlignerTask.cpp" line="55"/>
+        <location filename="../src/GenomeAlignerTask.cpp" line="57"/>
         <source>UGENE Genome Aligner</source>
         <translation>Модуль сборки контигов UGENE</translation>
     </message>
@@ -272,27 +256,27 @@ p, li { white-space: pre-wrap; }
         <translation>Запустить модуль сборки контигов из командной строки</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="116"/>
+        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="115"/>
         <source>Finished parsing genome aligner options.</source>
         <translation>Разбор опций модуля сборки контигов завершен.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="128"/>
+        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="124"/>
         <source>Path to reference sequence is not set.</source>
         <translation>Путь до референсной последовательности не указан.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="134"/>
+        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="130"/>
         <source>Short reads list is empty.</source>
         <translation>Список считываемых последовательностей пуст.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="138"/>
+        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="134"/>
         <source>Reference (index or sequence) is not set.</source>
         <translation>Референс (индекс или последовательность) не установлен.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="182"/>
+        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="175"/>
         <source>  --%1    Use this flag to only build index for reference sequence.
 
 </source>
@@ -301,7 +285,7 @@ p, li { white-space: pre-wrap; }
 </translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="183"/>
+        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="176"/>
         <source>  --%1    Path to reference genome sequence
 
 </source>
@@ -310,7 +294,7 @@ p, li { white-space: pre-wrap; }
 </translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="184"/>
+        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="177"/>
         <source>  --%1    Path to short-reads data in FASTA or FASTQ format
 
 </source>
@@ -319,7 +303,7 @@ p, li { white-space: pre-wrap; }
 </translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="185"/>
+        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="178"/>
         <source>  --%1    Path to prebuilt index (base file name or with .idx extension). If not set, index is searched in system temporary folder. If --build-index option is applied, index will be saved to specified path.
 
 </source>
@@ -328,7 +312,7 @@ p, li { white-space: pre-wrap; }
 </translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="186"/>
+        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="179"/>
         <source>  --%1    Path to output alignment in UGENEDB or SAM format (see --%2)
 
 </source>
@@ -337,7 +321,7 @@ p, li { white-space: pre-wrap; }
 </translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="187"/>
+        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="180"/>
         <source>  --%1    Memory size (in Mbs) reserved for short-reads. The bigger value the faster algorithm works. Default value depends on available system memory.
 
 </source>
@@ -346,7 +330,7 @@ p, li { white-space: pre-wrap; }
 </translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="188"/>
+        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="181"/>
         <source>  --%1    Index fragmentation size (in Mbs). Small fragments better fit into RAM, allowing to load more short reads. Default value is 10.
 
 </source>
@@ -355,7 +339,7 @@ p, li { white-space: pre-wrap; }
 </translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="189"/>
+        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="182"/>
         <source>  --%1    Absolute amount of allowed mismatches per every short-read (mutually exclusive with --%2). Default value is 0.
 
 </source>
@@ -364,7 +348,7 @@ p, li { white-space: pre-wrap; }
 </translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="190"/>
+        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="183"/>
         <source>  --%1    Percentage amount of allowed mismatches per every short-read (mutually exclusive with --%2). Default value is 0.
 
 </source>
@@ -373,7 +357,7 @@ p, li { white-space: pre-wrap; }
 </translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="191"/>
+        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="184"/>
         <source>  --%1    Use both the read and its reverse complement during the aligning.
 
 </source>
@@ -382,7 +366,7 @@ p, li { white-space: pre-wrap; }
 </translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="192"/>
+        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="185"/>
         <source>  --%1    Report only about best alignments (in terms of mismatches).
 
 </source>
@@ -391,14 +375,14 @@ p, li { white-space: pre-wrap; }
 </translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="193"/>
+        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="186"/>
         <source>  --%1    Omit reads with qualities lower than the specified value. Reads which have no qualities are not omitted. Default value is 0.
 
 </source>
         <translation>  --%1    Пропустить риды с качеством ниже указанного значения. Риды, которые не имеют оценки качества не пропускаются. Значение по умолчанию 0.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="194"/>
+        <location filename="../src/GenomeAlignerCMDLineTask.cpp" line="187"/>
         <source>  --%1    Output aligned reads in SAM format. Default value is false.
 
 </source>
@@ -410,13 +394,13 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>U2::GenomeAlignerIndexTask</name>
     <message>
-        <location filename="../src/GenomeAlignerIndexTask.cpp" line="89"/>
-        <location filename="../src/GenomeAlignerIndexTask.cpp" line="135"/>
+        <location filename="../src/GenomeAlignerIndexTask.cpp" line="92"/>
+        <location filename="../src/GenomeAlignerIndexTask.cpp" line="138"/>
         <source>File %1 is not found. Try to create index another time.</source>
         <translation>Файл %1 не найден. Попробуйте создать индекс еще раз.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerIndexTask.cpp" line="182"/>
+        <location filename="../src/GenomeAlignerIndexTask.cpp" line="184"/>
         <source>Can not init short reads loader. %1</source>
         <translation>Невозможно загрузить короткие риды. %1</translation>
     </message>
@@ -424,22 +408,22 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>U2::GenomeAlignerPlugin</name>
     <message>
-        <location filename="../src/GenomeAlignerPlugin.cpp" line="72"/>
+        <location filename="../src/GenomeAlignerPlugin.cpp" line="81"/>
         <source>UGENE Genome Aligner</source>
         <translation>Модуль сборки контигов UGENE</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerPlugin.cpp" line="72"/>
+        <location filename="../src/GenomeAlignerPlugin.cpp" line="81"/>
         <source>Assembly DNA to reference sequence</source>
         <translation>Сборка контигов по последовательности</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerPlugin.cpp" line="118"/>
+        <location filename="../src/GenomeAlignerPlugin.cpp" line="124"/>
         <source>UGENE Short Reads Aligner</source>
         <translation>Модуль сборки контигов UGENE</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerPlugin.cpp" line="119"/>
+        <location filename="../src/GenomeAlignerPlugin.cpp" line="125"/>
         <source>UGENE Genome Aligner is an efficient and fast tool for short read alignment.It has 2 work modes: build index and align short reads (default mode).
 If there is no index available for reference sequence it will be built on the fly.
 
@@ -480,13 +464,13 @@ ugene --genome-aligner --reference=/path/to/ref --short-reads=/path/to/reads --r
 <context>
     <name>U2::GenomeAlignerSettingsWidget</name>
     <message>
-        <location filename="../src/GenomeAlignerSettingsWidget.cpp" line="112"/>
-        <location filename="../src/GenomeAlignerSettingsWidget.cpp" line="170"/>
+        <location filename="../src/GenomeAlignerSettingsWidget.cpp" line="114"/>
+        <location filename="../src/GenomeAlignerSettingsWidget.cpp" line="174"/>
         <source>This index file is corrupted. Please, load a valid index file.</source>
         <translation>Этот индексный файл поврежден. Пожалуйста, загрузите другой индексный файл.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerSettingsWidget.cpp" line="164"/>
+        <location filename="../src/GenomeAlignerSettingsWidget.cpp" line="166"/>
         <source>The index folder has already contain the prebuilt index. But its reference fragmentation parameter is %1 and it doesn&apos;t equal to the parameter you have chosen (%2).
 
 Press &quot;Ok&quot; to delete this index file and create a new during the aligning.
@@ -497,7 +481,7 @@ Press &quot;Cancel&quot; to change this parameter or the index folder.</source>
 Нажмите &quot;Отмена&quot; чтобы изменить параметр или индексную папку.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerSettingsWidget.cpp" line="180"/>
+        <location filename="../src/GenomeAlignerSettingsWidget.cpp" line="184"/>
         <source>Set index files folder</source>
         <translation>Выбрать индексную папку</translation>
     </message>
@@ -505,57 +489,57 @@ Press &quot;Cancel&quot; to change this parameter or the index folder.</source>
 <context>
     <name>U2::GenomeAlignerTask</name>
     <message>
-        <location filename="../src/GenomeAlignerTask.cpp" line="131"/>
+        <location filename="../src/GenomeAlignerTask.cpp" line="134"/>
         <source>Genome Aligner settings</source>
         <translation>Настройки модуля сборки контигов</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerTask.cpp" line="132"/>
+        <location filename="../src/GenomeAlignerTask.cpp" line="135"/>
         <source>Index file name: %1</source>
         <translation>Имя индексного файла: %1</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerTask.cpp" line="133"/>
+        <location filename="../src/GenomeAlignerTask.cpp" line="136"/>
         <source>Use prebuilt index: %2</source>
         <translation>Использовать индекс: %2</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerTask.cpp" line="208"/>
+        <location filename="../src/GenomeAlignerTask.cpp" line="212"/>
         <source>Can not init short reads loader.</source>
         <translation>Невозможно загрузить короткие риды.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerTask.cpp" line="348"/>
+        <location filename="../src/GenomeAlignerTask.cpp" line="355"/>
         <source>The aligning is finished.</source>
         <translation>Выравнивание завершено.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerTask.cpp" line="349"/>
+        <location filename="../src/GenomeAlignerTask.cpp" line="356"/>
         <source>Whole working time = %1.</source>
         <translation>Время выполнения = %1.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerTask.cpp" line="350"/>
+        <location filename="../src/GenomeAlignerTask.cpp" line="357"/>
         <source>%1% reads aligned.</source>
         <translation>%1% ридов было выровнено.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerTask.cpp" line="352"/>
+        <location filename="../src/GenomeAlignerTask.cpp" line="359"/>
         <source>Short-reads loading time = %1</source>
         <translation>Время загрузки ридов = %1</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerTask.cpp" line="353"/>
+        <location filename="../src/GenomeAlignerTask.cpp" line="360"/>
         <source>Results writing time = %1</source>
         <translation>Время записи результатов = %1</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerTask.cpp" line="355"/>
+        <location filename="../src/GenomeAlignerTask.cpp" line="362"/>
         <source>Index loading time = %1</source>
         <translation>Время загрузки индекса = %1</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerTask.cpp" line="356"/>
+        <location filename="../src/GenomeAlignerTask.cpp" line="363"/>
         <source>Short-reads IO time = %1</source>
         <translation>Время IO коротких ридов = %1</translation>
     </message>
@@ -563,7 +547,7 @@ Press &quot;Cancel&quot; to change this parameter or the index folder.</source>
 <context>
     <name>U2::LocalWorkflow::GenomeAlignerBuildPrompter</name>
     <message>
-        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="151"/>
+        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="147"/>
         <source>Build genome aligner index from %1 and send it url to output.</source>
         <translation>Построить индекс из %1 и отравить его путь на выход.</translation>
     </message>
@@ -571,17 +555,17 @@ Press &quot;Cancel&quot; to change this parameter or the index folder.</source>
 <context>
     <name>U2::LocalWorkflow::GenomeAlignerBuildWorker</name>
     <message>
-        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="66"/>
+        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="68"/>
         <source>Reference</source>
         <translation>Референсная последовательность</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="67"/>
+        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="68"/>
         <source>Reference sequence url. The short reads will be aligned to this reference genome.</source>
         <translation>Путь до референсной последовательности. Короткие риды будут выровнены на эту референсную последовательность.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="68"/>
+        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="69"/>
         <source>Genome aligner index builder</source>
         <translation>Построение индекса модуля сборки контигов</translation>
     </message>
@@ -596,32 +580,32 @@ Press &quot;Cancel&quot; to change this parameter or the index folder.</source>
         <translation>Индекс</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="71"/>
+        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="70"/>
         <source>Output index url.</source>
         <translation>Путь до индексного файла.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="72"/>
+        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="71"/>
         <source>Reference fragmentation</source>
         <translation>Разбиение референса</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="73"/>
+        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="71"/>
         <source>Reference fragmentation size</source>
         <translation>Размер референсного разбиения</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="109"/>
+        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="107"/>
         <source>Reference sequence URL is empty</source>
         <translation>Неу казан путь до референсной последовательности</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="113"/>
+        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="111"/>
         <source>Result index URL is empty</source>
         <translation>Не указан путь до индекса</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="136"/>
+        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="133"/>
         <source>Genome aligner index building finished. Result name is %1</source>
         <translation>Построение индекса завершено. Результирующее имя %1</translation>
     </message>
@@ -629,7 +613,7 @@ Press &quot;Cancel&quot; to change this parameter or the index folder.</source>
 <context>
     <name>U2::LocalWorkflow::GenomeAlignerIndexReaderPrompter</name>
     <message>
-        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="229"/>
+        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="222"/>
         <source>Read genome aligner index from %1 and send it url to output.</source>
         <translation>Построить индекс из %1 и отравить его путь на выход.</translation>
     </message>
@@ -637,42 +621,42 @@ Press &quot;Cancel&quot; to change this parameter or the index folder.</source>
 <context>
     <name>U2::LocalWorkflow::GenomeAlignerIndexReaderWorker</name>
     <message>
-        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="161"/>
+        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="158"/>
         <source>Genome aligner index</source>
         <translation>Индекс модуля сборки контигов</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="161"/>
+        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="158"/>
         <source>Result of genome aligner index builder.</source>
         <translation>Результат построения индекса.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="167"/>
+        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="164"/>
         <source>Genome aligner index reader</source>
         <translation>Чтение индекса</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="168"/>
+        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="164"/>
         <source>Read a set of several files with extensions .idx, .ref, .X.sarr. These files together constitute the index: they are all that is needed to align reads to that reference.</source>
         <translation>Чтение набора нескольких файлов с расширениями .idx, .ref, .X.sarr. Эти файлы вместе составляют индекс: они необходимы для выравнивания ридов на референс.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="169"/>
+        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="165"/>
         <source>Index</source>
         <translation>Индекс</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="170"/>
+        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="165"/>
         <source>Select an index file with the .idx extension</source>
         <translation>Выберите индексный файл с расширением .idx</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="201"/>
+        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="195"/>
         <source>Index URL is empty</source>
         <translation>Не указан путь до индекса</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="214"/>
+        <location filename="../src/GenomeAlignerIndexWorker.cpp" line="208"/>
         <source>Reading genome aligner index finished. Result name is %1</source>
         <translation>Чтение индекса завершено. Результирующее имя %1</translation>
     </message>
@@ -680,257 +664,241 @@ Press &quot;Cancel&quot; to change this parameter or the index folder.</source>
 <context>
     <name>U2::LocalWorkflow::GenomeAlignerPrompter</name>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="216"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="217"/>
         <source>unset</source>
         <translation>не указан</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="219"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="220"/>
         <source>Maps input reads from &lt;u&gt;%1&lt;/u&gt; </source>
-        <translation type="unfinished"></translation>
+        <translation>Выровнять входные риды из &lt;u&gt;%1&lt;/u&gt; </translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="224"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="225"/>
         <source> to reference sequence with index &lt;u&gt;%1&lt;/u&gt;.</source>
-        <translation type="unfinished"></translation>
+        <translation>на референсную последовательность с индексом &lt;u&gt;%1&lt;/u&gt;.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="227"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="228"/>
         <source> to reference sequence &lt;u&gt;%1&lt;/u&gt;.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Aligns reads from &lt;u&gt;%1&lt;/u&gt; </source>
-        <translation type="vanished">Выровненные риды из &lt;u&gt;%1&lt;/u&gt; </translation>
-    </message>
-    <message>
-        <source> to reference genome &lt;u&gt;%1&lt;/u&gt;.</source>
-        <translation type="vanished"> на референсную последовательность &lt;u&gt;%1&lt;/u&gt;.</translation>
+        <translation>на референсную последовательность &lt;u&gt;%1&lt;/u&gt;.</translation>
     </message>
 </context>
 <context>
     <name>U2::LocalWorkflow::GenomeAlignerWorker</name>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="346"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="344"/>
         <source>Is absolute mismatches values?</source>
         <translation>Это абсолютное число несоответствий?</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="272"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="271"/>
         <source>Bowtie2 cannot recognize read pairs from the same file. Please, perform demultiplexing first.</source>
         <translation>Bowtie2 не может распознать пары ридов из того же файла. Пожалуйста, выполните демультиплексирование в первую очередь.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="247"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="246"/>
         <source>The slot must be not empty: &apos;%1&apos;</source>
         <translation>Слот не может быть пустым: &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="285"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="284"/>
         <source>URL of a file with reads</source>
         <translation>Путь до файла с ридами</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="286"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="285"/>
         <source>Input reads to be aligned.</source>
         <translation>Входные риды будут выровнены.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="288"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="287"/>
         <source>URL of a file with mate reads</source>
         <translation>Путь до файла со вспомогательными ридами</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="289"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="288"/>
         <source>Input mate reads to be aligned.</source>
         <translation>Вспомогательные риды будут выровнены.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="295"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="294"/>
         <source>Genome aligner data</source>
         <translation>Данные модуля сборки контигов</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="296"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="295"/>
         <source>Input reads to be aligned with Bowtie2.</source>
         <translation>Входные риды будут выровнены при помощи Bowtie2.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="303"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="302"/>
         <source>Assembly URL</source>
         <translation>Путь до сборки</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="304"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="303"/>
         <source>Output assembly URL.</source>
         <translation>Выходной путь для сборки.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="307"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="306"/>
         <source>Genome aligner output data</source>
         <translation>Выходные данные модуля сборки контигов</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="308"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="307"/>
         <source>Output assembly files.</source>
         <translation>Выходные файлы сборки.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="319"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="317"/>
         <source>Output folder</source>
         <translation>Выходная папка</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="320"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="318"/>
         <source>Folder to save UGENE genome aligner output files.</source>
         <translation>Папка для сохранения выходных файлов модуля сборки контигов.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="323"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="321"/>
         <source>Output file name</source>
         <translation>Имя выходного файла</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="324"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="322"/>
         <source>Base name of the output file. &apos;out.sam&apos; by default</source>
         <translation>Базовое имя для выходных файлов. По умолчанию &apos;out.sam&apos;</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="327"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="325"/>
         <source>Reference input type</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип референса</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="328"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="326"/>
         <source>Select &quot;Sequence&quot; to input a reference genome as a sequence file. &lt;br/&gt;Note that any sequence file format, supported by UGENE, is allowed (FASTA, GenBank, etc.). &lt;br/&gt;The index will be generated automatically in this case. &lt;br/&gt;Select &quot;Index&quot; to input already generated index files, specific for the tool.</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите &quot;Последовательность&quot; чтобы ввести референсный геном как файл. &lt;br/&gt;Любой формат файла, который поддерживается UGENE допустим (FASTA, GenBank, и т.д.). &lt;br/&gt;Индекс будет сгенерирован автоматически. &lt;br/&gt;Выберите &quot;Индекс&quot; чтобы ввести уже готовый файл с индексом.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="334"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="332"/>
         <source>Reference genome</source>
         <translation>Референсная последовательность</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="335"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="333"/>
         <source>Path to indexed reference genome.</source>
         <translation>Путь до индексированной референсной последовательности.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="338"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="336"/>
         <source>Genome Aligner index folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Папка для индекса</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="339"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="337"/>
         <source>The folder with the index for the reference sequence.</source>
-        <translation type="unfinished"></translation>
+        <translation>Папка с индексом для референсной последоавтельности.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="342"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="340"/>
         <source>Genome Aligner index basename</source>
-        <translation type="unfinished"></translation>
+        <translation>Базовое название индекса</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="343"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="341"/>
         <source>The basename of the index for the reference sequence.</source>
-        <translation type="unfinished"></translation>
+        <translation>Базовое имя индекса для референсной последовательности.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="347"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="345"/>
         <source>&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;true&lt;/b&gt; - absolute mismatches mode is used&lt;/p&gt;&lt;p&gt;&lt;b&gt;false&lt;/b&gt; - percentage mismatches mode is used&lt;/p&gt;                                    You can choose absolute or percentage mismatches values mode.&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;true&lt;/b&gt; - используется абсолютное значение несоответствий&lt;/p&gt;&lt;p&gt;&lt;b&gt;false&lt;/b&gt; - используется процентное значение несоответствий&lt;/p&gt;                                    Вы можете выбрать абсолютный или процентный режим.&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="350"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="348"/>
         <source>Absolute mismatches</source>
         <translation>Абсолютное число несоответствий</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="351"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="349"/>
         <source>&lt;html&gt;&lt;body&gt;Number of mismatches allowed while aligning reads.&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;body&gt;Число несоответствий, допустимое при сборке контигов из считываемых последовательностей.&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="353"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="351"/>
         <source>Percentage mismatches</source>
         <translation>Процентное число несоответствий</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="354"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="352"/>
         <source>&lt;html&gt;&lt;body&gt;Percentage of mismatches allowed while aligning reads.&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;body&gt;Процентное число несоответствий, допустимое при собрке контигов из считываемых последовательностей.&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="356"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="354"/>
         <source>Align reverse complement reads</source>
         <translation>Выровнять обратно-комплементарные риды</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="357"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="355"/>
         <source>&lt;html&gt;&lt;body&gt;Set this option to align both direct and reverse complement reads.&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;body&gt;Выбрать эту опцию, чтобы выровнять риды и обратно комплементарные риды.&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="359"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="357"/>
         <source>Use &quot;best&quot;-mode</source>
         <translation>Использовать &quot;best&quot; режим</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="360"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="358"/>
         <source>&lt;html&gt;&lt;body&gt;Report only the best alignment for each read (in terms of mismatches).&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;body&gt;Включить в отчет только наилучшее выравнивание (в терминах несовпадений)&lt;/body&gt;&lt;/html&gt;
 </translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="362"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="360"/>
         <source>Omit reads with qualities lower than</source>
         <translation>Пропустить риды с качеством менее чем</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="363"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="361"/>
         <source>&lt;html&gt;&lt;body&gt;Omit reads with qualities lower than the specified value. Reads that have no qualities are not omited.                                    &lt;p&gt;Set &lt;b&gt;&quot;0&quot;&lt;/b&gt; to switch off this option.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;body&gt;Пропустить риды с качеством ниже указанного значения. Риды, которые не имеют оценки качества не пропускаются.                                     &lt;p&gt;Установите &lt;b&gt;&quot;0&quot;&lt;/b&gt; чтобы переключить эту опцию.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="401"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="398"/>
         <source>Map Reads with UGENE Genome Aligner</source>
-        <translation type="unfinished"></translation>
+        <translation>Выравнивание с помощью модуля сборки контигов UGENE</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="402"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="398"/>
         <source>Genome Aligner is a program for mapping short DNA sequence reads to a long reference sequence, developed by the UGENE team.&lt;br/&gt;&lt;br/&gt;Provide URL(s) to FASTA or FASTQ file(s) with NGS reads to the input port of the element, set up the reference sequence in the parameters. The result is saved to the specified SAM file, URL to the file is passed to the output port.</source>
-        <translation type="unfinished"></translation>
+        <translation>Уникальный алгоритм UGENE для сборки контигов из считываемых последовательностей по референсному геному.</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="414"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="410"/>
         <source>Sequence</source>
-        <translation type="unfinished"></translation>
+        <translation>Последовательность</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="415"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="411"/>
         <source>Index</source>
-        <translation type="unfinished">Индекс</translation>
+        <translation>Индекс</translation>
     </message>
     <message>
-        <source>Align Reads with UGENE Genome Aligner</source>
-        <translation type="vanished">Выравнивание с помощью модуля сборки контигов UGENE</translation>
-    </message>
-    <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="370"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="368"/>
         <source>Use GPU-optimization</source>
         <translation>Использовать GPU оптимизацию</translation>
     </message>
     <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="371"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="368"/>
         <source>&lt;html&gt;&lt;body&gt;Use GPU-calculatings while aligning reads. This option requires OpenCL-enable GPU-device.&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;body&gt;Использовать GPU-вычисления в процессе выравнивания. Эта опция требует наличие устройства OpenCL GPU.&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <source>Unique UGENE algorithm for aligning short reads to reference genome</source>
-        <translation type="vanished">Уникальный алгоритм UGENE для сборки контигов из считываемых последовательностей по референсному геному</translation>
-    </message>
-    <message>
-        <location filename="../src/GenomeAlignerWorker.cpp" line="98"/>
+        <location filename="../src/GenomeAlignerWorker.cpp" line="99"/>
         <source>Short reads list is empty.</source>
         <translation>Список считываемых последовательностей пуст.</translation>
     </message>
@@ -938,7 +906,7 @@ Press &quot;Cancel&quot; to change this parameter or the index folder.</source>
 <context>
     <name>U2::ShortReadAlignerCPU</name>
     <message>
-        <location filename="../src/GenomeAlignerFindTask.cpp" line="208"/>
+        <location filename="../src/GenomeAlignerFindTask.cpp" line="215"/>
         <source>[%1] Index size for part %2/%3 is zero, skipping it.</source>
         <translation>[%1] Размер индекса для части %2/%3 равен нулю, пропустить его.</translation>
     </message>
@@ -946,7 +914,7 @@ Press &quot;Cancel&quot; to change this parameter or the index folder.</source>
 <context>
     <name>U2::ShortReadAlignerOpenCL</name>
     <message>
-        <location filename="../src/GenomeAlignerFindTask.cpp" line="306"/>
+        <location filename="../src/GenomeAlignerFindTask.cpp" line="311"/>
         <source>Index size for part %1/%2 is zero, skipping it.</source>
         <translation>Размер индекса для части %1/%2 равен нулю, пропустить его.</translation>
     </message>

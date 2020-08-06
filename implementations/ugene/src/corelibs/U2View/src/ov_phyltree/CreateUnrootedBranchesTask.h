@@ -30,18 +30,18 @@ class PhyNode;
 class GraphicsRectangularBranchItem;
 class GraphicsUnrootedBranchItem;
 
-class CreateUnrootedBranchesTask: public CreateBranchesTask {
+class CreateUnrootedBranchesTask : public CreateBranchesTask {
     Q_OBJECT
 
     qreal coef;
-    GraphicsRectangularBranchItem* root1;
-    GraphicsUnrootedBranchItem* getBranch(GraphicsRectangularBranchItem *r, GraphicsUnrootedBranchItem* parent);
+    GraphicsRectangularBranchItem *root1;
+    GraphicsUnrootedBranchItem *getBranch(GraphicsRectangularBranchItem *r, GraphicsUnrootedBranchItem *parent);
 
 public:
     CreateUnrootedBranchesTask(GraphicsRectangularBranchItem *r);
     void run();
 };
 
-}//namespace;
+}    // namespace U2
 
 #endif

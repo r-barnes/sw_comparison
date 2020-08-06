@@ -22,30 +22,33 @@
 #ifndef _U2_BASE_NGS_WORKER_H_
 #define _U2_BASE_NGS_WORKER_H_
 
+#include <U2Core/GUrl.h>
+
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
-#include <U2Core/GUrl.h>
 
 namespace U2 {
 namespace LocalWorkflow {
 
-class U2LANG_EXPORT BaseNGSSetting{
+class U2LANG_EXPORT BaseNGSSetting {
 public:
-    BaseNGSSetting(): outDir(""), outName(""),inputUrl(""){}
+    BaseNGSSetting()
+        : outDir(""), outName(""), inputUrl("") {
+    }
 
     QString outDir;
     QString outName;
     QString inputUrl;
     QVariantMap customParameters;
-    QList<ExternalToolListener*> listeners;
+    QList<ExternalToolListener *> listeners;
 };
 
-class U2LANG_EXPORT BaseNGSWorker: public BaseWorker {
+class U2LANG_EXPORT BaseNGSWorker : public BaseWorker {
     Q_OBJECT
 public:
     BaseNGSWorker(Actor *a);
     void init();
-    Task * tick();
+    Task *tick();
     void cleanup();
 
     static const QString INPUT_PORT;
@@ -56,12 +59,14 @@ public:
     static const QString DEFAULT_NAME;
 
 protected:
-    virtual QVariantMap getCustomParameters() const {return QVariantMap();}
+    virtual QVariantMap getCustomParameters() const {
+        return QVariantMap();
+    }
     virtual QString getDefaultFileName() const = 0;
-    virtual Task* getTask(const BaseNGSSetting& settings) const = 0;
+    virtual Task *getTask(const BaseNGSSetting &settings) const = 0;
 
     QString takeUrl();
-    QString getTargetName(const QString& fileUrl, const QString& outDir);
+    QString getTargetName(const QString &fileUrl, const QString &outDir);
     void sendResult(const QString &url);
 
 protected:
@@ -70,18 +75,16 @@ protected:
     QStringList outUrls;
 
 public slots:
-    void sl_taskFinished( Task *task );
+    void sl_taskFinished(Task *task);
 
-
-}; //BaseNGSWorker
-
+};    //BaseNGSWorker
 
 class U2LANG_EXPORT BaseNGSParser : public ExternalToolLogParser {
 public:
     BaseNGSParser();
 
-    void parseOutput(const QString& partOfLog);
-    void parseErrOutput(const QString& partOfLog);
+    void parseOutput(const QString &partOfLog);
+    void parseErrOutput(const QString &partOfLog);
 
 private:
     QString lastErrLine;
@@ -95,7 +98,9 @@ public:
     void prepare();
     void run();
 
-    QString getResult(){return resultUrl;}
+    QString getResult() {
+        return resultUrl;
+    }
 
 protected:
     virtual void prepareStep() {};
@@ -104,16 +109,15 @@ protected:
     /**
      * Don't delete customParser, it will be deleted automatically.
      */
-    virtual ExternalToolRunTask* getExternalToolTask (const QString& toolId, ExternalToolLogParser *customParser = NULL);
-    virtual QStringList getParameters(U2OpStatus& os) = 0;
+    virtual ExternalToolRunTask *getExternalToolTask(const QString &toolId, ExternalToolLogParser *customParser = NULL);
+    virtual QStringList getParameters(U2OpStatus &os) = 0;
 
 protected:
     BaseNGSSetting settings;
     QString resultUrl;
 };
 
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-} //LocalWorkflow
-} //U2
-
-#endif //_U2_BASE_NGS_WORKER_H_
+#endif    //_U2_BASE_NGS_WORKER_H_

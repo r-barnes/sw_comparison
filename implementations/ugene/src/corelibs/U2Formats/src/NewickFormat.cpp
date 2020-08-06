@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "NewickFormat.h"
+
 #include <U2Core/DatatypeSerializeUtils.h>
 #include <U2Core/IOAdapter.h>
 #include <U2Core/PhyTreeObject.h>
@@ -28,38 +30,39 @@
 #include <U2Core/U2OpStatus.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "NewickFormat.h"
-
 namespace U2 {
 
 /* TRANSLATOR U2::IOAdapter */
 /* TRANSLATOR U2::NewickFormat */
 
-NewickFormat::NewickFormat(QObject* p) : TextDocumentFormat(p, BaseDocumentFormats::NEWICK, DocumentFormatFlags_W1) {
-    fileExtensions << "nwk" << "newick" << "nh" << "ph";
+NewickFormat::NewickFormat(QObject *p)
+    : TextDocumentFormat(p, BaseDocumentFormats::NEWICK, DocumentFormatFlags_W1) {
+    fileExtensions << "nwk"
+                   << "newick"
+                   << "nh"
+                   << "ph";
     formatName = tr("Newick Standard");
     formatDescription = tr("Newick is a simple format used to write out trees in a text file");
     supportedObjectTypes += GObjectTypes::PHYLOGENETIC_TREE;
 }
 
-
 #define BUFF_SIZE 1024
 
-static QList<GObject*> parseTrees(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap &fs, U2OpStatus& si);
+static QList<GObject *> parseTrees(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &si);
 
-Document* NewickFormat::loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os){
-    QList<GObject*> objects = parseTrees(io, dbiRef, fs, os);
+Document *NewickFormat::loadTextDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os) {
+    QList<GObject *> objects = parseTrees(io, dbiRef, fs, os);
     CHECK_OP_EXT(os, qDeleteAll(objects), NULL);
-    Document* d = new Document(this, io->getFactory(), io->getURL(), dbiRef, objects, fs);
+    Document *d = new Document(this, io->getFactory(), io->getURL(), dbiRef, objects, fs);
     return d;
 }
 
-void NewickFormat::storeDocument(Document* d, IOAdapter* io, U2OpStatus& os) {
+void NewickFormat::storeDocument(Document *d, IOAdapter *io, U2OpStatus &os) {
     Q_UNUSED(os);
     assert(d->getDocumentFormat() == this);
 
-    foreach(GObject* obj, d->getObjects()) {
-        PhyTreeObject* phyObj = qobject_cast<PhyTreeObject*>(obj);
+    foreach (GObject *obj, d->getObjects()) {
+        PhyTreeObject *phyObj = qobject_cast<PhyTreeObject *>(obj);
         if (phyObj != NULL) {
             QByteArray data = NewickPhyTreeSerializer::serialize(phyObj->getTree());
             io->writeBlock(data.constData(), data.size());
@@ -67,61 +70,63 @@ void NewickFormat::storeDocument(Document* d, IOAdapter* io, U2OpStatus& os) {
     }
 }
 
-FormatCheckResult NewickFormat::checkRawTextData(const QByteArray& rawData, const GUrl&) const {
-    const char* data = rawData.constData();
+FormatCheckResult NewickFormat::checkRawTextData(const QByteArray &rawData, const GUrl &) const {
+    const char *data = rawData.constData();
     int size = rawData.size();
     bool containsBinary = TextUtils::contains(TextUtils::BINARY, data, size);
     if (containsBinary) {
         return FormatDetection_NotMatched;
     }
     int brackets = 0;
-    typedef enum { letter, letter_than_whites, any } Cases;
+    typedef enum { letter,
+                   letter_than_whites,
+                   any } Cases;
     Cases last = any;
     bool quotedLabelStarted = false;
     for (int i = 0; i < size; ++i) {
-        if('\'' == data[i]) {
-            if(!quotedLabelStarted && i > 0 && (data[i-1] == '(' || data[i-1] == ',')) {
+        if ('\'' == data[i]) {
+            if (!quotedLabelStarted && i > 0 && (data[i - 1] == '(' || data[i - 1] == ',')) {
                 quotedLabelStarted = true;
-            } else if(quotedLabelStarted) {
+            } else if (quotedLabelStarted) {
                 quotedLabelStarted = false;
             }
             continue;
         }
-        if(quotedLabelStarted) {
+        if (quotedLabelStarted) {
             continue;
         }
         switch (data[i]) {
-            case '(':
-                ++brackets;
-                break;
-            case ')':
-                if (brackets == 0) {
+        case '(':
+            ++brackets;
+            break;
+        case ')':
+            if (brackets == 0) {
+                return FormatDetection_NotMatched;
+            }
+            --brackets;
+            break;
+        case ';':
+            if (brackets != 0) {
+                return FormatDetection_NotMatched;
+            }
+            break;
+        default:
+            if (data[i] < 0) {    // for ex. if file contains utf-8 symbols
+                return FormatDetection_NotMatched;
+            }
+            if (TextUtils::ALPHA_NUMS[data[i]] || data[i] == '-' || data[i] == '_') {
+                if (last == letter_than_whites) {
                     return FormatDetection_NotMatched;
                 }
-                --brackets;
-                break;
-            case ';':
-                if (brackets != 0) {
-                    return FormatDetection_NotMatched;
-                }
-                break;
-            default:
-                if (data[i] < 0) { // for ex. if file contains utf-8 symbols
-                    return FormatDetection_NotMatched;
-                }
-                if (TextUtils::ALPHA_NUMS[data[i]] || data[i] == '-' || data[i] == '_') {
-                    if (last == letter_than_whites) {
-                        return FormatDetection_NotMatched;
-                    }
-                    last = letter;
+                last = letter;
+                continue;
+            }
+            if (TextUtils::WHITES[data[i]]) {
+                if (last == letter || last == letter_than_whites) {
+                    last = letter_than_whites;
                     continue;
                 }
-                if (TextUtils::WHITES[data[i]]) {
-                    if (last == letter || last == letter_than_whites) {
-                        last = letter_than_whites;
-                        continue;
-                    }
-                }
+            }
         }
         last = any;
     }
@@ -131,8 +136,8 @@ FormatCheckResult NewickFormat::checkRawTextData(const QByteArray& rawData, cons
     if (QRegExp("[a-zA-Z\r\n]*").exactMatch(rawData)) {
         return FormatDetection_LowSimilarity;
     }
-    int braces = (rawData.contains('(') ? 1 : 0) + (rawData.contains(')') ? 1 : 0) ;
-    if (braces == 0 && rawData.length() > 50)  {
+    int braces = (rawData.contains('(') ? 1 : 0) + (rawData.contains(')') ? 1 : 0);
+    if (braces == 0 && rawData.length() > 50) {
         return FormatDetection_LowSimilarity;
     }
     if (braces == 1) {
@@ -141,15 +146,15 @@ FormatCheckResult NewickFormat::checkRawTextData(const QByteArray& rawData, cons
     return FormatDetection_HighSimilarity;
 }
 
-static QList<GObject*> parseTrees(IOAdapter *io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& si) {
-    QList<GObject*> objects;
+static QList<GObject *> parseTrees(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &si) {
+    QList<GObject *> objects;
     DbiOperationsBlock opBlock(dbiRef, si);
     CHECK_OP(si, objects);
     Q_UNUSED(opBlock);
     QList<PhyTree> trees = NewickPhyTreeSerializer::parseTrees(io, si);
     CHECK_OP(si, objects);
 
-    for (int i=0; i<trees.size(); i++) {
+    for (int i = 0; i < trees.size(); i++) {
         PhyTree tree = trees[i];
         QString objName = (0 == i) ? QString("Tree") : QString("Tree%1").arg(i + 1);
         QVariantMap hints;
@@ -162,4 +167,4 @@ static QList<GObject*> parseTrees(IOAdapter *io, const U2DbiRef& dbiRef, const Q
     return objects;
 }
 
-}//namespace
+}    // namespace U2

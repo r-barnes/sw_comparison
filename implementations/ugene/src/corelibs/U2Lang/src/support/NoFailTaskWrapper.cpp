@@ -19,16 +19,15 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
-
 #include "NoFailTaskWrapper.h"
+
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
 NoFailTaskWrapper::NoFailTaskWrapper(Task *task)
-: Task("Wrapper", TaskFlags(TaskFlag_CancelOnSubtaskCancel) | TaskFlag_NoRun),
-  subTask(task)
-{
+    : Task("Wrapper", TaskFlags(TaskFlag_CancelOnSubtaskCancel) | TaskFlag_NoRun),
+      subTask(task) {
     SAFE_POINT_EXT(NULL != subTask, setError("NULL task"), );
     setTaskName(tr("Wrapper task for: \"%1\"").arg(subTask->getTaskName()));
 }
@@ -38,7 +37,7 @@ void NoFailTaskWrapper::prepare() {
     addSubTask(subTask);
 }
 
-Task * NoFailTaskWrapper::originalTask() const {
+Task *NoFailTaskWrapper::originalTask() const {
     return subTask;
 }
 
@@ -52,4 +51,4 @@ QStringList NoFailTaskWrapper::getWarnings() const {
     return subTask->getWarnings();
 }
 
-} // U2
+}    // namespace U2

@@ -29,17 +29,14 @@ const QString BaseWelcomePageActions::CREATE_WORKFLOW = "create_workflow";
 const QString BaseWelcomePageActions::QUICK_START = "quick_start";
 
 WelcomePageAction::WelcomePageAction(const QString &id)
-: id(id)
-{
-
+    : id(id) {
 }
 
 WelcomePageAction::~WelcomePageAction() {
-
 }
 
-const QString & WelcomePageAction::getId() const {
+const QString &WelcomePageAction::getId() const {
     return id;
 }
 
-} // U2
+}    // namespace U2

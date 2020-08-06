@@ -35,13 +35,13 @@ public:
 
     virtual void upgrade(U2OpStatus &os) const = 0;
     bool isAppliable(const Version &dbVersion) const;
-    bool operator < (const U2DbiUpgrader &other) const;
+    bool operator<(const U2DbiUpgrader &other) const;
 
 protected:
     const Version versionFrom;
     const Version versionTo;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_DBI_UPGRADER_H_
+#endif    // _U2_DBI_UPGRADER_H_

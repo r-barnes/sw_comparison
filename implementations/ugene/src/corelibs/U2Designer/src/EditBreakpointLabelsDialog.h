@@ -37,8 +37,9 @@ class U2DESIGNER_EXPORT EditBreakpointLabelsDialog : public QDialog {
     Q_DISABLE_COPY(EditBreakpointLabelsDialog)
 public:
     EditBreakpointLabelsDialog(const QStringList &existingLabels = QStringList(),
-        const QStringList &initCallingBreakpointLabels = QStringList(), QWidget *parent = 0,
-        Qt::WindowFlags f = 0);
+                               const QStringList &initCallingBreakpointLabels = QStringList(),
+                               QWidget *parent = 0,
+                               Qt::WindowFlags f = 0);
     ~EditBreakpointLabelsDialog();
 
 protected:
@@ -65,6 +66,6 @@ private:
     Ui_EditBreakpointLabelsDialog *ui;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _EDIT_BREAKPOINT_LABELS_DIALOG_H_
+#endif    // _EDIT_BREAKPOINT_LABELS_DIALOG_H_

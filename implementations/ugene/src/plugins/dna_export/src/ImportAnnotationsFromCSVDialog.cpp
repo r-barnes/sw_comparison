@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ImportAnnotationsFromCSVDialog.h"
+
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QPushButton>
@@ -42,7 +44,6 @@
 #include <U2Gui/U2FileDialog.h>
 
 #include "CSVColumnConfigurationDialog.h"
-#include "ImportAnnotationsFromCSVDialog.h"
 #include "ImportAnnotationsFromCSVTask.h"
 
 //TODO: add complement token configuration
@@ -52,17 +53,17 @@
 namespace U2 {
 
 // TODO: unify with plugin settings
-#define SETTINGS_ROOT       QString("dna_export/import_annotations_from_csv/")
-#define A_NAME              QString("annotation_name")
-#define T_SEPARATOR         QString("token_separator")
-#define SKIP_LINES_COUNT    QString("skip_lines_count")
-#define SKIP_LINES_PREFIX   QString("skip_lines_prefix")
+#define SETTINGS_ROOT QString("dna_export/import_annotations_from_csv/")
+#define A_NAME QString("annotation_name")
+#define T_SEPARATOR QString("token_separator")
+#define SKIP_LINES_COUNT QString("skip_lines_count")
+#define SKIP_LINES_PREFIX QString("skip_lines_prefix")
 
-ImportAnnotationsFromCSVDialog::ImportAnnotationsFromCSVDialog(QWidget* w)
-    : QDialog (w),
+ImportAnnotationsFromCSVDialog::ImportAnnotationsFromCSVDialog(QWidget *w)
+    : QDialog(w),
       saveController(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742400");
+    new HelpButton(this, buttonBox, "46499847");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Run"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -70,9 +71,9 @@ ImportAnnotationsFromCSVDialog::ImportAnnotationsFromCSVDialog(QWidget* w)
     connect(previewButton, SIGNAL(clicked()), SLOT(sl_previewClicked()));
     connect(guessButton, SIGNAL(clicked()), SLOT(sl_guessSeparatorClicked()));
     connect(scriptButton, SIGNAL(clicked()), SLOT(sl_scriptSeparatorClicked()));
-    connect(separatorEdit, SIGNAL(textChanged(const QString&)), SLOT(sl_separatorChanged(const QString&)));
-    connect(prefixToSkipEdit, SIGNAL(textChanged(const QString&)), SLOT(sl_prefixToSkipChanged(const QString&)));
-    connect(previewTable, SIGNAL(itemClicked(QTableWidgetItem*)), SLOT(sl_tableItemClicked(QTableWidgetItem*)));
+    connect(separatorEdit, SIGNAL(textChanged(const QString &)), SLOT(sl_separatorChanged(const QString &)));
+    connect(prefixToSkipEdit, SIGNAL(textChanged(const QString &)), SLOT(sl_prefixToSkipChanged(const QString &)));
+    connect(previewTable, SIGNAL(itemClicked(QTableWidgetItem *)), SLOT(sl_tableItemClicked(QTableWidgetItem *)));
     connect(previewTable->horizontalHeader(), SIGNAL(sectionClicked(int)), SLOT(sl_tableHeaderClicked(int)));
     connect(columnSeparatorRadioButton, SIGNAL(toggled(bool)), SLOT(sl_separatorRadioToggled(bool)));
     connect(scriptRadioButton, SIGNAL(toggled(bool)), SLOT(sl_scriptRadioToggled(bool)));
@@ -81,7 +82,6 @@ ImportAnnotationsFromCSVDialog::ImportAnnotationsFromCSVDialog(QWidget* w)
 
     sl_separatorChanged(separatorEdit->text());
     sl_prefixToSkipChanged(prefixToSkipEdit->text());
-
 
     //restore last settings
     QString lastName = AppContext::getSettings()->getValue(SETTINGS_ROOT + A_NAME).toString();
@@ -103,7 +103,8 @@ ImportAnnotationsFromCSVDialog::ImportAnnotationsFromCSVDialog(QWidget* w)
     }
 
     scriptHeader = tr("//The script parses input line\n // and returns an array of parsed elements as the result\nvar %1; //input line\nvar %2; //parsed line number")
-        .arg(ReadCSVAsAnnotationsTask::LINE_VAR).arg(ReadCSVAsAnnotationsTask::LINE_NUM_VAR);
+                       .arg(ReadCSVAsAnnotationsTask::LINE_VAR)
+                       .arg(ReadCSVAsAnnotationsTask::LINE_NUM_VAR);
 
     columnSeparatorRadioButton->setChecked(true);
     sl_scriptRadioToggled(false);
@@ -111,9 +112,8 @@ ImportAnnotationsFromCSVDialog::ImportAnnotationsFromCSVDialog(QWidget* w)
     separatorEdit->setMaxLength(SEPARATOR_EDIT_MAX_LENGTH);
 
     // connect this slot after initial dialog model is set up
-    connect(removeQuotesCheck, SIGNAL(toggled(bool)),SLOT(sl_removeQuotesToggled(bool)));
+    connect(removeQuotesCheck, SIGNAL(toggled(bool)), SLOT(sl_removeQuotesToggled(bool)));
     connect(linesToSkipBox, SIGNAL(valueChanged(int)), SLOT(sl_linesToSkipChanged(int)));
-
 }
 
 void ImportAnnotationsFromCSVDialog::accept() {
@@ -135,22 +135,32 @@ void ImportAnnotationsFromCSVDialog::accept() {
     int startPos = 0;
     int length = 0;
     int names = 0;
-    foreach (const ColumnConfig& conf, columnsConfig) {
-        switch(conf.role) {
-            case ColumnRole_EndPos: endPos++; break;
-            case ColumnRole_StartPos: startPos++; break;
-            case ColumnRole_Length: length++; break;
-            case ColumnRole_Name: names++; break;
-            case ColumnRole_Ignore: break;
-            case ColumnRole_Qualifier: break;
-            default:;
+    foreach (const ColumnConfig &conf, columnsConfig) {
+        switch (conf.role) {
+        case ColumnRole_EndPos:
+            endPos++;
+            break;
+        case ColumnRole_StartPos:
+            startPos++;
+            break;
+        case ColumnRole_Length:
+            length++;
+            break;
+        case ColumnRole_Name:
+            names++;
+            break;
+        case ColumnRole_Ignore:
+            break;
+        case ColumnRole_Qualifier:
+            break;
+        default:;
         }
     }
-    if (endPos + startPos + length < 2  || endPos > 1 || startPos > 1 || length > 1) {
+    if (endPos + startPos + length < 2 || endPos > 1 || startPos > 1 || length > 1) {
         QMessageBox::critical(this, L10N::errorTitle(), tr("Invalid start position/end position/length configuration!"));
         return;
     }
-    if (names > 1 ) {
+    if (names > 1) {
         QMessageBox::critical(this, L10N::errorTitle(), tr("Multiple columns are used as a name!"));
         return;
     }
@@ -169,7 +179,7 @@ void ImportAnnotationsFromCSVDialog::accept() {
     return QDialog::accept();
 }
 
-void ImportAnnotationsFromCSVDialog::toParsingConfig(CSVParsingConfig& config) const {
+void ImportAnnotationsFromCSVDialog::toParsingConfig(CSVParsingConfig &config) const {
     config.columns = columnsConfig;
     config.linesToSkip = linesToSkipBox->value();
     config.prefixToSkip = prefixToSkipEdit->text();
@@ -179,16 +189,16 @@ void ImportAnnotationsFromCSVDialog::toParsingConfig(CSVParsingConfig& config) c
 
     config.parsingScript.clear();
     config.splitToken.clear();
-    if( columnSeparatorRadioButton->isChecked() ) {
+    if (columnSeparatorRadioButton->isChecked()) {
         config.splitToken = separatorEdit->text();
-    } else if( scriptRadioButton->isChecked() ) {
+    } else if (scriptRadioButton->isChecked()) {
         config.parsingScript = parsingScript;
     } else {
         assert(false);
     }
 }
 
-void ImportAnnotationsFromCSVDialog::toTaskConfig(ImportAnnotationsFromCSVTaskConfig& config) const {
+void ImportAnnotationsFromCSVDialog::toTaskConfig(ImportAnnotationsFromCSVTaskConfig &config) const {
     assert(result() == QDialog::Accepted);
     toParsingConfig(config.parsingOptions);
     config.csvFile = readFileName->text();
@@ -198,9 +208,9 @@ void ImportAnnotationsFromCSVDialog::toTaskConfig(ImportAnnotationsFromCSVTaskCo
 }
 
 #define PREVIEW_BUFF_SIZE 8196
-QString ImportAnnotationsFromCSVDialog::readFileHeader(const QString& fileName, bool silentFail) {
+QString ImportAnnotationsFromCSVDialog::readFileHeader(const QString &fileName, bool silentFail) {
     IOAdapterId ioId = IOAdapterUtils::url2io(fileName);
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(ioId);
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(ioId);
     QScopedPointer<IOAdapter> io(iof->createIOAdapter());
     bool ok = io->open(fileName, IOAdapterMode_Read);
     if (!ok) {
@@ -220,7 +230,6 @@ QString ImportAnnotationsFromCSVDialog::readFileHeader(const QString& fileName, 
             readFileName->setFocus();
         }
         return QString();
-
     }
     assert(bytesRead >= 0);
     previewBuff.resize(bytesRead);
@@ -262,9 +271,9 @@ void ImportAnnotationsFromCSVDialog::sl_scriptSeparatorClicked() {
     QObjectScopedPointer<ScriptEditorDialog> d = new ScriptEditorDialog(this, scriptHeader);
     if (!parsingScript.isEmpty()) {
         d->setScriptText(parsingScript);
-    } else { //set sample script
-        QString l1 = "var firstColumn = ["+ReadCSVAsAnnotationsTask::LINE_NUM_VAR+"];\n";
-        QString l2 = "var otherColumns = "+ReadCSVAsAnnotationsTask::LINE_VAR+".split(\" \");\n";
+    } else {    //set sample script
+        QString l1 = "var firstColumn = [" + ReadCSVAsAnnotationsTask::LINE_NUM_VAR + "];\n";
+        QString l2 = "var otherColumns = " + ReadCSVAsAnnotationsTask::LINE_VAR + ".split(\" \");\n";
         QString l3 = "result =firstColumn.concat(otherColumns);";
         d->setScriptText(l1 + l2 + l3);
     }
@@ -299,22 +308,24 @@ void ImportAnnotationsFromCSVDialog::guessSeparator(bool silent) {
     preview(silent);
 }
 
-static QString toHex(const QString& text) {
+static QString toHex(const QString &text) {
     QString rawHex = text.toLocal8Bit().toHex();
     QString res;
-    for (int i=0; i<rawHex.size(); i+=2) {
+    for (int i = 0; i < rawHex.size(); i += 2) {
         QString hexPart = rawHex.mid(i, 2);
-        res += (res.length() > 0 ? " ": "") + hexPart;
+        res += (res.length() > 0 ? " " : "") + hexPart;
     }
     return res;
 }
 
-void ImportAnnotationsFromCSVDialog::sl_separatorChanged(const QString& v) {
+void ImportAnnotationsFromCSVDialog::sl_separatorChanged(const QString &v) {
     if (v.isEmpty()) {
         separatorLabel->setText(tr("Column separator"));
     } else {
         separatorLabel->setText(tr("Column separator value: [%1], hex: [%2], length: %3")
-            .arg(v).arg(toHex(v)).arg(v.length()));
+                                    .arg(v)
+                                    .arg(toHex(v))
+                                    .arg(v.length()));
         if (v.trimmed().length() == 0) {
             separatorsModeCheck->setChecked(true);
         }
@@ -324,7 +335,7 @@ void ImportAnnotationsFromCSVDialog::sl_separatorChanged(const QString& v) {
     }
 }
 
-void ImportAnnotationsFromCSVDialog::sl_prefixToSkipChanged(const QString& v) {
+void ImportAnnotationsFromCSVDialog::sl_prefixToSkipChanged(const QString &v) {
     skipPrefixLabel->setEnabled(!v.isEmpty());
 }
 
@@ -371,13 +382,13 @@ QString ImportAnnotationsFromCSVDialog::checkInputGroup(bool silent) {
 }
 
 bool ImportAnnotationsFromCSVDialog::checkSeparators(bool silent) {
-    if (columnSeparatorRadioButton->isChecked() && separatorEdit->text().isEmpty() ) {
+    if (columnSeparatorRadioButton->isChecked() && separatorEdit->text().isEmpty()) {
         if (!silent) {
             QMessageBox::critical(this, L10N::errorTitle(), tr("Separator value is not set"));
             separatorEdit->setFocus();
         }
         return false;
-    } else if( scriptRadioButton->isChecked() && parsingScript.isEmpty() ){
+    } else if (scriptRadioButton->isChecked() && parsingScript.isEmpty()) {
         if (!silent) {
             QMessageBox::critical(this, L10N::errorTitle(), tr("Script is empty"));
         }
@@ -422,7 +433,6 @@ void ImportAnnotationsFromCSVDialog::preview(bool silent) {
         return;
     }
 
-
     int columnCount = 0;
     TaskStateInfo ti;
     QList<QStringList> lines = ReadCSVAsAnnotationsTask::parseLinesIntoTokens(text, parseOptions, columnCount, ti);
@@ -437,14 +447,14 @@ void ImportAnnotationsFromCSVDialog::preview(bool silent) {
     previewTable->setColumnCount(columnCount);
 
     for (int column = 0; column < columnCount; column++) {
-        QTableWidgetItem* headerItem = createHeaderItem(column);
+        QTableWidgetItem *headerItem = createHeaderItem(column);
         previewTable->setHorizontalHeaderItem(column, headerItem);
     }
     for (int row = 0; row < lines.size(); row++) {
-        const QStringList& rowData = lines.at(row);
-        for (int column = 0; column < rowData.size(); column ++) {
+        const QStringList &rowData = lines.at(row);
+        for (int column = 0; column < rowData.size(); column++) {
             QString token = rowData.at(column);
-            QTableWidgetItem* item = new QTableWidgetItem(token);
+            QTableWidgetItem *item = new QTableWidgetItem(token);
             item->setFlags(Qt::ItemIsEnabled);
             previewTable->setItem(row, column, item);
         }
@@ -457,63 +467,63 @@ void ImportAnnotationsFromCSVDialog::prepareColumnsConfig(int numColumns) {
     }
 
     while (columnsConfig.size() > numColumns) {
-        const ColumnConfig& config = columnsConfig.last();
+        const ColumnConfig &config = columnsConfig.last();
         if (config.role == ColumnRole_Ignore) {
             columnsConfig.removeLast();
         }
     }
 }
 
-QTableWidgetItem* ImportAnnotationsFromCSVDialog::createHeaderItem(int column) const {
-    assert(column >=0 && column < columnsConfig.size());
+QTableWidgetItem *ImportAnnotationsFromCSVDialog::createHeaderItem(int column) const {
+    assert(column >= 0 && column < columnsConfig.size());
     QString text = getHeaderItemText(column);
     return new QTableWidgetItem(text);
 }
 
 QString ImportAnnotationsFromCSVDialog::getHeaderItemText(int column) const {
-    const ColumnConfig& config = columnsConfig.at(column);
+    const ColumnConfig &config = columnsConfig.at(column);
     QString text = tr("[ignored]");
     switch (config.role) {
-        case ColumnRole_Qualifier:
-            text = tr("[qualifier %1]").arg(config.qualifierName);
-            break;
-        case ColumnRole_Name:
-            text = tr("[name]");
-            break;
-        case ColumnRole_StartPos:
-            if (config.startPositionOffset!=0) {
-                text = tr("[start position with offset %1]").arg(config.startPositionOffset);
-            } else {
-                text = tr("[start position]");
-            }
-            break;
-        case ColumnRole_EndPos:
-            if (config.endPositionIsInclusive) {
-                text = tr("[end position (inclusive)]");
-            } else {
-                text = tr("[end position]");
-            }
-            break;
-        case ColumnRole_Length:
-            text = tr("[length]");
-            break;
-        case ColumnRole_ComplMark:
-            if (config.complementMark.isEmpty()) {
-                text = tr("[complement]");
-            } else {
-                text = tr("[complement if '%1']").arg(config.complementMark);
-            }
-            break;
-        case ColumnRole_Group:
-            text = tr("[group]");
-            break;
-        default:
-            assert(config.role == ColumnRole_Ignore);
+    case ColumnRole_Qualifier:
+        text = tr("[qualifier %1]").arg(config.qualifierName);
+        break;
+    case ColumnRole_Name:
+        text = tr("[name]");
+        break;
+    case ColumnRole_StartPos:
+        if (config.startPositionOffset != 0) {
+            text = tr("[start position with offset %1]").arg(config.startPositionOffset);
+        } else {
+            text = tr("[start position]");
+        }
+        break;
+    case ColumnRole_EndPos:
+        if (config.endPositionIsInclusive) {
+            text = tr("[end position (inclusive)]");
+        } else {
+            text = tr("[end position]");
+        }
+        break;
+    case ColumnRole_Length:
+        text = tr("[length]");
+        break;
+    case ColumnRole_ComplMark:
+        if (config.complementMark.isEmpty()) {
+            text = tr("[complement]");
+        } else {
+            text = tr("[complement if '%1']").arg(config.complementMark);
+        }
+        break;
+    case ColumnRole_Group:
+        text = tr("[group]");
+        break;
+    default:
+        assert(config.role == ColumnRole_Ignore);
     }
     return text;
 }
 
-void ImportAnnotationsFromCSVDialog::sl_tableItemClicked(QTableWidgetItem* item) {
+void ImportAnnotationsFromCSVDialog::sl_tableItemClicked(QTableWidgetItem *item) {
     int column = previewTable->column(item);
     configureColumn(column);
 }
@@ -529,7 +539,7 @@ void ImportAnnotationsFromCSVDialog::sl_separatorRadioToggled(bool checked) {
 
 void ImportAnnotationsFromCSVDialog::sl_scriptRadioToggled(bool checked) {
     scriptButton->setEnabled(checked);
-    if(checked && parsingScript.isEmpty()) {
+    if (checked && parsingScript.isEmpty()) {
         sl_scriptSeparatorClicked();
     }
 }
@@ -537,9 +547,9 @@ void ImportAnnotationsFromCSVDialog::sl_scriptRadioToggled(bool checked) {
 void ImportAnnotationsFromCSVDialog::configureColumn(int column) {
     assert(column >= 0 && column < columnsConfig.size());
 
-    const ColumnConfig& config = columnsConfig.at(column);
+    const ColumnConfig &config = columnsConfig.at(column);
     QObjectScopedPointer<CSVColumnConfigurationDialog> d = new CSVColumnConfigurationDialog(this, config);
-    int rc = d->exec(); // TODO: set dialog position close to the header item
+    int rc = d->exec();    // TODO: set dialog position close to the header item
     CHECK(!d.isNull(), );
     if (rc == QDialog::Accepted) {
         columnsConfig[column] = d->config;
@@ -547,4 +557,4 @@ void ImportAnnotationsFromCSVDialog::configureColumn(int column) {
     previewTable->horizontalHeaderItem(column)->setText(getHeaderItemText(column));
 }
 
-} //namespace
+}    // namespace U2

@@ -19,77 +19,63 @@
  * MA 02110-1301, USA.
  */
 
+#include "WelcomePageMdiController.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/L10n.h>
 #include <U2Core/Settings.h>
-#include <U2Core/Task.h>
 #include <U2Core/U2SafePoints.h>
 
 #include "WelcomePageMdi.h"
-#include "WelcomePageMdiController.h"
 #include "project_support/ProjectLoaderImpl.h"
 
 namespace U2 {
 
 WelcomePageMdiController::WelcomePageMdiController()
-    : QObject(NULL),
-      welcomePage(NULL)
-{
+    : QObject(nullptr),
+      welcomePage(nullptr) {
     MWMDIManager *mdiManager = getMdiManager();
-    CHECK(NULL != mdiManager, );
+    CHECK(mdiManager != nullptr, );
 
-    connect(mdiManager, SIGNAL(si_windowClosing(MWMDIWindow*)), SLOT(sl_onMdiClose(MWMDIWindow*)));
+    connect(mdiManager, SIGNAL(si_windowClosing(MWMDIWindow *)), SLOT(sl_onMdiClose(MWMDIWindow *)));
 }
 
-MWMDIManager * WelcomePageMdiController::getMdiManager() {
+MWMDIManager *WelcomePageMdiController::getMdiManager() {
     MainWindow *mainWindow = AppContext::getMainWindow();
-    SAFE_POINT(NULL != mainWindow, L10N::nullPointerError("Main Window"), NULL);
+    SAFE_POINT(mainWindow != nullptr, L10N::nullPointerError("Main Window"), nullptr);
 
-    MWMDIManager *result = mainWindow->getMDIManager();
-    SAFE_POINT(NULL != result, L10N::nullPointerError("MDI Manager"), NULL);
-    return result;
-}
-
-void WelcomePageMdiController::sl_onPageLoaded() {
-    CHECK(NULL != welcomePage, );
-
-    MWMDIManager *mdiManager = getMdiManager();
-    CHECK(NULL != mdiManager, );
-
-    if (!mdiManager->getWindows().contains(welcomePage)) {
-        sl_onRecentChanged();
-        mdiManager->addMDIWindow(welcomePage);
-    }
+    return mainWindow->getMDIManager();
 }
 
 void WelcomePageMdiController::sl_showPage() {
-    disconnect(AppContext::getTaskScheduler(), SIGNAL(si_noTasksInScheduler()), this, SLOT(sl_showPage()));
     MWMDIManager *mdiManager = getMdiManager();
-    CHECK(NULL != mdiManager, );
+    CHECK(mdiManager != nullptr, );
 
-    if (NULL != welcomePage) {
+    if (welcomePage != nullptr) {
         if (mdiManager->getWindows().contains(welcomePage)) {
+            uiLog.trace("Activating WelcomePage window");
             mdiManager->activateWindow(welcomePage);
-        } // else: it means that the page has already been called but it is loading now
+        }    // else: it means that the page has already been called but it is loading now
         return;
     }
 
+    uiLog.trace("Creating new WelcomePage window");
     welcomePage = new WelcomePageMdi(tr("Start Page"), this);
-    if (welcomePage->isLoaded()) { // it is for the case of synchronous page loading
-        sl_onPageLoaded();
-    }
+    mdiManager->addMDIWindow(welcomePage);
+    sl_onRecentChanged();
 }
 
 void WelcomePageMdiController::sl_onMdiClose(MWMDIWindow *mdi) {
     CHECK(mdi == welcomePage, );
-    welcomePage = NULL;
+    welcomePage = nullptr;
 }
 
 void WelcomePageMdiController::sl_onRecentChanged() {
-    CHECK(NULL != welcomePage, );
-    QStringList recentProjects = AppContext::getSettings()->getValue(SETTINGS_DIR + RECENT_PROJECTS_SETTINGS_NAME, QStringList(), true).toStringList();
-    QStringList recentFiles = AppContext::getSettings()->getValue(SETTINGS_DIR + RECENT_ITEMS_SETTINGS_NAME, QStringList(), true).toStringList();
+    CHECK(welcomePage != nullptr, );
+    auto settings = AppContext::getSettings();
+    QStringList recentProjects = settings->getValue(SETTINGS_DIR + RECENT_PROJECTS_SETTINGS_NAME, QStringList(), true).toStringList();
+    QStringList recentFiles = settings->getValue(SETTINGS_DIR + RECENT_ITEMS_SETTINGS_NAME, QStringList(), true).toStringList();
     welcomePage->updateRecent(recentProjects, recentFiles);
 }
 
-} // U2
+}    // namespace U2

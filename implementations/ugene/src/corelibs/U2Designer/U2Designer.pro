@@ -2,9 +2,9 @@ include (U2Designer.pri)
 
 # Input
 HEADERS += src/BreakpointHitCountDialog.h \
+           src/DatasetWidget.h \
            src/DatasetsController.h \
            src/DatasetsListWidget.h \
-           src/DatasetWidget.h \
            src/DbFolderItem.h \
            src/DbObjectItem.h \
            src/DelegateEditors.h \
@@ -32,6 +32,11 @@ HEADERS += src/BreakpointHitCountDialog.h \
            src/dashboard/DashboardPageController.h \
            src/dashboard/RemoveDashboardsTask.h \
            src/dashboard/ScanDashboardsDirTask.h \
+           src/dashboard/webview/JavaScriptAgent.h \
+           src/dashboard/webview/SimpleWebViewBasedWidgetController.h \
+           src/dashboard/webview/U2WebView.h \
+           src/dashboard/webview/WebViewController.h \
+           src/dashboard/webview/WebViewControllerPrivate.h \
            src/support/OutputDirectoryWidget.h \
            src/support/URLLineEdit.h \
            src/wizard/BowtieWidgetController.h \
@@ -47,6 +52,16 @@ HEADERS += src/BreakpointHitCountDialog.h \
            src/wizard/WidgetController.h \
            src/wizard/WizardController.h \
            src/wizard/WizardPageController.h
+
+useWebKit() {
+    HEADERS += src/dashboard/webview/webkit/WebViewWebKitControllerPrivate.h
+} else {
+    HEADERS += src/dashboard/webview/qtwebengine/WebViewQtWebEngineControllerPrivate.h \
+               src/dashboard/webview/qtwebengine/webchannel/U2WebChannel.h \
+               src/dashboard/webview/qtwebengine/webchannel/WebSocketClientWrapper.h \
+               src/dashboard/webview/qtwebengine/webchannel/WebSocketTransport.h
+}
+
 
 FORMS += src/AnnsActionDialog.ui \
          src/BreakpointHitCountDialog.ui \
@@ -70,9 +85,9 @@ FORMS += src/AnnsActionDialog.ui \
          src/StringActionDialog.ui
 
 SOURCES += src/BreakpointHitCountDialog.cpp \
+           src/DatasetWidget.cpp \
            src/DatasetsController.cpp \
            src/DatasetsListWidget.cpp \
-           src/DatasetWidget.cpp \
            src/DbFolderItem.cpp \
            src/DbObjectItem.cpp \
            src/DelegateEditors.cpp \
@@ -100,6 +115,10 @@ SOURCES += src/BreakpointHitCountDialog.cpp \
            src/dashboard/DashboardPageController.cpp \
            src/dashboard/RemoveDashboardsTask.cpp \
            src/dashboard/ScanDashboardsDirTask.cpp \
+           src/dashboard/webview/JavaScriptAgent.cpp \
+           src/dashboard/webview/SimpleWebViewBasedWidgetController.cpp \
+           src/dashboard/webview/WebViewController.cpp \
+           src/dashboard/webview/WebViewControllerPrivate.cpp \
            src/support/OutputDirectoryWidget.cpp \
            src/support/URLLineEdit.cpp \
            src/wizard/BowtieWidgetController.cpp \
@@ -115,6 +134,17 @@ SOURCES += src/BreakpointHitCountDialog.cpp \
            src/wizard/WidgetController.cpp \
            src/wizard/WizardController.cpp \
            src/wizard/WizardPageController.cpp
+
+useWebKit() {
+    SOURCES += src/dashboard/webview/webkit/WebViewWebKitControllerPrivate.cpp
+} else {
+    SOURCES += src/dashboard/webview/qtwebengine/WebViewQtWebEngineControllerPrivate.cpp \
+               src/dashboard/webview/qtwebengine/webchannel/U2WebChannel.cpp \
+               src/dashboard/webview/qtwebengine/webchannel/WebSocketClientWrapper.cpp \
+               src/dashboard/webview/qtwebengine/webchannel/WebSocketTransport.cpp
+
+}
+
 
 RESOURCES += U2Designer.qrc
 TRANSLATIONS += transl/russian.ts

@@ -37,12 +37,11 @@ class OPWidgetFactory;
  * low-level implementation of the panel (including widgets, their styles, etc.)
  * To use this class add the Options Panel's main widget to a layout and add the required groups.
  */
-class U2GUI_EXPORT OptionsPanel : public QObject
-{
+class U2GUI_EXPORT OptionsPanel : public QObject {
     Q_OBJECT
 public:
     /** Creates a new OptionsPanelWidget */
-    OptionsPanel(GObjectView*);
+    OptionsPanel(GObjectView *);
 
     /**
      * Normally, the OptionsPanelWidget is added to another widget and should be deleted
@@ -52,16 +51,18 @@ public:
     ~OptionsPanel();
 
     /** Add a new options panel group instance and corresponding widgets*/
-    void addGroup(OPWidgetFactory* factory);
+    void addGroup(OPWidgetFactory *factory);
 
     /** Returns the main Options Panel widget */
-    OptionsPanelWidget * getMainWidget();
+    OptionsPanelWidget *getMainWidget();
 
-    /** Open a group with the specified group ID: only one at a time */
-    void openGroupById(const QString& groupId);
+    /** Opens a group with the specified group id. */
+    void openGroupById(const QString &groupId, const QVariantMap &options = QVariantMap());
 
-    /** Returs Id for current tab **/
-    QString getActiveGroupId(){return activeGroupId;}
+    /** Returns id for currently opened tab. **/
+    QString getActiveGroupId() {
+        return activeGroupId;
+    }
 
 public slots:
     /** Catches signals that a group header has been pressed
@@ -69,28 +70,27 @@ public slots:
     void sl_groupHeaderPressed(QString groupId);
 
 private:
-    GObjectView* objView;
+    GObjectView *objView;
 
     /** Shows the options widget */
-    void openOptionsGroup(const QString& groupId);
+    void openOptionsGroup(const QString &groupId, const QVariantMap &options = QVariantMap());
 
     /** Hides the options widget  */
-    void closeOptionsGroup(const QString& groupId);
+    void closeOptionsGroup(const QString &groupId);
 
     /** Returns the Options Panel widget factory by the specified groupId, or NULL. */
-    OPWidgetFactory* findFactoryByGroupId(const QString& groupId);
+    OPWidgetFactory *findFactoryByGroupId(const QString &groupId);
 
     /** All added groups */
-    QList<OPWidgetFactory*> opWidgetFactories;
+    QList<OPWidgetFactory *> opWidgetFactories;
 
     /** The widget that displays options groups */
-    OptionsPanelWidget* widget;
+    OptionsPanelWidget *widget;
 
     /** IDs of the opened group */
     QString activeGroupId;
 };
 
-} // namespace
-
+}    // namespace U2
 
 #endif

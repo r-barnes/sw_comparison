@@ -38,26 +38,26 @@ public:
     WizardPage(const QString &id, const QString &title);
     virtual ~WizardPage();
 
-    void validate(const QList<Workflow::Actor*> &actors, U2OpStatus &os) const;
+    void validate(const QList<Workflow::Actor *> &actors, U2OpStatus &os) const;
 
     void setNext(const QString &id);
     void setNext(const QString &id, const Predicate &predicate, U2OpStatus &os);
     QString getNextId(const QMap<QString, Variable> &vars) const;
     bool isFinal() const;
 
-    const QString & getId() const;
-    const QString & getTitle() const;
+    const QString &getId() const;
+    const QString &getTitle() const;
     void setContent(TemplatedPageContent *value);
-    TemplatedPageContent * getContent();
+    TemplatedPageContent *getContent();
 
     /** for serializing */
-    const QMap<Predicate, QString> & nextIdMap() const;
-    const QString & plainNextId() const;
+    const QMap<Predicate, QString> &nextIdMap() const;
+    const QString &plainNextId() const;
 
 private:
     QString id;
     QString nextId;
-    QMap<Predicate, QString> nextIds; // predicate <-> id
+    QMap<Predicate, QString> nextIds;    // predicate <-> id
     QString title;
 
     TemplatedPageContent *content;
@@ -69,9 +69,9 @@ public:
     virtual ~TemplatedPageContent();
 
     virtual void accept(TemplatedPageVisitor *visitor) = 0;
-    virtual void validate(const QList<Workflow::Actor*> &actors, U2OpStatus &os) const = 0;
+    virtual void validate(const QList<Workflow::Actor *> &actors, U2OpStatus &os) const = 0;
 
-    const QString & getTemplateId() const;
+    const QString &getTemplateId() const;
 
 private:
     QString templateId;
@@ -79,7 +79,7 @@ private:
 
 class PageContentFactory {
 public:
-    static TemplatedPageContent * createContent(const QString &id, U2OpStatus &os);
+    static TemplatedPageContent *createContent(const QString &id, U2OpStatus &os);
 };
 
 /**
@@ -92,7 +92,7 @@ public:
     virtual ~DefaultPageContent();
 
     virtual void accept(TemplatedPageVisitor *visitor);
-    virtual void validate(const QList<Workflow::Actor*> &actors, U2OpStatus &os) const;
+    virtual void validate(const QList<Workflow::Actor *> &actors, U2OpStatus &os) const;
 
     void addParamWidget(WizardWidget *widget);
     void setLogoPath(const QString &path);
@@ -104,15 +104,15 @@ public:
     /** The width in pixels of whole page: logo + parameters */
     int getPageWidth() const;
 
-    LogoWidget * getLogoArea();
-    WidgetsArea * getParamsArea();
+    LogoWidget *getLogoArea();
+    WidgetsArea *getParamsArea();
 
 private:
     LogoWidget *logoArea;
     WidgetsArea *paramsArea;
 
-    static const int HEIGHT; // px
-    static const int WIDTH; // px
+    static const int HEIGHT;    // px
+    static const int WIDTH;    // px
 
 public:
     static const QString ID;
@@ -125,6 +125,6 @@ public:
     virtual void visit(DefaultPageContent *) = 0;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_WIZARDPAGE_H_
+#endif    // _U2_WIZARDPAGE_H_

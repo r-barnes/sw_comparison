@@ -22,8 +22,8 @@
 #ifndef _U2_ALPHABET_H_
 #define _U2_ALPHABET_H_
 
-#include <U2Core/global.h>
 #include <U2Core/U2Identity.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -33,9 +33,11 @@ namespace U2 {
 */
 class U2CORE_EXPORT U2AlphabetId : public AbstractStringId {
 public:
-    U2AlphabetId(const QString& id = QString()) : AbstractStringId(id){}
+    U2AlphabetId(const QString &id = QString())
+        : AbstractStringId(id) {
+    }
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

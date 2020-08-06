@@ -22,104 +22,115 @@
 #ifndef _U2_FIND_REPEATS_TASK_H_
 #define _U2_FIND_REPEATS_TASK_H_
 
-#include "RFBase.h"
-
-#include <U2Core/Task.h>
-#include <U2Core/GObjectReference.h>
-
-#include <U2Core/DNASequence.h>
-#include <U2Core/AnnotationData.h>
-
 #include <QMutex>
+
+#include <U2Core/AnnotationData.h>
+#include <U2Core/DNASequence.h>
+#include <U2Core/GObjectReference.h>
+#include <U2Core/Task.h>
+
+#include "RFBase.h"
 
 namespace U2 {
 
-
 class FindRepeatsTaskSettings {
 public:
-    FindRepeatsTaskSettings() :
-        minLen(2),
-        mismatches(0),
-        minDist(0),
-        maxDist(0),
-        inverted(false),
-        reportReflected(false),
-        maxResults(10*1000*100),
-        reportSeqShift(0),
-        reportSeq2Shift(0),
-        algo(RFAlgorithm_Auto),
-        filter(DisjointRepeats),
-        nThreads(MAX_PARALLEL_SUBTASKS_AUTO),
-        excludeTandems(false) {}
+    FindRepeatsTaskSettings()
+        : minLen(2),
+          mismatches(0),
+          minDist(0),
+          maxDist(0),
+          inverted(false),
+          reportReflected(false),
+          maxResults(10 * 1000 * 100),
+          reportSeqShift(0),
+          reportSeq2Shift(0),
+          algo(RFAlgorithm_Auto),
+          filter(DisjointRepeats),
+          nThreads(MAX_PARALLEL_SUBTASKS_AUTO),
+          excludeTandems(false) {
+    }
 
-    int                 minLen;
-    int                 mismatches;
-    int                 minDist;
-    int                 maxDist;
-    bool                inverted;
-    bool                reportReflected;
-    int                 maxResults;
-    U2Region            seqRegion;
-    U2Region            seq2Region;
-    qint64              reportSeqShift;
-    qint64              reportSeq2Shift;
+    int minLen;
+    int mismatches;
+    int minDist;
+    int maxDist;
+    bool inverted;
+    bool reportReflected;
+    int maxResults;
+    U2Region seqRegion;
+    U2Region seq2Region;
+    qint64 reportSeqShift;
+    qint64 reportSeq2Shift;
 
     //all these regions are in global sequence coordinates
-    QVector<U2Region>    midRegionsToInclude;  //reported repeat must contain one of these regions
-    QVector<U2Region>    midRegionsToExclude;  //reported repeat must not contain none of these regions
-    QVector<U2Region>    allowedRegions;       //reported repeat must fit one of these regions
+    QVector<U2Region> midRegionsToInclude;    //reported repeat must contain one of these regions
+    QVector<U2Region> midRegionsToExclude;    //reported repeat must not contain none of these regions
+    QVector<U2Region> allowedRegions;    //reported repeat must fit one of these regions
 
-    RFAlgorithm         algo;
-    RepeatsFilterAlgorithm    filter;
-    int                 nThreads;
-    bool                excludeTandems;
+    RFAlgorithm algo;
+    RepeatsFilterAlgorithm filter;
+    int nThreads;
+    bool excludeTandems;
 
-    void setIdentity(int percent) {mismatches = int((minLen / 100.0) * (100 - percent));}
-    int  getIdentity(int mismatch = -1) const {return qBound(50, int(100.0 - (mismatch == -1 ? mismatches : mismatch) * 100. /minLen), 100);}
-    bool hasRegionFilters() const {return !midRegionsToInclude.isEmpty() || !midRegionsToExclude.isEmpty() || !allowedRegions.isEmpty();}
+    void setIdentity(int percent) {
+        mismatches = int((minLen / 100.0) * (100 - percent));
+    }
+    int getIdentity(int mismatch = -1) const {
+        return qBound(50, int(100.0 - (mismatch == -1 ? mismatches : mismatch) * 100. / minLen), 100);
+    }
+    bool hasRegionFilters() const {
+        return !midRegionsToInclude.isEmpty() || !midRegionsToExclude.isEmpty() || !allowedRegions.isEmpty();
+    }
 
-    static int getIdentity(int mismatch, int len) { return qBound(50, int(100.0 - (mismatch * 100. / len )),100); }
+    static int getIdentity(int mismatch, int len) {
+        return qBound(50, int(100.0 - (mismatch * 100. / len)), 100);
+    }
 };
 
 //WARNING: this task is suitable only for a single sequence processing -> check addResults x/y sorting
 class RevComplSequenceTask;
 class FindTandemsToAnnotationsTask;
 class FindRepeatsTask : public Task, public RFResultsListener {
-Q_OBJECT
+    Q_OBJECT
 public:
-    FindRepeatsTask(const FindRepeatsTaskSettings& s, const DNASequence& seq, const DNASequence& seq2);
+    FindRepeatsTask(const FindRepeatsTaskSettings &s, const DNASequence &seq, const DNASequence &seq2);
 
     void prepare();
     void run();
     ReportResult report();
     void cleanup();
 
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
-    virtual void onResult(const RFResult& r);
-    virtual void onResults(const QVector<RFResult>& v) ;
+    virtual void onResult(const RFResult &r);
+    virtual void onResults(const QVector<RFResult> &v);
 
-    QVector<RFResult> getResults() const {return results;} // used if createAnnotations == false
-    const FindRepeatsTaskSettings&  getSettings() const {return settings;}
+    QVector<RFResult> getResults() const {
+        return results;
+    }    // used if createAnnotations == false
+    const FindRepeatsTaskSettings &getSettings() const {
+        return settings;
+    }
 
 protected:
-    void addResult(const RFResult& r);
+    void addResult(const RFResult &r);
     void _addResult(int x, int y, int l, int c);
-    bool isFilteredByRegions(const RFResult& r);
-    RFAlgorithmBase* createRFTask();
+    bool isFilteredByRegions(const RFResult &r);
+    RFAlgorithmBase *createRFTask();
     void filterNestedRepeats();
     void filterUniqueRepeats();
     Task *createRepeatFinderTask();
     void filterTandems(const QList<SharedAnnotationData> &tandems, DNASequence &se);
 
-    bool                        oneSequence;
-    FindRepeatsTaskSettings     settings;
-    DNASequence                 seq1, seq2;
-    QVector<RFResult>           results;
-    QMutex                      resultsLock;
-    RevComplSequenceTask*       revComplTask;
-    RFAlgorithmBase*            rfTask;
-    quint64                     startTime;
+    bool oneSequence;
+    FindRepeatsTaskSettings settings;
+    DNASequence seq1, seq2;
+    QVector<RFResult> results;
+    QMutex resultsLock;
+    RevComplSequenceTask *revComplTask;
+    RFAlgorithmBase *rfTask;
+    quint64 startTime;
     FindTandemsToAnnotationsTask *tandemTask1;
     FindTandemsToAnnotationsTask *tandemTask2;
 };
@@ -127,38 +138,38 @@ protected:
 class FindRepeatsToAnnotationsTask : public Task {
     Q_OBJECT
 public:
-    FindRepeatsToAnnotationsTask(const FindRepeatsTaskSettings& s,
-                                 const DNASequence& seq,
-                                 const QString& annName,
-                                 const QString& groupName,
+    FindRepeatsToAnnotationsTask(const FindRepeatsTaskSettings &s,
+                                 const DNASequence &seq,
+                                 const QString &annName,
+                                 const QString &groupName,
                                  const QString &annDescription,
-                                 const GObjectReference& annObjRef);
+                                 const GObjectReference &annObjRef);
 
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
     QList<SharedAnnotationData> importAnnotations();
 
 private:
-    QString                 annName;
-    QString                 annGroup;
-    const QString           annDescription;
-    GObjectReference        annObjRef;
-    FindRepeatsTask*        findTask;
+    QString annName;
+    QString annGroup;
+    const QString annDescription;
+    GObjectReference annObjRef;
+    FindRepeatsTask *findTask;
     FindRepeatsTaskSettings settings;
 };
 
 class RevComplSequenceTask : public Task {
     Q_OBJECT
 public:
-    RevComplSequenceTask(const DNASequence& s, const U2Region& reg);
+    RevComplSequenceTask(const DNASequence &s, const U2Region &reg);
 
     void run();
     void cleanup();
 
     DNASequence sequence;
-    U2Region     region;
+    U2Region region;
     DNASequence complementSequence;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

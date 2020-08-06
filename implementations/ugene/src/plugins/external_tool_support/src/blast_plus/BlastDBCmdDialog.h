@@ -22,10 +22,12 @@
 #ifndef _U2_BLAST_DB_CMD_DIALOG_H
 #define _U2_BLAST_DB_CMD_DIALOG_H
 
+#include <ui_BlastDBCmdDialog.h>
+
 #include <QDialog>
 
 #include <U2Gui/DialogUtils.h>
-#include <ui_BlastDBCmdDialog.h>
+
 #include "BlastDBCmdSupportTask.h"
 #include "utils/BlastDBSelectorWidgetController.h"
 
@@ -36,8 +38,8 @@ class SaveDocumentController;
 class BlastDBCmdDialog : public QDialog, public Ui_BlastDBCmdDialog {
     Q_OBJECT
 public:
-    BlastDBCmdDialog( BlastDBCmdSupportTaskSettings& settings, QWidget* parent);
-    void setQueryId(const QString& queryId);
+    BlastDBCmdDialog(BlastDBCmdSupportTaskSettings &settings, QWidget *parent);
+    void setQueryId(const QString &queryId);
 
 private slots:
     void accept();
@@ -48,9 +50,9 @@ private:
 
     BlastDBSelectorWidgetController *dbSelector;
     SaveDocumentController *saveController;
-    BlastDBCmdSupportTaskSettings&    settings;
-    QPushButton* fetchButton;
+    BlastDBCmdSupportTaskSettings &settings;
+    QPushButton *fetchButton;
 };
 
-}//namespace
-#endif // _U2_BLAST_DB_CMD_DIALOG_H
+}    // namespace U2
+#endif    // _U2_BLAST_DB_CMD_DIALOG_H

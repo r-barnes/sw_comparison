@@ -39,7 +39,8 @@ namespace Workflow {
 class ActionPerformer {
 public:
     ActionPerformer(const QString &outSlot, const GrouperSlotAction &action, WorkflowContext *context);
-    virtual ~ActionPerformer() {}
+    virtual ~ActionPerformer() {
+    }
     virtual bool applyAction(const QVariant &newData) = 0;
     virtual QVariant finishAction(U2OpStatus &os) = 0;
     virtual void setParameters(const QVariantMap &);
@@ -47,8 +48,12 @@ public:
     virtual QString getActionType() const;
 
     QString getOutSlot() const;
-    void setParentPerformer(ActionPerformer *parent) {this->parent = parent;}
-    ActionPerformer *getParentPerformer() const {return parent;}
+    void setParentPerformer(ActionPerformer *parent) {
+        this->parent = parent;
+    }
+    ActionPerformer *getParentPerformer() const {
+        return parent;
+    }
 
 protected:
     QString outSlot;
@@ -59,7 +64,7 @@ protected:
     ActionPerformer *parent;
 };
 
-typedef QMap<QString, ActionPerformer*> PerformersMap;
+typedef QMap<QString, ActionPerformer *> PerformersMap;
 
 /**
  * Utility class for grouper actions
@@ -82,6 +87,7 @@ public:
     virtual QVariantMap getParameters() const;
 
     static QString PREV_SEQ_LENGTH;
+
 private:
     U2SequenceImporter importer;
     qint64 prevSeqLen;
@@ -126,13 +132,13 @@ public:
     virtual void setParameters(const QVariantMap &map);
 
     static QString PARENT_SEQUENCE_SLOT;
+
 private:
     QList<SharedAnnotationData> result;
     qint64 offset;
 };
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2
 
-
-#endif // _GROUPER_ACTION_UTILS_
+#endif    // _GROUPER_ACTION_UTILS_

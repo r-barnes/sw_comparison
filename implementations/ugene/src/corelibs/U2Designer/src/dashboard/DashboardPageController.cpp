@@ -19,39 +19,36 @@
  * MA 02110-1301, USA.
  */
 
+#include "DashboardPageController.h"
+
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMetaMethod>
 
-#include <U2Gui/WebViewController.h>
-
 #include "Dashboard.h"
 #include "DashboardJsAgent.h"
-#include "DashboardPageController.h"
+#include "webview/WebViewController.h"
 
 namespace U2 {
 
-DashboardPageController::DashboardPageController(Dashboard *_dashboard)
-    : SimpleWebViewBasedWidgetController(_dashboard, new DashboardJsAgent(_dashboard)),
+DashboardPageController::DashboardPageController(Dashboard *_dashboard, U2WebView *webView)
+    : SimpleWebViewBasedWidgetController(webView, new DashboardJsAgent(_dashboard)),
       progress(0),
       state(Dashboard::STATE_RUNNING),
       dashboard(_dashboard),
-      monitor(_dashboard->getMonitor())
-{
+      monitor(_dashboard->getMonitor()) {
     if (NULL != monitor) {
         connect(monitor, SIGNAL(si_progressChanged(int)), SLOT(sl_progressChanged(int)));
         connect(monitor, SIGNAL(si_taskStateChanged(Monitor::TaskState)), SLOT(sl_taskStateChanged(Monitor::TaskState)));
         connect(monitor, SIGNAL(si_newNotification(WorkflowNotification, int)), SLOT(sl_newNotification(WorkflowNotification, int)), Qt::UniqueConnection);
-        connect(monitor, SIGNAL(si_workerInfoChanged(const QString &, const Monitor::WorkerInfo &)),
-                SLOT(sl_workerInfoChanged(const QString &, const Monitor::WorkerInfo &)));
+        connect(monitor, SIGNAL(si_workerInfoChanged(const QString &, const Monitor::WorkerInfo &)), SLOT(sl_workerInfoChanged(const QString &, const Monitor::WorkerInfo &)));
         connect(monitor, SIGNAL(si_updateProducers()), SLOT(sl_workerStatsUpdate()));
-        connect(monitor, SIGNAL(si_newOutputFile(const Monitor::FileInfo &)),
-                SLOT(sl_newOutputFile(const Monitor::FileInfo &)));
+        connect(monitor, SIGNAL(si_newOutputFile(const Monitor::FileInfo &)), SLOT(sl_newOutputFile(const Monitor::FileInfo &)));
         connect(monitor, SIGNAL(si_logChanged(Monitor::LogEntry)), SLOT(sl_onLogChanged(Monitor::LogEntry)));
 
         foreach (const WorkflowNotification &notification, monitor->getNotifications()) {
-            sl_newNotification(notification, 0); // TODO: fix count of notifications
+            sl_newNotification(notification, 0);    // TODO: fix count of notifications
         }
     }
 }
@@ -98,7 +95,7 @@ QString state2String(Monitor::TaskState state) {
     }
 }
 
-}
+}    // namespace
 
 void DashboardPageController::sl_taskStateChanged(Monitor::TaskState newState) {
     state = state2String(newState);
@@ -242,4 +239,4 @@ QString DashboardPageController::serializeFileInfo(const Monitor::FileInfo &info
     return QString(doc.toJson(QJsonDocument::Compact));
 }
 
-}   // namespace U2
+}    // namespace U2

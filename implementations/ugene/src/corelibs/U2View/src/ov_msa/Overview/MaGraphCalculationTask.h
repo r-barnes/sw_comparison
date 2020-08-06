@@ -22,14 +22,14 @@
 #ifndef _U2_MSA_GRAPH_CALCULATION_TASK_H_
 #define _U2_MSA_GRAPH_CALCULATION_TASK_H_
 
-#include <U2Core/AppResources.h>
-#include <U2Core/global.h>
-#include <U2Core/BackgroundTaskRunner.h>
-#include <U2View/MSAEditorConsensusCache.h>
-
-#include <U2Core/MultipleSequenceAlignment.h>
-
 #include <QPolygonF>
+
+#include <U2Core/AppResources.h>
+#include <U2Core/BackgroundTaskRunner.h>
+#include <U2Core/MultipleSequenceAlignment.h>
+#include <U2Core/global.h>
+
+#include <U2View/MSAEditorConsensusCache.h>
 
 namespace U2 {
 
@@ -42,15 +42,18 @@ class MsaHighlightingScheme;
 class MaGraphCalculationTask : public BackgroundTask<QPolygonF> {
     Q_OBJECT
 public:
-    MaGraphCalculationTask(MultipleAlignmentObject* msa, int width, int height);
+    MaGraphCalculationTask(MultipleAlignmentObject *msa, int width, int height);
 
     void run();
 signals:
     void si_calculationStarted();
     void si_calculationStoped();
+
 protected:
     void constructPolygon(QPolygonF &polygon);
-    virtual int getGraphValue(int) const { return height; }
+    virtual int getGraphValue(int) const {
+        return height;
+    }
 
     MultipleAlignment ma;
     MemoryLocker memLocker;
@@ -63,19 +66,23 @@ protected:
 class MaConsensusOverviewCalculationTask : public MaGraphCalculationTask {
     Q_OBJECT
 public:
-    MaConsensusOverviewCalculationTask(MultipleAlignmentObject* msa,
-                                        int width, int height);
+    MaConsensusOverviewCalculationTask(MultipleAlignmentObject *msa,
+                                       int width,
+                                       int height);
+
 private:
     int getGraphValue(int pos) const;
 
-    MSAConsensusAlgorithm*  algorithm;
+    MSAConsensusAlgorithm *algorithm;
 };
 
 class MaGapOverviewCalculationTask : public MaGraphCalculationTask {
     Q_OBJECT
 public:
-    MaGapOverviewCalculationTask(MultipleAlignmentObject* msa,
-                                  int width, int height);
+    MaGapOverviewCalculationTask(MultipleAlignmentObject *msa,
+                                 int width,
+                                 int height);
+
 private:
     int getGraphValue(int pos) const;
 };
@@ -83,26 +90,30 @@ private:
 class MaClustalOverviewCalculationTask : public MaGraphCalculationTask {
     Q_OBJECT
 public:
-    MaClustalOverviewCalculationTask(MultipleAlignmentObject* msa,
-                                      int width, int height);
+    MaClustalOverviewCalculationTask(MultipleAlignmentObject *msa,
+                                     int width,
+                                     int height);
+
 private:
     int getGraphValue(int pos) const;
 
-    MSAConsensusAlgorithm*  algorithm;
+    MSAConsensusAlgorithm *algorithm;
 };
 
 class MaHighlightingOverviewCalculationTask : public MaGraphCalculationTask {
     Q_OBJECT
 public:
-    MaHighlightingOverviewCalculationTask(MaEditor* _editor,
-                                           const QString &colorSchemeId,
-                                           const QString &highlightingSchemeId,
-                                           int width, int height);
+    MaHighlightingOverviewCalculationTask(MaEditor *_editor,
+                                          const QString &colorSchemeId,
+                                          const QString &highlightingSchemeId,
+                                          int width,
+                                          int height);
 
     static bool isCellHighlighted(const MultipleAlignment &msa,
-                                  MsaHighlightingScheme* highlightingScheme,
-                                  MsaColorScheme* colorScheme,
-                                  int seq, int pos,
+                                  MsaHighlightingScheme *highlightingScheme,
+                                  MsaColorScheme *colorScheme,
+                                  int seq,
+                                  int pos,
                                   int refSeq);
 
     static bool isGapScheme(const QString &schemeId);
@@ -115,11 +126,11 @@ private:
 
     int refSequenceId;
 
-    MsaColorScheme*         colorScheme;
-    MsaHighlightingScheme*  highlightingScheme;
-    QString                 schemeId;
+    MsaColorScheme *colorScheme;
+    MsaHighlightingScheme *highlightingScheme;
+    QString schemeId;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_MSA_GRAPH_CALCULATION_TASK_H_
+#endif    // _U2_MSA_GRAPH_CALCULATION_TASK_H_

@@ -19,11 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "MsaColorSchemeClustalX.h"
+
 #include <U2Algorithm/MSAConsensusUtils.h>
 
 #include <U2Core/MultipleAlignmentObject.h>
-
-#include "MsaColorSchemeClustalX.h"
 
 namespace U2 {
 
@@ -31,16 +31,15 @@ MsaColorSchemeClustalX::MsaColorSchemeClustalX(QObject *parent, const MsaColorSc
     : MsaColorScheme(parent, factory, maObj),
       objVersion(1),
       cacheVersion(0),
-      aliLen(maObj->getLength())
-{
-    colorByIdx[ClustalColor_BLUE]    = "#80a0f0";
-    colorByIdx[ClustalColor_RED]     = "#f01505";
-    colorByIdx[ClustalColor_GREEN]   = "#15c015";
-    colorByIdx[ClustalColor_PINK]    = "#f08080";
+      aliLen(maObj->getLength()) {
+    colorByIdx[ClustalColor_BLUE] = "#80a0f0";
+    colorByIdx[ClustalColor_RED] = "#f01505";
+    colorByIdx[ClustalColor_GREEN] = "#15c015";
+    colorByIdx[ClustalColor_PINK] = "#f08080";
     colorByIdx[ClustalColor_MAGENTA] = "#c048c0";
-    colorByIdx[ClustalColor_ORANGE]  = "#f09048";
-    colorByIdx[ClustalColor_CYAN]    = "#15a4a4";
-    colorByIdx[ClustalColor_YELLOW]  = "#c0c000";
+    colorByIdx[ClustalColor_ORANGE] = "#f09048";
+    colorByIdx[ClustalColor_CYAN] = "#15a4a4";
+    colorByIdx[ClustalColor_YELLOW] = "#c0c000";
 
     connect(maObj, SIGNAL(si_alignmentChanged(const MultipleAlignment &, const MaModificationInfo &)), SLOT(sl_alignmentChanged()));
 }
@@ -51,7 +50,7 @@ QColor MsaColorSchemeClustalX::getBackgroundColor(int seq, int pos, char) const 
     }
 
     int idx = getColorIdx(seq, pos);
-    assert(idx >=0 && idx < ClustalColor_NUM_COLORS);
+    assert(idx >= 0 && idx < ClustalColor_NUM_COLORS);
     return colorByIdx[idx];
 }
 
@@ -78,7 +77,7 @@ int basesContent(const int *freqs, const char *str, int len) {
     return res;
 }
 
-}
+}    // namespace
 
 void MsaColorSchemeClustalX::updateCache() const {
     if (cacheVersion == objVersion) {
@@ -138,8 +137,8 @@ void MsaColorSchemeClustalX::updateCache() const {
         for (int seq = 0; seq < nSeq; seq++) {
             char c = msa->charAt(seq, pos);
             int colorIdx = ClustalColor_NO_COLOR;
-            switch(c) {
-            case 'W': //(W,L,V,I,M,F): {50%, P}{60%, WLVIMAFCYHP} -> BLUE
+            switch (c) {
+            case 'W':    //(W,L,V,I,M,F): {50%, P}{60%, WLVIMAFCYHP} -> BLUE
             case 'L':
             case 'V':
             case 'I':
@@ -149,7 +148,7 @@ void MsaColorSchemeClustalX::updateCache() const {
                     colorIdx = ClustalColor_BLUE;
                 }
                 break;
-            case 'A': // {50%, P}{60%, WLVIMAFCYHP}{85%, T,S,G} -> BLUE
+            case 'A':    // {50%, P}{60%, WLVIMAFCYHP}{85%, T,S,G} -> BLUE
                 if (freqs['P'] > content50 || basesContent(freqs, "WLVIMAFCYHP", 11) > content60) {
                     colorIdx = ClustalColor_BLUE;
                 } else if (freqs['T'] > content85 || freqs['S'] > content85 || freqs['G'] > 85) {
@@ -157,38 +156,38 @@ void MsaColorSchemeClustalX::updateCache() const {
                 }
                 break;
 
-            case 'K': //{60%, KR}{85%, Q} -> RED
+            case 'K':    //{60%, KR}{85%, Q} -> RED
             case 'R':
                 if ((freqs['K'] + freqs['R'] > content60) || freqs['Q'] > content85) {
                     colorIdx = ClustalColor_RED;
                 }
                 break;
 
-            case 'T': // {50%, TS}{60%, WLVIMAFCYHP} -> GREEN
+            case 'T':    // {50%, TS}{60%, WLVIMAFCYHP} -> GREEN
                 if ((freqs['T'] + freqs['S'] > content50) || basesContent(freqs, "WLVIMAFCYHP", 11) > content60) {
                     colorIdx = ClustalColor_GREEN;
                 }
                 break;
 
-            case 'S': // {50%, TS}{80%, WLVIMAFCYHP} -> GREEN
+            case 'S':    // {50%, TS}{80%, WLVIMAFCYHP} -> GREEN
                 if ((freqs['T'] + freqs['S'] > content50) || basesContent(freqs, "WLVIMAFCYHP", 11) > content80) {
                     colorIdx = ClustalColor_GREEN;
                 }
                 break;
 
-            case 'N': // {50%, N}{85%, D} -> GREEN
+            case 'N':    // {50%, N}{85%, D} -> GREEN
                 if (freqs['N'] > content50 || freqs['D'] > content85) {
                     colorIdx = ClustalColor_GREEN;
                 }
                 break;
 
-            case 'Q': // {50%, QE}{60%, KR} -> GREEN
+            case 'Q':    // {50%, QE}{60%, KR} -> GREEN
                 if ((freqs['Q'] + freqs['E']) > content50 || (freqs['K'] + freqs['R']) > content60) {
                     colorIdx = ClustalColor_GREEN;
                 }
                 break;
 
-            case 'C': //{85%, C} -> PINK
+            case 'C':    //{85%, C} -> PINK
                 //{50%, P}{60%, WLVIMAFCYHP}{85%, S} -> BLUE
                 if (freqs['C'] > content85) {
                     colorIdx = ClustalColor_PINK;
@@ -197,33 +196,32 @@ void MsaColorSchemeClustalX::updateCache() const {
                 }
                 break;
 
-            case 'D': //{50%, DE,N} -> MAGENTA
+            case 'D':    //{50%, DE,N} -> MAGENTA
                 if ((freqs['D'] + freqs['E']) > content50 || freqs['N'] > content50) {
                     colorIdx = ClustalColor_MAGENTA;
                 }
                 break;
-            case 'E': //{50%, DE,QE} -> MAGENTA
+            case 'E':    //{50%, DE,QE} -> MAGENTA
                 if ((freqs['D'] + freqs['E']) > content50 || (freqs['Q'] + freqs['E']) > content50) {
                     colorIdx = ClustalColor_MAGENTA;
                 }
                 break;
-            case 'G': //{ALWAYS} -> ORANGE
+            case 'G':    //{ALWAYS} -> ORANGE
                 colorIdx = ClustalColor_ORANGE;
                 break;
 
-            case 'H': // {50%, P}{60%, WLVIMAFCYHP} -> CYAN
+            case 'H':    // {50%, P}{60%, WLVIMAFCYHP} -> CYAN
             case 'Y':
                 if (freqs['P'] > content50 || basesContent(freqs, "WLVIMAFCYHP", 11) > content60) {
                     colorIdx = ClustalColor_CYAN;
                 }
                 break;
 
-            case 'P': //{ALWAYS} -> YELLOW
+            case 'P':    //{ALWAYS} -> YELLOW
                 colorIdx = ClustalColor_YELLOW;
                 break;
             default:
                 break;
-
             }
             setColorIdx(seq, pos, colorIdx);
         }
@@ -242,7 +240,7 @@ int MsaColorSchemeClustalX::getColorIdx(int seq, int pos) const {
     int cacheIdx = getCacheIdx(seq, pos, low);
     quint8 val = colorsCache[cacheIdx];
     int colorIdx = low ? val & 0x0F : (val & 0xF0) >> 4;
-    assert(colorIdx >=0 && colorIdx < ClustalColor_NUM_COLORS);
+    assert(colorIdx >= 0 && colorIdx < ClustalColor_NUM_COLORS);
     return colorIdx;
 }
 
@@ -259,13 +257,12 @@ void MsaColorSchemeClustalX::setColorIdx(int seq, int pos, int colorIdx) const {
     colorsCache[cacheIdx] = val;
 }
 
-MsaColorSchemeClustalXFactory::MsaColorSchemeClustalXFactory(QObject *parent, const QString &id, const QString &name, const AlphabetFlags &supportedAlphabets) : MsaColorSchemeFactory(parent, id, name, supportedAlphabets)
-{
-
+MsaColorSchemeClustalXFactory::MsaColorSchemeClustalXFactory(QObject *parent, const QString &id, const QString &name, const AlphabetFlags &supportedAlphabets)
+    : MsaColorSchemeFactory(parent, id, name, supportedAlphabets) {
 }
 
-MsaColorScheme * MsaColorSchemeClustalXFactory::create(QObject *parent, MultipleAlignmentObject *maObj) const {
+MsaColorScheme *MsaColorSchemeClustalXFactory::create(QObject *parent, MultipleAlignmentObject *maObj) const {
     return new MsaColorSchemeClustalX(parent, this, maObj);
 }
 
-}   // namespace U2
+}    // namespace U2

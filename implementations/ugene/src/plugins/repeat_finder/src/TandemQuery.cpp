@@ -19,27 +19,29 @@
  * MA 02110-1301, USA.
  */
 
+#include "TandemQuery.h"
+
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/TaskSignalMapper.h>
-#include <U2Lang/BaseTypes.h>
+
 #include <U2Designer/DelegateEditors.h>
 
-#include "TandemQuery.h"
+#include <U2Lang/BaseTypes.h>
 
 namespace U2 {
 
 namespace {
-    const QString MIN_PERIOD_ATTRIBUTE = "min-period";
-    const QString MAX_PERIOD_ATTRIBUTE = "max-period";
-    const QString ALGORITHM_ATTRIBUTE = "algorithm";
-    const QString MIN_TANDEM_SIZE_ATTRIBUTE = "min-tandem-size";
-    const QString MIN_REPEAT_COUNT_ATTRIBUTE = "min-repeat-count";
-    const QString SHOW_OVERLAPPED_TANDEMS_ATTRIBUTE = "show-overlapped-tandems";
-    const QString N_THREADS_ATTRIBUTE = "n-threads";
+const QString MIN_PERIOD_ATTRIBUTE = "min-period";
+const QString MAX_PERIOD_ATTRIBUTE = "max-period";
+const QString ALGORITHM_ATTRIBUTE = "algorithm";
+const QString MIN_TANDEM_SIZE_ATTRIBUTE = "min-tandem-size";
+const QString MIN_REPEAT_COUNT_ATTRIBUTE = "min-repeat-count";
+const QString SHOW_OVERLAPPED_TANDEMS_ATTRIBUTE = "show-overlapped-tandems";
+const QString N_THREADS_ATTRIBUTE = "n-threads";
 
-    const QString ALGORITHM_SUFFIX = "suffix";
-    const QString ALGORITHM_SUFFIX_BINARY = "suffix-binary";
-}
+const QString ALGORITHM_SUFFIX = "suffix";
+const QString ALGORITHM_SUFFIX_BINARY = "suffix-binary";
+}    // namespace
 
 // QDTandemActor
 
@@ -52,7 +54,6 @@ int QDTandemActor::getMaxResultLen() const {
 }
 
 QString QDTandemActor::getText() const {
-
     int minPeriod = cfg->getParameter(MIN_PERIOD_ATTRIBUTE)->getAttributeValueWithoutScript<int>();
     QString minPeriodString = QString("<a href=\"%1\">%2</a>").arg(MIN_PERIOD_ATTRIBUTE).arg(minPeriod);
 
@@ -77,9 +78,9 @@ Task *QDTandemActor::getAlgorithmTask(const QVector<U2Region> &location) {
     settings.showOverlappedTandems = cfg->getParameter(SHOW_OVERLAPPED_TANDEMS_ATTRIBUTE)->getAttributeValueWithoutScript<bool>();
     settings.nThreads = cfg->getParameter(N_THREADS_ATTRIBUTE)->getAttributeValueWithoutScript<int>();
 
-    const DNASequence& dnaSeq = scheme->getSequence();
+    const DNASequence &dnaSeq = scheme->getSequence();
     Task *task = new Task(tr("TandemQDTask"), TaskFlag_NoRun);
-    foreach(const U2Region &r, location) {
+    foreach (const U2Region &r, location) {
         FindTandemsTaskSettings localSettings(settings);
         localSettings.seqRegion = r;
         TandemFinder *subTask = new TandemFinder(localSettings, dnaSeq);
@@ -93,16 +94,16 @@ Task *QDTandemActor::getAlgorithmTask(const QVector<U2Region> &location) {
 void QDTandemActor::sl_onAlgorithmTaskFinished() {
     QList<SharedAnnotationData> annotations;
     {
-        const DNASequence& dnaSeq = scheme->getSequence();
+        const DNASequence &dnaSeq = scheme->getSequence();
         FindTandemsToAnnotationsTask helperTask(settings, dnaSeq, "repeat unit", QString(), "", GObjectReference());
-        foreach(TandemFinder *task, subTasks) {
+        foreach (TandemFinder *task, subTasks) {
             annotations.append(helperTask.importTandemAnnotations(task->getResults(), task->getSettings().seqRegion.startPos, task->getSettings().showOverlappedTandems));
         }
     }
     subTasks.clear();
-    foreach(const SharedAnnotationData &annotation, annotations) {
+    foreach (const SharedAnnotationData &annotation, annotations) {
         QDResultGroup *group = new QDResultGroup(QDStrand_Both);
-        foreach(U2Region region, annotation->location->regions) {
+        foreach (U2Region region, annotation->location->regions) {
             QDResultUnit resultUnit(new QDResultUnitData);
             resultUnit->quals = annotation->qualifiers;
             resultUnit->region = region;
@@ -114,14 +115,14 @@ void QDTandemActor::sl_onAlgorithmTaskFinished() {
     }
 }
 
-QList<QPair<QString, QString> > QDTandemActor::saveConfiguration() const {
-    QList<QPair<QString, QString> > result = QDActor::saveConfiguration();
+QList<QPair<QString, QString>> QDTandemActor::saveConfiguration() const {
+    QList<QPair<QString, QString>> result = QDActor::saveConfiguration();
     Attribute *algorithmAttribute = cfg->getParameter(ALGORITHM_ATTRIBUTE);
-    for (int i = 0;i < result.size();i++) {
+    for (int i = 0; i < result.size(); i++) {
         QPair<QString, QString> &attribute = result[i];
         if (algorithmAttribute->getId() == attribute.first) {
             TSConstants::TSAlgo algorithm = (TSConstants::TSAlgo)algorithmAttribute->getAttributeValueWithoutScript<int>();
-            switch(algorithm) {
+            switch (algorithm) {
             case TSConstants::AlgoSuffix:
                 attribute.second = ALGORITHM_SUFFIX;
                 break;
@@ -136,14 +137,14 @@ QList<QPair<QString, QString> > QDTandemActor::saveConfiguration() const {
     return result;
 }
 
-void QDTandemActor::loadConfiguration(const QList<QPair<QString, QString> > &strMap) {
+void QDTandemActor::loadConfiguration(const QList<QPair<QString, QString>> &strMap) {
     QDActor::loadConfiguration(strMap);
-    foreach(const StringAttribute &attribute, strMap) {
+    foreach (const StringAttribute &attribute, strMap) {
         if (ALGORITHM_ATTRIBUTE == attribute.first) {
             int algorithm = TSConstants::AlgoSuffix;
-            if(ALGORITHM_SUFFIX == attribute.second) {
+            if (ALGORITHM_SUFFIX == attribute.second) {
                 algorithm = TSConstants::AlgoSuffix;
-            } else if(ALGORITHM_SUFFIX_BINARY == attribute.second) {
+            } else if (ALGORITHM_SUFFIX_BINARY == attribute.second) {
                 algorithm = TSConstants::AlgoSuffixBinary;
             }
             cfg->setParameter(ALGORITHM_ATTRIBUTE, qVariantFromValue(algorithm));
@@ -155,9 +156,8 @@ QColor QDTandemActor::defaultColor() const {
     return QColor(0x66, 0xa3, 0xd2);
 }
 
-QDTandemActor::QDTandemActor(QDActorPrototype const *prototype):
-    QDActor(prototype)
-{
+QDTandemActor::QDTandemActor(QDActorPrototype const *prototype)
+    : QDActor(prototype) {
     cfg->setAnnotationKey("repeat_unit");
     units["tandem"] = new QDSchemeUnit(this);
 }
@@ -179,8 +179,8 @@ QDTandemActorPrototype::QDTandemActorPrototype() {
         Descriptor nThreadsDescriptor(N_THREADS_ATTRIBUTE, QDTandemActor::tr("Parallel threads"), QDTandemActor::tr("Number of parallel threads used for the task."));
 
         FindTandemsTaskSettings defaultSettings;
-        defaultSettings.minRepeatCount = 3; // the default constructor initializes it to an invalid value
-        defaultSettings.maxPeriod = 1000000; // the default constructor initializes it to an invalid value
+        defaultSettings.minRepeatCount = 3;    // the default constructor initializes it to an invalid value
+        defaultSettings.maxPeriod = 1000000;    // the default constructor initializes it to an invalid value
 
         attributes.append(new Attribute(minPeriodDescriptor, BaseTypes::NUM_TYPE(), true, defaultSettings.minPeriod));
         attributes.append(new Attribute(maxPeriodDescriptor, BaseTypes::NUM_TYPE(), true, defaultSettings.maxPeriod));
@@ -242,4 +242,4 @@ QDActor *QDTandemActorPrototype::createInstance() const {
     return new QDTandemActor(this);
 }
 
-} // namespace U2
+}    // namespace U2

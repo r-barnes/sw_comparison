@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ConvertAlignment2StockholmTask.h"
+
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
@@ -31,7 +33,6 @@
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/UserApplicationsSettings.h>
 
-#include "ConvertAlignment2StockholmTask.h"
 #include "utils/ExportTasks.h"
 
 namespace U2 {
@@ -41,12 +42,11 @@ ConvertAlignment2Stockholm::ConvertAlignment2Stockholm(const QString &msaUrl, co
       loadTask(NULL),
       saveTask(NULL),
       msaUrl(msaUrl),
-      workingDir(workingDir)
-{
+      workingDir(workingDir) {
     SAFE_POINT_EXT(!msaUrl.isEmpty(), setError("Msa URL is empty"), );
 }
 
-const QString & ConvertAlignment2Stockholm::getResultUrl() const {
+const QString &ConvertAlignment2Stockholm::getResultUrl() const {
     return resultUrl;
 }
 
@@ -79,12 +79,12 @@ const QString TEMP_DIR = "convert";
 
 QString getTaskTempDirName(const QString &prefix, Task *task) {
     return prefix + QString::number(task->getTaskId()) + "_" +
-            QDate::currentDate().toString("dd.MM.yyyy") + "_" +
-            QTime::currentTime().toString("hh.mm.ss.zzz") + "_" +
-            QString::number(QCoreApplication::applicationPid());
+           QDate::currentDate().toString("dd.MM.yyyy") + "_" +
+           QTime::currentTime().toString("hh.mm.ss.zzz") + "_" +
+           QString::number(QCoreApplication::applicationPid());
 }
 
-}
+}    // namespace
 
 void ConvertAlignment2Stockholm::prepareResultUrl() {
     if (workingDir.isEmpty()) {
@@ -94,11 +94,11 @@ void ConvertAlignment2Stockholm::prepareResultUrl() {
     resultUrl = workingDir + "/" + QFileInfo(msaUrl).baseName() + ".sto";
 
     QDir tempDir(workingDir);
-    if (tempDir.exists()){
+    if (tempDir.exists()) {
         ExternalToolSupportUtils::removeTmpDir(workingDir, stateInfo);
         CHECK_OP(stateInfo, );
     }
-    if (!tempDir.mkpath(workingDir)){
+    if (!tempDir.mkpath(workingDir)) {
         setError(tr("Cannot create a folder for temporary files."));
         return;
     }
@@ -118,4 +118,4 @@ void ConvertAlignment2Stockholm::prepareSaveTask() {
     saveTask->setSubtaskProgressWeight(50);
 }
 
-}   // namespace U2
+}    // namespace U2

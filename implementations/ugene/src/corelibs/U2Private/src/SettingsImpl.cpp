@@ -21,21 +21,20 @@
 
 #include "SettingsImpl.h"
 
-#include <U2Core/AppContext.h>
-#include <U2Core/Version.h>
-
-#include <U2Core/CMDLineRegistry.h>
-#include <U2Core/CMDLineCoreOptions.h>
-
 #include <QDir>
 #include <QProcess>
 
+#include <U2Core/AppContext.h>
+#include <U2Core/CMDLineCoreOptions.h>
+#include <U2Core/CMDLineRegistry.h>
+#include <U2Core/Version.h>
+
 namespace U2 {
 
-static QString findKey(const QStringList& envList, const QString& key) {
+static QString findKey(const QStringList &envList, const QString &key) {
     QString prefix = key + "=";
     QString result;
-    foreach(const QString& var, envList) {
+    foreach (const QString &var, envList) {
         if (var.startsWith(prefix)) {
             result = var.mid(prefix.length());
             break;
@@ -44,10 +43,10 @@ static QString findKey(const QStringList& envList, const QString& key) {
     return result;
 }
 
-static QString preparePath(const QString& pathName) {
+static QString preparePath(const QString &pathName) {
     QString result = pathName.trimmed().replace("//", "/").replace("\\", "/");
     if (result.endsWith("/")) {
-        result = result.left(result.length() - 1) ;
+        result = result.left(result.length() - 1);
     }
     return result;
 }
@@ -62,16 +61,15 @@ SettingsImpl::SettingsImpl(QSettings::Scope scope) {
         bool localCfg = false;
         QDir dir(QDir::current());
         QFileInfoList dirEntries = dir.entryInfoList();
-        foreach(const QFileInfo& entry, dirEntries) {
+        foreach (const QFileInfo &entry, dirEntries) {
             if (entry.fileName() == configFileName) {
-
                 fileName = entry.filePath();
                 localCfg = true;
                 break;
             }
         }
         if (!localCfg) {
-            fileName = AppContext::getCMDLineRegistry()->getParameterValue( CMDLineCoreOptions::INI_FILE );
+            fileName = AppContext::getCMDLineRegistry()->getParameterValue(CMDLineCoreOptions::INI_FILE);
             if (fileName.isEmpty()) {
                 fileName = findKey(envList, U2_USER_INI);
             }
@@ -80,14 +78,13 @@ SettingsImpl::SettingsImpl(QSettings::Scope scope) {
         fileName = findKey(envList, U2_SYSTEM_INI);
     }
 #ifdef Q_OS_MAC
-        QSettings::Format format = QSettings::NativeFormat;
+    QSettings::Format format = QSettings::NativeFormat;
 #else
-        QSettings::Format format = QSettings::IniFormat;
+    QSettings::Format format = QSettings::IniFormat;
 #endif
     if (fileName.isEmpty()) {
-        settings = new QSettings(format, scope, U2_ORGANIZATION_NAME, U2_PRODUCT_NAME
-            , this);
-    }  else {
+        settings = new QSettings(format, scope, U2_ORGANIZATION_NAME, U2_PRODUCT_NAME, this);
+    } else {
         settings = new QSettings(fileName, format, this);
     }
 }
@@ -96,28 +93,27 @@ SettingsImpl::~SettingsImpl() {
     settings->sync();
 }
 
-bool SettingsImpl::contains(const QString& pathName) const {
+bool SettingsImpl::contains(const QString &pathName) const {
     QMutexLocker lock(&threadSafityLock);
 
     QString key = preparePath(pathName);
     return settings->contains(key);
 }
 
-void SettingsImpl::remove(const QString& pathName) {
+void SettingsImpl::remove(const QString &pathName) {
     QMutexLocker lock(&threadSafityLock);
 
     QString key = preparePath(pathName);
     settings->remove(key);
 }
 
-
-QVariant SettingsImpl::getValue(const QString& pathName, const QVariant& defaultValue, bool versionedValue) const {
+QVariant SettingsImpl::getValue(const QString &pathName, const QVariant &defaultValue, bool versionedValue) const {
     QMutexLocker lock(&threadSafityLock);
 
     QString path = pathName;
     QString key = preparePath(path);
 
-    if (versionedValue){
+    if (versionedValue) {
         //find versioned value in the key path
         settings->beginGroup(key);
         QStringList allKeys = settings->allKeys();
@@ -126,13 +122,13 @@ QVariant SettingsImpl::getValue(const QString& pathName, const QVariant& default
         QString versionedKey = toVersionKey(key);
 
         bool found = false;
-        foreach (const QString& settingsKey, allKeys){
-            if (QString(key + "/" + settingsKey) == versionedKey){
+        foreach (const QString &settingsKey, allKeys) {
+            if (QString(key + "/" + settingsKey) == versionedKey) {
                 found = true;
                 break;
             }
         }
-        if (!found){
+        if (!found) {
             return defaultValue;
         }
 
@@ -142,13 +138,13 @@ QVariant SettingsImpl::getValue(const QString& pathName, const QVariant& default
     return settings->value(key, defaultValue);
 }
 
-void SettingsImpl::setValue(const QString& pathName, const QVariant& value, bool versionedValue) {
+void SettingsImpl::setValue(const QString &pathName, const QVariant &value, bool versionedValue) {
     QMutexLocker lock(&threadSafityLock);
 
     QString path = pathName;
     QString key = preparePath(path);
 
-    if (versionedValue){
+    if (versionedValue) {
         //TODO: delete versioned keys?
 
         //create versioned key
@@ -158,7 +154,7 @@ void SettingsImpl::setValue(const QString& pathName, const QVariant& value, bool
     settings->setValue(key, value);
 }
 
-QString SettingsImpl::toVersionKey(const QString& key) const {
+QString SettingsImpl::toVersionKey(const QString &key) const {
     static QString VERSION_KEY_SUFFIX = "/" + Version::appVersion().text;
 
     if (key.endsWith("/")) {
@@ -167,9 +163,8 @@ QString SettingsImpl::toVersionKey(const QString& key) const {
     return key + VERSION_KEY_SUFFIX;
 }
 
-QString SettingsImpl::toMinorVersionKey(const QString& key) const {
-    static QString VERSION_KEY_SUFFIX = "/" + QString::number(Version::appVersion().major)
-        + "." + QString::number(Version::appVersion().minor);
+QString SettingsImpl::toMinorVersionKey(const QString &key) const {
+    static QString VERSION_KEY_SUFFIX = "/" + QString::number(Version::appVersion().major) + "." + QString::number(Version::appVersion().minor);
 
     if (key.endsWith("/")) {
         return key + VERSION_KEY_SUFFIX + "/";
@@ -177,7 +172,7 @@ QString SettingsImpl::toMinorVersionKey(const QString& key) const {
     return key + VERSION_KEY_SUFFIX;
 }
 
-QStringList SettingsImpl::getAllKeys(const QString& path) const {
+QStringList SettingsImpl::getAllKeys(const QString &path) const {
     QMutexLocker lock(&threadSafityLock);
 
     QString key = preparePath(path);
@@ -187,7 +182,7 @@ QStringList SettingsImpl::getAllKeys(const QString& path) const {
     return allKeys;
 }
 
-QStringList SettingsImpl::getChildGroups(const QString& path) const {
+QStringList SettingsImpl::getChildGroups(const QString &path) const {
     QMutexLocker lock(&threadSafityLock);
 
     QString key = preparePath(path);
@@ -197,9 +192,9 @@ QStringList SettingsImpl::getChildGroups(const QString& path) const {
     return allKeys;
 }
 
-void SettingsImpl::cleanSection(const QString& path){
+void SettingsImpl::cleanSection(const QString &path) {
     QStringList keyList = getAllKeys(path);
-    foreach(QString key, keyList){
+    foreach (QString key, keyList) {
         remove(key);
     }
 }
@@ -210,8 +205,8 @@ void SettingsImpl::sync() {
     settings->sync();
 }
 
-QString SettingsImpl::fileName() const  {
+QString SettingsImpl::fileName() const {
     return settings->fileName();
 }
 
-}//namespace
+}    // namespace U2

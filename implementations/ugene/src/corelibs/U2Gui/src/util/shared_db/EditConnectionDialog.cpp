@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "EditConnectionDialog.h"
+
 #include <QMessageBox>
 
 #include <U2Core/AppContext.h>
@@ -27,20 +29,18 @@
 
 #include <U2Gui/HelpButton.h>
 
-#include "util/AuthenticationWidget.h"
-#include "EditConnectionDialog.h"
 #include "ui_EditConnectionDialog.h"
+#include "util/AuthenticationWidget.h"
 
 namespace U2 {
 
 const QString EditConnectionDialog::DEFAULT_PORT = "3306";
 
-EditConnectionDialog::EditConnectionDialog(QWidget *parent, const QString &dbiUrl, const QString &userName, const QString &connectionName) :
-    QDialog(parent),
-    ui(new Ui_EditConnectionDialog)
-{
+EditConnectionDialog::EditConnectionDialog(QWidget *parent, const QString &dbiUrl, const QString &userName, const QString &connectionName)
+    : QDialog(parent),
+      ui(new Ui_EditConnectionDialog) {
     ui->setupUi(this);
-    new HelpButton(this, ui->buttonBox, "24742692");
+    new HelpButton(this, ui->buttonBox, "46501288");
     adjustSize();
     init(dbiUrl, connectionName, userName);
 }
@@ -75,7 +75,6 @@ QString EditConnectionDialog::getShortDbiUrl() const {
                                     ui->leDatabase->text());
 }
 
-
 void EditConnectionDialog::accept() {
     if (!checkFields()) {
         return;
@@ -90,7 +89,7 @@ void EditConnectionDialog::accept() {
     QDialog::accept();
 }
 
-void EditConnectionDialog::init(const U2DbiId& dbiUrl, const QString& connectionName, const QString &userName) {
+void EditConnectionDialog::init(const U2DbiId &dbiUrl, const QString &connectionName, const QString &userName) {
     initTabOrder();
 
     ui->leName->setText(connectionName);
@@ -101,7 +100,7 @@ void EditConnectionDialog::init(const U2DbiId& dbiUrl, const QString& connection
         int port = -1;
         QString dbName;
 
-        U2DbiUtils::parseDbiUrl(dbiUrl, host,port, dbName);
+        U2DbiUtils::parseDbiUrl(dbiUrl, host, port, dbName);
         ui->leHost->setText(host);
         if (port > 0) {
             ui->lePort->setText(QString::number(port));
@@ -155,4 +154,4 @@ QString EditConnectionDialog::getFullDbiUrl() const {
     return U2DbiUtils::createFullDbiUrl(ui->authenticationWidget->getLogin(), getShortDbiUrl());
 }
 
-}   // namespace U2
+}    // namespace U2

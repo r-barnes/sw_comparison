@@ -22,14 +22,15 @@
 #ifndef _U2_PHYML_DIALOGWIDGET_H
 #define _U2_PHYML_DIALOGWIDGET_H
 
-#include "ui_PhyMLDialog.h"
-
-#include "PhyMLSupport.h"
+#include <U2Core/AppContext.h>
+#include <U2Core/MultipleSequenceAlignment.h>
 
 #include <U2Gui/InputWidgetsControllers.h>
-#include <U2Core/MultipleSequenceAlignment.h>
-#include <U2Core/AppContext.h>
+
 #include <U2View/CreatePhyTreeWidget.h>
+
+#include "PhyMLSupport.h"
+#include "ui_PhyMLDialog.h"
 
 namespace U2 {
 
@@ -63,12 +64,12 @@ public:
     static const QString UserTreePath;
 };
 
-class PhyMlWidget : public CreatePhyTreeWidget, public Ui_PhyMLDialog{
-   Q_OBJECT
+class PhyMlWidget : public CreatePhyTreeWidget, public Ui_PhyMLDialog {
+    Q_OBJECT
 public:
     PhyMlWidget(const MultipleSequenceAlignment &ma, QWidget *parent);
 
-    void fillSettings(CreatePhyTreeSettings& settings);
+    void fillSettings(CreatePhyTreeSettings &settings);
     void storeSettings();
     void restoreDefault();
     bool checkSettings(QString &msg, const CreatePhyTreeSettings &settings);
@@ -82,13 +83,13 @@ private:
 
     QStringList generatePhyMlSettingsScript();
 
-    bool isAminoAcid; //is the msa has the amino acid alphabet
+    bool isAminoAcid;    //is the msa has the amino acid alphabet
 
     WidgetControllersContainer widgetControllers;
 private slots:
     void sl_checkUserTreeType(int newIndex);
     void sl_checkTreeImprovement(int newIndex);
-    void sl_checkSubModelType(const QString& newModel);
+    void sl_checkSubModelType(const QString &newModel);
     void sl_inputPathButtonClicked();
     void sl_optTopologyCheckboxClicked(bool checked);
 
@@ -98,6 +99,6 @@ private:
     bool isTreeNumberSet;
 };
 
-}//namespace
+}    // namespace U2
 
-#endif // _U2_PHYML_DIALOGWIDGET_H
+#endif    // _U2_PHYML_DIALOGWIDGET_H

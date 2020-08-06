@@ -19,9 +19,10 @@
  * MA 02110-1301, USA.
  */
 
+#include "HeadCropStep.h"
+
 #include <U2Core/U2SafePoints.h>
 
-#include "HeadCropStep.h"
 #include "trimmomatic/util/LengthSettingsWidget.h"
 
 namespace U2 {
@@ -30,8 +31,7 @@ namespace LocalWorkflow {
 const QString HeadCropStepFactory::ID = "HEADCROP";
 
 HeadCropStep::HeadCropStep()
-    : TrimmomaticStep(HeadCropStepFactory::ID)
-{
+    : TrimmomaticStep(HeadCropStepFactory::ID) {
     name = "HEADCROP";
     description = tr("<html><head></head><body>"
                      "<h4>HEADCROP</h4>"
@@ -57,14 +57,12 @@ QVariantMap HeadCropStep::parseState(const QString &command) const {
 }
 
 HeadCropStepFactory::HeadCropStepFactory()
-    : TrimmomaticStepFactory(ID)
-{
-
+    : TrimmomaticStepFactory(ID) {
 }
 
 HeadCropStep *HeadCropStepFactory::createStep() const {
     return new HeadCropStep();
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

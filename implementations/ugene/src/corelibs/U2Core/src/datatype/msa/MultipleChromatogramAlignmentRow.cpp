@@ -35,27 +35,20 @@
 namespace U2 {
 
 MultipleChromatogramAlignmentRow::MultipleChromatogramAlignmentRow()
-    : MultipleAlignmentRow(new MultipleChromatogramAlignmentRowData)
-{
-
+    : MultipleAlignmentRow(new MultipleChromatogramAlignmentRowData) {
 }
 
 MultipleChromatogramAlignmentRow::MultipleChromatogramAlignmentRow(const MultipleAlignmentRow &maRow)
-    : MultipleAlignmentRow(maRow)
-{
+    : MultipleAlignmentRow(maRow) {
     SAFE_POINT(NULL != maRowData.dynamicCast<MultipleChromatogramAlignmentRowData>(), "Can't cast MultipleAlignmentRow to MultipleChromatogramAlignmentRow", );
 }
 
 MultipleChromatogramAlignmentRow::MultipleChromatogramAlignmentRow(MultipleChromatogramAlignmentData *mcaData)
-    : MultipleAlignmentRow(new MultipleChromatogramAlignmentRowData(mcaData))
-{
-
+    : MultipleAlignmentRow(new MultipleChromatogramAlignmentRowData(mcaData)) {
 }
 
 MultipleChromatogramAlignmentRow::MultipleChromatogramAlignmentRow(MultipleChromatogramAlignmentRowData *mcaRowData)
-    : MultipleAlignmentRow(mcaRowData)
-{
-
+    : MultipleAlignmentRow(mcaRowData) {
 }
 
 MultipleChromatogramAlignmentRow::MultipleChromatogramAlignmentRow(const U2McaRow &rowInDb,
@@ -63,9 +56,7 @@ MultipleChromatogramAlignmentRow::MultipleChromatogramAlignmentRow(const U2McaRo
                                                                    const DNASequence &sequence,
                                                                    const U2MsaRowGapModel &gaps,
                                                                    MultipleChromatogramAlignmentData *mcaData)
-    : MultipleAlignmentRow(new MultipleChromatogramAlignmentRowData(rowInDb, chromatogram, sequence, gaps, mcaData))
-{
-
+    : MultipleAlignmentRow(new MultipleChromatogramAlignmentRowData(rowInDb, chromatogram, sequence, gaps, mcaData)) {
 }
 
 MultipleChromatogramAlignmentRow::MultipleChromatogramAlignmentRow(const U2McaRow &rowInDb,
@@ -73,15 +64,11 @@ MultipleChromatogramAlignmentRow::MultipleChromatogramAlignmentRow(const U2McaRo
                                                                    const DNAChromatogram &chromatogram,
                                                                    const QByteArray &rawData,
                                                                    MultipleChromatogramAlignmentData *mcaData)
-    : MultipleAlignmentRow(new MultipleChromatogramAlignmentRowData(rowInDb, rowName, chromatogram, rawData, mcaData))
-{
-
+    : MultipleAlignmentRow(new MultipleChromatogramAlignmentRowData(rowInDb, rowName, chromatogram, rawData, mcaData)) {
 }
 
 MultipleChromatogramAlignmentRow::MultipleChromatogramAlignmentRow(const MultipleChromatogramAlignmentRow &row, MultipleChromatogramAlignmentData *mcaData)
-    : MultipleAlignmentRow(new MultipleChromatogramAlignmentRowData(row, mcaData))
-{
-
+    : MultipleAlignmentRow(new MultipleChromatogramAlignmentRowData(row, mcaData)) {
 }
 
 MultipleChromatogramAlignmentRowData *MultipleChromatogramAlignmentRow::data() const {
@@ -114,8 +101,7 @@ QSharedPointer<MultipleChromatogramAlignmentRowData> MultipleChromatogramAlignme
 
 MultipleChromatogramAlignmentRowData::MultipleChromatogramAlignmentRowData(MultipleChromatogramAlignmentData *mcaData)
     : MultipleAlignmentRowData(),
-      alignment(mcaData)
-{
+      alignment(mcaData) {
     removeTrailingGaps();
 }
 
@@ -127,8 +113,7 @@ MultipleChromatogramAlignmentRowData::MultipleChromatogramAlignmentRowData(const
     : MultipleAlignmentRowData(sequence, gaps),
       alignment(mcaData),
       chromatogram(chromatogram),
-      initialRowInDb(rowInDb)
-{
+      initialRowInDb(rowInDb) {
     SAFE_POINT(alignment != NULL, "Parent MultipleChromatogramAlignmentData are NULL", );
     removeTrailingGaps();
 }
@@ -141,8 +126,7 @@ MultipleChromatogramAlignmentRowData::MultipleChromatogramAlignmentRowData(const
     : MultipleAlignmentRowData(),
       alignment(mcaData),
       chromatogram(chromatogram),
-      initialRowInDb(rowInDb)
-{
+      initialRowInDb(rowInDb) {
     QByteArray sequenceData;
     U2MsaRowGapModel gapModel;
     MaDbiUtils::splitBytesToCharsAndGaps(rawData, sequenceData, gapModel);
@@ -155,8 +139,7 @@ MultipleChromatogramAlignmentRowData::MultipleChromatogramAlignmentRowData(const
       alignment(mcaData),
       chromatogram(row->chromatogram),
       initialRowInDb(row->initialRowInDb),
-      additionalInfo(row->additionalInfo)
-{
+      additionalInfo(row->additionalInfo) {
     SAFE_POINT(alignment != NULL, "Parent MultipleChromatogramAlignmentData are NULL", );
 }
 
@@ -267,7 +250,9 @@ void MultipleChromatogramAlignmentRowData::append(const MultipleChromatogramAlig
 
     if (lengthBefore < rowLength) {
         coreLog.trace(QString("Internal error: incorrect length '%1' were passed to MultipleChromatogramAlignmentRowData::append,"
-                              "coreEnd is '%2'").arg(lengthBefore).arg(getCoreEnd()));
+                              "coreEnd is '%2'")
+                          .arg(lengthBefore)
+                          .arg(getCoreEnd()));
         os.setError("Failed to append one row to another");
         return;
     }
@@ -321,7 +306,9 @@ void MultipleChromatogramAlignmentRowData::insertGaps(int position, int count, U
 void MultipleChromatogramAlignmentRowData::removeChars(int pos, int count, U2OpStatus &os) {
     if (pos < 0 || count < 0) {
         coreLog.trace(QString("Internal error: incorrect parameters were passed to MultipleChromatogramAlignmentRowData::removeChars, "
-            "pos '%1', count '%2'").arg(pos).arg(count));
+                              "pos '%1', count '%2'")
+                          .arg(pos)
+                          .arg(count));
         os.setError("Can't remove chars from a row");
         return;
     }
@@ -373,13 +360,12 @@ bool MultipleChromatogramAlignmentRowData::isRowContentEqual(const MultipleChrom
 }
 
 bool MultipleChromatogramAlignmentRowData::isRowContentEqual(const MultipleChromatogramAlignmentRowData &row) const {
-    if (MatchExactly == DNASequenceUtils::compare(sequence, row.getSequence())
-        && ChromatogramUtils::areEqual(chromatogram, row.chromatogram)) {
+    if (MatchExactly == DNASequenceUtils::compare(sequence, row.getSequence()) && ChromatogramUtils::areEqual(chromatogram, row.chromatogram)) {
         if (sequence.length() == 0) {
             return true;
         } else {
             U2MsaRowGapModel firstRowGaps = gaps;
-            if  (!firstRowGaps.isEmpty() && (U2Msa::GAP_CHAR == charAt(0))) {
+            if (!firstRowGaps.isEmpty() && (U2Msa::GAP_CHAR == charAt(0))) {
                 firstRowGaps.removeFirst();
             }
 
@@ -397,6 +383,10 @@ bool MultipleChromatogramAlignmentRowData::isRowContentEqual(const MultipleChrom
     return false;
 }
 
+bool MultipleChromatogramAlignmentRowData::isDefault() const {
+    return *this == MultipleChromatogramAlignmentRowData();
+}
+
 bool MultipleChromatogramAlignmentRowData::operator!=(const MultipleChromatogramAlignmentRowData &mcaRowData) const {
     return !(*this == mcaRowData);
 }
@@ -411,7 +401,7 @@ bool MultipleChromatogramAlignmentRowData::operator==(const MultipleChromatogram
 
 bool MultipleChromatogramAlignmentRowData::operator==(const MultipleAlignmentRowData &maRowData) const {
     try {
-        return  (*this == dynamic_cast<const MultipleChromatogramAlignmentRowData &>(maRowData));
+        return (*this == dynamic_cast<const MultipleChromatogramAlignmentRowData &>(maRowData));
     } catch (std::bad_cast) {
         FAIL("Can't cast MultipleAlignmentRowData to MultipleChromatogramAlignmentRowData", true);
     }
@@ -420,7 +410,10 @@ bool MultipleChromatogramAlignmentRowData::operator==(const MultipleAlignmentRow
 void MultipleChromatogramAlignmentRowData::crop(U2OpStatus &os, qint64 startPosition, qint64 count) {
     if (startPosition < 0 || count < 0) {
         coreLog.trace(QString("Internal error: incorrect parameters were passed to MultipleChromatogramAlignmentRowData::crop, "
-            "startPos '%1', length '%2', row length '%3'").arg(startPosition).arg(count).arg(getRowLength()));
+                              "startPos '%1', length '%2', row length '%3'")
+                          .arg(startPosition)
+                          .arg(count)
+                          .arg(getRowLength()));
         os.setError("Can't crop a row!");
         return;
     }
@@ -489,7 +482,7 @@ void MultipleChromatogramAlignmentRowData::replaceChars(char origChar, char resu
         }
 
         if (gapsIndexes.isEmpty()) {
-            return; // There is nothing to replace
+            return;    // There is nothing to replace
         }
 
         // Remove all 'origChar' characters from the row sequence
@@ -653,8 +646,10 @@ void MultipleChromatogramAlignmentRowData::syncLengths() {
 void MultipleChromatogramAlignmentRowData::getStartAndEndSequencePositions(int pos, int count, int &startPosInSeq, int &endPosInSeq) {
     int rowLengthWithoutTrailingGap = getRowLengthWithoutTrailing();
     SAFE_POINT(pos < rowLengthWithoutTrailingGap,
-        QString("Incorrect position '%1' in MultipleChromatogramAlignmentRowData::getStartAndEndSequencePosition, "
-        "row length without trailing gaps is '%2'").arg(pos).arg(rowLengthWithoutTrailingGap),);
+               QString("Incorrect position '%1' in MultipleChromatogramAlignmentRowData::getStartAndEndSequencePosition, "
+                       "row length without trailing gaps is '%2'")
+                   .arg(pos)
+                   .arg(rowLengthWithoutTrailingGap), );
 
     // Remove chars from the sequence
     // Calculate start position in the sequence
@@ -672,7 +667,7 @@ void MultipleChromatogramAlignmentRowData::getStartAndEndSequencePositions(int p
     }
 
     // Calculate end position in the sequence
-    int endRegionPos = pos + count; // non-inclusive
+    int endRegionPos = pos + count;    // non-inclusive
 
     if (endRegionPos > rowLengthWithoutTrailingGap) {
         endRegionPos = rowLengthWithoutTrailingGap;
@@ -712,4 +707,4 @@ int MultipleChromatogramAlignmentRowData::getCoreStart() const {
     return MsaRowUtils::getCoreStart(gaps);
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -19,46 +19,46 @@
  * MA 02110-1301, USA.
  */
 
+#include "CustomAutoAnnotationDialog.h"
+
 #include <QPushButton>
+
+#include <U2Core/AppContext.h>
+#include <U2Core/Settings.h>
+#include <U2Core/UserApplicationsSettings.h>
+
+#include <U2Gui/HelpButton.h>
 
 #include <U2View/ADVSequenceObjectContext.h>
 #include <U2View/AnnotatedDNAView.h>
 #include <U2View/AutoAnnotationUtils.h>
-#include <U2Core/AppContext.h>
-#include <U2Core/Settings.h>
-#include <U2Core/UserApplicationsSettings.h>
-#include <U2Gui/HelpButton.h>
 
 #include "CustomPatternAnnotationTask.h"
-#include "CustomAutoAnnotationDialog.h"
 
 namespace U2 {
 
-CustomAutoAnnotationDialog::CustomAutoAnnotationDialog(ADVSequenceObjectContext* ctx)
- : QDialog(ctx->getAnnotatedDNAView()->getWidget()), seqCtx(ctx)
-{
+CustomAutoAnnotationDialog::CustomAutoAnnotationDialog(ADVSequenceObjectContext *ctx)
+    : QDialog(ctx->getAnnotatedDNAView()->getWidget()), seqCtx(ctx) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742626");
+    new HelpButton(this, buttonBox, "46501276");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Annotate"));
 
     loadSettings();
 }
 
 void CustomAutoAnnotationDialog::loadSettings() {
+    QStringList filteredFeatures = AppContext::getSettings()->getValue(FILTERED_FEATURE_LIST, QStringList()).toStringList();
 
-    QStringList filteredFeatures = AppContext::getSettings()->getValue(FILTERED_FEATURE_LIST, QStringList() ).toStringList();
-
-    featureBox->setChecked( !filteredFeatures.contains(PlasmidFeatureTypes::FEATURE));
-    genesBox->setChecked( !filteredFeatures.contains(PlasmidFeatureTypes::GENE));
-    originBox->setChecked( !filteredFeatures.contains(PlasmidFeatureTypes::ORIGIN));
-    primerBox->setChecked( !filteredFeatures.contains(PlasmidFeatureTypes::PRIMER));
-    promotersBox->setChecked( !filteredFeatures.contains(PlasmidFeatureTypes::PROMOTER));
-    regulatoryBox->setChecked( !filteredFeatures.contains(PlasmidFeatureTypes::REGULATORY));
-    terminatorBox->setChecked( !filteredFeatures.contains(PlasmidFeatureTypes::TERMINATOR));
+    featureBox->setChecked(!filteredFeatures.contains(PlasmidFeatureTypes::FEATURE));
+    genesBox->setChecked(!filteredFeatures.contains(PlasmidFeatureTypes::GENE));
+    originBox->setChecked(!filteredFeatures.contains(PlasmidFeatureTypes::ORIGIN));
+    primerBox->setChecked(!filteredFeatures.contains(PlasmidFeatureTypes::PRIMER));
+    promotersBox->setChecked(!filteredFeatures.contains(PlasmidFeatureTypes::PROMOTER));
+    regulatoryBox->setChecked(!filteredFeatures.contains(PlasmidFeatureTypes::REGULATORY));
+    terminatorBox->setChecked(!filteredFeatures.contains(PlasmidFeatureTypes::TERMINATOR));
 }
 
 void CustomAutoAnnotationDialog::saveSettings() {
-
     QStringList filteredFeatures;
 
     if (!featureBox->isChecked()) {
@@ -83,17 +83,14 @@ void CustomAutoAnnotationDialog::saveSettings() {
         filteredFeatures.append(PlasmidFeatureTypes::TERMINATOR);
     }
 
-    AppContext::getSettings()->setValue(FILTERED_FEATURE_LIST, filteredFeatures );
-
+    AppContext::getSettings()->setValue(FILTERED_FEATURE_LIST, filteredFeatures);
 }
 
-
 void CustomAutoAnnotationDialog::accept() {
-
     saveSettings();
     AutoAnnotationUtils::triggerAutoAnnotationsUpdate(seqCtx, PLASMID_FEATURES_GROUP_NAME);
 
     QDialog::accept();
 }
 
-}//namespace
+}    // namespace U2

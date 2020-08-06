@@ -19,22 +19,23 @@
  * MA 02110-1301, USA.
  */
 
+#include "SpadesWorker.h"
+
 #include <QScopedPointer>
 
 #include <U2Algorithm/GenomeAssemblyMultiTask.h>
-#include <U2Algorithm/GenomeAssemblyRegistry.h>
 
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/FailTask.h>
 #include <U2Core/FileAndDirectoryUtils.h>
+#include <U2Core/GUrlUtils.h>
+#include <U2Core/QVariantUtils.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
-#include <U2Core/QVariantUtils.h>
-#include <U2Core/GUrlUtils.h>
-
-#include <U2Formats/GenbankLocationParser.h>
 
 #include <U2Designer/DelegateEditors.h>
+
+#include <U2Formats/GenbankLocationParser.h>
 
 #include <U2Gui/DialogUtils.h>
 
@@ -45,45 +46,42 @@
 #include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/WorkflowMonitor.h>
 
+
+#include "SpadesDelegate.h"
 #include "SpadesPortRelationDescriptor.h"
 #include "SpadesSlotRelationDescriptor.h"
 #include "SpadesSupport.h"
-#include "SpadesWorker.h"
 #include "SpadesTask.h"
-#include "SpadesDelegate.h"
 
 namespace U2 {
 namespace LocalWorkflow {
 
 const QString SpadesWorkerFactory::ACTOR_ID = "spades-id";
 
-const QStringList SpadesWorkerFactory::READS_URL_SLOT_ID_LIST = QStringList() <<
-                                                                 "readsurl" <<
-                                                                 "readsurl-2" <<
-                                                                 "readsurl-3" <<
-                                                                 "readsurl-4" <<
-                                                                 "readsurl-5" <<
-                                                                 "readsurl-6" <<
-                                                                 "readsurl-7" <<
-                                                                 "readsurl-8" <<
-                                                                 "readsurl-9" <<
-                                                                 "readsurl-10";
-const QStringList SpadesWorkerFactory::READS_PAIRED_URL_SLOT_ID_LIST = QStringList() <<
-                                                                  "readspairedurl" <<
-                                                                  "readspairedurl-2" <<
-                                                                  "readspairedurl-3";
+const QStringList SpadesWorkerFactory::READS_URL_SLOT_ID_LIST = QStringList() << "readsurl"
+                                                                              << "readsurl-2"
+                                                                              << "readsurl-3"
+                                                                              << "readsurl-4"
+                                                                              << "readsurl-5"
+                                                                              << "readsurl-6"
+                                                                              << "readsurl-7"
+                                                                              << "readsurl-8"
+                                                                              << "readsurl-9"
+                                                                              << "readsurl-10";
+const QStringList SpadesWorkerFactory::READS_PAIRED_URL_SLOT_ID_LIST = QStringList() << "readspairedurl"
+                                                                                     << "readspairedurl-2"
+                                                                                     << "readspairedurl-3";
 
-const QStringList SpadesWorkerFactory::IN_TYPE_ID_LIST = QStringList() <<
-                                                       "spades-paired-data" <<
-                                                       "spades-paired-data-2" <<
-                                                       "spades-paired-data-3"<<
-                                                       "spades-data" <<
-                                                       "spades-data-2" <<
-                                                       "spades-data-3" <<
-                                                       "spades-data-4" <<
-                                                       "spades-data-5" <<
-                                                       "spades-data-6" <<
-                                                       "spades-data-7";
+const QStringList SpadesWorkerFactory::IN_TYPE_ID_LIST = QStringList() << "spades-paired-data"
+                                                                       << "spades-paired-data-2"
+                                                                       << "spades-paired-data-3"
+                                                                       << "spades-data"
+                                                                       << "spades-data-2"
+                                                                       << "spades-data-3"
+                                                                       << "spades-data-4"
+                                                                       << "spades-data-5"
+                                                                       << "spades-data-6"
+                                                                       << "spades-data-7";
 
 const QString SpadesWorkerFactory::OUT_TYPE_ID = "spades-data-out";
 
@@ -125,7 +123,7 @@ const QString SpadesWorkerFactory::BASE_SPADES_SUBDIR = "spades";
 
 const StrStrMap SpadesWorkerFactory::PORT_ID_2_YAML_LIBRARY_NAME = SpadesWorkerFactory::getPortId2YamlLibraryName();
 
-const QString SpadesWorkerFactory::getPortNameById(const QString& portId) {
+const QString SpadesWorkerFactory::getPortNameById(const QString &portId) {
     QString res;
     if (portId == IN_PORT_ID_LIST[0]) {
         res = tr("unpaired reads");
@@ -178,20 +176,17 @@ const QString SpadesWorker::RUNNING_MODE_ERROR_CORRECTION_ONLY = "Error correcti
 
 const QString SpadesWorker::K_MER_AUTO = "Auto";
 
-
 /************************************************************************/
 /* Worker */
 /************************************************************************/
 SpadesWorker::SpadesWorker(Actor *p)
-    : BaseWorker(p, false)
-    , output(NULL) {}
+    : BaseWorker(p, false), output(NULL) {
+}
 
 void SpadesWorker::init() {
-    const QStringList portIds = QStringList() <<
-        SpadesWorkerFactory::IN_PORT_PAIRED_ID_LIST <<
-        SpadesWorkerFactory::IN_PORT_ID_LIST;
-    foreach(const QString& portId, portIds) {
-        IntegralBus* channel = ports.value(portId);
+    const QStringList portIds = QStringList() << SpadesWorkerFactory::IN_PORT_PAIRED_ID_LIST << SpadesWorkerFactory::IN_PORT_ID_LIST;
+    foreach (const QString &portId, portIds) {
+        IntegralBus *channel = ports.value(portId);
         inChannels << channel;
         readsFetchers << DatasetFetcher(this, channel, context);
     }
@@ -212,7 +207,7 @@ QVariantMap uniteUniquely(const QVariantMap &first, const QVariantMap &second) {
     return result;
 }
 
-}
+}    // namespace
 
 Task *SpadesWorker::tick() {
     U2OpStatus2Log os;
@@ -242,7 +237,7 @@ Task *SpadesWorker::tick() {
         const int index = SpadesWorkerFactory::getReadsUrlSlotIdIndex(portId, isPaired);
 
         QList<Message> fullDataset = readsFetchers[i].takeFullDataset();
-        foreach(const Message& m, fullDataset) {
+        foreach (const Message &m, fullDataset) {
             messageCounter++;
             messageId = m.getMetadataId();
 
@@ -279,7 +274,7 @@ Task *SpadesWorker::tick() {
     output->setContext(unitedPortContext, currentMetadataId);
 
     settings.listeners = createLogListeners();
-    GenomeAssemblyMultiTask* t = new GenomeAssemblyMultiTask(settings);
+    GenomeAssemblyMultiTask *t = new GenomeAssemblyMultiTask(settings);
     connect(t, SIGNAL(si_stateChanged()), SLOT(sl_taskFinished()));
     return t;
 }
@@ -293,8 +288,8 @@ bool SpadesWorker::isReady() const {
     }
 
     bool res = true;
-    QList<Port*> inPorts = actor->getInputPorts();
-    foreach (Port* port, inPorts) {
+    QList<Port *> inPorts = actor->getInputPorts();
+    foreach (Port *port, inPorts) {
         CHECK_CONTINUE(port->isEnabled());
 
         IntegralBus *inChannel = ports.value(port->getId());
@@ -308,10 +303,10 @@ bool SpadesWorker::isReady() const {
 
 bool SpadesWorker::processInputMessagesAndCheckReady() {
     bool result = true;
-    QList<Port*> inPorts = actor->getInputPorts();
-    for (int i = 0; i < readsFetchers.size(); i++){
+    QList<Port *> inPorts = actor->getInputPorts();
+    for (int i = 0; i < readsFetchers.size(); i++) {
         const QString portId = readsFetchers[i].getPortId();
-        Port* port = actor->getPort(portId);
+        Port *port = actor->getPort(portId);
         SAFE_POINT(port != NULL, QString("Port with id %1 not found").arg(portId), false);
         CHECK_CONTINUE(port->isEnabled());
 
@@ -329,9 +324,9 @@ void SpadesWorker::trySetDone(U2OpStatus &os) {
     bool isDone = true;
     bool hasReadyFetcher = false;
     bool hasDoneFetcher = false;
-    for (int i = 0; i < readsFetchers.size(); i++){
+    for (int i = 0; i < readsFetchers.size(); i++) {
         const QString portId = readsFetchers[i].getPortId();
-        Port* port = actor->getPort(portId);
+        Port *port = actor->getPort(portId);
         SAFE_POINT(port != NULL, QString("Port with id %1 not found").arg(portId), );
         CHECK_CONTINUE(port->isEnabled());
 
@@ -346,20 +341,20 @@ void SpadesWorker::trySetDone(U2OpStatus &os) {
         os.setError(tr("Some input data elements sent data while some elements already finished their work. Check that all input data elements have the same datasets quantity."));
     }
 
-    if (isDone ) {
+    if (isDone) {
         setDone();
         output->setEnded();
     }
 }
 
 void SpadesWorker::sl_taskFinished() {
-    GenomeAssemblyMultiTask *t = dynamic_cast<GenomeAssemblyMultiTask*>(sender());
+    GenomeAssemblyMultiTask *t = dynamic_cast<GenomeAssemblyMultiTask *>(sender());
     if (!t->isFinished() || t->hasError() || t->isCanceled() || t->getResultUrl().isEmpty()) {
         return;
     }
 
     QString scaffoldUrl = t->getResultUrl();
-    SpadesTask *spadesTask = qobject_cast<SpadesTask*>(t->getAssemblyTask());
+    SpadesTask *spadesTask = qobject_cast<SpadesTask *>(t->getAssemblyTask());
     CHECK(spadesTask != NULL, );
     QString contigsUrl = spadesTask->getContigsUrl();
 
@@ -370,7 +365,6 @@ void SpadesWorker::sl_taskFinished() {
 
     context->getMonitor()->addOutputFile(scaffoldUrl, getActor()->getId());
     context->getMonitor()->addOutputFile(contigsUrl, getActor()->getId());
-
 }
 
 GenomeAssemblyTaskSettings SpadesWorker::getSettings(U2OpStatus &os) {
@@ -408,42 +402,42 @@ GenomeAssemblyTaskSettings SpadesWorker::getSettings(U2OpStatus &os) {
 /************************************************************************/
 
 void SpadesWorkerFactory::init() {
-    QList<PortDescriptor*> portDescs;
+    QList<PortDescriptor *> portDescs;
 
     //in port
     QList<Descriptor> readDescriptors;
-    foreach(const QString& readId, QStringList() << IN_PORT_PAIRED_ID_LIST << IN_PORT_ID_LIST) {
+    foreach (const QString &readId, QStringList() << IN_PORT_PAIRED_ID_LIST << IN_PORT_ID_LIST) {
         const QString dataName = SpadesWorkerFactory::getPortNameById(readId);
         readDescriptors << Descriptor(readId,
-            SpadesWorker::tr("Input %1").arg(dataName),
-            SpadesWorker::tr("Input %1 to be assembled with SPAdes.").arg(dataName));
+                                      SpadesWorker::tr("Input %1").arg(dataName),
+                                      SpadesWorker::tr("Input %1 to be assembled with SPAdes.").arg(dataName));
     }
 
     QList<Descriptor> inputDescriptors;
-    foreach(const QString& id, READS_URL_SLOT_ID_LIST) {
+    foreach (const QString &id, READS_URL_SLOT_ID_LIST) {
         inputDescriptors << Descriptor(id,
-            SpadesWorker::tr("File URL 1"),
-            SpadesWorker::tr("File URL 1."));
+                                       SpadesWorker::tr("File URL 1"),
+                                       SpadesWorker::tr("File URL 1."));
     }
     SAFE_POINT(READS_URL_SLOT_ID_LIST.size() == inputDescriptors.size(),
                "Incorrect descriptors quantity", );
 
     QList<Descriptor> inputPairedDescriptors;
-    foreach(const QString& pairedId, READS_PAIRED_URL_SLOT_ID_LIST) {
+    foreach (const QString &pairedId, READS_PAIRED_URL_SLOT_ID_LIST) {
         inputPairedDescriptors << Descriptor(pairedId,
-            SpadesWorker::tr("File URL 2"),
-            SpadesWorker::tr("File URL 2."));
+                                             SpadesWorker::tr("File URL 2"),
+                                             SpadesWorker::tr("File URL 2."));
     }
     SAFE_POINT(READS_PAIRED_URL_SLOT_ID_LIST.size() == inputPairedDescriptors.size(),
                "Incorrect paired descriptors quantity", );
 
     for (int i = 0; i < inputDescriptors.size(); i++) {
-        const Descriptor& desc = inputDescriptors[i];
+        const Descriptor &desc = inputDescriptors[i];
 
         QMap<Descriptor, DataTypePtr> inTypeMap;
         inTypeMap[desc] = BaseTypes::STRING_TYPE();
         if (i < inputPairedDescriptors.size()) {
-            const Descriptor& pairedDesc = inputPairedDescriptors[i];
+            const Descriptor &pairedDesc = inputPairedDescriptors[i];
             inTypeMap[pairedDesc] = BaseTypes::STRING_TYPE();
         }
 
@@ -454,16 +448,16 @@ void SpadesWorkerFactory::init() {
     //out port
     QMap<Descriptor, DataTypePtr> outTypeMap;
     Descriptor scaffoldOutDesc(SCAFFOLD_OUT_SLOT_ID,
-        SpadesWorker::tr("Scaffolds URL"),
-        SpadesWorker::tr("Output scaffolds URL."));
+                               SpadesWorker::tr("Scaffolds URL"),
+                               SpadesWorker::tr("Output scaffolds URL."));
 
     Descriptor contigsOutDesc(CONTIGS_URL_OUT_SLOT_ID,
-        SpadesWorker::tr("Contigs URL"),
-        SpadesWorker::tr("Output contigs URL."));
+                              SpadesWorker::tr("Contigs URL"),
+                              SpadesWorker::tr("Output contigs URL."));
 
     Descriptor outPortDesc(OUT_PORT_DESCR,
-        SpadesWorker::tr("Output File"),
-        SpadesWorker::tr("Output assembly files."));
+                           SpadesWorker::tr("Output File"),
+                           SpadesWorker::tr("Output assembly files."));
 
     outTypeMap[scaffoldOutDesc] = BaseTypes::STRING_TYPE();
     outTypeMap[contigsOutDesc] = BaseTypes::STRING_TYPE();
@@ -471,64 +465,63 @@ void SpadesWorkerFactory::init() {
     DataTypePtr outTypeSet(new MapDataType(OUT_TYPE_ID, outTypeMap));
     portDescs << new PortDescriptor(outPortDesc, outTypeSet, false, true);
 
-
-    QList<Attribute*> attrs;
+    QList<Attribute *> attrs;
     {
         Descriptor inputData(SpadesTask::OPTION_INPUT_DATA,
-            SpadesWorker::tr("Input data"),
+                             SpadesWorker::tr("Input data"),
                              QCoreApplication::tr("<html>"
-                                 "Select the type of input for SPAdes. URL(s) to the input files of the selected type(s) should be provided to the corresponding port(s) of the workflow element."
-                                 "<p>At least one library of the following types is required:"
-                                 "<ul>"
-                                 "<li>Illumina paired-end/high-quality mate-pairs/unpaired reads</li>"
-                                 "<li>IonTorrent paired-end/high-quality mate-pairs/unpaired reads</li>"
-                                 "<li>PacBio CCS reads (at least 5 reads coverage is recommended)</li>"
-                                 "</ul></p>"
-                                 "<p>It is strongly suggested to provide multiple paired-end and mate-pair libraries according to their insert size (from smallest to longest).</p>"
-                                 "<p>Additionally, one may input Oxford Nanopore reads, Sanger reads, contigs generated by other assembler(s), etc."
-                                 "Note that Illumina and IonTorrent libraries should not be assembled together. All other types of input data are compatible.</p>"
-                                 "<p>It is also possible to set up reads orientation (forward-reverse (fr), reverse-forward (rf), forward-forward (ff)) and specify whether paired reads are separate or interlaced.</p>"
-                                 "<p>Illumina, IonTorrent or PacBio CCS reads should be provided in FASTQ format.<br>"
-                                 "Illumina or PacBio read may also be provided in FASTA format. Error correction should be skipped in this case (see the \"Running mode\" parameter).<br>"
-                                 "Sanger, Oxford Nanopore and PacBio CLR reads can be provided in both formats since SPAdes does not run error correction for these types of data.</p>"
-                                 "</html>"));
+                                                  "Select the type of input for SPAdes. URL(s) to the input files of the selected type(s) should be provided to the corresponding port(s) of the workflow element."
+                                                  "<p>At least one library of the following types is required:"
+                                                  "<ul>"
+                                                  "<li>Illumina paired-end/high-quality mate-pairs/unpaired reads</li>"
+                                                  "<li>IonTorrent paired-end/high-quality mate-pairs/unpaired reads</li>"
+                                                  "<li>PacBio CCS reads (at least 5 reads coverage is recommended)</li>"
+                                                  "</ul></p>"
+                                                  "<p>It is strongly suggested to provide multiple paired-end and mate-pair libraries according to their insert size (from smallest to longest).</p>"
+                                                  "<p>Additionally, one may input Oxford Nanopore reads, Sanger reads, contigs generated by other assembler(s), etc."
+                                                  "Note that Illumina and IonTorrent libraries should not be assembled together. All other types of input data are compatible.</p>"
+                                                  "<p>It is also possible to set up reads orientation (forward-reverse (fr), reverse-forward (rf), forward-forward (ff)) and specify whether paired reads are separate or interlaced.</p>"
+                                                  "<p>Illumina, IonTorrent or PacBio CCS reads should be provided in FASTQ format.<br>"
+                                                  "Illumina or PacBio read may also be provided in FASTA format. Error correction should be skipped in this case (see the \"Running mode\" parameter).<br>"
+                                                  "Sanger, Oxford Nanopore and PacBio CLR reads can be provided in both formats since SPAdes does not run error correction for these types of data.</p>"
+                                                  "</html>"));
 
         Descriptor outDir(OUTPUT_DIR,
-            SpadesWorker::tr("Output folder"),
-            SpadesWorker::tr("Folder to save Spades output files."));
+                          SpadesWorker::tr("Output folder"),
+                          SpadesWorker::tr("Folder to save Spades output files."));
 
         Descriptor threads(SpadesTask::OPTION_THREADS,
-            SpadesWorker::tr("Number of threads"),
-            SpadesWorker::tr("Number of threads (-t)."));
+                           SpadesWorker::tr("Number of threads"),
+                           SpadesWorker::tr("Number of threads (-t)."));
 
         Descriptor memLim(SpadesTask::OPTION_MEMLIMIT,
-            SpadesWorker::tr("Memory limit"),
-            SpadesWorker::tr("Memory limit (-m)."));
+                          SpadesWorker::tr("Memory limit"),
+                          SpadesWorker::tr("Memory limit (-m)."));
 
         Descriptor datasetType(SpadesTask::OPTION_DATASET_TYPE,
-            SpadesWorker::tr("Dataset type"),
-            SpadesWorker::tr("Select the input dataset type: standard isolate (the default value) or multiple displacement amplification (corresponds to --sc)."));
+                               SpadesWorker::tr("Dataset type"),
+                               SpadesWorker::tr("Select the input dataset type: standard isolate (the default value) or multiple displacement amplification (corresponds to --sc)."));
 
         Descriptor rMode(SpadesTask::OPTION_RUNNING_MODE,
-            SpadesWorker::tr("Running mode"),
-            SpadesWorker::tr("By default, SPAdes performs both read error correction and assembly. You can select leave one of only (corresponds to --only-assembler, --only-error-correction).<br><br>\
+                         SpadesWorker::tr("Running mode"),
+                         SpadesWorker::tr("By default, SPAdes performs both read error correction and assembly. You can select leave one of only (corresponds to --only-assembler, --only-error-correction).<br><br>\
                               Error correction is performed using BayesHammer module in case of Illumina input reads and IonHammer in case of IonTorrent data. Note that you should not use error correction \
                               in case input reads do not have quality information(e.g. FASTA input files are provided)."));
 
-         Descriptor kMer(SpadesTask::OPTION_K_MER,
-             SpadesWorker::tr("K-mers"),
-             SpadesWorker::tr("k-mer sizes (-k)."));
+        Descriptor kMer(SpadesTask::OPTION_K_MER,
+                        SpadesWorker::tr("K-mers"),
+                        SpadesWorker::tr("k-mer sizes (-k)."));
 
         QVariantMap defaultValue;
         defaultValue.insert(IN_PORT_PAIRED_ID_LIST[0], QString("%1:%2").arg(ORIENTATION_FR).arg(TYPE_SINGLE));
         defaultValue.insert(SEQUENCING_PLATFORM_ID, PLATFORM_ILLUMINA);
-        Attribute* inputAttr = new Attribute(inputData, BaseTypes::MAP_TYPE(), false, QVariant::fromValue<QVariantMap>(defaultValue));
+        Attribute *inputAttr = new Attribute(inputData, BaseTypes::MAP_TYPE(), false, QVariant::fromValue<QVariantMap>(defaultValue));
 
-        foreach (const QString& read, IN_PORT_ID_LIST) {
+        foreach (const QString &read, IN_PORT_ID_LIST) {
             inputAttr->addPortRelation(new SpadesPortRelationDescriptor(read, QVariantList() << read));
         }
 
-        foreach (const QString& pairedRead, IN_PORT_PAIRED_ID_LIST) {
+        foreach (const QString &pairedRead, IN_PORT_PAIRED_ID_LIST) {
             inputAttr->addPortRelation(new SpadesPortRelationDescriptor(pairedRead, QVariantList() << pairedRead));
             bool unused = false;
             const int index = getReadsUrlSlotIdIndex(pairedRead, unused);
@@ -546,7 +539,7 @@ void SpadesWorkerFactory::init() {
         attrs << new Attribute(outDir, BaseTypes::STRING_TYPE(), Attribute::CanBeEmpty | Attribute::Required);
     }
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
         DelegateTags outputUrlTags;
         outputUrlTags.set(DelegateTags::PLACEHOLDER_TEXT, SpadesWorker::tr("Auto"));
@@ -577,8 +570,8 @@ void SpadesWorkerFactory::init() {
     }
 
     Descriptor protoDesc(SpadesWorkerFactory::ACTOR_ID,
-        SpadesWorker::tr("Assemble Reads with SPAdes"),
-        SpadesWorker::tr("In general, SPAdes (St. Petersburg genome assembler) is an assembly toolkit containing various assembly pipelines. \
+                         SpadesWorker::tr("Assemble Reads with SPAdes"),
+                         SpadesWorker::tr("In general, SPAdes (St. Petersburg genome assembler) is an assembly toolkit containing various assembly pipelines. \
                           This workflow element provides GUI for the main SPAdes executable script. One can specify Illumina, IonTorrent or \
                           PacBio reads as input. Hybrid assemblies are also possible, for example, with Oxford Nanopore or Sanger reads.<br><br>\
                           To use the element, configure the type of input in the \"Input data\" parameter. The corresponding input ports will appear \
@@ -615,6 +608,5 @@ QString SpadesPrompter::composeRichDoc() {
     return tr("Assemble de novo the input data into contigs and scaffolds.");
 }
 
-} // LocalWorkflow
-} // U2
-
+}    // namespace LocalWorkflow
+}    // namespace U2

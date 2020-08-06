@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "StructuralAlignmentDialog.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 
@@ -38,15 +40,14 @@
 #include <U2Gui/HelpButton.h>
 
 #include "BioStruct3DSubsetEditor.h"
-#include "StructuralAlignmentDialog.h"
 
 namespace U2 {
 
-static QList<BioStruct3DObject*> findAvailableBioStructs() {
-    QList<GObject*> objs = GObjectUtils::findAllObjects(UOF_LoadedOnly, GObjectTypes::BIOSTRUCTURE_3D);
-    QList<BioStruct3DObject*> biostructs;
+static QList<BioStruct3DObject *> findAvailableBioStructs() {
+    QList<GObject *> objs = GObjectUtils::findAllObjects(UOF_LoadedOnly, GObjectTypes::BIOSTRUCTURE_3D);
+    QList<BioStruct3DObject *> biostructs;
     foreach (GObject *obj, objs) {
-        BioStruct3DObject *bso = qobject_cast<BioStruct3DObject*> (obj);
+        BioStruct3DObject *bso = qobject_cast<BioStruct3DObject *>(obj);
         assert(bso);
         biostructs << bso;
     }
@@ -54,21 +55,19 @@ static QList<BioStruct3DObject*> findAvailableBioStructs() {
     return biostructs;
 }
 
-StructuralAlignmentDialog::StructuralAlignmentDialog(const BioStruct3DObject *fixedRef/* = 0*/, int fixedRefModel/* = -1*/, QWidget *parent/* = 0*/)
-        : QDialog(parent), task(0)
-{
+StructuralAlignmentDialog::StructuralAlignmentDialog(const BioStruct3DObject *fixedRef /* = 0*/, int fixedRefModel /* = -1*/, QWidget *parent /* = 0*/)
+    : QDialog(parent), task(0) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742421");
+    new HelpButton(this, buttonBox, "46499901");
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
-
 
     StructuralAlignmentAlgorithmRegistry *reg = AppContext::getStructuralAlignmentAlgorithmRegistry();
     foreach (const QString &id, reg->getFactoriesIds()) {
         algorithmCombo->addItem(id, qVariantFromValue(id));
     }
 
-    QList<BioStruct3DObject*> biostructs = findAvailableBioStructs();
+    QList<BioStruct3DObject *> biostructs = findAvailableBioStructs();
     ref = new BioStruct3DSubsetEditor(biostructs, fixedRef, fixedRefModel);
     mob = new BioStruct3DSubsetEditor(biostructs);
 
@@ -115,8 +114,8 @@ void StructuralAlignmentDialog::accept() {
     // Since we unable to change mob structure we clone the GObject
     // TODO: clone live-range?
     U2OpStatus2Log os;
-    const U2DbiRef dbiRef = AppContext::getDbiRegistry( )->getSessionTmpDbiRef( os );
-    BioStruct3DObject *mobClone = qobject_cast<BioStruct3DObject*> (mobSubset.obj->clone(dbiRef, os));
+    const U2DbiRef dbiRef = AppContext::getDbiRegistry()->getSessionTmpDbiRef(os);
+    BioStruct3DObject *mobClone = qobject_cast<BioStruct3DObject *>(mobSubset.obj->clone(dbiRef, os));
     mobSubset.obj = mobClone;
 
     StructuralAlignmentTaskSettings settings(refSubset, mobSubset);
@@ -143,10 +142,9 @@ int StructuralAlignmentDialog::execIfAlgorithmAvailable() {
     if (reg->getFactoriesIds().isEmpty()) {
         QMessageBox::warning(this, "Error", "No available algorithms, make sure that appropriate plugin loaded (for ex. PTools)");
         return Rejected;
-    }
-    else {
+    } else {
         return exec();
     }
 }
 
-}   // namespace U2
+}    // namespace U2

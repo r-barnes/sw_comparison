@@ -24,10 +24,10 @@
 
 #include <ui_CreateRulerDialog.h>
 
-#include <U2Core/U2Region.h>
-
-#include <QSet>
 #include <QDialog>
+#include <QSet>
+
+#include <U2Core/U2Region.h>
 
 namespace U2 {
 
@@ -35,13 +35,13 @@ class U2VIEW_EXPORT CreateRulerDialogController : public QDialog, public Ui_Crea
     Q_OBJECT
 public:
     CreateRulerDialogController(
-            /* The names in this set are already used and are not allowed */
-            const QSet<QString>& namesToFilter,
-            /** Ruler offset selected by default */
-            int defaultOffset,
-            QWidget* p=NULL);
+        /* The names in this set are already used and are not allowed */
+        const QSet<QString> &namesToFilter,
+        /** Ruler offset selected by default */
+        int defaultOffset,
+        QWidget *p = NULL);
 
-    virtual void accept ();
+    virtual void accept();
 
 private slots:
     void sl_colorButtonClicked();
@@ -50,14 +50,12 @@ private:
     void updateColorSample();
 
 public:
-    QString         name;
-    int             offset;
-    QColor          color;
-    QSet<QString>   filter;
-
+    QString name;
+    int offset;
+    QColor color;
+    QSet<QString> filter;
 };
 
-
-}// namespace
+}    // namespace U2
 
 #endif

@@ -30,15 +30,16 @@ namespace U2 {
 
 class FindPatternMsaWidgetSavableTab : public U2SavableWidget {
 public:
-    FindPatternMsaWidgetSavableTab(QWidget *wrappedWidget, MWMDIWindow* contextWindow);
+    FindPatternMsaWidgetSavableTab(QWidget *wrappedWidget, MWMDIWindow *contextWindow);
     ~FindPatternMsaWidgetSavableTab();
 
     void setChildValue(const QString &childId, const QVariant &value);
     void setRegionWidgetIds(const QStringList &s);
+
 private:
     QStringList regionWidgetIds;
 };
 
-} // namespace U2
+}    // namespace U2
 
 #endif

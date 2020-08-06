@@ -22,9 +22,9 @@
 #ifndef _U2_SAM_READER_H_
 #define _U2_SAM_READER_H_
 
-#include "Reader.h"
-#include "Header.h"
 #include "Alignment.h"
+#include "Header.h"
+#include "Reader.h"
 
 namespace U2 {
 namespace BAM {
@@ -32,9 +32,10 @@ namespace BAM {
 class SamReader : public Reader {
 public:
     SamReader(IOAdapter &ioAdapter);
-    const Header &getHeader()const;
+    const Header &getHeader() const;
     Alignment readAlignment(bool &eof);
-    bool isEof()const;
+    bool isEof() const;
+
 private:
     QByteArray readString(bool &eof);
     void readHeader();
@@ -42,10 +43,10 @@ private:
 
     static const int LOCAL_READ_BUFFER_SIZE;
     QByteArray readBuffer;
-friend class AlignmentParser;
+    friend class AlignmentParser;
 };
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2
 
-#endif // _U2_SAM_READER_H_
+#endif    // _U2_SAM_READER_H_

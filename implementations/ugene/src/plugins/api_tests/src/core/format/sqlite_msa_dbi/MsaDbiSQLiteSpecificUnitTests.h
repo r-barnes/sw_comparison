@@ -22,10 +22,9 @@
 #ifndef _U2_MSA_DBI_SQLITE_SPECIFIC_UNIT_TESTS_H_
 #define _U2_MSA_DBI_SQLITE_SPECIFIC_UNIT_TESTS_H_
 
-#include "core/dbi/DbiTest.h"
-
 #include <unittest.h>
 
+#include "core/dbi/DbiTest.h"
 
 namespace U2 {
 
@@ -38,13 +37,13 @@ public:
     static void init();
     static void shutdown();
 
-    static SQLiteDbi* getSQLiteDbi();
+    static SQLiteDbi *getSQLiteDbi();
 
-    static qint64 getModStepsNum(const U2DataId& objId, U2OpStatus& os);
+    static qint64 getModStepsNum(const U2DataId &objId, U2OpStatus &os);
 
-    static U2DataId createTestMsa(bool enableModTracking, U2OpStatus& os);
-    static U2DataId createNotSoSmallTestMsa(bool enableModTracking, U2OpStatus& os);
-    static U2DataId createTestSequence(bool enableModTracking, qint64 seqLength, U2OpStatus& os);
+    static U2DataId createTestMsa(bool enableModTracking, U2OpStatus &os);
+    static U2DataId createNotSoSmallTestMsa(bool enableModTracking, U2OpStatus &os);
+    static U2DataId createTestSequence(bool enableModTracking, qint64 seqLength, U2OpStatus &os);
     static U2MsaRow createRow(qint64 seqLength, U2OpStatus &os);
 
     static const QString TEST_MSA_NAME;
@@ -53,8 +52,8 @@ private:
     static U2MsaRow addRow(const U2DataId &msaId, const QByteArray &name, const QByteArray &seq, const QList<U2MsaGap> &gaps, U2OpStatus &os);
 
     static TestDbiProvider dbiProvider;
-    static const QString& SQLITE_MSA_DB_URL;
-    static SQLiteDbi* sqliteDbi;
+    static const QString &SQLITE_MSA_DB_URL;
+    static SQLiteDbi *sqliteDbi;
 };
 
 ///////////////////////////////////////////////////////////////
@@ -62,7 +61,6 @@ private:
 // The tests verify the correct structure of the SQLiteDbi
 // after some operations.
 ///////////////////////////////////////////////////////////////
-
 
 /**
  * Update a MSA name.
@@ -155,9 +153,7 @@ DECLARE_TEST(MsaDbiSQLiteSpecificUnitTests, addRows_noModTrack);
 DECLARE_TEST(MsaDbiSQLiteSpecificUnitTests, addRows_undo);
 DECLARE_TEST(MsaDbiSQLiteSpecificUnitTests, addRows_redo);
 
-} // namespace
-
-
+}    // namespace U2
 
 DECLARE_METATYPE(MsaDbiSQLiteSpecificUnitTests, updateMsaName_noModTrack);
 DECLARE_METATYPE(MsaDbiSQLiteSpecificUnitTests, updateMsaName_undo);
@@ -213,6 +209,5 @@ DECLARE_METATYPE(MsaDbiSQLiteSpecificUnitTests, removeRows_redo);
 DECLARE_METATYPE(MsaDbiSQLiteSpecificUnitTests, addRows_noModTrack);
 DECLARE_METATYPE(MsaDbiSQLiteSpecificUnitTests, addRows_undo);
 DECLARE_METATYPE(MsaDbiSQLiteSpecificUnitTests, addRows_redo);
-
 
 #endif

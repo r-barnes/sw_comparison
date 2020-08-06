@@ -19,13 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "DumpLicenseTask.h"
+
 #include <QFile>
 
 #include <U2Core/AppContext.h>
-#include <U2Core/CMDLineRegistry.h>
 #include <U2Core/CMDLineHelpProvider.h>
-
-#include "DumpLicenseTask.h"
+#include <U2Core/CMDLineRegistry.h>
 
 namespace U2 {
 
@@ -33,21 +33,22 @@ const QString DumpLicenseTask::LICENSE_CMDLINE_OPTION = "license";
 const QString DumpLicenseTask::LICENCE_FILENAME = "license";
 
 void DumpLicenseTask::initHelp() {
-    CMDLineRegistry * cmdlineRegistry = AppContext::getCMDLineRegistry();
+    CMDLineRegistry *cmdlineRegistry = AppContext::getCMDLineRegistry();
 
-    CMDLineHelpProvider * helpSection = new CMDLineHelpProvider(
+    CMDLineHelpProvider *helpSection = new CMDLineHelpProvider(
         LICENSE_CMDLINE_OPTION,
-        tr( "Shows license information." ));
+        tr("Shows license information."));
 
     cmdlineRegistry->registerCMDLineHelpProvider(helpSection);
 }
 
-DumpLicenseTask::DumpLicenseTask() : Task(tr("Dump license information task"), TaskFlag_None) {
+DumpLicenseTask::DumpLicenseTask()
+    : Task(tr("Dump license information task"), TaskFlag_None) {
 }
 
 void DumpLicenseTask::run() {
-    QFile file(QString( PATH_PREFIX_DATA ) + ":" + LICENCE_FILENAME );
-    if(!file.open(QIODevice::ReadOnly)) {
+    QFile file(QString(PATH_PREFIX_DATA) + ":" + LICENCE_FILENAME);
+    if (!file.open(QIODevice::ReadOnly)) {
         setError("Cannot find license file");
         return;
     }
@@ -55,4 +56,4 @@ void DumpLicenseTask::run() {
     fprintf(stdout, "%s", licenseText.constData());
 }
 
-} // U2
+}    // namespace U2

@@ -30,15 +30,15 @@ namespace U2 {
 
 class VariationTrackMessageTranslator : public BaseMessageTranslator {
 public:
-    VariationTrackMessageTranslator( const QVariant &atomicMessage,
-        Workflow::WorkflowContext *initContext );
+    VariationTrackMessageTranslator(const QVariant &atomicMessage,
+                                    Workflow::WorkflowContext *initContext);
 
-    QString getTranslation( ) const;
+    QString getTranslation() const;
 
 protected:
     U2EntityRef variantTrackRef;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_VARIATION_TRACK_MESSAGE_TRANSLATOR_H_
+#endif    // _U2_VARIATION_TRACK_MESSAGE_TRANSLATOR_H_

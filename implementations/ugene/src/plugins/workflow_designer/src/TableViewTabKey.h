@@ -25,18 +25,18 @@
 #include <QTableView>
 
 namespace U2 {
-class TableViewTabKey : public QTableView
-{
+class TableViewTabKey : public QTableView {
 public:
     explicit TableViewTabKey(QWidget *parent = 0);
 
 protected:
     virtual void closeEditor(QWidget *editor, QAbstractItemDelegate::EndEditHint hint);
     virtual void keyPressEvent(QKeyEvent *event);
+
 private:
     void setNextIndex();
     QModelIndex getNextIndex() const;
 };
-}
+}    // namespace U2
 
-#endif // _U2_TABLE_VIEW_TAB_KEY_H_
+#endif    // _U2_TABLE_VIEW_TAB_KEY_H_

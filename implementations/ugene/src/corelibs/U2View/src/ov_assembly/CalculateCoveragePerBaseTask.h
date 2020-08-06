@@ -24,8 +24,8 @@
 
 #include <QMap>
 
-#include <U2Core/U2Assembly.h>
 #include <U2Core/Task.h>
+#include <U2Core/U2Assembly.h>
 #include <U2Core/U2Region.h>
 #include <U2Core/U2Type.h>
 
@@ -33,8 +33,9 @@ namespace U2 {
 
 class CoveragePerBaseInfo {
 public:
-    CoveragePerBaseInfo() :
-        coverage(0) {}
+    CoveragePerBaseInfo()
+        : coverage(0) {
+    }
 
     int coverage;
     QMap<char, int> basesCount;
@@ -42,12 +43,16 @@ public:
 class GetAssemblyLengthTask : public Task {
     Q_OBJECT
 public:
-    GetAssemblyLengthTask(const U2DbiRef &dbiRef, const U2DataId &assemblyId) :
-        Task(tr("Get length of Assembly"), TaskFlag_None), dbiRef(dbiRef), assemblyId(assemblyId) {}
+    GetAssemblyLengthTask(const U2DbiRef &dbiRef, const U2DataId &assemblyId)
+        : Task(tr("Get length of Assembly"), TaskFlag_None), dbiRef(dbiRef), assemblyId(assemblyId) {
+    }
 
     void run();
 
-    qint64 getAssemblyLength() const { return length; }
+    qint64 getAssemblyLength() const {
+        return length;
+    }
+
 private:
     const U2DbiRef dbiRef;
     const U2DataId assemblyId;
@@ -91,7 +96,7 @@ public:
 signals:
     void si_regionIsProcessed(qint64 startPos);
 
-    private slots:
+private slots:
 
 private:
     const U2DbiRef dbiRef;
@@ -102,6 +107,6 @@ private:
     GetAssemblyLengthTask *getLengthTask;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_CALCULATE_COVERAGE_PER_BASE_TASK_H_
+#endif    // _U2_CALCULATE_COVERAGE_PER_BASE_TASK_H_

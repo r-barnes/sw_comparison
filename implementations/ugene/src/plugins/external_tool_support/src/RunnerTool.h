@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-
 #ifndef _U2_RUNNER_TOOL_H_
 #define _U2_RUNNER_TOOL_H_
 
@@ -30,7 +29,7 @@ namespace U2 {
 class RunnerTool : public ExternalTool {
     Q_OBJECT
 public:
-    RunnerTool(const QStringList& runParameters, const QString& id, const QString& name, const QString& path);
+    RunnerTool(const QStringList &runParameters, const QString &id, const QString &name, const QString &path);
 
     QStringList getRunParameters() const override;
 
@@ -41,5 +40,5 @@ private:
     QStringList runParameters;
 };
 
-}
+}    // namespace U2
 #endif

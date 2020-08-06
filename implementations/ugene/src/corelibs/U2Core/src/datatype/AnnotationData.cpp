@@ -25,7 +25,6 @@ namespace U2 {
 
 AnnotationData::AnnotationData()
     : location(new U2LocationData()), caseAnnotation(false), type(U2FeatureTypes::MiscFeature) {
-
 }
 
 bool AnnotationData::isJoin() const {
@@ -56,11 +55,11 @@ void AnnotationData::setLocationOperator(U2LocationOperator o) {
     location->op = o;
 }
 
-const QVector<U2Region> & AnnotationData::getRegions() const {
+const QVector<U2Region> &AnnotationData::getRegions() const {
     return location->regions;
 }
 
-AnnotationData & AnnotationData::operator =(const AnnotationData &a) {
+AnnotationData &AnnotationData::operator=(const AnnotationData &a) {
     type = a.type;
     name = a.name;
     location = a.location;
@@ -69,7 +68,7 @@ AnnotationData & AnnotationData::operator =(const AnnotationData &a) {
     return *this;
 }
 
-bool AnnotationData::operator== (const AnnotationData &other) const {
+bool AnnotationData::operator==(const AnnotationData &other) const {
     if (this->type != other.type) {
         return false;
     }
@@ -81,7 +80,7 @@ bool AnnotationData::operator== (const AnnotationData &other) const {
     if (this->qualifiers.size() != other.qualifiers.size()) {
         return false;
     }
-    foreach(const U2Qualifier &q, this->qualifiers) {
+    foreach (const U2Qualifier &q, this->qualifiers) {
         if (!other.qualifiers.contains(q)) {
             return false;
         }
@@ -94,7 +93,7 @@ bool AnnotationData::operator== (const AnnotationData &other) const {
     return true;
 }
 
-bool AnnotationData::operator !=(const AnnotationData &other) const {
+bool AnnotationData::operator!=(const AnnotationData &other) const {
     return !(*this == other);
 }
 
@@ -109,7 +108,7 @@ void AnnotationData::removeAllQualifiers(const QString &name, QStringList &value
 }
 
 void AnnotationData::findQualifiers(const QString &name, QVector<U2Qualifier> &res) const {
-    foreach(const U2Qualifier &q, qualifiers) {
+    foreach (const U2Qualifier &q, qualifiers) {
         if (q.name == name) {
             res.append(q);
         }
@@ -117,7 +116,7 @@ void AnnotationData::findQualifiers(const QString &name, QVector<U2Qualifier> &r
 }
 
 QString AnnotationData::findFirstQualifierValue(const QString &name) const {
-    foreach(const U2Qualifier &q, qualifiers) {
+    foreach (const U2Qualifier &q, qualifiers) {
         if (q.name == name) {
             return q.value;
         }
@@ -125,7 +124,7 @@ QString AnnotationData::findFirstQualifierValue(const QString &name) const {
     return QString::null;
 }
 
-bool AnnotationData::operator <(const AnnotationData &other) const {
+bool AnnotationData::operator<(const AnnotationData &other) const {
     if (getRegions().isEmpty()) {
         return true;
     }
@@ -135,43 +134,51 @@ bool AnnotationData::operator <(const AnnotationData &other) const {
     return getRegions().first() < other.getRegions().first();
 }
 
-QDataStream & operator>>(QDataStream &dataStream, TriState &state) {
+QDataStream &operator>>(QDataStream &dataStream, TriState &state) {
     int st;
     dataStream >> st;
     switch (st) {
-    case 0: state = TriState_Yes; break;
-    case 1: state = TriState_No; break;
-    default: state = TriState_Unknown;
+    case 0:
+        state = TriState_Yes;
+        break;
+    case 1:
+        state = TriState_No;
+        break;
+    default:
+        state = TriState_Unknown;
     }
     return dataStream;
 }
 
-QDataStream & operator<<(QDataStream &dataStream, const TriState &state) {
+QDataStream &operator<<(QDataStream &dataStream, const TriState &state) {
     switch (state) {
-    case TriState_Yes: return dataStream << 0;
-    case TriState_No: return dataStream << 1;
-    default: return dataStream << 2;
+    case TriState_Yes:
+        return dataStream << 0;
+    case TriState_No:
+        return dataStream << 1;
+    default:
+        return dataStream << 2;
     }
 }
 
-QDataStream & operator>>(QDataStream &dataStream, U2Qualifier &q) {
+QDataStream &operator>>(QDataStream &dataStream, U2Qualifier &q) {
     return dataStream >> q.name >> q.value;
 }
 
-QDataStream & operator<<(QDataStream &dataStream, const U2Qualifier &q) {
+QDataStream &operator<<(QDataStream &dataStream, const U2Qualifier &q) {
     return dataStream << q.name << q.value;
 }
 
-QDataStream & operator>>(QDataStream &dataStream, AnnotationData &) {
+QDataStream &operator>>(QDataStream &dataStream, AnnotationData &) {
     assert(0);
     return dataStream;
     //    return dataStream >> data.name >> data.location >> data.qualifiers;
 }
 
-QDataStream & operator<<(QDataStream &dataStream, const AnnotationData &) {
+QDataStream &operator<<(QDataStream &dataStream, const AnnotationData &) {
     assert(0);
     return dataStream;
     //    return dataStream << data.name << data.location << data.qualifiers;
 }
 
-} //namespace U2
+}    //namespace U2

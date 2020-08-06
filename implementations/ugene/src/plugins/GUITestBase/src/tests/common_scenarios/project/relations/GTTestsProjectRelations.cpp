@@ -19,28 +19,30 @@
  * MA 02110-1301, USA.
  */
 
-#include "GTGlobals.h"
 #include "GTTestsProjectRelations.h"
+#include <base_dialogs/GTFileDialog.h>
+#include <drivers/GTKeyboardDriver.h>
+#include <drivers/GTMouseDriver.h>
+#include <src/GTUtilsSequenceView.h>
+#include <system/GTFile.h>
+
+#include <U2View/AnnotatedDNAViewFactory.h>
+
+#include "GTGlobals.h"
 #include "GTUtilsDocument.h"
 #include "GTUtilsProject.h"
 #include "GTUtilsProjectTreeView.h"
 #include "GTUtilsTaskTreeView.h"
 #include "utils/GTUtilsApp.h"
-#include <base_dialogs/GTFileDialog.h>
-#include <drivers/GTKeyboardDriver.h>
-#include <drivers/GTMouseDriver.h>
-#include <system/GTFile.h>
-#include <U2View/AnnotatedDNAViewFactory.h>
 
-namespace U2{
+namespace U2 {
 
-namespace GUITest_common_scenarios_project_relations{
+namespace GUITest_common_scenarios_project_relations {
 using namespace HI;
 GUI_TEST_CLASS_DEFINITION(test_0001) {
-
-    GTUtilsProject::openFiles(os, testDir+"_common_data/scenarios/project/proj2.uprj");
-    GTUtilsDocument::checkDocument(os, "1.gb");
+    GTUtilsProject::openFile(os, testDir + "_common_data/scenarios/project/proj2.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
+    GTUtilsDocument::checkDocument(os, "1.gb");
     GTMouseDriver::moveTo(GTUtilsProjectTreeView::getItemCenter(os, "NC_001363 features"));
     GTMouseDriver::doubleClick();
     GTUtilsDocument::checkDocument(os, "1.gb", AnnotatedDNAViewFactory::ID);
@@ -59,7 +61,7 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
     GTFile::copy(os, secondAnn, sandBoxDir + "/" + secondAnnFaleName);
     GTFileDialog::openFile(os, sandBoxDir, fileName);
     GTUtilsTaskTreeView::waitTaskFinished(os);
-    GTUtilsTaskTreeView::waitTaskFinished(os);
+
     GTUtilsDocument::checkDocument(os, "1.gb");
     GTUtilsDocument::checkDocument(os, "2.gb");
 
@@ -73,6 +75,6 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
     GTUtilsTaskTreeView::waitTaskFinished(os);
 }
 
-}
+}    // namespace GUITest_common_scenarios_project_relations
 
-}
+}    // namespace U2

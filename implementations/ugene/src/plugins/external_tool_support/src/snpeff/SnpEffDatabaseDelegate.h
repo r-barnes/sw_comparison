@@ -22,11 +22,11 @@
 #ifndef _U2_SNPEFF_DATABASE_DELEGATE_H_
 #define _U2_SNPEFF_DATABASE_DELEGATE_H_
 
-#include <U2Lang/ConfigurationEditor.h>
-
 #include <QDialog>
 #include <QLineEdit>
 #include <QToolButton>
+
+#include <U2Lang/ConfigurationEditor.h>
 
 #include "ui_SnpEffDatabaseDialog.h"
 
@@ -41,12 +41,13 @@ namespace LocalWorkflow {
 class SnpEffDatabaseDialog : public QDialog, public Ui_SnpEffDatabaseDialog {
     Q_OBJECT
 public:
-    SnpEffDatabaseDialog(QWidget* parent = 0);
+    SnpEffDatabaseDialog(QWidget *parent = 0);
     QString getDatabase() const;
 private slots:
     void sl_selectionChanged();
+
 private:
-    QSortFilterProxyModel* proxyModel;
+    QSortFilterProxyModel *proxyModel;
 };
 
 /************************************************************************/
@@ -64,8 +65,8 @@ public slots:
     void sl_showDialog();
 
 private:
-    QLineEdit*      lineEdit;
-    QToolButton*    toolButton;
+    QLineEdit *lineEdit;
+    QToolButton *toolButton;
 };
 
 /************************************************************************/
@@ -76,13 +77,11 @@ class SnpEffDatabaseDelegate : public PropertyDelegate {
 public:
     SnpEffDatabaseDelegate(QObject *parent = 0);
 
-    virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-                                  const QModelIndex &index) const;
-    virtual PropertyWidget * createWizardWidget(U2OpStatus &os, QWidget *parent) const;
+    virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    virtual PropertyWidget *createWizardWidget(U2OpStatus &os, QWidget *parent) const;
 
     virtual void setEditorData(QWidget *editor, const QModelIndex &index) const;
-    virtual void setModelData(QWidget *editor, QAbstractItemModel *model,
-        const QModelIndex &index) const;
+    virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
 
     virtual PropertyDelegate *clone();
 
@@ -90,7 +89,7 @@ private slots:
     void sl_commit();
 };
 
-} // namespace LocalWorkflow
-} // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_SNPEFF_DATABASE_DELEGATE_H_
+#endif    // _U2_SNPEFF_DATABASE_DELEGATE_H_

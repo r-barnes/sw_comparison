@@ -19,36 +19,33 @@
  * MA 02110-1301, USA.
  */
 
+#include "WizardPageController.h"
+
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "WidgetController.h"
 #include "WDWizardPage.h"
+#include "WidgetController.h"
 #include "WizardController.h"
-
-#include "WizardPageController.h"
 
 namespace U2 {
 
 WizardPageController::WizardPageController(WizardController *wc, WizardPage *page)
-: wPage(NULL), wc(wc), page(page)
-{
-
+    : wPage(NULL), wc(wc), page(page) {
 }
 
 WizardPageController::~WizardPageController() {
-
 }
 
 void WizardPageController::setQtPage(WDWizardPage *value) {
     wPage = value;
 }
 
-WDWizardPage * WizardPageController::getQtPage() const {
+WDWizardPage *WizardPageController::getQtPage() const {
     return wPage;
 }
 
-WizardPage * WizardPageController::getPage() const {
+WizardPage *WizardPageController::getPage() const {
     return page;
 }
 
@@ -90,34 +87,34 @@ void WizardPageController::setError(WDWizardPage *wPage) {
 }
 
 namespace {
-    QList<QLayout*> removeOneLayoutContent(QLayout *l) {
-        QList<QLayout*> result;
+QList<QLayout *> removeOneLayoutContent(QLayout *l) {
+    QList<QLayout *> result;
 
-        while (l->count() > 0) {
-            QLayoutItem *item = l->takeAt(0);
-            if (NULL != item->widget()) {
-                item->widget()->setParent(NULL);
-                delete item;
-            } else if (NULL != item->layout()) {
-                result << item->layout();
-            } else {
-                delete item;
-            }
+    while (l->count() > 0) {
+        QLayoutItem *item = l->takeAt(0);
+        if (NULL != item->widget()) {
+            item->widget()->setParent(NULL);
+            delete item;
+        } else if (NULL != item->layout()) {
+            result << item->layout();
+        } else {
+            delete item;
         }
-        return result;
     }
+    return result;
 }
+}    // namespace
 
 void WizardPageController::removeLayout(QLayout *l) {
     CHECK(NULL != l, );
-    QList<QLayout*> layouts;
-    QList<QLayout*> layoutStack;
+    QList<QLayout *> layouts;
+    QList<QLayout *> layoutStack;
     layouts << l;
     layoutStack << l;
 
     while (!layouts.isEmpty()) {
         QLayout *current = layouts.takeFirst();
-        QList<QLayout*> innerLayouts = removeOneLayoutContent(current);
+        QList<QLayout *> innerLayouts = removeOneLayoutContent(current);
         layouts << innerLayouts;
         layoutStack << innerLayouts;
     }
@@ -139,4 +136,4 @@ int WizardPageController::nextId() const {
     return wc->getQtPageId(id);
 }
 
-} // U2
+}    // namespace U2

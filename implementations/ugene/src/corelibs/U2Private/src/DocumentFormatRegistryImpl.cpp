@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DocumentFormatRegistryImpl.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DbiDocumentFormat.h>
 #include <U2Core/RawDataUdrSchema.h>
@@ -61,15 +63,13 @@
 #include <U2Formats/VCF4VariationFormat.h>
 #include <U2Formats/VectorNtiSequenceFormat.h>
 
-#include "DocumentFormatRegistryImpl.h"
-
 namespace U2 {
 
 DocumentFormatRegistryImpl::~DocumentFormatRegistryImpl() {
     qDeleteAll(formats);
 }
 
-bool DocumentFormatRegistryImpl::registerFormat(DocumentFormat* f) {
+bool DocumentFormatRegistryImpl::registerFormat(DocumentFormat *f) {
     SAFE_POINT(getFormatById(f->getFormatId()) == NULL, "Existing format", false);
     formats.push_back(f);
     emit si_documentFormatRegistered(f);
@@ -81,14 +81,14 @@ bool DocumentFormatRegistryImpl::registerFormat(DocumentFormat* f) {
 
 QList<DocumentFormatId> DocumentFormatRegistryImpl::getRegisteredFormats() const {
     QList<DocumentFormatId> ids;
-    foreach(DocumentFormat* df, formats) {
+    foreach (DocumentFormat *df, formats) {
         ids.append(df->getFormatId());
     }
     return ids;
 }
 
-DocumentFormat* DocumentFormatRegistryImpl::selectFormatByFileExtension(const QString& fileExt) const {
-    foreach(DocumentFormat* df, formats) {
+DocumentFormat *DocumentFormatRegistryImpl::selectFormatByFileExtension(const QString &fileExt) const {
+    foreach (DocumentFormat *df, formats) {
         if (df->getSupportedDocumentFileExtensions().contains(fileExt)) {
             return df;
         }
@@ -96,10 +96,9 @@ DocumentFormat* DocumentFormatRegistryImpl::selectFormatByFileExtension(const QS
     return NULL;
 }
 
-QList<DocumentFormatId> DocumentFormatRegistryImpl::selectFormats(const DocumentFormatConstraints& c) const
-{
+QList<DocumentFormatId> DocumentFormatRegistryImpl::selectFormats(const DocumentFormatConstraints &c) const {
     QList<DocumentFormatId> ids;
-    foreach(DocumentFormat* df, formats) {
+    foreach (DocumentFormat *df, formats) {
         if (df->checkConstraints(c)) {
             ids.append(df->getFormatId());
         }
@@ -107,7 +106,7 @@ QList<DocumentFormatId> DocumentFormatRegistryImpl::selectFormats(const Document
     return ids;
 }
 
-bool DocumentFormatRegistryImpl::unregisterFormat(DocumentFormat* f) {
+bool DocumentFormatRegistryImpl::unregisterFormat(DocumentFormat *f) {
     int n = formats.removeAll(f);
     bool res = n > 0;
     if (res) {
@@ -116,8 +115,8 @@ bool DocumentFormatRegistryImpl::unregisterFormat(DocumentFormat* f) {
     return res;
 }
 
-DocumentFormat* DocumentFormatRegistryImpl::getFormatById(DocumentFormatId id) const {
-    foreach (DocumentFormat* f, formats) {
+DocumentFormat *DocumentFormatRegistryImpl::getFormatById(DocumentFormatId id) const {
+    foreach (DocumentFormat *f, formats) {
         if (BaseDocumentFormats::equal(f->getFormatId(), id)) {
             return f;
         }
@@ -125,70 +124,69 @@ DocumentFormat* DocumentFormatRegistryImpl::getFormatById(DocumentFormatId id) c
     return NULL;
 }
 
-
 void DocumentFormatRegistryImpl::init() {
     U2OpStatusImpl os;
     RawDataUdrSchema::init(os);
     SAFE_POINT_OP(os, );
 
-    PlainTextFormat* text = new PlainTextFormat(this);
+    PlainTextFormat *text = new PlainTextFormat(this);
     registerFormat(text);
 
-    FastaFormat* fasta = new FastaFormat(this);
+    FastaFormat *fasta = new FastaFormat(this);
     registerFormat(fasta);
 
-    GenbankPlainTextFormat* gb = new GenbankPlainTextFormat(this);
+    GenbankPlainTextFormat *gb = new GenbankPlainTextFormat(this);
     registerFormat(gb);
 
-    EMBLPlainTextFormat* em = new EMBLPlainTextFormat(this);
+    EMBLPlainTextFormat *em = new EMBLPlainTextFormat(this);
     registerFormat(em);
 
-    SwissProtPlainTextFormat* sp = new SwissProtPlainTextFormat(this);
+    SwissProtPlainTextFormat *sp = new SwissProtPlainTextFormat(this);
     registerFormat(sp);
 
-    ABIFormat* abi = new ABIFormat(this);
+    ABIFormat *abi = new ABIFormat(this);
     registerFormat(abi);
 
-    SCFFormat* scf = new SCFFormat(this);
+    SCFFormat *scf = new SCFFormat(this);
     registerFormat(scf);
 
-    RawDNASequenceFormat* rsf = new RawDNASequenceFormat(this);
+    RawDNASequenceFormat *rsf = new RawDNASequenceFormat(this);
     registerFormat(rsf);
 
-    ClustalWAlnFormat* aln = new ClustalWAlnFormat(this);
+    ClustalWAlnFormat *aln = new ClustalWAlnFormat(this);
     registerFormat(aln);
 
-    StockholmFormat* stf = new StockholmFormat(this);
+    StockholmFormat *stf = new StockholmFormat(this);
     registerFormat(stf);
 
-    NewickFormat* nwf = new NewickFormat(this);
+    NewickFormat *nwf = new NewickFormat(this);
     registerFormat(nwf);
 
-    PDBFormat* pdb = new PDBFormat(this);
+    PDBFormat *pdb = new PDBFormat(this);
     registerFormat(pdb);
 
-    FastqFormat* ftq = new FastqFormat(this);
+    FastqFormat *ftq = new FastqFormat(this);
     registerFormat(ftq);
 
-    ASNFormat* asn = new ASNFormat(this);
+    ASNFormat *asn = new ASNFormat(this);
     registerFormat(asn);
 
-    MSFFormat* msf = new MSFFormat(this);
+    MSFFormat *msf = new MSFFormat(this);
     registerFormat(msf);
 
-    BedFormat* bed = new BedFormat(this);
+    BedFormat *bed = new BedFormat(this);
     registerFormat(bed);
 
     GFFFormat *gff = new GFFFormat(this);
     registerFormat(gff);
 
-    GTFFormat* gtf = new GTFFormat(this);
+    GTFFormat *gtf = new GTFFormat(this);
     registerFormat(gtf);
 
-    FpkmTrackingFormat* fpkmTr = new FpkmTrackingFormat(this);
+    FpkmTrackingFormat *fpkmTr = new FpkmTrackingFormat(this);
     registerFormat(fpkmTr);
 
-    NEXUSFormat* nexus = new NEXUSFormat(this);
+    NEXUSFormat *nexus = new NEXUSFormat(this);
     registerFormat(nexus);
 
     SAMFormat *sam = new SAMFormat(this);
@@ -206,7 +204,7 @@ void DocumentFormatRegistryImpl::init() {
     AceImporter *aceImporter = new AceImporter();
     importSupport.addDocumentImporter(aceImporter);
 
-    AprImporter* aprImporter = new AprImporter();
+    AprImporter *aprImporter = new AprImporter();
     importSupport.addDocumentImporter(aprImporter);
 
     PDWFormat *pdw = new PDWFormat(this);
@@ -234,8 +232,8 @@ void DocumentFormatRegistryImpl::init() {
     AppContext::getDbiRegistry()->registerDbiFactory(new MysqlDbiFactory());
 
     DocumentFormatFlags flags(DocumentFormatFlag_SupportWriting | DocumentFormatFlag_CannotBeCompressed);
-    DbiDocumentFormat* sdbi = new DbiDocumentFormat(SQLiteDbiFactory::ID, BaseDocumentFormats::UGENEDB, tr("UGENE Database"), QStringList()<<"ugenedb", flags);
+    DbiDocumentFormat *sdbi = new DbiDocumentFormat(SQLiteDbiFactory::ID, BaseDocumentFormats::UGENEDB, tr("UGENE Database"), QStringList() << "ugenedb", flags);
     registerFormat(sdbi);
 }
 
-}//namespace
+}    // namespace U2

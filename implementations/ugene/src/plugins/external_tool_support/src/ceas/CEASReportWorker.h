@@ -27,8 +27,8 @@
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
 
-#include "CEASSupportTask.h"
 #include "CEASSettings.h"
+#include "CEASSupportTask.h"
 #include "utils/CistromeDelegate.h"
 
 namespace U2 {
@@ -52,40 +52,48 @@ private:
 
 private slots:
     void sl_taskFinished();
-}; // CEASReportWorker
+};    // CEASReportWorker
 
 class CeasComboBoxWithUrlsDelegate : public CistromeComboBoxWithUrlsDelegate {
 public:
-    CeasComboBoxWithUrlsDelegate(const QVariantMap& items, bool _isPath = false, QObject *parent = 0) : CistromeComboBoxWithUrlsDelegate(items, _isPath, parent) {}
+    CeasComboBoxWithUrlsDelegate(const QVariantMap &items, bool _isPath = false, QObject *parent = 0)
+        : CistromeComboBoxWithUrlsDelegate(items, _isPath, parent) {
+    }
 
 private:
     virtual void updateUgeneSettings();
 
     virtual QString getDataPathName();
     virtual QString getAttributeName();
-    virtual QString getDefaultValue() { return "hg19"; }
-}; // CeasComboBoxWithUrlsDelegate
+    virtual QString getDefaultValue() {
+        return "hg19";
+    }
+};    // CeasComboBoxWithUrlsDelegate
 
 class CEASReportWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
 
-    CEASReportWorkerFactory() : DomainFactory(ACTOR_ID) {}
+    CEASReportWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
     static void init();
     virtual Worker *createWorker(Actor *a);
-}; // CEASReportWorkerFactory
+};    // CEASReportWorkerFactory
 
 class CEASReportPrompter : public PrompterBase<CEASReportPrompter> {
     Q_OBJECT
 public:
-    CEASReportPrompter(Actor *p = NULL) : PrompterBase<CEASReportPrompter>(p) {}
+    CEASReportPrompter(Actor *p = NULL)
+        : PrompterBase<CEASReportPrompter>(p) {
+    }
 
 protected:
     QString composeRichDoc();
 
-}; // CEASReportPrompter
+};    // CEASReportPrompter
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_CEAS_SUPPORT_WORKER_
+#endif    // _U2_CEAS_SUPPORT_WORKER_

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "KrakenBuildWorker.h"
+
 #include <U2Core/TaskSignalMapper.h>
 
 #include <U2Lang/BaseSlots.h>
@@ -27,7 +29,6 @@
 #include <U2Lang/WorkflowMonitor.h>
 
 #include "KrakenBuildTask.h"
-#include "KrakenBuildWorker.h"
 #include "KrakenBuildWorkerFactory.h"
 
 namespace U2 {
@@ -35,9 +36,7 @@ namespace LocalWorkflow {
 
 KrakenBuildWorker::KrakenBuildWorker(Actor *actor)
     : BaseWorker(actor, false),
-      output(NULL)
-{
-
+      output(NULL) {
 }
 
 void KrakenBuildWorker::init() {
@@ -54,7 +53,6 @@ Task *KrakenBuildWorker::tick() {
 }
 
 void KrakenBuildWorker::cleanup() {
-
 }
 
 void KrakenBuildWorker::sl_taskFinished(Task *task) {
@@ -92,7 +90,7 @@ KrakenBuildTaskSettings KrakenBuildWorker::getSettings() {
     settings.threadsNumber = getValue<int>(KrakenBuildWorkerFactory::THREADS_NUMBER_ATTR_ID);
 
     if (settings.mode == KrakenBuildTaskSettings::BUILD) {
-        const QList<Dataset> datasets = getValue<QList<Dataset> >(KrakenBuildWorkerFactory::GENOMIC_LIBRARY_ATTR_ID);
+        const QList<Dataset> datasets = getValue<QList<Dataset>>(KrakenBuildWorkerFactory::GENOMIC_LIBRARY_ATTR_ID);
         if (!datasets.isEmpty()) {
             foreach (URLContainer *urlContainer, datasets.first().getUrls()) {
                 FilesIterator *iterator = urlContainer->getFileUrls();
@@ -126,5 +124,5 @@ int KrakenBuildWorker::getListenersCount(const KrakenBuildTaskSettings &settings
     }
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

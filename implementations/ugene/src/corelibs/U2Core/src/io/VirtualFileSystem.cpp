@@ -20,14 +20,13 @@
  */
 
 #include "VirtualFileSystem.h"
+#include <cassert>
+
+#include <QFile>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/IOAdapterUtils.h>
 #include <U2Core/U2SafePoints.h>
-
-#include <QFile>
-
-#include <cassert>
 
 namespace U2 {
 
@@ -35,13 +34,17 @@ namespace U2 {
  * VirtualFileSystem
  *******************************************/
 
-VirtualFileSystem::VirtualFileSystem() {}
+VirtualFileSystem::VirtualFileSystem() {
+}
 
-VirtualFileSystem::VirtualFileSystem(const QString & fsName) : fileSystemName(fsName) {}
+VirtualFileSystem::VirtualFileSystem(const QString &fsName)
+    : fileSystemName(fsName) {
+}
 
-VirtualFileSystem::~VirtualFileSystem() {}
+VirtualFileSystem::~VirtualFileSystem() {
+}
 
-bool VirtualFileSystem::createFile(const QString & filename, const QByteArray & data) {
+bool VirtualFileSystem::createFile(const QString &filename, const QByteArray &data) {
     if (files.contains(filename)) {
         return false;
     }
@@ -49,8 +52,8 @@ bool VirtualFileSystem::createFile(const QString & filename, const QByteArray & 
     return true;
 }
 
-bool VirtualFileSystem::mapFile(const QString & filename, const QString & filePath) {
-    IOAdapterFactory * iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(filePath));
+bool VirtualFileSystem::mapFile(const QString &filename, const QString &filePath) {
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(filePath));
     SAFE_POINT(iof != NULL, QString("Failed to find IO adapter factory: %1").arg(filePath), false);
 
     QScopedPointer<IOAdapter> io(iof->createIOAdapter());
@@ -75,12 +78,12 @@ bool VirtualFileSystem::mapFile(const QString & filename, const QString & filePa
     return true;
 }
 
-bool VirtualFileSystem::mapBack(const QString & filename, const QString & filePath) const {
+bool VirtualFileSystem::mapBack(const QString &filename, const QString &filePath) const {
     if (!files.contains(filename)) {
         return false;
     }
 
-    IOAdapterFactory * iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(filePath));
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(filePath));
     SAFE_POINT(iof != NULL, QString("Failed to find IO adapter factory: %1").arg(filePath), false);
 
     QScopedPointer<IOAdapter> io(iof->createIOAdapter());
@@ -92,34 +95,34 @@ bool VirtualFileSystem::mapBack(const QString & filename, const QString & filePa
     return true;
 }
 
-void VirtualFileSystem::modifyFile(const QString & filename, const QByteArray & data) {
+void VirtualFileSystem::modifyFile(const QString &filename, const QByteArray &data) {
     files[filename] = data;
 }
 
-QByteArray VirtualFileSystem::removeFile(const QString & filename) {
+QByteArray VirtualFileSystem::removeFile(const QString &filename) {
     return files.take(filename);
 }
 
 void VirtualFileSystem::removeAllFiles() {
     QStringList keys = files.keys();
-    foreach(const QString & key, keys) {
+    foreach (const QString &key, keys) {
         removeFile(key);
     }
 }
 
-bool VirtualFileSystem::fileExists(const QString & filename) const {
+bool VirtualFileSystem::fileExists(const QString &filename) const {
     return files.contains(filename);
 }
 
-QByteArray & VirtualFileSystem::getFileByName(const QString & filename) {
+QByteArray &VirtualFileSystem::getFileByName(const QString &filename) {
     return files[filename];
 }
 
-QByteArray VirtualFileSystem::getFileByName(const QString & filename) const {
+QByteArray VirtualFileSystem::getFileByName(const QString &filename) const {
     return files.value(filename);
 }
 
-void VirtualFileSystem::setId(const QString & id) {
+void VirtualFileSystem::setId(const QString &id) {
     fileSystemName = id;
 }
 
@@ -135,13 +138,14 @@ QStringList VirtualFileSystem::getAllFilenames() const {
 * VirtualFileSystemRegistry
 *******************************************/
 
-VirtualFileSystemRegistry::VirtualFileSystemRegistry() {}
+VirtualFileSystemRegistry::VirtualFileSystemRegistry() {
+}
 
 VirtualFileSystemRegistry::~VirtualFileSystemRegistry() {
     qDeleteAll(registry.values());
 }
 
-bool VirtualFileSystemRegistry::registerFileSystem(VirtualFileSystem * entry) {
+bool VirtualFileSystemRegistry::registerFileSystem(VirtualFileSystem *entry) {
     SAFE_POINT(entry != NULL, "FS is NULL!", false);
 
     QString id = entry->getId();
@@ -152,15 +156,15 @@ bool VirtualFileSystemRegistry::registerFileSystem(VirtualFileSystem * entry) {
     return true;
 }
 
-VirtualFileSystem * VirtualFileSystemRegistry::unregisterFileSystem(const QString & id) {
+VirtualFileSystem *VirtualFileSystemRegistry::unregisterFileSystem(const QString &id) {
     return registry.take(id);
 }
 
-VirtualFileSystem * VirtualFileSystemRegistry::getFileSystemById(const QString & id) const {
+VirtualFileSystem *VirtualFileSystemRegistry::getFileSystemById(const QString &id) const {
     return registry[id];
 }
 
-QList< VirtualFileSystem* > VirtualFileSystemRegistry::getAllFileSystems() const {
+QList<VirtualFileSystem *> VirtualFileSystemRegistry::getAllFileSystems() const {
     return registry.values();
 }
 
@@ -168,4 +172,4 @@ QStringList VirtualFileSystemRegistry::getAllIds() const {
     return registry.keys();
 }
 
-} // U2
+}    // namespace U2

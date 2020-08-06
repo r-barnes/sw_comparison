@@ -36,35 +36,29 @@ class McaReferenceCharController;
 class U2VIEW_EXPORT McaEditorWgt : public MaEditorWgt {
     Q_OBJECT
 public:
-    McaEditorWgt(McaEditor* editor);
+    McaEditorWgt(McaEditor *editor);
 
-    McaEditor* getEditor() const;
-    McaEditorConsensusArea* getConsensusArea() const;
+    McaEditor *getEditor() const;
+    McaEditorConsensusArea *getConsensusArea() const;
     McaEditorNameList *getEditorNameList() const;
-    McaEditorSequenceArea* getSequenceArea() const;
-    McaReferenceCharController* getRefCharController() const;
+    McaEditorSequenceArea *getSequenceArea() const;
+    McaReferenceCharController *getRefCharController() const;
 
-    QAction *getClearSelectionAction() const;
-    QAction *getToogleColumnsAction() const;
-
-signals:
-    void si_clearSelection();
+    QAction *getToggleColumnsAction() const;
 
 protected:
     void initActions();
-    void initSeqArea(GScrollBar* shBar, GScrollBar* cvBar);
+    void initSeqArea(GScrollBar *shBar, GScrollBar *cvBar);
     void initOverviewArea();
-    void initNameList(QScrollBar* nhBar);
+    void initNameList(QScrollBar *nhBar);
     void initConsensusArea();
     void initStatusBar();
 
 private:
-    McaEditorReferenceArea*     refArea;
-    McaReferenceCharController* refCharController;
-
-    QAction *clearSelectionAction;
+    McaEditorReferenceArea *refArea;
+    McaReferenceCharController *refCharController;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MCA_EDITOR_WGT_H_
+#endif    // _U2_MCA_EDITOR_WGT_H_

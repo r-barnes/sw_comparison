@@ -30,15 +30,14 @@ namespace Workflow {
 
 class U2LANG_EXPORT ReadDbObjActorPrototype : public IntegralBusActorPrototype {
 public:
-    ReadDbObjActorPrototype(const Descriptor &desc, const QList<PortDescriptor *> &ports = QList<PortDescriptor *>(),
-        const QList<Attribute *> &attrs = QList<Attribute *>());
+    ReadDbObjActorPrototype(const Descriptor &desc, const QList<PortDescriptor *> &ports = QList<PortDescriptor *>(), const QList<Attribute *> &attrs = QList<Attribute *>());
 
     // set @types as a compatible types for a URL attribute
     virtual void setCompatibleDbObjectTypes(const QSet<GObjectType> &types);
 };
 
-} // Workflow
+}    // namespace Workflow
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_READ_DB_OBJ_ACTOR_PROTOTYPE_H_
+#endif    // _U2_READ_DB_OBJ_ACTOR_PROTOTYPE_H_

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "RawDataUdrSchema.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/U2DbiPackUtils.h>
 #include <U2Core/U2DbiUtils.h>
@@ -27,81 +29,79 @@
 #include <U2Core/UdrDbi.h>
 #include <U2Core/UdrSchemaRegistry.h>
 
-#include "RawDataUdrSchema.h"
-
 namespace U2 {
 
 const UdrSchemaId RawDataUdrSchema::ID("RawData");
 
 namespace {
-    // Fields numbers
-    const int CONTENT = 1;
-    const int SERIALIZER = 2;
+// Fields numbers
+const int CONTENT = 1;
+const int SERIALIZER = 2;
 
-    const int BUFFER_SIZE = 4*1024*1024;
+const int BUFFER_SIZE = 4 * 1024 * 1024;
 
-    class DbiHelper {
-        Q_DISABLE_COPY(DbiHelper)
+class DbiHelper {
+    Q_DISABLE_COPY(DbiHelper)
 
-        DbiConnection *con;
-    public:
-        DbiHelper(const U2DbiRef &dbiRef, U2OpStatus &os)
-            : dbi(NULL)
-        {
-            con = new DbiConnection(dbiRef, os);
-            CHECK_OP(os, );
-            SAFE_POINT_EXT(NULL != con->dbi, os.setError("NULL DBI"), );
-            dbi = con->dbi->getUdrDbi();
-            SAFE_POINT_EXT(NULL != dbi, os.setError("NULL source UDR DBI"), );
-        }
+    DbiConnection *con;
 
-        ~DbiHelper() {
-            delete con;
-        }
-
-        UdrDbi *dbi;
-    };
-
-    UdrRecordId getRecordId(UdrDbi *dbi, const U2DataId &objId, U2OpStatus &os) {
-        const QList<UdrRecord> records = dbi->getObjectRecords(RawDataUdrSchema::ID, objId, os);
-        CHECK_OP(os, UdrRecordId("", ""));
-        CHECK_EXT(1 == records.size(), os.setError("Unexpected records count"), UdrRecordId("", ""));
-        return records.first().getId();
+public:
+    DbiHelper(const U2DbiRef &dbiRef, U2OpStatus &os)
+        : dbi(NULL) {
+        con = new DbiConnection(dbiRef, os);
+        CHECK_OP(os, );
+        SAFE_POINT_EXT(NULL != con->dbi, os.setError("NULL DBI"), );
+        dbi = con->dbi->getUdrDbi();
+        SAFE_POINT_EXT(NULL != dbi, os.setError("NULL source UDR DBI"), );
     }
 
-    UdrRecordId retrieveObject(UdrDbi *dbi, U2RawData &object, U2OpStatus &os) {
-        UdrRecordId recId = getRecordId(dbi, object.id, os);
-        CHECK_OP(os, recId);
-
-        UdrRecord record = dbi->getRecord(recId, os);
-        CHECK_OP(os, recId);
-
-        U2Object obj;
-        dbi->getRootDbi()->getObjectDbi()->getObject(obj, object.id, os);
-        CHECK_OP(os, recId);
-
-        object.visualName = obj.visualName;
-        object.version = obj.version;
-        CHECK_OP(os, recId);
-
-        object.serializer = record.getString(SERIALIZER, os);
-        CHECK_OP(os, recId);
-
-        return recId;
+    ~DbiHelper() {
+        delete con;
     }
 
-    UdrRecordId createObjectCore(UdrDbi *dbi, const QString& folder, U2RawData &object, U2OpStatus &os) {
-        dbi->createObject(RawDataUdrSchema::ID, object, folder, os);
-        CHECK_OP(os, UdrRecordId("", ""));
+    UdrDbi *dbi;
+};
 
-        QList<UdrValue> data;
-        data << UdrValue(object.id);
-        data << UdrValue();
-        data << UdrValue(object.serializer);
-
-        return dbi->addRecord(RawDataUdrSchema::ID, data, os);
-    }
+UdrRecordId getRecordId(UdrDbi *dbi, const U2DataId &objId, U2OpStatus &os) {
+    const QList<UdrRecord> records = dbi->getObjectRecords(RawDataUdrSchema::ID, objId, os);
+    CHECK_OP(os, UdrRecordId("", ""));
+    CHECK_EXT(1 == records.size(), os.setError("Unexpected records count"), UdrRecordId("", ""));
+    return records.first().getId();
 }
+
+UdrRecordId retrieveObject(UdrDbi *dbi, U2RawData &object, U2OpStatus &os) {
+    UdrRecordId recId = getRecordId(dbi, object.id, os);
+    CHECK_OP(os, recId);
+
+    UdrRecord record = dbi->getRecord(recId, os);
+    CHECK_OP(os, recId);
+
+    U2Object obj;
+    dbi->getRootDbi()->getObjectDbi()->getObject(obj, object.id, os);
+    CHECK_OP(os, recId);
+
+    object.visualName = obj.visualName;
+    object.version = obj.version;
+    CHECK_OP(os, recId);
+
+    object.serializer = record.getString(SERIALIZER, os);
+    CHECK_OP(os, recId);
+
+    return recId;
+}
+
+UdrRecordId createObjectCore(UdrDbi *dbi, const QString &folder, U2RawData &object, U2OpStatus &os) {
+    dbi->createObject(RawDataUdrSchema::ID, object, folder, os);
+    CHECK_OP(os, UdrRecordId("", ""));
+
+    QList<UdrValue> data;
+    data << UdrValue(object.id);
+    data << UdrValue();
+    data << UdrValue(object.serializer);
+
+    return dbi->addRecord(RawDataUdrSchema::ID, data, os);
+}
+}    // namespace
 
 void RawDataUdrSchema::init(U2OpStatus &os) {
     UdrSchema::FieldDesc content("content", UdrSchema::BLOB);
@@ -133,7 +133,7 @@ void RawDataUdrSchema::createObject(const U2DbiRef &dbiRef, U2RawData &object, U
     createObject(dbiRef, U2ObjectDbi::ROOT_FOLDER, object, os);
 }
 
-void RawDataUdrSchema::createObject(const U2DbiRef &dbiRef, const QString& folder, U2RawData &object, U2OpStatus &os) {
+void RawDataUdrSchema::createObject(const U2DbiRef &dbiRef, const QString &folder, U2RawData &object, U2OpStatus &os) {
     DbiHelper con(dbiRef, os);
     CHECK_OP(os, );
 
@@ -188,9 +188,7 @@ QByteArray RawDataUdrSchema::readAllContent(const U2EntityRef &objRef, U2OpStatu
     return result;
 }
 
-void RawDataUdrSchema::cloneObject(const U2EntityRef &srcObjRef, const U2DbiRef &dstDbiRef,
-                                   const QString &dstFolder, U2RawData &dstObject, U2OpStatus &os)
-{
+void RawDataUdrSchema::cloneObject(const U2EntityRef &srcObjRef, const U2DbiRef &dstDbiRef, const QString &dstFolder, U2RawData &dstObject, U2OpStatus &os) {
     DbiOperationsBlock srcOpBlock(srcObjRef.dbiRef, os);
     Q_UNUSED(srcOpBlock);
     CHECK_OP(os, );
@@ -228,4 +226,4 @@ void RawDataUdrSchema::cloneObject(const U2EntityRef &srcObjRef, const U2DbiRef 
     }
 }
 
-} // U2
+}    // namespace U2

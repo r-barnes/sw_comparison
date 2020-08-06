@@ -36,11 +36,12 @@ class Configuration;
  */
 class U2LANG_EXPORT ConfigurationValidator {
 public:
-    virtual ~ConfigurationValidator() { }
-    virtual bool validate(const Configuration*, NotificationsList& notificationList) const = 0;
+    virtual ~ConfigurationValidator() {
+    }
+    virtual bool validate(const Configuration *, NotificationsList &notificationList) const = 0;
 
-}; // ConfigurationValidator
+};    // ConfigurationValidator
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_WORKFLOW_CONFIGURATION_VALIDATOR_H_
+#endif    // _U2_WORKFLOW_CONFIGURATION_VALIDATOR_H_

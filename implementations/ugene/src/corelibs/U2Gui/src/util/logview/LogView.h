@@ -25,12 +25,12 @@
 #include <LogSettings.h>
 
 #include <QHash>
-#include <QRegExp>
-#include <QTimer>
 #include <QLineEdit>
 #include <QPlainTextEdit>
+#include <QRegExp>
 #include <QShortcut>
 #include <QSyntaxHighlighter>
+#include <QTimer>
 
 namespace U2 {
 
@@ -38,18 +38,19 @@ class LogCache;
 class LogMessage;
 class LogFilter;
 
-class SearchHighlighter: public QSyntaxHighlighter {
+class SearchHighlighter : public QSyntaxHighlighter {
 public:
-    SearchHighlighter(QTextDocument *doc): QSyntaxHighlighter(doc) {}
+    SearchHighlighter(QTextDocument *doc)
+        : QSyntaxHighlighter(doc) {
+    }
 
     QRegExp reg_exp;
     void highlightBlock(const QString &text);
 };
 
-
 enum LogViewSearchBoxMode {
     LogViewSearchBox_Visible,
-    LogViewSearchBox_Auto, //TODO: not supported today
+    LogViewSearchBox_Auto,    //TODO: not supported today
     LogViewSearchBox_Hidden
 };
 
@@ -60,31 +61,31 @@ public:
         only from categories listed in categoriesFilter
         LogSettings are ignored in this case
      */
-    LogViewWidget(LogCache* c);
-    LogViewWidget(const LogFilter& filter);
+    LogViewWidget(LogCache *c);
+    LogViewWidget(const LogFilter &filter);
     ~LogViewWidget();
 
-    bool isShown(const LogMessage& msg);
-    bool isShown(const QString& txt);
+    bool isShown(const LogMessage &msg);
+    bool isShown(const QString &txt);
     /** returns first category in the msg.categories that match 'show-filter' criteria*/
-    QString getEffectiveCategory(const LogMessage& msg) const;
+    QString getEffectiveCategory(const LogMessage &msg) const;
 
-    virtual void setSettings(const LogSettings& s); 
+    virtual void setSettings(const LogSettings &s);
 
     void setSearchBoxMode(LogViewSearchBoxMode mode);
 
-    virtual void onMessage(const LogMessage& msg);
+    virtual void onMessage(const LogMessage &msg);
 
 protected:
-    void addMessage(const LogMessage& msg);
-    void addText(const QString& text);
+    void addMessage(const LogMessage &msg);
+    void addText(const QString &text);
     void showEvent(QShowEvent *e);
     void hideEvent(QHideEvent *e);
     void resetView();
 
 private slots:
     void sl_showNewMessages();
-    void sl_onTextEdited(const QString& text);
+    void sl_onTextEdited(const QString &text);
     void popupMenu(const QPoint &pos);
     void sl_openSettingsDialog();
     void sl_dumpCounters();
@@ -96,27 +97,27 @@ private slots:
     void useRegExp();
 
 private:
-    QString prepareText(const LogMessage& msg) const;
+    QString prepareText(const LogMessage &msg) const;
     void init();
     bool eventFilter(QObject *object, QEvent *event);
 
-    QTimer                   updateViewTimer;
-    QPlainTextEdit*          edit;
-    QLineEdit*               searchEdit;
-    QShortcut*               shortcut;
-    SearchHighlighter*       highlighter;
-    bool                     caseSensitive, useRegexp;
-    
-	int                 messageCounter;
-    LogCache*           cache;
-    QAction*            showViewAction;
-    QAction*            showSettingsAction;
-    QAction*            dumpCountersAction;
-    QAction*            clearAction;
-    QAction*            addSeparatorAction;
-    bool                connected;
+    QTimer updateViewTimer;
+    QPlainTextEdit *edit;
+    QLineEdit *searchEdit;
+    QShortcut *shortcut;
+    SearchHighlighter *highlighter;
+    bool caseSensitive, useRegexp;
+
+    int messageCounter;
+    LogCache *cache;
+    QAction *showViewAction;
+    QAction *showSettingsAction;
+    QAction *dumpCountersAction;
+    QAction *clearAction;
+    QAction *addSeparatorAction;
+    bool connected;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

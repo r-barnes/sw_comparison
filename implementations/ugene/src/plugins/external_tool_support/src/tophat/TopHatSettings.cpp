@@ -19,12 +19,12 @@
  * MA 02110-1301, USA.
  */
 
+#include "TopHatSettings.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/AppResources.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "TopHatSettings.h"
 
 namespace U2 {
 
@@ -32,8 +32,7 @@ const QString TopHatSettings::INDEX = "Index";
 const QString TopHatSettings::SEQUENCE = "Sequence";
 
 TopHatInputData::TopHatInputData()
-: paired(false), fromFiles(false), workflowContext(NULL)
-{
+    : paired(false), fromFiles(false), workflowContext(NULL) {
 }
 
 int TopHatInputData::size() const {
@@ -49,31 +48,32 @@ void TopHatInputData::cleanupReads() {
 
 TopHatSettings::TopHatSettings()
     : mateInnerDistance(0),
-    mateStandardDeviation(0),
-    noNovelJunctions(false),
-    maxMultihits(0),
-    segmentLength(0),
-    fusionSearch(false),
-    transcriptomeOnly(false),
-    transcriptomeMaxHits(0),
-    prefilterMultihits(false),
-    minAnchorLength(0),
-    spliceMismatches(0),
-    readMismatches(0),
-    segmentMismatches(0),
-    solexa13quals(false),
-    bowtieMode(vMode),
-    useBowtie1(false){}
+      mateStandardDeviation(0),
+      noNovelJunctions(false),
+      maxMultihits(0),
+      segmentLength(0),
+      fusionSearch(false),
+      transcriptomeOnly(false),
+      transcriptomeMaxHits(0),
+      prefilterMultihits(false),
+      minAnchorLength(0),
+      spliceMismatches(0),
+      readMismatches(0),
+      segmentMismatches(0),
+      solexa13quals(false),
+      bowtieMode(vMode),
+      useBowtie1(false) {
+}
 
 void TopHatSettings::cleanupReads() {
     data.cleanupReads();
 }
 
-Workflow::WorkflowContext * TopHatSettings::workflowContext() const {
+Workflow::WorkflowContext *TopHatSettings::workflowContext() const {
     return data.workflowContext;
 }
 
-Workflow::DbiDataStorage * TopHatSettings::storage() const {
+Workflow::DbiDataStorage *TopHatSettings::storage() const {
     CHECK(NULL != workflowContext(), NULL);
     return workflowContext()->getDataStorage();
 }
@@ -88,4 +88,4 @@ uint TopHatSettings::getThreadsCount() {
     CHECK(0 != threads, 1);
     return threads;
 }
-}
+}    // namespace U2

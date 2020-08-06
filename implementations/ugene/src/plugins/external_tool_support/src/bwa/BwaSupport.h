@@ -29,12 +29,12 @@ namespace U2 {
 class BwaSupport : public ExternalTool {
     Q_OBJECT
 public:
-    BwaSupport(const QString& id, const QString &name, const QString &path = "");
+    BwaSupport(const QString &id, const QString &name, const QString &path = "");
 
     static const QString ET_BWA;
     static const QString ET_BWA_ID;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_BWA_SUPPORT_H_
+#endif    // _U2_BWA_SUPPORT_H_

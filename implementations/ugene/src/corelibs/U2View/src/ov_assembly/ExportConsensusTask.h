@@ -22,12 +22,12 @@
 #ifndef _U2_EXPORT_CONSENSUS_TASK_H_
 #define _U2_EXPORT_CONSENSUS_TASK_H_
 
-#include "AssemblyConsensusTask.h"
-
 #include <QQueue>
 
 #include <U2Core/DocumentProviderTask.h>
 #include <U2Core/U2SequenceUtils.h>
+
+#include "AssemblyConsensusTask.h"
 
 namespace U2 {
 
@@ -50,11 +50,15 @@ public:
     ExportConsensusTask(const ExportConsensusTaskSettings &settings_);
 
     virtual void prepare();
-    virtual QList<Task*> onSubTaskFinished(Task* subTask);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
 
     // implement ConsensusSettingsQueue interface
-    virtual int count() { return consensusRegions.count(); }
-    virtual bool hasNext() { return ! consensusRegions.isEmpty(); }
+    virtual int count() {
+        return consensusRegions.count();
+    }
+    virtual bool hasNext() {
+        return !consensusRegions.isEmpty();
+    }
     virtual AssemblyConsensusTaskSettings getNextSettings();
     virtual void reportResult(const ConsensusInfo &result);
 
@@ -63,7 +67,7 @@ public:
 private:
     U2Sequence resultSequence;
     ExportConsensusTaskSettings settings;
-    AssemblyConsensusWorker * consensusTask;
+    AssemblyConsensusWorker *consensusTask;
     U2SequenceImporter seqImporter;
 
     // A region to analyze at a time
@@ -73,6 +77,6 @@ private:
     QQueue<U2Region> consensusRegions;
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

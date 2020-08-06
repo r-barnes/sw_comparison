@@ -19,40 +19,46 @@
  * MA 02110-1301, USA.
  */
 
+#include "MysqlSequenceDbi.h"
+
 #include <U2Core/U2DbiPackUtils.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/U2SequenceUtils.h>
 
 #include "MysqlObjectDbi.h"
-#include "MysqlSequenceDbi.h"
 #include "util/MysqlHelpers.h"
 #include "util/MysqlModificationAction.h"
 
 namespace U2 {
 
-MysqlSequenceDbi::MysqlSequenceDbi(MysqlDbi* dbi) :
-    U2SequenceDbi(dbi),
-    MysqlChildDbiCommon(dbi)
-{
+MysqlSequenceDbi::MysqlSequenceDbi(MysqlDbi *dbi)
+    : U2SequenceDbi(dbi),
+      MysqlChildDbiCommon(dbi) {
 }
 
-void MysqlSequenceDbi::initSqlSchema(U2OpStatus& os) {
+void MysqlSequenceDbi::initSqlSchema(U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
     // sequence object
     U2SqlQuery("CREATE TABLE Sequence (object BIGINT PRIMARY KEY, length BIGINT NOT NULL DEFAULT 0, alphabet TEXT NOT NULL, "
-                            "circular TINYINT NOT NULL DEFAULT 0, "
-                             "FOREIGN KEY(object) REFERENCES Object(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8", db, os).execute();
+               "circular TINYINT NOT NULL DEFAULT 0, "
+               "FOREIGN KEY(object) REFERENCES Object(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8",
+               db,
+               os)
+        .execute();
 
     // part of the sequence, starting with 'sstart'(inclusive) and ending at 'send'(not inclusive)
     U2SqlQuery("CREATE TABLE SequenceData (sequence BIGINT, sstart BIGINT NOT NULL, send BIGINT NOT NULL, data LONGBLOB NOT NULL, "
-        "FOREIGN KEY(sequence) REFERENCES Sequence(object) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8", db, os).execute();
+               "FOREIGN KEY(sequence) REFERENCES Sequence(object) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8",
+               db,
+               os)
+        .execute();
 
     U2SqlQuery("CREATE INDEX SequenceData_sequence_region on SequenceData(sstart, send)", db, os).execute();
 }
 
-U2Sequence MysqlSequenceDbi::getSequenceObject(const U2DataId& sequenceId, U2OpStatus& os) {
+U2Sequence MysqlSequenceDbi::getSequenceObject(const U2DataId &sequenceId, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -76,7 +82,7 @@ U2Sequence MysqlSequenceDbi::getSequenceObject(const U2DataId& sequenceId, U2OpS
     return res;
 }
 
-QByteArray MysqlSequenceDbi::getSequenceData(const U2DataId& sequenceId, const U2Region& region, U2OpStatus& os) {
+QByteArray MysqlSequenceDbi::getSequenceData(const U2DataId &sequenceId, const U2Region &region, U2OpStatus &os) {
     try {
         QByteArray res;
 
@@ -88,7 +94,7 @@ QByteArray MysqlSequenceDbi::getSequenceData(const U2DataId& sequenceId, const U
 
         // Get all chunks that intersect the region
         static const QString queryString = "SELECT sstart, send, data FROM SequenceData "
-            "WHERE sequence = :id AND send >= :startPos AND sstart < :endPos ORDER BY sstart";
+                                           "WHERE sequence = :id AND send >= :startPos AND sstart < :endPos ORDER BY sstart";
         U2SqlQuery q(queryString, db, os);
 
         q.bindDataId(":id", sequenceId);
@@ -109,14 +115,14 @@ QByteArray MysqlSequenceDbi::getSequenceData(const U2DataId& sequenceId, const U
             pos += copyLength;
             regionLengthToRead -= copyLength;
             SAFE_POINT_EXT(regionLengthToRead >= 0,
-                os.setError("An error occurred during reading sequence data from dbi."),
-                QByteArray());
+                           os.setError("An error occurred during reading sequence data from dbi."),
+                           QByteArray());
         }
         return res;
     } catch (const std::bad_alloc &) {
 #ifdef UGENE_X86
         os.setError("UGENE ran out of memory during the sequence processing. "
-            "The 32-bit UGENE version has a restriction on its memory consumption. Try using the 64-bit version instead.");
+                    "The 32-bit UGENE version has a restriction on its memory consumption. Try using the 64-bit version instead.");
 #else
         os.setError("Out of memory during the sequence processing.");
 #endif
@@ -128,7 +134,7 @@ QByteArray MysqlSequenceDbi::getSequenceData(const U2DataId& sequenceId, const U
     }
 }
 
-void MysqlSequenceDbi::createSequenceObject(U2Sequence& sequence, const QString& folder, U2OpStatus& os, U2DbiObjectRank rank) {
+void MysqlSequenceDbi::createSequenceObject(U2Sequence &sequence, const QString &folder, U2OpStatus &os, U2DbiObjectRank rank) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -144,7 +150,7 @@ void MysqlSequenceDbi::createSequenceObject(U2Sequence& sequence, const QString&
     q.insert();
 }
 
-void MysqlSequenceDbi::updateSequenceObject(U2Sequence& sequence, U2OpStatus& os) {
+void MysqlSequenceDbi::updateSequenceObject(U2Sequence &sequence, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -166,11 +172,11 @@ namespace {
 
 #define SEQUENCE_CHUNK_SIZE (64 * 1024)
 
-static QList<QByteArray> quantify(const QList<QByteArray>& input) {
+static QList<QByteArray> quantify(const QList<QByteArray> &input) {
     QList<QByteArray> res;
     QByteArray currentChunk;
 
-    foreach (const QByteArray& i, input) {
+    foreach (const QByteArray &i, input) {
         int bytes2Chunk = SEQUENCE_CHUNK_SIZE - currentChunk.length();
         if (i.length() <= bytes2Chunk) {
             // if 'i' fits into chunk - just add it
@@ -195,16 +201,16 @@ static QList<QByteArray> quantify(const QList<QByteArray>& input) {
         }
     }
 
-    if (!currentChunk.isEmpty())  {
+    if (!currentChunk.isEmpty()) {
         res.append(currentChunk);
     }
 
     return res;
 }
 
-}   // unnamed namespace
+}    // unnamed namespace
 
-void MysqlSequenceDbi::updateSequenceData(const U2DataId& sequenceId, const U2Region& regionToReplace, const QByteArray& dataToInsert, const QVariantMap &hints, U2OpStatus& os) {
+void MysqlSequenceDbi::updateSequenceData(const U2DataId &sequenceId, const U2Region &regionToReplace, const QByteArray &dataToInsert, const QVariantMap &hints, U2OpStatus &os) {
     updateSequenceData(sequenceId, sequenceId, regionToReplace, dataToInsert, hints, os);
 }
 
@@ -222,9 +228,7 @@ void MysqlSequenceDbi::updateSequenceData(const U2DataId &masterId, const U2Data
     updateAction.complete(os);
 }
 
-void MysqlSequenceDbi::updateSequenceData(MysqlModificationAction& updateAction, const U2DataId& sequenceId, const U2Region& regionToReplace,
-    const QByteArray& dataToInsert, const QVariantMap &hints, U2OpStatus& os)
-{
+void MysqlSequenceDbi::updateSequenceData(MysqlModificationAction &updateAction, const U2DataId &sequenceId, const U2Region &regionToReplace, const QByteArray &dataToInsert, const QVariantMap &hints, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -242,7 +246,7 @@ void MysqlSequenceDbi::updateSequenceData(MysqlModificationAction& updateAction,
     updateAction.addModification(sequenceId, U2ModType::sequenceUpdatedData, modDetails, os);
 }
 
-void MysqlSequenceDbi::undo(const U2DataId& seqId, qint64 modType, const QByteArray& modDetails, U2OpStatus& os) {
+void MysqlSequenceDbi::undo(const U2DataId &seqId, qint64 modType, const QByteArray &modDetails, U2OpStatus &os) {
     if (U2ModType::sequenceUpdatedData == modType) {
         undoUpdateSequenceData(seqId, modDetails, os);
     } else {
@@ -251,7 +255,7 @@ void MysqlSequenceDbi::undo(const U2DataId& seqId, qint64 modType, const QByteAr
     }
 }
 
-void MysqlSequenceDbi::redo(const U2DataId& seqId, qint64 modType, const QByteArray& modDetails, U2OpStatus& os) {
+void MysqlSequenceDbi::redo(const U2DataId &seqId, qint64 modType, const QByteArray &modDetails, U2OpStatus &os) {
     if (U2ModType::sequenceUpdatedData == modType) {
         redoUpdateSequenceData(seqId, modDetails, os);
     } else {
@@ -263,16 +267,16 @@ void MysqlSequenceDbi::redo(const U2DataId& seqId, qint64 modType, const QByteAr
 /************************************************************************/
 /* Core methods */
 /************************************************************************/
-void MysqlSequenceDbi::updateSequenceDataCore(const U2DataId& sequenceId, const U2Region& regionToReplace, const QByteArray& dataToInsert, const QVariantMap &hints, U2OpStatus& os) {
+void MysqlSequenceDbi::updateSequenceDataCore(const U2DataId &sequenceId, const U2Region &regionToReplace, const QByteArray &dataToInsert, const QVariantMap &hints, U2OpStatus &os) {
     bool updateLenght = hints.value(U2SequenceDbiHints::UPDATE_SEQUENCE_LENGTH, true).toBool();
     bool emptySequence = hints.value(U2SequenceDbiHints::EMPTY_SEQUENCE, false).toBool();
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
     //algorithm:
-        // find all regions affected -> remove them
-        // construct new regions from cuts from old regions and new dataToInsert
-        // remove affected annotations or adjust their locations if possible
+    // find all regions affected -> remove them
+    // construct new regions from cuts from old regions and new dataToInsert
+    // remove affected annotations or adjust their locations if possible
 
     // find cropped parts
     QByteArray leftCrop;
@@ -344,7 +348,7 @@ void MysqlSequenceDbi::updateSequenceDataCore(const U2DataId& sequenceId, const 
 
     static const QString insertString = "INSERT INTO SequenceData(sequence, sstart, send, data) VALUES(:sequence, :sstart, :send, :data)";
     U2SqlQuery insertQ(insertString, db, os);
-    foreach (const QByteArray& d, newDataToInsert) {
+    foreach (const QByteArray &d, newDataToInsert) {
         insertQ.bindDataId(":sequence", sequenceId);
         insertQ.bindInt64(":sstart", startPos);
         insertQ.bindInt64(":send", startPos + d.length());
@@ -380,7 +384,7 @@ void MysqlSequenceDbi::updateSequenceDataCore(const U2DataId& sequenceId, const 
 /************************************************************************/
 /* Undo/redo methods */
 /************************************************************************/
-void MysqlSequenceDbi::undoUpdateSequenceData(const U2DataId& sequenceId, const QByteArray& modDetails, U2OpStatus& os) {
+void MysqlSequenceDbi::undoUpdateSequenceData(const U2DataId &sequenceId, const QByteArray &modDetails, U2OpStatus &os) {
     U2Region replacedRegion;
     U2Region replacedByRegion;
     QByteArray oldData;
@@ -395,7 +399,7 @@ void MysqlSequenceDbi::undoUpdateSequenceData(const U2DataId& sequenceId, const 
     updateSequenceDataCore(sequenceId, replacedByRegion, oldData, hints, os);
 }
 
-void MysqlSequenceDbi::redoUpdateSequenceData(const U2DataId& sequenceId, const QByteArray& modDetails, U2OpStatus& os) {
+void MysqlSequenceDbi::redoUpdateSequenceData(const U2DataId &sequenceId, const QByteArray &modDetails, U2OpStatus &os) {
     U2Region replacedRegion;
     U2Region replacedByRegion;
     QByteArray oldData;
@@ -409,4 +413,4 @@ void MysqlSequenceDbi::redoUpdateSequenceData(const U2DataId& sequenceId, const 
     updateSequenceDataCore(sequenceId, replacedRegion, newData, hints, os);
 }
 
-}   // namespace U2
+}    // namespace U2

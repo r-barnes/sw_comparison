@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ConductGOWorker.h"
+
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/FailTask.h>
 #include <U2Core/L10n.h>
@@ -39,7 +41,6 @@
 #include <U2Lang/WorkflowMonitor.h>
 
 #include "ConductGOSupport.h"
-#include "ConductGOWorker.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -56,15 +57,11 @@ static const QString OUTPUT_DIR("output-dir");
 static const QString TITLE("title");
 static const QString GENE_UNIVERSE("gene-universe");
 
-
 /************************************************************************/
 /* Worker */
 /************************************************************************/
 ConductGOWorker::ConductGOWorker(Actor *p)
-: BaseWorker(p)
-, inChannel(NULL)
-{
-
+    : BaseWorker(p), inChannel(NULL) {
 }
 
 void ConductGOWorker::init() {
@@ -85,28 +82,27 @@ Task *ConductGOWorker::tick() {
 
         ConductGOSettings settings = createConductGOSettings(data[ANNOT_SLOT_ID].toString());
 
-        ConductGOTask* t = new ConductGOTask(settings);
+        ConductGOTask *t = new ConductGOTask(settings);
         t->addListeners(createLogListeners());
         connect(t, SIGNAL(si_stateChanged()), SLOT(sl_taskFinished()));
         return t;
-    }else if (inChannel->isEnded()) {
+    } else if (inChannel->isEnded()) {
         setDone();
     }
     return NULL;
 }
 
 void ConductGOWorker::cleanup() {
-
 }
 
 void ConductGOWorker::sl_taskFinished() {
-    ConductGOTask *t = dynamic_cast<ConductGOTask*>(sender());
+    ConductGOTask *t = dynamic_cast<ConductGOTask *>(sender());
     if (!t->isFinished() || t->hasError() || t->isCanceled()) {
         return;
     }
 
-    const QStringList& resFileNames = t->getResultFileNames();
-    foreach(const QString& fn, resFileNames){
+    const QStringList &resFileNames = t->getResultFileNames();
+    foreach (const QString &fn, resFileNames) {
         QString url = t->getSettings().outDir + "/" + fn;
         context->getMonitor()->addOutputFile(url, getActor()->getId(), QFileInfo(url).suffix() == "html");
     }
@@ -131,71 +127,66 @@ ConductGOSettings ConductGOWorker::createConductGOSettings(const QString &treatU
 /* Factory */
 /************************************************************************/
 
-
 void ConductGOWorkerFactory::init() {
-    QList<PortDescriptor*> portDescs;
+    QList<PortDescriptor *> portDescs;
 
     //in port
     QMap<Descriptor, DataTypePtr> inTypeMap;
     Descriptor treatDesc(ANNOT_SLOT_ID,
-        ConductGOWorker::tr("Target genes"),
-        ConductGOWorker::tr("URL to file with genes to identify over represented GO terms."));
+                         ConductGOWorker::tr("Target genes"),
+                         ConductGOWorker::tr("URL to file with genes to identify over represented GO terms."));
     inTypeMap[treatDesc] = BaseTypes::STRING_TYPE();
 
     Descriptor inPortDesc(IN_PORT_DESCR,
-        ConductGOWorker::tr("Conduct GO data"),
-        ConductGOWorker::tr("URL to file with genes to identify over represented GO terms."));
+                          ConductGOWorker::tr("Conduct GO data"),
+                          ConductGOWorker::tr("URL to file with genes to identify over represented GO terms."));
 
     DataTypePtr inTypeSet(new MapDataType(IN_TYPE_ID, inTypeMap));
     portDescs << new PortDescriptor(inPortDesc, inTypeSet, true);
 
-    QList<Attribute*> attrs;
+    QList<Attribute *> attrs;
     {
-         Descriptor outDir(OUTPUT_DIR,
-             ConductGOWorker::tr("Output folder"),
-             ConductGOWorker::tr("The folder to store Conduct GO results."));
-         Descriptor titleDescr(TITLE,
-             ConductGOWorker::tr("Title"),
-             ConductGOWorker::tr("Title is used to name the output files - so make it meaningful."));
-         Descriptor guDescr(GENE_UNIVERSE,
-             ConductGOWorker::tr("Gene Universe"),
-             ConductGOWorker::tr("Select a gene universe."));
-
+        Descriptor outDir(OUTPUT_DIR,
+                          ConductGOWorker::tr("Output folder"),
+                          ConductGOWorker::tr("The folder to store Conduct GO results."));
+        Descriptor titleDescr(TITLE,
+                              ConductGOWorker::tr("Title"),
+                              ConductGOWorker::tr("Title is used to name the output files - so make it meaningful."));
+        Descriptor guDescr(GENE_UNIVERSE,
+                           ConductGOWorker::tr("Gene Universe"),
+                           ConductGOWorker::tr("Select a gene universe."));
 
         attrs << new Attribute(outDir, BaseTypes::STRING_TYPE(), true, QVariant(""));
         attrs << new Attribute(titleDescr, BaseTypes::STRING_TYPE(), true, QVariant("Default"));
         attrs << new Attribute(guDescr, BaseTypes::STRING_TYPE(), true, ConductGOSettings::UNIVERSE_HGU133A);
     }
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
-          delegates[OUTPUT_DIR] = new URLDelegate("", "", false, true);
+        delegates[OUTPUT_DIR] = new URLDelegate("", "", false, true);
 
+        {
+            QVariantMap vm;
 
-          {
-              QVariantMap vm;
+            vm[ConductGOSettings::UNIVERSE_HGU133A] = ConductGOSettings::UNIVERSE_HGU133A;
+            vm[ConductGOSettings::UNIVERSE_HGU133B] = ConductGOSettings::UNIVERSE_HGU133B;
+            vm[ConductGOSettings::UNIVERSE_HGU133PLUS2] = ConductGOSettings::UNIVERSE_HGU133PLUS2;
+            vm[ConductGOSettings::UNIVERSE_HGU95AV2] = ConductGOSettings::UNIVERSE_HGU95AV2;
+            vm[ConductGOSettings::UNIVERSE_MOUSE_430a2] = ConductGOSettings::UNIVERSE_MOUSE_430a2;
+            vm[ConductGOSettings::UNIVERSE_CELEGANS] = ConductGOSettings::UNIVERSE_CELEGANS;
+            vm[ConductGOSettings::UNIVERSE_DROSOPHILA2] = ConductGOSettings::UNIVERSE_DROSOPHILA2;
+            vm[ConductGOSettings::UNIVERSE_ORG_HS_EG] = ConductGOSettings::UNIVERSE_ORG_HS_EG;
+            vm[ConductGOSettings::UNIVERSE_ORG_MM_EG] = ConductGOSettings::UNIVERSE_ORG_MM_EG;
+            vm[ConductGOSettings::UNIVERSE_ORG_CE_EG] = ConductGOSettings::UNIVERSE_ORG_CE_EG;
+            vm[ConductGOSettings::UNIVERSE_ORG_DM_EG] = ConductGOSettings::UNIVERSE_ORG_DM_EG;
 
-              vm[ConductGOSettings::UNIVERSE_HGU133A] = ConductGOSettings::UNIVERSE_HGU133A;
-              vm[ConductGOSettings::UNIVERSE_HGU133B] = ConductGOSettings::UNIVERSE_HGU133B;
-              vm[ConductGOSettings::UNIVERSE_HGU133PLUS2] = ConductGOSettings::UNIVERSE_HGU133PLUS2;
-              vm[ConductGOSettings::UNIVERSE_HGU95AV2] = ConductGOSettings::UNIVERSE_HGU95AV2;
-              vm[ConductGOSettings::UNIVERSE_MOUSE_430a2] = ConductGOSettings::UNIVERSE_MOUSE_430a2;
-              vm[ConductGOSettings::UNIVERSE_CELEGANS] = ConductGOSettings::UNIVERSE_CELEGANS;
-              vm[ConductGOSettings::UNIVERSE_DROSOPHILA2] = ConductGOSettings::UNIVERSE_DROSOPHILA2;
-              vm[ConductGOSettings::UNIVERSE_ORG_HS_EG] = ConductGOSettings::UNIVERSE_ORG_HS_EG;
-              vm[ConductGOSettings::UNIVERSE_ORG_MM_EG] = ConductGOSettings::UNIVERSE_ORG_MM_EG;
-              vm[ConductGOSettings::UNIVERSE_ORG_CE_EG] = ConductGOSettings::UNIVERSE_ORG_CE_EG;
-              vm[ConductGOSettings::UNIVERSE_ORG_DM_EG] = ConductGOSettings::UNIVERSE_ORG_DM_EG;
-
-              delegates[GENE_UNIVERSE] = new ComboBoxDelegate(vm);
-          }
-
-
+            delegates[GENE_UNIVERSE] = new ComboBoxDelegate(vm);
+        }
     }
 
     Descriptor protoDesc(ConductGOWorkerFactory::ACTOR_ID,
-    ConductGOWorker::tr("Conduct GO"),
-    ConductGOWorker::tr("Given a list of genes, using Bioconductor (GO, GOstats) and  DAVID at NIH."));
+                         ConductGOWorker::tr("Conduct GO"),
+                         ConductGOWorker::tr("Given a list of genes, using Bioconductor (GO, GOstats) and  DAVID at NIH."));
 
     ActorPrototype *proto = new IntegralBusActorPrototype(protoDesc, portDescs, attrs);
     proto->setPrompter(new ConductGOPrompter());
@@ -212,9 +203,9 @@ Worker *ConductGOWorkerFactory::createWorker(Actor *a) {
 QString ConductGOPrompter::composeRichDoc() {
     QString res = "";
 
-    Actor* annProducer = qobject_cast<IntegralBusPort*>(target->getPort(IN_PORT_DESCR))->getProducer(ANNOT_SLOT_ID);
+    Actor *annProducer = qobject_cast<IntegralBusPort *>(target->getPort(IN_PORT_DESCR))->getProducer(ANNOT_SLOT_ID);
 
-    QString unsetStr = "<font color='red'>"+tr("unset")+"</font>";
+    QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
     QString annUrl = annProducer ? annProducer->getLabel() : unsetStr;
 
     QString dir = getHyperlink(OUTPUT_DIR, getURL(OUTPUT_DIR));
@@ -227,5 +218,5 @@ QString ConductGOPrompter::composeRichDoc() {
     return res;
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

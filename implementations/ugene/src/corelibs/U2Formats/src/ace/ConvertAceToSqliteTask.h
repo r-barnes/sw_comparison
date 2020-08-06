@@ -51,7 +51,7 @@ private:
     const GUrl sourceUrl;
 
     U2DbiRef dstDbiRef;
-    U2Dbi* dbi;
+    U2Dbi *dbi;
 
     bool databaseWasCreated;
     int countImportedAssembly;
@@ -61,6 +61,6 @@ private:
     QMap<int, U2Sequence> importedReferences;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_CONVERT_ACE_TO_SQLITE_TASK_H_
+#endif    // _U2_CONVERT_ACE_TO_SQLITE_TASK_H_

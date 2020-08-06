@@ -22,9 +22,10 @@
 #ifndef _U2_BIOSTRUCT3D_OBJECT_TESTS_H_
 #define _U2_BIOSTRUCT3D_OBJECT_TESTS_H_
 
-#include <U2Test/XMLTestUtils.h>
 #include <QDomElement>
 #include <QHash>
+
+#include <U2Test/XMLTestUtils.h>
 
 namespace U2 {
 
@@ -32,93 +33,83 @@ class Document;
 
 class GTest_BioStruct3DNumberOfAtoms : public XmlTest {
     Q_OBJECT
-        SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_BioStruct3DNumberOfAtoms, "check-biostruct3d-number-of-atoms");
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_BioStruct3DNumberOfAtoms, "check-biostruct3d-number-of-atoms");
 
     ReportResult report();
 
     QString objContextName;
     int numAtoms;
-
 };
 
 class GTest_BioStruct3DNumberOfChains : public XmlTest {
     Q_OBJECT
-        SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_BioStruct3DNumberOfChains, "check-biostruct3d-number-of-chains");
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_BioStruct3DNumberOfChains, "check-biostruct3d-number-of-chains");
 
     ReportResult report();
 
     QString objContextName;
-    int     numChains;
+    int numChains;
 };
-
 
 class GTest_BioStruct3DAtomCoordinates : public XmlTest {
     Q_OBJECT
-        SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_BioStruct3DAtomCoordinates, "check-biostruct3d-atom-coords");
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_BioStruct3DAtomCoordinates, "check-biostruct3d-atom-coords");
 
     ReportResult report();
 
     QString objContextName;
-    double  x,y,z;
-    int     atomId;
-    int     modelId;
-
+    double x, y, z;
+    int atomId;
+    int modelId;
 };
 
 class GTest_BioStruct3DAtomChainIndex : public XmlTest {
     Q_OBJECT
-        SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_BioStruct3DAtomChainIndex, "check-biostruct3d-atom-chain-id");
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_BioStruct3DAtomChainIndex, "check-biostruct3d-atom-chain-id");
 
     ReportResult report();
 
     QString objContextName;
-    int     chainId;
-    int     atomId;
-    int     modelId;
-
+    int chainId;
+    int atomId;
+    int modelId;
 };
 
 class GTest_BioStruct3DAtomResidueName : public XmlTest {
     Q_OBJECT
-        SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_BioStruct3DAtomResidueName, "check-biostruct3d-atom-residue-name");
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_BioStruct3DAtomResidueName, "check-biostruct3d-atom-residue-name");
 
     ReportResult report();
 
     QString objContextName;
     QString residueName;
-    int     atomId;
-    int     modelId;
-
+    int atomId;
+    int modelId;
 };
-
 
 class GTest_PDBFormatStressTest : public XmlTest {
     Q_OBJECT
-        SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_PDBFormatStressTest, "try-load-all-pdb-documents");
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_PDBFormatStressTest, "try-load-all-pdb-documents");
 
     ReportResult report();
-    QList<Task*> onSubTaskFinished(Task* subTask);
-    QHash<Task*, QString>   fileNames;
+    QList<Task *> onSubTaskFinished(Task *subTask);
+    QHash<Task *, QString> fileNames;
 };
-
 
 class GTest_ASNFormatStressTest : public XmlTest {
     Q_OBJECT
-        SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_ASNFormatStressTest, "try-load-all-mmdb-documents");
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_ASNFormatStressTest, "try-load-all-mmdb-documents");
 
     ReportResult report();
-    QList<Task*> onSubTaskFinished(Task* subTask);
-    QHash<Task*, QString>   fileNames;
+    QList<Task *> onSubTaskFinished(Task *subTask);
+    QHash<Task *, QString> fileNames;
 };
-
 
 class BioStruct3DObjectTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
+}    // namespace U2
 
-
-}//namespace
-
-#endif //_U2_BIOSTRUCT3D_OBJECT_TESTS_H_
+#endif    //_U2_BIOSTRUCT3D_OBJECT_TESTS_H_

@@ -22,58 +22,72 @@
 #ifndef _U2_LOG_H_
 #define _U2_LOG_H_
 
-#include <U2Core/global.h>
-
 #include <QMetaType>
 #include <QMutex>
-#include <QTime>
 #include <QStringList>
+#include <QTime>
+
+#include <U2Core/global.h>
 
 namespace U2 {
 
-enum LogLevel { LogLevel_TRACE, LogLevel_DETAILS, LogLevel_INFO, LogLevel_ERROR, LogLevel_NumLevels};
+enum LogLevel { LogLevel_TRACE,
+                LogLevel_DETAILS,
+                LogLevel_INFO,
+                LogLevel_ERROR,
+                LogLevel_NumLevels };
 
 class U2CORE_EXPORT LogMessage {
 public:
-    LogMessage() {}
-    LogMessage(const QStringList& cat, LogLevel l, const QString& m);
+    LogMessage() {
+    }
+    LogMessage(const QStringList &cat, LogLevel l, const QString &m);
 
     QStringList categories;
-    LogLevel    level;
-    QString     text;
-    qint64      time; //time in microseconds from Unix Epoch (UTC). See Timer.h
+    LogLevel level;
+    QString text;
+    qint64 time;    //time in microseconds from Unix Epoch (UTC). See Timer.h
 };
-
 
 class U2CORE_EXPORT Logger {
 public:
-    Logger(const QString& category1);
-    Logger(const QString& category1, const QString& category2);
-    Logger(const QString& category1, const QString& category2, const QString& category3);
-    Logger(const QString& category1, const QString& category2, const QString& category3, const QString& category4);
-    Logger(const QStringList& categoryNames);
+    Logger(const QString &category1);
+    Logger(const QString &category1, const QString &category2);
+    Logger(const QString &category1, const QString &category2, const QString &category3);
+    Logger(const QString &category1, const QString &category2, const QString &category3, const QString &category4);
+    Logger(const QStringList &categoryNames);
 
     virtual ~Logger();
 
-    static void log(LogLevel level, const QString& message, const QString& category);
+    static void log(LogLevel level, const QString &message, const QString &category);
 
-    static void log(LogLevel level, const QString& message, const QStringList& categoryies);
+    static void log(LogLevel level, const QString &message, const QStringList &categoryies);
 
-    virtual void message(LogLevel level, const QString& msg);
+    virtual void message(LogLevel level, const QString &msg);
 
-    void message(LogLevel level, const QString& msg, const QString& extraCategory);
+    void message(LogLevel level, const QString &msg, const QString &extraCategory);
 
-    void message(LogLevel level, const QString& msg, const QStringList& extraCategories);
+    void message(LogLevel level, const QString &msg, const QStringList &extraCategories);
 
-    void trace(const QString& msg)  { message(LogLevel_TRACE, msg);}
+    void trace(const QString &msg) {
+        message(LogLevel_TRACE, msg);
+    }
 
-    void details(const QString& msg)  { message(LogLevel_DETAILS, msg);}
+    void details(const QString &msg) {
+        message(LogLevel_DETAILS, msg);
+    }
 
-    void info(const QString& msg)  { message(LogLevel_INFO, msg);}
+    void info(const QString &msg) {
+        message(LogLevel_INFO, msg);
+    }
 
-    void error(const QString& msg)  { message(LogLevel_ERROR, msg);}
+    void error(const QString &msg) {
+        message(LogLevel_ERROR, msg);
+    }
 
-    const QStringList& getCategories() const {return categoryNames;}
+    const QStringList &getCategories() const {
+        return categoryNames;
+    }
 
 protected:
     void init();
@@ -82,54 +96,54 @@ protected:
 
 class U2CORE_EXPORT LogListener {
 public:
-    virtual void onMessage(const LogMessage& m) = 0;
+    virtual void onMessage(const LogMessage &m) = 0;
 };
-
 
 class U2CORE_EXPORT LogServer : public QObject {
     Q_OBJECT
     friend class Logger;
     friend class UiLogger;
+
 public:
     LogServer();
-    static LogServer* getInstance();
-    const QList<Logger*>& getLoggers() const {return loggers;}
+    static LogServer *getInstance();
+    const QList<Logger *> &getLoggers() const {
+        return loggers;
+    }
     QStringList getCategories() const;
 
-    void addListener(LogListener* listner);
-    void removeListener(LogListener* listener);
+    void addListener(LogListener *listner);
+    void removeListener(LogListener *listener);
 
 private:
-    void message(const LogMessage& m);
-    void message(const LogMessage& m, LogListener* listener);
+    void message(const LogMessage &m);
+    void message(const LogMessage &m, LogListener *listener);
 
-    QList<Logger*> loggers;
-    QList<LogListener*> listeners;
+    QList<Logger *> loggers;
+    QList<LogListener *> listeners;
     QMutex listenerMutex;
 };
-
 
 //TODO: support log category translation + use log category ids instead of the names in code
 
 // Log category for algorithms and computing details
-#define ULOG_CAT_ALGORITHM          "Algorithms"
+#define ULOG_CAT_ALGORITHM "Algorithms"
 // Log category for console output
-#define ULOG_CAT_CONSOLE            "Console"
+#define ULOG_CAT_CONSOLE "Console"
 // Log category for core service (internal model events)
-#define ULOG_CAT_CORE_SERVICES      "Core Services"
+#define ULOG_CAT_CORE_SERVICES "Core Services"
 // Log category for IO events
-#define ULOG_CAT_IO                 "Input/Output"
+#define ULOG_CAT_IO "Input/Output"
 // Log category for performance tracking
-#define ULOG_CAT_PERFORMANCE        "Performance"
+#define ULOG_CAT_PERFORMANCE "Performance"
 // Log category for scripting related logs
-#define ULOG_CAT_SCRIPTS            "Scripts"
+#define ULOG_CAT_SCRIPTS "Scripts"
 // Log category for task machinery related logs
-#define ULOG_CAT_TASKS              "Tasks"
+#define ULOG_CAT_TASKS "Tasks"
 // Log category for UI related events
-#define ULOG_CAT_USER_INTERFACE     "User Interface"
+#define ULOG_CAT_USER_INTERFACE "User Interface"
 // Log category for user's actions
-#define ULOG_CAT_USER_ACTIONS    "User Actions"
-
+#define ULOG_CAT_USER_ACTIONS "User Actions"
 
 static Logger algoLog(ULOG_CAT_ALGORITHM);
 static Logger cmdLog(ULOG_CAT_CONSOLE);
@@ -141,11 +155,8 @@ static Logger taskLog(ULOG_CAT_TASKS);
 static Logger uiLog(ULOG_CAT_USER_INTERFACE);
 static Logger userActLog(ULOG_CAT_USER_ACTIONS);
 
+}    // namespace U2
 
-}//namespace
-
-Q_DECLARE_METATYPE( U2::LogMessage )
-
+Q_DECLARE_METATYPE(U2::LogMessage)
 
 #endif
-

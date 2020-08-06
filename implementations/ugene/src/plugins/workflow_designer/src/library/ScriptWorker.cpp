@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ScriptWorker.h"
+
 #include <QScriptEngineDebugger>
 
 #include <U2Core/AppContext.h>
@@ -46,8 +48,6 @@
 #include <U2Lang/SequencePrototype.h>
 #include <U2Lang/WorkflowEnv.h>
 
-#include "ScriptWorker.h"
-
 namespace U2 {
 namespace LocalWorkflow {
 
@@ -60,17 +60,15 @@ static const QString IN_PORT_ID("in");
 static const QString OUT_PORT_ID("out");
 
 ScriptWorkerTask::ScriptWorkerTask(WorkflowScriptEngine *_engine, AttributeScript *_script)
-    : Task(tr("Script worker task"), AppContext::isGUIMode() ? TaskFlag_RunInMainThread
-    : TaskFlag_None), engine(_engine), script(_script)
-{
+    : Task(tr("Script worker task"), AppContext::isGUIMode() ? TaskFlag_RunInMainThread : TaskFlag_None), engine(_engine), script(_script) {
     WorkflowScriptLibrary::initEngine(engine);
 }
 
 void ScriptWorkerTask::run() {
     QMap<QString, QScriptValue> scriptVars;
-    foreach(const Descriptor &key, script->getScriptVars().uniqueKeys()) {
+    foreach (const Descriptor &key, script->getScriptVars().uniqueKeys()) {
         assert(!key.getId().isEmpty());
-        if(!(script->getScriptVars().value(key)).isNull()) {
+        if (!(script->getScriptVars().value(key)).isNull()) {
             scriptVars[key.getId()] = engine->newVariant(script->getScriptVars().value(key));
         } else {
             scriptVars[key.getId()] = engine->newVariant(engine->globalObject().property(key.getId().toLatin1().data()).toVariant());
@@ -84,8 +82,8 @@ void ScriptWorkerTask::run() {
     }
     result = scriptResultValue.toVariant();
 
-    if( stateInfo.cancelFlag ) {
-        if(!stateInfo.hasError()) {
+    if (stateInfo.cancelFlag) {
+        if (!stateInfo.hasError()) {
             stateInfo.setError("Script task canceled");
         }
     }
@@ -95,7 +93,7 @@ QVariant ScriptWorkerTask::getResult() const {
     return result;
 }
 
-WorkflowScriptEngine * ScriptWorkerTask::getEngine() {
+WorkflowScriptEngine *ScriptWorkerTask::getEngine() {
     return engine;
 }
 
@@ -105,7 +103,7 @@ QString ScriptPromter::composeRichDoc() {
 
 bool ScriptWorkerFactory::init(QList<DataTypePtr> input,
                                QList<DataTypePtr> output,
-                               QList<Attribute*> attrs,
+                               QList<Attribute *> attrs,
                                const QString &name,
                                const QString &description,
                                const QString &actorFilePath) {
@@ -116,13 +114,12 @@ bool ScriptWorkerFactory::init(QList<DataTypePtr> input,
     return true;
 }
 
-Worker * ScriptWorkerFactory::createWorker(Actor *a) {
+Worker *ScriptWorkerFactory::createWorker(Actor *a) {
     return new ScriptWorker(a);
 }
 
 ScriptWorker::ScriptWorker(Actor *a)
-: BaseWorker(a), input(NULL), output(NULL), taskFinished(false)
-{
+    : BaseWorker(a), input(NULL), output(NULL), taskFinished(false) {
     script = a->getScript();
     engine = NULL;
 }
@@ -131,7 +128,7 @@ void ScriptWorker::init() {
     input = ports.value(IN_PORT_ID);
     output = ports.value(OUT_PORT_ID);
     engine = new WorkflowScriptEngine(context);
-    if ( AppContext::isGUIMode( ) ) { // add script debugger
+    if (AppContext::isGUIMode()) {    // add script debugger
         engine->setProcessEventsInterval(50);
         QScriptEngineDebugger *scriptDebugger = new QScriptEngineDebugger(engine);
         scriptDebugger->setAutoShowStandardWindow(true);
@@ -140,16 +137,16 @@ void ScriptWorker::init() {
 }
 
 void ScriptWorker::bindPortVariables() {
-    foreach( IntegralBus * bus, ports.values() ) {
+    foreach (IntegralBus *bus, ports.values()) {
         assert(bus != NULL);
-        if(actor->getPort(bus->getPortId())->isOutput()) { // means that it is bus for output port
+        if (actor->getPort(bus->getPortId())->isOutput()) {    // means that it is bus for output port
             continue;
         }
 
         QVariantMap busData = bus->lookMessage().getData().toMap();
-        foreach(const QString & slotId, busData.keys()) {
+        foreach (const QString &slotId, busData.keys()) {
             QString attrId = "in_" + slotId;
-            if( script->hasVarWithId(attrId)) {
+            if (script->hasVarWithId(attrId)) {
                 script->setVarValueWithId(attrId, busData.value(slotId));
             }
         }
@@ -157,11 +154,11 @@ void ScriptWorker::bindPortVariables() {
 }
 
 void ScriptWorker::bindAttributeVariables() {
-    QMap<QString, Attribute*> attrs = actor->getParameters();
-    QMap<QString, Attribute*>::iterator it;
-    for(it = attrs.begin(); it!=attrs.end();it++) {
+    QMap<QString, Attribute *> attrs = actor->getParameters();
+    QMap<QString, Attribute *>::iterator it;
+    for (it = attrs.begin(); it != attrs.end(); it++) {
         Attribute *attr = it.value();
-        if(script->hasVarWithId(attr->getId())) {
+        if (script->hasVarWithId(attr->getId())) {
             script->setVarValueWithId(attr->getId(), attr->getAttributePureValue());
         }
     }
@@ -212,8 +209,8 @@ void ScriptWorker::setDone() {
     }
 }
 
-Task * ScriptWorker::tick() {
-    if(script->isEmpty()) {
+Task *ScriptWorker::tick() {
+    if (script->isEmpty()) {
         coreLog.error(tr("no script text"));
         return new FailTask(tr("no script text"));
     }
@@ -237,7 +234,7 @@ Task * ScriptWorker::tick() {
 
 void ScriptWorker::sl_taskFinished() {
     taskFinished = true;
-    ScriptWorkerTask *t = qobject_cast<ScriptWorkerTask*>(sender());
+    ScriptWorkerTask *t = qobject_cast<ScriptWorkerTask *>(sender());
     if (t->getState() != Task::State_Finished || t->hasError() || t->isCanceled()) {
         return;
     }
@@ -247,7 +244,7 @@ void ScriptWorker::sl_taskFinished() {
     assert(dtr);
     DataTypePtr ptr = dtr->getById(OUTPUT_PORT_TYPE + name);
 
-    if(ptr->getAllDescriptors().size() == 1 && ptr->getAllDescriptors().first().getId() == BaseTypes::MULTIPLE_ALIGNMENT_TYPE()->getId()) {
+    if (ptr->getAllDescriptors().size() == 1 && ptr->getAllDescriptors().first().getId() == BaseTypes::MULTIPLE_ALIGNMENT_TYPE()->getId()) {
         if (input != NULL && !input->isEnded()) {
             return;
         }
@@ -255,7 +252,7 @@ void ScriptWorker::sl_taskFinished() {
 
     QVariantMap map;
     bool hasSeqArray = false;
-    foreach(const Descriptor &desc, ptr->getAllDescriptors()) {
+    foreach (const Descriptor &desc, ptr->getAllDescriptors()) {
         QString varName = "out_" + desc.getId();
         QScriptValue value = t->getEngine()->globalObject().property(varName.toLatin1().data());
         if (BaseSlots::DNA_SEQUENCE_SLOT().getId() == desc.getId()) {
@@ -263,8 +260,7 @@ void ScriptWorker::sl_taskFinished() {
                 hasSeqArray = true;
                 continue;
             }
-            SharedDbiDataHandler seqId = ScriptEngineUtils::getDbiId(t->getEngine(), value,
-                SequenceScriptClass::CLASS_NAME);
+            SharedDbiDataHandler seqId = ScriptEngineUtils::getDbiId(t->getEngine(), value, SequenceScriptClass::CLASS_NAME);
             if (!seqId.constData() || !seqId.constData()->isValid()) {
                 continue;
             }
@@ -277,18 +273,17 @@ void ScriptWorker::sl_taskFinished() {
         if (hasSeqArray) {
             QString varName = "out_" + BaseSlots::DNA_SEQUENCE_SLOT().getId();
             QScriptValue value = t->getEngine()->globalObject().property(varName.toLatin1().data());
-            for (int i=0; i<value.property("length").toInt32(); i++) {
-                SharedDbiDataHandler seqId = ScriptEngineUtils::getDbiId(t->getEngine(), value.property(i),
-                    SequenceScriptClass::CLASS_NAME);
+            for (int i = 0; i < value.property("length").toInt32(); i++) {
+                SharedDbiDataHandler seqId = ScriptEngineUtils::getDbiId(t->getEngine(), value.property(i), SequenceScriptClass::CLASS_NAME);
                 if (seqId.constData() && seqId.constData()->isValid()) {
                     map[BaseSlots::DNA_SEQUENCE_SLOT().getId()] = qVariantFromValue(seqId);
-                    output->put(Message(ptr,map));
+                    output->put(Message(ptr, map));
                 }
             }
         } else {
             QVariant scriptResult = t->getResult();
             if (!map.isEmpty()) {
-                output->put(Message(ptr,map));
+                output->put(Message(ptr, map));
             }
         }
     }
@@ -298,5 +293,5 @@ void ScriptWorker::cleanup() {
     delete engine;
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

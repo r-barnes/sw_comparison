@@ -28,15 +28,20 @@ namespace U2 {
 
 class GraphicsBranchItem;
 
-class CreateBranchesTask: public Task {
+class CreateBranchesTask : public Task {
     Q_OBJECT
 protected:
-    GraphicsBranchItem* root;
+    GraphicsBranchItem *root;
+
 public:
-    CreateBranchesTask(): Task(QObject::tr("Generating tree view"), TaskFlag_None), root(NULL) {}
-    GraphicsBranchItem* getResult() { return root; }
+    CreateBranchesTask()
+        : Task(QObject::tr("Generating tree view"), TaskFlag_None), root(NULL) {
+    }
+    GraphicsBranchItem *getResult() {
+        return root;
+    }
 };
 
-}//namespace;
+}    // namespace U2
 
 #endif

@@ -33,7 +33,7 @@ class HmmerBuildFromFileTask : public ExternalToolSupportTask {
 public:
     HmmerBuildFromFileTask(const HmmerBuildSettings &settigngs, const QString &msaUrl);
 
-    const QString & getHmmProfileUrl() const;
+    const QString &getHmmProfileUrl() const;
 
 private:
     void prepare();
@@ -54,6 +54,6 @@ private:
     const QString msaUrl;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_HMMER_BUILD_FROM_FILE_TASK_H_
+#endif    // _U2_HMMER_BUILD_FROM_FILE_TASK_H_

@@ -24,8 +24,8 @@
 #include <U2Core/AnnotationSettings.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/DNAAlphabet.h>
-#include <U2Core/DNASequenceSelection.h>
 #include <U2Core/DNASequenceObject.h>
+#include <U2Core/DNASequenceSelection.h>
 #include <U2Core/Timer.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
@@ -35,7 +35,6 @@
 #include <U2View/PanViewRows.h>
 
 namespace U2 {
-
 
 const int PanViewRenderer::RULER_NOTCH_SIZE = 2;
 //const int PanViewRenderer::MAX_VISIBLE_ROWS  = 20;
@@ -48,7 +47,7 @@ PanViewRenderer::PanViewRenderer(PanView *panView, SequenceObjectContext *ctx)
     s = panView->getLinesSettings();
 }
 
-qint64 PanViewRenderer::coordToPos(const QPoint &/*p*/, const QSize &/*canvasSize*/, const U2Region &/*visibleRange*/) const {
+qint64 PanViewRenderer::coordToPos(const QPoint & /*p*/, const QSize & /*canvasSize*/, const U2Region & /*visibleRange*/) const {
     FAIL("The method must never be called", -1);
 }
 
@@ -56,7 +55,7 @@ double PanViewRenderer::getCurrentScale() const {
     return double(panView->getRenderArea()->width()) / panView->getVisibleRange().length;
 }
 
-U2Region PanViewRenderer::getAnnotationYRange(Annotation *a, int r, const AnnotationSettings *as, const QSize& canvasSize, const U2Region& visibleRange) const {
+U2Region PanViewRenderer::getAnnotationYRange(Annotation *a, int r, const AnnotationSettings *as, const QSize &canvasSize, const U2Region &visibleRange) const {
     Q_UNUSED(r);
     Q_UNUSED(canvasSize);
     Q_UNUSED(visibleRange);
@@ -73,8 +72,8 @@ U2Region PanViewRenderer::getMirroredYRange(const U2Strand &) const {
     FAIL("Must not be called!", U2Region(-1, 0));
 }
 
-qint64 PanViewRenderer::getContentIndentY(const QSize& canvasSize, const U2Region& /*visibleRange*/) const {
-   return (canvasSize.height() - s->numLines * commonMetrics.lineHeight) / 2;
+qint64 PanViewRenderer::getContentIndentY(const QSize &canvasSize, const U2Region & /*visibleRange*/) const {
+    return (canvasSize.height() - s->numLines * commonMetrics.lineHeight) / 2;
 }
 
 qint64 PanViewRenderer::getMinimumHeight() const {
@@ -88,7 +87,7 @@ QSize PanViewRenderer::getBaseCanvasSize(const U2Region &visibleRange) const {
 
     int firstLastWidth = lastCharCenter - firstCharCenter;
     if (qRound(halfChar) == 0) {
-        firstLastWidth--; // make the end of the ruler visible
+        firstLastWidth--;    // make the end of the ruler visible
     }
 
     PVRowsManager *rm = panView->getRowsManager();
@@ -114,17 +113,17 @@ void PanViewRenderer::drawAll(QPainter &p, const QSize &canvasSize, const U2Regi
 
     GraphUtils::RulerConfig c;
 
-    int hCenter = (int) getContentIndentY(canvasSize, visibleRange);
+    int hCenter = (int)getContentIndentY(canvasSize, visibleRange);
     double halfChar = getCurrentScale() / 2;
     int firstCharCenter = qRound(posToXCoordF(visibleRange.startPos, canvasSize, visibleRange) + halfChar);
     int lastCharCenter = qRound(posToXCoordF(visibleRange.endPos() - 1, canvasSize, visibleRange) + halfChar);
     int firstLastWidth = lastCharCenter - firstCharCenter;
     if (qRound(halfChar) == 0) {
-        firstLastWidth--; // make the end of the ruler visible
+        firstLastWidth--;    // make the end of the ruler visible
     }
     c.notchSize = RULER_NOTCH_SIZE;
     int chunk = GraphUtils::calculateChunk(visibleRange.startPos + 1, visibleRange.endPos(), panView->width(), p);
-    foreach(const RulerInfo& ri, s->customRulers) {
+    foreach (const RulerInfo &ri, s->customRulers) {
         chunk = qMax(chunk, GraphUtils::calculateChunk(visibleRange.startPos + 1 - ri.offset, visibleRange.endPos() - ri.offset, panView->width(), p));
     }
     c.predefinedChunk = chunk;
@@ -143,7 +142,7 @@ void PanViewRenderer::drawAll(QPainter &p, const QSize &canvasSize, const U2Regi
 }
 
 void PanViewRenderer::drawSelection(QPainter &p, const QSize &canvasSize, const U2Region &visibleRange) {
-    int hCenter = (int) getContentIndentY(canvasSize, visibleRange);
+    int hCenter = (int)getContentIndentY(canvasSize, visibleRange);
     p.translate(0, hCenter);
 
     drawSequence(p, canvasSize, visibleRange);
@@ -161,7 +160,7 @@ void PanViewRenderer::drawAnnotations(QPainter &p, const QSize &canvasSize, cons
     const QPen dotty(Qt::lightGray, 1, Qt::DotLine);
     p.setPen(dotty);
     p.setFont(annMetrics.afSmall);
-    const int cachedViewWidth = canvasSize.width(); // rename the variable
+    const int cachedViewWidth = canvasSize.width();    // rename the variable
 
     //draw row names
     PVRowsManager *rm = panView->getRowsManager();
@@ -231,8 +230,8 @@ void PanViewRenderer::drawSequence(QPainter &p, const QSize &canvasSize, const U
 
 #define ARROW_DY 5
 #define ARROW_DX 5
-void PanViewRenderer::drawSequenceSelection(QPainter& p, const QSize &canvasSize, const U2Region &visibleRange) {
-    const QVector<U2Region>& selection = ctx->getSequenceSelection()->getSelectedRegions();
+void PanViewRenderer::drawSequenceSelection(QPainter &p, const QSize &canvasSize, const U2Region &visibleRange) {
+    const QVector<U2Region> &selection = ctx->getSequenceSelection()->getSelectedRegions();
     bool showSequenceMode = isSequenceCharsVisible();
     CHECK(!selection.isEmpty(), );
 
@@ -242,7 +241,7 @@ void PanViewRenderer::drawSequenceSelection(QPainter& p, const QSize &canvasSize
     QFontMetrics rfm(commonMetrics.rulerFont);
 
     int lineY = getLineY(s->getSelectionLine());
-    int ly = lineY + commonMetrics.lineHeight / 2; //ruler line
+    int ly = lineY + commonMetrics.lineHeight / 2;    //ruler line
 
     bool drawRect = showSequenceMode;
     bool drawGraphics = true;
@@ -253,7 +252,7 @@ void PanViewRenderer::drawSequenceSelection(QPainter& p, const QSize &canvasSize
     int halfNum = rfm.boundingRect('1').height() / 2;
     int rty = ly + halfNum;
 
-    const DNAAlphabet* alphabet = ctx->getSequenceObject()->getAlphabet();
+    const DNAAlphabet *alphabet = ctx->getSequenceObject()->getAlphabet();
     QString unitType;
     if (alphabet->isAmino()) {
         unitType = "aa";
@@ -262,7 +261,7 @@ void PanViewRenderer::drawSequenceSelection(QPainter& p, const QSize &canvasSize
     }
 
     QString rangePattern = " " + panView->tr("[%1 %2]") + " ";
-    foreach(const U2Region& r, selection) {
+    foreach (const U2Region &r, selection) {
         if (!visibleRange.intersects(r)) {
             continue;
         }
@@ -272,10 +271,10 @@ void PanViewRenderer::drawSequenceSelection(QPainter& p, const QSize &canvasSize
 
         p.setPen(pen1);
         if (visibleRange.contains(r.startPos) && s->numLines > 1) {
-            p.drawLine(x1, - (int) getContentIndentY(canvasSize, visibleRange), x1, ly);
+            p.drawLine(x1, -(int)getContentIndentY(canvasSize, visibleRange), x1, ly);
         }
         if (visibleRange.contains(r.endPos() - 1) && s->numLines > 1) {
-            p.drawLine(x2, - (int) getContentIndentY(canvasSize, visibleRange), x2, ly);
+            p.drawLine(x2, -(int)getContentIndentY(canvasSize, visibleRange), x2, ly);
         }
 
         if (drawRect) {
@@ -302,12 +301,12 @@ void PanViewRenderer::drawSequenceSelection(QPainter& p, const QSize &canvasSize
             int rulerWidth = x2 - x1;
             bool rangeTextInTheMiddle = rulerWidth - dArrow > rtRect.width();
             if (rangeTextInTheMiddle) {
-                int rtx = x1 + (rulerWidth - rtRect.width())/2 + 1;
+                int rtx = x1 + (rulerWidth - rtRect.width()) / 2 + 1;
                 assert(rtx - x1 >= ARROW_DX);
                 rtRect.translate(rtx, rty);
                 p.fillRect(rtRect, Qt::white);
                 p.drawText(rtRect, Qt::AlignCenter, rangeText);
-            }  else { //if range text is not in the middle glue it to one of the boundary texts
+            } else {    //if range text is not in the middle glue it to one of the boundary texts
                 QString newT2 = t2 + rangeText;
                 QRect newT2Rect = rfm.boundingRect(newT2).translated(x2 + tOffs, rty);
                 if (newT2Rect.right() < canvasSize.width()) {
@@ -315,8 +314,9 @@ void PanViewRenderer::drawSequenceSelection(QPainter& p, const QSize &canvasSize
                     t2 = newT2;
                 } else {
                     QString newT1 = rangeText + t1;
-                    QRect newT1Rect = rfm.boundingRect(newT1); newT1Rect.translate(x1 - newT1Rect.width() - tOffs, rty);
-                    if (newT1Rect.left() >=0) {
+                    QRect newT1Rect = rfm.boundingRect(newT1);
+                    newT1Rect.translate(x1 - newT1Rect.width() - tOffs, rty);
+                    if (newT1Rect.left() >= 0) {
                         t1 = newT1;
                         t1Rect = newT1Rect;
                     }
@@ -345,7 +345,7 @@ void PanViewRenderer::drawSequenceSelection(QPainter& p, const QSize &canvasSize
                 p.drawLine(x1, ly, x1 + ARROW_DX, ly + ARROW_DY);
                 p.drawLine(x1, ly, x1 + ARROW_DX, ly - ARROW_DY);
             }
-            if (visibleRange.contains(r.endPos()-1)) {
+            if (visibleRange.contains(r.endPos() - 1)) {
                 p.drawLine(x2, ly, x2 - ARROW_DX, ly + ARROW_DY);
                 p.drawLine(x2, ly, x2 - ARROW_DX, ly - ARROW_DY);
             }
@@ -353,16 +353,14 @@ void PanViewRenderer::drawSequenceSelection(QPainter& p, const QSize &canvasSize
     }
 }
 
-void PanViewRenderer::drawRuler(GraphUtils::RulerConfig c,  QPainter& p, const U2Region &visibleRange, int firstCharCenter, int firstLastWidth) {
+void PanViewRenderer::drawRuler(GraphUtils::RulerConfig c, QPainter &p, const U2Region &visibleRange, int firstCharCenter, int firstLastWidth) {
     CHECK(s->showMainRuler, );
 
     int y = getLineY(s->getRulerLine()) + c.notchSize;
     GraphUtils::drawRuler(p, QPoint(firstCharCenter, y), firstLastWidth, visibleRange.startPos + 1, visibleRange.endPos(), commonMetrics.rulerFont, c);
 }
 
-void PanViewRenderer::drawCustomRulers(GraphUtils::RulerConfig c,  QPainter& p, const U2Region &visibleRange,
-                                       int firstCharCenter, int lastCharCenter,
-                                       int w, int predefinedY, bool ignoreVisibleRange) {
+void PanViewRenderer::drawCustomRulers(GraphUtils::RulerConfig c, QPainter &p, const U2Region &visibleRange, int firstCharCenter, int lastCharCenter, int w, int predefinedY, bool ignoreVisibleRange) {
     CHECK(s->showCustomRulers && !s->customRulers.isEmpty(), );
 
     double pixelsPerChar = getCurrentScale();
@@ -372,21 +370,21 @@ void PanViewRenderer::drawCustomRulers(GraphUtils::RulerConfig c,  QPainter& p, 
     QFontMetrics fm(crf);
 
     int maxRulerTextWidth = 0;
-    foreach(const RulerInfo& ri, s->customRulers) {
+    foreach (const RulerInfo &ri, s->customRulers) {
         int _w = fm.width(ri.name);
         maxRulerTextWidth = qMax(maxRulerTextWidth, _w);
     }
     QTextOption rulerTo;
     rulerTo.setWrapMode(QTextOption::NoWrap);
-    for (int i = 0, n = s->customRulers.count();  i < n; i++) {
-        const RulerInfo& ri = s->customRulers[i];
+    for (int i = 0, n = s->customRulers.count(); i < n; i++) {
+        const RulerInfo &ri = s->customRulers[i];
         p.setPen(ri.color);
         p.setFont(crf);
         int y = (predefinedY == -1) ? getLineY(s->getCustomRulerLine(i)) + c.notchSize : predefinedY - i * commonMetrics.lineHeight;
         QRect rulerTextRect(ignoreVisibleRange ? firstCharCenter + LINE_TEXT_OFFSET : LINE_TEXT_OFFSET, y, maxRulerTextWidth, commonMetrics.lineHeight);
         p.drawText(rulerTextRect, ri.name, rulerTo);
         int rulerStartOffset = maxRulerTextWidth + 2 * LINE_TEXT_OFFSET + (ignoreVisibleRange ? firstCharCenter : 0);
-        if (rulerStartOffset >= w)  {
+        if (rulerStartOffset >= w) {
             continue;
         }
         qint64 startPos = visibleRange.startPos + 1 - ri.offset;
@@ -403,37 +401,34 @@ void PanViewRenderer::drawCustomRulers(GraphUtils::RulerConfig c,  QPainter& p, 
 
         int rulerWidth = lastCharCenter - x;
         if (qRound(halfChar) == 0) {
-            rulerWidth--; // make the end of the ruler visible
+            rulerWidth--;    // make the end of the ruler visible
         }
 
-        int offsetToFirstNotch = (int) (c.predefinedChunk - visibleRange.startPos % c.predefinedChunk);
+        int offsetToFirstNotch = (int)(c.predefinedChunk - visibleRange.startPos % c.predefinedChunk);
         qint64 mainRuler = visibleRange.startPos + offsetToFirstNotch;
         qint64 newStartPos = visibleRange.startPos - ri.offset + offsetToFirstNotch;
         qint64 lim = startPos + ri.offset;
-        for(; mainRuler < lim; mainRuler += c.predefinedChunk, newStartPos += c.predefinedChunk) ;
-        c.correction = (int) newStartPos;
+        for (; mainRuler < lim; mainRuler += c.predefinedChunk, newStartPos += c.predefinedChunk)
+            ;
+        c.correction = (int)newStartPos;
 
         GraphUtils::drawRuler(p, QPoint(x, y), rulerWidth, startPos, endPos, commonMetrics.rulerFont, c);
     }
 }
 
-const QString PanViewRenderer::getText(const PVRowData * rData) const {
-    const QString text = (NULL == rData)
-        ? U2::PanView::tr("empty")
-        : rData->key + " (" + QString::number(rData->annotations.size()) + ")";
+const QString PanViewRenderer::getText(const PVRowData *rData) const {
+    const QString text = (NULL == rData) ? U2::PanView::tr("empty") : rData->key + " (" + QString::number(rData->annotations.size()) + ")";
     return text;
 }
 
 PanViewRenderAreaFactory::PanViewRenderAreaFactory() {
-
 }
 
 PanViewRenderAreaFactory::~PanViewRenderAreaFactory() {
-
 }
 
 PanViewRenderArea *PanViewRenderAreaFactory::createRenderArea(PanView *panView) const {
     return new PanViewRenderArea(panView, new PanViewRenderer(panView, panView->getSequenceContext()));
 }
 
-} // namespace
+}    // namespace U2

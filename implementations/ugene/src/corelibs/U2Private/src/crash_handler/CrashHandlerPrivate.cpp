@@ -19,19 +19,17 @@
  * MA 02110-1301, USA.
  */
 
-#include "CrashHandler.h"
 #include "CrashHandlerPrivate.h"
+
+#include "CrashHandler.h"
 
 namespace U2 {
 
-CrashHandlerPrivate::CrashHandlerPrivate() :
-    breakpadHandler(NULL)
-{
-
+CrashHandlerPrivate::CrashHandlerPrivate()
+    : breakpadHandler(NULL) {
 }
 
 CrashHandlerPrivate::~CrashHandlerPrivate() {
-
 }
 
 void CrashHandlerPrivate::storeStackTrace() {
@@ -50,4 +48,4 @@ void CrashHandlerPrivate::handleException(const QString &exceptionType, const QS
     CrashHandler::handleException(exceptionType, dumpUrl);
 }
 
-}   // namespace U2
+}    // namespace U2

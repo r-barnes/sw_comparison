@@ -31,10 +31,10 @@ namespace U2 {
 class BreakpointGreaterOrEqualHitCounter : public BreakpointEqualHitCounter {
 public:
     BreakpointGreaterOrEqualHitCounter(BreakpointHitCountCondition initCondition,
-        quint32 initHitCount);
+                                       quint32 initHitCount);
     virtual bool hit();
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_WORKFLOW_BREAKPOINT_GREATER_OR_EQUAL_HIT_COUNTER_H_
+#endif    // _U2_WORKFLOW_BREAKPOINT_GREATER_OR_EQUAL_HIT_COUNTER_H_

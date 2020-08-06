@@ -19,28 +19,25 @@
  * MA 02110-1301, USA.
  */
 
-#include <QTableWidget>
-#include <QGraphicsItem>
-#include <QMainWindow>
-
 #include "GTTestsOptionPanelSequenceView.h"
-
-#include "primitives/GTAction.h"
-#include "api/GTBaseCompleter.h"
-#include <primitives/GTComboBox.h>
-#include <primitives/GTCheckBox.h>
-#include <primitives/GTDoubleSpinBox.h>
-#include "system/GTFile.h"
+#include <base_dialogs/ColorDialogFiller.h>
 #include <base_dialogs/GTFileDialog.h>
+#include <base_dialogs/MessageBoxFiller.h>
 #include <drivers/GTKeyboardDriver.h>
-#include <primitives/GTLineEdit.h>
 #include <drivers/GTMouseDriver.h>
+#include <primitives/GTCheckBox.h>
+#include <primitives/GTComboBox.h>
+#include <primitives/GTDoubleSpinBox.h>
+#include <primitives/GTLineEdit.h>
 #include <primitives/GTRadioButton.h>
 #include <primitives/GTSlider.h>
 #include <primitives/GTWidget.h>
 
-#include <base_dialogs/MessageBoxFiller.h>
-#include <base_dialogs/ColorDialogFiller.h>
+#include <QGraphicsItem>
+#include <QMainWindow>
+#include <QTableWidget>
+
+#include <U2Core/AppContext.h>
 
 #include "GTUtilsAnnotationsTreeView.h"
 #include "GTUtilsLog.h"
@@ -49,14 +46,15 @@
 #include "GTUtilsProjectTreeView.h"
 #include "GTUtilsSequenceView.h"
 #include "GTUtilsTaskTreeView.h"
+#include "api/GTBaseCompleter.h"
+#include "primitives/GTAction.h"
+#include "system/GTFile.h"
 
-#include <U2Core/AppContext.h>
+namespace U2 {
 
-namespace U2{
-
-namespace GUITest_common_scenarios_options_panel_sequence_view{
+namespace GUITest_common_scenarios_options_panel_sequence_view {
 using namespace HI;
-GUI_TEST_CLASS_DEFINITION(test_0001){
+GUI_TEST_CLASS_DEFINITION(test_0001) {
     //checking 'next' 'prev' buttons functionality
     GTFileDialog::openFile(os, dataDir + "samples/FASTA/", "human_T1.fa");
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -77,7 +75,7 @@ GUI_TEST_CLASS_DEFINITION(test_0001){
     CHECK_SET_ERR(GTUtilsOptionPanelSequenceView::checkResultsText(os, "Results: 2/2"), "Results string not match");
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0002){
+GUI_TEST_CLASS_DEFINITION(test_0002) {
     //checking searching with invalid pattern
     GTFileDialog::openFile(os, dataDir + "samples/FASTA/", "human_T1.fa");
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -89,7 +87,7 @@ GUI_TEST_CLASS_DEFINITION(test_0002){
     CHECK_SET_ERR(!GTUtilsOptionPanelSequenceView::isPrevNextEnabled(os), "Next and prev buttons are enabled");
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0003){
+GUI_TEST_CLASS_DEFINITION(test_0003) {
     //checking results with diffirent algorithms
     GTFileDialog::openFile(os, dataDir + "samples/FASTA/", "human_T1.fa");
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -105,7 +103,7 @@ GUI_TEST_CLASS_DEFINITION(test_0003){
     CHECK_SET_ERR(GTUtilsOptionPanelSequenceView::checkResultsText(os, "Results: 1/16"), "Results string not match");
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0004){
+GUI_TEST_CLASS_DEFINITION(test_0004) {
     //checking saving annotations after search
     GTFileDialog::openFile(os, dataDir + "samples/FASTA/", "human_T1.fa");
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -121,7 +119,7 @@ GUI_TEST_CLASS_DEFINITION(test_0004){
     GTUtilsAnnotationsTreeView::findItem(os, "Misc. Feature  (0, 2)");
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0005){
+GUI_TEST_CLASS_DEFINITION(test_0005) {
     //checking searching with different parameter 'match percentage'
     GTFileDialog::openFile(os, dataDir + "samples/FASTA/", "human_T1.fa");
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -138,12 +136,12 @@ GUI_TEST_CLASS_DEFINITION(test_0005){
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0006) {
-//    1. Open "data/samples/FASTA/human_T1.fa".
+    //    1. Open "data/samples/FASTA/human_T1.fa".
     GTFileDialog::openFile(os, dataDir + "samples/FASTA", "human_T1.fa");
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
-//    2. Open "Search In Sequence" options panel tab.
-//    Expected state: all show/hide widgetsare collapsed.
+    //    2. Open "Search In Sequence" options panel tab.
+    //    Expected state: all show/hide widgetsare collapsed.
     GTUtilsOptionPanelSequenceView::openTab(os, GTUtilsOptionPanelSequenceView::Search);
 
     CHECK_SET_ERR(!GTUtilsOptionPanelSequenceView::isSearchAlgorithmShowHideWidgetOpened(os), "'Search algorithm' subwidget is unexpectedly opened");
@@ -153,7 +151,7 @@ GUI_TEST_CLASS_DEFINITION(test_0006) {
     CHECK_SET_ERR(!GTUtilsOptionPanelSequenceView::isAnnotationParametersShowHideWidgetOpened(os), "'Annotation parameters' subwidget is unexpectedly opened");
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0007){
+GUI_TEST_CLASS_DEFINITION(test_0007) {
     //checking results with searching in translation
     GTFileDialog::openFile(os, dataDir + "samples/FASTA/", "human_T1.fa");
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -168,7 +166,7 @@ GUI_TEST_CLASS_DEFINITION(test_0007){
     CHECK_SET_ERR(GTUtilsOptionPanelSequenceView::checkResultsText(os, "Results: 1/2"), "Results string not match");
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0008){
+GUI_TEST_CLASS_DEFINITION(test_0008) {
     //checking results with searching in translation
     GTFileDialog::openFile(os, dataDir + "samples/FASTA/", "human_T1.fa");
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -185,7 +183,7 @@ GUI_TEST_CLASS_DEFINITION(test_0008){
     CHECK_SET_ERR(GTUtilsOptionPanelSequenceView::checkResultsText(os, "Results: 1/2"), "Results string not match");
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0009){
+GUI_TEST_CLASS_DEFINITION(test_0009) {
     //checking results with searching in translation
     GTFileDialog::openFile(os, dataDir + "samples/FASTA/", "human_T1.fa");
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -198,19 +196,19 @@ GUI_TEST_CLASS_DEFINITION(test_0009){
     GTWidget::click(os, GTWidget::findWidget(os, "ArrowHeader_Search in"));
     GTUtilsOptionPanelSequenceView::setSearchInLocation(os, "Custom region");
 
-    QLineEdit *regLE = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "editEnd", NULL, GTGlobals::FindOptions(false)));
+    QLineEdit *regLE = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "editEnd", NULL, GTGlobals::FindOptions(false)));
     CHECK_SET_ERR(regLE != NULL, "LineEdit is NULL");
     GTLineEdit::setText(os, regLE, "40000");
     CHECK_SET_ERR(GTUtilsOptionPanelSequenceView::checkResultsText(os, "Results: 1/12"), "Results string not match");
 
     regLE = NULL;
-    regLE = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "editStart", NULL, GTGlobals::FindOptions(false)));
+    regLE = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "editStart", NULL, GTGlobals::FindOptions(false)));
     CHECK_SET_ERR(regLE != NULL, "LineEdit is NULL");
     GTLineEdit::setText(os, regLE, "9000");
     CHECK_SET_ERR(GTUtilsOptionPanelSequenceView::checkResultsText(os, "Results: 1/10"), "Results string not match");
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0010){
+GUI_TEST_CLASS_DEFINITION(test_0010) {
     //checking results with searching in translation
     GTFileDialog::openFile(os, dataDir + "samples/FASTA/", "human_T1.fa");
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -224,6 +222,6 @@ GUI_TEST_CLASS_DEFINITION(test_0010){
     CHECK_SET_ERR(GTUtilsOptionPanelSequenceView::checkResultsText(os, "Results: 1/99900"), "Results string not match");
 }
 
-}
+}    // namespace GUITest_common_scenarios_options_panel_sequence_view
 
-}
+}    // namespace U2

@@ -29,36 +29,33 @@ namespace U2 {
 
 U2Entity::U2Entity(const U2DataId &id)
     : id(id) {
-
 }
 
 U2Entity::U2Entity(const U2Entity &other)
     : id(other.id) {
-
 }
 
 U2Entity::~U2Entity() {
-
 }
 
 bool U2Entity::hasValidId() const {
     return !id.isEmpty();
 }
 
-U2Entity U2Entity::operator =(const U2Entity &other) {
+U2Entity U2Entity::operator=(const U2Entity &other) {
     id = other.id;
     return *this;
 }
 
-bool U2Entity::operator ==(const U2Entity &other) const {
+bool U2Entity::operator==(const U2Entity &other) const {
     return id == other.id;
 }
 
-bool U2Entity::operator !=(const U2Entity &other) const {
+bool U2Entity::operator!=(const U2Entity &other) const {
     return id != other.id;
 }
 
-bool U2Entity::operator <(const U2Entity &other) const {
+bool U2Entity::operator<(const U2Entity &other) const {
     return id < other.id;
 }
 
@@ -68,7 +65,6 @@ bool U2Entity::operator <(const U2Entity &other) const {
 
 U2DbiRef::U2DbiRef(const U2DbiFactoryId &dbiFactoryId, const U2DbiId &dbiId)
     : dbiFactoryId(dbiFactoryId), dbiId(dbiId) {
-
 }
 
 bool U2DbiRef::isValid() const {
@@ -76,23 +72,23 @@ bool U2DbiRef::isValid() const {
 }
 
 bool U2DbiRef::operator!=(const U2DbiRef &r2) const {
-    return !(operator ==(r2));
+    return !(operator==(r2));
 }
 
 bool U2DbiRef::operator==(const U2DbiRef &r2) const {
     return dbiFactoryId == r2.dbiFactoryId && dbiId == r2.dbiId;
 }
 
-bool U2DbiRef::operator <(const U2DbiRef &r2) const {
+bool U2DbiRef::operator<(const U2DbiRef &r2) const {
     return dbiFactoryId + dbiId < r2.dbiFactoryId + r2.dbiId;
 }
 
-QDataStream & operator <<(QDataStream &out, const U2DbiRef &dbiRef) {
+QDataStream &operator<<(QDataStream &out, const U2DbiRef &dbiRef) {
     out << dbiRef.dbiFactoryId << dbiRef.dbiId;
     return out;
 }
 
-QDataStream & operator >>(QDataStream &in, U2DbiRef &dbiRef) {
+QDataStream &operator>>(QDataStream &in, U2DbiRef &dbiRef) {
     in >> dbiRef.dbiFactoryId;
     in >> dbiRef.dbiId;
     return in;
@@ -104,29 +100,26 @@ QDataStream & operator >>(QDataStream &in, U2DbiRef &dbiRef) {
 
 U2EntityRef::U2EntityRef()
     : version(0) {
-
 }
 
 U2EntityRef::U2EntityRef(const U2DbiRef &dbiRef, const U2DataId &entityId)
     : dbiRef(dbiRef), entityId(entityId), version(0) {
-
 }
 
 bool U2EntityRef::isValid() const {
     return dbiRef.isValid() && !entityId.isEmpty();
 }
 
-bool U2EntityRef::operator == (const U2EntityRef &other) const {
+bool U2EntityRef::operator==(const U2EntityRef &other) const {
     return (entityId == other.entityId) && (version == other.version) && (dbiRef == other.dbiRef);
 }
 
-bool U2EntityRef::operator !=(const U2EntityRef &other) const {
-    return !(operator ==(other));
+bool U2EntityRef::operator!=(const U2EntityRef &other) const {
+    return !(operator==(other));
 }
 
-bool U2EntityRef::operator <(const U2EntityRef &other) const {
-    return dbiRef.dbiFactoryId + dbiRef.dbiId + entityId + QString::number(version)
-        < other.dbiRef.dbiFactoryId + other.dbiRef.dbiId + other.entityId + QString::number(other.version);
+bool U2EntityRef::operator<(const U2EntityRef &other) const {
+    return dbiRef.dbiFactoryId + dbiRef.dbiId + entityId + QString::number(version) < other.dbiRef.dbiFactoryId + other.dbiRef.dbiId + other.entityId + QString::number(other.version);
 }
 
 namespace {
@@ -148,8 +141,8 @@ class Registrator {
 
 const bool Registrator::u2DataIdRegistered = registerDataId();
 
-}
+}    // namespace
 
 bool U2DbiRef::metaInfoRegistered = registerMetaInfo();
 
-} // U2
+}    // namespace U2

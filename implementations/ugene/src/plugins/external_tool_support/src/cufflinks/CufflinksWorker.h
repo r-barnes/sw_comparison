@@ -22,35 +22,30 @@
 #ifndef _U2_CUFFLINKS_WORKER_H
 #define _U2_CUFFLINKS_WORKER_H
 
-#include "CufflinksSettings.h"
-
 #include <U2Lang/Descriptor.h>
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
 
+#include "CufflinksSettings.h"
 
 namespace U2 {
 namespace LocalWorkflow {
 
-
-class CufflinksPrompter : public PrompterBase<CufflinksPrompter>
-{
+class CufflinksPrompter : public PrompterBase<CufflinksPrompter> {
     Q_OBJECT
 
 public:
-    CufflinksPrompter(Actor* parent = 0);
+    CufflinksPrompter(Actor *parent = 0);
 
 protected:
     QString composeRichDoc();
 };
 
-
-class CufflinksWorker : public BaseWorker
-{
+class CufflinksWorker : public BaseWorker {
     Q_OBJECT
 
 public:
-    CufflinksWorker(Actor* actor);
+    CufflinksWorker(Actor *actor);
 
     void init();
     Task *tick();
@@ -60,8 +55,8 @@ private slots:
     void sl_cufflinksTaskFinished();
 
 protected:
-    IntegralBus* input;
-    IntegralBus* output;
+    IntegralBus *input;
+    IntegralBus *output;
     CufflinksSettings settings;
 
     bool settingsAreCorrect;
@@ -70,14 +65,16 @@ private:
     void initSlotsState();
 };
 
-
-class CufflinksWorkerFactory : public DomainFactory
-{
+class CufflinksWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
     static void init();
-    CufflinksWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual Worker* createWorker(Actor* actor) { return new CufflinksWorker(actor); }
+    CufflinksWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual Worker *createWorker(Actor *actor) {
+        return new CufflinksWorker(actor);
+    }
 
     static const QString OUT_DIR;
     static const QString REF_ANNOTATION;
@@ -95,7 +92,7 @@ public:
     static const QString ISO_LEVEL_SLOT_DESCR_ID;
 };
 
-} // namespace LocalWorkflow
-} // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

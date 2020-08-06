@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "Metaphlan2Task.h"
+
 #include <QDir>
 #include <QFileInfo>
 
@@ -32,24 +34,25 @@
 
 #include "Metaphlan2LogParser.h"
 #include "Metaphlan2Support.h"
-#include "Metaphlan2Task.h"
 #include "Metaphlan2WorkerFactory.h"
 
 namespace U2 {
 
 using namespace LocalWorkflow;
 
-Metaphlan2TaskSettings::Metaphlan2TaskSettings() : isPairedEnd(false),
-                                                   numberOfThreads(1),
-                                                   normalizeByMetagenomeSize(false),
-                                                   presenceThreshold(1) {}
+Metaphlan2TaskSettings::Metaphlan2TaskSettings()
+    : isPairedEnd(false),
+      numberOfThreads(1),
+      normalizeByMetagenomeSize(false),
+      presenceThreshold(1) {
+}
 
-Metaphlan2ClassifyTask::Metaphlan2ClassifyTask(const Metaphlan2TaskSettings& _settings) :
-                                    ExternalToolSupportTask(tr("Classify reads with Metaphlan2"),
-                                    TaskFlags_NR_FOSE_COSC | TaskFlag_MinimizeSubtaskErrorText),
-                                    settings(_settings),
-                                    classifyTask(nullptr),
-                                    calculateSequencesNumberTask(nullptr) {
+Metaphlan2ClassifyTask::Metaphlan2ClassifyTask(const Metaphlan2TaskSettings &_settings)
+    : ExternalToolSupportTask(tr("Classify reads with Metaphlan2"),
+                              TaskFlags_NR_FOSE_COSC | TaskFlag_MinimizeSubtaskErrorText),
+      settings(_settings),
+      classifyTask(nullptr),
+      calculateSequencesNumberTask(nullptr) {
     GCOUNTER(cvar, tvar, "Metaphlan2ClassifyTask");
 
     needToCountSequences = settings.analysisType == Metaphlan2WorkerFactory::ANALYSIS_TYPE_MARKER_AB_TABLE_VALUE &&
@@ -63,15 +66,15 @@ Metaphlan2ClassifyTask::Metaphlan2ClassifyTask(const Metaphlan2TaskSettings& _se
     SAFE_POINT_EXT(!settings.tmpDir.isEmpty(), setError("Temporary folder URL is empty."), );
     SAFE_POINT_EXT(!settings.readsUrl.isEmpty(), setError(tr("Reads URL is empty.")), );
     SAFE_POINT_EXT(!settings.isPairedEnd ||
-                   !settings.readsUrl.isEmpty(),
+                       !settings.readsUrl.isEmpty(),
                    setError(tr("Paired reads URL is empty, but the 'paired reads' option is set.")), );
 }
 
-const QString& Metaphlan2ClassifyTask::getBowtie2OutputUrl() const {
+const QString &Metaphlan2ClassifyTask::getBowtie2OutputUrl() const {
     return settings.bowtie2OutputFile;
 }
 
-const QString& Metaphlan2ClassifyTask::getOutputUrl() const {
+const QString &Metaphlan2ClassifyTask::getOutputUrl() const {
     return settings.outputFile;
 }
 
@@ -85,8 +88,8 @@ void Metaphlan2ClassifyTask::prepare() {
     }
 }
 
-QList<Task*> Metaphlan2ClassifyTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> result;
+QList<Task *> Metaphlan2ClassifyTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> result;
     CHECK(!hasError() && !isCanceled(), result);
     CHECK(calculateSequencesNumberTask == subTask, result);
 
@@ -138,14 +141,13 @@ QStringList Metaphlan2ClassifyTask::getArguments() {
     return arguments;
 }
 
-
 void Metaphlan2ClassifyTask::prepareClassifyTask() {
     classifyTask = new ExternalToolRunTask(Metaphlan2Support::TOOL_ID,
-                                            getArguments(),
-                                            new Metaphlan2LogParser(),
-                                            QString(),
-                                            QStringList() << settings.bowtie2ExternalToolPath
-                                                          << settings.pythonExternalToolPath);
+                                           getArguments(),
+                                           new Metaphlan2LogParser(),
+                                           QString(),
+                                           QStringList() << settings.bowtie2ExternalToolPath
+                                                         << settings.pythonExternalToolPath);
     setListenerForTask(classifyTask);
 }
 
@@ -154,14 +156,14 @@ DocumentFormatId Metaphlan2ClassifyTask::detectInputFormats() {
     if (settings.isPairedEnd) {
         DocumentFormatId pairedFormatId = detectFormat(GUrl(settings.pairedReadsUrl));
         CHECK_EXT(formatId == pairedFormatId,
-                       stateInfo.setError(tr("Input files with PE reads have different format.")),
-                       DocumentFormatId());
+                  stateInfo.setError(tr("Input files with PE reads have different format.")),
+                  DocumentFormatId());
     }
 
     return formatId;
 }
 
-DocumentFormatId Metaphlan2ClassifyTask::detectFormat(const GUrl& url) {
+DocumentFormatId Metaphlan2ClassifyTask::detectFormat(const GUrl &url) {
     DocumentFormatId resultFormatId;
     DocumentUtils::Detection detection = DocumentUtils::detectFormat(url, resultFormatId);
     CHECK_EXT(detection == DocumentUtils::FORMAT,
@@ -175,5 +177,4 @@ DocumentFormatId Metaphlan2ClassifyTask::detectFormat(const GUrl& url) {
     return resultFormatId;
 }
 
-} // namespace U2
-
+}    // namespace U2

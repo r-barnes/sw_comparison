@@ -26,16 +26,18 @@
 
 namespace U2 {
 using namespace HI;
-    class EditGroupAnnotationsFiller : public Filler {
-    public:
-        EditGroupAnnotationsFiller(HI::GUITestOpStatus &_os, const QString &_groupName):
-          Filler(_os, ""), groupName(_groupName) {}
+class EditGroupAnnotationsFiller : public Filler {
+public:
+    EditGroupAnnotationsFiller(HI::GUITestOpStatus &_os, const QString &_groupName)
+        : Filler(_os, ""), groupName(_groupName) {
+    }
 
-        void commonScenario();
-    private:
-        QString groupName;
-    };
+    void commonScenario();
 
-}
+private:
+    QString groupName;
+};
+
+}    // namespace U2
 
 #endif

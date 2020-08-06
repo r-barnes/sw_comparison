@@ -20,38 +20,38 @@
  */
 
 #include "SQLiteObjectDbiUnitTests.h"
-#include "core/util/MsaDbiUtilsUnitTests.h"
 
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/U2AttributeDbi.h>
 #include <U2Core/U2MsaDbi.h>
+#include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SequenceDbi.h>
 #include <U2Core/U2SequenceUtils.h>
-#include <U2Core/U2OpStatusUtils.h>
 
 #include <U2Formats/SQLiteDbi.h>
 #include <U2Formats/SQLiteObjectDbi.h>
 #include <U2Formats/SQLiteSequenceDbi.h>
 
+#include "core/util/MsaDbiUtilsUnitTests.h"
 
 namespace U2 {
 
 TestDbiProvider SQLiteObjectDbiTestData::dbiProvider = TestDbiProvider();
-const QString& SQLiteObjectDbiTestData::SQLITE_OBJ_DB_URL("sqlite-obj-dbi.ugenedb");
-U2AttributeDbi* SQLiteObjectDbiTestData::attributeDbi = NULL;
-U2MsaDbi* SQLiteObjectDbiTestData::msaDbi = NULL;
-U2SequenceDbi* SQLiteObjectDbiTestData::sequenceDbi = NULL;
-SQLiteDbi* SQLiteObjectDbiTestData::sqliteDbi = NULL;
-SQLiteObjectDbi* SQLiteObjectDbiTestData::sqliteObjectDbi = NULL;
+const QString &SQLiteObjectDbiTestData::SQLITE_OBJ_DB_URL("sqlite-obj-dbi.ugenedb");
+U2AttributeDbi *SQLiteObjectDbiTestData::attributeDbi = NULL;
+U2MsaDbi *SQLiteObjectDbiTestData::msaDbi = NULL;
+U2SequenceDbi *SQLiteObjectDbiTestData::sequenceDbi = NULL;
+SQLiteDbi *SQLiteObjectDbiTestData::sqliteDbi = NULL;
+SQLiteObjectDbi *SQLiteObjectDbiTestData::sqliteObjectDbi = NULL;
 
 void SQLiteObjectDbiTestData::init() {
     SAFE_POINT(NULL == sqliteDbi, "sqliteDbi has already been initialized!", );
 
     // Get URL
     bool ok = dbiProvider.init(SQLITE_OBJ_DB_URL, false);
-    SAFE_POINT(ok, "Dbi provider failed to initialize in MsaTestData::init()!",);
+    SAFE_POINT(ok, "Dbi provider failed to initialize in MsaTestData::init()!", );
 
-    U2Dbi* dbi = dbiProvider.getDbi();
+    U2Dbi *dbi = dbiProvider.getDbi();
     QString url = dbi->getDbiRef().dbiId;
     dbiProvider.close();
 
@@ -64,21 +64,20 @@ void SQLiteObjectDbiTestData::init() {
     SAFE_POINT_OP(os, );
 
     sqliteObjectDbi = sqliteDbi->getSQLiteObjectDbi();
-    SAFE_POINT(NULL != sqliteObjectDbi, "Failed to get sqliteObjectDbi!",);
+    SAFE_POINT(NULL != sqliteObjectDbi, "Failed to get sqliteObjectDbi!", );
 
     attributeDbi = sqliteDbi->getAttributeDbi();
-    SAFE_POINT(NULL != attributeDbi, "Failed to get attributeDbi!",);
+    SAFE_POINT(NULL != attributeDbi, "Failed to get attributeDbi!", );
 
     msaDbi = sqliteDbi->getMsaDbi();
-    SAFE_POINT(NULL != msaDbi, "Failed to get msaDbi!",);
+    SAFE_POINT(NULL != msaDbi, "Failed to get msaDbi!", );
 
     sequenceDbi = sqliteDbi->getSequenceDbi();
-    SAFE_POINT(NULL != sequenceDbi, "Failed to get sequenceDbi!",);
+    SAFE_POINT(NULL != sequenceDbi, "Failed to get sequenceDbi!", );
 }
 
 void SQLiteObjectDbiTestData::shutdown() {
     if (NULL != sqliteDbi) {
-
         delete sqliteDbi;
 
         sqliteDbi = NULL;
@@ -89,42 +88,42 @@ void SQLiteObjectDbiTestData::shutdown() {
     }
 }
 
-SQLiteDbi* SQLiteObjectDbiTestData::getSQLiteDbi() {
+SQLiteDbi *SQLiteObjectDbiTestData::getSQLiteDbi() {
     if (NULL == sqliteDbi) {
         init();
     }
     return sqliteDbi;
 }
 
-SQLiteObjectDbi* SQLiteObjectDbiTestData::getSQLiteObjectDbi() {
+SQLiteObjectDbi *SQLiteObjectDbiTestData::getSQLiteObjectDbi() {
     if (NULL == sqliteObjectDbi) {
         init();
     }
     return sqliteObjectDbi;
 }
 
-U2AttributeDbi* SQLiteObjectDbiTestData::getAttributeDbi() {
+U2AttributeDbi *SQLiteObjectDbiTestData::getAttributeDbi() {
     if (NULL == attributeDbi) {
         init();
     }
     return attributeDbi;
 }
 
-U2MsaDbi* SQLiteObjectDbiTestData::getMsaDbi() {
+U2MsaDbi *SQLiteObjectDbiTestData::getMsaDbi() {
     if (NULL == msaDbi) {
         init();
     }
     return msaDbi;
 }
 
-U2SequenceDbi* SQLiteObjectDbiTestData::getSequenceDbi() {
+U2SequenceDbi *SQLiteObjectDbiTestData::getSequenceDbi() {
     if (NULL == sequenceDbi) {
         init();
     }
     return sequenceDbi;
 }
 
-U2DataId SQLiteObjectDbiTestData::createTestMsa(bool enableModTracking, U2OpStatus& os) {
+U2DataId SQLiteObjectDbiTestData::createTestMsa(bool enableModTracking, U2OpStatus &os) {
     // Create an alignment
     U2AlphabetId alphabet = BaseDNAAlphabetIds::NUCL_DNA_DEFAULT();
     U2DataId msaId = sqliteDbi->getMsaDbi()->createMsaObject("", "Test alignment", alphabet, os);
@@ -138,7 +137,7 @@ U2DataId SQLiteObjectDbiTestData::createTestMsa(bool enableModTracking, U2OpStat
     return msaId;
 }
 
-void SQLiteObjectDbiTestData::addTestRow(const U2DataId& msaId, U2OpStatus& os) {
+void SQLiteObjectDbiTestData::addTestRow(const U2DataId &msaId, U2OpStatus &os) {
     U2Sequence seq;
     seq.alphabet = BaseDNAAlphabetIds::NUCL_DNA_DEFAULT();
     seq.circular = false;
@@ -157,11 +156,9 @@ void SQLiteObjectDbiTestData::addTestRow(const U2DataId& msaId, U2OpStatus& os) 
     SAFE_POINT_OP(os, );
 }
 
-
-
 IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, removeMsaObject) {
     U2OpStatusImpl os;
-    U2MsaDbi* msaDbi = SQLiteObjectDbiTestData::getMsaDbi();
+    U2MsaDbi *msaDbi = SQLiteObjectDbiTestData::getMsaDbi();
 
     // FIRST ALIGNMENT
     // Create an alignment
@@ -170,12 +167,12 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, removeMsaObject) {
 
     // Add alignment info
     U2StringAttribute attr(msaId, "MSA1 info key", "MSA1 info value");
-    U2AttributeDbi* attrDbi = SQLiteObjectDbiTestData::getAttributeDbi();
+    U2AttributeDbi *attrDbi = SQLiteObjectDbiTestData::getAttributeDbi();
     attrDbi->createStringAttribute(attr, os);
     CHECK_NO_ERROR(os);
 
     // Create sequences
-    U2SequenceDbi* sequenceDbi = SQLiteObjectDbiTestData::getSequenceDbi();
+    U2SequenceDbi *sequenceDbi = SQLiteObjectDbiTestData::getSequenceDbi();
     U2Sequence seq1;
     U2Sequence seq2;
     sequenceDbi->createSequenceObject(seq1, "", os);
@@ -250,11 +247,11 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, removeMsaObject) {
     CHECK_NO_ERROR(os);
 
     // REMOVE THE FIRST ALIGNMENT OBJECT
-    SQLiteObjectDbi* sqliteObjectDbi = SQLiteObjectDbiTestData::getSQLiteObjectDbi();
+    SQLiteObjectDbi *sqliteObjectDbi = SQLiteObjectDbiTestData::getSQLiteObjectDbi();
     sqliteObjectDbi->removeObject(msaId, os);
 
     // VERIFY THAT THERE IS ONLY THE SECOND ALIGNMENT'S RECORDS LEFT IN TABLES
-    SQLiteDbi* sqliteDbi = SQLiteObjectDbiTestData::getSQLiteDbi();
+    SQLiteDbi *sqliteDbi = SQLiteObjectDbiTestData::getSQLiteDbi();
 
     // "Attribute"
     SQLiteReadQuery qAttr("SELECT COUNT(*) FROM Attribute WHERE name = ?1", sqliteDbi->getDbRef(), os);
@@ -388,7 +385,7 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, setTrackModType) {
 
 IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, canUndoRedo_noTrack) {
     U2OpStatusImpl os;
-    U2ObjectDbi* objDbi = SQLiteObjectDbiTestData::getSQLiteObjectDbi();
+    U2ObjectDbi *objDbi = SQLiteObjectDbiTestData::getSQLiteObjectDbi();
 
     // Create test msa
     U2DataId msaId = SQLiteObjectDbiTestData::createTestMsa(false, os);
@@ -399,30 +396,34 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, canUndoRedo_noTrack) {
     CHECK_NO_ERROR(os);
 
     // Verify canUndo/canRedo
-    bool undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    bool redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    bool undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    bool redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_FALSE(undoState, "undo state");
     CHECK_FALSE(redoState, "redo state");
 }
 
 IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, canUndoRedo_noAction) {
     U2OpStatusImpl os;
-    U2ObjectDbi* objDbi = SQLiteObjectDbiTestData::getSQLiteObjectDbi();
+    U2ObjectDbi *objDbi = SQLiteObjectDbiTestData::getSQLiteObjectDbi();
 
     // Create test msa
     U2DataId msaId = SQLiteObjectDbiTestData::createTestMsa(true, os);
     CHECK_NO_ERROR(os);
 
     // Verify canUndo/canRedo
-    bool undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    bool redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    bool undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    bool redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_FALSE(undoState, "undo state");
     CHECK_FALSE(redoState, "redo state");
 }
 
 IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, canUndoRedo_lastState) {
     U2OpStatusImpl os;
-    U2ObjectDbi* objDbi = SQLiteObjectDbiTestData::getSQLiteObjectDbi();
+    U2ObjectDbi *objDbi = SQLiteObjectDbiTestData::getSQLiteObjectDbi();
 
     // Create test msa
     U2DataId msaId = SQLiteObjectDbiTestData::createTestMsa(true, os);
@@ -433,15 +434,17 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, canUndoRedo_lastState) {
     CHECK_NO_ERROR(os);
 
     // Verify canUndo/canRedo
-    bool undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    bool redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    bool undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    bool redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_TRUE(undoState, "undo state");
     CHECK_FALSE(redoState, "redo state");
 }
 
 IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, canUndoRedo_firstState) {
     U2OpStatusImpl os;
-    U2ObjectDbi* objDbi = SQLiteObjectDbiTestData::getSQLiteObjectDbi();
+    U2ObjectDbi *objDbi = SQLiteObjectDbiTestData::getSQLiteObjectDbi();
 
     // Create test msa
     U2DataId msaId = SQLiteObjectDbiTestData::createTestMsa(true, os);
@@ -454,15 +457,17 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, canUndoRedo_firstState) {
     CHECK_NO_ERROR(os);
 
     // Verify canUndo/canRedo
-    bool undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    bool redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    bool undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    bool redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_FALSE(undoState, "undo state");
     CHECK_TRUE(redoState, "redo state");
 }
 
 IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, canUndoRedo_midState) {
     U2OpStatusImpl os;
-    U2ObjectDbi* objDbi = SQLiteObjectDbiTestData::getSQLiteObjectDbi();
+    U2ObjectDbi *objDbi = SQLiteObjectDbiTestData::getSQLiteObjectDbi();
 
     // Create test msa
     U2DataId msaId = SQLiteObjectDbiTestData::createTestMsa(true, os);
@@ -478,15 +483,17 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, canUndoRedo_midState) {
     CHECK_NO_ERROR(os);
 
     // Verify canUndo/canRedo
-    bool undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    bool redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    bool undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    bool redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_TRUE(undoState, "undo state");
     CHECK_TRUE(redoState, "redo state");
 }
 
 IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, canUndoRedo_oneUserStep) {
     U2OpStatusImpl os;
-    U2ObjectDbi* objDbi = SQLiteObjectDbiTestData::getSQLiteObjectDbi();
+    U2ObjectDbi *objDbi = SQLiteObjectDbiTestData::getSQLiteObjectDbi();
 
     // Create test msa
     U2DataId msaId = SQLiteObjectDbiTestData::createTestMsa(true, os);
@@ -505,8 +512,10 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, canUndoRedo_oneUserStep) {
     }
 
     // Verify canUndo/canRedo
-    bool undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    bool redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    bool undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    bool redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_TRUE(undoState, "undo state before undo");
     CHECK_FALSE(redoState, "redo state before undo");
 
@@ -515,8 +524,10 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, canUndoRedo_oneUserStep) {
     CHECK_NO_ERROR(os);
 
     // Verify canUndo/canRedo
-    undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_FALSE(undoState, "undo state after undo");
     CHECK_TRUE(redoState, "redo state after undo");
 }
@@ -556,8 +567,7 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_user3Multi) {
     if (qVersion.step()) {
         qint64 userStepVersion = qVersion.getInt64(0);
         CHECK_EQUAL(msaVersion, userStepVersion, "version in user step");
-    }
-    else {
+    } else {
         CHECK_TRUE(false, "Failed to get userModStep version!");
     }
     CHECK_NO_ERROR(os);
@@ -568,8 +578,10 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_user3Multi) {
     CHECK_EQUAL(msaVersion + 3, msaVersionAftAct, "msa version after 3 actions");
 
     // Verify canUndo/canRedo
-    bool undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    bool redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    bool undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    bool redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_TRUE(undoState, "undo state before undo");
     CHECK_FALSE(redoState, "redo state before undo");
 
@@ -600,8 +612,10 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_user3Multi) {
     CHECK_EQUAL(msaVersion + 3, msaVersionAftRedo, "msa version after redo");
 
     // Verify canUndo/canRedo
-    undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_TRUE(undoState, "undo state after redo");
     CHECK_FALSE(redoState, "redo state after redo");
 }
@@ -644,8 +658,7 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_actionAfterUndo) {
     qUser.bindDataId(1, msaId);
     if (qUser.step()) {
         CHECK_EQUAL(1, qUser.getInt64(0), "number of user steps");
-    }
-    else {
+    } else {
         CHECK_TRUE(false, "Unexpected error!");
     }
     CHECK_NO_ERROR(os);
@@ -654,8 +667,7 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_actionAfterUndo) {
     qSingle.bindDataId(1, msaId);
     if (qSingle.step()) {
         CHECK_EQUAL(1, qSingle.getInt64(0), "number of single steps");
-    }
-    else {
+    } else {
         CHECK_TRUE(false, "Unexpected error!");
     }
     CHECK_NO_ERROR(os);
@@ -670,8 +682,10 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_actionAfterUndo) {
     CHECK_EQUAL(msaVersion, msaVersionAfterActUndo, "msa version after undo, action and undo");
 
     // Verify canUndo/canRedo
-    bool undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    bool redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    bool undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    bool redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_FALSE(undoState, "undo state after undo, action and undo");
     CHECK_TRUE(redoState, "redo state after undo, action and undo");
 
@@ -685,8 +699,10 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_actionAfterUndo) {
     CHECK_EQUAL(msaVersion + 1, msaVersionAfterActRedo, "msa version after undo, action and undo/redo");
 
     // Verify canUndo/canRedo
-    undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_TRUE(undoState, "undo state after undo, action and undo/redo");
     CHECK_FALSE(redoState, "redo state after undo, action and undo/redo");
 }
@@ -733,8 +749,7 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_actionUndoActionUndo1) {
     qUser.bindDataId(1, msaId);
     if (qUser.step()) {
         CHECK_EQUAL(1, qUser.getInt64(0), "number of user steps");
-    }
-    else {
+    } else {
         CHECK_TRUE(false, "Unexpected error!");
     }
     CHECK_NO_ERROR(os);
@@ -743,8 +758,7 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_actionUndoActionUndo1) {
     qSingle.bindDataId(1, msaId);
     if (qSingle.step()) {
         CHECK_EQUAL(1, qSingle.getInt64(0), "number of single steps");
-    }
-    else {
+    } else {
         CHECK_TRUE(false, "Unexpected error!");
     }
     CHECK_NO_ERROR(os);
@@ -759,8 +773,10 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_actionUndoActionUndo1) {
     CHECK_EQUAL(msaVersion, msaVersionAfter, "msa version after action, undo, action, undo");
 
     // Verify canUndo/canRedo
-    bool undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    bool redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    bool undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    bool redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_FALSE(undoState, "undo state after undo, action and undo/redo");
     CHECK_TRUE(redoState, "redo state after undo, action and undo/redo");
 }
@@ -793,8 +809,7 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_actionUndoActionUndo2) {
     qUser.bindDataId(1, msaId);
     if (qUser.step()) {
         CHECK_EQUAL(1, qUser.getInt64(0), "number of user steps");
-    }
-    else {
+    } else {
         CHECK_TRUE(false, "Unexpected error!");
     }
     CHECK_NO_ERROR(os);
@@ -803,8 +818,7 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_actionUndoActionUndo2) {
     qSingle.bindDataId(1, msaId);
     if (qSingle.step()) {
         CHECK_EQUAL(1, qSingle.getInt64(0), "number of single steps");
-    }
-    else {
+    } else {
         CHECK_TRUE(false, "Unexpected error!");
     }
     CHECK_NO_ERROR(os);
@@ -819,8 +833,10 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_actionUndoActionUndo2) {
     CHECK_EQUAL(msaVersion, msaVersionAfter, "msa version after action, undo, action, undo");
 
     // Verify canUndo/canRedo
-    bool undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    bool redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    bool undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    bool redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_FALSE(undoState, "undo state after undo, action and undo/redo");
     CHECK_TRUE(redoState, "redo state after undo, action and undo/redo");
 }
@@ -860,8 +876,7 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_actionUndoActionUndo3) {
     qUser.bindDataId(1, msaId);
     if (qUser.step()) {
         CHECK_EQUAL(1, qUser.getInt64(0), "number of user steps");
-    }
-    else {
+    } else {
         CHECK_TRUE(false, "Unexpected error!");
     }
     CHECK_NO_ERROR(os);
@@ -870,8 +885,7 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_actionUndoActionUndo3) {
     qSingle.bindDataId(1, msaId);
     if (qSingle.step()) {
         CHECK_EQUAL(1, qSingle.getInt64(0), "number of single steps");
-    }
-    else {
+    } else {
         CHECK_TRUE(false, "Unexpected error!");
     }
     CHECK_NO_ERROR(os);
@@ -886,8 +900,10 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_actionUndoActionUndo3) {
     CHECK_EQUAL(msaVersion, msaVersionAfter, "msa version after action, undo, action, undo");
 
     // Verify canUndo/canRedo
-    bool undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    bool redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    bool undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    bool redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_FALSE(undoState, "undo state after undo, action and undo/redo");
     CHECK_TRUE(redoState, "redo state after undo, action and undo/redo");
 }
@@ -927,8 +943,7 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_actionUndoActionUndo4) {
     qUser.bindDataId(1, msaId);
     if (qUser.step()) {
         CHECK_EQUAL(1, qUser.getInt64(0), "number of user steps");
-    }
-    else {
+    } else {
         CHECK_TRUE(false, "Unexpected error!");
     }
     CHECK_NO_ERROR(os);
@@ -937,8 +952,7 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_actionUndoActionUndo4) {
     qSingle.bindDataId(1, msaId);
     if (qSingle.step()) {
         CHECK_EQUAL(1, qSingle.getInt64(0), "number of single steps");
-    }
-    else {
+    } else {
         CHECK_TRUE(false, "Unexpected error!");
     }
     CHECK_NO_ERROR(os);
@@ -953,8 +967,10 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_actionUndoActionUndo4) {
     CHECK_EQUAL(msaVersion, msaVersionAfter, "msa version after action, undo, action, undo");
 
     // Verify canUndo/canRedo
-    bool undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    bool redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    bool undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    bool redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_FALSE(undoState, "undo state after undo, action and undo/redo");
     CHECK_TRUE(redoState, "redo state after undo, action and undo/redo");
 }
@@ -978,25 +994,27 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_user3Single6) {
         CHECK_NO_ERROR(os);
         Q_UNUSED(userStep);
 
-        SQLiteObjectDbiTestData::addTestRow(msaId, os); // multi/single step 1
+        SQLiteObjectDbiTestData::addTestRow(msaId, os);    // multi/single step 1
         CHECK_NO_ERROR(os);
 
-        SQLiteObjectDbiTestData::addTestRow(msaId, os); // multi/single step 2
+        SQLiteObjectDbiTestData::addTestRow(msaId, os);    // multi/single step 2
         CHECK_NO_ERROR(os);
     }
 
     // User step 2
-    SQLiteObjectDbiTestData::addTestRow(msaId, os); // multi/single step 3
+    SQLiteObjectDbiTestData::addTestRow(msaId, os);    // multi/single step 3
 
     // Verify version
-    qint64 msaVersionAfterUser1 = msaVersion + 2; // verified in another test
+    qint64 msaVersionAfterUser1 = msaVersion + 2;    // verified in another test
     qint64 msaVersionAfterUser2 = objDbi->getObjectVersion(msaId, os);
     CHECK_NO_ERROR(os);
     CHECK_EQUAL(msaVersionAfterUser1 + 1, msaVersionAfterUser2, "msa version after user step 2");
 
     // Verify canUndo/canRedo
-    bool undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    bool redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    bool undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    bool redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_TRUE(undoState, "undo state after user step 2");
     CHECK_FALSE(redoState, "redo state after user step 2");
 
@@ -1020,10 +1038,10 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_user3Single6) {
         CHECK_NO_ERROR(os);
         Q_UNUSED(userStep);
 
-        sqliteDbi->getMsaDbi()->addRow(msaId, -1, row, os); // multi/single step 4
+        sqliteDbi->getMsaDbi()->addRow(msaId, -1, row, os);    // multi/single step 4
         CHECK_NO_ERROR(os);
 
-        sqliteDbi->getMsaDbi()->updateRowContent(msaId, row.rowId, "ACGT", QList<U2MsaGap>(), os); // multi step 5, single steps 5-6
+        sqliteDbi->getMsaDbi()->updateRowContent(msaId, row.rowId, "ACGT", QList<U2MsaGap>(), os);    // multi step 5, single steps 5-6
         CHECK_NO_ERROR(os);
     }
 
@@ -1033,8 +1051,10 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_user3Single6) {
     CHECK_EQUAL(msaVersionAfterUser2 + 2, msaVersionAfterUser3, "msa version after user step 3");
 
     // Verify canUndo/canRedo
-    undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_TRUE(undoState, "undo state after user step 3");
     CHECK_FALSE(redoState, "redo state after user step 3");
 
@@ -1048,8 +1068,10 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_user3Single6) {
     CHECK_EQUAL(msaVersionAfterUser2, msaVersionAfterUndo1, "msa version after undo 1");
 
     // Verify canUndo/canRedo
-    undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_TRUE(undoState, "undo state after undo 1");
     CHECK_TRUE(redoState, "redo state after undo 1");
 
@@ -1063,8 +1085,10 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_user3Single6) {
     CHECK_EQUAL(msaVersionAfterUser1, msaVersionAfterUndo2, "msa version after undo 2");
 
     // Verify canUndo/canRedo
-    undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_TRUE(undoState, "undo state after undo 2");
     CHECK_TRUE(redoState, "redo state after undo 2");
 
@@ -1078,8 +1102,10 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_user3Single6) {
     CHECK_EQUAL(msaVersion, msaVersionAfterUndo3, "msa version after undo 3");
 
     // Verify canUndo/canRedo
-    undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_FALSE(undoState, "undo state after undo 3");
     CHECK_TRUE(redoState, "redo state after undo 3");
 
@@ -1093,8 +1119,10 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_user3Single6) {
     CHECK_EQUAL(msaVersionAfterUser1, msaVersionAfterRedo1, "msa version after redo 1");
 
     // Verify canUndo/canRedo
-    undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_TRUE(undoState, "undo state after redo 1");
     CHECK_TRUE(redoState, "redo state after redo 1");
 
@@ -1108,8 +1136,10 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_user3Single6) {
     CHECK_EQUAL(msaVersionAfterUser2, msaVersionAfterRedo2, "msa version after redo 2");
 
     // Verify canUndo/canRedo
-    undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_TRUE(undoState, "undo state after redo 2");
     CHECK_TRUE(redoState, "redo state after redo 2");
 
@@ -1123,10 +1153,12 @@ IMPLEMENT_TEST(SQLiteObjectDbiUnitTests, commonUndoRedo_user3Single6) {
     CHECK_EQUAL(msaVersionAfterUser3, msaVersionAfterRedo3, "msa version after redo 3");
 
     // Verify canUndo/canRedo
-    undoState = objDbi->canUndo(msaId, os); CHECK_NO_ERROR(os);
-    redoState = objDbi->canRedo(msaId, os); CHECK_NO_ERROR(os);
+    undoState = objDbi->canUndo(msaId, os);
+    CHECK_NO_ERROR(os);
+    redoState = objDbi->canRedo(msaId, os);
+    CHECK_NO_ERROR(os);
     CHECK_TRUE(undoState, "undo state after redo 3");
     CHECK_FALSE(redoState, "redo state after redo 3");
 }
 
-} // namespace
+}    // namespace U2

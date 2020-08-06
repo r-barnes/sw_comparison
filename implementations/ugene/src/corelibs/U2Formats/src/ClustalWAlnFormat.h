@@ -36,19 +36,19 @@ class U2FORMATS_EXPORT ClustalWAlnFormat : public TextDocumentFormat {
 public:
     static const QByteArray CLUSTAL_HEADER;
 
-    ClustalWAlnFormat(QObject* p);
+    ClustalWAlnFormat(QObject *p);
 
-    virtual void storeDocument(Document* d, IOAdapter* io, U2OpStatus& os);
+    virtual void storeDocument(Document *d, IOAdapter *io, U2OpStatus &os);
 
-    virtual void storeEntry(IOAdapter *io, const QMap< GObjectType, QList<GObject*> > &objectsMap, U2OpStatus &os);
+    virtual void storeEntry(IOAdapter *io, const QMap<GObjectType, QList<GObject *>> &objectsMap, U2OpStatus &os);
 
 protected:
-    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& = GUrl()) const;
+    virtual FormatCheckResult checkRawTextData(const QByteArray &rawData, const GUrl & = GUrl()) const;
 
-    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
+    virtual Document *loadTextDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os);
 
 private:
-    void load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& objects, const QVariantMap& fs, U2OpStatus& ti);
+    void load(IOAdapter *io, const U2DbiRef &dbiRef, QList<GObject *> &objects, const QVariantMap &fs, U2OpStatus &ti);
 
     static const int MAX_LINE_LEN;
     static const int MAX_NAME_LEN;
@@ -56,6 +56,6 @@ private:
     static const int SEQ_ALIGNMENT;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

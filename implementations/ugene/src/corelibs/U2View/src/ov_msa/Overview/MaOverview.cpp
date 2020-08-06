@@ -19,13 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "MaOverview.h"
+
 #include <QMouseEvent>
 #include <QPainter>
 
 #include <U2View/MSAEditor.h>
 #include <U2View/MSAEditorSequenceArea.h>
 
-#include "MaOverview.h"
 #include "ov_msa/helpers/BaseWidthController.h"
 #include "ov_msa/helpers/RowHeightController.h"
 #include "ov_msa/helpers/ScrollController.h"
@@ -38,13 +39,10 @@ MaOverview::MaOverview(MaEditorWgt *ui)
       ui(ui),
       sequenceArea(ui->getSequenceArea()),
       stepX(0),
-      stepY(0)
-{
+      stepY(0) {
     connect(sequenceArea, SIGNAL(si_visibleRangeChanged()), this, SLOT(sl_visibleRangeChanged()));
-    connect(sequenceArea, SIGNAL(si_selectionChanged(MaEditorSelection,MaEditorSelection)),
-            SLOT(sl_selectionChanged()));
-    connect(editor->getMaObject(), SIGNAL(si_alignmentChanged(MultipleAlignment,MaModificationInfo)),
-            SLOT(sl_redraw()));
+    connect(sequenceArea, SIGNAL(si_selectionChanged(MaEditorSelection, MaEditorSelection)), SLOT(sl_selectionChanged()));
+    connect(editor->getMaObject(), SIGNAL(si_alignmentChanged(MultipleAlignment, MaModificationInfo)), SLOT(sl_redraw()));
     connect(ui->getScrollController(), SIGNAL(si_visibleAreaChanged()), SLOT(sl_redraw()));
     connect(ui->getCollapseModel(), SIGNAL(si_toggled()), SLOT(sl_redraw()));
 }
@@ -117,4 +115,4 @@ int MaOverview::getContentWidgetHeight() const {
     return height();
 }
 
-} // namespace
+}    // namespace U2

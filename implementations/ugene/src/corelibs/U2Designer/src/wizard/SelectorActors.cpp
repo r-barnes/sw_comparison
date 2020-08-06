@@ -19,14 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "SelectorActors.h"
+
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Lang/ActorPrototypeRegistry.h>
 #include <U2Lang/SelectorValue.h>
 #include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/WorkflowUtils.h>
-
-#include "SelectorActors.h"
 
 namespace U2 {
 
@@ -35,9 +35,8 @@ SelectorActors::SelectorActors() {
     srcActor = NULL;
 }
 
-SelectorActors::SelectorActors(ElementSelectorWidget *_widget, const QList<Actor*> &allActors, U2OpStatus &os)
-: widget(_widget)
-{
+SelectorActors::SelectorActors(ElementSelectorWidget *_widget, const QList<Actor *> &allActors, U2OpStatus &os)
+    : widget(_widget) {
     srcActor = WorkflowUtils::actorById(allActors, widget->getActorId());
     if (NULL == srcActor) {
         os.setError(QObject::tr("Unknown actor id: %1").arg(widget->getActorId()));
@@ -57,14 +56,13 @@ SelectorActors::SelectorActors(ElementSelectorWidget *_widget, const QList<Actor
 }
 
 SelectorActors::~SelectorActors() {
-
 }
 
-Actor * SelectorActors::getActor(const QString &value) const {
+Actor *SelectorActors::getActor(const QString &value) const {
     return actors.value(value, NULL);
 }
 
-Actor * SelectorActors::getSourceActor() const {
+Actor *SelectorActors::getSourceActor() const {
     return srcActor;
 }
 
@@ -77,4 +75,4 @@ QList<PortMapping> SelectorActors::getMappings(const QString &value) const {
     return QList<PortMapping>();
 }
 
-} // U2
+}    // namespace U2

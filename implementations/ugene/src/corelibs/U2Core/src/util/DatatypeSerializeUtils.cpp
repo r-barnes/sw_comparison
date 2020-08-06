@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DatatypeSerializeUtils.h"
+
 #include <QBitArray>
 #include <QStack>
 #include <QtEndian>
@@ -26,8 +28,6 @@
 #include <U2Core/StringAdapter.h>
 #include <U2Core/TextUtils.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "DatatypeSerializeUtils.h"
 
 namespace U2 {
 
@@ -41,13 +41,13 @@ const QString FMatrixSerializer::ID = "fm_1.14";
     if (offset + size > length) { \
         os.setError("The data are too short"); \
         return result; \
-        }
+    }
 
 namespace {
 template<class T>
 inline QByteArray packNum(const T &num) {
     T leNum = qToLittleEndian<T>(num);
-    return QByteArray((char*)&leNum, sizeof(T));
+    return QByteArray((char *)&leNum, sizeof(T));
 }
 template<>
 inline QByteArray packNum(const double &num) {
@@ -70,7 +70,7 @@ inline QByteArray unpackReal(const uchar *data, int length, int &offset, U2OpSta
     int size = unpackNum<int>(data, length, offset, os);
     CHECK_OP(os, "");
     CHECK_SIZE(size, "");
-    QByteArray result((const char*)data + offset, size);
+    QByteArray result((const char *)data + offset, size);
     offset += size;
     return result;
 }
@@ -91,7 +91,7 @@ template<class T>
 inline QByteArray packNumVector(const QVector<T> &vector) {
     QByteArray result;
     result += packNum<int>(vector.size());
-    foreach(const T &num, vector) {
+    foreach (const T &num, vector) {
         result += packNum<T>(num);
     }
     return result;
@@ -112,7 +112,7 @@ inline QVector<T> unpackNumVector(const uchar *data, int length, int &offset, U2
 inline QByteArray packCharVector(const QVector<char> &vector) {
     QByteArray result;
     result += packNum<int>(vector.size());
-    foreach(const char &c, vector) {
+    foreach (const char &c, vector) {
         result += c;
     }
     return result;
@@ -140,7 +140,7 @@ inline bool unpackBool(const uchar *data, int length, int &offset, U2OpStatus &o
     offset++;
     return (0 == c) ? false : true;
 }
-}
+}    // namespace
 
 /************************************************************************/
 /* DNAChromatogramSerializer */
@@ -164,7 +164,7 @@ QByteArray DNAChromatogramSerializer::serialize(const DNAChromatogram &chroma) {
 
 DNAChromatogram DNAChromatogramSerializer::deserialize(const QByteArray &binary, U2OpStatus &os) {
     DNAChromatogram result;
-    const uchar *data = (const uchar*)(binary.data());
+    const uchar *data = (const uchar *)(binary.data());
     int offset = 0;
     int length = binary.length();
 
@@ -198,7 +198,10 @@ DNAChromatogram DNAChromatogramSerializer::deserialize(const QByteArray &binary,
 /* NewickPhyTreeSerializer */
 /************************************************************************/
 namespace {
-enum ReadState { RS_NAME, RS_WEIGHT, RS_QUOTED_NAME, RS_NAME_OR_WEIGHT };
+enum ReadState { RS_NAME,
+                 RS_WEIGHT,
+                 RS_QUOTED_NAME,
+                 RS_NAME_OR_WEIGHT };
 
 void packTreeNode(QByteArray &binary, const PhyNode *node) {
     int branches = node->branchCount();
@@ -232,7 +235,7 @@ void packTreeNode(QByteArray &binary, const PhyNode *node) {
         binary.append(QString(node->getName()).toLatin1());
     }
 }
-}
+}    // namespace
 
 #define BUFF_SIZE 1024
 /* TODO:
@@ -242,7 +245,7 @@ void packTreeNode(QByteArray &binary, const PhyNode *node) {
  Newlines may appear anywhere except within labels or branch_lengths.
  Comments are enclosed in square brackets and may appear anywhere newlines are permitted.
  */
-QList<PhyTree> NewickPhyTreeSerializer::parseTrees(IOAdapter *io, U2OpStatus& si) {
+QList<PhyTree> NewickPhyTreeSerializer::parseTrees(IOAdapter *io, U2OpStatus &si) {
     QList<PhyTree> result;
     QByteArray block(BUFF_SIZE, '\0');
     int blockLen;
@@ -261,8 +264,8 @@ QList<PhyTree> NewickPhyTreeSerializer::parseTrees(IOAdapter *io, U2OpStatus& si
     QString lastStr;
     PhyNode *rd = new PhyNode();
 
-    QStack<PhyNode*> nodeStack;
-    QStack<PhyBranch*>  branchStack;
+    QStack<PhyNode *> nodeStack;
+    QStack<PhyBranch *> branchStack;
     nodeStack.push(rd);
     while ((blockLen = io->readBlock(block.data(), BUFF_SIZE)) > 0) {
         for (int i = 0; i < blockLen; ++i) {
@@ -274,7 +277,7 @@ QList<PhyTree> NewickPhyTreeSerializer::parseTrees(IOAdapter *io, U2OpStatus& si
                 continue;
             }
             done = false;
-            if (!ops[(uchar)c]) { //not ops -> cache
+            if (!ops[(uchar)c]) {    //not ops -> cache
                 lastStr.append(c);
                 continue;
             }
@@ -307,7 +310,7 @@ QList<PhyTree> NewickPhyTreeSerializer::parseTrees(IOAdapter *io, U2OpStatus& si
                     nodeStack.top()->setName(lastStr);
                 } else {
                     CHECK_EXT_BREAK(state == RS_WEIGHT, si.setError(DatatypeSerializers::tr("Incorrect tree parsing state")));
-                    if (!branchStack.isEmpty()) { //ignore root node weight if present
+                    if (!branchStack.isEmpty()) {    //ignore root node weight if present
                         if (nodeStack.size() < 2) {
                             si.setError(DatatypeSerializers::tr("Unexpected weight: %1").arg(lastStr));
                         }
@@ -319,16 +322,16 @@ QList<PhyTree> NewickPhyTreeSerializer::parseTrees(IOAdapter *io, U2OpStatus& si
             }
 
             // advance in state
-            if (c == '(') { //new child
+            if (c == '(') {    //new child
                 CHECK_EXT_BREAK(!nodeStack.isEmpty(), si.setError(DatatypeSerializers::tr("Tree node stack is empty")));
-                PhyNode* pn = new PhyNode();
-                PhyBranch* bd = PhyTreeData::addBranch(nodeStack.top(), pn, 0);
+                PhyNode *pn = new PhyNode();
+                PhyBranch *bd = PhyTreeData::addBranch(nodeStack.top(), pn, 0);
                 nodeStack.push(pn);
                 branchStack.push(bd);
                 state = RS_NAME;
-            } else if (c == ':') { //weight start
+            } else if (c == ':') {    //weight start
                 if (state == RS_WEIGHT && !lastStr.isEmpty()) {
-                    if (!branchStack.isEmpty()) { //ignore root node weight if present
+                    if (!branchStack.isEmpty()) {    //ignore root node weight if present
                         bool ok = false;
                         branchStack.top()->nodeValue = lastStr.toDouble(&ok);
                         if (!ok) {
@@ -340,7 +343,7 @@ QList<PhyTree> NewickPhyTreeSerializer::parseTrees(IOAdapter *io, U2OpStatus& si
                     }
                 }
                 state = RS_WEIGHT;
-            } else if (c == ',') { //new sibling
+            } else if (c == ',') {    //new sibling
                 CHECK_EXT_BREAK(!nodeStack.isEmpty(), si.setError(DatatypeSerializers::tr("Tree node stack is empty")));
                 CHECK_EXT_BREAK(!branchStack.isEmpty(), si.setError(DatatypeSerializers::tr("Branch node stack is empty")));
                 if (nodeStack.isEmpty() || branchStack.isEmpty()) {
@@ -349,12 +352,12 @@ QList<PhyTree> NewickPhyTreeSerializer::parseTrees(IOAdapter *io, U2OpStatus& si
                 }
                 nodeStack.pop();
                 branchStack.pop();
-                PhyNode* pn = new PhyNode();
-                PhyBranch* bd = PhyTreeData::addBranch(nodeStack.top(), pn, 0);
+                PhyNode *pn = new PhyNode();
+                PhyBranch *bd = PhyTreeData::addBranch(nodeStack.top(), pn, 0);
                 nodeStack.push(pn);
                 branchStack.push(bd);
                 state = RS_NAME;
-            } else if (c == ')') { //end of the branch, go up
+            } else if (c == ')') {    //end of the branch, go up
                 nodeStack.pop();
                 if (nodeStack.isEmpty()) {
                     si.setError(DatatypeSerializers::tr("Unexpected closing bracket :%1").arg(lastStr));
@@ -434,9 +437,9 @@ PhyTree NewickPhyTreeSerializer::deserialize(const QByteArray &binary, U2OpStatu
 namespace {
 class PackContext {
 public:
-    QHash<const AtomData*, SharedAtom> atoms;
-    QHash<const AtomData*, int> atomPositions;
-    QHash<int, const AtomData*> atomByPosition;
+    QHash<const AtomData *, SharedAtom> atoms;
+    QHash<const AtomData *, int> atomPositions;
+    QHash<int, const AtomData *> atomByPosition;
 };
 
 template<class T>
@@ -459,7 +462,7 @@ template<>
 inline QByteArray unpack(const uchar *data, int length, int &offset, U2OpStatus &os) {
     int size = unpackNum<int>(data, length, offset, os);
     CHECK_SIZE(size, "");
-    QByteArray result((const char*)data + offset, size);
+    QByteArray result((const char *)data + offset, size);
     offset += size;
     return result;
 }
@@ -674,7 +677,7 @@ template<class T>
 inline QByteArray packList(const QList<T> &data, PackContext &ctx) {
     QByteArray result;
     result += packNum<int>(data.size());
-    foreach(const T &d, data) {
+    foreach (const T &d, data) {
         result += pack(d, ctx);
     }
     return result;
@@ -711,7 +714,7 @@ template<class KeyT, class ValueT>
 inline QByteArray packMap(const QMap<KeyT, ValueT> &data, PackContext &ctx) {
     QByteArray result;
     result += packNum<int>(data.size());
-    foreach(const KeyT &idx, data.keys()) {
+    foreach (const KeyT &idx, data.keys()) {
         result += packNum<KeyT>(idx);
         result += pack(data[idx], ctx);
     }
@@ -762,7 +765,7 @@ inline SharedMolecule unpack(const uchar *data, int length, int &offset, U2OpSta
 inline QByteArray pack(const AtomCoordSet &data, PackContext &ctx) {
     QByteArray result;
     result += packNum<int>(data.size());
-    foreach(int idx, data.keys()) {
+    foreach (int idx, data.keys()) {
         result += packNum<int>(idx);
         result += pack(data[idx], ctx);
     }
@@ -782,7 +785,7 @@ inline AtomCoordSet unpack(const uchar *data, int length, int &offset, U2OpStatu
     }
     return result;
 }
-}
+}    // namespace
 
 QByteArray BioStruct3DSerializer::serialize(const BioStruct3D &bioStruct) {
     PackContext ctx;
@@ -800,7 +803,7 @@ QByteArray BioStruct3DSerializer::serialize(const BioStruct3D &bioStruct) {
 }
 
 BioStruct3D BioStruct3DSerializer::deserialize(const QByteArray &binary, U2OpStatus &os) {
-    const uchar *data = (const uchar*)(binary.data());
+    const uchar *data = (const uchar *)(binary.data());
     int offset = 0;
     int length = binary.length();
 
@@ -834,7 +837,7 @@ template<class T>
 inline QByteArray packArray(const QVarLengthArray<T> &data) {
     QByteArray result;
     result += packNum<int>(data.size());
-    foreach(const T &d, data) {
+    foreach (const T &d, data) {
         result += packNum<T>(d);
     }
     return result;
@@ -853,7 +856,7 @@ inline QVarLengthArray<T> unpackArray(const uchar *data, int length, int &offset
 inline QByteArray packMap(const QMap<QString, QString> &data) {
     QByteArray result;
     result += packNum<int>(data.size());
-    foreach(const QString &key, data.keys()) {
+    foreach (const QString &key, data.keys()) {
         result += pack(key);
         result += pack(data[key]);
     }
@@ -872,7 +875,7 @@ inline QMap<QString, QString> unpackMap(const uchar *data, int length, int &offs
     }
     return result;
 }
-}
+}    // namespace
 
 QByteArray WMatrixSerializer::serialize(const PWMatrix &matrix) {
     QByteArray result;
@@ -883,7 +886,7 @@ QByteArray WMatrixSerializer::serialize(const PWMatrix &matrix) {
 }
 
 PWMatrix WMatrixSerializer::deserialize(const QByteArray &binary, U2OpStatus &os) {
-    const uchar *data = (const uchar*)(binary.data());
+    const uchar *data = (const uchar *)(binary.data());
     int offset = 0;
     int length = binary.length();
 
@@ -912,7 +915,7 @@ QByteArray FMatrixSerializer::serialize(const PFMatrix &matrix) {
 }
 
 PFMatrix FMatrixSerializer::deserialize(const QByteArray &binary, U2OpStatus &os) {
-    const uchar *data = (const uchar*)(binary.data());
+    const uchar *data = (const uchar *)(binary.data());
     int offset = 0;
     int length = binary.length();
 
@@ -929,4 +932,4 @@ PFMatrix FMatrixSerializer::deserialize(const QByteArray &binary, U2OpStatus &os
     return result;
 }
 
-} // U2
+}    // namespace U2

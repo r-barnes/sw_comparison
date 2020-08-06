@@ -19,20 +19,21 @@
  * MA 02110-1301, USA.
  */
 
+#include "AnnotationUnitTests.h"
+
 #include <QBitArray>
 
 #include <U2Core/U2FeatureUtils.h>
-#include <U2Core/U2SafePoints.h>
 #include <U2Core/U2OpStatusUtils.h>
+#include <U2Core/U2SafePoints.h>
 
 #include "../../gobjects/FeaturesTableObjectUnitTest.h"
-#include "AnnotationUnitTests.h"
 
 #define CHECK_REGIONS_MATCH(first, second) \
-CHECK_TRUE(first.size() == second.size(), "Invalid annotation's region count"); \
-foreach (const U2Region &region, first) { \
-    CHECK_TRUE(second.contains(region), "Invalid annotation's region"); \
-}
+    CHECK_TRUE(first.size() == second.size(), "Invalid annotation's region count"); \
+    foreach (const U2Region &region, first) { \
+        CHECK_TRUE(second.contains(region), "Invalid annotation's region"); \
+    }
 
 namespace U2 {
 
@@ -316,4 +317,4 @@ IMPLEMENT_TEST(AnnotationUnitTest, getSet_Case) {
     CHECK_FALSE(annotation->isCaseAnnotation(), "Unexpected annotation case!");
 }
 
-} // namespace U2
+}    // namespace U2

@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-
 #include "SeqPosSettings.h"
 
 #include <U2Core/GUrlUtils.h>
@@ -33,12 +32,11 @@ const QString SeqPosSettings::MOTIF_DB_TRANSFAC = "transfac.xml";
 const QString SeqPosSettings::MOTIF_DB_HDPI = "hpdi.xml";
 const QString SeqPosSettings::MOTIF_DB_JASPAR = "jaspar.xml";
 
-
 SeqPosSettings::SeqPosSettings() {
     initDefault();
 }
 
-void SeqPosSettings::initDefault(){
+void SeqPosSettings::initDefault() {
     outDir = "";
     genomeAssembly = "";
     findDeNovo = false;
@@ -48,18 +46,18 @@ void SeqPosSettings::initDefault(){
     pVal = 0.001f;
 }
 
-QStringList SeqPosSettings::getArguments( const QString& treatFilePath){
+QStringList SeqPosSettings::getArguments(const QString &treatFilePath) {
     QStringList result;
 
     result << treatFilePath;
 
     result << genomeAssembly;
 
-    if (findDeNovo){
+    if (findDeNovo) {
         result << "-d";
     }
 
-    if (!motifDB.isEmpty()){
+    if (!motifDB.isEmpty()) {
         result << "-m " + motifDB;
     }
 
@@ -71,8 +69,7 @@ QStringList SeqPosSettings::getArguments( const QString& treatFilePath){
 
     result << "--verbose";
 
-
     return result;
 }
 
-} // U2
+}    // namespace U2

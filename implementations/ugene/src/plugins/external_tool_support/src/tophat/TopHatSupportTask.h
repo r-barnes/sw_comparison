@@ -22,11 +22,6 @@
 #ifndef _U2_TOPHAT_SUPPORT_TASK_H_
 #define _U2_TOPHAT_SUPPORT_TASK_H_
 
-#include "TopHatSettings.h"
-#include "TopHatSupport.h"
-#include "bowtie/BowtieTask.h"
-#include "bowtie2/Bowtie2Task.h"
-
 #include <U2Core/DocumentModel.h>
 #include <U2Core/ExternalToolRunTask.h>
 #include <U2Core/SaveDocumentTask.h>
@@ -35,25 +30,30 @@
 #include <U2Lang/DbiDataHandler.h>
 #include <U2Lang/ReadDocumentTaskFactory.h>
 
+#include "TopHatSettings.h"
+#include "TopHatSupport.h"
+#include "bowtie/BowtieTask.h"
+#include "bowtie2/Bowtie2Task.h"
 
 namespace U2 {
 
-class TopHatSupportTask : public ExternalToolSupportTask
-{
+class TopHatSupportTask : public ExternalToolSupportTask {
     Q_OBJECT
 
 public:
-    TopHatSupportTask(const TopHatSettings& settings);
+    TopHatSupportTask(const TopHatSettings &settings);
     ~TopHatSupportTask();
 
     void prepare();
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
     Task::ReportResult report();
     QStringList getOutputFiles() const;
     QString getOutBamUrl() const;
     QString getDatasetName() const;
 
-    Workflow::SharedDbiDataHandler getAcceptedHits() const { return acceptedHits; }
+    Workflow::SharedDbiDataHandler getAcceptedHits() const {
+        return acceptedHits;
+    }
 
 private:
     enum FileRole {
@@ -68,23 +68,23 @@ private:
     void renameOutputFile(FileRole role, const QString &newUrl);
     void renameOutputFiles();
 
-    TopHatSettings      settings;
+    TopHatSettings settings;
 
-    QPointer<Document>                  tmpDoc;
-    QPointer<Document>                  tmpDocPaired;
-    QString                             workingDirectory;
+    QPointer<Document> tmpDoc;
+    QPointer<Document> tmpDocPaired;
+    QString workingDirectory;
 
-    SaveDocumentTask*                   saveTmpDocTask;
-    SaveDocumentTask*                   savePairedTmpDocTask;
-    ExternalToolRunTask*                topHatExtToolTask;
-    Workflow::ReadDocumentTask*         readAssemblyOutputTask;
+    SaveDocumentTask *saveTmpDocTask;
+    SaveDocumentTask *savePairedTmpDocTask;
+    ExternalToolRunTask *topHatExtToolTask;
+    Workflow::ReadDocumentTask *readAssemblyOutputTask;
 
     /** Specifies whether a document, or both documents (in case of paired reads) were saved */
-    bool                                tmpDocSaved;
-    bool                                tmpDocPairedSaved;
+    bool tmpDocSaved;
+    bool tmpDocPairedSaved;
 
-    Workflow::SharedDbiDataHandler      acceptedHits;
-    QMap<FileRole, QString>             outputFiles;
+    Workflow::SharedDbiDataHandler acceptedHits;
+    QMap<FileRole, QString> outputFiles;
 
     ExternalToolSupportTask *bowtieIndexTask;
 
@@ -92,11 +92,11 @@ private:
 
 private:
     QString setupTmpDir();
-    SaveDocumentTask * createSaveTask(const QString &url, QPointer<Document> &doc, const QList<Workflow::SharedDbiDataHandler> &seqs);
-    ExternalToolRunTask * runTophat();
+    SaveDocumentTask *createSaveTask(const QString &url, QPointer<Document> &doc, const QList<Workflow::SharedDbiDataHandler> &seqs);
+    ExternalToolRunTask *runTophat();
 
     ExternalToolSupportTask *createIndexTask();
 };
-} // namespace
+}    // namespace U2
 
 #endif

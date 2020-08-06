@@ -21,23 +21,24 @@
 
 #include "SplashScreen.h"
 
-#include <U2Core/AppContext.h>
-#include <U2Core/Task.h>
-#include <U2Core/Version.h>
-#include <U2Core/U2SafePoints.h>
-
 #include <QEvent>
+#include <QLabel>
+#include <QLayout>
 #include <QMovie>
 #include <QPainter>
-#include <QLayout>
-#include <QLabel>
 
-namespace U2{
+#include <U2Core/AppContext.h>
+#include <U2Core/Task.h>
+#include <U2Core/U2SafePoints.h>
+#include <U2Core/Version.h>
+
+namespace U2 {
 
 #define VERSION_HEIGHT_PX 15
 #define TASK_HEIGHT_PX 13
 
-SplashScreen::SplashScreen( QWidget *parent /* = NULL*/ ):QDialog(parent) {
+SplashScreen::SplashScreen(QWidget *parent /* = NULL*/)
+    : QDialog(parent) {
     setEnabled(false);
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
@@ -45,35 +46,35 @@ SplashScreen::SplashScreen( QWidget *parent /* = NULL*/ ):QDialog(parent) {
     setWindowFlags(windowFlags() | Qt::MSWindowsFixedSizeDialogHint);
 #endif
     setWindowModality(Qt::ApplicationModal);
-    QHBoxLayout* mainLayout = new QHBoxLayout();
+    QHBoxLayout *mainLayout = new QHBoxLayout();
     setLayout(mainLayout);
     setContentsMargins(0, 0, 0, 0);
     mainLayout->setMargin(0);
     QFrame *frame = new QFrame(this);
     mainLayout->addWidget(frame);
 
-    QHBoxLayout* frameLayout = new QHBoxLayout();
+    QHBoxLayout *frameLayout = new QHBoxLayout();
     frameLayout->setMargin(0);
     frame->setContentsMargins(0, 0, 0, 0);
     frame->setLayout(frameLayout);
 
-    SplashScreenWidget* sWidget = new SplashScreenWidget();
+    SplashScreenWidget *sWidget = new SplashScreenWidget();
 
-    QVBoxLayout* aWLayout = (QVBoxLayout*)frame->layout();
+    QVBoxLayout *aWLayout = (QVBoxLayout *)frame->layout();
     aWLayout->insertWidget(0, sWidget);
     aWLayout->setStretchFactor(sWidget, 100);
     installEventFilter(this);
 }
 
-void SplashScreen::sl_close(){
-    if(AppContext::getTaskScheduler() == qobject_cast<TaskScheduler*>(sender())){
+void SplashScreen::sl_close() {
+    if (AppContext::getTaskScheduler() == qobject_cast<TaskScheduler *>(sender())) {
         removeEventFilter(this);
         close();
     }
 }
 
-bool SplashScreen::eventFilter(QObject * /*obj*/, QEvent *ev){
-    if(ev->type() == QEvent::Close){
+bool SplashScreen::eventFilter(QObject * /*obj*/, QEvent *ev) {
+    if (ev->type() == QEvent::Close) {
         ev->ignore();
         return true;
     }
@@ -81,7 +82,7 @@ bool SplashScreen::eventFilter(QObject * /*obj*/, QEvent *ev){
 }
 
 ////////////////////////////////////////////////////////////////
-SplashScreenWidget::SplashScreenWidget(){
+SplashScreenWidget::SplashScreenWidget() {
     setObjectName("splash_screen_widget");
 
     Version v = Version::appVersion();
@@ -96,44 +97,49 @@ SplashScreenWidget::SplashScreenWidget(){
     image1 = image2 = image;
 
     dots_number = 0;
-    task = "";
+    activeTaskName = "";
     dots_timer_id = startTimer(500);
     startTimer(50);
 
-    getTask();
+    updateActiveTaskName();
     getDots();
     drawInfo();
 }
 
-void SplashScreenWidget::getTask(){
-    if(AppContext::getTaskScheduler() == NULL){
-        return;
-    }
-    QList<Task*> tasks = AppContext::getTaskScheduler()->getTopLevelTasks();
-    if(tasks.size() > 0){
-        Task* topLevelTask = tasks.at(0);
-        task = topLevelTask->getTaskName();
-
-        QList<QPointer<Task> > subtasks = topLevelTask->getSubtasks();
-        if(subtasks.size() > 0){
-            task = subtasks.at(0)->getTaskName();
+static Task *selectTaskToShowAsActive(const QList<Task *> &taskList, bool preferFirst) {
+    foreach (Task *task, taskList) {
+        if (task->isRunning()) {
+            return task;
         }
-    }else{
-        task = "";
     }
+    return taskList.isEmpty() ? nullptr : (preferFirst ? taskList.first() : taskList.last());
 }
 
-void SplashScreenWidget::getDots(){
-    if(dots_number >= 3){
+void SplashScreenWidget::updateActiveTaskName() {
+    TaskScheduler *scheduler = AppContext::getTaskScheduler();
+    CHECK(scheduler != nullptr, )
+    QList<Task *> topLevelTasks = scheduler->getTopLevelTasks();
+    Task *activeTopLevelTask = selectTaskToShowAsActive(topLevelTasks, true);
+    if (activeTopLevelTask == nullptr) {
+        activeTaskName = "";
+        return;
+    }
+    QList<Task *> subTasks = activeTopLevelTask->getPureSubtasks();
+    Task *activeTask = subTasks.isEmpty() ? activeTopLevelTask : selectTaskToShowAsActive(subTasks, false);
+    activeTaskName = activeTask->getTaskName();
+}
+
+void SplashScreenWidget::getDots() {
+    if (dots_number >= 3) {
         dots_number = 0;
-    }else{
+    } else {
         dots_number++;
     }
 }
 
-void SplashScreenWidget::timerEvent(QTimerEvent *e){
-    getTask();
-    if(e->timerId()==dots_timer_id){
+void SplashScreenWidget::timerEvent(QTimerEvent *e) {
+    updateActiveTaskName();
+    if (e->timerId() == dots_timer_id) {
         getDots();
     }
     drawInfo();
@@ -142,14 +148,14 @@ void SplashScreenWidget::timerEvent(QTimerEvent *e){
     QObject::timerEvent(e);
 }
 
-void SplashScreenWidget::paintEvent(QPaintEvent *e){
+void SplashScreenWidget::paintEvent(QPaintEvent *e) {
     QWidget::paintEvent(e);
 
     QPainter p(this);
     p.drawImage(0, 0, image2);
 }
 
-void SplashScreenWidget::drawInfo(){
+void SplashScreenWidget::drawInfo() {
     image2 = image1;
 
     QPainter p(&image2);
@@ -158,7 +164,7 @@ void SplashScreenWidget::drawInfo(){
     font.setFamily("Heiti");
     font.setBold(true);
     font.setPixelSize(VERSION_HEIGHT_PX);
-    p.setFont( font );
+    p.setFont(font);
     p.setPen(QColor(0, 46, 59));
     QString versionSign = version.right(version.indexOf(".")).toInt() == 0 ? version.left(version.indexOf(".")) : version;
     if (version.contains("-dev")) {
@@ -168,14 +174,14 @@ void SplashScreenWidget::drawInfo(){
     for (int i = 0; i < dots_number; i++) {
         text.append(".");
     }
-    p.drawText(17,285, text);
+    p.drawText(17, 285, text);
 
-    if(!task.isEmpty()){
+    if (!activeTaskName.isEmpty()) {
         font.setPixelSize(TASK_HEIGHT_PX);
         font.setBold(false);
-        p.setFont( font );
-        p.drawText(18,290 + VERSION_HEIGHT_PX, task);
+        p.setFont(font);
+        p.drawText(18, 290 + VERSION_HEIGHT_PX, activeTaskName);
     }
     p.end();
 }
-}
+}    // namespace U2

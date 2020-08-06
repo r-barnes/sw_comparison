@@ -23,6 +23,7 @@
 #define _U2_WORKFLOW_MARKER_H_
 
 #include <U2Core/global.h>
+
 #include <U2Lang/Datatype.h>
 #include <U2Lang/Descriptor.h>
 
@@ -90,12 +91,13 @@ enum ParameterState {
     REQUIRED
 };
 
-class U2LANG_EXPORT Marker : public QObject{
+class U2LANG_EXPORT Marker : public QObject {
     Q_OBJECT
 public:
     Marker(const QString &markerType, const QString &markerName);
     Marker(const Marker &m);
-    virtual ~Marker() {}
+    virtual ~Marker() {
+    }
     virtual void addValue(QString name, QString value);
     virtual QString getMarkingResult(const QVariant &object);
     virtual MarkerGroup getGroup() = 0;
@@ -136,7 +138,9 @@ public:
 class U2LANG_EXPORT SequenceMarker : public Marker {
     Q_OBJECT
 public:
-    SequenceMarker(const QString &markerType, const QString &markerName) : Marker(markerType, markerName) {}
+    SequenceMarker(const QString &markerType, const QString &markerName)
+        : Marker(markerType, markerName) {
+    }
     virtual QString getMarkingResult(const QVariant &object);
     virtual MarkerGroup getGroup();
     virtual Marker *clone();
@@ -149,7 +153,8 @@ class U2LANG_EXPORT QualifierMarker : public Marker {
     Q_OBJECT
 public:
     QualifierMarker(const QString &markerType, const QString &markerName, const QString &qualName)
-        : Marker(markerType, markerName), qualName(qualName) {}
+        : Marker(markerType, markerName), qualName(qualName) {
+    }
     virtual QString getMarkingResult(const QVariant &object);
     virtual MarkerGroup getGroup();
     virtual Marker *clone();
@@ -171,7 +176,8 @@ class U2LANG_EXPORT AnnotationMarker : public Marker {
     Q_OBJECT
 public:
     AnnotationMarker(const QString &markerType, const QString &markerName, const QString &annName)
-        : Marker(markerType, markerName), annName(annName) {}
+        : Marker(markerType, markerName), annName(annName) {
+    }
     virtual QString getMarkingResult(const QVariant &object);
     virtual MarkerGroup getGroup();
     virtual Marker *clone();
@@ -192,12 +198,14 @@ private:
 class U2LANG_EXPORT TextMarker : public Marker {
     Q_OBJECT
 public:
-    TextMarker(const QString &markerType, const QString &markerName) : Marker(markerType, markerName) {}
+    TextMarker(const QString &markerType, const QString &markerName)
+        : Marker(markerType, markerName) {
+    }
     virtual QString getMarkingResult(const QVariant &object);
     virtual MarkerGroup getGroup();
     virtual Marker *clone();
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_WORKFLOW_MARKER_H_
+#endif    // _U2_WORKFLOW_MARKER_H_

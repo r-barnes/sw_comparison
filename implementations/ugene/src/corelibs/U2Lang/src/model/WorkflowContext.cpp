@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "WorkflowContext.h"
+
 #include <QApplication>
 #include <QDir>
 #include <QFileInfo>
@@ -40,8 +42,6 @@
 #include <U2Lang/WorkflowMonitor.h>
 #include <U2Lang/WorkflowSettings.h>
 
-#include "WorkflowContext.h"
-
 namespace U2 {
 namespace Workflow {
 
@@ -52,14 +52,13 @@ static QString getWorkflowId(WorkflowContext *ctx) {
     return wId;
 }
 
-WorkflowContext::WorkflowContext(const QList<Actor*> &procs, WorkflowMonitor *_monitor)
-: monitor(_monitor), storage(NULL), process("")
-{
+WorkflowContext::WorkflowContext(const QList<Actor *> &procs, WorkflowMonitor *_monitor)
+    : monitor(_monitor), storage(NULL), process("") {
     foreach (Actor *p, procs) {
         procMap.insert(p->getId(), p);
     }
 
-    { // register WD process
+    {    // register WD process
         AppFileStorage *fileStorage = AppContext::getAppFileStorage();
         CHECK(NULL != fileStorage, );
 
@@ -92,11 +91,11 @@ bool WorkflowContext::init() {
     return storage->init();
 }
 
-DbiDataStorage * WorkflowContext::getDataStorage() {
+DbiDataStorage *WorkflowContext::getDataStorage() {
     return storage;
 }
 
-WorkflowMonitor * WorkflowContext::getMonitor() {
+WorkflowMonitor *WorkflowContext::getMonitor() {
     return monitor;
 }
 
@@ -131,11 +130,11 @@ DataTypePtr WorkflowContext::getOutSlotType(const QString &slotStr) {
     return DataTypePtr();
 }
 
-const WorkflowProcess & WorkflowContext::getWorkflowProcess() const {
+const WorkflowProcess &WorkflowContext::getWorkflowProcess() const {
     return process;
 }
 
-WorkflowProcess & WorkflowContext::getWorkflowProcess() {
+WorkflowProcess &WorkflowContext::getWorkflowProcess() {
     return process;
 }
 
@@ -157,7 +156,7 @@ QString WorkflowContext::absolutePath(const QString &relative) const {
     return workingDir() + relative;
 }
 
-MessageMetadataStorage & WorkflowContext::getMetadataStorage() {
+MessageMetadataStorage &WorkflowContext::getMetadataStorage() {
     return metadataStorage;
 }
 
@@ -196,14 +195,14 @@ QString WorkflowContextCMDLine::getOutputDirectory(U2OpStatus &os) {
     // 1. Detect folder
     QString root;
 
-    CMDLineRegistry* cmdlineReg = AppContext::getCMDLineRegistry();
+    CMDLineRegistry *cmdlineReg = AppContext::getCMDLineRegistry();
     assert(cmdlineReg != nullptr);
 
     if (useOutputDir()) {
         root = WorkflowSettings::getWorkflowOutputDirectory();
     } else if (cmdlineReg != nullptr && cmdlineReg->hasParameter(WORKING_DIR)) {
         root = FileAndDirectoryUtils::getAbsolutePath(cmdlineReg->getParameterValue(WORKING_DIR));
-    } else{
+    } else {
         root = QProcess().workingDirectory();
     }
 
@@ -236,7 +235,8 @@ QString WorkflowContextCMDLine::createSubDirectoryForRun(const QString &root, U2
     bool created = rootDir.mkdir(dirName);
     if (!created) {
         os.setError(QObject::tr("Can not create folder %1 in the folder %2")
-            .arg(dirName).arg(rootDir.absolutePath()));
+                        .arg(dirName)
+                        .arg(rootDir.absolutePath()));
         return "";
     }
     return dirName;
@@ -263,5 +263,5 @@ void WorkflowContextCMDLine::saveRunInfo(const QString &dir) {
     runInfo.close();
 }
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

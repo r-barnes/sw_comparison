@@ -19,30 +19,29 @@
  * MA 02110-1301, USA.
  */
 
-#include <QPushButton>
-#include <QApplication>
-
 #include "LicenseAgreementDialogFiller.h"
-#include "utils/GTThread.h"
 #include <primitives/GTWidget.h>
+
+#include <QApplication>
+#include <QPushButton>
+
+#include "utils/GTThread.h"
 
 namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::GenerateAlignmentProfileDialogFiller"
 
-LicenseAgreementDialogFiller::LicenseAgreementDialogFiller(HI::GUITestOpStatus &os) :
-    Filler(os, "LicenseDialog")
-{
-
+LicenseAgreementDialogFiller::LicenseAgreementDialogFiller(HI::GUITestOpStatus &os)
+    : Filler(os, "LicenseDialog") {
 }
 
 #define GT_METHOD_NAME "commonScenario"
 void LicenseAgreementDialogFiller::commonScenario() {
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
     GTGlobals::sleep();
 
-    QPushButton* accept = dialog->findChild<QPushButton*>("acceptButton");
+    QPushButton *accept = dialog->findChild<QPushButton *>("acceptButton");
     GTWidget::click(os, accept);
     GTThread::waitForMainThread();
 }
@@ -50,4 +49,4 @@ void LicenseAgreementDialogFiller::commonScenario() {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

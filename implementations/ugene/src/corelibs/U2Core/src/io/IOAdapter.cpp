@@ -27,17 +27,13 @@ namespace U2 {
 
 const IOAdapterId BaseIOAdapters::LOCAL_FILE("local_file");
 const IOAdapterId BaseIOAdapters::GZIPPED_LOCAL_FILE("local_file_gzip");
-const IOAdapterId BaseIOAdapters::HTTP_FILE( "http_file" );
-const IOAdapterId BaseIOAdapters::GZIPPED_HTTP_FILE( "http_file_gzip" );
-const IOAdapterId BaseIOAdapters::VFS_FILE( "memory_buffer" );
-const IOAdapterId BaseIOAdapters::STRING( "string" );
+const IOAdapterId BaseIOAdapters::HTTP_FILE("http_file");
+const IOAdapterId BaseIOAdapters::GZIPPED_HTTP_FILE("http_file_gzip");
+const IOAdapterId BaseIOAdapters::VFS_FILE("memory_buffer");
+const IOAdapterId BaseIOAdapters::STRING("string");
 const IOAdapterId BaseIOAdapters::DATABASE_CONNECTION("database_connection");
 
-
-qint64 IOAdapter::readUntil(char* buf, qint64 maxSize,
-                            const QBitArray& readTerminators,
-                            TerminatorHandling th,  bool* terminatorFound)
-{
+qint64 IOAdapter::readUntil(char *buf, qint64 maxSize, const QBitArray &readTerminators, TerminatorHandling th, bool *terminatorFound) {
     const qint64 CHUNK = (qint64)1024;
     const char *chunk_start, *start = buf, *end = buf + maxSize;
 
@@ -47,7 +43,7 @@ qint64 IOAdapter::readUntil(char* buf, qint64 maxSize,
     do {
         chunk_start = buf;
         len = readBlock(buf, qMin(CHUNK, (qint64)end - (qint64)buf));
-        if (len == -1){
+        if (len == -1) {
             //error
             return -1;
         }
@@ -55,18 +51,18 @@ qint64 IOAdapter::readUntil(char* buf, qint64 maxSize,
             // last chunk, no more data or buffer space
             end = buf + len;
         }
-        const char* buf_end = buf + len;
-        for(; buf < buf_end; buf++ ) {
+        const char *buf_end = buf + len;
+        for (; buf < buf_end; buf++) {
             // loop exit invariant: buf is positioned after last accepted char
             if (readTerminators[(uchar)*buf]) {
                 found = true;
                 if (th == Term_Exclude) {
                     break;
-                } else if( Term_Skip == th ) {
+                } else if (Term_Skip == th) {
                     termsSkipped++;
                 }
             } else if (found) {
-                assert( Term_Include == th || Term_Skip == th );
+                assert(Term_Include == th || Term_Skip == th);
                 break;
             }
         }
@@ -74,7 +70,7 @@ qint64 IOAdapter::readUntil(char* buf, qint64 maxSize,
 
     if (found) {
         bool b = skip((qint64)buf - (qint64)chunk_start - len);
-        assert(b);// Cannot put back unused data;
+        assert(b);    // Cannot put back unused data;
         Q_UNUSED(b);
     }
 
@@ -87,14 +83,14 @@ qint64 IOAdapter::readUntil(char* buf, qint64 maxSize,
 
 bool IOAdapter::isEof() {
     char ch;
-    qint64 ret = readBlock( &ch, 1 );
+    qint64 ret = readBlock(&ch, 1);
     if (ret == 1) {
-        skip( -ret );
+        skip(-ret);
     }
     return 0 == ret;
 }
 
-qint64 IOAdapter::readLine( char* buff, qint64 maxSize, bool* terminatorFound /* = 0*/ ) {
+qint64 IOAdapter::readLine(char *buff, qint64 maxSize, bool *terminatorFound /* = 0*/) {
     bool b = false;
     if (!terminatorFound) {
         terminatorFound = &b;
@@ -117,7 +113,7 @@ qint64 IOAdapter::readLine( char* buff, qint64 maxSize, bool* terminatorFound /*
     return len;
 }
 
-void IOAdapter::cutByteOrderMarks(char* data, QString& errorString, qint64& length) {
+void IOAdapter::cutByteOrderMarks(char *data, QString &errorString, qint64 &length) {
     QByteArray dataByteArray(data, length);
     qint64 newCached = TextUtils::cutByteOrderMarks(data, errorString, length);
     QByteArray newDatatByteArray(data);
@@ -126,4 +122,4 @@ void IOAdapter::cutByteOrderMarks(char* data, QString& errorString, qint64& leng
     }
 }
 
-}//namespace
+}    // namespace U2

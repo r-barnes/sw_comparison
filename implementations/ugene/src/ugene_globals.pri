@@ -44,14 +44,31 @@ macx {
 }
 
 linux-g++ {
+    QMAKE_CXXFLAGS += -Wall
+
     # We have a lot of such warning from QT -> disable them.
     QMAKE_CXXFLAGS += -Wno-expansion-to-defined
-    
+    QMAKE_CXXFLAGS += -Wno-deprecated-copy
+    QMAKE_CXXFLAGS += -Wno-class-memaccess
+    QMAKE_CXXFLAGS += -Wno-unused-parameter
+    QMAKE_CXXFLAGS += -Wno-unused-variable
+    QMAKE_CXXFLAGS += -Wno-implicit-fallthrough
+    QMAKE_CXXFLAGS += -Wno-catch-value
+    QMAKE_CXXFLAGS += -Wno-sign-compare
+    QMAKE_CXXFLAGS += -Wno-ignored-attributes
+
+    # QT 5.4 sources produce this warning when compiled with gcc9. Re-check after QT upgrade.
+    QMAKE_CXXFLAGS += -Wno-cast-function-type
+
+    # Some of the warnings must be errors
+    QMAKE_CXXFLAGS += -Werror=return-type
+    QMAKE_CXXFLAGS += -Werror=parentheses
+
     # build with coverage (gcov) support, now for Linux only
     equals(UGENE_GCOV_ENABLE, 1) {
-    message("Build with gcov support. See gcov/lcov doc for generating coverage info")
-    QMAKE_CXXFLAGS += --coverage -fprofile-arcs -ftest-coverage
-    QMAKE_LFLAGS += -lgcov --coverage
+        message("Build with gcov support. See gcov/lcov doc for generating coverage info")
+        QMAKE_CXXFLAGS += --coverage -fprofile-arcs -ftest-coverage
+        QMAKE_LFLAGS += -lgcov --coverage
     }
 }
 
@@ -74,13 +91,11 @@ isEmpty( UGENE_INSTALL_DIR )     : UGENE_INSTALL_DIR     = $$INSTALL_LIBDIR/ugen
 isEmpty( UGENE_INSTALL_BINDIR )  : UGENE_INSTALL_BINDIR  = $$INSTALL_BINDIR
 isEmpty( UGENE_INSTALL_MAN )     : UGENE_INSTALL_MAN     = $$INSTALL_MANDIR/man1
 
-CONFIG(x64) {
+CONFIG(x86) {
+    DEFINES += UGENE_X86
+} else {
     DEFINES += UGENE_X86_64
     win32 : QMAKE_LFLAGS *= /MACHINE:X64
-} else:CONFIG(ppc) {
-    DEFINES += UGENE_PPC
-} else {
-    DEFINES += UGENE_X86
 }
 
 macx : DEFINES += RUN_WORKFLOW_IN_THREADS
@@ -338,6 +353,6 @@ defineTest(useWebKit) {
     return(false)
 }
 
-if (exclude_list_enabled() | !useWebKit()) {
+if (exclude_list_enabled()) {
     DEFINES += HI_EXCLUDED
 }

@@ -19,30 +19,28 @@
  * MA 02110-1301, USA.
  */
 
-#include <QPushButton>
-
 #include "AnnotHighlightWidget.h"
+#include <limits.h>
+
+#include <QPushButton>
 
 #include <U2Core/AnnotationSelection.h>
 #include <U2Core/AnnotationSettings.h>
+#include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/Counter.h>
 #include <U2Core/DNAAlphabet.h>
-#include <U2Core/AnnotationTableObject.h>
-#include <U2Core/U2SafePoints.h>
 #include <U2Core/U1AnnotationUtils.h>
+#include <U2Core/U2SafePoints.h>
 
 #include <U2View/ADVSequenceObjectContext.h>
-#include <U2View/AnnotatedDNAView.h>
 #include <U2View/ADVSingleSequenceWidget.h>
+#include <U2View/AnnotatedDNAView.h>
 #include <U2View/PanView.h>
-#include <limits.h>
 
 namespace U2 {
 
-
-ShowAllAnnotTypesLabel::ShowAllAnnotTypesLabel()
-{
+ShowAllAnnotTypesLabel::ShowAllAnnotTypesLabel() {
     // By default, show only types for the sequence
     showAllIsSelected = false;
     setText(QObject::tr("Show all annotation names"));
@@ -54,14 +52,12 @@ ShowAllAnnotTypesLabel::ShowAllAnnotTypesLabel()
         "margin-top: 1px;");
 }
 
-void ShowAllAnnotTypesLabel::mousePressEvent(QMouseEvent* event)
-{
+void ShowAllAnnotTypesLabel::mousePressEvent(QMouseEvent *event) {
     Q_UNUSED(event);
     if (showAllIsSelected) {
         showAllIsSelected = false;
         setText(QObject::tr("Show all annotation names"));
-    }
-    else {
+    } else {
         showAllIsSelected = true;
         setText(QObject::tr("Show names for the sequence only"));
     }
@@ -69,18 +65,16 @@ void ShowAllAnnotTypesLabel::mousePressEvent(QMouseEvent* event)
     emit si_showAllStateChanged();
 }
 
-
-AnnotHighlightWidget::AnnotHighlightWidget(AnnotatedDNAView* _annotatedDnaView)
-    : annotatedDnaView(_annotatedDnaView)
-{
-    SAFE_POINT(0 != annotatedDnaView, "AnnotatedDNAView is NULL!",);
+AnnotHighlightWidget::AnnotHighlightWidget(AnnotatedDNAView *_annotatedDnaView)
+    : annotatedDnaView(_annotatedDnaView) {
+    SAFE_POINT(0 != annotatedDnaView, "AnnotatedDNAView is NULL!", );
     initLayout();
     connectSlots();
     loadAnnotTypes();
 }
 
 void AnnotHighlightWidget::initLayout() {
-    QVBoxLayout* mainLayout = new QVBoxLayout();
+    QVBoxLayout *mainLayout = new QVBoxLayout();
     mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->setSpacing(10);
     mainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
@@ -94,7 +88,7 @@ void AnnotHighlightWidget::initLayout() {
     annotTreeTitle = new QLabel(tr("Select an annotation name:"));
 
     // Tree
-    QVBoxLayout* treeLayout = new QVBoxLayout();
+    QVBoxLayout *treeLayout = new QVBoxLayout();
     treeLayout->setContentsMargins(0, 0, 0, 10);
     treeLayout->setSpacing(0);
 
@@ -107,7 +101,7 @@ void AnnotHighlightWidget::initLayout() {
     treeLayout->addWidget(showAllLabel);
 
     // Configure settings
-    QVBoxLayout* settingsLayout = new QVBoxLayout();
+    QVBoxLayout *settingsLayout = new QVBoxLayout();
     settingsLayout->setContentsMargins(0, 0, 0, 0);
     settingsLayout->setSpacing(0);
     settingsLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
@@ -118,20 +112,20 @@ void AnnotHighlightWidget::initLayout() {
     settingsLayout->addWidget(settingsTitle);
     settingsLayout->addWidget(annotSettingsWidget);
 
-    QHBoxLayout* buttonsLayout = new QHBoxLayout();
+    QHBoxLayout *buttonsLayout = new QHBoxLayout();
     buttonsLayout->setContentsMargins(0, 0, 0, 0);
     buttonsLayout->setSpacing(0);
 
     prevAnnotationButton = new QPushButton(QIcon(":core/images/backward.png"), "");
-    prevAnnotationButton->setFixedSize(32,32);
+    prevAnnotationButton->setFixedSize(32, 32);
     prevAnnotationButton->setToolTip(AnnotHighlightWidget::tr("Previous annotation"));
     prevAnnotationButton->setDisabled(true);
     prevAnnotationButton->setObjectName("prevAnnotationButton");
     buttonsLayout->addWidget(prevAnnotationButton);
-    buttonsLayout->addSpacerItem(new QSpacerItem(0,0, QSizePolicy::Expanding, QSizePolicy::Minimum));
+    buttonsLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
 
     nextAnnotationButton = new QPushButton(QIcon(":core/images/forward.png"), "");
-    nextAnnotationButton->setFixedSize(32,32);
+    nextAnnotationButton->setFixedSize(32, 32);
     nextAnnotationButton->setToolTip(AnnotHighlightWidget::tr("Next annotation"));
     nextAnnotationButton->setObjectName("nextAnnotationButton");
     buttonsLayout->addWidget(nextAnnotationButton);
@@ -177,7 +171,7 @@ bool AnnotHighlightWidget::noAnnotatedRegions() const {
 
 void AnnotHighlightWidget::selectNextAnnotation(bool isForward) const {
     AnnotationSelection *as = annotatedDnaView->getAnnotationsSelection();
-    CHECK(as != NULL,);
+    CHECK(as != NULL, );
 
     bool isAnnRegionValid = false;
     AnnotatedRegion annRegion;
@@ -214,9 +208,9 @@ bool AnnotHighlightWidget::findFirstAnnotatedRegionAfterPos(AnnotatedRegion &ann
         qint64 seqLen = annotatedDnaView->getSequenceContext(annObject)->getSequenceLength();
         QList<Annotation *> annots = annObject->getAnnotationsByRegion(U2Region(isForward ? startPos : 0, isForward ? seqLen - startPos : startPos));
         foreach (Annotation *a, annots) {
-            QVector <U2Region> regions = a->getRegions();
-            for (int i = 0; i < regions.size(); i++){
-                if (sign * regions[i].startPos > sign * startPos && sign *regions[i].startPos < sign * pos) {
+            QVector<U2Region> regions = a->getRegions();
+            for (int i = 0; i < regions.size(); i++) {
+                if (sign * regions[i].startPos > sign * startPos && sign * regions[i].startPos < sign * pos) {
                     pos = regions[i].startPos;
                     annRegion.annotation = a;
                     annRegion.regionIdx = i;
@@ -239,15 +233,14 @@ bool AnnotHighlightWidget::findFirstAnnotatedRegionAfterPos(AnnotatedRegion &ann
 }
 
 bool AnnotHighlightWidget::findNextUnselectedAnnotatedRegion(AnnotatedRegion &annRegion, bool fromTheBeginning) const {
-
-    AnnotationSelection* as = annotatedDnaView->getAnnotationsSelection();
+    AnnotationSelection *as = annotatedDnaView->getAnnotationsSelection();
     CHECK(as != NULL, false);
     CHECK(!as->isEmpty(), false);
 
     // detect the most right/left start position in selection
-    const QList<Annotation*> selectionData = as->getAnnotations();
+    const QList<Annotation *> selectionData = as->getAnnotations();
     int start = -1;
-    foreach (Annotation* selectionItem, selectionData) {
+    foreach (Annotation *selectionItem, selectionData) {
         foreach (U2Region region, selectionItem->getRegions()) {
             if (start == -1) {
                 start = region.startPos;
@@ -271,7 +264,6 @@ bool AnnotHighlightWidget::findNextUnselectedAnnotatedRegion(AnnotatedRegion &an
             annRegion = regionsAtTheSamePosition[idx];
             return true;
         }
-
     }
 
     return findFirstAnnotatedRegionAfterPos(annRegion, start, fromTheBeginning);
@@ -293,8 +285,8 @@ void AnnotHighlightWidget::sl_onPrevAnnotationClick() {
 }
 
 void AnnotHighlightWidget::sl_onAnnotationSelectionChanged() {
-    AnnotationSelection* as = annotatedDnaView->getAnnotationsSelection();
-    CHECK(as != NULL,);
+    AnnotationSelection *as = annotatedDnaView->getAnnotationsSelection();
+    CHECK(as != NULL, );
 
     if (as->isEmpty()) {
         nextAnnotationButton->setDisabled(noAnnotatedRegions());
@@ -304,7 +296,7 @@ void AnnotHighlightWidget::sl_onAnnotationSelectionChanged() {
         prevAnnotationButton->setDisabled(false);
 
         // find first or last annotation region
-        foreach (Annotation* a, as->getAnnotations()) {
+        foreach (Annotation *a, as->getAnnotations()) {
             foreach (U2Region region, a->getRegions()) {
                 if (isFirstAnnotatedRegion(a, region, false)) {
                     nextAnnotationButton->setDisabled(true);
@@ -314,21 +306,18 @@ void AnnotHighlightWidget::sl_onAnnotationSelectionChanged() {
                 }
             }
         }
-
     }
 }
 
 void AnnotHighlightWidget::setNoAnnotTypesLabelValue() {
-    QList<ADVSequenceObjectContext*> seqContexts = annotatedDnaView->getSequenceContexts();
+    QList<ADVSequenceObjectContext *> seqContexts = annotatedDnaView->getSequenceContexts();
 
     if (1 == seqContexts.count()) {
         noAnnotTypesLabel->setText(tr("The sequence doesn't have any annotations."));
-    }
-    else {
+    } else {
         noAnnotTypesLabel->setText(tr("The sequences do not have any annotations."));
     }
 }
-
 
 void AnnotHighlightWidget::setNoAnnotsLayout() {
     noAnnotTypesLabel->show();
@@ -337,7 +326,6 @@ void AnnotHighlightWidget::setNoAnnotsLayout() {
     settingsTitle->hide();
     annotSettingsWidget->hide();
 }
-
 
 void AnnotHighlightWidget::setLayoutWithAnnotsSelection() {
     noAnnotTypesLabel->hide();
@@ -356,51 +344,40 @@ void AnnotHighlightWidget::connectSlots() {
 
     // Another color or a setting has been selected for an annotation type
     connect(annotTree, SIGNAL(si_colorChanged(QString, QColor)), SLOT(sl_storeNewColor(QString, QColor)));
-    connect(annotSettingsWidget, SIGNAL(si_annotSettingsChanged(AnnotationSettings*)),
-        SLOT(sl_storeNewSettings(AnnotationSettings*)));
+    connect(annotSettingsWidget, SIGNAL(si_annotSettingsChanged(AnnotationSettings *)), SLOT(sl_storeNewSettings(AnnotationSettings *)));
 
     // A sequence has been modified (a subsequence added, removed, etc.)
-    connect(annotatedDnaView, SIGNAL(si_sequenceModified(ADVSequenceObjectContext*)),
-        this, SLOT(sl_onSequenceModified(ADVSequenceObjectContext*)));
+    connect(annotatedDnaView, SIGNAL(si_sequenceModified(ADVSequenceObjectContext *)), this, SLOT(sl_onSequenceModified(ADVSequenceObjectContext *)));
 
     // An annotation object has been added/removed - connect/disconnect slots
-    connect(annotatedDnaView, SIGNAL(si_annotationObjectAdded(AnnotationTableObject*)),
-        SLOT(sl_onAnnotationObjectAdded(AnnotationTableObject*)));
-    connect(annotatedDnaView, SIGNAL(si_annotationObjectRemoved(AnnotationTableObject*)),
-        SLOT(sl_onAnnotationObjectRemoved(AnnotationTableObject*)));
+    connect(annotatedDnaView, SIGNAL(si_annotationObjectAdded(AnnotationTableObject *)), SLOT(sl_onAnnotationObjectAdded(AnnotationTableObject *)));
+    connect(annotatedDnaView, SIGNAL(si_annotationObjectRemoved(AnnotationTableObject *)), SLOT(sl_onAnnotationObjectRemoved(AnnotationTableObject *)));
 
     // An annotation has been added/removed/modified
-    QList<AnnotationTableObject *> seqAnnotTableObjs = annotatedDnaView->getAnnotationObjects(true); // "true" to include auto-annotations
+    QList<AnnotationTableObject *> seqAnnotTableObjs = annotatedDnaView->getAnnotationObjects(true);    // "true" to include auto-annotations
     foreach (const AnnotationTableObject *annotTableObj, seqAnnotTableObjs) {
         connectSlotsForAnnotTableObj(annotTableObj);
     }
 
-    connect(prevAnnotationButton, SIGNAL(clicked()),this, SLOT(sl_onPrevAnnotationClick()));
+    connect(prevAnnotationButton, SIGNAL(clicked()), this, SLOT(sl_onPrevAnnotationClick()));
 
     connect(nextAnnotationButton, SIGNAL(clicked()), this, SLOT(sl_onNextAnnotationClick()));
 
     AnnotationSelection *as = annotatedDnaView->getAnnotationsSelection();
     CHECK(as != NULL, );
-    connect(as, SIGNAL(si_selectionChanged(AnnotationSelection *, const QList<Annotation *> &, const QList<Annotation *> &)),
-            SLOT(sl_onAnnotationSelectionChanged()));
+    connect(as, SIGNAL(si_selectionChanged(AnnotationSelection *, const QList<Annotation *> &, const QList<Annotation *> &)), SLOT(sl_onAnnotationSelectionChanged()));
 }
 
 void AnnotHighlightWidget::connectSlotsForAnnotTableObj(const AnnotationTableObject *annotTableObj) {
-    connect(annotTableObj, SIGNAL(si_onAnnotationsAdded(const QList<Annotation *> &)),
-        SLOT(sl_onAnnotationsAdded(const QList<Annotation *> &)));
-    connect(annotTableObj, SIGNAL(si_onAnnotationsRemoved(const QList<Annotation *> &)),
-        SLOT(sl_onAnnotationsRemoved(const QList<Annotation *> &)));
-    connect(annotTableObj, SIGNAL(si_onAnnotationsModified(const QList<AnnotationModification> &)),
-            SLOT(sl_onAnnotationsModified()));
+    connect(annotTableObj, SIGNAL(si_onAnnotationsAdded(const QList<Annotation *> &)), SLOT(sl_onAnnotationsAdded(const QList<Annotation *> &)));
+    connect(annotTableObj, SIGNAL(si_onAnnotationsRemoved(const QList<Annotation *> &)), SLOT(sl_onAnnotationsRemoved(const QList<Annotation *> &)));
+    connect(annotTableObj, SIGNAL(si_onAnnotationsModified(const QList<AnnotationModification> &)), SLOT(sl_onAnnotationsModified()));
 }
 
 void AnnotHighlightWidget::disconnectSlotsForAnnotTableObj(const AnnotationTableObject *annotTableObj) {
-    disconnect(annotTableObj, SIGNAL(si_onAnnotationsAdded(const QList<Annotation *> &)),
-        this, SLOT(sl_onAnnotationsAdded(const QList<Annotation *> &)));
-    disconnect(annotTableObj, SIGNAL(si_onAnnotationsRemoved(const QList<Annotation *> &)),
-        this, SLOT(sl_onAnnotationsRemoved(const QList<Annotation *> &)));
-    disconnect(annotTableObj, SIGNAL(si_onAnnotationsModified(const QList<AnnotationModification> &)),
-        this, SLOT(sl_onAnnotationsModified()));
+    disconnect(annotTableObj, SIGNAL(si_onAnnotationsAdded(const QList<Annotation *> &)), this, SLOT(sl_onAnnotationsAdded(const QList<Annotation *> &)));
+    disconnect(annotTableObj, SIGNAL(si_onAnnotationsRemoved(const QList<Annotation *> &)), this, SLOT(sl_onAnnotationsRemoved(const QList<Annotation *> &)));
+    disconnect(annotTableObj, SIGNAL(si_onAnnotationsModified(const QList<AnnotationModification> &)), this, SLOT(sl_onAnnotationsModified()));
 }
 
 void AnnotHighlightWidget::sl_onShowAllStateChanged() {
@@ -417,7 +394,7 @@ void AnnotHighlightWidget::sl_onSelectedItemChanged(const QString &annotName) {
 void AnnotHighlightWidget::findAllAnnotationsNamesForSequence() {
     annotNamesWithAminoInfo.clear();
 
-    QList<ADVSequenceObjectContext*> seqObjContexts = annotatedDnaView->getSequenceContexts();
+    QList<ADVSequenceObjectContext *> seqObjContexts = annotatedDnaView->getSequenceContexts();
 
     foreach (ADVSequenceObjectContext *seqContext, seqObjContexts) {
         const DNAAlphabet *seqAlphabet = seqContext->getAlphabet();
@@ -443,8 +420,7 @@ void AnnotHighlightWidget::findAllAnnotationsNamesForSequence() {
                         // if the value is "true", then it doesn't make sense to rewrite the same value
                         // if the value is "false", then the annotation was previously found on a nucleotide
                         // sequence and therefore the "Show on translation" option should be enabled
-                    }
-                    else {
+                    } else {
                         // Disable the option
                         annotNamesWithAminoInfo.insert(annotName, true);
                     }
@@ -454,13 +430,11 @@ void AnnotHighlightWidget::findAllAnnotationsNamesForSequence() {
     }
 }
 
-
-void AnnotHighlightWidget::findAllAnnotationsNamesInSettings()
-{
+void AnnotHighlightWidget::findAllAnnotationsNamesInSettings() {
     annotNamesWithAminoInfo.clear();
 
-    AnnotationSettingsRegistry* registry = AppContext::getAnnotationsSettingsRegistry();
-    SAFE_POINT(0 != registry, "AnnotationSettingsRegistry is NULL!",);
+    AnnotationSettingsRegistry *registry = AppContext::getAnnotationsSettingsRegistry();
+    SAFE_POINT(0 != registry, "AnnotationSettingsRegistry is NULL!", );
 
     QStringList annotSettings = registry->getAllSettings();
     foreach (QString setting, annotSettings) {
@@ -476,8 +450,7 @@ void AnnotHighlightWidget::updateAnnotationNames() {
     }
 }
 
-void AnnotHighlightWidget::loadAnnotTypes()
-{
+void AnnotHighlightWidget::loadAnnotTypes() {
     // Get the annotation names
     updateAnnotationNames();
 
@@ -495,27 +468,25 @@ void AnnotHighlightWidget::loadAnnotTypes()
         setLayoutWithAnnotsSelection();
 
         // Add the tree items
-        AnnotationSettingsRegistry* annotRegistry = AppContext::getAnnotationsSettingsRegistry();
-        foreach(const QString& name, annotNames) {
-            AnnotationSettings* annotSettings = annotRegistry->getAnnotationSettings(name);
+        AnnotationSettingsRegistry *annotRegistry = AppContext::getAnnotationsSettingsRegistry();
+        foreach (const QString &name, annotNames) {
+            AnnotationSettings *annotSettings = annotRegistry->getAnnotationSettings(name);
             annotTree->addItem(name, annotSettings->color);
         }
 
         // By default, select either previously selected item (if it is present) or the first item
         if (annotNames.contains(currentAnnotName)) {
             annotTree->setItemSelectedWithAnnotName(currentAnnotName);
-        }
-        else {
+        } else {
             annotTree->setFirstItemSelected();
             currentAnnotName = annotTree->getFirstItemAnnotName();
-            SAFE_POINT(currentAnnotName != QString(), "Failed to get first annotation name!",);
+            SAFE_POINT(currentAnnotName != QString(), "Failed to get first annotation name!", );
         }
 
         // Set the configuration settings for the item
-        AnnotationSettings* currentAnnotSettings = annotRegistry->getAnnotationSettings(currentAnnotName);
+        AnnotationSettings *currentAnnotSettings = annotRegistry->getAnnotationSettings(currentAnnotName);
         annotSettingsWidget->setSettings(currentAnnotSettings, annotNamesWithAminoInfo.value(currentAnnotName));
-    }
-    else {
+    } else {
         setNoAnnotsLayout();
     }
 
@@ -524,11 +495,10 @@ void AnnotHighlightWidget::loadAnnotTypes()
     }
 }
 
-void AnnotHighlightWidget::sl_storeNewColor(const QString& annotName, const QColor& newColor)
-{
-    QList<AnnotationSettings*> annotToWrite;
-    AnnotationSettingsRegistry* annotRegistry = AppContext::getAnnotationsSettingsRegistry();
-    AnnotationSettings* annotSettings = annotRegistry->getAnnotationSettings(annotName);
+void AnnotHighlightWidget::sl_storeNewColor(const QString &annotName, const QColor &newColor) {
+    QList<AnnotationSettings *> annotToWrite;
+    AnnotationSettingsRegistry *annotRegistry = AppContext::getAnnotationsSettingsRegistry();
+    AnnotationSettings *annotSettings = annotRegistry->getAnnotationSettings(annotName);
     if (annotSettings->color != newColor) {
         annotSettings->color = newColor;
         annotToWrite.append(annotSettings);
@@ -536,16 +506,14 @@ void AnnotHighlightWidget::sl_storeNewColor(const QString& annotName, const QCol
     }
 }
 
-void AnnotHighlightWidget::sl_storeNewSettings(AnnotationSettings* annotSettings)
-{
-    QList<AnnotationSettings*> annotToWrite;
-    AnnotationSettingsRegistry* annotRegistry = AppContext::getAnnotationsSettingsRegistry();
+void AnnotHighlightWidget::sl_storeNewSettings(AnnotationSettings *annotSettings) {
+    QList<AnnotationSettings *> annotToWrite;
+    AnnotationSettingsRegistry *annotRegistry = AppContext::getAnnotationsSettingsRegistry();
     annotToWrite.append(annotSettings);
     annotRegistry->changeSettings(annotToWrite, true);
 }
 
-void AnnotHighlightWidget::sl_onSequenceModified(ADVSequenceObjectContext* /* seqContext */)
-{
+void AnnotHighlightWidget::sl_onSequenceModified(ADVSequenceObjectContext * /* seqContext */) {
     loadAnnotTypes();
 }
 
@@ -569,16 +537,16 @@ void AnnotHighlightWidget::sl_onAnnotationsRemoved(const QList<Annotation *> &an
     }
 
     bool isSelectedItemRemoved = false;
-    QList<AnnotationTableObject*> annTables = annotatedDnaView->getAnnotationObjects(true);
-    foreach (const QString& annotName, observedAnnNames.keys()) {
+    QList<AnnotationTableObject *> annTables = annotatedDnaView->getAnnotationObjects(true);
+    foreach (const QString &annotName, observedAnnNames.keys()) {
         int count = 0;
-        foreach (AnnotationTableObject* t, annTables) {
+        foreach (AnnotationTableObject *t, annTables) {
             count += t->getAnnotationsByName(annotName).size();
         }
         if (count == observedAnnNames[annotName]) {
-            QList<QTreeWidgetItem*> itemList = annotTree->findItems(annotName, Qt::MatchExactly);
+            QList<QTreeWidgetItem *> itemList = annotTree->findItems(annotName, Qt::MatchExactly);
             SAFE_POINT(itemList.size() == 1, "Annotation Highlight tree should contain only one item per annotation type", );
-            QTreeWidgetItem* item = itemList.first();
+            QTreeWidgetItem *item = itemList.first();
             delete annotTree->takeTopLevelItem(annotTree->indexOfTopLevelItem(item));
             annotNamesWithAminoInfo.remove(annotName);
             if (selectedAnnotName == annotName) {
@@ -605,16 +573,14 @@ void AnnotHighlightWidget::sl_onAnnotationsModified() {
     loadAnnotTypes();
 }
 
-void AnnotHighlightWidget::sl_onAnnotationObjectAdded(AnnotationTableObject *annotTableObj)
-{
+void AnnotHighlightWidget::sl_onAnnotationObjectAdded(AnnotationTableObject *annotTableObj) {
     connectSlotsForAnnotTableObj(annotTableObj);
     loadAnnotTypes();
 }
 
-void AnnotHighlightWidget::sl_onAnnotationObjectRemoved(AnnotationTableObject *annotTableObj)
-{
+void AnnotHighlightWidget::sl_onAnnotationObjectRemoved(AnnotationTableObject *annotTableObj) {
     disconnectSlotsForAnnotTableObj(annotTableObj);
     loadAnnotTypes();
 }
 
-} // namespace
+}    // namespace U2

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CEASSupportTask.h"
+
 #include <QDir>
 
 #include <U2Core/AnnotationTableObject.h>
@@ -42,7 +44,6 @@
 #include <U2Lang/DbiDataStorage.h>
 
 #include "CEASSupport.h"
-#include "CEASSupportTask.h"
 #include "R/RSupport.h"
 
 namespace U2 {
@@ -53,22 +54,19 @@ namespace U2 {
 const QString CEASTaskSettings::PDF_FORMAT("PDF");
 const QString CEASTaskSettings::PNG_FORMAT("PNG");
 
-CEASTaskSettings::CEASTaskSettings() :
-    storage(NULL)
-{
+CEASTaskSettings::CEASTaskSettings()
+    : storage(NULL) {
 }
 
 CEASTaskSettings::CEASTaskSettings(const CEASSettings &_ceas, Workflow::DbiDataStorage *storage, const QList<Workflow::SharedDbiDataHandler> &_bedData, const QString &_wigData)
-: ceas(_ceas), storage(storage), bedData(_bedData), wigData(_wigData)
-{
-
+    : ceas(_ceas), storage(storage), bedData(_bedData), wigData(_wigData) {
 }
 
-CEASSettings & CEASTaskSettings::getCeasSettings() {
+CEASSettings &CEASTaskSettings::getCeasSettings() {
     return ceas;
 }
 
-const CEASSettings & CEASTaskSettings::getCeasSettings() const {
+const CEASSettings &CEASTaskSettings::getCeasSettings() const {
     return ceas;
 }
 
@@ -80,7 +78,7 @@ const QList<Workflow::SharedDbiDataHandler> &CEASTaskSettings::getBedData() cons
     return bedData;
 }
 
-const QString & CEASTaskSettings::getWigData() const {
+const QString &CEASTaskSettings::getWigData() const {
     return wigData;
 }
 
@@ -90,10 +88,9 @@ const QString & CEASTaskSettings::getWigData() const {
 const QString CEASSupportTask::BASE_DIR_NAME("ceas_report");
 
 CEASSupportTask::CEASSupportTask(const CEASTaskSettings &_settings)
-: ExternalToolSupportTask("Running CEAS report task", TaskFlag_None),
-settings(_settings), bedDoc(NULL),
-bedTask(NULL), wigTask(NULL), etTask(NULL), activeSubtasks(0)
-{
+    : ExternalToolSupportTask("Running CEAS report task", TaskFlag_None),
+      settings(_settings), bedDoc(NULL),
+      bedTask(NULL), wigTask(NULL), etTask(NULL), activeSubtasks(0) {
     GCOUNTER(cvar, tvar, "NGS:CEASTask");
     SAFE_POINT_EXT(NULL != settings.getStorage() || settings.getBedData().isEmpty(), setError(L10N::nullPointerError("workflow data storage")), );
 }
@@ -103,21 +100,21 @@ CEASSupportTask::~CEASSupportTask() {
 }
 
 void CEASSupportTask::cleanup() {
-    delete bedDoc; bedDoc = NULL;
+    delete bedDoc;
+    bedDoc = NULL;
 
     //remove tmp files
     QString tmpDirPath = AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath(BASE_DIR_NAME);
     QDir tmpDir(tmpDirPath);
-    if(tmpDir.exists()){
-        foreach(QString file, tmpDir.entryList()){
+    if (tmpDir.exists()) {
+        foreach (QString file, tmpDir.entryList()) {
             tmpDir.remove(file);
         }
-        if(!tmpDir.rmdir(tmpDir.absolutePath())){
+        if (!tmpDir.rmdir(tmpDir.absolutePath())) {
             //stateInfo.setError(tr("Subdir for temporary files exists. Can not remove this folder."));
             //return;
         }
     }
-
 }
 
 void CEASSupportTask::prepare() {
@@ -128,19 +125,19 @@ void CEASSupportTask::prepare() {
     createBedDoc();
     CHECK_OP(stateInfo, );
 
-    if (bedDoc){
+    if (bedDoc) {
         bedTask = new SaveDocumentTask(bedDoc);
         addSubTask(bedTask);
         activeSubtasks++;
-    }else{
+    } else {
         addSubTask(createETTask());
     }
 }
 
 void CEASSupportTask::createBedDoc() {
-    if (settings.getBedData().isEmpty()){
+    if (settings.getBedData().isEmpty()) {
         bedDoc = NULL;
-    }else{
+    } else {
         QString bedUrl = workingDir + "/" + "tmp.bed";
 
         DocumentFormat *bedFormat = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::BED);
@@ -162,28 +159,28 @@ bool CEASSupportTask::canStartETTask() const {
     return (0 == activeSubtasks);
 }
 
-Task* CEASSupportTask::createETTask(){
-    Task* res;
-    if (bedDoc){
+Task *CEASSupportTask::createETTask() {
+    Task *res;
+    if (bedDoc) {
         settings.getCeasSettings().setBedFile(bedDoc->getURLString());
     }
 
     settings.getCeasSettings().setWigFile(settings.getWigData());
     QStringList args = settings.getCeasSettings().getArgumentList();
 
-    ExternalTool* rTool = AppContext::getExternalToolRegistry()->getById(RSupport::ET_R_ID);
+    ExternalTool *rTool = AppContext::getExternalToolRegistry()->getById(RSupport::ET_R_ID);
     SAFE_POINT(NULL != rTool, "R script tool wasn't found in the registry", new FailTask("R script tool wasn't found in the registry"));
     const QString rDir = QFileInfo(rTool->getPath()).dir().absolutePath();
 
-    ExternalToolRunTask* runTask = new ExternalToolRunTask(CEASSupport::ET_CEAS_ID, args, new CEASLogParser(), workingDir, QStringList() << rDir);
+    ExternalToolRunTask *runTask = new ExternalToolRunTask(CEASSupport::ET_CEAS_ID, args, new CEASLogParser(), workingDir, QStringList() << rDir);
     setListenerForTask(runTask);
     res = runTask;
 
     return res;
 }
 
-QList<Task*> CEASSupportTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> result;
+QList<Task *> CEASSupportTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> result;
     CHECK(!subTask->isCanceled(), result);
     CHECK(!subTask->hasError(), result);
 
@@ -219,67 +216,64 @@ bool CEASSupportTask::copyFile(const QString &src, const QString &dst) {
 
 void CEASSupportTask::run() {
     QString tmpPdfFile = workingDir + "/tmp.pdf";
-    if (!copyFile(tmpPdfFile, settings.getCeasSettings().getImageFilePath())){
+    if (!copyFile(tmpPdfFile, settings.getCeasSettings().getImageFilePath())) {
         settings.getCeasSettings().setImagePath("");
     }
 
     CHECK_OP(stateInfo, );
 
-    if (!settings.getBedData().isEmpty()){ //no annotation file if no bed data
+    if (!settings.getBedData().isEmpty()) {    //no annotation file if no bed data
         QString tmpXlsFile = workingDir + "/tmp.xls";
-        if(!copyFile(tmpXlsFile, settings.getCeasSettings().getAnnsFilePath())){
+        if (!copyFile(tmpXlsFile, settings.getCeasSettings().getAnnsFilePath())) {
             settings.getCeasSettings().setAnnsFilePath("");
         }
         CHECK_OP(stateInfo, );
     }
 }
 
-const CEASTaskSettings & CEASSupportTask::getSettings() const {
+const CEASTaskSettings &CEASSupportTask::getSettings() const {
     return settings;
 }
 
 //////////////////////////////////////////////////////////////////////////
 //CEASLogParser
-CEASLogParser::CEASLogParser() :
-    ExternalToolLogParser(),
-    progress(-1)
-{
-
+CEASLogParser::CEASLogParser()
+    : ExternalToolLogParser(),
+      progress(-1) {
 }
 
-int CEASLogParser::getProgress(){
+int CEASLogParser::getProgress() {
     //parsing INFO  @ Fri, 07 Dec 2012 19:30:16: #1 read tag files...
     static const int max_step = 8;
-    if(!lastPartOfLog.isEmpty()){
-        QString lastMessage=lastPartOfLog.last();
+    if (!lastPartOfLog.isEmpty()) {
+        QString lastMessage = lastPartOfLog.last();
         QRegExp rx(" #(\\d+) \\w");
-        if(lastMessage.contains(rx)){
+        if (lastMessage.contains(rx)) {
             SAFE_POINT(rx.indexIn(lastMessage) > -1, "bad progress index", 0);
             int step = rx.cap(1).toInt();
-            return static_cast<int>((100 * step)/ float(qMax(step, max_step)));
+            return static_cast<int>((100 * step) / float(qMax(step, max_step)));
         }
     }
     return progress;
 }
 
-void CEASLogParser::parseOutput( const QString& partOfLog ){
+void CEASLogParser::parseOutput(const QString &partOfLog) {
     ExternalToolLogParser::parseOutput(partOfLog);
 }
 
-void CEASLogParser::parseErrOutput( const QString& partOfLog ){
-    lastPartOfLog=partOfLog.split(QRegExp("(\n|\r)"));
-    lastPartOfLog.first()=lastErrLine+lastPartOfLog.first();
-    lastErrLine=lastPartOfLog.takeLast();
-    foreach(QString buf, lastPartOfLog){
-        if(buf.contains("ERROR", Qt::CaseInsensitive)
-            || buf.contains("CRITICAL", Qt::CaseInsensitive)){
-                coreLog.error("CEAS: " + buf);
-        }else if (buf.contains("WARNING", Qt::CaseInsensitive)){
+void CEASLogParser::parseErrOutput(const QString &partOfLog) {
+    lastPartOfLog = partOfLog.split(QRegExp("(\n|\r)"));
+    lastPartOfLog.first() = lastErrLine + lastPartOfLog.first();
+    lastErrLine = lastPartOfLog.takeLast();
+    foreach (QString buf, lastPartOfLog) {
+        if (buf.contains("ERROR", Qt::CaseInsensitive) || buf.contains("CRITICAL", Qt::CaseInsensitive)) {
+            coreLog.error("CEAS: " + buf);
+        } else if (buf.contains("WARNING", Qt::CaseInsensitive)) {
             algoLog.info(buf);
-        }else {
+        } else {
             algoLog.trace(buf);
         }
     }
 }
 
-} // U2
+}    // namespace U2

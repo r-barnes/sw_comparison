@@ -25,19 +25,19 @@
 #include <U2Core/Task.h>
 
 #include <U2Lang/LocalDomain.h>
-#include <U2Lang/WorkflowUtils.h>
 #include <U2Lang/WorkflowEnv.h>
+#include <U2Lang/WorkflowUtils.h>
 
 namespace U2 {
 namespace LocalWorkflow {
 
-class ExternalProcessWorker: public BaseWorker {
+class ExternalProcessWorker : public BaseWorker {
     Q_OBJECT
 public:
     ExternalProcessWorker(Actor *a);
 
     bool isReady() const;
-    Task* tick();
+    Task *tick();
     void init();
     void cleanup();
 
@@ -65,49 +65,54 @@ private:
     void finish();
 
     IntegralBus *output;
-    QList<IntegralBus*> inputs;
+    QList<IntegralBus *> inputs;
     QString commandLine;
     ExternalProcessConfig *cfg;
 
-    QMap<QString, bool> urlsForDashboard;       // url -> open by system
+    QMap<QString, bool> urlsForDashboard;    // url -> open by system
     QStringList inputUrls;
 };
 
-class ExternalProcessWorkerFactory: public DomainFactory {
+class ExternalProcessWorkerFactory : public DomainFactory {
 public:
-    ExternalProcessWorkerFactory(QString name) : DomainFactory(name) {}
-    static bool init(ExternalProcessConfig * cfg);
-    virtual Worker* createWorker(Actor* a) {return new ExternalProcessWorker(a);}
+    ExternalProcessWorkerFactory(QString name)
+        : DomainFactory(name) {
+    }
+    static bool init(ExternalProcessConfig *cfg);
+    virtual Worker *createWorker(Actor *a) {
+        return new ExternalProcessWorker(a);
+    }
 };
 
-class ExternalProcessWorkerPrompter: public PrompterBase<ExternalProcessWorkerPrompter> {
+class ExternalProcessWorkerPrompter : public PrompterBase<ExternalProcessWorkerPrompter> {
     Q_OBJECT
 public:
-    ExternalProcessWorkerPrompter(Actor *p = NULL): PrompterBase<ExternalProcessWorkerPrompter>(p) {}
+    ExternalProcessWorkerPrompter(Actor *p = NULL)
+        : PrompterBase<ExternalProcessWorkerPrompter>(p) {
+    }
     QString composeRichDoc();
 };
 
-class LaunchExternalToolTask: public Task {
+class LaunchExternalToolTask : public Task {
     Q_OBJECT
     Q_DISABLE_COPY(LaunchExternalToolTask)
 public:
-    LaunchExternalToolTask(const QString &execString, const QString& workingDir, const QMap<QString, DataConfig> &outputUrls);
+    LaunchExternalToolTask(const QString &execString, const QString &workingDir, const QMap<QString, DataConfig> &outputUrls);
     ~LaunchExternalToolTask();
 
     void run();
 
     QMap<QString, DataConfig> takeOutputUrls();
-    void addListeners(const QList<ExternalToolListener*>& listenersToAdd);
+    void addListeners(const QList<ExternalToolListener *> &listenersToAdd);
+
 private:
     QMap<QString, DataConfig> outputUrls;
     QString execString;
     QString workingDir;
-    QList<ExternalToolListener*> listeners;
+    QList<ExternalToolListener *> listeners;
 };
 
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-}
-}
-
-
-#endif // _U2_EXTERNAL_PROCESS_WORKER_H_
+#endif    // _U2_EXTERNAL_PROCESS_WORKER_H_

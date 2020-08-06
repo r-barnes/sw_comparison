@@ -23,6 +23,7 @@
 #define _U2_GENBANK_LOCATION_PARSER_UNIT_TESTS_H_
 
 #include <unittest.h>
+
 #include <U2Core/U2OpStatusUtils.h>
 
 namespace U2 {
@@ -56,7 +57,7 @@ DECLARE_TEST(LocationParserTestData, locationParserGreaterInvalid);
 DECLARE_TEST(LocationParserTestData, locationParserName);
 DECLARE_TEST(LocationParserTestData, locationParserNameInvalid);
 DECLARE_TEST(LocationParserTestData, locationBuildStringNumberInvalid);
-}
+}    // namespace U2
 
 DECLARE_METATYPE(LocationParserTestData, locationParser);
 DECLARE_METATYPE(LocationParserTestData, locationParserEmpty);

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "HmmerSearchTask.h"
+
 #include <QCoreApplication>
 #include <QDir>
 
@@ -36,7 +38,6 @@
 #include <U2Core/UserApplicationsSettings.h>
 
 #include "HmmerParseSearchResultsTask.h"
-#include "HmmerSearchTask.h"
 #include "HmmerSupport.h"
 #include "utils/ExportTasks.h"
 
@@ -52,8 +53,7 @@ HmmerSearchTask::HmmerSearchTask(const HmmerSearchSettings &settings)
       hmmerTask(NULL),
       parseTask(NULL),
       removeWorkingDir(false),
-      hmm2Mode(false)
-{
+      hmm2Mode(false) {
     GCOUNTER(cvar, tvar, "HMMER Search");
     SAFE_POINT_EXT(settings.validate(), setError("Settings are invalid"), );
 }
@@ -101,11 +101,7 @@ QList<Task *> HmmerSearchTask::onSubTaskFinished(Task *subTask) {
 QString HmmerSearchTask::generateReport() const {
     QString res;
     res += "<table>";
-    res += "<tr><td><b>" + tr("HMM profile used: ") + "</b></td><td>" + QFileInfo(settings.hmmProfileUrl).absoluteFilePath()
-           + ( hmm2Mode
-            ? " <br>Warning: it is not recommended to use HMMER2 models with HMMER3. Details: https://cryptogenomicon.org/2009/03/25/using-hmmer2-models-with-hmmer3-dont-do-that/"
-            : "")
-            + "</td></tr>";
+    res += "<tr><td><b>" + tr("HMM profile used: ") + "</b></td><td>" + QFileInfo(settings.hmmProfileUrl).absoluteFilePath() + (hmm2Mode ? " <br>Warning: it is not recommended to use HMMER2 models with HMMER3. Details: https://cryptogenomicon.org/2009/03/25/using-hmmer2-models-with-hmmer3-dont-do-that/" : "") + "</td></tr>";
 
     if (hasError() || isCanceled()) {
         res += "<tr><td><b>" + tr("Task was not finished") + "</b></td><td></td></tr>";
@@ -130,12 +126,12 @@ const QString HMMER_TEMP_DIR = "hmmer";
 
 QString getTaskTempDirName(const QString &prefix, Task *task) {
     return prefix + QString::number(task->getTaskId()) + "_" +
-            QDate::currentDate().toString("dd.MM.yyyy") + "_" +
-            QTime::currentTime().toString("hh.mm.ss.zzz") + "_" +
-            QString::number(QCoreApplication::applicationPid());
+           QDate::currentDate().toString("dd.MM.yyyy") + "_" +
+           QTime::currentTime().toString("hh.mm.ss.zzz") + "_" +
+           QString::number(QCoreApplication::applicationPid());
 }
 
-}
+}    // namespace
 
 void HmmerSearchTask::prepareWorkingDir() {
     if (settings.workingDir.isEmpty()) {
@@ -233,7 +229,7 @@ void HmmerSearchTask::prepareSequenceSaveTask() {
     saveSequenceTask->setSubtaskProgressWeight(5);
 }
 
-static bool isHmm2Profile(const QString& url) {
+static bool isHmm2Profile(const QString &url) {
     QByteArray header = IOAdapterUtils::readFileHeader(GUrl(url), 6);
     return header.startsWith("HMMER2");
 }
@@ -253,4 +249,4 @@ void HmmerSearchTask::prepareParseTask() {
     parseTask->setSubtaskProgressWeight(5);
 }
 
-}   // namespace U2
+}    // namespace U2

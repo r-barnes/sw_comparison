@@ -19,20 +19,23 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2IdTypes.h>
 #include "GTUtilsQueryDesigner.h"
-#include "api/GTGraphicsItem.h"
-#include "primitives/GTMenu.h"
-#include <primitives/GTWidget.h>
 #include <drivers/GTKeyboardDriver.h>
 #include <drivers/GTMouseDriver.h>
 #include <primitives/GTTreeWidget.h>
-#include "GTUtilsMdi.h"
+#include <primitives/GTWidget.h>
 
-#include <U2View/MSAEditor.h>
-#include <QTreeWidget>
 #include <QGraphicsItem>
 #include <QGraphicsView>
+#include <QTreeWidget>
+
+#include <U2Core/U2IdTypes.h>
+
+#include <U2View/MSAEditor.h>
+
+#include "GTUtilsMdi.h"
+#include "api/GTGraphicsItem.h"
+#include "primitives/GTMenu.h"
 
 namespace U2 {
 using namespace HI;
@@ -40,85 +43,85 @@ using namespace HI;
 
 #define GT_METHOD_NAME "findTreeItem"
 void GTUtilsQueryDesigner::openQueryDesigner(HI::GUITestOpStatus &os) {
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "Query Designer...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "Query Designer...");
     GTGlobals::sleep(500);
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "findTreeItem"
-QTreeWidgetItem* GTUtilsQueryDesigner::findAlgorithm(HI::GUITestOpStatus &os,QString itemName){
-    QTreeWidgetItem* foundItem = NULL;
-    QTreeWidget *w=qobject_cast<QTreeWidget*>(GTWidget::findWidget(os,"palette"));
+QTreeWidgetItem *GTUtilsQueryDesigner::findAlgorithm(HI::GUITestOpStatus &os, QString itemName) {
+    QTreeWidgetItem *foundItem = NULL;
+    QTreeWidget *w = qobject_cast<QTreeWidget *>(GTWidget::findWidget(os, "palette"));
 
-    QList<QTreeWidgetItem*> outerList = w->findItems("",Qt::MatchContains);
+    QList<QTreeWidgetItem *> outerList = w->findItems("", Qt::MatchContains);
 
-    for (int i=0;i<outerList.count();i++){
-        QList<QTreeWidgetItem*> innerList;
+    for (int i = 0; i < outerList.count(); i++) {
+        QList<QTreeWidgetItem *> innerList;
 
-        for(int j=0;j<outerList.value(i)->childCount();j++ ){
-           innerList.append(outerList.value(i)->child(j));
+        for (int j = 0; j < outerList.value(i)->childCount(); j++) {
+            innerList.append(outerList.value(i)->child(j));
         }
 
-        foreach(QTreeWidgetItem* item, innerList){
-            if(item->text(0)==itemName){
+        foreach (QTreeWidgetItem *item, innerList) {
+            if (item->text(0) == itemName) {
                 foundItem = item;
             }
         }
     }
-    CHECK_SET_ERR_RESULT(foundItem!=NULL,"Item is null", NULL);
+    CHECK_SET_ERR_RESULT(foundItem != NULL, "Item is null", NULL);
     return foundItem;
 }
 #undef GT_METHOD_NAME
 
-void GTUtilsQueryDesigner::addAlgorithm(HI::GUITestOpStatus &os, QString algName){
+void GTUtilsQueryDesigner::addAlgorithm(HI::GUITestOpStatus &os, QString algName) {
     QTreeWidgetItem *w = findAlgorithm(os, algName);
     GTGlobals::sleep(500);
-    CHECK_SET_ERR(w!=NULL,"algorithm is NULL");
+    CHECK_SET_ERR(w != NULL, "algorithm is NULL");
 
-    GTMouseDriver::moveTo(GTTreeWidget::getItemCenter(os,w));
+    GTMouseDriver::moveTo(GTTreeWidget::getItemCenter(os, w));
 
-    GTWidget::click(os, GTWidget::findWidget(os,"sceneView"));
+    GTWidget::click(os, GTWidget::findWidget(os, "sceneView"));
 }
 
-QPoint GTUtilsQueryDesigner::getItemCenter(HI::GUITestOpStatus &os,QString itemName){
+QPoint GTUtilsQueryDesigner::getItemCenter(HI::GUITestOpStatus &os, QString itemName) {
     QRect r = getItemRect(os, itemName);
     QPoint p = r.center();
     return p;
 }
 
-int GTUtilsQueryDesigner::getItemLeft(HI::GUITestOpStatus &os, QString itemName){
+int GTUtilsQueryDesigner::getItemLeft(HI::GUITestOpStatus &os, QString itemName) {
     QRect r = getItemRect(os, itemName);
     int i = r.left();
     return i;
 }
 
-int GTUtilsQueryDesigner::getItemRight(HI::GUITestOpStatus &os, QString itemName){
+int GTUtilsQueryDesigner::getItemRight(HI::GUITestOpStatus &os, QString itemName) {
     QRect r = getItemRect(os, itemName);
     int i = r.right() - 1;
     return i;
 }
 
-int GTUtilsQueryDesigner::getItemTop(HI::GUITestOpStatus &os, QString itemName){
+int GTUtilsQueryDesigner::getItemTop(HI::GUITestOpStatus &os, QString itemName) {
     QRect r = getItemRect(os, itemName);
     int i = r.top();
     return i;
 }
 
-int GTUtilsQueryDesigner::getItemBottom(HI::GUITestOpStatus &os, QString itemName){
+int GTUtilsQueryDesigner::getItemBottom(HI::GUITestOpStatus &os, QString itemName) {
     QRect r = getItemRect(os, itemName);
     int i = r.bottom();
     return i;
 }
 
-QRect GTUtilsQueryDesigner::getItemRect(HI::GUITestOpStatus &os,QString itemName){
-
-    QGraphicsView* sceneView = qobject_cast<QGraphicsView*>(GTWidget::findWidget(os,"sceneView"));
+QRect GTUtilsQueryDesigner::getItemRect(HI::GUITestOpStatus &os, QString itemName) {
+    QGraphicsView *sceneView = qobject_cast<QGraphicsView *>(GTWidget::findWidget(os, "sceneView"));
     QList<QGraphicsItem *> items = sceneView->items();
 
-    foreach(QGraphicsItem* it, items) {
+    foreach (QGraphicsItem *it, items) {
         QGraphicsObject *itObj = it->toGraphicsObject();
 
-        QGraphicsTextItem* textItemO = qobject_cast<QGraphicsTextItem*>(itObj);
+        QGraphicsTextItem *textItemO = qobject_cast<QGraphicsTextItem *>(itObj);
         if (textItemO) {
             QString text = textItemO->toPlainText();
             if (text.contains(itemName)) {
@@ -126,8 +129,8 @@ QRect GTUtilsQueryDesigner::getItemRect(HI::GUITestOpStatus &os,QString itemName
             }
         }
     }
-   return QRect();
+    return QRect();
 }
 
 #undef GT_CLASS_NAME
-} // namespace
+}    // namespace U2

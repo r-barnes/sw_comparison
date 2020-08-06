@@ -22,19 +22,20 @@
 #ifndef _U2_ORFDIALOG_H_
 #define _U2_ORFDIALOG_H_
 
-#include "ui_ORFDialogUI.h"
-
-#include <U2Core/global.h>
-#include <U2Core/U2Region.h>
-#include <U2Gui/RegionSelector.h>
-
+#include <QCloseEvent>
 #include <QList>
+#include <QTimer>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
-#include <QCloseEvent>
-#include <QTimer>
 
 #include <U2Algorithm/ORFAlgorithmTask.h>
+
+#include <U2Core/U2Region.h>
+#include <U2Core/global.h>
+
+#include <U2Gui/RegionSelector.h>
+
+#include "ui_ORFDialogUI.h"
 
 namespace U2 {
 
@@ -49,7 +50,7 @@ class ORFDialog : public QDialog, public Ui_ORFDialogBase {
     Q_OBJECT
 
 public:
-    ORFDialog(ADVSequenceObjectContext* ctx);
+    ORFDialog(ADVSequenceObjectContext *ctx);
 
 public slots:
     virtual void reject();
@@ -64,12 +65,11 @@ private slots:
     void sl_onClearList();
     void sl_onFindAll();
 
-    void sl_onTaskFinished(Task*);
+    void sl_onTaskFinished(Task *);
     void sl_onTimer();
 
-    void sl_onResultActivated(QTreeWidgetItem* i, int col);
+    void sl_onResultActivated(QTreeWidgetItem *i, int col);
     void sl_translationChanged();
-
 
 private:
     void connectGUI();
@@ -77,7 +77,7 @@ private:
     void updateStatus();
     void tunePercentBox();
     void initSettings();
-    void getSettings(ORFAlgorithmSettings& s);
+    void getSettings(ORFAlgorithmSettings &s);
 
     void runTask();
 
@@ -89,17 +89,17 @@ private:
 private:
     void createAnnotationWidget();
     void findStartedAAUpdateTask();
-    ADVSequenceObjectContext* ctx;
-    CreateAnnotationWidgetController* ac;
+    ADVSequenceObjectContext *ctx;
+    CreateAnnotationWidgetController *ac;
 
     U2Region panViewSelection;
-    ORFFindTask* task;
+    ORFFindTask *task;
     AutoAnnotationsUpdateTask *aaUpdateTask;
-    QTimer* timer;
-    RegionSelector* rs;
+    QTimer *timer;
+    RegionSelector *rs;
     bool isRegionOk;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

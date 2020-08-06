@@ -22,15 +22,14 @@
 #ifndef _U2_DNA_FLEX_TASK_H_
 #define _U2_DNA_FLEX_TASK_H_
 
-
-#include "FindHighFlexRegions.h"
-#include "HighFlexSettings.h"
+#include <QPointer>
 
 #include <U2Core/AnnotationData.h>
 #include <U2Core/DNASequence.h>
 #include <U2Core/Task.h>
 
-#include <QPointer>
+#include "FindHighFlexRegions.h"
+#include "HighFlexSettings.h"
 
 namespace U2 {
 
@@ -41,32 +40,30 @@ class DNASequence;
  * The main DNA Flexibility task: launches a task to search for high
  * flexibility regions (FindHighFlexRegions) and saves the annotations.
  */
-class DNAFlexTask : public Task
-{
+class DNAFlexTask : public Task {
     Q_OBJECT
 public:
-    DNAFlexTask(const HighFlexSettings& settings,
-        AnnotationTableObject *annotObject,
-        const QString& annotName,
-        const QString& annotGroup,
-        const QString &annDescription,
-        const DNASequence& sequence);
+    DNAFlexTask(const HighFlexSettings &settings,
+                AnnotationTableObject *annotObject,
+                const QString &annotName,
+                const QString &annotGroup,
+                const QString &annDescription,
+                const DNASequence &sequence);
 
-    QList<Task*> onSubTaskFinished(Task* subTask);
-    QList<SharedAnnotationData> getAnnotationsFromResults(const QList<HighFlexResult>& results);
+    QList<Task *> onSubTaskFinished(Task *subTask);
+    QList<SharedAnnotationData> getAnnotationsFromResults(const QList<HighFlexResult> &results);
 
 private:
-    HighFlexSettings                    settings;
-    QPointer<AnnotationTableObject>     annotObject;
-    U2FeatureType                       annotType;
-    QString                             annotName;
-    QString                             annotGroup;
-    const QString                       annDescription;
-    DNASequence                         sequence;
-    FindHighFlexRegions*                findHighFlexTask;
+    HighFlexSettings settings;
+    QPointer<AnnotationTableObject> annotObject;
+    U2FeatureType annotType;
+    QString annotName;
+    QString annotGroup;
+    const QString annDescription;
+    DNASequence sequence;
+    FindHighFlexRegions *findHighFlexTask;
 };
 
-
-} // namespace
+}    // namespace U2
 
 #endif

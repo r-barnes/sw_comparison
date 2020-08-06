@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "McaObjectTests.h"
+
 #include <QDomElement>
 
 #include <U2Core/DNASequenceObject.h>
@@ -27,14 +29,12 @@
 #include <U2Core/MultipleChromatogramAlignmentObject.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "McaObjectTests.h"
-
 namespace U2 {
 
 const QString GTest_CompareTwoMca::DOC1_ATTR = "doc1";
 const QString GTest_CompareTwoMca::DOC2_ATTR = "doc2";
 
-void GTest_CompareTwoMca::init(XMLTestFormat *, const QDomElement& element) {
+void GTest_CompareTwoMca::init(XMLTestFormat *, const QDomElement &element) {
     docContextName = element.attribute(DOC1_ATTR);
     if (docContextName.isEmpty()) {
         failMissingValue(DOC1_ATTR);
@@ -54,36 +54,30 @@ Task::ReportResult GTest_CompareTwoMca::report() {
     const QList<GObject *> objs1 = doc1->getObjects();
     CHECK_EXT(1 == objs1.size(), setError(QString("document '%1' contains several objects: the comparison not implemented").arg(docContextName)), ReportResult_Finished);
     MultipleChromatogramAlignmentObject *mca1 = qobject_cast<MultipleChromatogramAlignmentObject *>(objs1.first());
-    CHECK_EXT(NULL != mca1, setError(QString("document '%1' contains an incorrect object: expected '%2', got '%3'")
-                                     .arg(docContextName)
-                                     .arg(GObjectTypes::MULTIPLE_CHROMATOGRAM_ALIGNMENT)
-                                     .arg(objs1.first()->getGObjectType())), ReportResult_Finished);
+    CHECK_EXT(NULL != mca1, setError(QString("document '%1' contains an incorrect object: expected '%2', got '%3'").arg(docContextName).arg(GObjectTypes::MULTIPLE_CHROMATOGRAM_ALIGNMENT).arg(objs1.first()->getGObjectType())), ReportResult_Finished);
 
     Document *doc2 = getContext<Document>(this, secondDocContextName);
     CHECK_EXT(NULL != doc2, setError(QString("document not found: %1").arg(secondDocContextName)), ReportResult_Finished);
     const QList<GObject *> objs2 = doc2->getObjects();
     CHECK_EXT(1 == objs2.size(), setError(QString("document '%1' contains several objects: the comparison not implemented").arg(secondDocContextName)), ReportResult_Finished);
     MultipleChromatogramAlignmentObject *mca2 = qobject_cast<MultipleChromatogramAlignmentObject *>(objs2.first());
-    CHECK_EXT(NULL != mca2, setError(QString("document '%1' contains an incorrect object: expected '%2', got '%3'")
-                                     .arg(secondDocContextName)
-                                     .arg(GObjectTypes::MULTIPLE_CHROMATOGRAM_ALIGNMENT)
-                                     .arg(objs2.first()->getGObjectType())), ReportResult_Finished);
+    CHECK_EXT(NULL != mca2, setError(QString("document '%1' contains an incorrect object: expected '%2', got '%3'").arg(secondDocContextName).arg(GObjectTypes::MULTIPLE_CHROMATOGRAM_ALIGNMENT).arg(objs2.first()->getGObjectType())), ReportResult_Finished);
 
     const U2SequenceObject *reference1 = mca1->getReferenceObj();
     const U2SequenceObject *reference2 = mca2->getReferenceObj();
-    CHECK_EXT((NULL == reference1 && NULL == reference2)
-              || (NULL != reference1 && NULL != reference2), setError("One object has a reference, but another one doesn't"), ReportResult_Finished);
+    CHECK_EXT((NULL == reference1 && NULL == reference2) || (NULL != reference1 && NULL != reference2), setError("One object has a reference, but another one doesn't"), ReportResult_Finished);
 
     const qint64 rowsNumber1 = mca1->getNumRows();
     const qint64 rowsNumber2 = mca2->getNumRows();
     CHECK_EXT(rowsNumber1 == rowsNumber2,
               setError(QString("The rows numbers differ: the object '%1' from the document '%2' contains %3 rows, the object '%4' from the document '%5' contains %6 rows")
-              .arg(mca1->getGObjectName())
-              .arg(docContextName)
-              .arg(rowsNumber1)
-              .arg(mca2->getGObjectName())
-              .arg(secondDocContextName)
-              .arg(rowsNumber2)), ReportResult_Finished);
+                           .arg(mca1->getGObjectName())
+                           .arg(docContextName)
+                           .arg(rowsNumber1)
+                           .arg(mca2->getGObjectName())
+                           .arg(secondDocContextName)
+                           .arg(rowsNumber2)),
+              ReportResult_Finished);
 
     for (int i = 0; i < rowsNumber1; i++) {
         const MultipleChromatogramAlignmentRow row1 = mca1->getMcaRow(i);
@@ -99,9 +93,9 @@ Task::ReportResult GTest_CompareTwoMca::report() {
 }
 
 QList<XMLTestFactory *> McaObjectTests::createTestFactories() {
-    QList<XMLTestFactory*> res;
+    QList<XMLTestFactory *> res;
     res.append(GTest_CompareTwoMca::createFactory());
     return res;
 }
 
-}   // namespace U2
+}    // namespace U2

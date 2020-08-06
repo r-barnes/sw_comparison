@@ -19,29 +19,31 @@
  * MA 02110-1301, USA.
  */
 
+#include "RPSBlastSupportTask.h"
+
 #include <QFileInfo>
 
-#include "RPSBlastSupportTask.h"
 #include "BlastPlusSupport.h"
 
 namespace U2 {
 
-ExternalToolRunTask* RPSBlastSupportTask::createBlastPlusTask() {
+ExternalToolRunTask *RPSBlastSupportTask::createBlastPlusTask() {
     QStringList arguments;
     arguments << "-db" << settings.databaseNameAndPath;
     arguments << "-evalue" << QString::number(settings.expectValue);
     arguments << "-query" << url;
-    arguments << "-outfmt" << "5"; //Set output file format to xml
-    arguments << "-out" << url+".xml"; //settings.outputRepFile;
+    arguments << "-outfmt"
+              << "5";    //Set output file format to xml
+    arguments << "-out" << url + ".xml";    //settings.outputRepFile;
 
-    algoLog.trace("RPSBlast arguments: "+arguments.join(" "));
+    algoLog.trace("RPSBlast arguments: " + arguments.join(" "));
     QString workingDirectory = QFileInfo(url).absolutePath();
-    ExternalToolRunTask* runTask = new ExternalToolRunTask(BlastPlusSupport::ET_RPSBLAST_ID, arguments, new ExternalToolLogParser(), workingDirectory);
+    ExternalToolRunTask *runTask = new ExternalToolRunTask(BlastPlusSupport::ET_RPSBLAST_ID, arguments, new ExternalToolLogParser(), workingDirectory);
     setListenerForTask(runTask);
     return runTask;
 }
 
-LocalCDSearch::LocalCDSearch(const CDSearchSettings& settings) {
+LocalCDSearch::LocalCDSearch(const CDSearchSettings &settings) {
     BlastTaskSettings stngs;
     stngs.databaseNameAndPath = settings.localDbFolder + "/" + settings.dbName;
     stngs.querySequence = settings.query;
@@ -55,4 +57,4 @@ QList<SharedAnnotationData> LocalCDSearch::getCDSResults() const {
     return task->getResultedAnnotations();
 }
 
-} //namespace
+}    // namespace U2

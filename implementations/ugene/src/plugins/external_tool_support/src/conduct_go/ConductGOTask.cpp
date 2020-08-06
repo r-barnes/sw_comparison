@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ConductGOTask.h"
+
 #include <QDir>
 
 #include <U2Core/AnnotationTableObject.h>
@@ -28,21 +30,19 @@
 #include <U2Core/Counter.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/DocumentUtils.h>
+#include <U2Core/GObjectTypes.h>
+#include <U2Core/GObjectUtils.h>
 #include <U2Core/GUrlUtils.h>
 #include <U2Core/IOAdapter.h>
 #include <U2Core/IOAdapterUtils.h>
-#include <U2Core/SaveDocumentTask.h>
 #include <U2Core/L10n.h>
+#include <U2Core/SaveDocumentTask.h>
 #include <U2Core/TextObject.h>
-#include <U2Core/GObjectUtils.h>
-#include <U2Core/GObjectTypes.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/UserApplicationsSettings.h>
 
 #include "ConductGOSupport.h"
 #include "R/RSupport.h"
-
-#include "ConductGOTask.h"
 
 namespace U2 {
 
@@ -50,11 +50,8 @@ const QString ConductGOTask::BASE_DIR_NAME("ConductGO_tmp");
 const QString ConductGOTask::BASE_SUBDIR_NAME("ConductGO");
 const QString ConductGOTask::TREAT_NAME("treatment");
 
-ConductGOTask::ConductGOTask(const ConductGOSettings& settings)
-: ExternalToolSupportTask("ConductGO annotation", TaskFlag_CollectChildrenWarnings)
-, settings(settings)
-, etTask(NULL)
-{
+ConductGOTask::ConductGOTask(const ConductGOSettings &settings)
+    : ExternalToolSupportTask("ConductGO annotation", TaskFlag_CollectChildrenWarnings), settings(settings), etTask(NULL) {
     GCOUNTER(cvar, tvar, "NGS:ConductGOTask");
 }
 
@@ -83,7 +80,7 @@ void ConductGOTask::prepare() {
     copyFile(settings.treatUrl, workingDir + "/" + QFileInfo(settings.treatUrl).fileName());
     settings.treatUrl = workingDir + "/" + QFileInfo(settings.treatUrl).fileName();
 
-    ExternalTool* rTool = AppContext::getExternalToolRegistry()->getById(RSupport::ET_R_ID);
+    ExternalTool *rTool = AppContext::getExternalToolRegistry()->getById(RSupport::ET_R_ID);
     SAFE_POINT_EXT(NULL != rTool, setError("R script tool wasn't found in the registry"), );
     const QString rDir = QFileInfo(rTool->getPath()).dir().absolutePath();
 
@@ -93,12 +90,12 @@ void ConductGOTask::prepare() {
 }
 
 void ConductGOTask::run() {
-    foreach (const QString& file, getResultFileNames()) {
+    foreach (const QString &file, getResultFileNames()) {
         copyFile(workingDir + "/" + file, getSettings().outDir + "/" + file);
     }
 }
 
-const ConductGOSettings & ConductGOTask::getSettings() const {
+const ConductGOSettings &ConductGOTask::getSettings() const {
     return settings;
 }
 
@@ -121,32 +118,31 @@ bool ConductGOTask::copyFile(const QString &src, const QString &dst) {
     return true;
 }
 
-
 QStringList ConductGOTask::getResultFileNames() const {
     QStringList result;
 
     QString current;
 
     current = getSettings().title + "_CC_RESULT.txt";
-    if (QFile::exists(workingDir+"/"+current)){
+    if (QFile::exists(workingDir + "/" + current)) {
         result << current;
     }
     current = getSettings().title + "_BP_RESULT.txt";
-    if (QFile::exists(workingDir+"/"+current)){
+    if (QFile::exists(workingDir + "/" + current)) {
         result << current;
     }
 
     current = getSettings().title + "_MF_RESULT.txt";
-    if (QFile::exists(workingDir+"/"+current)){
+    if (QFile::exists(workingDir + "/" + current)) {
         result << current;
     }
 
     current = getSettings().title + "_Conduct_GO_using_David.html";
-    if (QFile::exists(workingDir+"/"+current)){
+    if (QFile::exists(workingDir + "/" + current)) {
         result << current;
     }
 
     return result;
 }
 
-} // U2
+}    // namespace U2

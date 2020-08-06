@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "SeqStatisticsWidgetFactory.h"
+
 #include <QPixmap>
 
 #include <U2Core/U2SafePoints.h>
@@ -27,35 +29,31 @@
 
 #include "SeqStatisticsWidget.h"
 
-#include "SeqStatisticsWidgetFactory.h"
-
 namespace U2 {
 
 const QString SeqStatisticsWidgetFactory::GROUP_ID = "OP_SEQ_STATISTICS_WIDGET";
 const QString SeqStatisticsWidgetFactory::GROUP_ICON_STR = ":core/images/chart_bar.png";
-const QString SeqStatisticsWidgetFactory::GROUP_DOC_PAGE = "24742491";
-
+const QString SeqStatisticsWidgetFactory::GROUP_DOC_PAGE = "46500051";
 
 SeqStatisticsWidgetFactory::SeqStatisticsWidgetFactory() {
     objectViewOfWidget = ObjViewType_AlignmentEditor;
 }
 
-QWidget * SeqStatisticsWidgetFactory::createWidget(GObjectView* objView) {
-    SAFE_POINT(NULL != objView,
-        QString("Internal error: unable to create widget for group '%1', object view is NULL.").arg(GROUP_ID),
-        NULL);
+QWidget *SeqStatisticsWidgetFactory::createWidget(GObjectView *objView, const QVariantMap &options) {
+    SAFE_POINT(objView != nullptr,
+               QString("Internal error: unable to create widget for group '%1', object view is NULL.").arg(GROUP_ID),
+               nullptr);
 
-    MSAEditor* msa = qobject_cast<MSAEditor*>(objView);
-    SAFE_POINT(NULL != msa,
-        QString("Internal error: unable to cast object view to MSAEditor for group '%1'.").arg(GROUP_ID),
-        NULL);
+    MSAEditor *msa = qobject_cast<MSAEditor *>(objView);
+    SAFE_POINT(msa != nullptr,
+               QString("Internal error: unable to cast object view to MSAEditor for group '%1'.").arg(GROUP_ID),
+               nullptr);
 
-    SeqStatisticsWidget *SeqStatisticsWidgetWidget = new SeqStatisticsWidget(msa);
-    return SeqStatisticsWidgetWidget;
+    return new SeqStatisticsWidget(msa);
 }
 
 OPGroupParameters SeqStatisticsWidgetFactory::getOPGroupParameters() {
     return OPGroupParameters(GROUP_ID, QPixmap(GROUP_ICON_STR), QObject::tr("Statistics"), GROUP_DOC_PAGE);
 }
 
-} // namespace U2
+}    // namespace U2

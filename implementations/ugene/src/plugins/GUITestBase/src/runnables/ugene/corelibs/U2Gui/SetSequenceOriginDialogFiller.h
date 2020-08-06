@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-
 #ifndef _U2_SET_SEQUENCE_ORIGIN_DIALOG_FILLER_H_
 #define _U2_SET_SEQUENCE_ORIGIN_DIALOG_FILLER_H_
 
@@ -28,14 +27,16 @@
 namespace U2 {
 using namespace HI;
 
-class SetSequenceOriginDialogFiller: public Filler
-{
+class SetSequenceOriginDialogFiller : public Filler {
 public:
-    SetSequenceOriginDialogFiller(HI::GUITestOpStatus &os, int _start): Filler(os, "SetSequenceOriginDialog"), start(_start){}
+    SetSequenceOriginDialogFiller(HI::GUITestOpStatus &os, int _start)
+        : Filler(os, "SetSequenceOriginDialog"), start(_start) {
+    }
     virtual void commonScenario();
+
 private:
     int start;
 };
 
-}
-#endif // SETSEQUENCEORIGINDIALOGFILLER_H
+}    // namespace U2
+#endif    // SETSEQUENCEORIGINDIALOGFILLER_H

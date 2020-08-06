@@ -33,20 +33,21 @@ namespace U2 {
 class WorkflowSettingsPageController : public AppSettingsGUIPageController {
     Q_OBJECT
 public:
-    WorkflowSettingsPageController(QObject* p = NULL);
+    WorkflowSettingsPageController(QObject *p = NULL);
 
-    virtual AppSettingsGUIPageState* getSavedState();
+    virtual AppSettingsGUIPageState *getSavedState();
 
-    virtual void saveState(AppSettingsGUIPageState* s);
+    virtual void saveState(AppSettingsGUIPageState *s);
 
-    virtual AppSettingsGUIPageWidget* createWidget(AppSettingsGUIPageState* data);
+    virtual AppSettingsGUIPageWidget *createWidget(AppSettingsGUIPageState *data);
 
-    const QString& getHelpPageId() const {return helpPageId;};
+    const QString &getHelpPageId() const {
+        return helpPageId;
+    };
 
 private:
     static const QString helpPageId;
 };
-
 
 class WorkflowSettingsPageState : public AppSettingsGUIPageState {
     Q_OBJECT
@@ -65,17 +66,16 @@ public:
     bool showEmptyPorts;
 };
 
-
-class WorkflowSettingsPageWidget: public AppSettingsGUIPageWidget, public Ui_WorkflowSettingsWidget {
+class WorkflowSettingsPageWidget : public AppSettingsGUIPageWidget, public Ui_WorkflowSettingsWidget {
     Q_OBJECT
 public:
-    WorkflowSettingsPageWidget(WorkflowSettingsPageController* ctrl);
+    WorkflowSettingsPageWidget(WorkflowSettingsPageController *ctrl);
 
-    virtual void setState(AppSettingsGUIPageState* state);
+    virtual void setState(AppSettingsGUIPageState *state);
 
-    virtual AppSettingsGUIPageState* getState(QString& err) const;
+    virtual AppSettingsGUIPageState *getState(QString &err) const;
 
-    virtual bool eventFilter( QObject * watched, QEvent * event );
+    virtual bool eventFilter(QObject *watched, QEvent *event);
 
 private slots:
     void sl_getDirectory();
@@ -85,6 +85,6 @@ private slots:
     void sl_getColor();
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

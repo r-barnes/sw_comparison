@@ -27,24 +27,26 @@
 namespace U2 {
 
 enum ColumnRole {
-    ColumnRole_Ignore,      // ignore this column
-    ColumnRole_Qualifier,   // column will be mapped to a qualifier
-    ColumnRole_Name,        // name (or key) of the annotation
+    ColumnRole_Ignore,    // ignore this column
+    ColumnRole_Qualifier,    // column will be mapped to a qualifier
+    ColumnRole_Name,    // name (or key) of the annotation
     ColumnRole_StartPos,    // column will be mapped as start position
-    ColumnRole_EndPos,      // column will be mapped as end position
-    ColumnRole_Length,      // column will be mapped as length
-    ColumnRole_ComplMark,   // column is a complement strand indicator
-    ColumnRole_Group        // group of the annotation
+    ColumnRole_EndPos,    // column will be mapped as end position
+    ColumnRole_Length,    // column will be mapped as length
+    ColumnRole_ComplMark,    // column is a complement strand indicator
+    ColumnRole_Group    // group of the annotation
 };
 
 class ColumnConfig {
 public:
-    ColumnConfig() : role (ColumnRole_Ignore), startPositionOffset(0), endPositionIsInclusive(false) {}
-    ColumnRole  role;
-    QString     qualifierName;
-    QString     complementMark;
-    int         startPositionOffset;
-    bool        endPositionIsInclusive;
+    ColumnConfig()
+        : role(ColumnRole_Ignore), startPositionOffset(0), endPositionIsInclusive(false) {
+    }
+    ColumnRole role;
+    QString qualifierName;
+    QString complementMark;
+    int startPositionOffset;
+    bool endPositionIsInclusive;
 
     void reset() {
         role = ColumnRole_Ignore;
@@ -57,6 +59,6 @@ public:
     //TODO: support groups?
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

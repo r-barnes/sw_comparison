@@ -22,11 +22,10 @@
 #ifndef _U2_LOCATION_H_
 #define _U2_LOCATION_H_
 
-#include <U2Core/U2Type.h>
-#include <U2Core/U2Region.h>
-
 #include <QSharedData>
 
+#include <U2Core/U2Region.h>
+#include <U2Core/U2Type.h>
 
 namespace U2 {
 
@@ -57,52 +56,65 @@ enum U2LocationRegionType {
     U2LocationRegionType_SingleBase = 2
 };
 
-
 /** Annotation location */
 class U2CORE_EXPORT U2LocationData : public QSharedData {
 public:
-
     /** Location operator */
-    U2LocationOperator      op;
+    U2LocationOperator op;
 
     /**  Strand of the location. */
-    U2Strand                strand;
+    U2Strand strand;
 
     /**
         Descriptor of the region: no special info, site, ...
         Note that all non-default values are affective only for
         single region locations
     */
-    U2LocationRegionType    regionType;
+    U2LocationRegionType regionType;
 
     /** Annotated regions coordinates */
-    QVector<U2Region>         regions;
+    QVector<U2Region> regions;
 
     /** Constructs empty location */
-    U2LocationData() { reset(); }
+    U2LocationData() {
+        reset();
+    }
 
-    bool isEmpty() const {return regions.isEmpty();}
+    bool isEmpty() const {
+        return regions.isEmpty();
+    }
 
     /** Resets location to initial empty state */
     void reset();
 
+    bool isOrder() const {
+        return op == U2LocationOperator_Order;
+    }
 
-    bool isOrder() const {return op == U2LocationOperator_Order;}
+    bool isJoin() const {
+        return op == U2LocationOperator_Join;
+    }
 
-    bool isJoin() const {return op == U2LocationOperator_Join;}
+    bool isBond() const {
+        return op == U2LocationOperator_Bond;
+    }
 
-    bool isBond() const {return op == U2LocationOperator_Bond;}
+    bool isMultiRegion() const {
+        return regions.size() > 1;
+    }
 
-    bool isMultiRegion() const {return regions.size() > 1;}
+    bool isSingleRegion() const {
+        return regions.size() == 1;
+    }
 
-    bool isSingleRegion() const {return regions.size() == 1;}
+    bool operator==(const U2LocationData &l) const;
 
-    bool operator==(const U2LocationData& l) const;
-
-    bool operator!=(const U2LocationData& l) const {return !(*this == l);}
+    bool operator!=(const U2LocationData &l) const {
+        return !(*this == l);
+    }
 };
 
-inline bool U2LocationData::operator==(const U2LocationData& l) const {
+inline bool U2LocationData::operator==(const U2LocationData &l) const {
     bool res = regions == l.regions && strand == l.strand && op == l.op && regionType == l.regionType;
     return res;
 }
@@ -115,34 +127,68 @@ inline bool U2LocationData::operator==(const U2LocationData& l) const {
 */
 class U2CORE_EXPORT U2Location {
 public:
-    U2Location() : d(new U2LocationData()){}
-    U2Location( U2LocationData *l) : d(l){}
+    U2Location()
+        : d(new U2LocationData()) {
+    }
+    U2Location(U2LocationData *l)
+        : d(l) {
+    }
 
-    U2LocationData&	operator*() {return *d;}
-    const U2LocationData&	operator*() const {return *d;}
+    U2LocationData &operator*() {
+        return *d;
+    }
+    const U2LocationData &operator*() const {
+        return *d;
+    }
 
-    U2LocationData*	operator->() {return d;}
-    const U2LocationData*	operator->() const {return d;}
+    U2LocationData *operator->() {
+        return d;
+    }
+    const U2LocationData *operator->() const {
+        return d;
+    }
 
-    U2LocationData *data() {return d.data(); }
-    const U2LocationData *data() const {return d.constData();}
+    U2LocationData *data() {
+        return d.data();
+    }
+    const U2LocationData *data() const {
+        return d.constData();
+    }
 
-    inline operator U2LocationData *() { return d; }
-    inline operator const U2LocationData *() const { return d; }
+    inline operator U2LocationData *() {
+        return d;
+    }
+    inline operator const U2LocationData *() const {
+        return d;
+    }
 
-    U2Location&	operator=(const U2Location& other) {d = other.d; return *this;}
+    U2Location &operator=(const U2Location &other) {
+        d = other.d;
+        return *this;
+    }
 
 private:
     QSharedDataPointer<U2LocationData> d;
 };
 
-inline bool	operator!= ( const U2Location & ptr1, const U2Location & ptr2 ) {return *ptr1  != *ptr2;}
-inline bool	operator!= ( const U2Location & ptr1, const U2LocationData * ptr2 ) {return *ptr1  != *ptr2;}
-inline bool	operator!= ( const U2LocationData * ptr1, const U2Location & ptr2 ) {return *ptr1  != *ptr2;}
-inline bool	operator== ( const U2Location & ptr1, const U2Location & ptr2 ) {return *ptr1  == *ptr2;}
-inline bool	operator== ( const U2Location & ptr1, const U2LocationData * ptr2 ) {return *ptr1  == *ptr2;}
-inline bool	operator== ( const U2LocationData * ptr1, const U2Location & ptr2 ) {return *ptr1 == *ptr2;}
-
+inline bool operator!=(const U2Location &ptr1, const U2Location &ptr2) {
+    return *ptr1 != *ptr2;
+}
+inline bool operator!=(const U2Location &ptr1, const U2LocationData *ptr2) {
+    return *ptr1 != *ptr2;
+}
+inline bool operator!=(const U2LocationData *ptr1, const U2Location &ptr2) {
+    return *ptr1 != *ptr2;
+}
+inline bool operator==(const U2Location &ptr1, const U2Location &ptr2) {
+    return *ptr1 == *ptr2;
+}
+inline bool operator==(const U2Location &ptr1, const U2LocationData *ptr2) {
+    return *ptr1 == *ptr2;
+}
+inline bool operator==(const U2LocationData *ptr1, const U2Location &ptr2) {
+    return *ptr1 == *ptr2;
+}
 
 //////////////////////////////////////////////////////////////////////////
 // functions impl
@@ -154,6 +200,6 @@ inline void U2LocationData::reset() {
     regionType = U2LocationRegionType_Default;
 }
 
-} // namespace
+}    // namespace U2
 
 #endif

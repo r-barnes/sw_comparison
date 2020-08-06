@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "Peak2GeneWorker.h"
+
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/DataPathRegistry.h>
@@ -42,8 +44,6 @@
 #include <U2Lang/WorkflowMonitor.h>
 
 #include "Peak2GeneSupport.h"
-#include "Peak2GeneWorker.h"
-
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -69,16 +69,11 @@ static const QString SYMBOL("symbol");
 static const QString DISTANCE("distance");
 static const QString GENOME("genome");
 
-
 /************************************************************************/
 /* Worker */
 /************************************************************************/
 Peak2GeneWorker::Peak2GeneWorker(Actor *p)
-: BaseWorker(p)
-, inChannel(NULL)
-, output(NULL)
-{
-
+    : BaseWorker(p), inChannel(NULL), output(NULL) {
 }
 
 void Peak2GeneWorker::init() {
@@ -105,11 +100,11 @@ Task *Peak2GeneWorker::tick() {
             return new FailTask(os.getError());
         }
 
-        Peak2GeneTask* t = new Peak2GeneTask(settings, context->getDataStorage(), treatData);
+        Peak2GeneTask *t = new Peak2GeneTask(settings, context->getDataStorage(), treatData);
         t->addListeners(createLogListeners());
         connect(t, SIGNAL(si_stateChanged()), SLOT(sl_taskFinished()));
         return t;
-    }else if (inChannel->isEnded()) {
+    } else if (inChannel->isEnded()) {
         setDone();
         output->setEnded();
     }
@@ -117,21 +112,20 @@ Task *Peak2GeneWorker::tick() {
 }
 
 void Peak2GeneWorker::cleanup() {
-
 }
 
 void Peak2GeneWorker::sl_taskFinished() {
-    Peak2GeneTask *task = qobject_cast<Peak2GeneTask*>(sender());
+    Peak2GeneTask *task = qobject_cast<Peak2GeneTask *>(sender());
     if (!task->isFinished() || task->hasError() || task->isCanceled()) {
         return;
     }
 
     QVariantMap data;
 
-    AnnotationTableObject * genesTable = task->getGenes();
+    AnnotationTableObject *genesTable = task->getGenes();
     data[GENE_ANNOTATION] = QVariant::fromValue(context->getDataStorage()->putAnnotationTable(genesTable));
 
-    AnnotationTableObject * peaksTable = task->getPeaks();
+    AnnotationTableObject *peaksTable = task->getPeaks();
     data[PEAK_ANNOTATION] = QVariant::fromValue(context->getDataStorage()->putAnnotationTable(peaksTable));
 
     data[GENE_ANNOTATION_URL] = task->getGenesUrl();
@@ -177,31 +171,29 @@ QString Peak2GeneComboBoxWithUrlsDelegate::getAttributeName() {
 /* Factory */
 /************************************************************************/
 
-
 void Peak2GeneWorkerFactory::init() {
-
     //init data path
-    U2DataPath* dataPath = NULL;
-    U2DataPathRegistry* dpr =  AppContext::getDataPathRegistry();
-    if (dpr){
-        U2DataPath* dp = dpr->getDataPathByName(Peak2GeneSupport::REF_GENES_DATA_NAME);
-        if (dp && dp->isValid()){
+    U2DataPath *dataPath = NULL;
+    U2DataPathRegistry *dpr = AppContext::getDataPathRegistry();
+    if (dpr) {
+        U2DataPath *dp = dpr->getDataPathByName(Peak2GeneSupport::REF_GENES_DATA_NAME);
+        if (dp && dp->isValid()) {
             dataPath = dp;
         }
     }
 
-    QList<PortDescriptor*> portDescs;
+    QList<PortDescriptor *> portDescs;
 
     //in port
     QMap<Descriptor, DataTypePtr> inTypeMap;
     Descriptor treatDesc(TREAT_SLOT_ID,
-        Peak2GeneWorker::tr("Treatment features"),
-        Peak2GeneWorker::tr("Result peaks of MACS."));
+                         Peak2GeneWorker::tr("Treatment features"),
+                         Peak2GeneWorker::tr("Result peaks of MACS."));
     inTypeMap[treatDesc] = BaseTypes::ANNOTATION_TABLE_LIST_TYPE();
 
     Descriptor inPortDesc(IN_PORT_DESCR,
-        Peak2GeneWorker::tr("Peak2gene data"),
-        Peak2GeneWorker::tr("MACS peaks to get the refgenes near the peak summit/center."));
+                          Peak2GeneWorker::tr("Peak2gene data"),
+                          Peak2GeneWorker::tr("MACS peaks to get the refgenes near the peak summit/center."));
 
     DataTypePtr inTypeSet(new MapDataType(IN_TYPE_ID, inTypeMap));
     portDescs << new PortDescriptor(inPortDesc, inTypeSet, true);
@@ -209,21 +201,21 @@ void Peak2GeneWorkerFactory::init() {
     //out port
     QMap<Descriptor, DataTypePtr> outTypeMap;
     Descriptor geneRegDesc(GENE_ANNOTATION,
-        Peak2GeneWorker::tr("Gene regions"),
-        Peak2GeneWorker::tr("Annotation for each gene, containing all the peaks nearby."));
+                           Peak2GeneWorker::tr("Gene regions"),
+                           Peak2GeneWorker::tr("Annotation for each gene, containing all the peaks nearby."));
     Descriptor peakRegDesc(PEAK_ANNOTATION,
-        Peak2GeneWorker::tr("Peak regions"),
-        Peak2GeneWorker::tr("Annotation for each peak, containing all the genes nearby."));
+                           Peak2GeneWorker::tr("Peak regions"),
+                           Peak2GeneWorker::tr("Annotation for each peak, containing all the genes nearby."));
     Descriptor geneRegUrlDesc(GENE_ANNOTATION_URL,
-        Peak2GeneWorker::tr("Gene regions URL"),
-        Peak2GeneWorker::tr("URL to file with annotation for each gene, containing all the peaks nearby."));
+                              Peak2GeneWorker::tr("Gene regions URL"),
+                              Peak2GeneWorker::tr("URL to file with annotation for each gene, containing all the peaks nearby."));
     Descriptor peakRegUrlDesc(PEAK_ANNOTATION_URL,
-        Peak2GeneWorker::tr("Peak regions URL"),
-        Peak2GeneWorker::tr("URL to file with annotation for each peak, containing all the genes nearby."));
+                              Peak2GeneWorker::tr("Peak regions URL"),
+                              Peak2GeneWorker::tr("URL to file with annotation for each peak, containing all the genes nearby."));
 
     Descriptor outPortDesc(OUT_PORT_DESCR,
-        Peak2GeneWorker::tr("Peak2gene output data"),
-        Peak2GeneWorker::tr("Genes containing all the peaks nearby and peaks containing all the genes nearby."));
+                           Peak2GeneWorker::tr("Peak2gene output data"),
+                           Peak2GeneWorker::tr("Genes containing all the peaks nearby and peaks containing all the genes nearby."));
 
     outTypeMap[geneRegDesc] = BaseTypes::ANNOTATION_TABLE_TYPE();
     outTypeMap[peakRegDesc] = BaseTypes::ANNOTATION_TABLE_TYPE();
@@ -233,79 +225,77 @@ void Peak2GeneWorkerFactory::init() {
     DataTypePtr outTypeSet(new MapDataType(OUT_TYPE_ID, outTypeMap));
     portDescs << new PortDescriptor(outPortDesc, outTypeSet, false, true);
 
-     QList<Attribute*> attrs;
-     {
-         Descriptor outpos(OUTPOS,
-             Peak2GeneWorker::tr("Output type"),
-             Peak2GeneWorker::tr("Select which type of genes need to output. "
-             "<b>up</b> for genes upstream to peak summit, "
-             "<b>down</b> for genes downstream to peak summit, "
-             "<b>all</b> for both <b>up</b> and <b>down</b> (--op)."));
-         Descriptor symbol(SYMBOL,
-             Peak2GeneWorker::tr("Official gene symbols"),
-             Peak2GeneWorker::tr("Output <b>official gene symbol</b> instead of <b>refseq name</b> (--symbol)."));
-         Descriptor p2g_distance(DISTANCE,
-             Peak2GeneWorker::tr("Distance"),
-             Peak2GeneWorker::tr("Set a number which unit is base. It will get the refGenes in n bases from peak center (--distance)."));
-         Descriptor p2g_genome(GENOME,
-             Peak2GeneWorker::tr("Genome file"),
-             Peak2GeneWorker::tr("Select a genome file (sqlite3 file) to search refGenes (--genome)."));
+    QList<Attribute *> attrs;
+    {
+        Descriptor outpos(OUTPOS,
+                          Peak2GeneWorker::tr("Output type"),
+                          Peak2GeneWorker::tr("Select which type of genes need to output. "
+                                              "<b>up</b> for genes upstream to peak summit, "
+                                              "<b>down</b> for genes downstream to peak summit, "
+                                              "<b>all</b> for both <b>up</b> and <b>down</b> (--op)."));
+        Descriptor symbol(SYMBOL,
+                          Peak2GeneWorker::tr("Official gene symbols"),
+                          Peak2GeneWorker::tr("Output <b>official gene symbol</b> instead of <b>refseq name</b> (--symbol)."));
+        Descriptor p2g_distance(DISTANCE,
+                                Peak2GeneWorker::tr("Distance"),
+                                Peak2GeneWorker::tr("Set a number which unit is base. It will get the refGenes in n bases from peak center (--distance)."));
+        Descriptor p2g_genome(GENOME,
+                              Peak2GeneWorker::tr("Genome file"),
+                              Peak2GeneWorker::tr("Select a genome file (sqlite3 file) to search refGenes (--genome)."));
 
-         Attribute* annGrAttr = NULL;
-         if (dataPath){
-             const QList<QString>& dataNames = dataPath->getDataNames();
-             if (!dataNames.isEmpty()){
-                 int hg19Idx = dataNames.indexOf("hg19");
-                 if (hg19Idx == -1){
-                     annGrAttr = new Attribute(p2g_genome, BaseTypes::STRING_TYPE(), true, dataPath->getPathByName(dataNames.first()));
-                 }else{
-                     annGrAttr = new Attribute(p2g_genome, BaseTypes::STRING_TYPE(), true, dataPath->getPathByName(dataNames.at(hg19Idx)));
-                 }
+        Attribute *annGrAttr = NULL;
+        if (dataPath) {
+            const QList<QString> &dataNames = dataPath->getDataNames();
+            if (!dataNames.isEmpty()) {
+                int hg19Idx = dataNames.indexOf("hg19");
+                if (hg19Idx == -1) {
+                    annGrAttr = new Attribute(p2g_genome, BaseTypes::STRING_TYPE(), true, dataPath->getPathByName(dataNames.first()));
+                } else {
+                    annGrAttr = new Attribute(p2g_genome, BaseTypes::STRING_TYPE(), true, dataPath->getPathByName(dataNames.at(hg19Idx)));
+                }
 
-             }else{
-                 annGrAttr = new Attribute(p2g_genome, BaseTypes::STRING_TYPE(), true);
-             }
-         }else{
-             annGrAttr = new Attribute(p2g_genome, BaseTypes::STRING_TYPE(), true);
+            } else {
+                annGrAttr = new Attribute(p2g_genome, BaseTypes::STRING_TYPE(), true);
+            }
+        } else {
+            annGrAttr = new Attribute(p2g_genome, BaseTypes::STRING_TYPE(), true);
         }
 
         attrs << annGrAttr;
         attrs << new Attribute(outpos, BaseTypes::STRING_TYPE(), false, QVariant(Peak2GeneSettings::OUT_TYPE_ALL));
         attrs << new Attribute(symbol, BaseTypes::BOOL_TYPE(), false, QVariant(false));
         attrs << new Attribute(p2g_distance, BaseTypes::NUM_TYPE(), false, QVariant(3000));
-     }
+    }
 
-     QMap<QString, PropertyDelegate*> delegates;
-     {
-         {
+    QMap<QString, PropertyDelegate *> delegates;
+    {
+        {
             QVariantMap vm;
             vm["minimum"] = QVariant(0);
             vm["maximum"] = INT_MAX;
             vm["singleStep"] = QVariant(100);
 
             delegates[DISTANCE] = new SpinBoxDelegate(vm);
-         }
+        }
 
-         {
-             QVariantMap vm;
-             if (dataPath){
-                 vm = dataPath->getDataItemsVariantMap();
-             }
-             delegates[GENOME] = new Peak2GeneComboBoxWithUrlsDelegate(vm);
-         }
+        {
+            QVariantMap vm;
+            if (dataPath) {
+                vm = dataPath->getDataItemsVariantMap();
+            }
+            delegates[GENOME] = new Peak2GeneComboBoxWithUrlsDelegate(vm);
+        }
 
-
-         QVariantMap contentMap;
-         contentMap[Peak2GeneSettings::OUT_TYPE_ALL] = Peak2GeneSettings::OUT_TYPE_ALL;
-         contentMap[Peak2GeneSettings::OUT_TYPE_DOWNSTREAM] = Peak2GeneSettings::OUT_TYPE_DOWNSTREAM;
-         contentMap[Peak2GeneSettings::OUT_TYPE_UPSTREAM] = Peak2GeneSettings::OUT_TYPE_UPSTREAM;
-         delegates[OUTPOS] = new ComboBoxDelegate(contentMap);
-
-     }
+        QVariantMap contentMap;
+        contentMap[Peak2GeneSettings::OUT_TYPE_ALL] = Peak2GeneSettings::OUT_TYPE_ALL;
+        contentMap[Peak2GeneSettings::OUT_TYPE_DOWNSTREAM] = Peak2GeneSettings::OUT_TYPE_DOWNSTREAM;
+        contentMap[Peak2GeneSettings::OUT_TYPE_UPSTREAM] = Peak2GeneSettings::OUT_TYPE_UPSTREAM;
+        delegates[OUTPOS] = new ComboBoxDelegate(contentMap);
+    }
 
     Descriptor protoDesc(Peak2GeneWorkerFactory::ACTOR_ID,
-        Peak2GeneWorker::tr("Annotate Peaks with peak2gene"),
-        Peak2GeneWorker::tr("Gets refGenes near the ChIP regions identified by a peak-caller."));
+                         Peak2GeneWorker::tr("Annotate Peaks with peak2gene"),
+                         Peak2GeneWorker::tr("Gets refGenes near the ChIP regions identified by a peak-caller."));
 
     ActorPrototype *proto = new IntegralBusActorPrototype(protoDesc, portDescs, attrs);
     proto->setPrompter(new Peak2GenePrompter());
@@ -322,9 +312,9 @@ Worker *Peak2GeneWorkerFactory::createWorker(Actor *a) {
 QString Peak2GenePrompter::composeRichDoc() {
     QString res = "";
 
-    Actor* treatProducer = qobject_cast<IntegralBusPort*>(target->getPort(IN_PORT_DESCR))->getProducer(TREAT_SLOT_ID);
+    Actor *treatProducer = qobject_cast<IntegralBusPort *>(target->getPort(IN_PORT_DESCR))->getProducer(TREAT_SLOT_ID);
 
-    QString unsetStr = "<font color='red'>"+tr("unset")+"</font>";
+    QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
     QString treatUrl = treatProducer ? treatProducer->getLabel() : unsetStr;
 
     QString dbUrl = getHyperlink(GENOME, getURL(GENOME));
@@ -335,5 +325,5 @@ QString Peak2GenePrompter::composeRichDoc() {
     return res;
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

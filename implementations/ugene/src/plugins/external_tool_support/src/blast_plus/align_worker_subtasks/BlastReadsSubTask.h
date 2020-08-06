@@ -27,7 +27,6 @@
 #include <U2Lang/DbiDataHandler.h>
 #include <U2Lang/DbiDataStorage.h>
 
-
 namespace U2 {
 
 class AbstractAlignmentTaskFactory;
@@ -43,7 +42,7 @@ class BlastAndSwReadTask;
 class BlastReadsSubTask : public Task {
     Q_OBJECT
 public:
-    BlastReadsSubTask(const QString& dbPath,
+    BlastReadsSubTask(const QString &dbPath,
                       const QList<SharedDbiDataHandler> &reads,
                       const SharedDbiDataHandler &reference,
                       const int minIdentityPercent,
@@ -52,7 +51,7 @@ public:
 
     void prepare();
 
-    const QList<BlastAndSwReadTask*>& getBlastSubtasks() const;
+    const QList<BlastAndSwReadTask *> &getBlastSubtasks() const;
 
 private:
     const QString dbPath;
@@ -63,7 +62,7 @@ private:
 
     DbiDataStorage *storage;
 
-    QList<BlastAndSwReadTask*> blastSubTasks;
+    QList<BlastAndSwReadTask *> blastSubTasks;
 };
 
 /************************************************************************/
@@ -72,38 +71,38 @@ private:
 class BlastAndSwReadTask : public Task {
     Q_OBJECT
 public:
-    BlastAndSwReadTask(const QString& dbPath,
-                       const SharedDbiDataHandler& read,
+    BlastAndSwReadTask(const QString &dbPath,
+                       const SharedDbiDataHandler &read,
                        const SharedDbiDataHandler &reference,
                        const int minIdentityPercent,
                        const QString &readName,
                        DbiDataStorage *storage);
 
     bool isComplement() const;
-    const SharedDbiDataHandler& getRead() const;
-    const U2MsaRowGapModel&      getReferenceGaps() const;
-    const U2MsaRowGapModel&      getReadGaps() const;
+    const SharedDbiDataHandler &getRead() const;
+    const U2MsaRowGapModel &getReferenceGaps() const;
+    const U2MsaRowGapModel &getReadGaps() const;
 
-    bool        isReadAligned() const;
-    QString     getReadName() const;
+    bool isReadAligned() const;
+    QString getReadName() const;
     MultipleSequenceAlignment getMAlignment();
-    qint64      getOffset() const;
-    int         getReadIdentity() const;
+    qint64 getOffset() const;
+    int getReadIdentity() const;
 
 private:
     void prepare();
-    QList<Task*> onSubTaskFinished(Task *subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
     ReportResult report();
 
     BlastNPlusSupportTask *getBlastTask();
     void checkRead(const QByteArray &sequenceData);
 
-    U2Region getReferenceRegion(const QList<SharedAnnotationData>& blastAnnotations);
-    void createAlignment(const U2Region& refRegion);
+    U2Region getReferenceRegion(const QList<SharedAnnotationData> &blastAnnotations);
+    void createAlignment(const U2Region &refRegion);
     void shiftGaps(U2MsaRowGapModel &gaps) const;
 
-    static AbstractAlignmentTaskFactory* getAbstractAlignmentTaskFactory(const QString &algoId, const QString &implId, U2OpStatus &os);
-    static PairwiseAlignmentTaskSettings* createSettings(DbiDataStorage *storage, const SharedDbiDataHandler &msa, U2OpStatus &os);
+    static AbstractAlignmentTaskFactory *getAbstractAlignmentTaskFactory(const QString &algoId, const QString &implId, U2OpStatus &os);
+    static PairwiseAlignmentTaskSettings *createSettings(DbiDataStorage *storage, const SharedDbiDataHandler &msa, U2OpStatus &os);
 
     const QString dbPath;
     const SharedDbiDataHandler read;
@@ -128,7 +127,7 @@ private:
     bool skipped;
 };
 
-} // namespace Workflow
-} // namespace U2
+}    // namespace Workflow
+}    // namespace U2
 
-#endif // _U2_BLAST_READS_SUBTASK_H_
+#endif    // _U2_BLAST_READS_SUBTASK_H_

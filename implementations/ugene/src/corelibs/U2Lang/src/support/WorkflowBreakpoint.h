@@ -25,8 +25,8 @@
 #include <U2Lang/ActorModel.h>
 #include <U2Lang/WorkflowContext.h>
 
-#include "WorkflowBreakpointSharedInfo.h"
 #include "BreakpointConditionChecker.h"
+#include "WorkflowBreakpointSharedInfo.h"
 
 namespace U2 {
 
@@ -84,6 +84,6 @@ private:
     BreakpointConditionChecker conditionChecker;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_WORKFLOW_BREAKPOINT_H_
+#endif    // _U2_WORKFLOW_BREAKPOINT_H_

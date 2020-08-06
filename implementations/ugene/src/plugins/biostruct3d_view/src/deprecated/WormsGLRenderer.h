@@ -22,12 +22,13 @@
 #ifndef _U2_BIOSTRUCT3D_WORMS_RENDERER_H_
 #define _U2_BIOSTRUCT3D_WORMS_RENDERER_H_
 
-#include <QSharedDataPointer>
-#include <QVector>
 #include <QMap>
 #include <QPair>
+#include <QSharedDataPointer>
+#include <QVector>
 
-#include <U2Core/Vector3D.h>
+#include <U2Core/BioStruct3D.h>
+
 #include "BioStruct3DGLRender.h"
 #include "GraphicUtils.h"
 
@@ -37,30 +38,26 @@ class AtomData;
 namespace U2 {
 
 class WormsGLRenderer : public BioStruct3DGLRenderer {
-
-
     // BioPolymer molecule
 
-    struct Monomer
-    {
-        Monomer() : alphaCarbon(NULL), carbonylOxygen(NULL) {}
+    struct Monomer {
+        Monomer()
+            : alphaCarbon(NULL), carbonylOxygen(NULL) {
+        }
         QSharedDataPointer<AtomData> alphaCarbon;
         QSharedDataPointer<AtomData> carbonylOxygen;
     };
 
-    struct BioPolymerModel
-    {
-        QMap<int,Monomer> monomerMap;
+    struct BioPolymerModel {
+        QMap<int, Monomer> monomerMap;
     };
 
-    struct BioPolymer
-    {
+    struct BioPolymer {
         // multiple models
         QMap<int, BioPolymerModel> bpModels;
     };
 
-    QMap<int, BioPolymer > bioPolymerMap;
-
+    QMap<int, BioPolymer> bioPolymerMap;
 
     // Worm Model
 
@@ -72,7 +69,7 @@ class WormsGLRenderer : public BioStruct3DGLRenderer {
         // Worm building atom coords
         AtomsVector atoms;
         // Objects representing secondary structure
-        QVector<Object3D*>  objects;
+        QVector<Object3D *> objects;
     };
 
     struct Worm {
@@ -82,20 +79,19 @@ class WormsGLRenderer : public BioStruct3DGLRenderer {
     QMap<int, Worm> wormMap;
     Color4f atomColor;
 
-
     void createObjects3D();
-    Object3D* createStrand3D( int startId, int endId, const BioPolymerModel &bpModel );
-    Object3D* createHelix3D( int startId, int endId, const BioPolymerModel &bpModel );
+    Object3D *createStrand3D(int startId, int endId, const BioPolymerModel &bpModel);
+    Object3D *createHelix3D(int startId, int endId, const BioPolymerModel &bpModel);
     void createWorms();
     void drawWorms();
     void drawSecondaryStructure();
-    const float* getAtomColor(const SharedAtom& atom);
+    const float *getAtomColor(const SharedAtom &atom);
 
 private:
-    static void createBioPolymerMap(const QMap <int, SharedMolecule>& moleculeMap, QMap<int, BioPolymer>& bioPolymerMap);
+    static void createBioPolymerMap(const QMap<int, SharedMolecule> &moleculeMap, QMap<int, BioPolymer> &bioPolymerMap);
 
 protected:
-    WormsGLRenderer(const BioStruct3D& struc, const BioStruct3DColorScheme* s, const QList<int> &shownModels, const BioStruct3DRendererSettings *settings);
+    WormsGLRenderer(const BioStruct3D &struc, const BioStruct3DColorScheme *s, const QList<int> &shownModels, const BioStruct3DRendererSettings *settings);
 
 public:
     virtual ~WormsGLRenderer();
@@ -113,6 +109,6 @@ public:
     RENDERER_FACTORY(WormsGLRenderer)
 };
 
-} //namespace
+}    // namespace U2
 
-#endif // _U2_BIOSTRUCT3D_WORMS_RENDERER_H_
+#endif    // _U2_BIOSTRUCT3D_WORMS_RENDERER_H_

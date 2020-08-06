@@ -22,9 +22,10 @@
 #ifndef _U2_MEGER_BAM_WORKER_H_
 #define _U2_MEGER_BAM_WORKER_H_
 
+#include <U2Core/GUrl.h>
+
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
-#include <U2Core/GUrl.h>
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -35,17 +36,20 @@ typedef PrompterBase<MergeBamPrompter> MergeBamBase;
 class MergeBamPrompter : public MergeBamBase {
     Q_OBJECT
 public:
-    MergeBamPrompter(Actor* p = 0) : MergeBamBase(p) {}
+    MergeBamPrompter(Actor *p = 0)
+        : MergeBamBase(p) {
+    }
+
 protected:
     QString composeRichDoc();
-}; //MergeBamPrompter
+};    //MergeBamPrompter
 
-class MergeBamWorker: public BaseWorker {
+class MergeBamWorker : public BaseWorker {
     Q_OBJECT
 public:
     MergeBamWorker(Actor *a);
     void init();
-    Task * tick();
+    Task *tick();
     void cleanup();
 
 private:
@@ -54,23 +58,28 @@ private:
     QString outputDir;
     QStringList urls;
 public slots:
-    void sl_taskFinished( Task *task );
+    void sl_taskFinished(Task *task);
 
 private:
     QString takeUrl();
-    QString getOutputName(const QString& fileUrl);
+    QString getOutputName(const QString &fileUrl);
     void sendResult(const QString &url);
-}; //MergeBamWorker
+};    //MergeBamWorker
 
 class MergeBamWorkerFactory : public DomainFactory {
     static const QString ACTOR_ID;
+
 public:
     static void init();
-    MergeBamWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    Worker* createWorker(Actor* a) { return new MergeBamWorker(a); }
-}; //MergeBamWorkerFactory
+    MergeBamWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    Worker *createWorker(Actor *a) {
+        return new MergeBamWorker(a);
+    }
+};    //MergeBamWorkerFactory
 
-} //LocalWorkflow
-} //U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif //_U2_MEGER_BAM_WORKER_H_
+#endif    //_U2_MEGER_BAM_WORKER_H_

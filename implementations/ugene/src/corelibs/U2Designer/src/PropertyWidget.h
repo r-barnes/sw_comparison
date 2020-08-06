@@ -22,17 +22,17 @@
 #ifndef _U2_PROPERTYWIDGET_H_
 #define _U2_PROPERTYWIDGET_H_
 
-#include <QLayout>
 #include <QComboBox>
 #include <QDoubleSpinBox>
+#include <QLayout>
 #include <QSpinBox>
 #include <QToolButton>
-#include <QWidget>
 #include <QVariant>
-
-#include <U2Lang/ConfigurationEditor.h>
+#include <QWidget>
 
 #include <U2Designer/URLLineEdit.h>
+
+#include <U2Lang/ConfigurationEditor.h>
 
 class QStandardItem;
 class QStandardItemModel;
@@ -71,7 +71,7 @@ private slots:
 class DefaultPropertyWidget : public BaseDefaultPropertyWidget {
     Q_OBJECT
 public:
-    DefaultPropertyWidget(int maxLength = NO_LIMIT, QWidget* parent = nullptr);
+    DefaultPropertyWidget(int maxLength = NO_LIMIT, QWidget *parent = nullptr);
 };
 
 /************************************************************************/
@@ -81,7 +81,7 @@ public:
 class IgnoreUpDownPropertyWidget : public BaseDefaultPropertyWidget {
     Q_OBJECT
 public:
-    IgnoreUpDownPropertyWidget(int maxLength = NO_LIMIT, QWidget* parent = nullptr);
+    IgnoreUpDownPropertyWidget(int maxLength = NO_LIMIT, QWidget *parent = nullptr);
 };
 
 /************************************************************************/
@@ -90,10 +90,10 @@ public:
 
 class LineEditIgnoreUpDown : public QLineEdit {
 public:
-    LineEditIgnoreUpDown(QWidget* parent = nullptr);
+    LineEditIgnoreUpDown(QWidget *parent = nullptr);
 
 private:
-    void keyPressEvent(QKeyEvent* e) override;
+    void keyPressEvent(QKeyEvent *e) override;
 };
 
 /************************************************************************/
@@ -147,7 +147,7 @@ public:
     virtual QVariant value();
     virtual void setValue(const QVariant &value);
 
-    static ComboBoxWidget * createBooleanWidget(QWidget *parent = NULL);
+    static ComboBoxWidget *createBooleanWidget(QWidget *parent = NULL);
 
 signals:
     void valueChanged(const QString &value);
@@ -165,7 +165,7 @@ private slots:
 class ComboBoxEditableWidget : public PropertyWidget {
     Q_OBJECT
 public:
-    ComboBoxEditableWidget( const QVariantMap &items, QWidget *parent = NULL);
+    ComboBoxEditableWidget(const QVariantMap &items, QWidget *parent = NULL);
     virtual QVariant value();
     virtual void setValue(const QVariant &value);
 
@@ -173,7 +173,7 @@ signals:
     void valueChanged(const QString &value);
 
 protected slots:
-    virtual void sl_edit(const QString& val);
+    virtual void sl_edit(const QString &val);
 
 protected:
     QComboBox *comboBox;
@@ -183,14 +183,13 @@ private slots:
     void sl_valueChanged(int index);
 };
 
-
 /************************************************************************/
 /* ComboBoxWithUrlWidget */
 /************************************************************************/
 class ComboBoxWithUrlWidget : public PropertyWidget {
     Q_OBJECT
 public:
-    ComboBoxWithUrlWidget( const QVariantMap &items, bool isPath=false, QWidget *parent = NULL);
+    ComboBoxWithUrlWidget(const QVariantMap &items, bool isPath = false, QWidget *parent = NULL);
     virtual QVariant value();
     virtual void setValue(const QVariant &value);
 
@@ -229,10 +228,10 @@ private:
 /************************************************************************/
 /* ComboBoxWithChecksWidget */
 /************************************************************************/
-class U2DESIGNER_EXPORT ComboBoxWithChecksWidget: public PropertyWidget {
+class U2DESIGNER_EXPORT ComboBoxWithChecksWidget : public PropertyWidget {
     Q_OBJECT
 public:
-    ComboBoxWithChecksWidget( const QVariantMap &items, QWidget *parent = NULL);
+    ComboBoxWithChecksWidget(const QVariantMap &items, QWidget *parent = NULL);
     virtual QVariant value();
     virtual void setValue(const QVariant &value);
 
@@ -241,14 +240,13 @@ signals:
 
 protected:
     QComboBox *comboBox;
-    QStandardItemModel* cm;
+    QStandardItemModel *cm;
     QVariantMap items;
 
 protected slots:
     virtual void sl_valueChanged(int index);
-    virtual void sl_itemChanged(QStandardItem * item);
+    virtual void sl_itemChanged(QStandardItem *item);
 };
-
 
 /************************************************************************/
 /* URLWidget */
@@ -277,7 +275,7 @@ protected:
     virtual QString finalyze(const QString &url);
 
 private:
-    RunFileSystem * getRFS();
+    RunFileSystem *getRFS();
 
 private:
     URLLineEdit *urlLine;
@@ -302,6 +300,6 @@ protected:
     virtual QString finalyze(const QString &url);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_PROPERTYWIDGET_H_
+#endif    // _U2_PROPERTYWIDGET_H_

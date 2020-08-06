@@ -22,8 +22,9 @@
 #ifndef _U2_EXPORT_SEC_STRUCT_DIALOG_H_
 #define _U2_EXPORT_SEC_STRUCT_DIALOG_H_
 
-#include <U2Core/AnnotationData.h>
 #include <ui_SecStructDialog.h>
+
+#include <U2Core/AnnotationData.h>
 
 namespace U2 {
 
@@ -36,11 +37,11 @@ class RegionSelector;
 class U2VIEW_EXPORT SecStructDialog : public QDialog, private Ui_SecStructDialog {
     Q_OBJECT
 public:
-    SecStructDialog(ADVSequenceObjectContext* ctx, QWidget *p = NULL);
+    SecStructDialog(ADVSequenceObjectContext *ctx, QWidget *p = NULL);
 
 private slots:
     void sl_onStartPredictionClicked();
-    void sl_onTaskFinished(Task*);
+    void sl_onTaskFinished(Task *);
     void sl_onSaveAnnotations();
 
 private:
@@ -51,7 +52,7 @@ private:
     QPushButton *saveAnnotationButton;
     QPushButton *startButton;
     QPushButton *cancelButton;
-    RegionSelector* regionSelector;
+    RegionSelector *regionSelector;
 
     U2Region region;
 
@@ -60,9 +61,6 @@ private:
     void showResults();
 };
 
+}    // namespace U2
 
-
-} // namespace
-
-#endif //  _U2_EXPORT_SEC_STRUCT_DIALOG_H_
-
+#endif    //  _U2_EXPORT_SEC_STRUCT_DIALOG_H_

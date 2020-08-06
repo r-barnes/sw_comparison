@@ -56,30 +56,57 @@ class SequenceAreaRenderer;
 class U2VIEW_EXPORT MaEditorWgt : public QWidget {
     Q_OBJECT
 public:
-    MaEditorWgt(MaEditor* editor);
+    MaEditorWgt(MaEditor *editor);
 
-    QWidget* createHeaderLabelWidget(const QString& text = QString(),
+    QWidget *createHeaderLabelWidget(const QString &text = QString(),
                                      Qt::Alignment ali = Qt::AlignCenter,
-                                     QWidget* heightTarget = NULL);
+                                     QWidget *heightTarget = NULL,
+                                     bool proxyMouseEventsToNameList = true);
 
-    MaEditor*                       getEditor() const { return editor; }
-    MaEditorSequenceArea*           getSequenceArea() const { return seqArea; }
-    MaEditorNameList*               getEditorNameList() { return nameList; }
-    MaEditorConsensusArea*          getConsensusArea() { return consArea; }
-    MaEditorOverviewArea*           getOverviewArea() { return overviewArea; }
-    MSAEditorOffsetsViewController* getOffsetsViewController() { return offsetsView; }
-    ScrollController *              getScrollController();
-    BaseWidthController *           getBaseWidthController();
-    RowHeightController *           getRowHeightController();
-    DrawHelper *                    getDrawHelper();
+    MaEditor *getEditor() const {
+        return editor;
+    }
 
-    QAction* getUndoAction() const;
-    QAction* getRedoAction() const;
+    MaEditorSequenceArea *getSequenceArea() const {
+        return seqArea;
+    }
 
-    QAction* getDelSelectionAction() const { return delSelectionAction; }
-    QAction* getCopySelectionAction() const { return copySelectionAction; }
-    QAction* getCopyFormattedSelectionAction() const { return copyFormattedSelectionAction; }
-    QAction* getPasteAction() const { return pasteAction; }
+    MaEditorNameList *getEditorNameList() {
+        return nameList;
+    }
+
+    MaEditorConsensusArea *getConsensusArea() {
+        return consArea;
+    }
+
+    MaEditorOverviewArea *getOverviewArea() {
+        return overviewArea;
+    }
+
+    MSAEditorOffsetsViewController *getOffsetsViewController() {
+        return offsetsView;
+    }
+
+    ScrollController *getScrollController();
+    BaseWidthController *getBaseWidthController();
+    RowHeightController *getRowHeightController();
+    DrawHelper *getDrawHelper();
+
+    QAction *getUndoAction() const;
+    QAction *getRedoAction() const;
+
+    QAction *getDelSelectionAction() const {
+        return delSelectionAction;
+    }
+    QAction *getCopySelectionAction() const {
+        return copySelectionAction;
+    }
+    QAction *getCopyFormattedSelectionAction() const {
+        return copyFormattedSelectionAction;
+    }
+    QAction *getPasteAction() const {
+        return pasteAction;
+    }
 
     /* Returns if collapsible mode is enabled or not.
      *
@@ -87,15 +114,27 @@ public:
      * but have different features: in the collapsible mode the model can contains group of multiple sequences
      * or reordered rows.
      */
-    bool isCollapsibleMode() const { return collapsibleMode; }
-    void setCollapsibleMode(bool collapse) { collapsibleMode = collapse; }
-    MaCollapseModel* getCollapseModel() const { return collapseModel; }
+    bool isCollapsibleMode() const {
+        return collapsibleMode;
+    }
+    void setCollapsibleMode(bool collapse) {
+        collapsibleMode = collapse;
+    }
+    MaCollapseModel *getCollapseModel() const {
+        return collapseModel;
+    }
 
     /* If 'true' and collapse group has only 1 row it will have expand/collapse control. */
-    bool isCollapsingOfSingleRowGroupsEnabled() const { return enableCollapsingOfSingleRowGroups; }
+    bool isCollapsingOfSingleRowGroupsEnabled() const {
+        return enableCollapsingOfSingleRowGroups;
+    }
 
-    QWidget* getHeaderWidget() const { return seqAreaHeader; }
-    MsaUndoRedoFramework* getUndoRedoFramework() { return undoFWK; }
+    QWidget *getHeaderWidget() const {
+        return seqAreaHeader;
+    }
+    MsaUndoRedoFramework *getUndoRedoFramework() {
+        return undoFWK;
+    }
 
 signals:
     void si_startMaChanging();
@@ -113,46 +152,45 @@ protected:
     virtual void initWidgets();
     virtual void initActions();
 
-    virtual void initSeqArea(GScrollBar* shBar, GScrollBar* cvBar) = 0;
+    virtual void initSeqArea(GScrollBar *shBar, GScrollBar *cvBar) = 0;
     virtual void initOverviewArea() = 0;
-    virtual void initNameList(QScrollBar* nhBar) = 0;
+    virtual void initNameList(QScrollBar *nhBar) = 0;
     virtual void initConsensusArea() = 0;
     virtual void initStatusBar() = 0;
 
 protected:
-    MaEditor*                       editor;
-    MaEditorSequenceArea*           seqArea;
-    MaEditorNameList*               nameList;
-    MaEditorConsensusArea*          consArea;
-    MaEditorOverviewArea*           overviewArea;
-    MSAEditorOffsetsViewController* offsetsView;
-    MaEditorStatusBar*              statusBar;
+    MaEditor *editor;
+    MaEditorSequenceArea *seqArea;
+    MaEditorNameList *nameList;
+    MaEditorConsensusArea *consArea;
+    MaEditorOverviewArea *overviewArea;
+    MSAEditorOffsetsViewController *offsetsView;
+    MaEditorStatusBar *statusBar;
 
-    QWidget*                        nameAreaContainer;
-    QWidget*                        seqAreaHeader;
-    QVBoxLayout*                    seqAreaHeaderLayout;
+    QWidget *nameAreaContainer;
+    QWidget *seqAreaHeader;
+    QVBoxLayout *seqAreaHeaderLayout;
 
-    QGridLayout*                    seqAreaLayout;
-    QVBoxLayout*                    nameAreaLayout;
-    MaSplitterController            maSplitter;
+    QGridLayout *seqAreaLayout;
+    QVBoxLayout *nameAreaLayout;
+    MaSplitterController maSplitter;
 
-    MsaUndoRedoFramework*           undoFWK;
+    MsaUndoRedoFramework *undoFWK;
 
-    MaCollapseModel*                collapseModel;
-    bool                            collapsibleMode;
-    bool                            enableCollapsingOfSingleRowGroups;
-    ScrollController *              scrollController;
-    BaseWidthController *           baseWidthController;
-    RowHeightController *           rowHeightController;
-    DrawHelper *                    drawHelper;
+    MaCollapseModel *collapseModel;
+    bool collapsibleMode;
+    bool enableCollapsingOfSingleRowGroups;
+    ScrollController *scrollController;
+    BaseWidthController *baseWidthController;
+    RowHeightController *rowHeightController;
+    DrawHelper *drawHelper;
 
-    QAction                         *delSelectionAction;
-    QAction                         *copySelectionAction;
-    QAction                         *copyFormattedSelectionAction;
-    QAction                         *pasteAction;
+    QAction *delSelectionAction;
+    QAction *copySelectionAction;
+    QAction *copyFormattedSelectionAction;
+    QAction *pasteAction;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_MA_EDITOR_WGT_H_
-
+#endif    // _U2_MA_EDITOR_WGT_H_

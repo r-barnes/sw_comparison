@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "WevoteWorkerFactory.h"
+
 #include <QThread>
 
 #include <U2Core/AppContext.h>
@@ -35,12 +37,11 @@
 #include <U2Lang/BaseTypes.h>
 #include <U2Lang/WorkflowEnv.h>
 
+#include "../ngs_reads_classification/src/NgsReadsClassificationPlugin.h"
 #include "WevotePrompter.h"
 #include "WevoteSupport.h"
 #include "WevoteValidator.h"
 #include "WevoteWorker.h"
-#include "WevoteWorkerFactory.h"
-#include "../ngs_reads_classification/src/NgsReadsClassificationPlugin.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -59,9 +60,7 @@ const QString WevoteWorkerFactory::OUTPUT_FILE_ATTR_ID = "output-url";
 const QString WevoteWorkerFactory::WORKFLOW_CLASSIFY_TOOL_WEVOTE = "WEVOTE";
 
 WevoteWorkerFactory::WevoteWorkerFactory()
-    : DomainFactory(ACTOR_ID)
-{
-
+    : DomainFactory(ACTOR_ID) {
 }
 
 Worker *WevoteWorkerFactory::createWorker(Actor *actor) {
@@ -82,12 +81,12 @@ void WevoteWorkerFactory::init() {
         outType[TaxonomySupport::TAXONOMY_CLASSIFICATION_SLOT()] = TaxonomySupport::TAXONOMY_CLASSIFICATION_TYPE();
 
         Descriptor inPortDesc(INPUT_PORT_ID,
-                                    WevotePrompter::tr("Input classification CSV file"),
-                                    WevotePrompter::tr("Input a CSV file in the following format:\n"
-                                                       "1) a sequence name\n"
-                                                       "2) taxID from the first tool\n"
-                                                       "3) taxID from the second tool\n"
-                                                       "4) etc."));
+                              WevotePrompter::tr("Input classification CSV file"),
+                              WevotePrompter::tr("Input a CSV file in the following format:\n"
+                                                 "1) a sequence name\n"
+                                                 "2) taxID from the first tool\n"
+                                                 "3) taxID from the second tool\n"
+                                                 "4) etc."));
         Descriptor outPortDesc(OUTPUT_PORT_ID, WevotePrompter::tr("WEVOTE Classification"), WevotePrompter::tr("A map of sequence names with the associated taxonomy IDs."));
 
         ports << new PortDescriptor(inPortDesc, DataTypePtr(new MapDataType(ACTOR_ID + "-in", inType)), true /*input*/);
@@ -96,24 +95,19 @@ void WevoteWorkerFactory::init() {
 
     QList<Attribute *> attributes;
     {
-        Descriptor penaltyDesc(PENALTY_ATTR_ID, WevotePrompter::tr("Penalty"),
-                                     WevotePrompter::tr("Score penalty for disagreements (-k)"));
+        Descriptor penaltyDesc(PENALTY_ATTR_ID, WevotePrompter::tr("Penalty"), WevotePrompter::tr("Score penalty for disagreements (-k)"));
 
-        Descriptor numberOfAgreedToolsDesc(NUMBER_OF_AGREED_TOOLS_ATTR_ID, WevotePrompter::tr("Number of agreed tools"),
-                                                 WevotePrompter::tr("Specify the minimum number of tools agreed on WEVOTE decision (-a)."));
+        Descriptor numberOfAgreedToolsDesc(NUMBER_OF_AGREED_TOOLS_ATTR_ID, WevotePrompter::tr("Number of agreed tools"), WevotePrompter::tr("Specify the minimum number of tools agreed on WEVOTE decision (-a)."));
 
-        Descriptor scoreThresholdDesc(SCORE_THRESHOLD_ATTR_ID, WevotePrompter::tr("Score threshold"),
-                                            WevotePrompter::tr("Score threshold (-s)"));
+        Descriptor scoreThresholdDesc(SCORE_THRESHOLD_ATTR_ID, WevotePrompter::tr("Score threshold"), WevotePrompter::tr("Score threshold (-s)"));
 
-        Descriptor numberOfThreadsDesc(NUMBER_OF_THREADS_ATTR_ID, WevotePrompter::tr("Number of threads"),
-                                             WevotePrompter::tr("Use multiple threads (-n)."));
+        Descriptor numberOfThreadsDesc(NUMBER_OF_THREADS_ATTR_ID, WevotePrompter::tr("Number of threads"), WevotePrompter::tr("Use multiple threads (-n)."));
 
-        Descriptor outputFileDesc(OUTPUT_FILE_ATTR_ID, WevotePrompter::tr("Output file"),
-                                        WevotePrompter::tr("Specify the output text file name."));
+        Descriptor outputFileDesc(OUTPUT_FILE_ATTR_ID, WevotePrompter::tr("Output file"), WevotePrompter::tr("Specify the output text file name."));
 
         Descriptor classifyToolDesc(NgsReadsClassificationPlugin::WORKFLOW_CLASSIFY_TOOL_ID,
-                                          WORKFLOW_CLASSIFY_TOOL_WEVOTE,
-                                          "Classify tool. Hidden attribute");
+                                    WORKFLOW_CLASSIFY_TOOL_WEVOTE,
+                                    "Classify tool. Hidden attribute");
 
         Attribute *penaltyAttribute = new Attribute(penaltyDesc, BaseTypes::NUM_TYPE(), Attribute::None, 2);
         Attribute *numberOfAgreedToolsAttribute = new Attribute(numberOfAgreedToolsDesc, BaseTypes::NUM_TYPE(), Attribute::None, 0);
@@ -127,9 +121,7 @@ void WevoteWorkerFactory::init() {
         attributes << numberOfThreadsAttribute;
         attributes << outputFileAttribute;
 
-        attributes << new Attribute(classifyToolDesc, BaseTypes::STRING_TYPE(),
-                                    static_cast<Attribute::Flags>(Attribute::Hidden),
-                                    WORKFLOW_CLASSIFY_TOOL_WEVOTE);
+        attributes << new Attribute(classifyToolDesc, BaseTypes::STRING_TYPE(), static_cast<Attribute::Flags>(Attribute::Hidden), WORKFLOW_CLASSIFY_TOOL_WEVOTE);
     }
 
     QMap<QString, PropertyDelegate *> delegates;
@@ -160,9 +152,8 @@ void WevoteWorkerFactory::init() {
         delegates[OUTPUT_FILE_ATTR_ID] = new URLDelegate(tags, "wevote/output_file");
     }
 
-    Descriptor desc(ACTOR_ID, WevotePrompter::tr("Improve Classification with WEVOTE"),
-                          WevotePrompter::tr("WEVOTE (WEighted VOting Taxonomic idEntification) is a metagenome shortgun sequencing "
-                                             "DNA reads classifier based on an ensemble of other classification methods (Kraken, CLARK, etc.)."));
+    Descriptor desc(ACTOR_ID, WevotePrompter::tr("Improve Classification with WEVOTE"), WevotePrompter::tr("WEVOTE (WEighted VOting Taxonomic idEntification) is a metagenome shortgun sequencing "
+                                                                                                           "DNA reads classifier based on an ensemble of other classification methods (Kraken, CLARK, etc.)."));
     ActorPrototype *proto = new IntegralBusActorPrototype(desc, ports, attributes);
     proto->setEditor(new DelegateEditor(delegates));
     proto->setPrompter(new WevotePrompter(NULL));
@@ -181,5 +172,5 @@ void WevoteWorkerFactory::cleanup() {
     delete localDomain->unregisterEntry(ACTOR_ID);
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

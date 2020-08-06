@@ -24,40 +24,43 @@
 
 #include <QTextStream>
 
-#include <U2Core/global.h>
 #include <U2Core/StrPackUtils.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 namespace WorkflowSerialize {
 
 class Tokenizer {
 public:
-    void tokenizeSchema(const QString & data);
-    void tokenize(const QString & data, int unparseableBlockDepth = INT_MAX);
-    void tokenizeLine(const QString & line, QTextStream & s);
-    void tokenizeBlock(const QString & line, QTextStream & s);
-    void addToken(const QString & t);
-    void appendToken(const QString & t, bool skipEmpty = true);
+    void tokenizeSchema(const QString &data);
+    void tokenize(const QString &data, int unparseableBlockDepth = INT_MAX);
+    void tokenizeLine(const QString &line, QTextStream &s);
+    void tokenizeBlock(const QString &line, QTextStream &s);
+    void addToken(const QString &t);
+    void appendToken(const QString &t, bool skipEmpty = true);
     void removeCommentTokens();
-    void assertToken(const QString & etalon);
+    void assertToken(const QString &etalon);
 
     QString take();
     QString look() const;
-    bool notEmpty()const {return !tokens.isEmpty();}
+    bool notEmpty() const {
+        return !tokens.isEmpty();
+    }
 
     enum States {
         START_WORD
-    }; // States
+    };    // States
 
     QStringList tokens;
     int depth;
-}; // Tokenizer
+};    // Tokenizer
 
 class ParsedPairs {
 public:
-    ParsedPairs(Tokenizer & tokenizer, bool bigBlocks = false);
-    ParsedPairs(const QString & data, int unparseableBlockDepth = INT_MAX);
-    ParsedPairs() {}
+    ParsedPairs(Tokenizer &tokenizer, bool bigBlocks = false);
+    ParsedPairs(const QString &data, int unparseableBlockDepth = INT_MAX);
+    ParsedPairs() {
+    }
     QMap<QString, QString> equalPairs;
     QMap<QString, QString> blockPairs;
 
@@ -66,11 +69,12 @@ public:
 
     static QPair<QString, QString> parseOneEqual(Tokenizer &tokenizer);
     static QString skipBlock(Tokenizer &tokenizer);
+
 private:
-    void init(Tokenizer & tokenizer, bool bigBlocks);
-}; // ParsedPairs
+    void init(Tokenizer &tokenizer, bool bigBlocks);
+};    // ParsedPairs
 
-} // WorkflowSerialize
-} // U2
+}    // namespace WorkflowSerialize
+}    // namespace U2
 
-#endif // _U2_TOKENIZER_H_
+#endif    // _U2_TOKENIZER_H_

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "SecStructDialog.h"
+
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QMutableListIterator>
@@ -33,29 +35,27 @@
 #include <U2Core/DNASequenceSelection.h>
 #include <U2Core/L10n.h>
 #include <U2Core/PluginModel.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/U1AnnotationUtils.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2Region.h>
 #include <U2Core/U2SafePoints.h>
-#include <U2Core/QObjectScopedPointer.h>
 
 #include <U2Gui/CreateAnnotationDialog.h>
 #include <U2Gui/CreateAnnotationWidgetController.h>
 #include <U2Gui/HelpButton.h>
 #include <U2Gui/RegionSelector.h>
 
-#include <U2View/AnnotatedDNAView.h>
 #include <U2View/ADVSequenceObjectContext.h>
+#include <U2View/AnnotatedDNAView.h>
 #include <U2View/LicenseDialog.h>
-
-#include "SecStructDialog.h"
 
 namespace U2 {
 
-SecStructDialog::SecStructDialog( ADVSequenceObjectContext* _ctx, QWidget *p ) : QDialog(p), ctx(_ctx), task(NULL)
-{
+SecStructDialog::SecStructDialog(ADVSequenceObjectContext *_ctx, QWidget *p)
+    : QDialog(p), ctx(_ctx), task(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742580");
+    new HelpButton(this, buttonBox, "46501139");
 
     sspr = AppContext::getSecStructPredictAlgRegistry();
     algorithmComboBox->addItems(sspr->getAlgNameList());
@@ -80,9 +80,8 @@ SecStructDialog::SecStructDialog( ADVSequenceObjectContext* _ctx, QWidget *p ) :
     resultsTable->setHorizontalHeaderLabels(headerNames);
     resultsTable->horizontalHeader()->setStretchLastSection(true);
 
-    connect(AppContext::getTaskScheduler(), SIGNAL(si_stateChanged(Task*)), SLOT(sl_onTaskFinished(Task*)));
+    connect(AppContext::getTaskScheduler(), SIGNAL(si_stateChanged(Task *)), SLOT(sl_onTaskFinished(Task *)));
     connectGUI();
-
 }
 
 void SecStructDialog::connectGUI() {
@@ -91,34 +90,33 @@ void SecStructDialog::connectGUI() {
 }
 
 void SecStructDialog::updateState() {
-    bool haveActiveTask = task!=NULL;
+    bool haveActiveTask = task != NULL;
     bool haveResults = !results.isEmpty();
 
     algorithmComboBox->setEnabled(!haveActiveTask);
     startButton->setEnabled(!haveActiveTask);
     cancelButton->setEnabled(!haveActiveTask);
     saveAnnotationButton->setEnabled(haveResults);
-    totalPredictedStatus->setText( QString("%1").arg(results.size()));
+    totalPredictedStatus->setText(QString("%1").arg(results.size()));
     showResults();
-
 }
 
 void SecStructDialog::sl_onStartPredictionClicked() {
     SAFE_POINT(task == NULL, "Found pending prediction task!", );
 
-    SecStructPredictTaskFactory* factory = sspr->getAlgorithm(algorithmComboBox->currentText());
+    SecStructPredictTaskFactory *factory = sspr->getAlgorithm(algorithmComboBox->currentText());
     SAFE_POINT(NULL != factory, "Unregistered factory name", );
 
     //Check license
-    QString algorithm=algorithmComboBox->currentText();
-    QList<Plugin*> plugins=AppContext::getPluginSupport()->getPlugins();
-    foreach (Plugin* plugin, plugins){
-        if(plugin->getName() == algorithm){
-            if(!plugin->isFree() && !plugin->isLicenseAccepted()){
+    QString algorithm = algorithmComboBox->currentText();
+    QList<Plugin *> plugins = AppContext::getPluginSupport()->getPlugins();
+    foreach (Plugin *plugin, plugins) {
+        if (plugin->getName() == algorithm) {
+            if (!plugin->isFree() && !plugin->isLicenseAccepted()) {
                 QObjectScopedPointer<LicenseDialog> licenseDialog = new LicenseDialog(plugin);
                 const int ret = licenseDialog->exec();
                 CHECK(!licenseDialog.isNull(), );
-                if(ret != QDialog::Accepted){
+                if (ret != QDialog::Accepted) {
                     return;
                 }
             }
@@ -141,14 +139,14 @@ void SecStructDialog::sl_onStartPredictionClicked() {
     updateState();
 }
 
-void SecStructDialog::sl_onTaskFinished(Task* t) {
-    if (t != task || t->getState()!= Task::State_Finished) {
+void SecStructDialog::sl_onTaskFinished(Task *t) {
+    if (t != task || t->getState() != Task::State_Finished) {
         return;
     }
     results = task->getResults();
 
     //shifting results according to startPos
-    for (QMutableListIterator<SharedAnnotationData> it_ad(results); it_ad.hasNext(); ) {
+    for (QMutableListIterator<SharedAnnotationData> it_ad(results); it_ad.hasNext();) {
         SharedAnnotationData &ad = it_ad.next();
         U2Region::shift(region.startPos, ad->location->regions);
     }
@@ -159,11 +157,11 @@ void SecStructDialog::sl_onTaskFinished(Task* t) {
 void SecStructDialog::showResults() {
     int rowIndex = 0;
     resultsTable->setRowCount(results.size());
-    foreach(const SharedAnnotationData &data, results) {
+    foreach (const SharedAnnotationData &data, results) {
         U2Region annRegion = data->getRegions().first();
         QTableWidgetItem *locItem = new QTableWidgetItem(QString("[%1..%2]").arg(annRegion.startPos).arg(annRegion.endPos()));
         resultsTable->setItem(rowIndex, 0, locItem);
-        SAFE_POINT( data->qualifiers.size() == 1, "Only one qualifier expected!", );
+        SAFE_POINT(data->qualifiers.size() == 1, "Only one qualifier expected!", );
         QTableWidgetItem *nameItem = new QTableWidgetItem(QString(data->qualifiers.first().value));
         resultsTable->setItem(rowIndex, 1, nameItem);
         ++rowIndex;
@@ -192,10 +190,10 @@ void SecStructDialog::sl_onSaveAnnotations() {
 
     U1AnnotationUtils::addDescriptionQualifier(results, m.description);
 
-    CreateAnnotationsTask* t = new CreateAnnotationsTask(m.getAnnotationObject(), results, m.groupName);
+    CreateAnnotationsTask *t = new CreateAnnotationsTask(m.getAnnotationObject(), results, m.groupName);
     AppContext::getTaskScheduler()->registerTopLevelTask(t);
 
     QDialog::accept();
 }
 
-} // namespace U2
+}    // namespace U2

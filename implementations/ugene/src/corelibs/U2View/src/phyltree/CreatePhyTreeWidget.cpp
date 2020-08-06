@@ -25,14 +25,12 @@
 
 namespace U2 {
 
-QString CreatePhyTreeWidget::settingsPath(){
+QString CreatePhyTreeWidget::settingsPath() {
     return QString(PHY_TREE_SETTINGS);
 }
 
-CreatePhyTreeWidget::CreatePhyTreeWidget(QWidget *parent) :
-    QWidget(parent)
-{
-
+CreatePhyTreeWidget::CreatePhyTreeWidget(QWidget *parent)
+    : QWidget(parent) {
 }
 
 bool CreatePhyTreeWidget::checkSettings(QString &, const CreatePhyTreeSettings &) {
@@ -47,4 +45,4 @@ bool CreatePhyTreeWidget::insertOutputOptionWidget(PhyTreeDisplayOptionsWidget *
     return false;
 }
 
-}
+}    // namespace U2

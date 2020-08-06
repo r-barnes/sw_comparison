@@ -20,47 +20,45 @@
  */
 
 #include "DotPlotDialogFiller.h"
-#include <primitives/GTWidget.h>
-#include <primitives/GTSpinBox.h>
 #include <primitives/GTCheckBox.h>
+#include <primitives/GTSpinBox.h>
+#include <primitives/GTWidget.h>
 
 #include <QApplication>
-#include <QPushButton>
 #include <QDialogButtonBox>
+#include <QPushButton>
 
 namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::DotPlotFiller"
 #define GT_METHOD_NAME "commonScenario"
 
-DotPlotFiller::DotPlotFiller(HI::GUITestOpStatus &_os, CustomScenario *customScenario) : 
-    Filler(_os, "DotPlotDialog", customScenario), 
-    minLen(100), 
-    identity(0), 
-    invertedRepeats(false), 
-    but1kpressed(false) {
+DotPlotFiller::DotPlotFiller(HI::GUITestOpStatus &_os, CustomScenario *customScenario)
+    : Filler(_os, "DotPlotDialog", customScenario),
+      minLen(100),
+      identity(0),
+      invertedRepeats(false),
+      but1kpressed(false) {
 }
 
 void DotPlotFiller::commonScenario() {
-
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
-    QSpinBox *minLenBox = qobject_cast<QSpinBox*>(GTWidget::findWidget(os, "minLenBox", dialog));
-    if(but1kpressed){
+    QSpinBox *minLenBox = qobject_cast<QSpinBox *>(GTWidget::findWidget(os, "minLenBox", dialog));
+    if (but1kpressed) {
         GTWidget::click(os, GTWidget::findWidget(os, "minLenHeuristicsButton", dialog));
         GTGlobals::sleep();
-        GT_CHECK(minLenBox->value()==2,"minLem not 2, 1k button works wrong");
-    }
-    else
-        GTSpinBox::setValue(os, minLenBox, minLen,GTGlobals::UseKeyBoard);
+        GT_CHECK(minLenBox->value() == 2, "minLem not 2, 1k button works wrong");
+    } else
+        GTSpinBox::setValue(os, minLenBox, minLen, GTGlobals::UseKeyBoard);
 
     if (identity) {
-        QSpinBox *identityBox = qobject_cast<QSpinBox*>(GTWidget::findWidget(os, "identityBox", dialog));
-        GTSpinBox::setValue(os, identityBox, identity,GTGlobals::UseKeyBoard);
+        QSpinBox *identityBox = qobject_cast<QSpinBox *>(GTWidget::findWidget(os, "identityBox", dialog));
+        GTSpinBox::setValue(os, identityBox, identity, GTGlobals::UseKeyBoard);
     }
 
-    QCheckBox* invertedCheckBox = qobject_cast<QCheckBox*>(GTWidget::findWidget(os, "invertedCheckBox", dialog));
+    QCheckBox *invertedCheckBox = qobject_cast<QCheckBox *>(GTWidget::findWidget(os, "invertedCheckBox", dialog));
     GTCheckBox::setChecked(os, invertedCheckBox, invertedRepeats);
 
     GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
@@ -68,4 +66,4 @@ void DotPlotFiller::commonScenario() {
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

@@ -61,14 +61,15 @@ private slots:
     void updateSubgroupState(bool isSubgroupOpened);
 };
 
-
 class ArrowHeaderWidget : public QWidget {
     Q_OBJECT
 public:
     ArrowHeaderWidget(const QString &caption, bool isOpened);
     ~ArrowHeaderWidget();
 
-    bool isArrowOpened() { return isOpened; }
+    bool isArrowOpened() {
+        return isOpened;
+    }
     void showProgressWithTimeout();
     void hideProgress();
 
@@ -97,6 +98,6 @@ private:
     static const int TIMEOUT = 300;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_SHOW_HIDE_SUBGROUP_WIDGET_H_
+#endif    // _U2_SHOW_HIDE_SUBGROUP_WIDGET_H_

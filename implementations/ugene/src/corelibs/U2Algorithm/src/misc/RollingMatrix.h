@@ -29,10 +29,10 @@ namespace U2 {
 //TODO: rename n,m to rows, columns
 
 class U2ALGORITHM_EXPORT RollingMatrix {
-
 public:
-    RollingMatrix(int _n, int _m) : n(_n), m(_m), column0(0) {
-        data = new int[n*m];
+    RollingMatrix(int _n, int _m)
+        : n(_n), m(_m), column0(0) {
+        data = new int[n * m];
     }
 
     virtual ~RollingMatrix() {
@@ -55,8 +55,8 @@ public:
 
     void dump() const {
         printf("----------------\n");
-        for (int j=0; j<m; j++) {
-            for (int i=0; i<n; i++) {
+        for (int j = 0; j < m; j++) {
+            for (int i = 0; i < n; i++) {
                 printf("%x ", get(i, j));
             }
             printf("\n");
@@ -64,27 +64,24 @@ public:
     }
 
     void shiftColumn() {
-        if (++column0  == n) {
+        if (++column0 == n) {
             column0 = 0;
         }
     }
 
-    static quint64 getMatrixSizeInBytes(const int _n, const int _m)
-    {
+    static quint64 getMatrixSizeInBytes(const int _n, const int _m) {
         return _n * _m * sizeof(int);
     }
 
 private:
-
     int getIdx(int x, int y) const {
-        assert(x>=0 && y>=0 && x<n && y<m);
-        return  x*m+y;
+        assert(x >= 0 && y >= 0 && x < n && y < m);
+        return x * m + y;
     }
-
 
     int transposeX(int x) const {
         assert(x >= 0 && x < n);
-        return (column0 + x) % n ;
+        return (column0 + x) % n;
     }
 
     int transposeY(int y) const {
@@ -95,12 +92,10 @@ private:
 protected:
     int n;
     int m;
-    int* data;
+    int *data;
     int column0;
 };
 
-
-
-} //namespace
+}    // namespace U2
 
 #endif

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "RmdupBamWorker.h"
+
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentImport.h>
 #include <U2Core/DocumentModel.h>
@@ -47,28 +49,26 @@
 #include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/WorkflowMonitor.h>
 
-#include "RmdupBamWorker.h"
-
 namespace U2 {
 namespace LocalWorkflow {
 
 const QString RmdupBamWorkerFactory::ACTOR_ID("rmdup-bam");
-static const QString SHORT_NAME( "mb" );
-static const QString INPUT_PORT( "in-file" );
-static const QString OUTPUT_PORT( "out-file" );
-static const QString OUT_MODE_ID( "out-mode" );
-static const QString CUSTOM_DIR_ID( "custom-dir" );
-static const QString OUT_NAME_ID( "out-name" );
-static const QString REMOVE_SINGLE_END_ID( "remove-single-end" );
-static const QString TREAT_READS_ID( "treat_reads" );
+static const QString SHORT_NAME("mb");
+static const QString INPUT_PORT("in-file");
+static const QString OUTPUT_PORT("out-file");
+static const QString OUT_MODE_ID("out-mode");
+static const QString CUSTOM_DIR_ID("custom-dir");
+static const QString OUT_NAME_ID("out-name");
+static const QString REMOVE_SINGLE_END_ID("remove-single-end");
+static const QString TREAT_READS_ID("treat_reads");
 
 /************************************************************************/
 /* RmdupBamPrompter */
 /************************************************************************/
 QString RmdupBamPrompter::composeRichDoc() {
-    IntegralBusPort* input = qobject_cast<IntegralBusPort*>(target->getPort(INPUT_PORT));
-    const Actor* producer = input->getProducer(BaseSlots::URL_SLOT().getId());
-    QString unsetStr = "<font color='red'>"+tr("unset")+"</font>";
+    IntegralBusPort *input = qobject_cast<IntegralBusPort *>(target->getPort(INPUT_PORT));
+    const Actor *producer = input->getProducer(BaseSlots::URL_SLOT().getId());
+    QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
     QString producerName = tr("<u>%1</u>").arg(producer ? producer->getLabel() : unsetStr);
 
     QString doc = tr("Remove PCR duplicates of BAM files from %1 with SAMTools rmdup.").arg(producerName);
@@ -80,19 +80,16 @@ QString RmdupBamPrompter::composeRichDoc() {
 /************************************************************************/
 namespace {
 
-    static const QString DEFAULT_NAME( "Default" );
+static const QString DEFAULT_NAME("Default");
 }
 
 void RmdupBamWorkerFactory::init() {
-    Descriptor desc( ACTOR_ID, RmdupBamWorker::tr("Remove Duplicates in BAM Files"),
-        RmdupBamWorker::tr("Remove PCR duplicates of BAM files using SAMTools rmdup.") );
+    Descriptor desc(ACTOR_ID, RmdupBamWorker::tr("Remove Duplicates in BAM Files"), RmdupBamWorker::tr("Remove PCR duplicates of BAM files using SAMTools rmdup."));
 
-    QList<PortDescriptor*> p;
+    QList<PortDescriptor *> p;
     {
-        Descriptor inD(INPUT_PORT, RmdupBamWorker::tr("BAM File"),
-            RmdupBamWorker::tr("Set of BAM files to rmdup"));
-        Descriptor outD(OUTPUT_PORT, RmdupBamWorker::tr("Cleaned BAM File"),
-            RmdupBamWorker::tr("Cleaned BAM file"));
+        Descriptor inD(INPUT_PORT, RmdupBamWorker::tr("BAM File"), RmdupBamWorker::tr("Set of BAM files to rmdup"));
+        Descriptor outD(OUTPUT_PORT, RmdupBamWorker::tr("Cleaned BAM File"), RmdupBamWorker::tr("Cleaned BAM file"));
 
         QMap<Descriptor, DataTypePtr> inM;
         inM[BaseSlots::URL_SLOT()] = BaseTypes::STRING_TYPE();
@@ -103,35 +100,30 @@ void RmdupBamWorkerFactory::init() {
         p << new PortDescriptor(outD, DataTypePtr(new MapDataType(SHORT_NAME + ".output-url", outM)), false, true);
     }
 
-    QList<Attribute*> a;
+    QList<Attribute *> a;
     {
-        Descriptor outDir(OUT_MODE_ID, RmdupBamWorker::tr("Output folder"),
-            RmdupBamWorker::tr("Select an output folder. <b>Custom</b> - specify the output folder in the 'Custom folder' parameter. "
-            "<b>Workflow</b> - internal workflow folder. "
-            "<b>Input file</b> - the folder of the input file."));
+        Descriptor outDir(OUT_MODE_ID, RmdupBamWorker::tr("Output folder"), RmdupBamWorker::tr("Select an output folder. <b>Custom</b> - specify the output folder in the 'Custom folder' parameter. "
+                                                                                               "<b>Workflow</b> - internal workflow folder. "
+                                                                                               "<b>Input file</b> - the folder of the input file."));
 
-        Descriptor customDir(CUSTOM_DIR_ID, RmdupBamWorker::tr("Custom folder"),
-            RmdupBamWorker::tr("Select the custom output folder."));
+        Descriptor customDir(CUSTOM_DIR_ID, RmdupBamWorker::tr("Custom folder"), RmdupBamWorker::tr("Select the custom output folder."));
 
-        Descriptor outName(OUT_NAME_ID, RmdupBamWorker::tr("Output BAM name"),
-            RmdupBamWorker::tr("A name of an output BAM file. If default of empty value is provided the output name is the name of the first BAM file with .nodup.bam extension."));
+        Descriptor outName(OUT_NAME_ID, RmdupBamWorker::tr("Output BAM name"), RmdupBamWorker::tr("A name of an output BAM file. If default of empty value is provided the output name is the name of the first BAM file with .nodup.bam extension."));
 
-        Descriptor removeSE(REMOVE_SINGLE_END_ID, RmdupBamWorker::tr("Remove for single-end reads"),
-            RmdupBamWorker::tr("Remove duplicate for single-end reads. By default, the command works for paired-end reads only (-s)."));
+        Descriptor removeSE(REMOVE_SINGLE_END_ID, RmdupBamWorker::tr("Remove for single-end reads"), RmdupBamWorker::tr("Remove duplicate for single-end reads. By default, the command works for paired-end reads only (-s)."));
 
-        Descriptor treatReads(TREAT_READS_ID, RmdupBamWorker::tr("Treat as single-end"),
-            RmdupBamWorker::tr("Treat paired-end reads and single-end reads (-S)."));
+        Descriptor treatReads(TREAT_READS_ID, RmdupBamWorker::tr("Treat as single-end"), RmdupBamWorker::tr("Treat paired-end reads and single-end reads (-S)."));
 
         a << new Attribute(outDir, BaseTypes::NUM_TYPE(), false, QVariant(FileAndDirectoryUtils::WORKFLOW_INTERNAL));
-        Attribute* customDirAttr = new Attribute(customDir, BaseTypes::STRING_TYPE(), false, QVariant(""));
+        Attribute *customDirAttr = new Attribute(customDir, BaseTypes::STRING_TYPE(), false, QVariant(""));
         customDirAttr->addRelation(new VisibilityRelation(OUT_MODE_ID, FileAndDirectoryUtils::CUSTOM));
         a << customDirAttr;
-        a << new Attribute( outName, BaseTypes::STRING_TYPE(), false, QVariant(DEFAULT_NAME));
-        a << new Attribute( removeSE, BaseTypes::BOOL_TYPE(), false, QVariant(false));
-        a << new Attribute( treatReads, BaseTypes::BOOL_TYPE(), false, QVariant(false));
+        a << new Attribute(outName, BaseTypes::STRING_TYPE(), false, QVariant(DEFAULT_NAME));
+        a << new Attribute(removeSE, BaseTypes::BOOL_TYPE(), false, QVariant(false));
+        a << new Attribute(treatReads, BaseTypes::BOOL_TYPE(), false, QVariant(false));
     }
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
         QVariantMap directoryMap;
         QString fileDir = RmdupBamWorker::tr("Input file");
@@ -145,7 +137,7 @@ void RmdupBamWorkerFactory::init() {
         delegates[CUSTOM_DIR_ID] = new URLDelegate("", "", false, true);
     }
 
-    ActorPrototype* proto = new IntegralBusActorPrototype(desc, p, a);
+    ActorPrototype *proto = new IntegralBusActorPrototype(desc, p, a);
     proto->setEditor(new DelegateEditor(delegates));
     proto->setPrompter(new RmdupBamPrompter());
 
@@ -158,12 +150,7 @@ void RmdupBamWorkerFactory::init() {
 /* RmdupBamWorker */
 /************************************************************************/
 RmdupBamWorker::RmdupBamWorker(Actor *a)
-:BaseWorker(a)
-,inputUrlPort(NULL)
-,outputUrlPort(NULL)
-,outUrls("")
-{
-
+    : BaseWorker(a), inputUrlPort(NULL), outputUrlPort(NULL), outUrls("") {
 }
 
 void RmdupBamWorker::init() {
@@ -171,18 +158,18 @@ void RmdupBamWorker::init() {
     outputUrlPort = ports.value(OUTPUT_PORT);
 }
 
-Task * RmdupBamWorker::tick() {
+Task *RmdupBamWorker::tick() {
     if (inputUrlPort->hasMessage()) {
         const QString url = takeUrl();
         CHECK(!url.isEmpty(), NULL);
 
         const QString detectedFormat = FileAndDirectoryUtils::detectFormat(url);
-        if(detectedFormat.isEmpty()){
+        if (detectedFormat.isEmpty()) {
             coreLog.info(tr("Unknown file format: ") + url);
             return NULL;
         }
 
-        if(detectedFormat == BaseDocumentFormats::BAM){
+        if (detectedFormat == BaseDocumentFormats::BAM) {
             const QString outputDir = FileAndDirectoryUtils::createWorkingDir(url, getValue<int>(OUT_MODE_ID), getValue<QString>(CUSTOM_DIR_ID), context->workingDir());
 
             BamRmdupSetting setting;
@@ -194,7 +181,7 @@ Task * RmdupBamWorker::tick() {
 
             SamtoolsRmdupTask *t = new SamtoolsRmdupTask(setting);
             t->addListeners(createLogListeners());
-            connect(new TaskSignalMapper(t), SIGNAL(si_taskFinished(Task*)), SLOT(sl_taskFinished(Task*)));
+            connect(new TaskSignalMapper(t), SIGNAL(si_taskFinished(Task *)), SLOT(sl_taskFinished(Task *)));
             return t;
         }
     }
@@ -211,16 +198,15 @@ void RmdupBamWorker::cleanup() {
 }
 
 namespace {
-    QString getTargetUrl(Task *task) {
+QString getTargetUrl(Task *task) {
+    SamtoolsRmdupTask *rmdupTask = dynamic_cast<SamtoolsRmdupTask *>(task);
 
-        SamtoolsRmdupTask *rmdupTask = dynamic_cast<SamtoolsRmdupTask*>(task);
-
-        if (NULL != rmdupTask) {
-            return rmdupTask->getResult();
-        }
-        return "";
+    if (NULL != rmdupTask) {
+        return rmdupTask->getResult();
     }
+    return "";
 }
+}    // namespace
 
 void RmdupBamWorker::sl_taskFinished(Task *task) {
     CHECK(!task->hasError(), );
@@ -233,20 +219,19 @@ void RmdupBamWorker::sl_taskFinished(Task *task) {
     monitor()->addOutputFile(url, getActorId());
 }
 
-QString RmdupBamWorker::getTargetName (const QString &fileUrl, const QString &outDir){
+QString RmdupBamWorker::getTargetName(const QString &fileUrl, const QString &outDir) {
     QString name = getValue<QString>(OUT_NAME_ID);
 
-    if(name == DEFAULT_NAME || name.isEmpty()){
+    if (name == DEFAULT_NAME || name.isEmpty()) {
         name = QFileInfo(fileUrl).fileName();
         name = name + ".nodup.bam";
     }
-    if(outUrls.contains(outDir + name)){
+    if (outUrls.contains(outDir + name)) {
         name.append(QString("_%1").arg(outUrls.size()));
     }
-    outUrls.append(outDir+name);
+    outUrls.append(outDir + name);
     return name;
 }
-
 
 QString RmdupBamWorker::takeUrl() {
     const Message inputMessage = getMessageAndSetupScriptValues(inputUrlPort);
@@ -266,19 +251,18 @@ void RmdupBamWorker::sendResult(const QString &url) {
 
 ////////////////////////////////////////////////////////
 //BamRmdupSetting
-QStringList BamRmdupSetting::getSamtoolsArguments() const{
+QStringList BamRmdupSetting::getSamtoolsArguments() const {
     QStringList result;
 
     result << "rmdup";
 
-    if(removeSingleEnd){
+    if (removeSingleEnd) {
         result << "-s";
     }
 
-    if(treatReads){
+    if (treatReads) {
         result << "-S";
     }
-
 
     result << inputUrl;
 
@@ -287,32 +271,29 @@ QStringList BamRmdupSetting::getSamtoolsArguments() const{
     return result;
 }
 
-
 ////////////////////////////////////////////////////////
 //SamtoolsRmdupTask
 
 const QString SamtoolsRmdupTask::SAMTOOLS_ID = "USUPP_SAMTOOLS";
 
 SamtoolsRmdupTask::SamtoolsRmdupTask(const BamRmdupSetting &settings)
-:ExternalToolSupportTask(tr("Samtool rmdup for %1 ").arg(settings.inputUrl), TaskFlags(TaskFlag_None)),settings(settings),resultUrl(""){
-
+    : ExternalToolSupportTask(tr("Samtool rmdup for %1 ").arg(settings.inputUrl), TaskFlags(TaskFlag_None)), settings(settings), resultUrl("") {
 }
 
-void SamtoolsRmdupTask::prepare(){
-    if (settings.inputUrl.isEmpty()){
+void SamtoolsRmdupTask::prepare() {
+    if (settings.inputUrl.isEmpty()) {
         setError(tr("No assembly URL to filter"));
-        return ;
+        return;
     }
 
     const QDir outDir = QFileInfo(settings.outDir).absoluteDir();
     if (!outDir.exists()) {
         setError(tr("Folder does not exist: ") + outDir.absolutePath());
-        return ;
+        return;
     }
-
 }
 
-void SamtoolsRmdupTask::run(){
+void SamtoolsRmdupTask::run() {
     CHECK_OP(stateInfo, );
 
     ProcessRun samtools = ExternalToolSupportUtils::prepareProcess(SAMTOOLS_ID, settings.getSamtoolsArguments(), "", QStringList(), stateInfo, getListener(0));
@@ -324,7 +305,7 @@ void SamtoolsRmdupTask::run(){
     start(samtools, "SAMtools");
     CHECK_OP(stateInfo, );
 
-    while(!samtools.process->waitForFinished(1000)){
+    while (!samtools.process->waitForFinished(1000)) {
         if (isCanceled()) {
             CmdlineTaskRunner::killProcessTree(samtools.process);
             return;
@@ -332,18 +313,18 @@ void SamtoolsRmdupTask::run(){
     }
     checkExitCode(samtools.process, "SAMtools");
 
-    if(!hasError()){
+    if (!hasError()) {
         resultUrl = settings.outDir + settings.outName;
     }
 }
 
-void SamtoolsRmdupTask::start(const ProcessRun &pRun, const QString &toolName){
+void SamtoolsRmdupTask::start(const ProcessRun &pRun, const QString &toolName) {
     pRun.process->start(pRun.program, pRun.arguments);
     bool started = pRun.process->waitForStarted();
     CHECK_EXT(started, setError(tr("Can not run %1 tool").arg(toolName)), );
 }
 
-void SamtoolsRmdupTask::checkExitCode(QProcess *process, const QString &toolName){
+void SamtoolsRmdupTask::checkExitCode(QProcess *process, const QString &toolName) {
     int exitCode = process->exitCode();
     if (exitCode != EXIT_SUCCESS && !hasError()) {
         setError(tr("%1 tool exited with code %2").arg(toolName).arg(exitCode));
@@ -352,6 +333,5 @@ void SamtoolsRmdupTask::checkExitCode(QProcess *process, const QString &toolName
     }
 }
 
-
-} //LocalWorkflow
-} //U2
+}    // namespace LocalWorkflow
+}    // namespace U2

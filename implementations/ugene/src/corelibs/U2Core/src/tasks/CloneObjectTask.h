@@ -40,10 +40,10 @@ public:
     ~CloneObjectTask();
     void run();
 
-    GObject * takeResult();
-    const QString & getFolder() const;
-    GObject * getSourceObject() const;
-    Document * getDocument() const;
+    GObject *takeResult();
+    const QString &getFolder() const;
+    GObject *getSourceObject() const;
+    Document *getDocument() const;
 
 private:
     QPointer<GObject> srcObj;
@@ -53,6 +53,6 @@ private:
     GObject *dstObj;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_CLONE_OBJECT_TASK_H_
+#endif    // _U2_CLONE_OBJECT_TASK_H_

@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-
 #ifndef _U2_GRAPH_SETTINGS_DIALOG_FILLER_H_
 #define _U2_GRAPH_SETTINGS_DIALOG_FILLER_H_
 
@@ -28,8 +27,7 @@
 namespace U2 {
 using namespace HI;
 
-class GraphSettingsDialogFiller: public Filler
-{
+class GraphSettingsDialogFiller : public Filler {
 public:
     GraphSettingsDialogFiller(HI::GUITestOpStatus &os,
                               int window = -1,
@@ -53,5 +51,5 @@ private:
     int b;
 };
 
-}
-#endif // GRAPHSETTINGSDIALOGFILLER_H
+}    // namespace U2
+#endif    // GRAPHSETTINGSDIALOGFILLER_H

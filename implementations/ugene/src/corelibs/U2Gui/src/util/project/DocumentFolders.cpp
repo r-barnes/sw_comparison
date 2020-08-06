@@ -19,15 +19,15 @@
  * MA 02110-1301, USA.
  */
 
+#include "DocumentFolders.h"
+
 #include <U2Core/DocumentModel.h>
 #include <U2Core/Folder.h>
 #include <U2Core/Timer.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "ProjectUtils.h"
-
 #include "ConnectionHelper.h"
-#include "DocumentFolders.h"
+#include "ProjectUtils.h"
 
 namespace U2 {
 
@@ -44,7 +44,6 @@ bool folderPathLessThan(const QString &first, const QString &second) {
 }
 
 DocumentFoldersUpdate::DocumentFoldersUpdate() {
-
 }
 
 DocumentFoldersUpdate::DocumentFoldersUpdate(const U2DbiRef &dbiRef, U2OpStatus &os) {
@@ -58,15 +57,13 @@ DocumentFoldersUpdate::DocumentFoldersUpdate(const U2DbiRef &dbiRef, U2OpStatus 
     CHECK_OP(os, );
     std::sort(folders.begin(), folders.end(), folderPathLessThan);
     QHash<U2Object, QString>::ConstIterator i = u2objectFolders.constBegin();
-    for (; i!=u2objectFolders.constEnd(); i++) {
+    for (; i != u2objectFolders.constEnd(); i++) {
         objectIdFolders[i.key().id] = i.value();
     }
 }
 
 DocumentFolders::DocumentFolders()
-    : doc(NULL)
-{
-
+    : doc(NULL) {
 }
 
 void DocumentFolders::init(Document *doc, U2OpStatus &os) {
@@ -106,7 +103,7 @@ bool DocumentFolders::hasFolder(const QString &path) const {
     return foldersMap.contains(path) || U2ObjectDbi::ROOT_FOLDER == path;
 }
 
-Folder * DocumentFolders::getFolder(const QString &path) const {
+Folder *DocumentFolders::getFolder(const QString &path) const {
     SAFE_POINT(U2ObjectDbi::ROOT_FOLDER != path, "Unexpected folder path", NULL);
     SAFE_POINT(foldersMap.contains(path), "Unknown path", NULL);
     return foldersMap[path];
@@ -115,7 +112,7 @@ Folder * DocumentFolders::getFolder(const QString &path) const {
 void DocumentFolders::addFolder(const QString &path) {
     SAFE_POINT(!hasFolder(path), "The folder already exists", );
 
-    if (!ProjectUtils::isFolderInRecycleBinSubtree(path)) { // add all folders from @path if they don't exist
+    if (!ProjectUtils::isFolderInRecycleBinSubtree(path)) {    // add all folders from @path if they don't exist
         const QStringList pathList = path.split(U2ObjectDbi::PATH_SEP, QString::SkipEmptyParts);
         QString fullPath;
         foreach (const QString &folder, pathList) {
@@ -128,7 +125,7 @@ void DocumentFolders::addFolder(const QString &path) {
             // There is a new folder in the model -> update caches
             onFolderAdded(fullPath);
         }
-    } else { // if some folder is being removed to Recycle Bin, then all its parent folders do not have to be created,
+    } else {    // if some folder is being removed to Recycle Bin, then all its parent folders do not have to be created,
         // since actual parent folders exist and they can produce name conflicts if they are removed.
         foldersMap[path] = new Folder(doc, path);
         onFolderAdded(path);
@@ -153,7 +150,7 @@ void DocumentFolders::renameFolder(const QString &oldPath, const QString &newPat
         folderNewPath.replace(0, oldPathLength, newPath);
 
         // remove objects of the folder
-        QList<GObject*> objs = getObjects(folderPrevPath);
+        QList<GObject *> objs = getObjects(folderPrevPath);
         foreach (GObject *obj, objs) {
             moveObject(obj, folderPrevPath, folderNewPath);
         }
@@ -185,7 +182,7 @@ void DocumentFolders::removeFolder(const QString &path) {
         const QString folderPath = folder->getFolderPath();
 
         // remove objects of the folder
-        QList<GObject*> objs = getObjectsNatural(folderPath);
+        QList<GObject *> objs = getObjectsNatural(folderPath);
         foreach (GObject *obj, objs) {
             removeObject(obj, folderPath);
         }
@@ -193,7 +190,7 @@ void DocumentFolders::removeFolder(const QString &path) {
         // update caches
         onFolderRemoved(folder);
 
-        delete foldersMap[folderPath]; // now @folder is bad pointer
+        delete foldersMap[folderPath];    // now @folder is bad pointer
         foldersMap.remove(folderPath);
         removeFolderFromStorage(folderPath);
     }
@@ -223,22 +220,22 @@ int DocumentFolders::getNewObjectRowInParent(GObject *obj, const QString &parent
     return getSubFolders(parentPath).size() + (i - objects.constBegin());
 }
 
-QList<Folder*> DocumentFolders::getSubFolders(const QString &parentPath) const {
+QList<Folder *> DocumentFolders::getSubFolders(const QString &parentPath) const {
     if (hasCachedSubFolders.value(parentPath, false)) {
         return cachedSubFolders[parentPath];
     }
 
     if (ProjectUtils::isFolderInRecycleBin(parentPath)) {
-        return QList<Folder*>();
+        return QList<Folder *>();
     } else {
         QStringList subFoldersNames = calculateSubFoldersNames(parentPath);
         return cacheSubFoldersNames(parentPath, subFoldersNames);
     }
 }
 
-QList<Folder*> DocumentFolders::getSubFoldersNatural(const QString &parentPath) const {
+QList<Folder *> DocumentFolders::getSubFoldersNatural(const QString &parentPath) const {
     QStringList subFoldersNames = calculateSubFoldersNames(parentPath);
-    QList<Folder*> result;
+    QList<Folder *> result;
     foreach (const QString &name, subFoldersNames) {
         QString path = Folder::createPath(parentPath, name);
         Folder *f = getFolder(path);
@@ -258,9 +255,9 @@ void DocumentFolders::addFolderToCache(const QString &path) {
     }
 }
 
-QList<GObject*> DocumentFolders::getObjects(const QString &parentPath) const {
+QList<GObject *> DocumentFolders::getObjects(const QString &parentPath) const {
     if (ProjectUtils::isFolderInRecycleBin(parentPath)) {
-        return QList<GObject*>();
+        return QList<GObject *>();
     } else {
         return getObjectsNatural(parentPath);
     }
@@ -295,8 +292,8 @@ QStringList DocumentFolders::calculateSubFoldersNames(const QString &parentPath)
     return result;
 }
 
-QList<Folder*> & DocumentFolders::cacheSubFoldersNames(const QString &parentPath, const QStringList &subFoldersNames) const {
-    QList<Folder*> result;
+QList<Folder *> &DocumentFolders::cacheSubFoldersNames(const QString &parentPath, const QStringList &subFoldersNames) const {
+    QList<Folder *> result;
     foreach (const QString &name, subFoldersNames) {
         QString path = Folder::createPath(parentPath, name);
         Folder *f = getFolder(path);
@@ -312,7 +309,7 @@ QList<Folder*> & DocumentFolders::cacheSubFoldersNames(const QString &parentPath
 
 QStringList DocumentFolders::getAllSubFolders(const QString &path) const {
     QStringList result;
-    QList<Folder*> subFolders = getSubFoldersNatural(path);
+    QList<Folder *> subFolders = getSubFoldersNatural(path);
     while (!subFolders.isEmpty()) {
         Folder *folder = subFolders.takeFirst();
         result << folder->getFolderPath();
@@ -350,7 +347,7 @@ bool FolderObjectTreeStorage::hasObject(const U2DataId &id) const {
     return objectsIds.contains(id);
 }
 
-GObject * FolderObjectTreeStorage::getObject(const U2DataId &id) const {
+GObject *FolderObjectTreeStorage::getObject(const U2DataId &id) const {
     SAFE_POINT(hasObject(id), "Unknown object id", NULL);
     return objectsIds.value(id, NULL);
 }
@@ -362,7 +359,7 @@ void insertObjectToSortedList(QList<GObject *> &list, GObject *obj) {
     list.insert(insertPos, obj);
 }
 
-}
+}    // namespace
 
 void FolderObjectTreeStorage::addObject(GObject *obj, const QString &path) {
     objectsIds[obj->getEntityRef().entityId] = obj;
@@ -400,11 +397,11 @@ QString FolderObjectTreeStorage::getObjectFolder(GObject *obj) const {
     return objectFolders[obj];
 }
 
-QList<GObject*> FolderObjectTreeStorage::getObjectsNatural(const QString &parentPath) const {
+QList<GObject *> FolderObjectTreeStorage::getObjectsNatural(const QString &parentPath) const {
     return folderObjects.value(parentPath);
 }
 
-const DocumentFoldersUpdate & FolderObjectTreeStorage::getLastUpdate() const {
+const DocumentFoldersUpdate &FolderObjectTreeStorage::getLastUpdate() const {
     return lastUpdate;
 }
 
@@ -461,7 +458,7 @@ bool FolderObjectTreeStorage::isFolderIgnored(const QString &path) const {
     return false;
 }
 
-const QStringList & FolderObjectTreeStorage::allFolders() const {
+const QStringList &FolderObjectTreeStorage::allFolders() const {
     return lastUpdate.folders;
 }
 
@@ -507,4 +504,4 @@ int FolderObjectTreeStorage::insertSorted(const QString &value, QStringList &lis
     }
 }
 
-} // U2
+}    // namespace U2

@@ -22,8 +22,9 @@
 #ifndef __ASSEMBLY_RULER__
 #define __ASSEMBLY_RULER__
 
-#include <QWidget>
 #include <QSharedPointer>
+#include <QWidget>
+
 #include "AssemblyModel.h"
 
 namespace U2 {
@@ -38,17 +39,17 @@ class AssemblyBrowser;
 class AssemblyRuler : public QWidget {
     Q_OBJECT
 public:
-    AssemblyRuler(AssemblyBrowserUi * ui);
+    AssemblyRuler(AssemblyBrowserUi *ui);
 
     void setShowCoordsOnRuler(bool showCoords);
-    bool getShowCoordsOnRuler()const;
+    bool getShowCoordsOnRuler() const;
 
     void setShowCoverageOnRuler(bool value);
-    bool getShowCoverageOnRuler()const;
+    bool getShowCoverageOnRuler() const;
 
 protected:
-    void paintEvent(QPaintEvent * e);
-    void mouseMoveEvent(QMouseEvent * e);
+    void paintEvent(QPaintEvent *e);
+    void mouseMoveEvent(QMouseEvent *e);
 
 public slots:
     void sl_handleMoveToPos(const QPoint &);
@@ -59,18 +60,18 @@ private slots:
 private:
     void connectSlots();
     void drawAll();
-    void drawRuler(QPainter & p);
-    void drawCursor(QPainter & p);
+    void drawRuler(QPainter &p);
+    void drawCursor(QPainter &p);
 
 private:
-    AssemblyBrowserUi * ui;
-    AssemblyBrowser * browser;
+    AssemblyBrowserUi *ui;
+    AssemblyBrowser *browser;
     QSharedPointer<AssemblyModel> model;
 
     bool redraw;
     QPixmap cachedView;
 
-    int cursorPos; //x-coord of the cursor on the widget
+    int cursorPos;    //x-coord of the cursor on the widget
 
     //cached ruler labels. Rendered once in paintEvent,
     //used on each cursor redraw
@@ -82,6 +83,6 @@ private:
     QObject *startPositionObject;
 };
 
-} //ns
+}    // namespace U2
 
 #endif

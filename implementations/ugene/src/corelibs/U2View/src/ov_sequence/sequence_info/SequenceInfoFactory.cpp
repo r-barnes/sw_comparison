@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "SequenceInfoFactory.h"
+
 #include <QPixmap>
 
 #include <U2Core/U2SafePoints.h>
@@ -27,29 +29,27 @@
 
 #include "SequenceInfo.h"
 
-#include "SequenceInfoFactory.h"
-
 namespace U2 {
 
 const QString SequenceInfoFactory::GROUP_ID = "OP_SEQ_INFO";
 const QString SequenceInfoFactory::GROUP_ICON_STR = ":core/images/chart_bar.png";
-const QString SequenceInfoFactory::GROUP_DOC_PAGE = "24742362";
+const QString SequenceInfoFactory::GROUP_DOC_PAGE = "46499736";
 
 SequenceInfoFactory::SequenceInfoFactory() {
     objectViewOfWidget = ObjViewType_SequenceView;
 }
 
-QWidget * SequenceInfoFactory::createWidget(GObjectView* objView) {
-    SAFE_POINT(NULL != objView,
-        QString("Internal error: unable to create widget for group '%1', object view is NULL.").arg(GROUP_ID),
-        NULL);
+QWidget *SequenceInfoFactory::createWidget(GObjectView *objView, const QVariantMap &options) {
+    SAFE_POINT(objView != nullptr,
+               QString("Internal error: unable to create widget for group '%1', object view is NULL.").arg(GROUP_ID),
+               nullptr);
 
-    AnnotatedDNAView* annotatedDnaView = qobject_cast<AnnotatedDNAView*>(objView);
-    SAFE_POINT(NULL != annotatedDnaView,
-        QString("Internal error: unable to cast object view to AnnotatedDNAView for group '%1'.").arg(GROUP_ID),
-        NULL);
+    AnnotatedDNAView *annotatedDnaView = qobject_cast<AnnotatedDNAView *>(objView);
+    SAFE_POINT(annotatedDnaView != nullptr,
+               QString("Internal error: unable to cast object view to AnnotatedDNAView for group '%1'.").arg(GROUP_ID),
+               nullptr);
 
-    SequenceInfo* seqInfoWidget = new SequenceInfo(annotatedDnaView);
+    SequenceInfo *seqInfoWidget = new SequenceInfo(annotatedDnaView);
     seqInfoWidget->setObjectName("SequenceInfo");
     return seqInfoWidget;
 }
@@ -58,4 +58,4 @@ OPGroupParameters SequenceInfoFactory::getOPGroupParameters() {
     return OPGroupParameters(GROUP_ID, QPixmap(GROUP_ICON_STR), QObject::tr("Statistics"), GROUP_DOC_PAGE);
 }
 
-} // namespace U2
+}    // namespace U2

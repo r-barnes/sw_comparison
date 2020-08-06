@@ -22,7 +22,6 @@
 #ifndef _U2_STATISTICAL_REPORT_CONTROLLER_H_
 #define _U2_STATISTICAL_REPORT_CONTROLLER_H_
 
-#include <U2Gui/U2WebView.h>
 #include <QtWidgets/QTextBrowser>
 
 #include "ui_StatisticalReport.h"
@@ -30,10 +29,10 @@
 namespace U2 {
 
 /* HTML browser that autoresizes itself to fit HTML content with no scroll bars. */
-class ContentSizeHtmlViewer: public QTextBrowser {
+class ContentSizeHtmlViewer : public QTextBrowser {
     Q_OBJECT
 public:
-    ContentSizeHtmlViewer(QWidget* parent, const QString& html);
+    ContentSizeHtmlViewer(QWidget *parent, const QString &html);
     virtual QSize sizeHint();
 
 public slots:
@@ -45,13 +44,14 @@ class StatisticalReportController : public QDialog, public Ui_StatisticalReport 
 public:
     StatisticalReportController(const QString &htmlContent, QWidget *parent);
     bool isInfoSharingAccepted() const;
-    void resizeEvent( QResizeEvent* event );
+    void resizeEvent(QResizeEvent *event);
 public slots:
     void accept();
+
 private:
-    ContentSizeHtmlViewer* htmlView;
+    ContentSizeHtmlViewer *htmlView;
 };
 
-}
+}    // namespace U2
 
 #endif

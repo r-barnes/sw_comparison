@@ -44,50 +44,53 @@ class Folder;
 
 using namespace Workflow;
 
-enum UrlAttributeType {NotAnUrl, DatasetAttr, InputFile, InputDir, OutputFile, OutputDir};
+enum UrlAttributeType { NotAnUrl,
+                        DatasetAttr,
+                        InputFile,
+                        InputDir,
+                        OutputFile,
+                        OutputDir };
 
 class U2LANG_EXPORT WorkflowUtils : public QObject {
     Q_OBJECT
 public:
-    static QString getRichDoc(const Descriptor& d);
-    static void setQObjectProperties(QObject&, const QVariantMap&);
-    static QString getDropUrl(QList<DocumentFormat*>& fs, const QMimeData* md);
-    static QStringList expandToUrls(const QString&);
+    static QString getRichDoc(const Descriptor &d);
+    static void setQObjectProperties(QObject &, const QVariantMap &);
+    static QString getDropUrl(QList<DocumentFormat *> &fs, const QMimeData *md);
+    static QStringList expandToUrls(const QString &);
 
     static const QStringList WD_FILE_EXTENSIONS;
     static const QString WD_XML_FORMAT_EXTENSION;
     static const QString HREF_PARAM_ID;
 
-
     // used in GUI schema validating
-    static bool validate(const Workflow::Schema &s, QList<QListWidgetItem*> &errs);
+    static bool validate(const Workflow::Schema &s, QList<QListWidgetItem *> &errs);
     // used in cmdline schema validating
-    static bool validate( const Workflow::Schema &s, QStringList &errs);
+    static bool validate(const Workflow::Schema &s, QStringList &errs);
 
     static QList<Descriptor> findMatchingTypes(DataTypePtr set, DataTypePtr elementDataType);
     static QStringList findMatchingTypesAsStringList(DataTypePtr set, DataTypePtr elementDatatype);
     static QStringList candidatesAsStringList(const QList<Descriptor> &candidates);
-    static QList<Descriptor> findMatchingCandidates(DataTypePtr from, DataTypePtr to, const Descriptor & key);
+    static QList<Descriptor> findMatchingCandidates(DataTypePtr from, DataTypePtr to, const Descriptor &key);
     static QList<Descriptor> findMatchingCandidates(DataTypePtr from, DataTypePtr elementDatatype);
-    static Descriptor getCurrentMatchingDescriptor(const QList<Descriptor> & candidates, DataTypePtr to, const Descriptor & key,
-        const StrStrMap & bindings);
-    static DataTypePtr getToDatatypeForBusport(IntegralBusPort * p);
-    static DataTypePtr getFromDatatypeForBusport(IntegralBusPort * p, DataTypePtr to);
+    static Descriptor getCurrentMatchingDescriptor(const QList<Descriptor> &candidates, DataTypePtr to, const Descriptor &key, const StrStrMap &bindings);
+    static DataTypePtr getToDatatypeForBusport(IntegralBusPort *p);
+    static DataTypePtr getFromDatatypeForBusport(IntegralBusPort *p, DataTypePtr to);
 
     // find schema with 'name' in common folders or from settings
-    static QString findPathToSchemaFile(const QString & name);
+    static QString findPathToSchemaFile(const QString &name);
 
-    static void getLinkedActorsId(Actor *a, QList<QString> &linkedActors); //get list of ID's of all linked actors
+    static void getLinkedActorsId(Actor *a, QList<QString> &linkedActors);    //get list of ID's of all linked actors
 
     static bool isPathExist(const Port *src, const Port *dest);
 
-    static QString getStringForParameterDisplayRole(const QVariant & value);
+    static QString getStringForParameterDisplayRole(const QVariant &value);
 
-    static Actor * findActorByParamAlias(const QList<Actor*> & procs, const QString & alias, QString & attrName, bool writeLog = true);
+    static Actor *findActorByParamAlias(const QList<Actor *> &procs, const QString &alias, QString &attrName, bool writeLog = true);
 
-    static Descriptor getSlotDescOfDatatype(const DataTypePtr & dt);
+    static Descriptor getSlotDescOfDatatype(const DataTypePtr &dt);
 
-    static QString getParamIdFromHref(const QString& href);
+    static QString getParamIdFromHref(const QString &href);
 
     static QString generateIdFromName(const QString &name);
 
@@ -105,12 +108,11 @@ public:
 
     static QStringList getAttributeUrls(Attribute *attr);
 
-    static Actor * actorById(const QList<Actor*> &actors, const ActorId &id);
+    static Actor *actorById(const QList<Actor *> &actors, const ActorId &id);
 
     static QMap<Descriptor, DataTypePtr> getBusType(Port *inPort);
 
-    static bool isBindingValid(const QString &srcSlotId, const QMap<Descriptor, DataTypePtr> &srcBus,
-        const QString &dstSlotId, const QMap<Descriptor, DataTypePtr> &dstBus);
+    static bool isBindingValid(const QString &srcSlotId, const QMap<Descriptor, DataTypePtr> &srcBus, const QString &dstSlotId, const QMap<Descriptor, DataTypePtr> &dstBus);
 
     /** Returns the string which is not contained by @uniqueStrs list
      * Result is created from @str rolling @sep + number suffix
@@ -121,10 +123,10 @@ public:
     static QString updateExternalToolPath(const QString &id, const QString &path);
 
     static QString getExternalToolPath(const QString &toolId);
-    static QString externalToolIsAbsentError(const QString& toolName);
+    static QString externalToolIsAbsentError(const QString &toolName);
     static QString externalToolError(const QString &toolName);
     static QString externalToolInvalidError(const QString &toolName);
-    static QString customExternalToolInvalidError(const QString &toolName, const QString& elementName);
+    static QString customExternalToolInvalidError(const QString &toolName, const QString &elementName);
 
     static void schemaFromFile(const QString &url, Schema *schema, Metadata *meta, U2OpStatus &os);
 
@@ -168,7 +170,7 @@ public:
 
     static QScriptValue datasetsToScript(const QList<Dataset> &sets, QScriptEngine &engine);
 
-    static QString getDatasetSplitter(const QString& filePaths);
+    static QString getDatasetSplitter(const QString &filePaths);
 
     static QString packSamples(const QList<TophatSample> &samples);
     static QList<TophatSample> unpackSamples(const QString &samplesStr, U2OpStatus &os);
@@ -176,7 +178,7 @@ public:
 private:
     static QStringList initExtensions();
     static bool validate(const Workflow::Schema &s, NotificationsList &notificationList);
-}; // WorkflowUtils
+};    // WorkflowUtils
 
 class U2LANG_EXPORT WorkflowEntityValidator {
 public:
@@ -195,24 +197,31 @@ public:
 class U2LANG_EXPORT PrompterBaseImpl : public ActorDocument, public Prompter {
     Q_OBJECT
 public:
-    PrompterBaseImpl(Actor* p = 0) : ActorDocument(p) {}
+    PrompterBaseImpl(Actor *p = 0)
+        : ActorDocument(p) {
+    }
 
-    static bool isWildcardURL(const QString& url) {return url.indexOf(QRegExp("[*?\\[\\]]")) >= 0;}
+    static bool isWildcardURL(const QString &url) {
+        return url.indexOf(QRegExp("[*?\\[\\]]")) >= 0;
+    }
 
-    virtual ActorDocument * createDescription(Actor*) = 0;
+    virtual ActorDocument *createDescription(Actor *) = 0;
 
-    QString getURL(const QString& id, bool * empty = NULL, const QString &onEmpty = "", const QString &defaultValue = "");
-    QString getScreenedURL(IntegralBusPort* input, const QString& id, const QString& slot, const QString &onEmpty = "");
-    QString getRequiredParam(const QString& id);
-    QVariant getParameter(const QString& id);
-    QString getProducers(const QString& port, const QString& slot);
+    QString getURL(const QString &id, bool *empty = NULL, const QString &onEmpty = "", const QString &defaultValue = "");
+    QString getScreenedURL(IntegralBusPort *input, const QString &id, const QString &slot, const QString &onEmpty = "");
+    QString getRequiredParam(const QString &id);
+    QVariant getParameter(const QString &id);
+    QString getProducers(const QString &port, const QString &slot);
     QString getProducersOrUnset(const QString &port, const QString &slot);
-    static QString getHyperlink(const QString& id, const QString& val);
-    static QString getHyperlink(const QString& id, int val);
-    static QString getHyperlink(const QString& id, qreal val);
+    static QString getHyperlink(const QString &id, const QString &val);
+    static QString getHyperlink(const QString &id, int val);
+    static QString getHyperlink(const QString &id, qreal val);
 
     virtual QString composeRichDoc() = 0;
-    virtual void update(const QVariantMap& cfg) {map = cfg; sl_actorModified();}
+    virtual void update(const QVariantMap &cfg) {
+        map = cfg;
+        sl_actorModified();
+    }
 
 protected slots:
     virtual void sl_actorModified();
@@ -220,7 +229,7 @@ protected slots:
 protected:
     QVariantMap map;
 
-}; // PrompterBaseImpl
+};    // PrompterBaseImpl
 
 /**
  * template realization of Prompter and ActorDocument in one entity
@@ -229,32 +238,35 @@ protected:
  * only classes that inherit ActorDocument can be used as a template argument
  * provides
  */
-template <typename T>
+template<typename T>
 class PrompterBase : public PrompterBaseImpl {
 public:
-    PrompterBase(Actor* p = 0, bool listenInputs = true) : PrompterBaseImpl(p), listenInputs(listenInputs) {}
+    PrompterBase(Actor *p = 0, bool listenInputs = true)
+        : PrompterBaseImpl(p), listenInputs(listenInputs) {
+    }
     virtual ~PrompterBase() = default;
-    virtual ActorDocument* createDescription(Actor* a) {
-        T* doc = new T(a);
+    virtual ActorDocument *createDescription(Actor *a) {
+        T *doc = new T(a);
         doc->connect(a, SIGNAL(si_labelChanged()), SLOT(sl_actorModified()));
         doc->connect(a, SIGNAL(si_modified()), SLOT(sl_actorModified()));
         if (listenInputs) {
-            foreach(Workflow::Port* input, a->getInputPorts()) {
+            foreach (Workflow::Port *input, a->getInputPorts()) {
                 doc->connect(input, SIGNAL(bindingChanged()), SLOT(sl_actorModified()));
             }
         }
 
-        foreach(Workflow::Port* input, a->getOutputPorts()) {
+        foreach (Workflow::Port *input, a->getOutputPorts()) {
             doc->connect(input, SIGNAL(bindingChanged()), SLOT(sl_actorModified()));
         }
         //}
         return doc;
     }
+
 protected:
     bool listenInputs;
 
-}; // PrompterBase
+};    // PrompterBase
 
-}//namespace
+}    // namespace U2
 
 #endif

@@ -39,7 +39,6 @@ class ClearAnnotationsTask;
 class U2VIEW_EXPORT GSequenceLineViewAnnotated : public GSequenceLineView {
     Q_OBJECT
 public:
-
     GSequenceLineViewAnnotated(QWidget *p, SequenceObjectContext *ctx);
 
     bool isAnnotationVisible(const Annotation *a) const;
@@ -51,7 +50,6 @@ public:
     QList<Annotation *> findAnnotationsInRange(const U2Region &range) const;
 
     bool isAnnotationSelectionInVisibleRange() const;
-
 
 protected:
     void mousePressEvent(QMouseEvent *e);
@@ -87,8 +85,7 @@ protected slots:
     /* Updates view so annotation becomes visible. */
     virtual void sl_onAnnotationActivated(Annotation *annotation, int regionIndex);
 
-    virtual void sl_onAnnotationSelectionChanged(AnnotationSelection *, const QList<Annotation *> &added,
-                                                 const QList<Annotation *> &removed);
+    virtual void sl_onAnnotationSelectionChanged(AnnotationSelection *, const QList<Annotation *> &added, const QList<Annotation *> &removed);
 
 private:
     void connectAnnotationObject(const AnnotationTableObject *ao);
@@ -103,13 +100,13 @@ public:
     ~GSequenceLineViewAnnotatedRenderArea();
 
     //! VIEW_RENDERER_REFACTORING: only the second method should be available, because it is more common
-    virtual U2Region                getAnnotationYRange(Annotation *a, int region, const AnnotationSettings *as) const = 0;
-    virtual bool                    isPosOnAnnotationYRange(const QPoint& p, Annotation *a, int region, const AnnotationSettings* as) const;
+    virtual U2Region getAnnotationYRange(Annotation *a, int region, const AnnotationSettings *as) const = 0;
+    virtual bool isPosOnAnnotationYRange(const QPoint &p, Annotation *a, int region, const AnnotationSettings *as) const;
 
-    GSequenceLineViewAnnotated *    getGSequenceLineViewAnnotated() const;
+    GSequenceLineViewAnnotated *getGSequenceLineViewAnnotated() const;
 
 protected:
-    virtual void drawAll(QPaintDevice* pd) = 0;
+    virtual void drawAll(QPaintDevice *pd) = 0;
 
     //! VIEW_RENDERER_REFACTORING: should be removed, currenlty is used in CircularView
     enum DrawAnnotationPass {
@@ -133,17 +130,17 @@ protected:
 
 class ClearAnnotationsTask : public Task {
 public:
-                                    ClearAnnotationsTask(const QList<Annotation *> &    list,
-                                                          GSequenceLineViewAnnotated *  view);
+    ClearAnnotationsTask(const QList<Annotation *> &list,
+                         GSequenceLineViewAnnotated *view);
 
-    void                            run();
-    Task::ReportResult              report();
+    void run();
+    Task::ReportResult report();
 
 private:
-    QList<Annotation *>             l;
-    GSequenceLineViewAnnotated *    view;
+    QList<Annotation *> l;
+    GSequenceLineViewAnnotated *view;
 };
 
-} // namespace U2
+}    // namespace U2
 
 #endif

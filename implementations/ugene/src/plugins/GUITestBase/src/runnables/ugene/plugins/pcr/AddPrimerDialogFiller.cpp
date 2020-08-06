@@ -19,25 +19,21 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-
-#include <primitives/GTWidget.h>
 #include <primitives/GTLineEdit.h>
+#include <primitives/GTWidget.h>
+
+#include <QApplication>
 
 #include "AddPrimerDialogFiller.h"
 
 namespace U2 {
 
 AddPrimerDialogFiller::Parameters::Parameters()
-: primer(""), name(""), scenario(NULL)
-{
-
+    : primer(""), name(""), scenario(NULL) {
 }
 
 AddPrimerDialogFiller::AddPrimerDialogFiller(HI::GUITestOpStatus &os, const Parameters &parameters)
-: Filler(os, "EditPrimerDialog", parameters.scenario), parameters(parameters)
-{
-
+    : Filler(os, "EditPrimerDialog", parameters.scenario), parameters(parameters) {
 }
 
 #define GT_CLASS_NAME "GTUtilsDialog::AddPrimerDialogFiller"
@@ -46,12 +42,12 @@ void AddPrimerDialogFiller::commonScenario() {
     QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
-    QLineEdit *primerEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "primerEdit", dialog));
+    QLineEdit *primerEdit = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "primerEdit", dialog));
     GT_CHECK(primerEdit, "primerEdit is NULL");
     GTLineEdit::setText(os, primerEdit, parameters.primer);
 
     if (!parameters.name.isEmpty()) {
-        QLineEdit *nameEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "nameEdit", dialog));
+        QLineEdit *nameEdit = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "nameEdit", dialog));
         GT_CHECK(nameEdit, "nameEdit is NULL");
         GTLineEdit::setText(os, nameEdit, parameters.name);
     }
@@ -61,5 +57,4 @@ void AddPrimerDialogFiller::commonScenario() {
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
-
+}    // namespace U2

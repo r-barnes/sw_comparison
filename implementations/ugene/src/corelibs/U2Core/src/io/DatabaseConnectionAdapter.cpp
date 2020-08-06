@@ -19,22 +19,21 @@
  * MA 02110-1301, USA.
  */
 
+#include "DatabaseConnectionAdapter.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/U2DbiRegistry.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "DatabaseConnectionAdapter.h"
-
 namespace U2 {
 
-DatabaseConnectionAdapterFactory::DatabaseConnectionAdapterFactory(QObject *parent) :
-    IOAdapterFactory(parent),
-    name(tr("Database connection"))
-{
+DatabaseConnectionAdapterFactory::DatabaseConnectionAdapterFactory(QObject *parent)
+    : IOAdapterFactory(parent),
+      name(tr("Database connection")) {
 }
 
-IOAdapter* DatabaseConnectionAdapterFactory::createIOAdapter() {
+IOAdapter *DatabaseConnectionAdapterFactory::createIOAdapter() {
     return new DatabaseConnectionAdapter(this);
 }
 
@@ -42,7 +41,7 @@ IOAdapterId DatabaseConnectionAdapterFactory::getAdapterId() const {
     return BaseIOAdapters::DATABASE_CONNECTION;
 }
 
-const QString& DatabaseConnectionAdapterFactory::getAdapterName() const {
+const QString &DatabaseConnectionAdapterFactory::getAdapterName() const {
     return name;
 }
 
@@ -51,16 +50,15 @@ bool DatabaseConnectionAdapterFactory::isIOModeSupported(IOAdapterMode m) const 
     return (m == IOAdapterMode_Read) || (m == IOAdapterMode_Write);
 }
 
-TriState DatabaseConnectionAdapterFactory::isResourceAvailable(const GUrl&) const {
+TriState DatabaseConnectionAdapterFactory::isResourceAvailable(const GUrl &) const {
     return TriState_Unknown;
 }
 
-DatabaseConnectionAdapter::DatabaseConnectionAdapter(DatabaseConnectionAdapterFactory* factory, QObject* parent) :
-    IOAdapter(factory, parent)
-{
+DatabaseConnectionAdapter::DatabaseConnectionAdapter(DatabaseConnectionAdapterFactory *factory, QObject *parent)
+    : IOAdapter(factory, parent) {
 }
 
-bool DatabaseConnectionAdapter::open(const GUrl& url, IOAdapterMode m) {
+bool DatabaseConnectionAdapter::open(const GUrl &url, IOAdapterMode m) {
     if (IOAdapterMode_Read != m) {
         // In current state you can only read from shared database
         return false;
@@ -86,17 +84,17 @@ void DatabaseConnectionAdapter::close() {
     connection.close(os);
 }
 
-qint64 DatabaseConnectionAdapter::readUntil(char*, qint64, const QBitArray&, TerminatorHandling, bool*) {
+qint64 DatabaseConnectionAdapter::readUntil(char *, qint64, const QBitArray &, TerminatorHandling, bool *) {
     FAIL("Operation is not supported", 0);
     return 0;
 }
 
-qint64 DatabaseConnectionAdapter::readBlock(char*, qint64) {
+qint64 DatabaseConnectionAdapter::readBlock(char *, qint64) {
     FAIL("Operation is not supported", 0);
     return 0;
 }
 
-qint64 DatabaseConnectionAdapter::writeBlock(const char*, qint64) {
+qint64 DatabaseConnectionAdapter::writeBlock(const char *, qint64) {
     FAIL("Operation is not supported", 0);
     return 0;
 }

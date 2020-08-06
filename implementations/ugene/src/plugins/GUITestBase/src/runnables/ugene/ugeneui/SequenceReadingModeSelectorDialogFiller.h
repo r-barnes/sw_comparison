@@ -26,20 +26,25 @@
 
 namespace U2 {
 using namespace HI;
-    class SequenceReadingModeSelectorDialogFiller : public Filler {
-    public:
-        enum ReadingMode {Separate, Merge, Join, Align};
+class SequenceReadingModeSelectorDialogFiller : public Filler {
+public:
+    enum ReadingMode { Separate,
+                       Merge,
+                       Join,
+                       Align };
 
-        SequenceReadingModeSelectorDialogFiller(HI::GUITestOpStatus &_os, ReadingMode _mode = Separate, int _bases=10, bool cancel = false):
-        Filler(_os, "SequenceReadingModeSelectorDialog"), readingMode(_mode), bases(_bases), cancel(cancel) {}
-        SequenceReadingModeSelectorDialogFiller(HI::GUITestOpStatus &_os, CustomScenario* c);
+    SequenceReadingModeSelectorDialogFiller(HI::GUITestOpStatus &_os, ReadingMode _mode = Separate, int _bases = 10, bool cancel = false)
+        : Filler(_os, "SequenceReadingModeSelectorDialog"), readingMode(_mode), bases(_bases), cancel(cancel) {
+    }
+    SequenceReadingModeSelectorDialogFiller(HI::GUITestOpStatus &_os, CustomScenario *c);
 
-        virtual void commonScenario();
-    private:
-        ReadingMode readingMode;
-        int bases;
-        bool cancel;
-    };
-}
+    virtual void commonScenario();
+
+private:
+    ReadingMode readingMode;
+    int bases;
+    bool cancel;
+};
+}    // namespace U2
 
 #endif

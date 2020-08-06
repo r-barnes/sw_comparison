@@ -23,10 +23,9 @@
 
 namespace U2 {
 
-
 QDateTime GTimer::createDateTime(qint64 micros, Qt::TimeSpec spec) {
     QDateTime res(QDate(1970, 1, 1), QTime(0, 0), Qt::UTC);
-    res = res.addMSecs(micros/1000);
+    res = res.addMSecs(micros / 1000);
     assert(res.isValid());
     return res.toTimeSpec(spec);
 }
@@ -38,20 +37,23 @@ static double getFrequency() {
     QueryPerformanceFrequency(&freq);
     frequency = (double)freq.QuadPart;
 #else
-    frequency = 1000*1000; //microseconds
+    frequency = 1000 * 1000;    //microseconds
 #endif
     return frequency;
-
 }
 
 static qint64 getCorrection() {
     GCounter totalCounter("timer correction", "ticks", 1);
 
     TimeCounter tc(&totalCounter, false);
-    tc.start(); tc.stop();
-    tc.start(); tc.stop();
-    tc.start(); tc.stop();
-    tc.start(); tc.stop();
+    tc.start();
+    tc.stop();
+    tc.start();
+    tc.stop();
+    tc.start();
+    tc.stop();
+    tc.start();
+    tc.stop();
 
     qint64 correction = totalCounter.totalCount / 4;
     return correction;
@@ -61,5 +63,5 @@ qint64 TimeCounter::correction = getCorrection();
 double TimeCounter::frequency = getFrequency();
 
 bool TimeCounter::enabled = true;
-QString  TimeCounter::timeSuffix("seconds");
-} //namespace
+QString TimeCounter::timeSuffix("seconds");
+}    // namespace U2

@@ -32,16 +32,16 @@ public:
     Folder();
     Folder(Document *doc, const QString &folderPath);
     Folder(const Folder &other);
-    Folder & operator=(const Folder &other);
+    Folder &operator=(const Folder &other);
 
-    Document * getDocument() const;
-    const QString & getFolderPath() const;
+    Document *getDocument() const;
+    const QString &getFolderPath() const;
     QString getParentPath() const;
     QString getFolderName() const;
 
     void setFolderPath(const QString &newPath);
 
-    bool operator ==(const Folder &other) const;
+    bool operator==(const Folder &other) const;
 
     static bool isCorrectFolderName(const QString &name);
     static QString createPath(const QString &parentFolder, const QString &folderName);
@@ -69,6 +69,6 @@ public:
     static const QString MIME_TYPE;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_FOLDER_H_
+#endif    // _U2_FOLDER_H_

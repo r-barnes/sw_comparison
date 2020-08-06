@@ -23,6 +23,7 @@
 #define _U2_CONSOLE_SHUTDOWN_TASK_H_
 
 #include <QCoreApplication>
+
 #include <U2Core/Task.h>
 
 namespace U2 {
@@ -30,20 +31,21 @@ namespace U2 {
 class U2CORE_EXPORT ConsoleShutdownTask : public Task {
     Q_OBJECT
 public:
-    ConsoleShutdownTask(QCoreApplication* app);
+    ConsoleShutdownTask(QCoreApplication *app);
 
     void prepare();
 
     ReportResult report();
 protected slots:
     void startShutdown();
+
 protected:
-    virtual QList<Task*> onSubTaskFinished(Task* subTask);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
+
 private:
-    QCoreApplication* app;
+    QCoreApplication *app;
 };
 
-
-}//namespace
+}    // namespace U2
 
 #endif

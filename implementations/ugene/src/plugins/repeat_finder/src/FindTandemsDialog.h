@@ -25,7 +25,6 @@
 #include <U2Core/U2Region.h>
 
 #include "RF_SArray_TandemFinder.h"
-
 #include "ui_FindTandemsDialog.h"
 
 class QToolButton;
@@ -39,7 +38,7 @@ class RegionSelector;
 class FindTandemsDialog : public QDialog, public Ui_FindTandemsDialog {
     Q_OBJECT
 public:
-    FindTandemsDialog(ADVSequenceObjectContext* seq);
+    FindTandemsDialog(ADVSequenceObjectContext *seq);
 
     static FindTandemsTaskSettings defaultSettings();
 
@@ -55,18 +54,18 @@ private:
     U2Region getActiveRange(bool *ok = NULL) const;
     void saveState();
     QStringList getAvailableAnnotationNames() const;
-    bool getRegions(QCheckBox* cb, QLineEdit* le, QVector<U2Region>& res);
-    void prepareAMenu(QToolButton* tb, QLineEdit* le, const QStringList& names);
+    bool getRegions(QCheckBox *cb, QLineEdit *le, QVector<U2Region> &res);
+    void prepareAMenu(QToolButton *tb, QLineEdit *le, const QStringList &names);
 
     //methods for results count estimation
-    quint64 areaSize() const ;
+    quint64 areaSize() const;
     int estimateResultsCount() const;
 
-    ADVSequenceObjectContext*           sc;
-    CreateAnnotationWidgetController*   ac;
-    RegionSelector*                      rs;
+    ADVSequenceObjectContext *sc;
+    CreateAnnotationWidgetController *ac;
+    RegionSelector *rs;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

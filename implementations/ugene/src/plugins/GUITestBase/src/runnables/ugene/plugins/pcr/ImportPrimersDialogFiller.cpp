@@ -19,6 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "ImportPrimersDialogFiller.h"
+#include <base_dialogs/GTFileDialog.h>
+#include <primitives/GTComboBox.h>
+#include <primitives/GTWidget.h>
+
 #include <QApplication>
 #include <QComboBox>
 #include <QDialogButtonBox>
@@ -26,10 +31,6 @@
 #include <U2Core/U2ObjectDbi.h>
 
 #include "GTUtilsTaskTreeView.h"
-#include "ImportPrimersDialogFiller.h"
-#include <primitives/GTComboBox.h>
-#include <base_dialogs/GTFileDialog.h>
-#include <primitives/GTWidget.h>
 #include "runnables/ugene/corelibs/U2Gui/ProjectTreeItemSelectorDialogFiller.h"
 #include "runnables/ugene/corelibs/U2Gui/SharedConnectionsDialogFiller.h"
 
@@ -37,17 +38,13 @@ namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::ImportPrimersDialogFiller"
 
-ImportPrimersDialogFiller::ImportPrimersDialogFiller(HI::GUITestOpStatus &os, const QStringList &fileList) :
-    Filler(os, "ImportPrimersDialog"),
-    fileList(fileList)
-{
-
+ImportPrimersDialogFiller::ImportPrimersDialogFiller(HI::GUITestOpStatus &os, const QStringList &fileList)
+    : Filler(os, "ImportPrimersDialog"),
+      fileList(fileList) {
 }
 
-ImportPrimersDialogFiller::ImportPrimersDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario) :
-    Filler(os, "ImportPrimersDialog", scenario)
-{
-
+ImportPrimersDialogFiller::ImportPrimersDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario)
+    : Filler(os, "ImportPrimersDialog", scenario) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
@@ -99,20 +96,14 @@ void ImportPrimersDialogFiller::connectDatabase(HI::GUITestOpStatus &os, const Q
 void ImportPrimersDialogFiller::addObjects(HI::GUITestOpStatus &os, const QString &databaseName, const QStringList &objectNames) {
     QMap<QString, QStringList> objects;
     objects[databaseName] = objectNames;
-    GTUtilsDialog::waitForDialog(os, new ProjectTreeItemSelectorDialogFiller(os,
-                                                                             objects,
-                                                                             QSet<GObjectType>() << GObjectTypes::SEQUENCE,
-                                                                             ProjectTreeItemSelectorDialogFiller::Separate));
+    GTUtilsDialog::waitForDialog(os, new ProjectTreeItemSelectorDialogFiller(os, objects, QSet<GObjectType>() << GObjectTypes::SEQUENCE, ProjectTreeItemSelectorDialogFiller::Separate));
     GTWidget::click(os, GTWidget::findWidget(os, "pbAddObject", getDialog(os)));
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "addObject"
 void ImportPrimersDialogFiller::addObjects(HI::GUITestOpStatus &os, const QMap<QString, QStringList> &databaseAndObjectNames) {
-    GTUtilsDialog::waitForDialog(os, new ProjectTreeItemSelectorDialogFiller(os,
-                                                                             databaseAndObjectNames,
-                                                                             QSet<GObjectType>() << GObjectTypes::SEQUENCE,
-                                                                             ProjectTreeItemSelectorDialogFiller::Separate));
+    GTUtilsDialog::waitForDialog(os, new ProjectTreeItemSelectorDialogFiller(os, databaseAndObjectNames, QSet<GObjectType>() << GObjectTypes::SEQUENCE, ProjectTreeItemSelectorDialogFiller::Separate));
     GTWidget::click(os, GTWidget::findWidget(os, "pbAddObject", getDialog(os)));
 }
 #undef GT_METHOD_NAME
@@ -128,4 +119,4 @@ QWidget *ImportPrimersDialogFiller::getDialog(HI::GUITestOpStatus &os) {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

@@ -19,48 +19,47 @@
  * MA 02110-1301, USA.
  */
 
+#include "FeaturesTableObjectUnitTest.h"
+
 #include <QBitArray>
 #include <QDir>
 #include <QScopedPointer>
 
 #include <U2Core/AnnotationTableObjectConstraints.h>
 #include <U2Core/AppContext.h>
-#include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
+#include <U2Core/U2FeatureDbi.h>
+#include <U2Core/U2FeatureKeys.h>
+#include <U2Core/U2FeatureUtils.h>
 #include <U2Core/U2ObjectDbi.h>
+#include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Test/TestRunnerSettings.h>
-#include <U2Core/U2OpStatusUtils.h>
-#include <U2Core/U2FeatureDbi.h>
-#include <U2Core/U2FeatureUtils.h>
-#include <U2Core/U2FeatureKeys.h>
-
-#include "FeaturesTableObjectUnitTest.h"
 
 namespace U2 {
 
 template<>
 QString toString<U2FeatureLocation>(const U2FeatureLocation &loc) {
     QString strand = loc.strand == U2Strand::Direct ? "direct" :
-                     loc.strand == U2Strand::Complementary ? "complement" :
-                                                             "nostrand";
+                                                      loc.strand == U2Strand::Complementary ? "complement" :
+                                                                                              "nostrand";
     return QString("%1-%2").arg(loc.region.toString()).arg(strand);
 }
 
 namespace {
-    const QString FEATURE_DB_URL("feature-dbi.ugenedb");
+const QString FEATURE_DB_URL("feature-dbi.ugenedb");
 }
 
-U2FeatureDbi * FeaturesTableObjectTestData::featureDbi = NULL;
+U2FeatureDbi *FeaturesTableObjectTestData::featureDbi = NULL;
 TestDbiProvider FeaturesTableObjectTestData::dbiProvider;
 
 void FeaturesTableObjectTestData::init() {
     bool ok = dbiProvider.init(FEATURE_DB_URL, true);
-    SAFE_POINT(ok, "dbi provider failed to initialize",);
+    SAFE_POINT(ok, "dbi provider failed to initialize", );
 
     featureDbi = dbiProvider.getDbi()->getFeatureDbi();
-    SAFE_POINT(NULL != featureDbi, "feature database not loaded",);
+    SAFE_POINT(NULL != featureDbi, "feature database not loaded", );
 }
 
 U2FeatureDbi *FeaturesTableObjectTestData::getFeatureDbi() {
@@ -79,7 +78,7 @@ void FeaturesTableObjectTestData::shutdown() {
         U2OpStatusImpl opStatus;
         dbiProvider.close();
         featureDbi = NULL;
-        SAFE_POINT_OP(opStatus,);
+        SAFE_POINT_OP(opStatus, );
     }
 }
 
@@ -203,9 +202,9 @@ IMPLEMENT_TEST(FeatureTableObjectUnitTest, addAnnotationMultipleRegion) {
     foreach (const U2Region &reg, processedData->location->regions) {
         if (reg == areg1) {
             regs.setBit(0, true);
-        } else if(reg == areg2) {
+        } else if (reg == areg2) {
             regs.setBit(1, true);
-        } else if(reg == areg3) {
+        } else if (reg == areg3) {
             regs.setBit(2, true);
         }
     }
@@ -242,9 +241,9 @@ IMPLEMENT_TEST(FeatureTableObjectUnitTest, getAnnotations) {
     foreach (Annotation *annotation, annotations) {
         if (annotation->getName() == aname1) {
             annotationMatches.setBit(0, true);
-        } else if(annotation->getName() == aname2) {
+        } else if (annotation->getName() == aname2) {
             annotationMatches.setBit(1, true);
-        } else if(annotation->getName() == aname3) {
+        } else if (annotation->getName() == aname3) {
             annotationMatches.setBit(2, true);
         }
     }
@@ -623,4 +622,4 @@ IMPLEMENT_TEST(FeatureTableObjectUnitTest, checkConstraints) {
     CHECK_TRUE(ft.checkConstraints(&constraints), "unexpected constraint test result");
 }
 
-} // namespace
+}    // namespace U2

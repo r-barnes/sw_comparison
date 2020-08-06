@@ -35,33 +35,32 @@ ImportACEFileFiller::ImportACEFileFiller(HI::GUITestOpStatus &os,
                                          bool _isReadOnly,
                                          QString dstUrl,
                                          QString srcUrl,
-                                         int timeoutMs) :
-    Filler(os, "Select Document Format"),
-    isReadOnly(_isReadOnly),
-    sourceUrl(srcUrl),
-    destinationUrl(dstUrl) {
+                                         int timeoutMs)
+    : Filler(os, "Select Document Format"),
+      isReadOnly(_isReadOnly),
+      sourceUrl(srcUrl),
+      destinationUrl(dstUrl) {
     settings.timeout = timeoutMs;
 }
 
-ImportACEFileFiller::ImportACEFileFiller(HI::GUITestOpStatus &os, CustomScenario* _c)
-  : Filler(os, "Select Document Format", _c),
-    isReadOnly(false)
-{
+ImportACEFileFiller::ImportACEFileFiller(HI::GUITestOpStatus &os, CustomScenario *_c)
+    : Filler(os, "Select Document Format", _c),
+      isReadOnly(false) {
     settings.timeout = 120000;
 }
 
 void ImportACEFileFiller::commonScenario() {
     GTGlobals::sleep(500);
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
     if (isReadOnly) {
-        QRadioButton* rb = GTWidget::findExactWidget<QRadioButton*>(os, "0_radio", dialog);
+        QRadioButton *rb = GTWidget::findExactWidget<QRadioButton *>(os, "0_radio", dialog);
         CHECK_SET_ERR(rb != NULL, "Radio Button not found");
         GTRadioButton::click(os, rb);
         GTGlobals::sleep();
     } else {
-        QRadioButton* rb = GTWidget::findExactWidget<QRadioButton*>(os, "1_radio", dialog);
+        QRadioButton *rb = GTWidget::findExactWidget<QRadioButton *>(os, "1_radio", dialog);
         CHECK_SET_ERR(rb != NULL, "Radio Button not found");
         GTRadioButton::click(os, rb);
         GTGlobals::sleep();
@@ -81,4 +80,4 @@ void ImportACEFileFiller::commonScenario() {
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

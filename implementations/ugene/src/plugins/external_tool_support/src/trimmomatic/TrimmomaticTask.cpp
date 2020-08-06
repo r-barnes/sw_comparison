@@ -19,13 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "TrimmomaticTask.h"
+
 #include <U2Core/Counter.h>
 #include <U2Core/GUrlUtils.h>
 #include <U2Core/U2SafePoints.h>
 
 #include "TrimmomaticLogParser.h"
 #include "TrimmomaticSupport.h"
-#include "TrimmomaticTask.h"
 
 namespace U2 {
 
@@ -35,21 +36,19 @@ const QString TrimmomaticTaskSettings::PAIRED_END = "paired-end";
 TrimmomaticTaskSettings::TrimmomaticTaskSettings()
     : pairedReadsInput(false),
       generateLog(false),
-      numberOfThreads(1)
-{
+      numberOfThreads(1) {
 }
 
 TrimmomaticTask::TrimmomaticTask(const TrimmomaticTaskSettings &settings)
     : ExternalToolSupportTask(tr("Improve reads with Trimmomatic"), TaskFlags_NR_FOSE_COSC),
       settings(settings),
-      trimmomaticToolRunTask(NULL)
-{
+      trimmomaticToolRunTask(NULL) {
     GCOUNTER(cvar, tvar, "TrimmomaticTask");
 
     if (settings.pairedReadsInput) {
         SAFE_POINT_EXT(!settings.pairedOutputUrl1.isEmpty() && !settings.pairedOutputUrl2.isEmpty() &&
-                      !settings.unpairedOutputUrl1.isEmpty() && !settings.unpairedOutputUrl2.isEmpty(),
-                      setError("At least one of the four output files is not set!"), );
+                           !settings.unpairedOutputUrl1.isEmpty() && !settings.unpairedOutputUrl2.isEmpty(),
+                       setError("At least one of the four output files is not set!"), );
     } else {
         SAFE_POINT_EXT(!settings.seOutputUrl.isEmpty(), setError("Output file is not set!"), );
     }
@@ -132,5 +131,4 @@ const QString &TrimmomaticTask::getLogUrl() const {
     return settings.logUrl;
 }
 
-} // namespace U2
-
+}    // namespace U2

@@ -45,7 +45,7 @@ const QString GBFeatureUtils::QUALIFIER_CUT = "cut";
 const QString GBFeatureUtils::QUALIFIER_NOTE = "note";
 const QString GBFeatureUtils::QUALIFIER_TRANSLATION = "translation";
 
-static QColor cl(const QString& txt) {
+static QColor cl(const QString &txt) {
     QColor res;
     if (txt != "000000") {
         res.setNamedColor("#" + txt);
@@ -53,18 +53,16 @@ static QColor cl(const QString& txt) {
     return res;
 }
 
-
 #define FKE(key, type, text, color, amino, desc, quals) \
     features[key] = GBFeatureKeyInfo(key, type, text, color.isValid() ? color : FeatureColors::genLightColor(text), amino, desc); \
     if (strlen(quals) > 0) { \
-        features[key].namingQuals = QString(quals).split(",", QString::SkipEmptyParts);\
-        }
+        features[key].namingQuals = QString(quals).split(",", QString::SkipEmptyParts); \
+    }
 
 #define FK(key, type, text, color, amino, desc) \
     FKE(key, type, text, color, amino, desc, "label")
 
-
-const QVector<GBFeatureKeyInfo>& GBFeatureUtils::allKeys() {
+const QVector<GBFeatureKeyInfo> &GBFeatureUtils::allKeys() {
     QMutexLocker locker(&allKeys_mutex);
     static QVector<GBFeatureKeyInfo> features(GBFeatureKey_NUM_KEYS);
     static bool inited = false;
@@ -77,8 +75,7 @@ const QVector<GBFeatureKeyInfo>& GBFeatureUtils::allKeys() {
     FK(GBFeatureKey_bond, U2FeatureTypes::Disulfide, "Bond", cl("000000"), false, QObject::tr("Describes disulfide bonds (for protein files)"));
     FK(GBFeatureKey_C_region, U2FeatureTypes::CRegion, "C_region", cl("000000"), false, QObject::tr("Span of the C immunological feature"));
     FK(GBFeatureKey_CAAT_signal, U2FeatureTypes::CaatSignal, "CAAT_signal", cl("000000"), false, QObject::tr("`CAAT box' in eukaryotic promoters"));
-    FKE(GBFeatureKey_CDS, U2FeatureTypes::Cds, "CDS", cl("9bffff"), true, QObject::tr("Sequence coding for amino acids in protein (includes stop codon)"),
-        "label,protein_id,locus_tag,gene,function,product");
+    FKE(GBFeatureKey_CDS, U2FeatureTypes::Cds, "CDS", cl("9bffff"), true, QObject::tr("Sequence coding for amino acids in protein (includes stop codon)"), "label,protein_id,locus_tag,gene,function,product");
     FK(GBFeatureKey_conflict, U2FeatureTypes::Conflict, "conflict", cl("000000"), false, QObject::tr("Independent sequence determinations differ"));
     FK(GBFeatureKey_centromere, U2FeatureTypes::Centromere, "centromere", cl("000000"), false, QObject::tr("Region of biological interest identified as a centromere and which has been experimentally characterized"));
     FK(GBFeatureKey_D_loop, U2FeatureTypes::DLoop, "D-loop", cl("000000"), false, QObject::tr("Displacement loop"));
@@ -86,8 +83,7 @@ const QVector<GBFeatureKeyInfo>& GBFeatureUtils::allKeys() {
     FK(GBFeatureKey_enhancer, U2FeatureTypes::Enhancer, "enhancer", cl("000000"), false, QObject::tr("Cis-acting enhancer of promoter function"));
     FK(GBFeatureKey_exon, U2FeatureTypes::Exon, "exon", cl("000000"), false, QObject::tr("Region that codes for part of spliced mRNA"));
     FK(GBFeatureKey_gap, U2FeatureTypes::Gap, "gap", cl("000000"), false, QObject::tr("Gap in the sequence"));
-    FKE(GBFeatureKey_gene, U2FeatureTypes::Gene, "gene", cl("00ffc8"), false, QObject::tr("Region that defines a functional gene, possibly including upstream (promotor, enhancer, etc) and downstream control elements, and for which a name has been assigned."),
-        "label,gene,locus_tag,product,function");
+    FKE(GBFeatureKey_gene, U2FeatureTypes::Gene, "gene", cl("00ffc8"), false, QObject::tr("Region that defines a functional gene, possibly including upstream (promotor, enhancer, etc) and downstream control elements, and for which a name has been assigned."), "label,gene,locus_tag,product,function");
     FK(GBFeatureKey_GC_signal, U2FeatureTypes::GcSignal, "GC_signal", cl("000000"), false, QObject::tr("`GC box' in eukaryotic promoters"));
     FK(GBFeatureKey_iDNA, U2FeatureTypes::IDna, "iDNA", cl("000000"), false, QObject::tr("Intervening DNA eliminated by recombination"));
     FK(GBFeatureKey_intron, U2FeatureTypes::Intron, "intron", cl("000000"), false, QObject::tr("Transcribed region excised by mRNA splicing"));
@@ -97,8 +93,7 @@ const QVector<GBFeatureKeyInfo>& GBFeatureUtils::allKeys() {
     FK(GBFeatureKey_mat_peptide, U2FeatureTypes::MaturePeptide, "mat_peptide", cl("000000"), true, QObject::tr("Mature peptide coding region (does not include stop codon)"));
     FK(GBFeatureKey_misc_binding, U2FeatureTypes::MiscBindingSite, "misc_binding", cl("000000"), false, QObject::tr("Miscellaneous binding site"));
     FK(GBFeatureKey_misc_difference, U2FeatureTypes::MiscDifference, "misc_difference", cl("000000"), false, QObject::tr("Miscellaneous difference feature"));
-    FKE(GBFeatureKey_misc_feature, U2FeatureTypes::MiscFeature, "misc_feature", cl("000000"), false, QObject::tr("Region of biological significance that cannot be described by any other feature")
-        , "label,note");
+    FKE(GBFeatureKey_misc_feature, U2FeatureTypes::MiscFeature, "misc_feature", cl("000000"), false, QObject::tr("Region of biological significance that cannot be described by any other feature"), "label,note");
     FK(GBFeatureKey_misc_recomb, U2FeatureTypes::MiscRecombination, "misc_recomb", cl("000000"), false, QObject::tr("Miscellaneous, recombination feature"));
     FK(GBFeatureKey_misc_RNA, U2FeatureTypes::MiscRna, "misc_RNA", cl("000000"), false, QObject::tr("Miscellaneous transcript feature not defined by other RNA keys"));
     FK(GBFeatureKey_misc_signal, U2FeatureTypes::MiscSignal, "misc_signal", cl("000000"), false, QObject::tr("Miscellaneous signal"));
@@ -107,7 +102,7 @@ const QVector<GBFeatureKeyInfo>& GBFeatureUtils::allKeys() {
     FK(GBFeatureKey_modified_base, U2FeatureTypes::ModifiedBase, "modified_base", cl("000000"), false, QObject::tr("The indicated base is a modified nucleotide"));
     FK(GBFeatureKey_mRNA, U2FeatureTypes::MRna, "mRNA", cl("000000"), false, QObject::tr("Messenger RNA"));
     FK(GBFeatureKey_ncRNA, U2FeatureTypes::NcRna, "ncRNA", cl("000000"), false, QObject::tr("A non-protein-coding gene, other than ribosomal RNA and transfer RNA, the functional molecule of which is the RNA transcrip"))
-        FK(GBFeatureKey_N_region, U2FeatureTypes::NRegion, "N_region", cl("000000"), false, QObject::tr("Span of the N immunological feature"));
+    FK(GBFeatureKey_N_region, U2FeatureTypes::NRegion, "N_region", cl("000000"), false, QObject::tr("Span of the N immunological feature"));
     FK(GBFeatureKey_old_sequence, U2FeatureTypes::OldSequence, "old_sequence", cl("000000"), false, QObject::tr("Presented sequence revises a previous version"));
     FK(GBFeatureKey_operon, U2FeatureTypes::Operon, "operon", cl("000000"), false, QObject::tr("Region containing polycistronic transcript including a cluster of genes that are under the control of the same regulatory sequences/promotor and in the same biological pathway"));
     FK(GBFeatureKey_oriT, U2FeatureTypes::OriT, "oriT", cl("000000"), false, QObject::tr("Origin of transfer; region of a DNA molecule where transfer is initiated during the process of conjugation or mobilization"));
@@ -166,8 +161,7 @@ const QVector<GBFeatureKeyInfo>& GBFeatureUtils::allKeys() {
     return features;
 }
 
-
-const QMultiMap<QString, GBFeatureKey>& GBFeatureUtils::getKeyGroups() {
+const QMultiMap<QString, GBFeatureKey> &GBFeatureUtils::getKeyGroups() {
     QMutexLocker locker(&getKeyGroups_mutex);
     static QMultiMap<QString, GBFeatureKey> groups;
 
@@ -228,7 +222,7 @@ const QMultiMap<QString, GBFeatureKey>& GBFeatureUtils::getKeyGroups() {
         groups.insert(repeats, GBFeatureKey_repeat_region);
         groups.insert(repeats, GBFeatureKey_repeat_unit);
         groups.insert(repeats, GBFeatureKey_satellite);
-        groups.insert(repeats, GBFeatureKey_transposon); //TODO: recheck grouping
+        groups.insert(repeats, GBFeatureKey_transposon);    //TODO: recheck grouping
 
         QString rna = QObject::tr("RNA");
         groups.insert(rna, GBFeatureKey_ncRNA);
@@ -252,7 +246,7 @@ const QMultiMap<QString, GBFeatureKey>& GBFeatureUtils::getKeyGroups() {
         groups.insert(misc, GBFeatureKey_misc_structure);
         groups.insert(misc, GBFeatureKey_mobile_element);
         groups.insert(misc, GBFeatureKey_operon);
-        groups.insert(misc, GBFeatureKey_primer); //TODO: recheck grouping
+        groups.insert(misc, GBFeatureKey_primer);    //TODO: recheck grouping
         groups.insert(misc, GBFeatureKey_source);
         groups.insert(misc, GBFeatureKey_stem_loop);
         groups.insert(misc, GBFeatureKey_telomere);
@@ -273,9 +267,9 @@ const QMultiMap<QString, GBFeatureKey>& GBFeatureUtils::getKeyGroups() {
 #ifdef _DEBUG
         //check that no feature lost
         QVector<bool> featureInGroup(GBFeatureKey_NUM_KEYS, false);
-        foreach(const QString& groupName, groups.keys()) {
+        foreach (const QString &groupName, groups.keys()) {
             QList<GBFeatureKey> values = groups.values(groupName);
-            foreach(GBFeatureKey k, values) {
+            foreach (GBFeatureKey k, values) {
                 featureInGroup[k] = true;
             }
         }
@@ -288,18 +282,18 @@ const QMultiMap<QString, GBFeatureKey>& GBFeatureUtils::getKeyGroups() {
     return groups;
 }
 
-bool GBFeatureUtils::isFeatureHasNoValue(const QString& featureName) {
+bool GBFeatureUtils::isFeatureHasNoValue(const QString &featureName) {
     if (featureName == "pseudo") {
         return true;
     }
     return false;
 }
 
-GBFeatureKey GBFeatureUtils::getKey(const QString& text) {
+GBFeatureKey GBFeatureUtils::getKey(const QString &text) {
     QMutexLocker locker(&getKey_mutex);
     static QHash<QString, GBFeatureKey> keysByText;
     if (keysByText.isEmpty()) {
-        foreach(const GBFeatureKeyInfo& ki, allKeys()) {
+        foreach (const GBFeatureKeyInfo &ki, allKeys()) {
             keysByText[ki.text] = ki.id;
         }
     }
@@ -310,11 +304,11 @@ GBFeatureKey GBFeatureUtils::getKey(U2FeatureType featureType) {
     QMutexLocker locker(&getKey_mutex);
     static QHash<U2FeatureType, GBFeatureKey> keysByType;
     if (keysByType.isEmpty()) {
-        foreach(const GBFeatureKeyInfo& ki, allKeys()) {
+        foreach (const GBFeatureKeyInfo &ki, allKeys()) {
             keysByType[ki.type] = ki.id;
         }
     }
     return keysByType.value(featureType, GBFeatureKey_UNKNOWN);
 }
 
-}//namespace
+}    // namespace U2

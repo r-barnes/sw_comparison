@@ -19,19 +19,19 @@
  * MA 02110-1301, USA.
  */
 
-#include "utils/GTUtilsDialog.h"
-
-#include "primitives/GTMenu.h"
-#include "system/GTFile.h"
-#include "GTUtilsTaskTreeView.h"
-#include "runnables/ugene/corelibs/U2Gui/AlignShortReadsDialogFiller.h"
-#include "runnables/ugene/corelibs/U2Gui/ImportBAMFileDialogFiller.h"
-#include "runnables/ugene/corelibs/U2Gui/BuildIndexDialogFiller.h"
-
 #include "GTTestsBowtie2.h"
 
-#include <U2Gui/ToolsMenu.h>
 #include <U2Core/U2SafePoints.h>
+
+#include <U2Gui/ToolsMenu.h>
+
+#include "GTUtilsTaskTreeView.h"
+#include "primitives/GTMenu.h"
+#include "runnables/ugene/corelibs/U2Gui/AlignShortReadsDialogFiller.h"
+#include "runnables/ugene/corelibs/U2Gui/BuildIndexDialogFiller.h"
+#include "runnables/ugene/corelibs/U2Gui/ImportBAMFileDialogFiller.h"
+#include "system/GTFile.h"
+#include "utils/GTUtilsDialog.h"
 
 namespace U2 {
 namespace GUITest_Bowtie2 {
@@ -43,15 +43,11 @@ GUI_TEST_CLASS_DEFINITION(test_0001) {
     //  {Reference sequence} : _common_data/fasta/human_T1_cutted.fa
     //  {Index file name} : _tmp/bowtie2/human_T1_cutted
     // And click Start.
-    GTUtilsDialog::waitForDialog(os, new BuildIndexDialogFiller(os,
-                                            testDir + "_common_data/fasta/",
-                                            "human_T1_cutted.fa",
-                                            "Bowtie2",
-                                            false,
-                                            testDir + "_common_data/scenarios/sandbox/",
-                                            "human_T1_cutted"));
+    GTUtilsDialog::waitForDialog(os, new BuildIndexDialogFiller(os, testDir + "_common_data/fasta/", "human_T1_cutted.fa", "Bowtie2", false, testDir + "_common_data/scenarios/sandbox/", "human_T1_cutted"));
 
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "NGS data analysis" << "Build index for reads mapping...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "NGS data analysis"
+                                                << "Build index for reads mapping...");
 
     // Expected state: there are six files as result:
     //human_T1_cutted.1.bt2, human_T1_cutted.2.bt2, human_T1_cutted.3.bt2, human_T1_cutted.4.bt2,
@@ -64,45 +60,45 @@ GUI_TEST_CLASS_DEFINITION(test_0001) {
     indexList << testDir + "_common_data/scenarios/sandbox/human_T1_cutted.rev.2.bt2";
 
     GTGlobals::sleep(500);
-    for (int i = 0; i < indexList.size(); i++){
+    for (int i = 0; i < indexList.size(); i++) {
         CHECK_SET_ERR(GTFile::check(os, indexList[i]), "Index file " + indexList[i] + " is missing!");
     }
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0002){
-//Align short reads with bowtie2
-//no prebuilt index, default settings
-//The settings defined here could be used as default in other tests
+GUI_TEST_CLASS_DEFINITION(test_0002) {
+    //Align short reads with bowtie2
+    //no prebuilt index, default settings
+    //The settings defined here could be used as default in other tests
 
-//1. {Tools -> Align to reference -> Align short reads}
+    //1. {Tools -> Align to reference -> Align short reads}
 
-//2. Fill the dialog:
-//    {Mapping tool} : Bowtie2
-//    {Reference sequence} : _common_data/fasta/human_T1_cutted.fa
-//    {Result file name} : _tmp/bowtie2/human_T1_cutted.sam
-//    {Library} : single-end
-//    {Prebuilt index} : unchecked
-//    {Short reads} : _common_data/fasta/shuffled.fa
+    //2. Fill the dialog:
+    //    {Mapping tool} : Bowtie2
+    //    {Reference sequence} : _common_data/fasta/human_T1_cutted.fa
+    //    {Result file name} : _tmp/bowtie2/human_T1_cutted.sam
+    //    {Library} : single-end
+    //    {Prebuilt index} : unchecked
+    //    {Short reads} : _common_data/fasta/shuffled.fa
 
-//Parameters:
-//    {Mode} : --end-to-end
-//    {Number of mismatches} : 0
-//    {Seed length (--L)} : unchecked (20)
-//    {Add columns to allow gaps (--dpad)} : unchecked (15)
-//    {Disallow gaps (--gbar)} : unchecked (4)
-//    {Seed (--seed)} : unchecked (0)
-//    {Threads} : 4 (depends on CPU cores)
+    //Parameters:
+    //    {Mode} : --end-to-end
+    //    {Number of mismatches} : 0
+    //    {Seed length (--L)} : unchecked (20)
+    //    {Add columns to allow gaps (--dpad)} : unchecked (15)
+    //    {Disallow gaps (--gbar)} : unchecked (4)
+    //    {Seed (--seed)} : unchecked (0)
+    //    {Threads} : 4 (depends on CPU cores)
 
-//Flags:
-//    {No unpaired alignments (--no-mixed)} : unchecked
-//    {No discordant alignments (--no-discordant)} : unchecked
-//    {No forward orientation (--nofw)} : unchecked
-//    {No reverse-complement orientation (--norc)} : unchecked
-//    {No overlapping mates (--no-overlap)} : unchecked
-//    {No mates containing one another (--no-contain)} : unchecked
+    //Flags:
+    //    {No unpaired alignments (--no-mixed)} : unchecked
+    //    {No discordant alignments (--no-discordant)} : unchecked
+    //    {No forward orientation (--nofw)} : unchecked
+    //    {No reverse-complement orientation (--norc)} : unchecked
+    //    {No overlapping mates (--no-overlap)} : unchecked
+    //    {No mates containing one another (--no-contain)} : unchecked
 
-//And click Start.
-//Expected state: an "Import SAM file" dialog appears. The incoming assembly has name "human_T1" and contains 3 reads.
+    //And click Start.
+    //Expected state: an "Import SAM file" dialog appears. The incoming assembly has name "human_T1" and contains 3 reads.
     GTFile::copy(os, testDir + "_common_data/bowtie2/index/human_T1_cutted.fa", testDir + "_common_data/scenarios/sandbox/human_T1_cutted.fa");
     CHECK_OP(os, );
 
@@ -111,17 +107,19 @@ GUI_TEST_CLASS_DEFINITION(test_0002){
                                                                testDir + "_common_data/fasta/",
                                                                "shuffled.fa");
     // Parameters
-    AlignShortReadsFiller* alignShortReadsFiller = new AlignShortReadsFiller(os, &bowtie2Parameters);
+    AlignShortReadsFiller *alignShortReadsFiller = new AlignShortReadsFiller(os, &bowtie2Parameters);
     CHECK_OP(os, );
     GTUtilsDialog::waitForDialog(os, alignShortReadsFiller);
     CHECK_OP(os, );
 
-    ImportBAMFileFiller* importBAMFileFiller = new ImportBAMFileFiller(os);
+    ImportBAMFileFiller *importBAMFileFiller = new ImportBAMFileFiller(os);
     CHECK_OP(os, );
     GTUtilsDialog::waitForDialog(os, importBAMFileFiller);
     CHECK_OP(os, );
 
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "NGS data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "NGS data analysis"
+                                                << "Map reads to reference...");
     CHECK_OP(os, );
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
@@ -129,32 +127,32 @@ GUI_TEST_CLASS_DEFINITION(test_0002){
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0003) {
-//    File will be copied to the sandbox
-//    1. {Tools -> Align to reference -> Align short reads}
-//    2. Fill the dialog:
-//        {Mapping tool} : Bowtie2
-//        {Reference sequence} : _common_data/bowtie2/index/human_T1_cutted.fa
-//        {Result file name} : _tmp/bowtie2/human_T1_cutted.sam (in current test result path is default)
-//        {Library} : single-end
-//        {Prebuilt index} : unchecked
-//        {Short reads} : _common_data/fasta/shuffled.fa
+    //    File will be copied to the sandbox
+    //    1. {Tools -> Align to reference -> Align short reads}
+    //    2. Fill the dialog:
+    //        {Mapping tool} : Bowtie2
+    //        {Reference sequence} : _common_data/bowtie2/index/human_T1_cutted.fa
+    //        {Result file name} : _tmp/bowtie2/human_T1_cutted.sam (in current test result path is default)
+    //        {Library} : single-end
+    //        {Prebuilt index} : unchecked
+    //        {Short reads} : _common_data/fasta/shuffled.fa
 
-//    Parameters:
-//        {Mode} : --end-to-end
-//        {Number of mismatches} : 0
-//        {Seed length (--L)} : checked (20)
-//        {Add columns to allow gaps (--dpad)} : checked (15)
-//        {Disallow gaps (--gbar)} : checked (4)
-//        {Seed (--seed)} : checked (0)
-//        {Threads} : 4 (depends on CPU cores)
+    //    Parameters:
+    //        {Mode} : --end-to-end
+    //        {Number of mismatches} : 0
+    //        {Seed length (--L)} : checked (20)
+    //        {Add columns to allow gaps (--dpad)} : checked (15)
+    //        {Disallow gaps (--gbar)} : checked (4)
+    //        {Seed (--seed)} : checked (0)
+    //        {Threads} : 4 (depends on CPU cores)
 
-//    Flags:
-//        {No unpaired alignments (--no-mixed)} : checked
-//        {No discordant alignments (--no-discordant)} : checked
-//        {No forward orientation (--nofw)} : checked
-//        {No reverse-complement orientation (--norc)} : checked
-//        {No overlapping mates (--no-overlap)} : checked
-//        {No mates containing one another (--no-contain)} : checked
+    //    Flags:
+    //        {No unpaired alignments (--no-mixed)} : checked
+    //        {No discordant alignments (--no-discordant)} : checked
+    //        {No forward orientation (--nofw)} : checked
+    //        {No reverse-complement orientation (--norc)} : checked
+    //        {No overlapping mates (--no-overlap)} : checked
+    //        {No mates containing one another (--no-contain)} : checked
     GTFile::copy(os, testDir + "_common_data/bowtie2/index/human_T1_cutted.fa", testDir + "_common_data/scenarios/sandbox/human_T1_cutted.fa");
     CHECK_OP(os, );
 
@@ -177,17 +175,19 @@ GUI_TEST_CLASS_DEFINITION(test_0003) {
     bowtie2Parameters.noOverlappingMates = true;
     bowtie2Parameters.noMatesContainingOneAnother = true;
 
-    AlignShortReadsFiller* alignShortReadsFiller = new AlignShortReadsFiller(os, &bowtie2Parameters);
+    AlignShortReadsFiller *alignShortReadsFiller = new AlignShortReadsFiller(os, &bowtie2Parameters);
     CHECK_OP(os, );
     GTUtilsDialog::waitForDialog(os, alignShortReadsFiller);
     CHECK_OP(os, );
 
-    ImportBAMFileFiller* importBAMFileFiller = new ImportBAMFileFiller(os);
+    ImportBAMFileFiller *importBAMFileFiller = new ImportBAMFileFiller(os);
     CHECK_OP(os, );
     GTUtilsDialog::waitForDialog(os, importBAMFileFiller);
     CHECK_OP(os, );
 
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "NGS data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "NGS data analysis"
+                                                << "Map reads to reference...");
     CHECK_OP(os, );
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
@@ -195,34 +195,33 @@ GUI_TEST_CLASS_DEFINITION(test_0003) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0004) {
-//    File will be copied to the sandbox
-//    1. {Tools -> Align to reference -> Align short reads}
-//    2. Fill the dialog:
-//        {Mapping tool} : Bowtie2
-//        {Reference sequence} : _common_data/bowtie2/index/human_T1_cutted.fa
-//        {Library} : single-end
-//        {Prebuilt index} : unchecked
-//        {Short reads} : _common_data/fasta/shuffled.fa
+    //    File will be copied to the sandbox
+    //    1. {Tools -> Align to reference -> Align short reads}
+    //    2. Fill the dialog:
+    //        {Mapping tool} : Bowtie2
+    //        {Reference sequence} : _common_data/bowtie2/index/human_T1_cutted.fa
+    //        {Library} : single-end
+    //        {Prebuilt index} : unchecked
+    //        {Short reads} : _common_data/fasta/shuffled.fa
 
-//    Parameters:
-//        {Mode} : --local
-//        {Number of mismatches} : 1
-//        {Seed length (--L)} : checked (24)
-//        {Add columns to allow gaps (--dpad)} : checked (13)
-//        {Disallow gaps (--gbar)} : checked (5)
-//        {Seed (--seed)} : checked (23)
-//        {Threads} : 3 (depends on CPU cores)
+    //    Parameters:
+    //        {Mode} : --local
+    //        {Number of mismatches} : 1
+    //        {Seed length (--L)} : checked (24)
+    //        {Add columns to allow gaps (--dpad)} : checked (13)
+    //        {Disallow gaps (--gbar)} : checked (5)
+    //        {Seed (--seed)} : checked (23)
+    //        {Threads} : 3 (depends on CPU cores)
 
-//    Flags:
-//        {No unpaired alignments (--no-mixed)} : checked
-//        {No discordant alignments (--no-discordant)} : unchecked
-//        {No forward orientation (--nofw)} : unchecked
-//        {No reverse-complement orientation (--norc)} : checked
-//        {No overlapping mates (--no-overlap)} : checked
-//        {No mates containing one another (--no-contain)} : unchecked
+    //    Flags:
+    //        {No unpaired alignments (--no-mixed)} : checked
+    //        {No discordant alignments (--no-discordant)} : unchecked
+    //        {No forward orientation (--nofw)} : unchecked
+    //        {No reverse-complement orientation (--norc)} : checked
+    //        {No overlapping mates (--no-overlap)} : checked
+    //        {No mates containing one another (--no-contain)} : unchecked
 
-    GTFile::copy(os, testDir + "_common_data/bowtie2/index/human_T1_cutted.fa",
-                 testDir + "_common_data/scenarios/sandbox/human_T1_cutted.fa");
+    GTFile::copy(os, testDir + "_common_data/bowtie2/index/human_T1_cutted.fa", testDir + "_common_data/scenarios/sandbox/human_T1_cutted.fa");
     CHECK_OP(os, );
 
     AlignShortReadsFiller::Bowtie2Parameters bowtie2Parameters(testDir + "_common_data/bowtie2/index",
@@ -251,18 +250,20 @@ GUI_TEST_CLASS_DEFINITION(test_0004) {
     bowtie2Parameters.noOverlappingMates = false;
     bowtie2Parameters.noMatesContainingOneAnother = false;
 
-    AlignShortReadsFiller* alignShortReadsFiller = new AlignShortReadsFiller(os, &bowtie2Parameters);
+    AlignShortReadsFiller *alignShortReadsFiller = new AlignShortReadsFiller(os, &bowtie2Parameters);
     CHECK_OP(os, );
     GTUtilsDialog::waitForDialog(os, alignShortReadsFiller);
     CHECK_OP(os, );
 
-    ImportBAMFileFiller* importBAMFileFiller = new ImportBAMFileFiller(os,
-                    testDir + "_common_data/scenarios/sandbox/human_T1_cutted.sam.ugenedb");
+    ImportBAMFileFiller *importBAMFileFiller = new ImportBAMFileFiller(os,
+                                                                       testDir + "_common_data/scenarios/sandbox/human_T1_cutted.sam.ugenedb");
     CHECK_OP(os, );
     GTUtilsDialog::waitForDialog(os, importBAMFileFiller);
     CHECK_OP(os, );
 
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "NGS data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "NGS data analysis"
+                                                << "Map reads to reference...");
     CHECK_OP(os, );
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
@@ -277,18 +278,22 @@ GUI_TEST_CLASS_DEFINITION(test_0005) {
     bowtie2Parameters.prebuiltIndex = true;
     GTUtilsDialog::waitForDialog(os, new AlignShortReadsFiller(os, &bowtie2Parameters));
     GTUtilsDialog::waitForDialog(os, new ImportBAMFileFiller(os));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "NGS data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "NGS data analysis"
+                                                << "Map reads to reference...");
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0006) {
     AlignShortReadsFiller::Bowtie2Parameters parameters(testDir + "_common_data/bowtie2/",
-                                                 "lambda_virus.fa.gz",
-                                                 testDir + "_common_data/bowtie2/",
-                                                 "reads_1.fq");
+                                                        "lambda_virus.fa.gz",
+                                                        testDir + "_common_data/bowtie2/",
+                                                        "reads_1.fq");
     GTUtilsDialog::waitForDialog(os, new AlignShortReadsFiller(os, &parameters));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "NGS data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "NGS data analysis"
+                                                << "Map reads to reference...");
 
     GTUtilsDialog::waitForDialog(os, new ImportBAMFileFiller(os));
     GTGlobals::sleep();
@@ -296,5 +301,5 @@ GUI_TEST_CLASS_DEFINITION(test_0006) {
     GTGlobals::sleep();
 }
 
-} // GUITest_Bowtie2
-} // U2
+}    // namespace GUITest_Bowtie2
+}    // namespace U2

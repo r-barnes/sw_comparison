@@ -43,14 +43,14 @@ using namespace Workflow;
 
 class U2LANG_EXPORT WorkflowDebugStatus : public QObject {
     Q_OBJECT
-    Q_DISABLE_COPY( WorkflowDebugStatus )
+    Q_DISABLE_COPY(WorkflowDebugStatus)
 public:
     explicit WorkflowDebugStatus(QObject *parent = NULL);
     ~WorkflowDebugStatus();
 
     void setContext(WorkflowContext *initContext);
     void setMessageParser(WorkflowDebugMessageParser *initParser);
-    WorkflowDebugMessageParser *getMessageParser( ) const;
+    WorkflowDebugMessageParser *getMessageParser() const;
 
     // the method should be invoked before the running
     // of an actor's task. If it has a breakpoint,
@@ -84,8 +84,7 @@ public:
 
     const BreakpointHitCounterDump getHitCounterDumpForActor(const ActorId &actor) const;
     void resetHitCounterForActor(const ActorId &actor) const;
-    void setHitCounterForActor(const ActorId &actor, BreakpointHitCountCondition typeOfCounter,
-        quint32 parameter);
+    void setHitCounterForActor(const ActorId &actor, BreakpointHitCountCondition typeOfCounter, quint32 parameter);
     quint32 getHitCountForActor(const ActorId &actor) const;
 
     //////////////////////////////////////////////////////////////////////////
@@ -94,18 +93,17 @@ public:
     BreakpointConditionDump getConditionDumpForActor(const ActorId &actor) const;
     void setConditionEnabledForActor(const ActorId &actor, bool enabled);
     void setConditionParameterForActor(const ActorId &actor,
-        BreakpointConditionParameter newParameter);
+                                       BreakpointConditionParameter newParameter);
     void setConditionTextForActor(const ActorId &actor, const QString &newCondition);
 
     //////////////////////////////////////////////////////////////////////////
     ///////////Link investigating control/////////////////////////////////
 
     void respondToInvestigator(const WorkflowInvestigationData &investigationInfo,
-        const Link *bus);
+                               const Link *bus);
     void respondMessagesCount(const Link *bus, int countOfMessages);
     void respondMessageAttributesCount(const Link *bus, int countOfMessageAttributes);
-    void convertMessagesToDocuments(const Workflow::Link *bus, const QString &messageType,
-        int messageNumber, const QString &schemeName);
+    void convertMessagesToDocuments(const Workflow::Link *bus, const QString &messageType, int messageNumber, const QString &schemeName);
 
 public slots:
     void sl_pauseTriggerActivated();
@@ -121,8 +119,7 @@ signals:
     void si_busCountOfMessagesIsRequested(const Workflow::Link *bus);
     void si_busCountOfMessagesResponse(const Workflow::Link *bus, int countOfMessages);
     void si_busInvestigationRespond(const WorkflowInvestigationData &info, const Workflow::Link *bus);
-    void si_convertMessages2Documents(const Workflow::Link *bus, const QString &messageType,
-        int messageNumber, const QString &schemeName);
+    void si_convertMessages2Documents(const Workflow::Link *bus, const QString &messageType, int messageNumber, const QString &schemeName);
     void si_singleStepIsRequested(const ActorId &actor);
     void si_breakpointAdded(const ActorId &actor);
     void si_breakpointRemoved(const ActorId &actor);
@@ -148,6 +145,6 @@ private:
     static QList<BreakpointLabel> existingBreakpointLabels;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_WORKFLOW_DEBUG_STATUS_H_
+#endif    // _U2_WORKFLOW_DEBUG_STATUS_H_

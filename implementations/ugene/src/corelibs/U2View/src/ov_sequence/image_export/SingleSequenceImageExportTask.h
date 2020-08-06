@@ -19,14 +19,13 @@
  * MA 02110-1301, USA.
  */
 
-
 #ifndef _U2_SINGLE_SEQUENCE_IMAGE_EXPORT_TASK_H_
 #define _U2_SINGLE_SEQUENCE_IMAGE_EXPORT_TASK_H_
 
-#include "SequencePainter.h"
-#include "SequenceExportSettingsWidget.h"
-
 #include <U2Gui/ImageExportTask.h>
+
+#include "SequenceExportSettingsWidget.h"
+#include "SequencePainter.h"
 
 namespace U2 {
 
@@ -39,11 +38,11 @@ class SequenceImageExportTask : public ImageExportTask {
 public:
     SequenceImageExportTask(QSharedPointer<ExportImagePainter> painter,
                             QSharedPointer<CustomExportSettings> customSettings,
-                            const ImageExportTaskSettings& settings);
+                            const ImageExportTaskSettings &settings);
 
 protected:
-    QSharedPointer<ExportImagePainter>      painter;
-    QSharedPointer<CustomExportSettings>    customSettings;
+    QSharedPointer<ExportImagePainter> painter;
+    QSharedPointer<CustomExportSettings> customSettings;
 };
 
 /************************************************************************/
@@ -53,10 +52,11 @@ class SequenceImageExportToPdfTask : public SequenceImageExportTask {
 public:
     SequenceImageExportToPdfTask(QSharedPointer<ExportImagePainter> painter,
                                  QSharedPointer<CustomExportSettings> customSettings,
-                                 const ImageExportTaskSettings& settings)
+                                 const ImageExportTaskSettings &settings)
         : SequenceImageExportTask(painter,
                                   customSettings,
-                                  settings) {}
+                                  settings) {
+    }
     void run();
 };
 
@@ -67,10 +67,11 @@ class SequenceImageExportToSvgTask : public SequenceImageExportTask {
 public:
     SequenceImageExportToSvgTask(QSharedPointer<ExportImagePainter> painter,
                                  QSharedPointer<CustomExportSettings> customSettings,
-                                 const ImageExportTaskSettings& settings)
+                                 const ImageExportTaskSettings &settings)
         : SequenceImageExportTask(painter,
                                   customSettings,
-                                  settings) {}
+                                  settings) {
+    }
     void run();
 };
 
@@ -81,13 +82,14 @@ class SequenceImageExportToBitmapTask : public SequenceImageExportTask {
 public:
     SequenceImageExportToBitmapTask(QSharedPointer<ExportImagePainter> painter,
                                     QSharedPointer<CustomExportSettings> customSettings,
-                                    const ImageExportTaskSettings& settings)
+                                    const ImageExportTaskSettings &settings)
         : SequenceImageExportTask(painter,
                                   customSettings,
-                                  settings) {}
+                                  settings) {
+    }
     void run();
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_SINGLE_SEQUENCE_IMAGE_EXPORT_TASK_H_
+#endif    // _U2_SINGLE_SEQUENCE_IMAGE_EXPORT_TASK_H_

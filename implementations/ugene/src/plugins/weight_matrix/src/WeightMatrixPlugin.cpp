@@ -19,16 +19,18 @@
  * MA 02110-1301, USA.
  */
 
+#include "WeightMatrixPlugin.h"
+
 #include <QDir>
 
 #include <U2Algorithm/PWMConversionAlgorithm.h>
 
 #include <U2Core/AppContext.h>
+#include <U2Core/QObjectScopedPointer.h>
 
 #include <U2Gui/GUIUtils.h>
 #include <U2Gui/LastUsedDirHelper.h>
 #include <U2Gui/ToolsMenu.h>
-#include <U2Core/QObjectScopedPointer.h>
 
 #include <U2Lang/QueryDesignerRegistry.h>
 
@@ -42,23 +44,22 @@
 #include "PWMSearchDialogController.h"
 #include "WMQuery.h"
 #include "WeightMatrixIO.h"
-#include "WeightMatrixPlugin.h"
 #include "WeightMatrixWorkers.h"
 
 namespace U2 {
 
-extern "C" Q_DECL_EXPORT Plugin* U2_PLUGIN_INIT_FUNC() {
-    WeightMatrixPlugin* plug = new WeightMatrixPlugin();
+extern "C" Q_DECL_EXPORT Plugin *U2_PLUGIN_INIT_FUNC() {
+    WeightMatrixPlugin *plug = new WeightMatrixPlugin();
     return plug;
 }
 
-WeightMatrixPlugin::WeightMatrixPlugin() : Plugin(tr("Weight matrix"), tr("Search for TFBS with weight matrices"))
-{
+WeightMatrixPlugin::WeightMatrixPlugin()
+    : Plugin(tr("Weight matrix"), tr("Search for TFBS with weight matrices")) {
     if (AppContext::getMainWindow()) {
         ctxADV = new WeightMatrixADVContext(this);
         ctxADV->init();
 
-        QAction* buildAction = new QAction(tr("Build weight matrix..."), this);
+        QAction *buildAction = new QAction(tr("Build weight matrix..."), this);
         buildAction->setObjectName(ToolsMenu::TFBS_WEIGHT);
         connect(buildAction, SIGNAL(triggered()), SLOT(sl_build()));
         ToolsMenu::addAction(ToolsMenu::TFBS_MENU, buildAction);
@@ -75,7 +76,7 @@ WeightMatrixPlugin::WeightMatrixPlugin() : Plugin(tr("Weight matrix"), tr("Searc
     LocalWorkflow::PWMatrixWorkerFactory::init();
     LocalWorkflow::PFMatrixWorkerFactory::init();
 
-    QString defaultDir = QDir::searchPaths( PATH_PREFIX_DATA ).first() + "/position_weight_matrix";
+    QString defaultDir = QDir::searchPaths(PATH_PREFIX_DATA).first() + "/position_weight_matrix";
 
     if (LastUsedDirHelper::getLastUsedDir(WeightMatrixIO::WEIGHT_MATRIX_ID).isEmpty()) {
         LastUsedDirHelper::setLastUsedDir(defaultDir, WeightMatrixIO::WEIGHT_MATRIX_ID);
@@ -85,7 +86,7 @@ WeightMatrixPlugin::WeightMatrixPlugin() : Plugin(tr("Weight matrix"), tr("Searc
         LastUsedDirHelper::setLastUsedDir(defaultDir, WeightMatrixIO::FREQUENCY_MATRIX_ID);
     }
 
-    QDActorPrototypeRegistry* qdpr = AppContext::getQDActorProtoRegistry();
+    QDActorPrototypeRegistry *qdpr = AppContext::getQDActorProtoRegistry();
     qdpr->registerProto(new QDWMActorPrototype);
 }
 
@@ -93,30 +94,30 @@ WeightMatrixPlugin::~WeightMatrixPlugin() {
 }
 
 void WeightMatrixPlugin::sl_build() {
-    QWidget *p = (QWidget*)(AppContext::getMainWindow()->getQMainWindow());
+    QWidget *p = (QWidget *)(AppContext::getMainWindow()->getQMainWindow());
     QObjectScopedPointer<PWMBuildDialogController> d = new PWMBuildDialogController(p);
     d->exec();
 }
 
-WeightMatrixADVContext::WeightMatrixADVContext(QObject* p) : GObjectViewWindowContext(p, ANNOTATED_DNA_VIEW_FACTORY_ID)
-{
+WeightMatrixADVContext::WeightMatrixADVContext(QObject *p)
+    : GObjectViewWindowContext(p, ANNOTATED_DNA_VIEW_FACTORY_ID) {
 }
 
-void WeightMatrixADVContext::initViewContext(GObjectView* view) {
-    AnnotatedDNAView* av = qobject_cast<AnnotatedDNAView*>(view);
-    ADVGlobalAction* a = new ADVGlobalAction(av, QIcon(":weight_matrix/images/weight_matrix.png"), tr("Find TFBS with matrices..."), 80);
+void WeightMatrixADVContext::initViewContext(GObjectView *view) {
+    AnnotatedDNAView *av = qobject_cast<AnnotatedDNAView *>(view);
+    ADVGlobalAction *a = new ADVGlobalAction(av, QIcon(":weight_matrix/images/weight_matrix.png"), tr("Find TFBS with matrices..."), 80);
     a->addAlphabetFilter(DNAAlphabet_NUCL);
     connect(a, SIGNAL(triggered()), SLOT(sl_search()));
 }
 
 void WeightMatrixADVContext::sl_search() {
-    GObjectViewAction* action = qobject_cast<GObjectViewAction*>(sender());
-    AnnotatedDNAView* av = qobject_cast<AnnotatedDNAView*>(action->getObjectView());
+    GObjectViewAction *action = qobject_cast<GObjectViewAction *>(sender());
+    AnnotatedDNAView *av = qobject_cast<AnnotatedDNAView *>(action->getObjectView());
 
-    ADVSequenceObjectContext* seqCtx = av->getSequenceInFocus();
+    ADVSequenceObjectContext *seqCtx = av->getSequenceInFocus();
     assert(seqCtx->getAlphabet()->isNucleic());
     QObjectScopedPointer<PWMSearchDialogController> d = new PWMSearchDialogController(seqCtx, av->getWidget());
     d->exec();
 }
 
-}//namespace
+}    // namespace U2

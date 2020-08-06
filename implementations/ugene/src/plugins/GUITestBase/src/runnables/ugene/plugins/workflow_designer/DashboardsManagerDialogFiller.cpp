@@ -19,12 +19,12 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-#include <QTreeWidget>
-
 #include <drivers/GTKeyboardDriver.h>
 #include <primitives/GTTreeWidget.h>
 #include <primitives/GTWidget.h>
+
+#include <QApplication>
+#include <QTreeWidget>
 
 #include "DashboardsManagerDialogFiller.h"
 
@@ -33,8 +33,8 @@ using namespace HI;
 
 #define GT_CLASS_NAME "DashboardsManagerDialogFiller"
 #define GT_METHOD_NAME "commonScenario"
-void DashboardsManagerDialogFiller::commonScenario(){
-    QWidget* dialog = QApplication::activeModalWidget();
+void DashboardsManagerDialogFiller::commonScenario() {
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
     GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
@@ -42,34 +42,34 @@ void DashboardsManagerDialogFiller::commonScenario(){
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "selectDashboards"
-void DashboardsManagerDialogFiller::selectDashboards(HI::GUITestOpStatus &os, QStringList names){
-    QWidget* dialog = QApplication::activeModalWidget();
+void DashboardsManagerDialogFiller::selectDashboards(HI::GUITestOpStatus &os, QStringList names) {
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
-    QTreeWidget* listWidget = GTWidget::findExactWidget<QTreeWidget*>(os, "listWidget", dialog);
+    QTreeWidget *listWidget = GTWidget::findExactWidget<QTreeWidget *>(os, "listWidget", dialog);
     foreach (QString name, names) {
-        QTreeWidgetItem* item = GTTreeWidget::findItem(os, listWidget, name);
+        QTreeWidgetItem *item = GTTreeWidget::findItem(os, listWidget, name);
         GTKeyboardDriver::keyPress(Qt::Key_Control);
         GTTreeWidget::click(os, item);
-        GTKeyboardDriver::keyRelease( Qt::Key_Control);
+        GTKeyboardDriver::keyRelease(Qt::Key_Control);
     }
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "isDashboardPresent"
-bool DashboardsManagerDialogFiller::isDashboardPresent(HI::GUITestOpStatus &os, QString name){
-    QWidget* dialog = QApplication::activeModalWidget();
+bool DashboardsManagerDialogFiller::isDashboardPresent(HI::GUITestOpStatus &os, QString name) {
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK_RESULT(dialog, "activeModalWidget is NULL", false);
 
-    QTreeWidget* listWidget = GTWidget::findExactWidget<QTreeWidget*>(os, "listWidget", dialog);
-    QTreeWidgetItem* item = GTTreeWidget::findItem(os, listWidget, name, NULL, 0, GTGlobals::FindOptions(false));
+    QTreeWidget *listWidget = GTWidget::findExactWidget<QTreeWidget *>(os, "listWidget", dialog);
+    QTreeWidgetItem *item = GTTreeWidget::findItem(os, listWidget, name, NULL, 0, GTGlobals::FindOptions(false));
     return item != NULL;
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getDashboardsState"
-QList<QPair<QString, bool> > DashboardsManagerDialogFiller::getDashboardsState(HI::GUITestOpStatus &os) {
-    QList<QPair<QString, bool> > result;
+QList<QPair<QString, bool>> DashboardsManagerDialogFiller::getDashboardsState(HI::GUITestOpStatus &os) {
+    QList<QPair<QString, bool>> result;
 
     QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK_RESULT(dialog, "activeModalWidget is NULL", result);
@@ -85,4 +85,4 @@ QList<QPair<QString, bool> > DashboardsManagerDialogFiller::getDashboardsState(H
 
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

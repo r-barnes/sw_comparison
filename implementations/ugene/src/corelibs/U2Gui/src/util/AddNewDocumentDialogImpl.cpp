@@ -19,8 +19,10 @@
  * MA 02110-1301, USA.
  */
 
-#include <QPushButton>
+#include "AddNewDocumentDialogImpl.h"
+
 #include <QMessageBox>
+#include <QPushButton>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/IOAdapter.h>
@@ -35,29 +37,27 @@
 #include <U2Gui/HelpButton.h>
 #include <U2Gui/SaveDocumentController.h>
 
-#include "AddNewDocumentDialogImpl.h"
 #include "DocumentFormatComboboxController.h"
 
 namespace U2 {
 
 //BUG:419: add label to dialog with state description!
 
-#define SETTINGS_LASTFORMAT     "add_new_document/last_format"
-#define SETTINGS_LASTDIR        "add_new_document/last_dir"
+#define SETTINGS_LASTFORMAT "add_new_document/last_format"
+#define SETTINGS_LASTDIR "add_new_document/last_dir"
 
-AddNewDocumentDialogImpl::AddNewDocumentDialogImpl(QWidget* p, AddNewDocumentDialogModel& m, const DocumentFormatConstraints& c) 
+AddNewDocumentDialogImpl::AddNewDocumentDialogImpl(QWidget *p, AddNewDocumentDialogModel &m, const DocumentFormatConstraints &c)
     : QDialog(p),
-      model(m)
-{
+      model(m) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742422");
+    new HelpButton(this, buttonBox, "46499910");
     if (model.format.isEmpty()) {
         model.format = AppContext::getSettings()->getValue(SETTINGS_LASTFORMAT, QString("")).toString();
     }
-    
+
     formatController = new DocumentFormatComboboxController(this, documentTypeCombo, c, model.format);
     model.successful = false;
-    
+
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Create"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -90,8 +90,8 @@ void AddNewDocumentDialogImpl::accept() {
     QDialog::accept();
 }
 
-void AddNewDocumentDialogController::run(QWidget* p, AddNewDocumentDialogModel& m, const DocumentFormatConstraints& c) {
-    Project* proj = AppContext::getProject();
+void AddNewDocumentDialogController::run(QWidget *p, AddNewDocumentDialogModel &m, const DocumentFormatConstraints &c) {
+    Project *proj = AppContext::getProject();
     if (proj->isStateLocked()) {
         QMessageBox::critical(NULL, L10N::errorTitle(), AddNewDocumentDialogImpl::tr("Project is locked"));
         m.successful = false;
@@ -106,4 +106,4 @@ void AddNewDocumentDialogController::run(QWidget* p, AddNewDocumentDialogModel& 
     assert(proj->findDocumentByURL(m.url) == NULL);
 }
 
-}   // namespace U2
+}    // namespace U2

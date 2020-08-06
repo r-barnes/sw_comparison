@@ -30,9 +30,9 @@
 #ifndef _U2_SAFE_POINTS_
 #define _U2_SAFE_POINTS_
 
-#include <U2Core/Log.h>
 #include <assert.h>
 
+#include <U2Core/Log.h>
 
 /**
     Recover utility. Must be used when code tries to recover from invalid internal state
@@ -42,13 +42,12 @@
     Warning: never use this function as a simple check since it stops application execution in debug mode
             use CHECK_OP instead
 */
-#define SAFE_POINT(condition, message, result)  \
+#define SAFE_POINT(condition, message, result) \
     if (Q_UNLIKELY(!(condition))) { \
-        coreLog.error(QString("Trying to recover from error: %1 at %2:%3").arg(message).arg(__FILE__).arg(__LINE__)); \
+        U2::coreLog.error(QString("Trying to recover from error: %1 at %2:%3").arg(message).arg(__FILE__).arg(__LINE__)); \
         assert(condition); \
         return result; \
-    } \
-
+    }
 
 /**
     Recover utility. Must be used when code tries to recover from invalid internal state
@@ -59,13 +58,12 @@
     use CHECK_OP instead
 
 */
-#define SAFE_POINT_OP(os, result)  \
+#define SAFE_POINT_OP(os, result) \
     if (Q_UNLIKELY(os.hasError())) { \
-        coreLog.error(QString("Trying to recover from error: %1 at %2:%3").arg(os.getError()).arg(__FILE__).arg(__LINE__)); \
+        U2::coreLog.error(QString("Trying to recover from error: %1 at %2:%3").arg(os.getError()).arg(__FILE__).arg(__LINE__)); \
         assert(0); \
         return result; \
-    } \
-
+    }
 
 /**
     Recover utility. Must be used when code tries to recover from invalid internal state
@@ -75,21 +73,21 @@
     Warning: never use this function as a simple check since it stops application execution in debug mode
             use CHECK_OP instead
 */
-#define SAFE_POINT_EXT(condition, extraOp, result)  \
+#define SAFE_POINT_EXT(condition, extraOp, result) \
     if (Q_UNLIKELY(!(condition))) { \
         assert(condition); \
         extraOp; \
         return result; \
-    } \
+    }
 
 /**
     FAIL utility. Same as SAFE_POINT but uses unconditional fail.
     Can be used in code that must be unreachable
 */
-#define FAIL(message, result)  \
-    coreLog.error(QString("Trying to recover from error: %1 at %2:%3").arg(message).arg(__FILE__).arg(__LINE__)); \
+#define FAIL(message, result) \
+    U2::coreLog.error(QString("Trying to recover from error: %1 at %2:%3").arg(message).arg(__FILE__).arg(__LINE__)); \
     assert(0); \
-    return result; \
+    return result;
 
 /**
     Checks condition is false and returns the result if it is
@@ -151,21 +149,20 @@
         return result; \
     }
 
-
 /**
     Checks that operation is neither not failed nor canceled and returns the result if it does
 */
-#define CHECK_OP(os, result)  CHECK(!os.isCoR(), result)
+#define CHECK_OP(os, result) CHECK(!os.isCoR(), result)
 
 /**
     Checks that operation is neither not failed nor canceled and breaks if it does
 */
-#define CHECK_OP_BREAK(os)  CHECK_BREAK(!os.isCoR())
+#define CHECK_OP_BREAK(os) CHECK_BREAK(!os.isCoR())
 
 /**
     Checks that operation is neither failed nor canceled and returns the result if it does.
     Before the result is returned the 'extraOp' operation is performed (for example logging)
 */
-#define CHECK_OP_EXT(os, extraOp, result)  CHECK_EXT(!(os.isCoR()), extraOp, result)
+#define CHECK_OP_EXT(os, extraOp, result) CHECK_EXT(!(os.isCoR()), extraOp, result)
 
 #endif

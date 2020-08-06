@@ -7,7 +7,14 @@ QMAKE_PROJECT_NAME = QSpec
 TEMPLATE = lib
 CONFIG += thread debug_and_release warn_off qt dll
 INCLUDEPATH += src _tmp
-QT += testlib webkitwidgets
+QT += testlib
+
+useWebKit() {
+    QT += webkitwidgets
+} else {
+    QT += webenginewidgets
+}
+
 
 DEFINES += BUILDING_QSPEC_DLL
 DEFINES += QT_DLL
@@ -34,6 +41,7 @@ DESTDIR = ../../$$out_dir()
 unix {
     !macx {
         LIBS += -lXtst
+        QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"
     }
     macx {
         QMAKE_LFLAGS += -framework ApplicationServices
@@ -51,7 +59,6 @@ win32 {
 
     QMAKE_MSVC_PROJECT_NAME=lib_3rd_QSpec
 
-    LIBS += User32.lib Gdi32.lib
-    LIBS += psapi.lib
+    LIBS += User32.lib Gdi32.lib Advapi32.lib psapi.lib
     DEFINES += "PSAPI_VERSION=1"
 }

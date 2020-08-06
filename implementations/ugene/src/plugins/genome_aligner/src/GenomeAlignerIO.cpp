@@ -23,20 +23,20 @@
 
 #include <U2Core/AppContext.h>
 #include <U2Core/Counter.h>
+#include <U2Core/Timer.h>
+#include <U2Core/U2AlphabetUtils.h>
 #include <U2Core/U2AssemblyDbi.h>
 #include <U2Core/U2AttributeDbi.h>
 #include <U2Core/U2CoreAttributes.h>
-#include <U2Core/Timer.h>
+#include <U2Core/U2CrossDatabaseReferenceDbi.h>
 #include <U2Core/U2DbiRegistry.h>
-#include <U2Core/U2AlphabetUtils.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2OpStatusUtils.h>
-#include <U2Core/U2CrossDatabaseReferenceDbi.h>
-
-#include <U2Lang/BaseSlots.h>
-#include <U2Lang/BasePorts.h>
 
 #include <U2Formats/DocumentFormatUtils.h>
+
+#include <U2Lang/BasePorts.h>
+#include <U2Lang/BaseSlots.h>
 
 namespace U2 {
 
@@ -72,8 +72,7 @@ QString GenomeAlignerUrlReader::getMemberError() {
 /************************************************************************/
 
 GenomeAlignerUrlWriter::GenomeAlignerUrlWriter(const GUrl &resultFile, const QString &refName, int refLength)
-    :seqWriter(resultFile, refName, refLength)
-{
+    : seqWriter(resultFile, refName, refLength) {
     writtenReadsCount = 0;
 }
 
@@ -97,7 +96,7 @@ namespace LocalWorkflow {
 /* GenomeAlignerCommunicationChanelReader                               */
 /************************************************************************/
 
-GenomeAlignerCommunicationChanelReader::GenomeAlignerCommunicationChanelReader(CommunicationChannel* reads) {
+GenomeAlignerCommunicationChanelReader::GenomeAlignerCommunicationChanelReader(CommunicationChannel *reads) {
     assert(reads != NULL);
     this->reads = reads;
 }
@@ -131,7 +130,7 @@ void GenomeAlignerMsaWriter::close() {
     result->setAlphabet(AppContext::getDNAAlphabetRegistry()->findById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT()));
 }
 
-MultipleSequenceAlignment& GenomeAlignerMsaWriter::getResult() {
+MultipleSequenceAlignment &GenomeAlignerMsaWriter::getResult() {
     return result;
 }
 
@@ -149,7 +148,7 @@ void GenomeAlignerMsaWriter::setReferenceName(const QString &refName) {
     result->setName(refName);
 }
 
-} //LocalWorkflow
+}    // namespace LocalWorkflow
 
 /************************************************************************/
 /* GenomeAlignerDbiReader                                               */
@@ -157,8 +156,7 @@ void GenomeAlignerMsaWriter::setReferenceName(const QString &refName) {
 const qint64 GenomeAlignerDbiReader::readBunchSize = 1000;
 
 GenomeAlignerDbiReader::GenomeAlignerDbiReader(U2AssemblyDbi *_rDbi, U2Assembly _assembly)
-: rDbi(_rDbi), assembly(_assembly)
-{
+    : rDbi(_rDbi), assembly(_assembly) {
     wholeAssembly.startPos = 0;
     wholeAssembly.length = rDbi->getMaxEndPos(assembly.id, status) + 1;
     currentRead = reads.end();
@@ -198,7 +196,7 @@ bool GenomeAlignerDbiReader::isEnd() {
 }
 
 int GenomeAlignerDbiReader::getProgress() {
-    return (int)(100*(double)readNumber/readsInAssembly);
+    return (int)(100 * (double)readNumber / readsInAssembly);
 }
 
 /************************************************************************/
@@ -216,10 +214,9 @@ inline void checkOperationStatus(const U2OpStatus &status) {
 GenomeAlignerDbiWriter::GenomeAlignerDbiWriter(const QString &dbiFilePath,
                                                const QString &assemblyName,
                                                int refLength,
-                                               const QString& referenceObjectName,
-                                               const QString& referenceUrlForCrossLink) :
-    importer(status)
-{
+                                               const QString &referenceObjectName,
+                                               const QString &referenceUrlForCrossLink)
+    : importer(status) {
     //TODO: support several assemblies.
     dbiHandle = QSharedPointer<DbiConnection>(new DbiConnection(U2DbiRef(SQLITE_DBI_ID, dbiFilePath), true, status));
     checkOperationStatus(status);
@@ -287,4 +284,4 @@ void GenomeAlignerDbiWriter::close() {
     sqliteDbi->flush(status);
 }
 
-} //U2
+}    // namespace U2

@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-
 #ifndef _U2_CREATE_RULER_DIALOG_FILLER_H_
 #define _U2_CREATE_RULER_DIALOG_FILLER_H_
 
@@ -27,17 +26,17 @@
 
 namespace U2 {
 using namespace HI;
-class CreateRulerDialogFiller: public Filler
-{
+class CreateRulerDialogFiller : public Filler {
 public:
     CreateRulerDialogFiller(HI::GUITestOpStatus &os, QString _rulerName, int _startPos);
-    CreateRulerDialogFiller(HI::GUITestOpStatus &os, CustomScenario* c);
+    CreateRulerDialogFiller(HI::GUITestOpStatus &os, CustomScenario *c);
 
     virtual void commonScenario();
+
 private:
     QString rulerName;
     int startPos;
 };
 
-}
-#endif // CREATERULERDIALOGFILLER_H
+}    // namespace U2
+#endif    // CREATERULERDIALOGFILLER_H

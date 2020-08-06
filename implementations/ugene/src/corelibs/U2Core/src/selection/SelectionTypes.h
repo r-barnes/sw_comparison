@@ -38,6 +38,6 @@ public:
     static const GSelectionType FOLDERS;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

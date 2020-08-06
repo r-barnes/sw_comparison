@@ -37,8 +37,12 @@ typedef PrompterBase<CollocationPrompter> CollocationPrompterBase;
 class CollocationPrompter : public CollocationPrompterBase {
     Q_OBJECT
 public:
-    CollocationPrompter(Actor* p = 0) : CollocationPrompterBase(p) {}
-    virtual ~CollocationPrompter() {}
+    CollocationPrompter(Actor *p = 0)
+        : CollocationPrompterBase(p) {
+    }
+    virtual ~CollocationPrompter() {
+    }
+
 protected:
     QString composeRichDoc();
 };
@@ -46,11 +50,15 @@ protected:
 class CollocationWorker : public BaseWorker {
     Q_OBJECT
 public:
-    CollocationWorker(Actor* a) : BaseWorker(a), input(NULL), output(NULL) {}
-    virtual ~CollocationWorker() {}
+    CollocationWorker(Actor *a)
+        : BaseWorker(a), input(NULL), output(NULL) {
+    }
+    virtual ~CollocationWorker() {
+    }
     virtual void init();
-    virtual Task* tick();
-    virtual void cleanup() {}
+    virtual Task *tick();
+    virtual void cleanup() {
+    }
 private slots:
     void sl_taskFinished();
 
@@ -63,12 +71,17 @@ class CollocationWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
     static void init();
-    CollocationWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual ~CollocationWorkerFactory() {}
-    virtual Worker* createWorker(Actor* a) {return new CollocationWorker(a);}
+    CollocationWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual ~CollocationWorkerFactory() {
+    }
+    virtual Worker *createWorker(Actor *a) {
+        return new CollocationWorker(a);
+    }
 };
 
-}//Workflow namespace
-}//U2 namespace
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

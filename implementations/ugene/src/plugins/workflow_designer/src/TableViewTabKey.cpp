@@ -19,48 +19,48 @@
  * MA 02110-1301, USA.
  */
 
-#include <QKeyEvent>
-
 #include "TableViewTabKey.h"
 
+#include <QKeyEvent>
+
 namespace U2 {
-TableViewTabKey::TableViewTabKey(QWidget *parent) :
-    QTableView(parent){
+TableViewTabKey::TableViewTabKey(QWidget *parent)
+    : QTableView(parent) {
 }
 
-QModelIndex TableViewTabKey::getNextIndex() const{
+QModelIndex TableViewTabKey::getNextIndex() const {
     int column = this->currentIndex().column();
     int row = this->currentIndex().row();
-    if (column != 0){
+    if (column != 0) {
         row++;
     }
     column = 1;
     return this->model()->index(row, column);
 }
 
-void TableViewTabKey::setNextIndex(){
+void TableViewTabKey::setNextIndex() {
     QModelIndex nextIndex = getNextIndex();
     this->setCurrentIndex(nextIndex);
     this->edit(nextIndex);
 }
 
-void TableViewTabKey::closeEditor(QWidget *editor, QAbstractItemDelegate::EndEditHint hint){
-    if (hint == QAbstractItemDelegate::NoHint){
+void TableViewTabKey::closeEditor(QWidget *editor, QAbstractItemDelegate::EndEditHint hint) {
+    if (hint == QAbstractItemDelegate::NoHint) {
         QTableView::closeEditor(editor, QAbstractItemDelegate::SubmitModelCache);
         return;
     }
-    if (hint == QAbstractItemDelegate::EditNextItem){
+    if (hint == QAbstractItemDelegate::EditNextItem) {
         setNextIndex();
-        return ;
+        return;
     }
     QTableView::closeEditor(editor, hint);
 }
 
-void TableViewTabKey::keyPressEvent(QKeyEvent *event){
-    if (event->key() == Qt::Key_Tab){
+void TableViewTabKey::keyPressEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_Tab) {
         setNextIndex();
-        return ;
+        return;
     }
     QTableView::keyPressEvent(event);
 }
-}
+}    // namespace U2

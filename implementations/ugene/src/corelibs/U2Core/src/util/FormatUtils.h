@@ -22,16 +22,15 @@
 #ifndef _U2_FORMAT_UTILS_H_
 #define _U2_FORMAT_UTILS_H_
 
-#include <U2Core/global.h>
-
 #include <QStringList>
+
+#include <U2Core/global.h>
 
 namespace U2 {
 
 class DocumentFormatConstraints;
 
 class U2CORE_EXPORT FormatUtils {
-
 public:
     static QString splitThousands(qint64 num);
 
@@ -44,16 +43,15 @@ public:
     // for correct date formatting
     static QString getShortMonthName(int num);
 
-    static QString prepareFileFilter(const QMap<QString, QStringList>& formatNamesWithExtensions, bool allowAnyFiles = true, const QStringList& extraExtensions = QStringList(".gz"));
-    static QString prepareFileFilter(const QString& name, const QStringList& exts, bool any = true, const QStringList& extraExts = QStringList(".gz"));
+    static QString prepareFileFilter(const QMap<QString, QStringList> &formatNamesWithExtensions, bool allowAnyFiles = true, const QStringList &extraExtensions = QStringList(".gz"));
+    static QString prepareFileFilter(const QString &name, const QStringList &exts, bool any = true, const QStringList &extraExts = QStringList(".gz"));
     static QString prepareDocumentsFileFilter(const DocumentFormatId &fid, bool any, const QStringList &extra = QStringList(".gz"));
     //returns filter for all formats supported. All-docs filter is returned first if any==true
-    static QString prepareDocumentsFileFilter(bool any, const QStringList& extraExts = QStringList(".gz"));
-    static QString prepareDocumentsFileFilter(const DocumentFormatConstraints& c, bool any);
-    static QString prepareDocumentsFileFilterByObjType(const GObjectType& t, bool any);
+    static QString prepareDocumentsFileFilter(bool any, const QStringList &extraExts = QStringList(".gz"));
+    static QString prepareDocumentsFileFilter(const DocumentFormatConstraints &c, bool any);
+    static QString prepareDocumentsFileFilterByObjType(const GObjectType &t, bool any);
 };
 
-}//namespace
+}    // namespace U2
 
 #endif
-

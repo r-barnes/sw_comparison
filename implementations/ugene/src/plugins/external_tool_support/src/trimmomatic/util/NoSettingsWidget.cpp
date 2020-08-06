@@ -19,10 +19,10 @@
  * MA 02110-1301, USA.
  */
 
+#include "NoSettingsWidget.h"
+
 #include <QLabel>
 #include <QVBoxLayout>
-
-#include "NoSettingsWidget.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -54,5 +54,5 @@ QVariantMap NoSettingsWidget::parseState(const QString &) {
     return QVariantMap();
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

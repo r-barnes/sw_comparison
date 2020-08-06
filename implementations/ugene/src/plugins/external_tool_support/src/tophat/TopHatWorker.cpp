@@ -19,10 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-#include "../bowtie2/Bowtie2Support.h"
-#include "../bowtie/BowtieSupport.h"
-#include "../samtools/SamToolsExtToolSupport.h"
-#include "TopHatSupportTask.h"
 #include "TopHatWorker.h"
 
 #include <U2Core/AppContext.h>
@@ -46,6 +42,11 @@
 #include <U2Lang/BaseTypes.h>
 #include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/WorkflowMonitor.h>
+
+#include "../bowtie/BowtieSupport.h"
+#include "../bowtie2/Bowtie2Support.h"
+#include "../samtools/SamToolsExtToolSupport.h"
+#include "TopHatSupportTask.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -103,54 +104,53 @@ static const QString BOWTIE2("Bowtie2");
 
 static const QString FILE_TAG("file");
 
-void TopHatWorkerFactory::init()
-{
-    QList<PortDescriptor*> portDescriptors;
-    QList<Attribute*> attributes;
+void TopHatWorkerFactory::init() {
+    QList<PortDescriptor *> portDescriptors;
+    QList<Attribute *> attributes;
 
     // Define ports and slots
     Descriptor inPortDesc(
-                BasePorts::IN_SEQ_PORT_ID(),
-                TopHatWorker::tr("Input reads"),
-                TopHatWorker::tr("Input RNA-Seq reads"));
+        BasePorts::IN_SEQ_PORT_ID(),
+        TopHatWorker::tr("Input reads"),
+        TopHatWorker::tr("Input RNA-Seq reads"));
 
     Descriptor outPortDesc(
-                BasePorts::OUT_ASSEMBLY_PORT_ID(),
-                TopHatWorker::tr("TopHat output"),
-                TopHatWorker::tr("Accepted hits, junctions, insertions and deletions"));
+        BasePorts::OUT_ASSEMBLY_PORT_ID(),
+        TopHatWorker::tr("TopHat output"),
+        TopHatWorker::tr("Accepted hits, junctions, insertions and deletions"));
 
     QMap<Descriptor, DataTypePtr> inputMap;
 
     Descriptor inDataDesc(IN_DATA_SLOT_ID,
-        TopHatWorker::tr("Input reads"),
-        TopHatWorker::tr("TopHat input reads. Set this slot empty if you want"
-        " to align reads directly from a file and specify the \"Input reads url\" slot."
-        " When running TopHat with paired-end reads, this should be"
-        " the *_1 (\"left\") set of reads."));
+                          TopHatWorker::tr("Input reads"),
+                          TopHatWorker::tr("TopHat input reads. Set this slot empty if you want"
+                                           " to align reads directly from a file and specify the \"Input reads url\" slot."
+                                           " When running TopHat with paired-end reads, this should be"
+                                           " the *_1 (\"left\") set of reads."));
     Descriptor inUrlDesc(IN_URL_SLOT_ID,
-        TopHatWorker::tr("Input reads url"),
-        TopHatWorker::tr("TopHat input reads url. When running TopHat"
-        " with paired-end reads, this should be"
-        " the *_1 (\"left\") set of reads."));
+                         TopHatWorker::tr("Input reads url"),
+                         TopHatWorker::tr("TopHat input reads url. When running TopHat"
+                                          " with paired-end reads, this should be"
+                                          " the *_1 (\"left\") set of reads."));
     Descriptor pairedInDataDesc(PAIRED_IN_DATA_SLOT_ID,
-        TopHatWorker::tr("Input paired reads"),
-        TopHatWorker::tr(" Set this slot empty if you want"
-        " to align reads directly from a file and specify the \"Input reads url\" slot."
-        " Only used when running TopHat with paired"
-        " end reads, and contains the *_2 (\"right\")"
-        " set of reads. Reads MUST appear in the same order"
-        " as the *_1 reads."));
+                                TopHatWorker::tr("Input paired reads"),
+                                TopHatWorker::tr(" Set this slot empty if you want"
+                                                 " to align reads directly from a file and specify the \"Input reads url\" slot."
+                                                 " Only used when running TopHat with paired"
+                                                 " end reads, and contains the *_2 (\"right\")"
+                                                 " set of reads. Reads MUST appear in the same order"
+                                                 " as the *_1 reads."));
     Descriptor pairedInUrlDesc(PAIRED_IN_URL_SLOT_ID,
-        TopHatWorker::tr("Input paired reads url"),
-        TopHatWorker::tr("Only used when running TopHat with paired"
-        " end reads, and contains the *_2 (\"right\")"
-        " set of reads."));
+                               TopHatWorker::tr("Input paired reads url"),
+                               TopHatWorker::tr("Only used when running TopHat with paired"
+                                                " end reads, and contains the *_2 (\"right\")"
+                                                " set of reads."));
     Descriptor datasetDescriptor =
         Descriptor(DATASET_SLOT_ID,
-        TopHatWorker::tr("Dataset name"),
-        TopHatWorker::tr("Use it only when sequences slot(or slots) is specified."
-        " Group input reads into chunks for several Tophat runs.\n"
-        "Set it empty if you want to run Tophat once for all input reads"));
+                   TopHatWorker::tr("Dataset name"),
+                   TopHatWorker::tr("Use it only when sequences slot(or slots) is specified."
+                                    " Group input reads into chunks for several Tophat runs.\n"
+                                    "Set it empty if you want to run Tophat once for all input reads"));
 
     inputMap[inDataDesc] = BaseTypes::DNA_SEQUENCE_TYPE();
     inputMap[inUrlDesc] = BaseTypes::STRING_TYPE();
@@ -160,19 +160,21 @@ void TopHatWorkerFactory::init()
 
     portDescriptors << new PortDescriptor(inPortDesc,
                                           DataTypePtr(new MapDataType("in.sequences", inputMap)),
-                                          true /* input */, false, IntegralBusPort::BLIND_INPUT);
+                                          true /* input */,
+                                          false,
+                                          IntegralBusPort::BLIND_INPUT);
 
     QMap<Descriptor, DataTypePtr> outputMap;
 
     Descriptor assemblyDesc(ACCEPTED_HITS_SLOT_ID,
-        TopHatWorker::tr("Accepted hits"),
-        TopHatWorker::tr("Accepted hits found by TopHat"));
+                            TopHatWorker::tr("Accepted hits"),
+                            TopHatWorker::tr("Accepted hits found by TopHat"));
     Descriptor sampleDesc(SAMPLE_SLOT_ID,
-        TopHatWorker::tr("Sample name"),
-        TopHatWorker::tr("Sample name for running Cuffdiff"));
+                          TopHatWorker::tr("Sample name"),
+                          TopHatWorker::tr("Sample name for running Cuffdiff"));
     Descriptor outUrlDesc(OUT_BAM_URL_SLOT_ID,
-        TopHatWorker::tr("Accepted hits url"),
-        TopHatWorker::tr("The url to the assembly file with the accepted hits"));
+                          TopHatWorker::tr("Accepted hits url"),
+                          TopHatWorker::tr("The url to the assembly file with the accepted hits"));
 
     outputMap[assemblyDesc] = BaseTypes::ASSEMBLY_TYPE();
     outputMap[sampleDesc] = BaseTypes::STRING_TYPE();
@@ -183,39 +185,39 @@ void TopHatWorkerFactory::init()
 
     // Description of the element
     Descriptor topHatDescriptor(ACTOR_ID,
-        TopHatWorker::tr("Map RNA-Seq Reads with TopHat"),
-        TopHatWorker::tr("TopHat is a program for mapping RNA-Seq reads to a long reference sequence."
-                         " It uses Bowtie or Bowtie2 to map the reads and then analyzes the mapping"
-                         " results to identify splice junctions between exons."
-                         "<br/><br/>Provide URL(s) to FASTA or FASTQ file(s) with NGS RNA-Seq reads to the input"
-                         " port of the element, set up the reference sequence in the parameters."
-                         " The result is saved to the specified BAM file, URL to the file is passed"
-                         " to the output port. Several UCSC BED tracks are also produced: junctions,"
-                         " insertions, and deletions."));
+                                TopHatWorker::tr("Map RNA-Seq Reads with TopHat"),
+                                TopHatWorker::tr("TopHat is a program for mapping RNA-Seq reads to a long reference sequence."
+                                                 " It uses Bowtie or Bowtie2 to map the reads and then analyzes the mapping"
+                                                 " results to identify splice junctions between exons."
+                                                 "<br/><br/>Provide URL(s) to FASTA or FASTQ file(s) with NGS RNA-Seq reads to the input"
+                                                 " port of the element, set up the reference sequence in the parameters."
+                                                 " The result is saved to the specified BAM file, URL to the file is passed"
+                                                 " to the output port. Several UCSC BED tracks are also produced: junctions,"
+                                                 " insertions, and deletions."));
 
     // Define parameters of the element
     Descriptor outDir(OUT_DIR,
-        TopHatWorker::tr("Output folder"),
-        TopHatWorker::tr("The base name of output folder. It could be modified with a suffix."));
+                      TopHatWorker::tr("Output folder"),
+                      TopHatWorker::tr("The base name of output folder. It could be modified with a suffix."));
 
     Descriptor samplesMap(SAMPLES_MAP,
-        TopHatWorker::tr("Samples map"),
-        TopHatWorker::tr("The map which divide all input datasets into samples. Every sample has the unique name."));
+                          TopHatWorker::tr("Samples map"),
+                          TopHatWorker::tr("The map which divide all input datasets into samples. Every sample has the unique name."));
 
     Descriptor referenceInputType(REFERENCE_INPUT_TYPE,
-        TopHatWorker::tr("Reference input type"),
-        TopHatWorker::tr("Select \"Sequence\" to input a reference genome as a sequence file. "
-        "<br/>Note that any sequence file format, supported by UGENE, is allowed (FASTA, GenBank, etc.). "
-        "<br/>The index will be generated automatically in this case. "
-        "<br/>Select \"Index\" to input already generated index files, specific for the tool."));
+                                  TopHatWorker::tr("Reference input type"),
+                                  TopHatWorker::tr("Select \"Sequence\" to input a reference genome as a sequence file. "
+                                                   "<br/>Note that any sequence file format, supported by UGENE, is allowed (FASTA, GenBank, etc.). "
+                                                   "<br/>The index will be generated automatically in this case. "
+                                                   "<br/>Select \"Index\" to input already generated index files, specific for the tool."));
 
     Descriptor refGenome(REFERENCE_GENOME,
-        TopHatWorker::tr("Reference genome"),
-        TopHatWorker::tr("Path to indexed reference genome."));
+                         TopHatWorker::tr("Reference genome"),
+                         TopHatWorker::tr("Path to indexed reference genome."));
 
     Descriptor bowtieIndexDir(BOWTIE_INDEX_DIR,
-        TopHatWorker::tr("Bowtie index folder"),
-        TopHatWorker::tr("The folder with the Bowtie index for the reference sequence."));
+                              TopHatWorker::tr("Bowtie index folder"),
+                              TopHatWorker::tr("The folder with the Bowtie index for the reference sequence."));
 
     // THe refSeq parameter and Bowtie parameters' descriptions have been commented because of UGENE-1160
 
@@ -223,8 +225,8 @@ void TopHatWorkerFactory::init()
     //     " or a reference sequence."));
 
     Descriptor bowtieIndexBasename(BOWTIE_INDEX_BASENAME,
-        TopHatWorker::tr("Bowtie index basename"),
-        TopHatWorker::tr("The basename of the Bowtie index for the reference sequence."));
+                                   TopHatWorker::tr("Bowtie index basename"),
+                                   TopHatWorker::tr("The basename of the Bowtie index for the reference sequence."));
 
     //    " It is required to either input a folder and a basename of a Bowtie index,"
     //    " or a reference sequence."));
@@ -237,41 +239,41 @@ void TopHatWorkerFactory::init()
     //    " than this parameter, i.e. if they are specified, this parameter is ignored."));
 
     Descriptor mateInnerDistance(MATE_INNER_DISTANCE,
-        TopHatWorker::tr("Mate inner distance"),
-        TopHatWorker::tr("The expected (mean) inner distance between mate pairs."));
+                                 TopHatWorker::tr("Mate inner distance"),
+                                 TopHatWorker::tr("The expected (mean) inner distance between mate pairs."));
 
     Descriptor mateStandardDeviation(MATE_STANDARD_DEVIATION,
-        TopHatWorker::tr("Mate standard deviation"),
-        TopHatWorker::tr("The standard deviation for the distribution on inner distances between mate pairs."));
+                                     TopHatWorker::tr("Mate standard deviation"),
+                                     TopHatWorker::tr("The standard deviation for the distribution on inner distances between mate pairs."));
 
     Descriptor libraryType(LIBRARY_TYPE,
-        TopHatWorker::tr("Library type"),
-        TopHatWorker::tr("Specifies RNA-Seq protocol."));
+                           TopHatWorker::tr("Library type"),
+                           TopHatWorker::tr("Specifies RNA-Seq protocol."));
 
     Descriptor noNovelJunctions(NO_NOVEL_JUNCTIONS,
-        TopHatWorker::tr("No novel junctions"),
-        TopHatWorker::tr("Only look for reads across junctions indicated in"
-        " the supplied GFF or junctions file. This parameter is ignored"
-        " if <i>Raw junctions</i> or <i>Known transcript file</i> is not set."));
+                                TopHatWorker::tr("No novel junctions"),
+                                TopHatWorker::tr("Only look for reads across junctions indicated in"
+                                                 " the supplied GFF or junctions file. This parameter is ignored"
+                                                 " if <i>Raw junctions</i> or <i>Known transcript file</i> is not set."));
 
     Descriptor rawJunctions(RAW_JUNCTIONS,
-        TopHatWorker::tr("Raw junctions"),
-        TopHatWorker::tr("The list of raw junctions."));
+                            TopHatWorker::tr("Raw junctions"),
+                            TopHatWorker::tr("The list of raw junctions."));
 
     Descriptor knownTranscript(KNOWN_TRANSCRIPT,
-        TopHatWorker::tr("Known transcript file"),
-        TopHatWorker::tr("A set of gene model annotations and/or known transcripts."));
+                               TopHatWorker::tr("Known transcript file"),
+                               TopHatWorker::tr("A set of gene model annotations and/or known transcripts."));
 
     Descriptor maxMultihits(MAX_MULTIHITS,
-        TopHatWorker::tr("Max multihits"),
-        TopHatWorker::tr("Instructs TopHat to allow up to this many alignments to"
-        " the reference for a given read, and suppresses all alignments for"
-        " reads with more than this many alignments."));
+                            TopHatWorker::tr("Max multihits"),
+                            TopHatWorker::tr("Instructs TopHat to allow up to this many alignments to"
+                                             " the reference for a given read, and suppresses all alignments for"
+                                             " reads with more than this many alignments."));
 
     Descriptor segmentLength(SEGMENT_LENGTH,
-        TopHatWorker::tr("Segment length"),
-        TopHatWorker::tr("Each read is cut up into segments, each at least this long."
-        " These segments are mapped independently."));
+                             TopHatWorker::tr("Segment length"),
+                             TopHatWorker::tr("Each read is cut up into segments, each at least this long."
+                                              " These segments are mapped independently."));
 
     // Commented as it seems there is no "--report-discordant-pair-alignment"
     // in the latest TopHat version (not mentioned in the manual)
@@ -282,91 +284,91 @@ void TopHatWorkerFactory::init()
     //    " chromosomes, distant places on the same chromosome, or on the same strand."));
 
     Descriptor fusionSearch(FUSION_SEARCH,
-        TopHatWorker::tr("Fusion search"),
-        TopHatWorker::tr("Turn on fusion mapping."));
+                            TopHatWorker::tr("Fusion search"),
+                            TopHatWorker::tr("Turn on fusion mapping."));
 
     Descriptor transcriptomeOnly(TRANSCRIPTOME_ONLY,
-        TopHatWorker::tr("Transcriptome only"),
-        TopHatWorker::tr("Only align the reads to the transcriptome and report only"
-        " those mappings as genomic mappings."));
+                                 TopHatWorker::tr("Transcriptome only"),
+                                 TopHatWorker::tr("Only align the reads to the transcriptome and report only"
+                                                  " those mappings as genomic mappings."));
 
     Descriptor transcriptomeMaxHits(TRANSCRIPTOME_MAX_HITS,
-        TopHatWorker::tr("Transcriptome max hits"),
-        TopHatWorker::tr("Maximum number of mappings allowed for a read, when aligned"
-        " to the transcriptome (any reads found with more than this number of"
-        " mappings will be discarded)."));
+                                    TopHatWorker::tr("Transcriptome max hits"),
+                                    TopHatWorker::tr("Maximum number of mappings allowed for a read, when aligned"
+                                                     " to the transcriptome (any reads found with more than this number of"
+                                                     " mappings will be discarded)."));
 
     Descriptor prefilterMultihits(PREFILTER_MULTIHITS,
-        TopHatWorker::tr("Prefilter multihits"),
-        TopHatWorker::tr("When mapping reads on the transcriptome, some repetitive or"
-        " low complexity reads that would be discarded in the context of the genome"
-        " may appear to align to the transcript sequences and thus may end up"
-        " reported as mapped to those genes only. This option directs TopHat"
-        " to first align the reads to the whole genome in order to determine"
-        " and exclude such multi-mapped reads (according to the value of the"
-        " <i>Max multihits</i> option)."));
+                                  TopHatWorker::tr("Prefilter multihits"),
+                                  TopHatWorker::tr("When mapping reads on the transcriptome, some repetitive or"
+                                                   " low complexity reads that would be discarded in the context of the genome"
+                                                   " may appear to align to the transcript sequences and thus may end up"
+                                                   " reported as mapped to those genes only. This option directs TopHat"
+                                                   " to first align the reads to the whole genome in order to determine"
+                                                   " and exclude such multi-mapped reads (according to the value of the"
+                                                   " <i>Max multihits</i> option)."));
 
     Descriptor minAnchorLength(MIN_ANCHOR_LENGTH,
-        TopHatWorker::tr("Min anchor length"),
-        TopHatWorker::tr("The <i>anchor length</i>. TopHat will report junctions"
-        " spanned by reads with at least this many bases on each side of the"
-        " junction. Note that individual spliced alignments may span a junction"
-        " with fewer than this many bases on one side. However, every junction"
-        " involved in spliced alignments is supported by at least one read with"
-        " this many bases on each side."));
+                               TopHatWorker::tr("Min anchor length"),
+                               TopHatWorker::tr("The <i>anchor length</i>. TopHat will report junctions"
+                                                " spanned by reads with at least this many bases on each side of the"
+                                                " junction. Note that individual spliced alignments may span a junction"
+                                                " with fewer than this many bases on one side. However, every junction"
+                                                " involved in spliced alignments is supported by at least one read with"
+                                                " this many bases on each side."));
 
     Descriptor spliceMismatches(SPLICE_MISMATCHES,
-        TopHatWorker::tr("Splice mismatches"),
-        TopHatWorker::tr("The maximum number of mismatches that may appear in"
-        " the <i>anchor</i> region of a spliced alignment."));
+                                TopHatWorker::tr("Splice mismatches"),
+                                TopHatWorker::tr("The maximum number of mismatches that may appear in"
+                                                 " the <i>anchor</i> region of a spliced alignment."));
 
     Descriptor readMismatches(READ_MISMATCHES,
-        TopHatWorker::tr("Read mismatches"),
-        TopHatWorker::tr("Final read alignments having more than these"
-        " many mismatches are discarded."));
+                              TopHatWorker::tr("Read mismatches"),
+                              TopHatWorker::tr("Final read alignments having more than these"
+                                               " many mismatches are discarded."));
 
     Descriptor segmentMismatches(SEGMENT_MISMATCHES,
-        TopHatWorker::tr("Segment mismatches"),
-        TopHatWorker::tr("Read segments are mapped independently,"
-        " allowing up to this many mismatches in each segment"
-        " alignment."));
+                                 TopHatWorker::tr("Segment mismatches"),
+                                 TopHatWorker::tr("Read segments are mapped independently,"
+                                                  " allowing up to this many mismatches in each segment"
+                                                  " alignment."));
 
     Descriptor solexa13Quals(SOLEXA_1_3_QUALS,
-        TopHatWorker::tr("Solexa 1.3 quals"),
-        TopHatWorker::tr("As of the Illumina GA pipeline version 1.3,"
-        " quality scores are encoded in Phred-scaled base-64."
-        " Use this option for FASTQ files from pipeline 1.3 or later."));
+                             TopHatWorker::tr("Solexa 1.3 quals"),
+                             TopHatWorker::tr("As of the Illumina GA pipeline version 1.3,"
+                                              " quality scores are encoded in Phred-scaled base-64."
+                                              " Use this option for FASTQ files from pipeline 1.3 or later."));
 
     Descriptor bowtieVersion(BOWTIE_VERSION,
-        TopHatWorker::tr("Bowtie version"),
-        TopHatWorker::tr("Specifies which Bowtie version should be used."));
+                             TopHatWorker::tr("Bowtie version"),
+                             TopHatWorker::tr("Specifies which Bowtie version should be used."));
 
     Descriptor bowtieNMode(BOWTIE_N_MODE,
-        TopHatWorker::tr("Bowtie -n mode"),
-        TopHatWorker::tr("TopHat uses <i>-v</i> in Bowtie for initial"
-        " read mapping (the default), but with this option, <i>-n</i>"
-        " is used instead. Read segments are always mapped using"
-        " <i>-v</i> option."));
+                           TopHatWorker::tr("Bowtie -n mode"),
+                           TopHatWorker::tr("TopHat uses <i>-v</i> in Bowtie for initial"
+                                            " read mapping (the default), but with this option, <i>-n</i>"
+                                            " is used instead. Read segments are always mapped using"
+                                            " <i>-v</i> option."));
 
     Descriptor bowtieToolPath(BOWTIE_TOOL_PATH,
-        TopHatWorker::tr("Bowtie tool path"),
-        TopHatWorker::tr("The path to the Bowtie external tool."));
+                              TopHatWorker::tr("Bowtie tool path"),
+                              TopHatWorker::tr("The path to the Bowtie external tool."));
 
     Descriptor samtoolsPath(SAMTOOLS_TOOL_PATH,
-        TopHatWorker::tr("SAMtools tool path"),
-        TopHatWorker::tr("The path to the SAMtools tool. Note that"
-                         " the tool is available in the UGENE External Tool Package."));
+                            TopHatWorker::tr("SAMtools tool path"),
+                            TopHatWorker::tr("The path to the SAMtools tool. Note that"
+                                             " the tool is available in the UGENE External Tool Package."));
 
     Descriptor extToolPath(EXT_TOOL_PATH,
-        TopHatWorker::tr("TopHat tool path"),
-        TopHatWorker::tr("The path to the TopHat external tool in UGENE."));
+                           TopHatWorker::tr("TopHat tool path"),
+                           TopHatWorker::tr("The path to the TopHat external tool in UGENE."));
 
     Descriptor tmpDir(TMP_DIR_PATH,
-        TopHatWorker::tr("Temporary folder"),
-        TopHatWorker::tr("The folder for temporary files."));
+                      TopHatWorker::tr("Temporary folder"),
+                      TopHatWorker::tr("The folder for temporary files."));
 
     attributes << new Attribute(referenceInputType, BaseTypes::STRING_TYPE(), true, QVariant(TopHatSettings::INDEX));
-    Attribute* attrRefGenom = new Attribute(refGenome, BaseTypes::STRING_TYPE(), Attribute::Required | Attribute::NeedValidateEncoding, QVariant(""));
+    Attribute *attrRefGenom = new Attribute(refGenome, BaseTypes::STRING_TYPE(), Attribute::Required | Attribute::NeedValidateEncoding, QVariant(""));
     attrRefGenom->addRelation(new VisibilityRelation(REFERENCE_INPUT_TYPE, TopHatSettings::SEQUENCE));
     attributes << attrRefGenom;
     {
@@ -408,12 +410,12 @@ void TopHatWorkerFactory::init()
     attributes << new Attribute(samplesMap, BaseTypes::STRING_TYPE(), false, "");
 
     // Create the actor prototype
-    ActorPrototype* proto = new IntegralBusActorPrototype(topHatDescriptor,
-        portDescriptors,
-        attributes);
+    ActorPrototype *proto = new IntegralBusActorPrototype(topHatDescriptor,
+                                                          portDescriptors,
+                                                          attributes);
 
     // Values range of some parameters
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
 
     {
         QVariantMap rip;
@@ -516,7 +518,7 @@ void TopHatWorkerFactory::init()
     proto->setPortValidator(BasePorts::IN_SEQ_PORT_ID(), new InputSlotsValidator());
     proto->setValidator(new BowtieToolsValidator());
 
-    { // external tools
+    {    // external tools
         proto->addExternalTool(SamToolsExtToolSupport::ET_SAMTOOLS_EXT_ID, SAMTOOLS_TOOL_PATH);
         proto->addExternalTool(TopHatSupport::ET_TOPHAT_ID, EXT_TOOL_PATH);
     }
@@ -525,22 +527,18 @@ void TopHatWorkerFactory::init()
         BaseActorCategories::CATEGORY_NGS_MAP_ASSEMBLE_READS(),
         proto);
 
-    DomainFactory* localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
+    DomainFactory *localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
     localDomain->registerEntry(new TopHatWorkerFactory());
 }
-
 
 /*****************************
  * TopHatPrompter
  *****************************/
-TopHatPrompter::TopHatPrompter(Actor* parent)
-    : PrompterBase<TopHatPrompter>(parent)
-{
+TopHatPrompter::TopHatPrompter(Actor *parent)
+    : PrompterBase<TopHatPrompter>(parent) {
 }
 
-
-QString TopHatPrompter::composeRichDoc()
-{
+QString TopHatPrompter::composeRichDoc() {
     QString result = TopHatWorker::tr("Maps RNA-seq reads");
 
     QVariant inputType = getParameter(TopHatWorkerFactory::REFERENCE_INPUT_TYPE);
@@ -557,25 +555,21 @@ QString TopHatPrompter::composeRichDoc()
     return result;
 }
 
-
 /*****************************
  * TopHatWorker
  *****************************/
-TopHatWorker::TopHatWorker(Actor* actor)
+TopHatWorker::TopHatWorker(Actor *actor)
     : BaseWorker(actor, false /*autoTransit*/),
       input(NULL),
-      output(NULL)
-{
+      output(NULL) {
 }
 
-QList<Actor*> TopHatWorker::getProducers(const QString &slotId) const {
+QList<Actor *> TopHatWorker::getProducers(const QString &slotId) const {
     Port *port = actor->getPort(BasePorts::IN_SEQ_PORT_ID());
-    SAFE_POINT(NULL != port,"Internal error during initializing TopHatWorker: port is NULL!",
-        QList<Actor*>());
+    SAFE_POINT(NULL != port, "Internal error during initializing TopHatWorker: port is NULL!", QList<Actor *>());
 
-    IntegralBusPort *bus = dynamic_cast<IntegralBusPort*>(port);
-    SAFE_POINT(NULL != bus, "Internal error during initializing TopHatWorker: bus is NULL!",
-        QList<Actor*>());
+    IntegralBusPort *bus = dynamic_cast<IntegralBusPort *>(port);
+    SAFE_POINT(NULL != bus, "Internal error during initializing TopHatWorker: bus is NULL!", QList<Actor *>());
 
     return bus->getProducers(slotId);
 }
@@ -590,12 +584,12 @@ QString TopHatWorker::getSampleName(const QString &datasetName) const {
 }
 
 void TopHatWorker::initInputData() {
-    QList<Actor*> inDataProducers = getProducers(IN_DATA_SLOT_ID);
+    QList<Actor *> inDataProducers = getProducers(IN_DATA_SLOT_ID);
     settings.data.fromFiles = (inDataProducers.isEmpty());
 }
 
 void TopHatWorker::initPairedReads() {
-    QList<Actor*> pairedProducers;
+    QList<Actor *> pairedProducers;
     if (settings.data.fromFiles) {
         pairedProducers = getProducers(PAIRED_IN_URL_SLOT_ID);
     } else {
@@ -617,7 +611,7 @@ void TopHatWorker::initSettings() {
 
     settings.outDir = getValue<QString>(TopHatWorkerFactory::OUT_DIR);
     settings.bowtieIndexPathAndBasename = getValue<QString>(TopHatWorkerFactory::BOWTIE_INDEX_DIR) +
-        "/" + getValue<QString>(TopHatWorkerFactory::BOWTIE_INDEX_BASENAME);
+                                          "/" + getValue<QString>(TopHatWorkerFactory::BOWTIE_INDEX_BASENAME);
 
     settings.mateInnerDistance = getValue<int>(TopHatWorkerFactory::MATE_INNER_DISTANCE);
     settings.mateStandardDeviation = getValue<int>(TopHatWorkerFactory::MATE_STANDARD_DEVIATION);
@@ -646,15 +640,15 @@ void TopHatWorker::initSettings() {
 
     int bowtieModeVal = getValue<int>(TopHatWorkerFactory::BOWTIE_N_MODE);
     switch (bowtieModeVal) {
-        case vMode:
-            settings.bowtieMode = vMode;
-            break;
-        case nMode:
-            settings.bowtieMode = nMode;
-            break;
-        default:
-            algoLog.error(tr("Unrecognized value of the Bowtie mode option!"));
-            settingsAreCorrect = false;
+    case vMode:
+        settings.bowtieMode = vMode;
+        break;
+    case nMode:
+        settings.bowtieMode = nMode;
+        break;
+    default:
+        algoLog.error(tr("Unrecognized value of the Bowtie mode option!"));
+        settingsAreCorrect = false;
     }
 
     // Set version (Bowtie1 or Bowtie2) and the path to the corresponding external tool
@@ -700,7 +694,7 @@ void TopHatWorker::init() {
     initSamples();
 }
 
-Task * TopHatWorker::runTophat() {
+Task *TopHatWorker::runTophat() {
     if (settings.data.fromFiles && settings.data.size() == 1) {
         settings.resultPrefix = GUrlUtils::getPairedFastqFilesBaseName(settings.data.urls.first(), settings.data.paired);
     } else {
@@ -714,7 +708,7 @@ Task * TopHatWorker::runTophat() {
     return topHatSupportTask;
 }
 
-Task * TopHatWorker::tick() {
+Task *TopHatWorker::tick() {
     if (!settingsAreCorrect) {
         return NULL;
     }
@@ -750,7 +744,7 @@ Task * TopHatWorker::tick() {
 }
 
 void TopHatWorker::sl_topHatTaskFinished() {
-    TopHatSupportTask *task = qobject_cast<TopHatSupportTask*>(sender());
+    TopHatSupportTask *task = qobject_cast<TopHatSupportTask *>(sender());
     if (!task->isFinished()) {
         return;
     }
@@ -769,8 +763,7 @@ void TopHatWorker::sl_topHatTaskFinished() {
     }
 }
 
-void TopHatWorker::cleanup()
-{
+void TopHatWorker::cleanup() {
 }
 
 /************************************************************************/
@@ -801,51 +794,57 @@ bool InputSlotsValidator::validate(const IntegralBusPort *port, NotificationsLis
 }
 
 bool BowtieToolsValidator::validateBowtie(const Actor *actor, NotificationsList &notificationList) const {
-    Attribute *attr = actor->getParameter( TopHatWorkerFactory::BOWTIE_TOOL_PATH );
-    SAFE_POINT( NULL != attr, "NULL attribute", false );
+    Attribute *attr = actor->getParameter(TopHatWorkerFactory::BOWTIE_TOOL_PATH);
+    SAFE_POINT(attr != nullptr, "Bowtie tool path is not defined", false);
 
-    ExternalTool *bowTieTool = NULL;
+    ExternalTool *bowTieTool = nullptr;
     {
-        int version = getValue<int>( actor, TopHatWorkerFactory::BOWTIE_VERSION );
-        if ( 1 == version ) {
-            bowTieTool = AppContext::getExternalToolRegistry( )->getById(BowtieSupport::ET_BOWTIE_ID);
-            SAFE_POINT( NULL != bowTieTool, "NULL bowtie tool", false );
+        int version = getValue<int>(actor, TopHatWorkerFactory::BOWTIE_VERSION);
+        if (version == 1) {
+            bowTieTool = AppContext::getExternalToolRegistry()->getById(BowtieSupport::ET_BOWTIE_ID);
+            SAFE_POINT(bowTieTool != nullptr, "Bowtie tool is not found", false);
             ExternalTool *topHatTool = AppContext::getExternalToolRegistry()->getById(TopHatSupport::ET_TOPHAT_ID);
-            SAFE_POINT( NULL != topHatTool, "NULL tophat tool", false );
+            SAFE_POINT(topHatTool != nullptr, "TopHat tool is not found", false);
 
-            Version bowtieVersion = Version::parseVersion(bowTieTool->getVersion( ));
-            Version topHatVersion = Version::parseVersion(topHatTool->getVersion( ));
+            Version bowtieVersion = Version::parseVersion(bowTieTool->getVersion());
+            Version topHatVersion = Version::parseVersion(topHatTool->getVersion());
 
-            if ( topHatVersion.text.isEmpty( ) || bowtieVersion.text.isEmpty( ) ) {
-                QString toolName = topHatVersion.text.isEmpty( ) ? "TopHat" : "Bowtie";
-                QString message = QObject::tr( "%1 tool's version is undefined, "
-                    "this may cause some compatibility issues" ).arg( toolName );
-
-                WorkflowNotification warning( message, actor->getLabel( ), WorkflowNotification::U2_WARNING );
-                notificationList << warning;
+            if (topHatVersion.text.isEmpty() || bowtieVersion.text.isEmpty()) {
+                bool isPathOnlyValidation = qgetenv("UGENE_EXTERNAL_TOOLS_VALIDATION_BY_PATH_ONLY") == "1";
+                if (!isPathOnlyValidation) {    // PathOnlyValidation is used in nightly tests.
+                    if (topHatVersion.text.isEmpty() && bowtieVersion.text.isEmpty()) {
+                        QString message = QObject::tr("TopHat and Bowtie tool versions are undefined, this may cause some compatibility issues");
+                        WorkflowNotification warning(message, actor->getLabel(), WorkflowNotification::U2_WARNING);
+                        notificationList << warning;
+                    } else {
+                        QString toolName = topHatVersion.text.isEmpty() ? "TopHat" : "Bowtie";
+                        QString message = QObject::tr("%1 tool's version is undefined, this may cause some compatibility issues").arg(toolName);
+                        WorkflowNotification warning(message, actor->getLabel(), WorkflowNotification::U2_WARNING);
+                        notificationList << warning;
+                    }
+                }
                 return true;
-            } else if ( !( Version::parseVersion("0.12.9") > bowtieVersion && Version::parseVersion("2.0.8") >= topHatVersion )
-                 && !( Version::parseVersion("0.12.9") <= bowtieVersion && Version::parseVersion("2.0.8b") <= topHatVersion ) )
-            {
-                QString message = QObject::tr( "Bowtie and TopHat tools have incompatible "
-                    "versions. Your TopHat's version is %1, Bowtie's one is %2. The following are "
-                    "considered to be compatible: Bowtie < \"0.12.9\" and TopHat <= \"2.0.8\" or "
-                    "Bowtie >= \"0.12.9\" and TopHat >= \"2.0.8.b\"" ).arg( topHatVersion.text,
-                     bowtieVersion.text);
+            } else if (!(Version::parseVersion("0.12.9") > bowtieVersion && Version::parseVersion("2.0.8") >= topHatVersion) && !(Version::parseVersion("0.12.9") <= bowtieVersion && Version::parseVersion("2.0.8b") <= topHatVersion)) {
+                QString message = QObject::tr("Bowtie and TopHat tools have incompatible "
+                                              "versions. Your TopHat's version is %1, Bowtie's one is %2. The following are "
+                                              "considered to be compatible: Bowtie < \"0.12.9\" and TopHat <= \"2.0.8\" or "
+                                              "Bowtie >= \"0.12.9\" and TopHat >= \"2.0.8.b\"")
+                                      .arg(topHatVersion.text,
+                                           bowtieVersion.text);
 
-                WorkflowNotification error( message, actor->getLabel( ) );
+                WorkflowNotification error(message, actor->getLabel());
                 notificationList << error;
                 return false;
             }
         } else {
-            bowTieTool = AppContext::getExternalToolRegistry( )->getById(Bowtie2Support::ET_BOWTIE2_ALIGN_ID);
+            bowTieTool = AppContext::getExternalToolRegistry()->getById(Bowtie2Support::ET_BOWTIE2_ALIGN_ID);
         }
-        SAFE_POINT( NULL != bowTieTool, "NULL bowtie tool", false );
+        SAFE_POINT(bowTieTool != nullptr, "Bowtie tool is not found", false);
     }
 
-    bool valid = attr->isDefaultValue( ) ? !bowTieTool->getPath( ).isEmpty( ) : !attr->isEmpty( );
-    if ( !valid ) {
-        notificationList << WorkflowUtils::externalToolError( bowTieTool->getName( ) );
+    bool valid = attr->isDefaultValue() ? !bowTieTool->getPath().isEmpty() : !attr->isEmpty();
+    if (!valid) {
+        notificationList << WorkflowUtils::externalToolError(bowTieTool->getName());
     }
     return valid;
 }
@@ -882,7 +881,7 @@ bool BowtieToolsValidator::validateSamples(const Actor *actor, NotificationsList
     return valid;
 }
 
-bool BowtieToolsValidator::validate( const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &/*options*/ ) const {
+bool BowtieToolsValidator::validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> & /*options*/) const {
     bool valid = validateBowtie(actor, notificationList);
     return valid && validateSamples(actor, notificationList);
 }
@@ -891,8 +890,7 @@ bool BowtieToolsValidator::validate( const Actor *actor, NotificationsList &noti
 /* BowtieFilesRelation */
 /************************************************************************/
 BowtieFilesRelation::BowtieFilesRelation(const QString &indexNameAttrId)
-: AttributeRelation(indexNameAttrId)
-{
+    : AttributeRelation(indexNameAttrId) {
 }
 
 QVariant BowtieFilesRelation::getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue, DelegateTags *infTags, DelegateTags *) const {
@@ -946,8 +944,7 @@ QString BowtieFilesRelation::getBowtie2IndexName(const QString &dir, const QStri
 /* BowtieVersionRelation */
 /************************************************************************/
 BowtieVersionRelation::BowtieVersionRelation(const QString &bwtVersionAttrId)
-: AttributeRelation(bwtVersionAttrId)
-{
+    : AttributeRelation(bwtVersionAttrId) {
 }
 
 QVariant BowtieVersionRelation::getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue, DelegateTags *infTags, DelegateTags *) const {
@@ -973,5 +970,5 @@ RelationType BowtieVersionRelation::getType() const {
 BowtieVersionRelation *BowtieVersionRelation::clone() const {
     return new BowtieVersionRelation(*this);
 }
-} // namespace LocalWorkflow
-} // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

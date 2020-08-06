@@ -20,29 +20,27 @@
  */
 
 #include "ExportSelectedSequenceFromAlignmentDialogFiller.h"
-#include <primitives/GTWidget.h>
+#include <primitives/GTCheckBox.h>
+#include <primitives/GTComboBox.h>
 #include <primitives/GTLineEdit.h>
 #include <primitives/GTRadioButton.h>
-#include <primitives/GTComboBox.h>
-#include <primitives/GTCheckBox.h>
+#include <primitives/GTWidget.h>
 
-#include <QDir>
 #include <QApplication>
 #include <QDialogButtonBox>
+#include <QDir>
 #include <QPushButton>
 
 namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::exportSelectedSequenceFromAlignment"
 
-ExportSelectedSequenceFromAlignment::ExportSelectedSequenceFromAlignment(HI::GUITestOpStatus &_os, const QString &_path,
-                                                                         documentFormat _format, bool _keepGaps, bool _addToProj):
-    Filler(_os, "U2__SaveSelectedSequenceFromMSADialog"),
-    path(_path),
-    format(_format),
-    keepGaps(_keepGaps),
-    addToProj(_addToProj)
-{
+ExportSelectedSequenceFromAlignment::ExportSelectedSequenceFromAlignment(HI::GUITestOpStatus &_os, const QString &_path, documentFormat _format, bool _keepGaps, bool _addToProj)
+    : Filler(_os, "U2__SaveSelectedSequenceFromMSADialog"),
+      path(_path),
+      format(_format),
+      keepGaps(_keepGaps),
+      addToProj(_addToProj) {
     comboBoxItems[EMBL] = "EMBL";
     comboBoxItems[FASTA] = "FASTA";
     comboBoxItems[FASTQ] = "FASTQ";
@@ -50,39 +48,35 @@ ExportSelectedSequenceFromAlignment::ExportSelectedSequenceFromAlignment(HI::GUI
     comboBoxItems[Genbank] = "GenBank";
     comboBoxItems[Swiss_Prot] = "Swiss_Prot";
     comboBoxItems[Ugene_db] = "UGENE Database";
-
 }
 
 ExportSelectedSequenceFromAlignment::ExportSelectedSequenceFromAlignment(HI::GUITestOpStatus &os, CustomScenario *scenario)
     : Filler(os, "U2__SaveSelectedSequenceFromMSADialog", scenario),
       format(EMBL),
       keepGaps(false),
-      addToProj(false)
-{
-
+      addToProj(false) {
 }
 
 #define GT_METHOD_NAME "run"
-void ExportSelectedSequenceFromAlignment::commonScenario()
-{
+void ExportSelectedSequenceFromAlignment::commonScenario() {
     QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog != NULL, "dialog not found");
 
-    QLineEdit *lineEdit = dialog->findChild<QLineEdit*>();
+    QLineEdit *lineEdit = dialog->findChild<QLineEdit *>();
     GT_CHECK(lineEdit != NULL, "line edit not found");
     GTLineEdit::setText(os, lineEdit, path);
 
-    QComboBox *comboBox = dialog->findChild<QComboBox*>("formatCombo");
+    QComboBox *comboBox = dialog->findChild<QComboBox *>("formatCombo");
     GT_CHECK(comboBox != NULL, "ComboBox not found");
 
     int index = comboBox->findText(comboBoxItems[format]);
     GT_CHECK(index != -1, QString("item \"%1\" in combobox not found").arg(comboBoxItems[format]));
     GTComboBox::setCurrentIndex(os, comboBox, index);
 
-    QCheckBox *addToProjectBox = dialog->findChild<QCheckBox*>("addToProjectBox");
+    QCheckBox *addToProjectBox = dialog->findChild<QCheckBox *>("addToProjectBox");
     GTCheckBox::setChecked(os, addToProjectBox, addToProj);
 
-    QCheckBox *keepGapsBox = dialog->findChild<QCheckBox*>("keepGapsBox");
+    QCheckBox *keepGapsBox = dialog->findChild<QCheckBox *>("keepGapsBox");
     GTCheckBox::setChecked(os, keepGapsBox, keepGaps);
 
     GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
@@ -91,5 +85,4 @@ void ExportSelectedSequenceFromAlignment::commonScenario()
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-
-}
+}    // namespace U2

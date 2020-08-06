@@ -56,7 +56,7 @@ public:
     QModelIndex parent(const QModelIndex &index) const;
     int rowCount(const QModelIndex &parent) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
-    QMimeData * mimeData(const QModelIndexList &indexes) const;
+    QMimeData *mimeData(const QModelIndexList &indexes) const;
     QStringList mimeTypes() const;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
     Qt::DropActions supportedDropActions() const;
@@ -85,9 +85,9 @@ public:
     QModelIndex getIndexForObject(GObject *obj) const;
 
     static Type itemType(const QModelIndex &index);
-    static Document * toDocument(const QModelIndex &index);
-    static Folder * toFolder(const QModelIndex &index);
-    static GObject * toObject(const QModelIndex &index);
+    static Document *toDocument(const QModelIndex &index);
+    static Folder *toFolder(const QModelIndex &index);
+    static GObject *toObject(const QModelIndex &index);
 
     void addToIgnoreObjFilter(Document *doc, const U2DataId &objId);
     void addToIgnoreFolderFilter(Document *doc, const QString &folderPath);
@@ -113,7 +113,7 @@ private slots:
     void sl_documentImported();
 
 private:
-    static QObject * toQObject(const QModelIndex &index);
+    static QObject *toQObject(const QModelIndex &index);
     static bool isActive(Document *doc);
     static bool isActive(GObject *obj);
     static QIcon getIcon(const QIcon &icon, bool enabled);
@@ -123,7 +123,7 @@ private:
     /** NOTE: the method supposes that @oldFolders and @newFolders are sorted */
     static void findFoldersDiff(QStringList oldFolders, QStringList newFolders, QStringList &added, QStringList &deleted);
 
-    Document * getObjectDocument(GObject *obj) const;
+    Document *getObjectDocument(GObject *obj) const;
 
     int getTopLevelItemsCount() const;
     QModelIndex getTopLevelItemIndex(int row, int column) const;
@@ -135,7 +135,7 @@ private:
     QVariant data(Folder *folder, int role) const;
     QVariant data(GObject *obj, int role) const;
 
-    Document * findDocument(const U2DbiRef &dbiRef) const;
+    Document *findDocument(const U2DbiRef &dbiRef) const;
 
     QVariant getDocumentTextColorData(Document *doc) const;
     QVariant getDocumentFontData(Document *doc) const;
@@ -183,14 +183,14 @@ private:
     int beforeRemoveObject(Document *doc, GObject *obj);
     void afterRemove(int row);
 
-    QList<Document*> docs;
-    QSet<Document *> justAddedDocs; // documents that have been added to a project but not loaded yet
-    mutable QHash<Document*, DocumentFolders *> folders;
+    QList<Document *> docs;
+    QSet<Document *> justAddedDocs;    // documents that have been added to a project but not loaded yet
+    mutable QHash<Document *, DocumentFolders *> folders;
     ProjectTreeControllerModeSettings settings;
 
     static const QString MODIFIED_ITEM_COLOR;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_PROJECTVIEWMODEL_H_
+#endif    // _U2_PROJECTVIEWMODEL_H_

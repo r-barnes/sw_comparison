@@ -19,26 +19,28 @@
  * MA 02110-1301, USA.
  */
 
+#include "BowtieSettingsWidget.h"
+
 #include <QMessageBox>
 
 #include <U2Core/AppContext.h>
-#include <U2Core/AppSettings.h>
 #include <U2Core/AppResources.h>
+#include <U2Core/AppSettings.h>
 #include <U2Core/ExternalToolRegistry.h>
+
 #include <U2Gui/AppSettingsGUI.h>
-#include "BowtieSettingsWidget.h"
-#include "BowtieTask.h"
+
 #include "BowtieSupport.h"
+#include "BowtieTask.h"
 
 namespace U2 {
 
 // BowtieSettingsWidget
 
-BowtieSettingsWidget::BowtieSettingsWidget(QWidget *parent):
-    DnaAssemblyAlgorithmMainWidget(parent)
-{
+BowtieSettingsWidget::BowtieSettingsWidget(QWidget *parent)
+    : DnaAssemblyAlgorithmMainWidget(parent) {
     setupUi(this);
-    layout()->setContentsMargins(0,0,0,0);
+    layout()->setContentsMargins(0, 0, 0, 0);
 
     threadsSpinBox->setMaximum(AppContext::getAppSettings()->getAppResourcePool()->getIdealThreadCount());
     threadsSpinBox->setValue(AppContext::getAppSettings()->getAppResourcePool()->getIdealThreadCount());
@@ -54,10 +56,10 @@ BowtieSettingsWidget::BowtieSettingsWidget(QWidget *parent):
     requiredExtToolIds << BowtieSupport::ET_BOWTIE_ID << BowtieSupport::ET_BOWTIE_BUILD_ID;
 }
 
-QMap<QString,QVariant> BowtieSettingsWidget::getDnaAssemblyCustomSettings() const {
+QMap<QString, QVariant> BowtieSettingsWidget::getDnaAssemblyCustomSettings() const {
     QMap<QString, QVariant> settings;
 
-    switch(mismatchesComboBox->currentIndex()) {
+    switch (mismatchesComboBox->currentIndex()) {
     case 0:
         settings.insert(BowtieTask::OPTION_N_MISMATCHES, mismatchesSpinBox->value());
         break;
@@ -66,19 +68,19 @@ QMap<QString,QVariant> BowtieSettingsWidget::getDnaAssemblyCustomSettings() cons
         break;
     }
 
-    if(maqerrCheckBox->isChecked()) {
+    if (maqerrCheckBox->isChecked()) {
         settings.insert(BowtieTask::OPTION_MAQERR, maqerrSpinBox->value());
     }
-    if(maxbtsCheckBox->isChecked()) {
+    if (maxbtsCheckBox->isChecked()) {
         settings.insert(BowtieTask::OPTION_MAXBTS, maxbtsSpinBox->value());
     }
-    if(seedlenCheckBox->isChecked()) {
+    if (seedlenCheckBox->isChecked()) {
         settings.insert(BowtieTask::OPTION_SEED_LEN, seedlenSpinBox->value());
     }
-    if(chunckmbsCheckBox->isChecked()) {
+    if (chunckmbsCheckBox->isChecked()) {
         settings.insert(BowtieTask::OPTION_CHUNKMBS, chunkmbsSpinBox->value());
     }
-    if(seedCheckBox->isChecked()) {
+    if (seedCheckBox->isChecked()) {
         settings.insert(BowtieTask::OPTION_SEED, seedSpinBox->value());
     }
 
@@ -108,14 +110,13 @@ bool BowtieSettingsWidget::isValidIndex(const QString &oneIndexFileUrl) const {
 
 // BowtieBuildSettingsWidget
 
-BowtieBuildSettingsWidget::BowtieBuildSettingsWidget(QWidget *parent):
-    DnaAssemblyAlgorithmBuildIndexWidget(parent)
-{
+BowtieBuildSettingsWidget::BowtieBuildSettingsWidget(QWidget *parent)
+    : DnaAssemblyAlgorithmBuildIndexWidget(parent) {
     setupUi(this);
-    layout()->setContentsMargins(0,0,0,0);
+    layout()->setContentsMargins(0, 0, 0, 0);
 }
 
-QMap<QString,QVariant> BowtieBuildSettingsWidget::getBuildIndexCustomSettings() {
+QMap<QString, QVariant> BowtieBuildSettingsWidget::getBuildIndexCustomSettings() {
     QMap<QString, QVariant> settings;
     settings.insert(BowtieTask::OPTION_COLORSPACE, colorspaceCheckBox->isChecked());
     return settings;
@@ -125,7 +126,7 @@ QString BowtieBuildSettingsWidget::getIndexFileExtension() {
     return QString();
 }
 
-GUrl BowtieBuildSettingsWidget::buildIndexUrl(const GUrl& ) {
+GUrl BowtieBuildSettingsWidget::buildIndexUrl(const GUrl &) {
     return GUrl();
 }
 
@@ -147,4 +148,4 @@ bool BowtieGUIExtensionsFactory::hasBuildIndexWidget() {
     return true;
 }
 
-} //namespace
+}    // namespace U2

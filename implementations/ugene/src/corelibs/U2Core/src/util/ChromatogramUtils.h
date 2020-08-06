@@ -42,8 +42,7 @@ public:
     static qint64 getChromatogramLength(U2OpStatus &os, const U2EntityRef &chromatogramRef);
 
     static void updateChromatogramData(U2OpStatus &os, const U2EntityRef &chromatogramRef, const DNAChromatogram &chromatogram);
-    static void updateChromatogramData(U2OpStatus &os, const U2DataId& masterId,
-                                       const U2EntityRef &chromatogramRef, const DNAChromatogram &chromatogram);
+    static void updateChromatogramData(U2OpStatus &os, const U2DataId &masterId, const U2EntityRef &chromatogramRef, const DNAChromatogram &chromatogram);
 
     static U2EntityRef getChromatogramIdByRelatedSequenceId(U2OpStatus &os, const U2EntityRef &sequenceRef);
     static QString getChromatogramName(U2OpStatus &os, const U2EntityRef &chromatogramRef);
@@ -51,10 +50,10 @@ public:
     static DNAChromatogram complement(const DNAChromatogram &chromatogram);
     static DNAChromatogram reverseComplement(const DNAChromatogram &chromatogram);
     static U2Region sequenceRegion2TraceRegion(const DNAChromatogram &chromatogram, const U2Region &sequenceRegion);
-    static void insertBase(DNAChromatogram &chromatogram, int posUngapped, const QList<U2MsaGap>& gapModel, int posWithGaps);
-    static DNAChromatogram getGappedChromatogram(const DNAChromatogram& chrom, const QList<U2MsaGap>& gapModel);
+    static void insertBase(DNAChromatogram &chromatogram, int posUngapped, const QList<U2MsaGap> &gapModel, int posWithGaps);
+    static DNAChromatogram getGappedChromatogram(const DNAChromatogram &chrom, const QList<U2MsaGap> &gapModel);
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_CHROMATOGRAM_UTILS_H_
+#endif    // _U2_CHROMATOGRAM_UTILS_H_

@@ -19,15 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "GTestFrameworkComponents.h"
 
 #include <U2Core/AppContext.h>
-#include <U2Core/Settings.h>
-#include <U2Core/CMDLineRegistry.h>
-#include <U2Core/CMDLineHelpProvider.h>
 #include <U2Core/CMDLineCoreOptions.h>
+#include <U2Core/CMDLineHelpProvider.h>
+#include <U2Core/CMDLineRegistry.h>
+#include <U2Core/Settings.h>
 #include <U2Core/Version.h>
-
-#include "GTestFrameworkComponents.h"
 
 #include "xmltest/XMLTestFormat.h"
 
@@ -40,12 +39,12 @@ GTestFormatRegistry::GTestFormatRegistry() {
 }
 
 GTestFormatRegistry::~GTestFormatRegistry() {
-    foreach(GTestFormat* f, formats) {
+    foreach (GTestFormat *f, formats) {
         delete f;
     }
 }
 
-bool GTestFormatRegistry::registerTestFormat(GTestFormat* f) {
+bool GTestFormatRegistry::registerTestFormat(GTestFormat *f) {
     if (formats.contains(f)) {
         return false;
     }
@@ -53,7 +52,7 @@ bool GTestFormatRegistry::registerTestFormat(GTestFormat* f) {
     return true;
 }
 
-bool GTestFormatRegistry::unregisterTestFormat(GTestFormat* f) {
+bool GTestFormatRegistry::unregisterTestFormat(GTestFormat *f) {
     if (!formats.contains(f)) {
         return false;
     }
@@ -61,8 +60,8 @@ bool GTestFormatRegistry::unregisterTestFormat(GTestFormat* f) {
     return true;
 }
 
-GTestFormat* GTestFormatRegistry::findFormat(const GTestFormatId& id) {
-    foreach(GTestFormat* f, formats) {
+GTestFormat *GTestFormatRegistry::findFormat(const GTestFormatId &id) {
+    foreach (GTestFormat *f, formats) {
         if (f->getFormatId() == id) {
             return f;
         }
@@ -74,7 +73,7 @@ const QString TestFramework::TEST_TIMEOUT_CMD_OPTION = "test-timeout";
 bool TestFramework::helpRegistered = false;
 
 TestFramework::TestFramework() {
-    if( !helpRegistered && Version::appVersion().isDevVersion) {
+    if (!helpRegistered && Version::appVersion().isDevVersion) {
         setTRHelpSections();
     }
     setTestRunnerSettings();
@@ -82,61 +81,61 @@ TestFramework::TestFramework() {
 
 // all options connected with tests are registered here
 void TestFramework::setTRHelpSections() {
-    assert( !helpRegistered );
+    assert(!helpRegistered);
     helpRegistered = true;
 
-    CMDLineRegistry * cmdLineRegistry = AppContext::getCMDLineRegistry();
-    assert( NULL != cmdLineRegistry );
+    CMDLineRegistry *cmdLineRegistry = AppContext::getCMDLineRegistry();
+    assert(NULL != cmdLineRegistry);
 
-    CMDLineHelpProvider * testTimeoutSection = new CMDLineHelpProvider(
+    CMDLineHelpProvider *testTimeoutSection = new CMDLineHelpProvider(
         TEST_TIMEOUT_CMD_OPTION,
-        GTestFormatRegistry::tr( "Sets timeout for the tests." ),
-        "", // No full description
+        GTestFormatRegistry::tr("Sets timeout for the tests."),
+        "",    // No full description
         "<number_of_seconds>");
 
     CMDLineHelpProvider *testRunnerThreads = new CMDLineHelpProvider(
         CMDLineCoreOptions::TEST_THREADS,
-        GTestFormatRegistry::tr( "Sets the number of threads." ),
+        GTestFormatRegistry::tr("Sets the number of threads."),
         GTestFormatRegistry::tr(
             "Sets the number of threads in the Test Runner"
             " that can run at the same time.",
-        "<number_of_threads>"));
+            "<number_of_threads>"));
 
     CMDLineHelpProvider *testReport = new CMDLineHelpProvider(
         CMDLineCoreOptions::TEST_REPORT,
         GTestFormatRegistry::tr("Sets the folder for the test report."),
-        "", // No full description
+        "",    // No full description
         "<path_to_dir>");
 
-    CMDLineHelpProvider * suiteUrlSection = new CMDLineHelpProvider(
+    CMDLineHelpProvider *suiteUrlSection = new CMDLineHelpProvider(
         CMDLineCoreOptions::SUITE_URLS,
-        GTestFormatRegistry::tr( "Loads test suites and runs them." ),
-        "", // No full description
+        GTestFormatRegistry::tr("Loads test suites and runs them."),
+        "",    // No full description
         "<test_suite1> [<test_suite2> ...]");
 
-    CMDLineHelpProvider * teamcityOutputSection = new CMDLineHelpProvider(
+    CMDLineHelpProvider *teamcityOutputSection = new CMDLineHelpProvider(
         CMDLineCoreOptions::TEAMCITY_OUTPUT,
-        GTestFormatRegistry::tr( "Output a test's messages to the TeamCity system." ),
-        ""); // No full description
+        GTestFormatRegistry::tr("Output a test's messages to the TeamCity system."),
+        "");    // No full description
 
-    cmdLineRegistry->registerCMDLineHelpProvider( testRunnerThreads );
-    cmdLineRegistry->registerCMDLineHelpProvider( testTimeoutSection );
-    cmdLineRegistry->registerCMDLineHelpProvider( testReport );
-    cmdLineRegistry->registerCMDLineHelpProvider( suiteUrlSection );
-    cmdLineRegistry->registerCMDLineHelpProvider( teamcityOutputSection );
+    cmdLineRegistry->registerCMDLineHelpProvider(testRunnerThreads);
+    cmdLineRegistry->registerCMDLineHelpProvider(testTimeoutSection);
+    cmdLineRegistry->registerCMDLineHelpProvider(testReport);
+    cmdLineRegistry->registerCMDLineHelpProvider(suiteUrlSection);
+    cmdLineRegistry->registerCMDLineHelpProvider(teamcityOutputSection);
 }
 
 void TestFramework::setTestRunnerSettings() {
-    CMDLineRegistry * cmdLineRegistry = AppContext::getCMDLineRegistry();
-    assert( NULL != cmdLineRegistry );
-    Settings * settings = AppContext::getSettings();
-    assert( NULL != settings );
+    CMDLineRegistry *cmdLineRegistry = AppContext::getCMDLineRegistry();
+    assert(NULL != cmdLineRegistry);
+    Settings *settings = AppContext::getSettings();
+    assert(NULL != settings);
 
     // TODO: make constants TIME_OUT_VAR and NUM_THREADS
-    int timeOut = cmdLineRegistry->getParameterValue( TEST_TIMEOUT_CMD_OPTION ).toInt();
-    if (timeOut > 0)  {
-        settings->setValue( TR_SETTINGS_ROOT + "TIME_OUT_VAR", QString::number( timeOut ) );
+    int timeOut = cmdLineRegistry->getParameterValue(TEST_TIMEOUT_CMD_OPTION).toInt();
+    if (timeOut > 0) {
+        settings->setValue(TR_SETTINGS_ROOT + "TIME_OUT_VAR", QString::number(timeOut));
     }
 }
 
-}//namespace
+}    // namespace U2

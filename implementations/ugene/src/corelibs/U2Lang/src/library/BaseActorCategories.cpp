@@ -19,10 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "BaseActorCategories.h"
+
 #include <U2Lang/WorkflowEnv.h>
 
 #include "LocalDomain.h"
-#include "BaseActorCategories.h"
 
 namespace U2 {
 namespace Workflow {
@@ -80,25 +81,24 @@ const Descriptor BaseActorCategories::CATEGORY_SCRIPT() {
 }
 
 const Descriptor BaseActorCategories::CATEGORY_EXTERNAL() {
-    return Descriptor("ex", tr("Custom Elements with External Tools"),"");
+    return Descriptor("ex", tr("Custom Elements with External Tools"), "");
 }
 
 const Descriptor BaseActorCategories::CATEGORY_DATAFLOW() {
-    return Descriptor("df", tr("Data Flow"),"");
+    return Descriptor("df", tr("Data Flow"), "");
 }
 
 const Descriptor BaseActorCategories::CATEGORY_INCLUDES() {
-    return Descriptor("inc", tr("Includes"),"");
+    return Descriptor("inc", tr("Includes"), "");
 }
 
-const Descriptor BaseActorCategories::CATEGORY_SNP_ANNOTATION()
-{
-    return Descriptor("sch", tr("SNP Annotation"),"");
+const Descriptor BaseActorCategories::CATEGORY_SNP_ANNOTATION() {
+    return Descriptor("sch", tr("SNP Annotation"), "");
 }
 
 const Descriptor BaseActorCategories::CATEGORY_CHIP_SEQ() {
     return Descriptor("chs", tr("NGS: ChIP-Seq Analysis"), "");
 }
 
-}//Workflow namespace
-}//GB2 namespace
+}    // namespace Workflow
+}    // namespace U2

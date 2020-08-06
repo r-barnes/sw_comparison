@@ -22,33 +22,32 @@
 #ifndef _U2_SQLITE_DOCUMENT_FORMAT_H_
 #define _U2_SQLITE_DOCUMENT_FORMAT_H_
 
-#include <U2Core/U2Dbi.h>
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentModel.h>
+#include <U2Core/U2Dbi.h>
 
 namespace U2 {
 
 /** UGENE v1 wrapper over DBI (UGENE v2 data access) interface */
-class U2CORE_EXPORT DbiDocumentFormat: public DocumentFormat {
+class U2CORE_EXPORT DbiDocumentFormat : public DocumentFormat {
     Q_OBJECT
 public:
-    DbiDocumentFormat(const U2DbiFactoryId& id, const DocumentFormatId& formatId,
-        const QString& formatName, const QStringList& exits, DocumentFormatFlags flags, QObject* p = NULL);
+    DbiDocumentFormat(const U2DbiFactoryId &id, const DocumentFormatId &formatId, const QString &formatName, const QStringList &exits, DocumentFormatFlags flags, QObject *p = NULL);
 
-    virtual void storeDocument(Document* d, IOAdapter* io, U2OpStatus& os);
+    virtual void storeDocument(Document *d, IOAdapter *io, U2OpStatus &os);
 
-    virtual FormatCheckResult checkRawData(const QByteArray& rawData, const GUrl& url = GUrl()) const;
+    virtual FormatCheckResult checkRawData(const QByteArray &rawData, const GUrl &url = GUrl()) const;
 
 protected:
-    virtual Document* loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
+    virtual Document *loadDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os);
 
     QList<GObject *> prepareObjects(DbiConnection &handle, const QList<U2DataId> &objectIds);
     QList<GObject *> cloneObjects(const QList<GObject *> &srcObjects, const U2DbiRef &dstDbiRef, const QVariantMap &hints, U2OpStatus &os);
 
 private:
-    U2DbiFactoryId           id;
+    U2DbiFactoryId id;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

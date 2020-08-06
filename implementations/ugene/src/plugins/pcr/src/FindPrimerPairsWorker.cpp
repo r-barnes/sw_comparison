@@ -22,11 +22,11 @@
 #include "FindPrimerPairsWorker.h"
 
 #include <U2Core/AppContext.h>
+#include <U2Core/FailTask.h>
 #include <U2Core/IOAdapter.h>
 #include <U2Core/IOAdapterUtils.h>
 #include <U2Core/L10n.h>
 #include <U2Core/TaskSignalMapper.h>
-#include <U2Core/FailTask.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
@@ -34,12 +34,12 @@
 
 #include <U2Gui/DialogUtils.h>
 
-#include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/ActorPrototypeRegistry.h>
+#include <U2Lang/BaseActorCategories.h>
+#include <U2Lang/BasePorts.h>
 #include <U2Lang/BaseSlots.h>
 #include <U2Lang/BaseTypes.h>
-#include <U2Lang/BasePorts.h>
-#include <U2Lang/BaseActorCategories.h>
+#include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/WorkflowMonitor.h>
 
 namespace U2 {
@@ -51,7 +51,7 @@ namespace LocalWorkflow {
 QString FindPrimerPairsPromter::composeRichDoc() {
     QString res;
 
-    Actor* readsProducer = qobject_cast<IntegralBusPort*>(target->getPort(BasePorts::IN_SEQ_PORT_ID()))->getProducer(BaseSlots::DNA_SEQUENCE_SLOT().getId());
+    Actor *readsProducer = qobject_cast<IntegralBusPort *>(target->getPort(BasePorts::IN_SEQ_PORT_ID()))->getProducer(BaseSlots::DNA_SEQUENCE_SLOT().getId());
 
     QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
     QString readsUrl = readsProducer ? readsProducer->getLabel() : unsetStr;
@@ -66,9 +66,10 @@ void FindPrimerPairsWorker::init() {
     inPort = ports.value(BasePorts::IN_SEQ_PORT_ID());
 }
 
-void FindPrimerPairsWorker::cleanup() {}
+void FindPrimerPairsWorker::cleanup() {
+}
 
-Task* FindPrimerPairsWorker::tick() {
+Task *FindPrimerPairsWorker::tick() {
     if (inPort->hasMessage()) {
         Message inputMessage = getMessageAndSetupScriptValues(inPort);
         QVariantMap qm = inputMessage.getData().toMap();
@@ -84,19 +85,19 @@ Task* FindPrimerPairsWorker::tick() {
     }
     if (!inPort->hasMessage() && inPort->isEnded()) {
         QString reportFileUrl = getValue<QString>(FindPrimerPairsWorkerFactory::OUT_FILE);
-        Task* t = new FindPrimersTask(reportFileUrl, data);
-        connect(new TaskSignalMapper(t), SIGNAL(si_taskFinished(Task*)), SLOT(sl_onTaskFinished(Task*)));
+        Task *t = new FindPrimersTask(reportFileUrl, data);
+        connect(new TaskSignalMapper(t), SIGNAL(si_taskFinished(Task *)), SLOT(sl_onTaskFinished(Task *)));
         return t;
     }
     return NULL;
 }
 
-void FindPrimerPairsWorker::sl_onTaskFinished(Task* t) {
+void FindPrimerPairsWorker::sl_onTaskFinished(Task *t) {
     QString reportFileUrl = getValue<QString>(FindPrimerPairsWorkerFactory::OUT_FILE);
-    FindPrimersTask* findTask = qobject_cast<FindPrimersTask*>(t);
+    FindPrimersTask *findTask = qobject_cast<FindPrimersTask *>(t);
 
-    if(!findTask->hasError() && !findTask->isCanceled()) {
-        if(!findTask->getReport().isEmpty()) {
+    if (!findTask->hasError() && !findTask->isCanceled()) {
+        if (!findTask->getReport().isEmpty()) {
             context->getMonitor()->addOutputFile(reportFileUrl, getActor()->getId(), true);
         } else {
             context->getMonitor()->addError(tr("No correct primers pairs found"), getActor()->getId(), WorkflowNotification::U2_WARNING);
@@ -113,33 +114,32 @@ const QString FindPrimerPairsWorkerFactory::ACTOR_ID("find-primers");
 const QString FindPrimerPairsWorkerFactory::OUT_FILE("output-file");
 
 void FindPrimerPairsWorkerFactory::init() {
-    QList<PortDescriptor*> p; QList<Attribute*> a;
+    QList<PortDescriptor *> p;
+    QList<Attribute *> a;
     {
         Descriptor id(BasePorts::IN_SEQ_PORT_ID(),
-            FindPrimerPairsWorker::tr("Input sequences"),
-            FindPrimerPairsWorker::tr("Set of primers, which must be tested."));
+                      FindPrimerPairsWorker::tr("Input sequences"),
+                      FindPrimerPairsWorker::tr("Set of primers, which must be tested."));
 
         QMap<Descriptor, DataTypePtr> inM;
         inM[BaseSlots::DNA_SEQUENCE_SLOT()] = BaseTypes::DNA_SEQUENCE_TYPE();
-        p << new PortDescriptor(id, DataTypePtr(new MapDataType("findPrimers.seq", inM)), true,
-            false, IntegralBusPort::BLIND_INPUT);
-
+        p << new PortDescriptor(id, DataTypePtr(new MapDataType("findPrimers.seq", inM)), true, false, IntegralBusPort::BLIND_INPUT);
     }
 
-    Descriptor desc( FindPrimerPairsWorkerFactory::ACTOR_ID,
-        FindPrimerPairsWorker::tr("Find correct primer pairs"),
-        FindPrimerPairsWorker::tr("Find correct primer pairs, which consist of valid primers without dimers.") );
+    Descriptor desc(FindPrimerPairsWorkerFactory::ACTOR_ID,
+                    FindPrimerPairsWorker::tr("Find correct primer pairs"),
+                    FindPrimerPairsWorker::tr("Find correct primer pairs, which consist of valid primers without dimers."));
 
     Descriptor reportFileDesc(FindPrimerPairsWorkerFactory::OUT_FILE,
-        FindPrimerPairsWorker::tr("Output report file"),
-        FindPrimerPairsWorker::tr("Path to the report output file."));
+                              FindPrimerPairsWorker::tr("Output report file"),
+                              FindPrimerPairsWorker::tr("Path to the report output file."));
 
-    QList<Attribute*> attrs;
+    QList<Attribute *> attrs;
     attrs << new Attribute(reportFileDesc, BaseTypes::STRING_TYPE(), true);
 
-    ActorPrototype * proto = new IntegralBusActorPrototype( desc, p, attrs);
+    ActorPrototype *proto = new IntegralBusActorPrototype(desc, p, attrs);
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     QString filter = DialogUtils::prepareFileFilter(FindPrimerPairsWorker::tr("Report file"), QStringList("html"), true);
     DelegateTags tags;
     tags.set("filter", filter);
@@ -148,31 +148,32 @@ void FindPrimerPairsWorkerFactory::init() {
     delegates[OUT_FILE] = new URLDelegate(tags, "");
 
     proto->setEditor(new DelegateEditor(delegates));
-    proto->setPrompter( new FindPrimerPairsPromter() );
-    WorkflowEnv::getProtoRegistry()->registerProto( BaseActorCategories::CATEGORY_BASIC(), proto );
+    proto->setPrompter(new FindPrimerPairsPromter());
+    WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_BASIC(), proto);
 
-    DomainFactory* localDomain = WorkflowEnv::getDomainRegistry()->getById( LocalDomainFactory::ID );
-    localDomain->registerEntry( new FindPrimerPairsWorkerFactory() );
+    DomainFactory *localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
+    localDomain->registerEntry(new FindPrimerPairsWorkerFactory());
 }
 
-} //LocalWorkflow namespace
+}    // namespace LocalWorkflow
 
 /************************************************************************/
 /* FindPrimersTask */
 /************************************************************************/
-FindPrimersTask::FindPrimersTask(const QString& outputFileUrl, const QList<DNASequence>& sequences)
-: Task(tr("FindPrimersTask"), TaskFlag_None), sequences(sequences), outputUrl(outputFileUrl){}
+FindPrimersTask::FindPrimersTask(const QString &outputFileUrl, const QList<DNASequence> &sequences)
+    : Task(tr("FindPrimersTask"), TaskFlag_None), sequences(sequences), outputUrl(outputFileUrl) {
+}
 
 void FindPrimersTask::run() {
     CHECK(sequences.size() > 0, );
 
     QList<DNASequence> correctPrimers;
-    for(int i = 0; i < sequences.size(); i++) {
+    for (int i = 0; i < sequences.size(); i++) {
         if (isCanceled()) {
             return;
         }
         PrimerStatisticsCalculator calc(sequences.at(i).constData());
-        if(calc.getFirstError().isEmpty()) {
+        if (calc.getFirstError().isEmpty()) {
             correctPrimers.append(sequences.at(i));
         }
         stateInfo.setProgress(i * 10 / sequences.size());
@@ -183,19 +184,19 @@ void FindPrimersTask::run() {
             return;
         }
         stateInfo.setProgress(10 + i * 90 / correctPrimers.size());
-        for(int j = i+1; j < correctPrimers.size(); j++) {
+        for (int j = i + 1; j < correctPrimers.size(); j++) {
             QByteArray forwardPrimer = correctPrimers.at(i).constData();
             QByteArray reversePrimer = correctPrimers.at(j).constData();
 
             PrimersPairStatistics calc(forwardPrimer, reversePrimer);
 
-            if(calc.getFirstError().isEmpty()) {
+            if (calc.getFirstError().isEmpty()) {
                 QString newRow = createRow(correctPrimers.at(i).getName(), correctPrimers.at(j).getName(), calc.getForwardCalculator().getTm(), calc.getReverseCalculator().getTm());
                 rows.append(newRow);
             }
         }
     }
-    if(!rows.isEmpty()) {
+    if (!rows.isEmpty()) {
         createReport();
         writeReportToFile();
     }
@@ -217,7 +218,7 @@ void FindPrimersTask::createReport() {
     report += createColumn(LocalWorkflow::FindPrimerPairsWorker::tr("Reverse Tm"));
     report += "</tr>";
 
-    foreach(const QString& curRow, rows) {
+    foreach (const QString &curRow, rows) {
         report += curRow;
     }
 
@@ -229,7 +230,7 @@ void FindPrimersTask::createReport() {
 void FindPrimersTask::writeReportToFile() {
     IOAdapterId ioAdapterId = IOAdapterUtils::url2io(outputUrl);
     IOAdapterFactory *ioAdapterFactory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(ioAdapterId);
-    CHECK_EXT (ioAdapterFactory != NULL, setError(tr("No IO adapter found for URL: %1").arg(outputUrl)), );
+    CHECK_EXT(ioAdapterFactory != NULL, setError(tr("No IO adapter found for URL: %1").arg(outputUrl)), );
 
     QScopedPointer<IOAdapter> ioAdapter(ioAdapterFactory->createIOAdapter());
 
@@ -245,7 +246,7 @@ void FindPrimersTask::writeReportToFile() {
     ioAdapter->close();
 }
 
-QString FindPrimersTask::createRow(const QString& forwardName, const QString& reverseName, double forwardTm, double reverseTm) {
+QString FindPrimersTask::createRow(const QString &forwardName, const QString &reverseName, double forwardTm, double reverseTm) {
     QString newRow;
     newRow += "<tr>";
     newRow += createCell(forwardName);
@@ -256,12 +257,12 @@ QString FindPrimersTask::createRow(const QString& forwardName, const QString& re
     return newRow;
 }
 
-QString FindPrimersTask::createCell(const QString& value) {
+QString FindPrimersTask::createCell(const QString &value) {
     return QString("<td align=\"center\">%1</td>").arg(value);
 }
 
-QString FindPrimersTask::createColumn(const QString& name) {
+QString FindPrimersTask::createColumn(const QString &name) {
     return QString("<th width=\"30%\"/><p align=\"center\"><strong>%2</strong></p></th>").arg(name);
 }
 
-} //U2 namespace
+}    // namespace U2

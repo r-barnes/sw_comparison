@@ -19,9 +19,10 @@
  * MA 02110-1301, USA.
  */
 
+#include "AvgQualStep.h"
+
 #include <U2Core/U2SafePoints.h>
 
-#include "AvgQualStep.h"
 #include "trimmomatic/util/QualitySettingsWidget.h"
 
 namespace U2 {
@@ -30,8 +31,7 @@ namespace LocalWorkflow {
 const QString AvgQualStepFactory::ID = "AVGQUAL";
 
 AvgQualStep::AvgQualStep()
-    : TrimmomaticStep(AvgQualStepFactory::ID)
-{
+    : TrimmomaticStep(AvgQualStepFactory::ID) {
     name = "AVGQUAL";
     description = tr("<html><head></head><body>"
                      "<h4>AVGQUAL</h4>"
@@ -56,14 +56,12 @@ QVariantMap AvgQualStep::parseState(const QString &command) const {
 }
 
 AvgQualStepFactory::AvgQualStepFactory()
-    : TrimmomaticStepFactory(ID)
-{
-
+    : TrimmomaticStepFactory(ID) {
 }
 
 AvgQualStep *AvgQualStepFactory::createStep() const {
     return new AvgQualStep();
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

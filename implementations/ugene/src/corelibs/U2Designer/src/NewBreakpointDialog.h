@@ -22,8 +22,9 @@
 #ifndef _NEW_BREAKPOINT_DIALOG_H_
 #define _NEW_BREAKPOINT_DIALOG_H_
 
-#include <U2Core/global.h>
 #include <QDialog>
+
+#include <U2Core/global.h>
 
 class Ui_NewBreakpointDialog;
 
@@ -32,8 +33,7 @@ namespace U2 {
 class U2DESIGNER_EXPORT NewBreakpointDialog : public QDialog {
     Q_OBJECT
 public:
-    NewBreakpointDialog(const QStringList &elementsNames, QWidget *parent = NULL,
-        Qt::WindowFlags f = 0);
+    NewBreakpointDialog(const QStringList &elementsNames, QWidget *parent = NULL, Qt::WindowFlags f = 0);
     ~NewBreakpointDialog();
 
 signals:
@@ -46,6 +46,6 @@ private:
     Ui_NewBreakpointDialog *ui;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _NEW_BREAKPOINT_DIALOG_H_
+#endif    // _NEW_BREAKPOINT_DIALOG_H_

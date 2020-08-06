@@ -19,30 +19,29 @@
  * MA 02110-1301, USA.
  */
 
+#include "PortMapping.h"
+
 #include <QSet>
 
 #include <U2Core/U2SafePoints.h>
 
-#include "PortMapping.h"
-
 namespace U2 {
 
 PortMapping::PortMapping(const QString &srcPortId, const QString &dstPortId)
-: IdMapping(srcPortId, dstPortId)
-{
-
+    : IdMapping(srcPortId, dstPortId) {
 }
 
 void PortMapping::addSlotMapping(const SlotMapping &value) {
     slotList << value;
 }
 
-const QList<SlotMapping> & PortMapping::getMappings() const {
+const QList<SlotMapping> &PortMapping::getMappings() const {
     return slotList;
 }
 
 void PortMapping::validate(const QMap<Descriptor, DataTypePtr> &srcType,
-    const QMap<Descriptor, DataTypePtr> &dstType, U2OpStatus &os) const {
+                           const QMap<Descriptor, DataTypePtr> &dstType,
+                           U2OpStatus &os) const {
     validateSlotsCount(srcType, dstType, os);
     CHECK_OP(os, );
 
@@ -66,14 +65,14 @@ void PortMapping::validate(const QMap<Descriptor, DataTypePtr> &srcType,
 }
 
 void PortMapping::validateSlotsCount(const QMap<Descriptor, DataTypePtr> &srcType,
-    const QMap<Descriptor, DataTypePtr> &dstType, U2OpStatus &os) const{
+                                     const QMap<Descriptor, DataTypePtr> &dstType,
+                                     U2OpStatus &os) const {
     if (srcType.size() != dstType.size()) {
         os.setError(QObject::tr("Ports can not be mapped: %1, %2. Slots count is different").arg(srcId).arg(dstId));
     }
 }
 
-DataTypePtr PortMapping::validateSlotId(const QString &portId, const QString &slotId,
-    const QMap<Descriptor, DataTypePtr> &type, U2OpStatus &os) const {
+DataTypePtr PortMapping::validateSlotId(const QString &portId, const QString &slotId, const QMap<Descriptor, DataTypePtr> &type, U2OpStatus &os) const {
     if (!type.contains(slotId)) {
         os.setError(QObject::tr("%1 port does not contain a slot with id: %2").arg(portId).arg(slotId));
         return DataTypePtr();
@@ -82,7 +81,8 @@ DataTypePtr PortMapping::validateSlotId(const QString &portId, const QString &sl
 }
 
 void PortMapping::tryAddId(const QString &id,
-    QSet<QString> &idSet, U2OpStatus &os) const {
+                           QSet<QString> &idSet,
+                           U2OpStatus &os) const {
     if (idSet.contains(id)) {
         os.setError(QObject::tr("Duplicated mapping of slot with id: %1").arg(id));
         return;
@@ -91,7 +91,7 @@ void PortMapping::tryAddId(const QString &id,
 }
 
 void PortMapping::validateMappingsCount(const QMap<Descriptor, DataTypePtr> &srcType,
-    U2OpStatus &os) const {
+                                        U2OpStatus &os) const {
     if (slotList.count() < srcType.count()) {
         os.setError(QObject::tr("Not all slots are mapped"));
     }
@@ -117,4 +117,4 @@ QString PortMapping::getDstSlotId(const QString &srcSlotId, U2OpStatus &os) cons
     return "";
 }
 
-} // U2
+}    // namespace U2

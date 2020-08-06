@@ -21,26 +21,26 @@
 
 #include "PairwiseAlignmentSmithWatermanGUIExtension.h"
 
+#include <QFormLayout>
+#include <QGroupBox>
+#include <QLabel>
+#include <QLayout>
+#include <QStringList>
+#include <QVariant>
+
+#include <U2Algorithm/AlignmentAlgorithmsRegistry.h>
+#include <U2Algorithm/PairwiseAlignmentTask.h>
+#include <U2Algorithm/SubstMatrixRegistry.h>
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/U2AlphabetUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include <U2Algorithm/SubstMatrixRegistry.h>
-#include <U2Algorithm/AlignmentAlgorithmsRegistry.h>
-#include <U2Algorithm/PairwiseAlignmentTask.h>
-
-#include <QStringList>
-#include <QVariant>
-#include <QLabel>
-#include <QLayout>
-#include <QGroupBox>
-#include <QFormLayout>
-
 namespace U2 {
 
-PairwiseAlignmentSmithWatermanMainWidget::PairwiseAlignmentSmithWatermanMainWidget(QWidget* parent, QVariantMap* s) :
-    AlignmentAlgorithmMainWidget(parent, s) {
+PairwiseAlignmentSmithWatermanMainWidget::PairwiseAlignmentSmithWatermanMainWidget(QWidget *parent, QVariantMap *s)
+    : AlignmentAlgorithmMainWidget(parent, s) {
     setupUi(this);
     initParameters();
 }
@@ -65,16 +65,16 @@ void PairwiseAlignmentSmithWatermanMainWidget::initParameters() {
     }
 
     if (externSettings->contains(PairwiseAlignmentSmithWatermanTaskSettings::PA_SW_GAP_OPEN) &&
-            externSettings->value(PairwiseAlignmentSmithWatermanTaskSettings::PA_SW_GAP_OPEN, 0).toInt() >= SW_MIN_GAP_OPEN &&
-            externSettings->value(PairwiseAlignmentSmithWatermanTaskSettings::PA_SW_GAP_OPEN, 0).toInt() <= SW_MAX_GAP_OPEN) {
+        externSettings->value(PairwiseAlignmentSmithWatermanTaskSettings::PA_SW_GAP_OPEN, 0).toInt() >= SW_MIN_GAP_OPEN &&
+        externSettings->value(PairwiseAlignmentSmithWatermanTaskSettings::PA_SW_GAP_OPEN, 0).toInt() <= SW_MAX_GAP_OPEN) {
         gapOpen->setValue(-externSettings->value(PairwiseAlignmentSmithWatermanTaskSettings::PA_SW_GAP_OPEN, 0).toInt());
     } else {
         gapOpen->setValue(SW_DEFAULT_GAP_OPEN);
     }
 
     if (externSettings->contains(PairwiseAlignmentSmithWatermanTaskSettings::PA_SW_GAP_EXTD) &&
-            externSettings->value(PairwiseAlignmentSmithWatermanTaskSettings::PA_SW_GAP_EXTD, 0).toInt() >= SW_MIN_GAP_EXTD &&
-            externSettings->value(PairwiseAlignmentSmithWatermanTaskSettings::PA_SW_GAP_EXTD, 0).toInt() <= SW_MAX_GAP_EXTD) {
+        externSettings->value(PairwiseAlignmentSmithWatermanTaskSettings::PA_SW_GAP_EXTD, 0).toInt() >= SW_MIN_GAP_EXTD &&
+        externSettings->value(PairwiseAlignmentSmithWatermanTaskSettings::PA_SW_GAP_EXTD, 0).toInt() <= SW_MAX_GAP_EXTD) {
         gapExtd->setValue(-externSettings->value(PairwiseAlignmentSmithWatermanTaskSettings::PA_SW_GAP_EXTD, 0).toInt());
     } else {
         gapExtd->setValue(SW_DEFAULT_GAP_EXTD);
@@ -84,9 +84,9 @@ void PairwiseAlignmentSmithWatermanMainWidget::initParameters() {
 }
 
 void PairwiseAlignmentSmithWatermanMainWidget::addScoredMatrixes() {
-    const DNAAlphabet* al = U2AlphabetUtils::getById(externSettings->value(PairwiseAlignmentTaskSettings::ALPHABET, "").toString());
+    const DNAAlphabet *al = U2AlphabetUtils::getById(externSettings->value(PairwiseAlignmentTaskSettings::ALPHABET, "").toString());
     SAFE_POINT(NULL != al, "Alphabet not found.", );
-    SubstMatrixRegistry* matrixReg = AppContext::getSubstMatrixRegistry();
+    SubstMatrixRegistry *matrixReg = AppContext::getSubstMatrixRegistry();
     SAFE_POINT(matrixReg, "SubstMatrixRegistry is NULL.", );
     QStringList matrixList = matrixReg->selectMatrixNamesByAlphabet(al);
     scoringMatrix->addItems(matrixList);
@@ -114,18 +114,18 @@ void PairwiseAlignmentSmithWatermanMainWidget::fillInnerSettings() {
     innerSettings.insert(PairwiseAlignmentSmithWatermanTaskSettings::PA_SW_SCORING_MATRIX_NAME, scoringMatrix->currentText());
 }
 
-PairwiseAlignmentSmithWatermanGUIExtensionFactory::PairwiseAlignmentSmithWatermanGUIExtensionFactory(SW_AlgType _algType) :
-    AlignmentAlgorithmGUIExtensionFactory(), algType(_algType) {
+PairwiseAlignmentSmithWatermanGUIExtensionFactory::PairwiseAlignmentSmithWatermanGUIExtensionFactory(SW_AlgType _algType)
+    : AlignmentAlgorithmGUIExtensionFactory(), algType(_algType) {
 }
 
-AlignmentAlgorithmMainWidget* PairwiseAlignmentSmithWatermanGUIExtensionFactory::createMainWidget(QWidget* parent, QVariantMap* s) {
+AlignmentAlgorithmMainWidget *PairwiseAlignmentSmithWatermanGUIExtensionFactory::createMainWidget(QWidget *parent, QVariantMap *s) {
     if (mainWidgets.contains(parent)) {
         return mainWidgets.value(parent, NULL);
     }
-    PairwiseAlignmentSmithWatermanMainWidget* newMainWidget = new PairwiseAlignmentSmithWatermanMainWidget(parent, s);
-    connect(newMainWidget, SIGNAL(destroyed(QObject*)), SLOT(sl_widgetDestroyed(QObject*)));
+    PairwiseAlignmentSmithWatermanMainWidget *newMainWidget = new PairwiseAlignmentSmithWatermanMainWidget(parent, s);
+    connect(newMainWidget, SIGNAL(destroyed(QObject *)), SLOT(sl_widgetDestroyed(QObject *)));
     mainWidgets.insert(parent, newMainWidget);
     return newMainWidget;
 }
 
-}   //namespace
+}    // namespace U2

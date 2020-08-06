@@ -32,14 +32,14 @@ namespace U2 {
 */
 
 enum VariantTrackType {
-    TrackType_All           = 1,
-    TrackType_Perspective   = 2,
-    TrackType_Discarded     = 3,
+    TrackType_All = 1,
+    TrackType_Perspective = 2,
+    TrackType_Discarded = 3,
     TrackType_UnknownEffect = 4,
 
     // To check that int can be casted to the enum
-    TrackType_FIRST         = TrackType_All,
-    TrackType_LAST          = TrackType_UnknownEffect
+    TrackType_FIRST = TrackType_All,
+    TrackType_LAST = TrackType_UnknownEffect
 };
 
 class U2CORE_EXPORT U2VariantTrack : public U2Object {
@@ -48,16 +48,16 @@ public:
     U2VariantTrack(const U2DataId &id, const QString &dbId, VariantTrackType trackType, qint64 version);
 
     /** Sequence id */
-    U2DataId      sequence;
+    U2DataId sequence;
 
     /** Sequence name */
-    QString     sequenceName;
+    QString sequenceName;
 
     /** Track Type*/
     VariantTrackType trackType;
 
     /** File header */
-    QString     fileHeader;
+    QString fileHeader;
 
     U2DataType getType() const;
 
@@ -70,18 +70,18 @@ class U2CORE_EXPORT U2Variant : public U2Entity {
 public:
     U2Variant();
 
-    qint64      startPos;
-    qint64      endPos;
-    QByteArray  refData;
-    QByteArray  obsData;
-    QString     publicId;
-    StrStrMap   additionalInfo;
+    qint64 startPos;
+    qint64 endPos;
+    QByteArray refData;
+    QByteArray obsData;
+    QString publicId;
+    StrStrMap additionalInfo;
 
     static const QString VCF4_QUAL;
     static const QString VCF4_FILTER;
     static const QString VCF4_INFO;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_VARIANT_H_
+#endif    // _U2_VARIANT_H_

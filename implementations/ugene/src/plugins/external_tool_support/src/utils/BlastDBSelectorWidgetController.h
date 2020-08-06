@@ -40,10 +40,11 @@ signals:
 private slots:
     void sl_onBrowseDatabasePath();
     void sl_lineEditChanged();
+
 private:
     bool isNuclDB;
     bool inputDataValid;
 };
 
-}//namespace
-#endif //_U2_BLAST_DBSELECTOR_WIDGET_CONTROLLER_H_
+}    // namespace U2
+#endif    //_U2_BLAST_DBSELECTOR_WIDGET_CONTROLLER_H_

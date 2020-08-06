@@ -19,9 +19,10 @@
  * MA 02110-1301, USA.
  */
 
+#include "ToPhred64Step.h"
+
 #include <U2Core/U2SafePoints.h>
 
-#include "ToPhred64Step.h"
 #include "trimmomatic/util/NoSettingsWidget.h"
 
 namespace U2 {
@@ -30,8 +31,7 @@ namespace LocalWorkflow {
 const QString ToPhred64StepFactory::ID = "TOPHRED64";
 
 ToPhred64Step::ToPhred64Step()
-    : TrimmomaticStep(ToPhred64StepFactory::ID)
-{
+    : TrimmomaticStep(ToPhred64StepFactory::ID) {
     name = "TOPHRED64";
     description = tr("<html><head></head><body>"
                      "<h4>TOPHRED64</h4>"
@@ -52,14 +52,12 @@ QVariantMap ToPhred64Step::parseState(const QString &command) const {
 }
 
 ToPhred64StepFactory::ToPhred64StepFactory()
-    : TrimmomaticStepFactory(ID)
-{
-
+    : TrimmomaticStepFactory(ID) {
 }
 
 ToPhred64Step *ToPhred64StepFactory::createStep() const {
     return new ToPhred64Step();
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

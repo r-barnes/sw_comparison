@@ -55,7 +55,7 @@ private:
 
     void moveVisibleRange(QPoint pos);
 
-    McaEditor* getEditor() const;
+    McaEditor *getEditor() const;
 
     int getContentWidgetWidth() const;
     int getContentWidgetHeight() const;
@@ -82,6 +82,6 @@ private:
     static const QColor ARROW_REVERSE_COLOR;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MA_SANGER_OVERVIEW_H_
+#endif    // _U2_MA_SANGER_OVERVIEW_H_

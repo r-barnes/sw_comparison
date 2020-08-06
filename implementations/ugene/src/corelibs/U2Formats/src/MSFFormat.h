@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-
 #ifndef _U2_MSF_FORMAT_H_
 #define _U2_MSF_FORMAT_H_
 
@@ -35,23 +34,22 @@ class IOAdapter;
 class U2FORMATS_EXPORT MSFFormat : public TextDocumentFormat {
     Q_OBJECT
 public:
+    MSFFormat(QObject *p);
 
-    MSFFormat(QObject* p);
+    virtual void storeDocument(Document *d, IOAdapter *io, U2OpStatus &os);
 
-    virtual void storeDocument(Document* d, IOAdapter* io, U2OpStatus& os);
-
-    virtual void storeEntry(IOAdapter *io, const QMap< GObjectType, QList<GObject*> > &objectsMap, U2OpStatus &os);
+    virtual void storeEntry(IOAdapter *io, const QMap<GObjectType, QList<GObject *>> &objectsMap, U2OpStatus &os);
 
 protected:
-    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& = GUrl()) const;
+    virtual FormatCheckResult checkRawTextData(const QByteArray &rawData, const GUrl & = GUrl()) const;
 
-    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
+    virtual Document *loadTextDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os);
 
 private:
-    void save(IOAdapter* io, Document* doc, U2OpStatus& ti);
-    void load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& objects, const QVariantMap &hints, U2OpStatus& ti);
+    void save(IOAdapter *io, Document *doc, U2OpStatus &ti);
+    void load(IOAdapter *io, const U2DbiRef &dbiRef, QList<GObject *> &objects, const QVariantMap &hints, U2OpStatus &ti);
 
-    static int  getCheckSum(const QByteArray& seq);
+    static int getCheckSum(const QByteArray &seq);
 
     static const int CHECK_SUM_MOD;
     static const QByteArray MSF_FIELD;
@@ -69,6 +67,6 @@ private:
     static const int CHARS_IN_WORD;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

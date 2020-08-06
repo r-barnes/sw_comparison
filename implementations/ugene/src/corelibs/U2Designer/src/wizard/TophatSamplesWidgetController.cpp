@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "TophatSamplesWidgetController.h"
+
 #include <QFocusEvent>
 #include <QLineEdit>
 #include <QListWidget>
@@ -36,17 +38,13 @@
 #include <U2Lang/BaseAttributes.h>
 #include <U2Lang/WorkflowUtils.h>
 
-#include "TophatSamplesWidgetController.h"
-
 namespace U2 {
 
 TophatSamplesWidgetController::TophatSamplesWidgetController(WizardController *wc, TophatSamplesWidget *tsw)
-: WidgetController(wc), tsw(tsw)
-{
-
+    : WidgetController(wc), tsw(tsw) {
 }
 
-QWidget * TophatSamplesWidgetController::createGUI(U2OpStatus & /*os*/) {
+QWidget *TophatSamplesWidgetController::createGUI(U2OpStatus & /*os*/) {
     initSamplesMap();
     commit();
     return new TophatSamples(samples, this);
@@ -68,7 +66,7 @@ void TophatSamplesWidgetController::renameSample(int pos, const QString &newName
     }
 
     // check duplicates
-    for (int i=0; i<samples.size(); i++) {
+    for (int i = 0; i < samples.size(); i++) {
         TophatSample &sample = samples[i];
         if ((pos != i) && (sample.name == newName)) {
             os.setError(tr("Duplicate sample name"));
@@ -180,7 +178,7 @@ void TophatSamplesWidgetController::initSamplesMap() {
 
 void TophatSamplesWidgetController::removeMissedDatasets() {
     QStringList allDatasets = getAllDatasets();
-    for (int i=0; i<samples.size(); i++) {
+    for (int i = 0; i < samples.size(); i++) {
         QStringList &sampled = samples[i].datasets;
         foreach (const QString &d, sampled) {
             if (!allDatasets.contains(d)) {
@@ -206,7 +204,7 @@ void TophatSamplesWidgetController::checkDatasetRange(int samplePos, int dataset
 
 QStringList TophatSamplesWidgetController::getAllDatasets() const {
     AttributeInfo dsInfo(tsw->datasetsProvider, BaseAttributes::URL_IN_ATTRIBUTE().getId());
-    QList<Dataset> datasets = wc->getAttributeValue(dsInfo).value< QList<Dataset> >();
+    QList<Dataset> datasets = wc->getAttributeValue(dsInfo).value<QList<Dataset>>();
 
     QStringList result;
     foreach (const Dataset &d, datasets) {
@@ -244,8 +242,7 @@ void TophatSamplesWidgetController::commit() {
 class SampleNameEdit : public QLineEdit {
 public:
     SampleNameEdit(TophatSamples *samples, const QString &name, QWidget *parent)
-        : QLineEdit(name, parent), samples(samples), initialName(name)
-    {
+        : QLineEdit(name, parent), samples(samples), initialName(name) {
         setValidator(new QRegExpValidator(QRegExp("\\w*"), this));
         setObjectName(name);
     }
@@ -268,8 +265,7 @@ private:
 /* TophatSamples */
 /************************************************************************/
 TophatSamples::TophatSamples(const QList<TophatSample> &samples, TophatSamplesWidgetController *ctrl, QWidget *parent)
-: QWidget(parent), ctrl(ctrl), scrollArea(NULL), listLayout(NULL), upButton(NULL), downButton(NULL)
-{
+    : QWidget(parent), ctrl(ctrl), scrollArea(NULL), listLayout(NULL), upButton(NULL), downButton(NULL) {
     init(samples);
 }
 
@@ -282,8 +278,8 @@ void TophatSamples::init(const QList<TophatSample> &samples) {
     {
         hint->setWordWrap(true);
         hint->setText(tr("Divide the input datasets into samples for running Cuffdiff. There are must be at least 2 samples. "
-            "It is not necessary to have the same number of datasets (replicates) for each sample. "
-            "The samples names will be used by Cuffdiff as labels, which will be included in various output files produced by Cuffdiff."));
+                         "It is not necessary to have the same number of datasets (replicates) for each sample. "
+                         "The samples names will be used by Cuffdiff as labels, which will be included in various output files produced by Cuffdiff."));
         QString style = "\
             background-color: rgb(255, 255, 191);\
             border-width: 1px;\
@@ -323,13 +319,13 @@ void TophatSamples::appendSample(const TophatSample &sample) {
     listLayout->addWidget(sw);
 }
 
-QWidget * TophatSamples::initSample(const QString &sampleName, const QStringList &datasets) {
+QWidget *TophatSamples::initSample(const QString &sampleName, const QStringList &datasets) {
     QWidget *result = new QGroupBox(this);
     QVBoxLayout *vl = new QVBoxLayout(result);
     vl->setContentsMargins(5, 5, 5, 5);
 
     QHBoxLayout *hl = new QHBoxLayout();
-    { // header
+    {    // header
         hl->setContentsMargins(0, 0, 0, 0);
         QToolButton *removeButton = createButton(this, ":U2Designer/images/exit.png");
         connect(removeButton, SIGNAL(clicked()), SLOT(sl_remove()));
@@ -340,7 +336,7 @@ QWidget * TophatSamples::initSample(const QString &sampleName, const QStringList
 
     QListWidget *datasetsList = new QListWidget(this);
     datasetsList->setObjectName(sampleName + " datasetsList");
-    { // datasets
+    {    // datasets
         foreach (const QString &dataset, datasets) {
             datasetsList->addItem(dataset);
         }
@@ -367,7 +363,7 @@ bool TophatSamples::rename(QLineEdit *nameEdit) {
 }
 
 void TophatSamples::sl_remove() {
-    QToolButton *toolButton = dynamic_cast<QToolButton*>(sender());
+    QToolButton *toolButton = dynamic_cast<QToolButton *>(sender());
     SAFE_POINT(NULL != toolButton, "NULL button", );
     QWidget *sampleWidget = toolButton->parentWidget();
     CHECK(NULL != sampleWidget, );
@@ -403,7 +399,7 @@ void TophatSamples::sl_add() {
 }
 
 void TophatSamples::sl_selectionChanged() {
-    QListWidget *selectedList = dynamic_cast<QListWidget*>(sender());
+    QListWidget *selectedList = dynamic_cast<QListWidget *>(sender());
     CHECK(NULL != selectedList, );
     CHECK(selectedList->selectedItems().size() > 0, );
 
@@ -416,7 +412,7 @@ void TophatSamples::sl_selectionChanged() {
 }
 
 void TophatSamples::selectSample(int selectedPos) {
-    for (int pos=0; pos<order.size(); pos++) {
+    for (int pos = 0; pos < order.size(); pos++) {
         QListWidget *list = getListWidget(pos);
         SAFE_POINT(NULL != list, "NULL list widget", );
         if (pos != selectedPos) {
@@ -437,7 +433,7 @@ bool TophatSamples::isBorderCase(QListWidget *list, int datasetPos, Direction di
     }
 }
 
-void TophatSamples::getNewPositions(QListWidget *oldList, int oldSamplePos, int oldDatasetPos, Direction direction, int &newSamplePos, int &newDatasetPos, QListWidget * &newList) const {
+void TophatSamples::getNewPositions(QListWidget *oldList, int oldSamplePos, int oldDatasetPos, Direction direction, int &newSamplePos, int &newDatasetPos, QListWidget *&newList) const {
     newSamplePos = oldSamplePos;
     newDatasetPos = (UP == direction) ? oldDatasetPos - 1 : oldDatasetPos + 1;
     newList = oldList;
@@ -451,7 +447,7 @@ void TophatSamples::getNewPositions(QListWidget *oldList, int oldSamplePos, int 
 }
 
 void TophatSamples::findSelectedDataset(int &samplePos, int &datasetPos) const {
-    for (int pos=0; pos<order.size(); pos++) {
+    for (int pos = 0; pos < order.size(); pos++) {
         QListWidget *list = getListWidget(pos);
         SAFE_POINT(NULL != list, "NULL list widget", );
 
@@ -475,7 +471,7 @@ void TophatSamples::move(Direction direction) {
 
     // find target position
     int newSamplePos = -1;
-    int newDatasetPos = - 1;
+    int newDatasetPos = -1;
     QListWidget *newList = NULL;
     getNewPositions(oldList, oldSamplePos, oldDatasetPos, direction, newSamplePos, newDatasetPos, newList);
     SAFE_POINT(NULL != newList, "NULL new list widget", );
@@ -505,20 +501,20 @@ void TophatSamples::sl_down() {
     move(DOWN);
 }
 
-QListWidget * TophatSamples::getListWidget(int pos) const {
+QListWidget *TophatSamples::getListWidget(int pos) const {
     CHECK((pos > -1) && (pos < order.size()), NULL);
     QWidget *first = order[pos];
-    return first->findChild<QListWidget*>();
+    return first->findChild<QListWidget *>();
 }
 
-QToolButton * TophatSamples::createButton(QWidget *parent, const QString &icon) const {
+QToolButton *TophatSamples::createButton(QWidget *parent, const QString &icon) const {
     QToolButton *result = new QToolButton(parent);
     result->setIcon(QIcon(icon));
     result->setAutoRaise(true);
     return result;
 }
 
-QScrollArea * TophatSamples::createScrollArea() {
+QScrollArea *TophatSamples::createScrollArea() {
     scrollArea = new QScrollArea(this);
     QWidget *scrollable = new QWidget(scrollArea);
     scrollArea->setWidget(scrollable);
@@ -531,7 +527,7 @@ QScrollArea * TophatSamples::createScrollArea() {
     return scrollArea;
 }
 
-QVBoxLayout * TophatSamples::createControlButtonsLayout() {
+QVBoxLayout *TophatSamples::createControlButtonsLayout() {
     QVBoxLayout *result = new QVBoxLayout();
     result->setContentsMargins(0, 0, 0, 0);
     result->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Maximum, QSizePolicy::Minimum));
@@ -540,7 +536,7 @@ QVBoxLayout * TophatSamples::createControlButtonsLayout() {
     return result;
 }
 
-QVBoxLayout * TophatSamples::createControlButtons() {
+QVBoxLayout *TophatSamples::createControlButtons() {
     QVBoxLayout *result = new QVBoxLayout();
     result->setContentsMargins(0, 0, 0, 0);
 
@@ -560,7 +556,7 @@ QVBoxLayout * TophatSamples::createControlButtons() {
 
 void TophatSamples::updateArrows() {
     SAFE_POINT(order.size() > 1, "Unexpected count of samples", );
-    { // check if the top dataset is selected
+    {    // check if the top dataset is selected
         QListWidget *topList = getListWidget(0);
         if (topList->selectedItems().size() > 0) {
             QListWidgetItem *topItem = topList->item(0);
@@ -570,7 +566,7 @@ void TophatSamples::updateArrows() {
         }
     }
 
-    { // check if the bottom dataset is selected
+    {    // check if the bottom dataset is selected
         QListWidget *bottomList = getListWidget(order.size() - 1);
         if (bottomList->selectedItems().size() > 0) {
             QListWidgetItem *bottomItem = bottomList->item(bottomList->count() - 1);
@@ -581,7 +577,7 @@ void TophatSamples::updateArrows() {
     }
 
     // check other items
-    for (int pos=1; pos<order.size() - 1; pos++) {
+    for (int pos = 1; pos < order.size() - 1; pos++) {
         QListWidget *list = getListWidget(pos);
         if (list->selectedItems().size() > 0) {
             upButton->setEnabled(true);
@@ -595,4 +591,4 @@ void TophatSamples::updateArrows() {
     downButton->setEnabled(false);
 }
 
-} // U2
+}    // namespace U2

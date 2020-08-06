@@ -23,12 +23,12 @@
 #ifndef _U2_GENOME_ALIGNER_WRITE_TASK_H_
 #define _U2_GENOME_ALIGNER_WRITE_TASK_H_
 
+#include <QList>
+#include <QMutex>
+#include <QWaitCondition>
+
 #include "GenomeAlignerIO.h"
 #include "GenomeAlignerSearchQuery.h"
-
-#include <QWaitCondition>
-#include <QMutex>
-#include <QList>
 
 namespace U2 {
 
@@ -47,8 +47,11 @@ public:
     void addResult(SearchQuery *qu);
     void flush();
     void setFinished();
-    quint64 getWrittenReadsCount() const {return readsWritten;}
+    quint64 getWrittenReadsCount() const {
+        return readsWritten;
+    }
     void setSeqWriter(GenomeAlignerWriter *seqWriter);
+
 private:
     GenomeAlignerWriter *seqWriter;
     QVector<WriteData> results;
@@ -65,6 +68,6 @@ private:
 
     inline void setReadWritten(SearchQuery *read, SearchQuery *revCompl);
 };
-} //namespace
+}    // namespace U2
 
-#endif // _U2_GENOME_ALIGNER_WRITE_TASK_H_
+#endif    // _U2_GENOME_ALIGNER_WRITE_TASK_H_

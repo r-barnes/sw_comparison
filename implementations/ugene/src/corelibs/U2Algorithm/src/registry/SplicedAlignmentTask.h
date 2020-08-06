@@ -28,31 +28,34 @@
 
 namespace U2 {
 
-
 class SplicedAlignmentTaskConfig {
 public:
-    SplicedAlignmentTaskConfig(U2SequenceObject* cDna, U2SequenceObject* genomic) : cDnaObj(cDna), genomicSeqObj(genomic) {
-
+    SplicedAlignmentTaskConfig(U2SequenceObject *cDna, U2SequenceObject *genomic)
+        : cDnaObj(cDna), genomicSeqObj(genomic) {
     }
 
-    U2SequenceObject* getGenomicSequence() { return genomicSeqObj; }
-    U2SequenceObject* getCDnaSequence() { return cDnaObj; }
+    U2SequenceObject *getGenomicSequence() {
+        return genomicSeqObj;
+    }
+    U2SequenceObject *getCDnaSequence() {
+        return cDnaObj;
+    }
 
 private:
-    U2SequenceObject* cDnaObj;
-    U2SequenceObject* genomicSeqObj;
+    U2SequenceObject *cDnaObj;
+    U2SequenceObject *genomicSeqObj;
     QVariantMap customOptions;
 };
 
 // The task performs mRNA to genomic sequence alignment
 
-class U2ALGORITHM_EXPORT SplicedAlignmentTask : public Task
-{
+class U2ALGORITHM_EXPORT SplicedAlignmentTask : public Task {
     Q_OBJECT
 public:
-    SplicedAlignmentTask(const SplicedAlignmentTaskConfig& cfg);
-    SplicedAlignmentTask(const QString& taskName, TaskFlags flags, const SplicedAlignmentTaskConfig& cfg);
+    SplicedAlignmentTask(const SplicedAlignmentTaskConfig &cfg);
+    SplicedAlignmentTask(const QString &taskName, TaskFlags flags, const SplicedAlignmentTaskConfig &cfg);
     virtual QList<SharedAnnotationData> getAlignmentResult() = 0;
+
 protected:
     SplicedAlignmentTaskConfig config;
 };
@@ -61,11 +64,11 @@ protected:
 
 class U2ALGORITHM_EXPORT SplicedAlignmentTaskFactory {
 public:
-    virtual SplicedAlignmentTask* createTaskInstance(const SplicedAlignmentTaskConfig& config) = 0;
-    virtual ~SplicedAlignmentTaskFactory() {}
+    virtual SplicedAlignmentTask *createTaskInstance(const SplicedAlignmentTaskConfig &config) = 0;
+    virtual ~SplicedAlignmentTaskFactory() {
+    }
 };
 
+}    // namespace U2
 
-} // namespace
-
-#endif // _U2_SPLICED_ALIGNMENT_TASK_H
+#endif    // _U2_SPLICED_ALIGNMENT_TASK_H

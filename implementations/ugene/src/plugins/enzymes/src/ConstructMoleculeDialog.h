@@ -22,8 +22,9 @@
 #ifndef _U2_CONSTRUCT_MOLECULE_DIALOG_H_
 #define _U2_CONSTRUCT_MOLECULE_DIALOG_H_
 
-#include <QList>
 #include <ui_ConstructMoleculeDialog.h>
+
+#include <QList>
 
 #include "CloningUtilTasks.h"
 
@@ -34,7 +35,7 @@ class SaveDocumentController;
 class ConstructMoleculeDialog : public QDialog, public Ui_ConstructMoleculeDialog {
     Q_OBJECT
 public:
-    ConstructMoleculeDialog(const QList<DNAFragment>& fragments, QWidget* parent);
+    ConstructMoleculeDialog(const QList<DNAFragment> &fragments, QWidget *parent);
     virtual void accept();
 
 private slots:
@@ -48,10 +49,10 @@ private slots:
     void sl_makeCircularBoxClicked();
     void sl_forceBluntBoxClicked();
     void sl_onEditFragmentButtonClicked();
-    void sl_onItemClicked( QTreeWidgetItem * item, int column );
+    void sl_onItemClicked(QTreeWidgetItem *item, int column);
 
 protected:
-    bool eventFilter(QObject* obj , QEvent* event);
+    bool eventFilter(QObject *obj, QEvent *event);
 
 private:
     void update();
@@ -62,7 +63,6 @@ private:
     SaveDocumentController *saveController;
 };
 
+}    // namespace U2
 
-} //namespace
-
-#endif // _U2_CONSTRUCT_MOLECULE_DIALOG_H_
+#endif    // _U2_CONSTRUCT_MOLECULE_DIALOG_H_

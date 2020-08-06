@@ -29,28 +29,27 @@ namespace U2 {
 
 /* TRANSLATOR U2::DNAAlphabetRegistryImpl */
 
-DNAAlphabetRegistryImpl::DNAAlphabetRegistryImpl(DNATranslationRegistry* _tr) {
+DNAAlphabetRegistryImpl::DNAAlphabetRegistryImpl(DNATranslationRegistry *_tr) {
     treg = _tr;
     initBaseAlphabets();
     initBaseTranslations();
 }
 
 DNAAlphabetRegistryImpl::~DNAAlphabetRegistryImpl() {
-    foreach(const DNAAlphabet* a, alphabets) {
+    foreach (const DNAAlphabet *a, alphabets) {
         delete a;
     }
     alphabets.clear();
 }
 
-static bool alphabetComplexityComparator(const DNAAlphabet* a1, const DNAAlphabet* a2) {
-    int a1Size = a1->getMap().count(true); //TODO: cache this val
+static bool alphabetComplexityComparator(const DNAAlphabet *a1, const DNAAlphabet *a2) {
+    int a1Size = a1->getMap().count(true);    //TODO: cache this val
     int a2Size = a2->getMap().count(true);
     return a1Size < a2Size;
 }
 
-
-bool DNAAlphabetRegistryImpl::registerAlphabet(const DNAAlphabet* a) {
-    if (findById(a->getId())!=NULL) {
+bool DNAAlphabetRegistryImpl::registerAlphabet(const DNAAlphabet *a) {
+    if (findById(a->getId()) != NULL) {
         return false;
     }
     alphabets.push_back(a);
@@ -59,13 +58,14 @@ bool DNAAlphabetRegistryImpl::registerAlphabet(const DNAAlphabet* a) {
     return true;
 }
 
-void DNAAlphabetRegistryImpl::unregisterAlphabet(const DNAAlphabet* a) {
+void DNAAlphabetRegistryImpl::unregisterAlphabet(const DNAAlphabet *a) {
     int n = alphabets.removeAll(a);
-    assert(n==1); Q_UNUSED(n);
+    assert(n == 1);
+    Q_UNUSED(n);
 }
 
-const DNAAlphabet* DNAAlphabetRegistryImpl::findById(const QString& id) const {
-    foreach(const DNAAlphabet* al, alphabets) {
+const DNAAlphabet *DNAAlphabetRegistryImpl::findById(const QString &id) const {
+    foreach (const DNAAlphabet *al, alphabets) {
         if (al->getId() == id) {
             return al;
         }
@@ -73,6 +73,4 @@ const DNAAlphabet* DNAAlphabetRegistryImpl::findById(const QString& id) const {
     return NULL;
 }
 
-
-
-}//namespace
+}    // namespace U2

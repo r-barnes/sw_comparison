@@ -19,25 +19,29 @@
  * MA 02110-1301, USA.
  */
 
+#include <GTUtilsMdi.h>
+#include <GTUtilsNotifications.h>
+#include <base_dialogs/GTFileDialog.h>
+#include <drivers/GTKeyboardDriver.h>
+#include <drivers/GTMouseDriver.h>
+#include <primitives/GTComboBox.h>
+#include <primitives/GTLineEdit.h>
+#include <primitives/GTSpinBox.h>
+#include <primitives/GTWidget.h>
+
 #include <U2Core/U2IdTypes.h>
+
+#include "GTTestsInSilicoPcr.h"
 #include "GTUtilsAnnotationsTreeView.h"
 #include "GTUtilsOptionPanelSequenceView.h"
 #include "GTUtilsPcr.h"
+#include "GTUtilsProject.h"
 #include "GTUtilsProjectTreeView.h"
 #include "GTUtilsSequenceView.h"
 #include "GTUtilsTaskTreeView.h"
-#include <primitives/GTComboBox.h>
-#include <base_dialogs/GTFileDialog.h>
-#include <drivers/GTKeyboardDriver.h>
-#include <primitives/GTLineEdit.h>
-#include <drivers/GTMouseDriver.h>
-#include <primitives/GTSpinBox.h>
-#include <primitives/GTWidget.h>
 #include "primitives/PopupChooser.h"
 #include "runnables/ugene/plugins/pcr/PrimersDetailsDialogFiller.h"
 #include "runnables/ugene/ugeneui/SequenceReadingModeSelectorDialogFiller.h"
-
-#include "GTTestsInSilicoPcr.h"
 
 namespace U2 {
 namespace GUITest_common_scenarios_in_silico_pcr {
@@ -48,11 +52,11 @@ GUI_TEST_CLASS_DEFINITION(test_0001) {
 
     //1. Open "_common_data/fasta/alphabet.fa".
     GTUtilsDialog::waitForDialog(os, new SequenceReadingModeSelectorDialogFiller(os, SequenceReadingModeSelectorDialogFiller::Separate));
-    GTFileDialog::openFile(os, testDir + "_common_data/fasta", "alphabet.fa");
-    GTUtilsTaskTreeView::waitTaskFinished(os);
+    GTUtilsProject::openFile(os, testDir + "_common_data/fasta/alphabet.fa");
+    GTUtilsSequenceView::checkSequenceViewWindowIsActive(os);
 
     //2. Activate the "Amino" sequence in the sequence view (set the focus for it).
-    GTWidget::click(os, GTUtilsSequenceView::getSeqWidgetByNumber(os, 0));
+    GTWidget::click(os, GTUtilsSequenceView::getPanOrDetView(os, 0));
 
     //3. Open the PCR OP.
     GTWidget::click(os, GTWidget::findWidget(os, "OP_IN_SILICO_PCR"));
@@ -65,7 +69,7 @@ GUI_TEST_CLASS_DEFINITION(test_0001) {
     CHECK_SET_ERR(warning->isVisible(), "No alphabet warning");
 
     //4. Activate the "Nucl" sequence.
-    GTWidget::click(os, GTUtilsSequenceView::getSeqWidgetByNumber(os, 1));
+    GTWidget::click(os, GTUtilsSequenceView::getPanOrDetView(os, 1));
 
     //Expected: The panel is available, the info message is hidden.
     CHECK_SET_ERR(params->isEnabled(), "The panel is disabled for the right alphabet");
@@ -86,7 +90,7 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
     //3. Set the focus at the primer line edit and write "Q%1" (not ACGT).
     // TODO: wrap into api
     QWidget *forwardPrimerBox = GTWidget::findWidget(os, "forwardPrimerBox");
-    QLineEdit *forwardPrimerLine = dynamic_cast<QLineEdit*>(GTWidget::findWidget(os, "primerEdit", forwardPrimerBox));
+    QLineEdit *forwardPrimerLine = dynamic_cast<QLineEdit *>(GTWidget::findWidget(os, "primerEdit", forwardPrimerBox));
     GTLineEdit::setText(os, forwardPrimerLine, "Q%1", true);
 
     //Expected: the line edit is empty, the statistics label is empty.
@@ -96,7 +100,7 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
     GTLineEdit::setText(os, forwardPrimerLine, "atcg", true);
 
     //Expected: the line edit content is "ATCG", the statistics label shows the temperature and "4-mer".
-    QLabel *statsLabel = dynamic_cast<QLabel*>(GTWidget::findWidget(os, "characteristicsLabel", forwardPrimerBox));
+    QLabel *statsLabel = dynamic_cast<QLabel *>(GTWidget::findWidget(os, "characteristicsLabel", forwardPrimerBox));
     CHECK_SET_ERR(forwardPrimerLine->text() == "ATCG", "No upper-case");
     CHECK_SET_ERR(statsLabel->text().endsWith("4-mer"), "Wrong statistics label");
 
@@ -193,7 +197,7 @@ GUI_TEST_CLASS_DEFINITION(test_0004) {
     GTUtilsProjectTreeView::findIndex(os, "pIB2-SEC13_9-1196.gb");
 
     // TODO: remove it after fixing UGENE-3657
-    GTKeyboardDriver::keyClick( 'w', Qt::ControlModifier);
+    GTKeyboardDriver::keyClick('w', Qt::ControlModifier);
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0005) {
@@ -233,7 +237,7 @@ GUI_TEST_CLASS_DEFINITION(test_0005) {
     GTMouseDriver::moveTo(GTUtilsPcr::getResultPoint(os, 1));
     GTKeyboardDriver::keyPress(Qt::Key_Control);
     GTMouseDriver::click();
-    GTKeyboardDriver::keyRelease( Qt::Key_Control);
+    GTKeyboardDriver::keyRelease(Qt::Key_Control);
 
     //Expected: the sequence selection is not changed, two results are selected in the table.
     // TODO
@@ -247,9 +251,9 @@ GUI_TEST_CLASS_DEFINITION(test_0005) {
     GTUtilsProjectTreeView::findIndex(os, "pIB2-SEC13_2-3775.gb");
 
     // TODO: remove it after fixing UGENE-3657
-    GTKeyboardDriver::keyClick( 'w', Qt::ControlModifier);
-    GTKeyboardDriver::keyClick( 'w', Qt::ControlModifier);
-    GTKeyboardDriver::keyClick( 'w', Qt::ControlModifier);
+    GTKeyboardDriver::keyClick('w', Qt::ControlModifier);
+    GTKeyboardDriver::keyClick('w', Qt::ControlModifier);
+    GTKeyboardDriver::keyClick('w', Qt::ControlModifier);
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0006) {
@@ -274,7 +278,7 @@ GUI_TEST_CLASS_DEFINITION(test_0006) {
     GTUtilsPcr::setPrimer(os, U2Strand::Complementary, "TGACCGTCTCAGGAGGTGGTTGTGTCAGAGGTTTT");
 
     //Expected: primer warning is shown, the find button text is "Find product(s) anyway".
-    QAbstractButton *findButton = dynamic_cast<QAbstractButton*>(GTWidget::findWidget(os, "findProductButton"));
+    QAbstractButton *findButton = dynamic_cast<QAbstractButton *>(GTWidget::findWidget(os, "findProductButton"));
     CHECK_SET_ERR(warning->isVisible(), "Primer warning is not visible");
     CHECK_SET_ERR(findButton->text() == "Find product(s) anyway", "Wrong find button text 1");
 
@@ -396,7 +400,7 @@ GUI_TEST_CLASS_DEFINITION(test_0009) {
     CHECK_SET_ERR(1 == GTUtilsPcr::productsCount(os), "Wrong results count 1");
 
     //6. Set the 3' perfect match: 16.
-    QSpinBox *perfectSpinBox = dynamic_cast<QSpinBox*>(GTWidget::findWidget(os, "perfectSpinBox"));
+    QSpinBox *perfectSpinBox = dynamic_cast<QSpinBox *>(GTWidget::findWidget(os, "perfectSpinBox"));
     GTSpinBox::setValue(os, perfectSpinBox, 16, GTGlobals::UseKeyBoard);
 
     //7. Click the find button.
@@ -411,7 +415,7 @@ GUI_TEST_CLASS_DEFINITION(test_0010) {
     //Export annotations
     //1. Open "_common_data/cmdline/pcr/begin-end.gb".
     GTFileDialog::openFile(os, testDir + "_common_data/cmdline/pcr/begin-end.gb");
-    GTUtilsTaskTreeView::waitTaskFinished(os);
+    GTUtilsSequenceView::checkSequenceViewWindowIsActive(os);
 
     //2. Open the PCR OP.
     GTWidget::click(os, GTWidget::findWidget(os, "OP_IN_SILICO_PCR"));
@@ -427,43 +431,51 @@ GUI_TEST_CLASS_DEFINITION(test_0010) {
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     //Expected: one product is found.
-    CHECK_SET_ERR(1 == GTUtilsPcr::productsCount(os), "Wrong results count");
+    CHECK_SET_ERR(GTUtilsPcr::productsCount(os) == 1, "Wrong results count");
 
     //6. Choose "Inner" annotation extraction.
-    QComboBox *annsComboBox = qobject_cast<QComboBox*>(GTWidget::findWidget(os, "annsComboBox"));
+    QComboBox *annsComboBox = qobject_cast<QComboBox *>(GTWidget::findWidget(os, "annsComboBox"));
     GTComboBox::setCurrentIndex(os, annsComboBox, 1);
 
     //7. Click "Export product(s)".
-    GTWidget::click(os, GTWidget::findWidget(os, "extractProductButton"));
+    QWidget *extractPB = GTWidget::findWidget(os, "extractProductButton");
+    GTUtilsNotifications::waitAllNotificationsClosed(os);
+    GTWidget::click(os, extractPB);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     //Expected: there are 3 annotations in the exported document: 2 primers and center 51..150.
-    CHECK_SET_ERR(NULL == GTUtilsAnnotationsTreeView::findItem(os, "middle", GTGlobals::FindOptions(false)), "Unexpected annotation 1");
+    CHECK_SET_ERR(GTUtilsAnnotationsTreeView::findItem(os, "middle", GTGlobals::FindOptions(false)) == NULL, "Unexpected annotation 1");
     CHECK_SET_ERR("complement(51..150)" == GTUtilsAnnotationsTreeView::getAnnotationRegionString(os, "center"), "Wrong region 1");
 
     //8. Choose "All annotations" annotation extraction.
     GTUtilsProjectTreeView::doubleClickItem(os, "begin-end.gb");
+    GTUtilsMdi::checkWindowIsActive(os, "begin-end");
     GTComboBox::setCurrentIndex(os, annsComboBox, 0);
 
     //9. Click "Export product(s)".
-    GTWidget::click(os, GTWidget::findWidget(os, "extractProductButton"));
+    extractPB = GTWidget::findWidget(os, "extractProductButton");
+    GTUtilsNotifications::waitAllNotificationsClosed(os);
+    GTWidget::click(os, extractPB);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     //Expected: there are 4 annotations in the exported document: 2 primers, center 51..150 and middle 1..200. Middle has the warning qualifier.
-    CHECK_SET_ERR("1..200" == GTUtilsAnnotationsTreeView::getAnnotationRegionString(os, "middle"), "Wrong region 2");
-    CHECK_SET_ERR("complement(51..150)" == GTUtilsAnnotationsTreeView::getAnnotationRegionString(os, "center"), "Wrong region 3");
+    CHECK_SET_ERR(GTUtilsAnnotationsTreeView::getAnnotationRegionString(os, "middle") == "1..200", "Wrong region 2");
+    CHECK_SET_ERR(GTUtilsAnnotationsTreeView::getAnnotationRegionString(os, "center") == "complement(51..150)", "Wrong region 3");
 
     //10. Choose "None" annotation extraction.
     GTUtilsProjectTreeView::doubleClickItem(os, "begin-end.gb");
+    GTUtilsMdi::checkWindowIsActive(os, "begin-end");
     GTComboBox::setCurrentIndex(os, annsComboBox, 2);
 
     //11. Click "Export product(s)".
-    GTWidget::click(os, GTWidget::findWidget(os, "extractProductButton"));
+    extractPB = GTWidget::findWidget(os, "extractProductButton");
+    GTUtilsNotifications::waitAllNotificationsClosed(os);
+    GTWidget::click(os, extractPB);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     //Expected: there are only 2 primers annotations in the exported document.
-    CHECK_SET_ERR(NULL == GTUtilsAnnotationsTreeView::findItem(os, "middle", GTGlobals::FindOptions(false)), "Unexpected annotation 2");
-    CHECK_SET_ERR(NULL == GTUtilsAnnotationsTreeView::findItem(os, "center", GTGlobals::FindOptions(false)), "Unexpected annotation 3");
+    CHECK_SET_ERR(GTUtilsAnnotationsTreeView::findItem(os, "middle", GTGlobals::FindOptions(false)) == NULL, "Unexpected annotation 2");
+    CHECK_SET_ERR(GTUtilsAnnotationsTreeView::findItem(os, "center", GTGlobals::FindOptions(false)) == NULL, "Unexpected annotation 3");
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0011) {
@@ -521,7 +533,7 @@ GUI_TEST_CLASS_DEFINITION(test_0012) {
     // Expected: the temperature is N/A, the primer pair info contains the message about non-ACGTN symbols
     CHECK_SET_ERR(GTUtilsPcr::getPrimerInfo(os, U2Strand::Complementary).contains("N/A"), "The temperature is configured");
 
-    QLabel* warningLabel = qobject_cast<QLabel*>(GTWidget::findWidget(os, "warningLabel"));
+    QLabel *warningLabel = qobject_cast<QLabel *>(GTWidget::findWidget(os, "warningLabel"));
     CHECK_SET_ERR(warningLabel != NULL, "Cannot find warningLabel");
     CHECK_SET_ERR(warningLabel->text().contains("The primers contain a character from the Extended DNA alphabet."), "Incorrect warning message");
 }
@@ -577,7 +589,7 @@ GUI_TEST_CLASS_DEFINITION(test_0014) {
 
     GTWidget::click(os, GTWidget::findWidget(os, "reverseComplementButton", GTUtilsPcr::primerBox(os, U2Strand::Direct)));
 
-    QLineEdit* primerLineEdit = GTWidget::findExactWidget<QLineEdit*>(os, "primerEdit", GTUtilsPcr::primerBox(os, U2Strand::Direct));
+    QLineEdit *primerLineEdit = GTWidget::findExactWidget<QLineEdit *>(os, "primerEdit", GTUtilsPcr::primerBox(os, U2Strand::Direct));
     CHECK_SET_ERR(primerLineEdit != NULL, "Forward primerEdit is NULL");
 
     CHECK_SET_ERR(primerLineEdit->text() == "XNVHDBMRSWYKACGT", "Incorrect reverse-complement primer translation");
@@ -645,7 +657,7 @@ GUI_TEST_CLASS_DEFINITION(test_0016) {
     GTGlobals::sleep();
 
     // Expected state: '-' pressing is ignored
-    QLineEdit *primerEdit = dynamic_cast<QLineEdit*>(GTWidget::findWidget(os, "primerEdit", GTUtilsPcr::primerBox(os, U2Strand::Direct)));
+    QLineEdit *primerEdit = dynamic_cast<QLineEdit *>(GTWidget::findWidget(os, "primerEdit", GTUtilsPcr::primerBox(os, U2Strand::Direct)));
     CHECK_SET_ERR(primerEdit != NULL, "Cannot find primer line edit");
     CHECK_SET_ERR(primerEdit->text().isEmpty(), "There are unexpected characters in PrimerLineEdit");
 }
@@ -662,11 +674,11 @@ GUI_TEST_CLASS_DEFINITION(test_0017) {
 
     GTUtilsOptionPanelSequenceView::openTab(os, GTUtilsOptionPanelSequenceView::InSilicoPcr);
 
-    QLineEdit *primerEdit = dynamic_cast<QLineEdit*>(GTWidget::findWidget(os, "primerEdit", GTWidget::findWidget(os, "forwardPrimerBox")));
+    QLineEdit *primerEdit = dynamic_cast<QLineEdit *>(GTWidget::findWidget(os, "primerEdit", GTWidget::findWidget(os, "forwardPrimerBox")));
     GTLineEdit::setText(os, primerEdit, "AC\r\nCCTG   GAGAG\nCATCG\tAT", true, true);
 
     CHECK_SET_ERR(primerEdit->text() == "ACCCTGGAGAGCATCGAT", "Incorrect whitespaces removing");
 }
 
-} // GUITest_common_scenarios_in_silico_pcr
-} // U2
+}    // namespace GUITest_common_scenarios_in_silico_pcr
+}    // namespace U2

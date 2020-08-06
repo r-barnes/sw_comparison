@@ -19,18 +19,18 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/DocumentModel.h>
+#include "PhyTreeGeneratorTask.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/AppResources.h>
-#include "PhyTreeGeneratorTask.h"
-#include "PhyTreeGeneratorRegistry.h"
+#include <U2Core/DocumentModel.h>
 
+#include "PhyTreeGeneratorRegistry.h"
 
 namespace U2 {
 
-PhyTreeGeneratorTask::PhyTreeGeneratorTask(const MultipleSequenceAlignment& ma, const CreatePhyTreeSettings& _settings)
-: Task(PhyTreeGeneratorTask::tr("Calculating Phylogenetic Tree"), TaskFlag_FailOnSubtaskError), inputMA(ma), settings(_settings)
-{
+PhyTreeGeneratorTask::PhyTreeGeneratorTask(const MultipleSequenceAlignment &ma, const CreatePhyTreeSettings &_settings)
+    : Task(PhyTreeGeneratorTask::tr("Calculating Phylogenetic Tree"), TaskFlag_FailOnSubtaskError), inputMA(ma), settings(_settings) {
     tpm = Task::Progress_Manual;
 }
 
@@ -41,32 +41,31 @@ Task::ReportResult PhyTreeGeneratorTask::report() {
     return ReportResult_Finished;
 }
 
-PhyTreeGeneratorLauncherTask::PhyTreeGeneratorLauncherTask(const MultipleSequenceAlignment& ma, const CreatePhyTreeSettings& _settings)
-:Task(PhyTreeGeneratorLauncherTask::tr("Calculating Phylogenetic Tree"), TaskFlag_FailOnSubtaskError), inputMA(ma->getCopy()), settings(_settings), task(NULL){
+PhyTreeGeneratorLauncherTask::PhyTreeGeneratorLauncherTask(const MultipleSequenceAlignment &ma, const CreatePhyTreeSettings &_settings)
+    : Task(PhyTreeGeneratorLauncherTask::tr("Calculating Phylogenetic Tree"), TaskFlag_FailOnSubtaskError), inputMA(ma->getCopy()), settings(_settings), task(NULL) {
     tpm = Task::Progress_SubTasksBased;
 }
-void PhyTreeGeneratorLauncherTask::prepare(){
+void PhyTreeGeneratorLauncherTask::prepare() {
     QString algId = settings.algorithm;
-    PhyTreeGeneratorRegistry* registry = AppContext::getPhyTreeGeneratorRegistry();
-    PhyTreeGenerator* generator = registry->getGenerator(algId);
-    assert(generator!=NULL);
+    PhyTreeGeneratorRegistry *registry = AppContext::getPhyTreeGeneratorRegistry();
+    PhyTreeGenerator *generator = registry->getGenerator(algId);
+    assert(generator != NULL);
     if (generator == NULL) {
         stateInfo.setError(PhyTreeGeneratorLauncherTask::tr("Tree construction algorithm %1 not found").arg(algId));
-    }else{
-        const QStringList& rowsOrder = settings.rowsOrder;
-        if(rowsOrder.size() >= inputMA->getRowNames().size()) {
+    } else {
+        const QStringList &rowsOrder = settings.rowsOrder;
+        if (rowsOrder.size() >= inputMA->getRowNames().size()) {
             inputMA->sortRowsByList(rowsOrder);
         }
 
         namesConvertor.replaceNamesWithAlphabeticIds(inputMA);
 
-        task = dynamic_cast<PhyTreeGeneratorTask*>(generator->createCalculatePhyTreeTask(inputMA,settings));
+        task = dynamic_cast<PhyTreeGeneratorTask *>(generator->createCalculatePhyTreeTask(inputMA, settings));
         addSubTask(task);
     }
-
 }
-Task::ReportResult PhyTreeGeneratorLauncherTask::report(){
-    if(task){
+Task::ReportResult PhyTreeGeneratorLauncherTask::report() {
+    if (task) {
         result = task->getResult();
         namesConvertor.restoreNames(result);
     }
@@ -77,38 +76,37 @@ void PhyTreeGeneratorLauncherTask::sl_onCalculationCanceled() {
     cancel();
 }
 
-void SeqNamesConvertor::replaceNamesWithAlphabeticIds(MultipleSequenceAlignment& ma) {
+void SeqNamesConvertor::replaceNamesWithAlphabeticIds(MultipleSequenceAlignment &ma) {
     QStringList rows = ma->getRowNames();
 
     int rowsNum = ma->getNumRows();
-    for(int i = 0; i < rowsNum; i++) {
+    for (int i = 0; i < rowsNum; i++) {
         namesMap[generateNewAlphabeticId()] = rows.at(i);
         ma->renameRow(i, lastIdStr);
     }
 }
-void SeqNamesConvertor::restoreNames(const PhyTree& tree) {
-    if(!tree) {
+void SeqNamesConvertor::restoreNames(const PhyTree &tree) {
+    if (!tree) {
         return;
     }
-    QList<const PhyNode*> nodes = tree->collectNodes();
-    foreach(const PhyNode* node, nodes) {
+    QList<const PhyNode *> nodes = tree->collectNodes();
+    foreach (const PhyNode *node, nodes) {
         QString restoredName = namesMap[node->getName()];
-        if(!restoredName.isEmpty()) {
-            PhyNode* renamedNode = const_cast<PhyNode*>(node);
+        if (!restoredName.isEmpty()) {
+            PhyNode *renamedNode = const_cast<PhyNode *>(node);
             renamedNode->setName(restoredName);
         }
     }
 }
 
-const QString& SeqNamesConvertor::generateNewAlphabeticId() {
+const QString &SeqNamesConvertor::generateNewAlphabeticId() {
     int idSize = lastIdStr.size();
-    for(int i = idSize - 1; i >= 0; i--) {
+    for (int i = idSize - 1; i >= 0; i--) {
         char curChar = lastIdStr.at(i).toLatin1();
-        if(curChar < 'z') {
+        if (curChar < 'z') {
             lastIdStr[i] = curChar + 1;
             return lastIdStr;
-        }
-        else {
+        } else {
             lastIdStr[i] = 'a';
         }
     }
@@ -119,5 +117,4 @@ const QString& SeqNamesConvertor::generateNewAlphabeticId() {
     return lastIdStr;
 }
 
-
-} //namespace
+}    // namespace U2

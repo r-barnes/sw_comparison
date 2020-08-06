@@ -38,29 +38,29 @@ namespace WorkflowSerialize {
 class HRWizardParser : public QObject {
     Q_OBJECT
 public:
-    HRWizardParser(Tokenizer &tokenizer, const QMap<QString, Actor*> &actorMap);
+    HRWizardParser(Tokenizer &tokenizer, const QMap<QString, Actor *> &actorMap);
     virtual ~HRWizardParser();
 
-    Wizard * parseWizard(U2OpStatus &os);
+    Wizard *parseWizard(U2OpStatus &os);
 
 private:
     Tokenizer &tokenizer;
-    const QMap<QString, Actor*> &actorMap;
+    const QMap<QString, Actor *> &actorMap;
     QString wizardName;
     QString finishLabel;
     QString helpPageId;
-    QList<WizardPage*> pages;
+    QList<WizardPage *> pages;
     QMap<QString, Variable> vars;
 
-    QMap<QString, QString> nextIds; // id <-> nextId
-    QMap<QString, WizardPage*> pagesMap; // id <-> page
-    QMap<QString, QList<Predicate> > results;
+    QMap<QString, QString> nextIds;    // id <-> nextId
+    QMap<QString, WizardPage *> pagesMap;    // id <-> page
+    QMap<QString, QList<Predicate>> results;
 
 private:
     void parsePage(U2OpStatus &os);
     void parseResult(U2OpStatus &os);
     void finilizePagesOrder(U2OpStatus &os);
-    Wizard * takeResult();
+    Wizard *takeResult();
     void parseNextIds(ParsedPairs &pairs, WizardPage *page, U2OpStatus &os);
 
 public:
@@ -105,7 +105,7 @@ public:
 
 private:
     QString serializePage(WizardPage *page, int depth);
-    QString serializeResults(const QMap<QString, QList<Predicate> > results, int depth);
+    QString serializeResults(const QMap<QString, QList<Predicate>> results, int depth);
     QString serializeNextId(WizardPage *page, int depth);
 };
 
@@ -115,10 +115,10 @@ private:
 class WizardWidgetParser : public WizardWidgetVisitor {
 public:
     WizardWidgetParser(const QString &title,
-        const QString &data,
-        const QMap<QString, Actor*> &actorMap,
-        QMap<QString, Variable> &vars,
-        U2OpStatus &os);
+                       const QString &data,
+                       const QMap<QString, Actor *> &actorMap,
+                       QMap<QString, Variable> &vars,
+                       U2OpStatus &os);
 
     virtual void visit(AttributeWidget *aw);
     virtual void visit(WidgetsArea *w);
@@ -136,7 +136,7 @@ public:
 private:
     QString title;
     QString data;
-    const QMap<QString, Actor*> &actorMap;
+    const QMap<QString, Actor *> &actorMap;
     QMap<QString, Variable> &vars;
     U2OpStatus &os;
 
@@ -145,7 +145,7 @@ private:
 private:
     void getLabelSize(WidgetsArea *wa);
     void getTitle(WidgetsArea *wa);
-    WizardWidget * createWidget(const QString &id);
+    WizardWidget *createWidget(const QString &id);
     SelectorValue parseSelectorValue(ActorPrototype *srcProto, const QString &valueDef);
     PortMapping parsePortMapping(const QString &mappingDef);
     void parseSlotsMapping(PortMapping &pm, const QString &mappingDef);
@@ -157,15 +157,15 @@ private:
 class PageContentParser : public TemplatedPageVisitor {
 public:
     PageContentParser(ParsedPairs &pairs,
-        const QMap<QString, Actor*> &actorMap,
-        QMap<QString, Variable> &vars,
-        U2OpStatus &os);
+                      const QMap<QString, Actor *> &actorMap,
+                      QMap<QString, Variable> &vars,
+                      U2OpStatus &os);
 
     virtual void visit(DefaultPageContent *content);
 
 private:
     ParsedPairs &pairs;
-    const QMap<QString, Actor*> &actorMap;
+    const QMap<QString, Actor *> &actorMap;
     QMap<QString, Variable> &vars;
     U2OpStatus &os;
 };
@@ -190,7 +190,7 @@ public:
     virtual void visit(TophatSamplesWidget *tsw);
     virtual void visit(LabelWidget *lw);
 
-    const QString & getResult();
+    const QString &getResult();
 
 private:
     int depth;
@@ -210,14 +210,14 @@ public:
 
     virtual void visit(DefaultPageContent *content);
 
-    const QString & getResult() const;
+    const QString &getResult() const;
 
 private:
     int depth;
     QString result;
 };
 
-} // WorkflowSerialize
-} // U2
+}    // namespace WorkflowSerialize
+}    // namespace U2
 
-#endif // _U2_HRWIZARDSERIALIZER_H_
+#endif    // _U2_HRWIZARDSERIALIZER_H_

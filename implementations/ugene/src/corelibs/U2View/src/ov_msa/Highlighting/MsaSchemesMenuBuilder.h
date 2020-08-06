@@ -22,12 +22,12 @@
 #ifndef _U2_MSA_SCHEMES_MENU_BUILDER_H_
 #define _U2_MSA_SCHEMES_MENU_BUILDER_H_
 
-#include <QList>
 #include <QAction>
+#include <QList>
 
 #include <U2Core/global.h>
 
-#define SECTION_TOKEN         QString("SEPARATOR")
+#define SECTION_TOKEN QString("SEPARATOR")
 
 namespace U2 {
 
@@ -42,22 +42,23 @@ public:
         Custom
     };
 
-    MsaSchemesMenuBuilder(): QObject() {};
+    MsaSchemesMenuBuilder()
+        : QObject() {};
 
-    static void createAndFillColorSchemeMenuActions(QList<QAction*> &actions, ColorSchemeType type, DNAAlphabetType alphabet, QObject *actionsParent);
+    static void createAndFillColorSchemeMenuActions(QList<QAction *> &actions, ColorSchemeType type, DNAAlphabetType alphabet, QObject *actionsParent);
 
-    static void createAndFillHighlightingMenuActions(QList<QAction*> &actions, DNAAlphabetType alphabet, QObject *actionsParent);
+    static void createAndFillHighlightingMenuActions(QList<QAction *> &actions, DNAAlphabetType alphabet, QObject *actionsParent);
 
-    static void addActionOrTextSeparatorToMenu(QAction* a, QMenu* colorsSchemeMenu);
+    static void addActionOrTextSeparatorToMenu(QAction *a, QMenu *colorsSchemeMenu);
 
 private:
-    static void fillColorSchemeMenuActions(QList<QAction*> &actions, QList<MsaColorSchemeFactory*> colorFactories, QObject *actionsParent);
-    static void fillHighlightingSchemeMenuActions(QList<QAction*> &actions, const QList<MsaHighlightingSchemeFactory*> &highlightingSchemeFactories, QObject *actionsParent);
-    
-    static void fillColorMenuSectionForCurrentAlphabet(QList<MsaColorSchemeFactory *> &colorSchemesFactories, QList<QAction *> &actions, const QString& alphName, QObject * actionsParent);
-    static void fillHighlightingMenuSectionForCurrentAlphabet(QList<MsaHighlightingSchemeFactory *> &highlightSchemesFactories, QList<QAction *> &actions, const QString&, QObject * actionsParent);
+    static void fillColorSchemeMenuActions(QList<QAction *> &actions, QList<MsaColorSchemeFactory *> colorFactories, QObject *actionsParent);
+    static void fillHighlightingSchemeMenuActions(QList<QAction *> &actions, const QList<MsaHighlightingSchemeFactory *> &highlightingSchemeFactories, QObject *actionsParent);
+
+    static void fillColorMenuSectionForCurrentAlphabet(QList<MsaColorSchemeFactory *> &colorSchemesFactories, QList<QAction *> &actions, const QString &alphName, QObject *actionsParent);
+    static void fillHighlightingMenuSectionForCurrentAlphabet(QList<MsaHighlightingSchemeFactory *> &highlightSchemesFactories, QList<QAction *> &actions, const QString &, QObject *actionsParent);
 };
 
-}
+}    // namespace U2
 
 #endif

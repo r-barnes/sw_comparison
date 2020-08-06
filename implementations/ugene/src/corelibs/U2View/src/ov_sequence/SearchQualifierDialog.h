@@ -33,10 +33,10 @@ namespace U2 {
 class AnnotationsTreeView;
 class AVItem;
 
-class U2VIEW_EXPORT SearchQualifierDialog: public QDialog {
+class U2VIEW_EXPORT SearchQualifierDialog : public QDialog {
     Q_OBJECT
 public:
-    SearchQualifierDialog(QWidget* p, AnnotationsTreeView *treeView);
+    SearchQualifierDialog(QWidget *p, AnnotationsTreeView *treeView);
     ~SearchQualifierDialog();
 
 protected:
@@ -54,13 +54,13 @@ private slots:
 private:
     void search(bool searchAll = false);
 
-    AnnotationsTreeView * treeView;
-    Ui_SearchQualifierDialog* ui;
-    AVItem* groupToSearchIn;
-    AVItem * parentAnnotationofPrevResult;
+    AnnotationsTreeView *treeView;
+    Ui_SearchQualifierDialog *ui;
+    AVItem *groupToSearchIn;
+    AVItem *parentAnnotationofPrevResult;
     int indexOfPrevResult;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif //_U2_SEARCH_QUALIFIER_DIALOG_H_
+#endif    //_U2_SEARCH_QUALIFIER_DIALOG_H_

@@ -25,10 +25,12 @@
 
 namespace U2 {
 
-UniprobeInfo::UniprobeInfo(): properties(QMap<QString, QString>()) {
+UniprobeInfo::UniprobeInfo()
+    : properties(QMap<QString, QString>()) {
 }
 
-UniprobeInfo::UniprobeInfo(const QMap<QString, QString>& props): properties(props) {
+UniprobeInfo::UniprobeInfo(const QMap<QString, QString> &props)
+    : properties(props) {
 }
 
 QString UniprobeInfo::getProperty(const QString &name) const {
@@ -39,7 +41,7 @@ QMap<QString, QString> UniprobeInfo::getProperties() const {
     return properties;
 }
 
-UniprobeInfo::UniprobeInfo(const QString& data) {
+UniprobeInfo::UniprobeInfo(const QString &data) {
     QStringList parsedData = data.split("\t");
     QMap<QString, QString> props;
     for (int i = 0, n = parsedData.length(); i < n; i++) {
@@ -52,14 +54,11 @@ PWMatrix::PWMatrix()
     : length(0),
       type(PWM_MONONUCLEOTIDE),
       minSum(0),
-      maxSum(0)
-{
-
+      maxSum(0) {
 }
 
-PWMatrix::PWMatrix(const QVarLengthArray<float>& matrix, const PWMatrixType& _type)
-    : data(matrix), type(_type)
-{
+PWMatrix::PWMatrix(const QVarLengthArray<float> &matrix, const PWMatrixType &_type)
+    : data(matrix), type(_type) {
     length = (type == PWM_MONONUCLEOTIDE) ? (matrix.size() / 4) : (matrix.size() / 16);
     minSum = 0, maxSum = 0;
 
@@ -77,11 +76,12 @@ PWMatrix::PWMatrix(const QVarLengthArray<float>& matrix, const PWMatrixType& _ty
 }
 
 int PWMatrix::index(int row, int column) const {
-    assert (row >= 0);
-    assert (row < 16);
-    if (type == PWM_MONONUCLEOTIDE) assert (row < 4);
-    assert (column >= 0);
-    assert (column < length);
+    assert(row >= 0);
+    assert(row < 16);
+    if (type == PWM_MONONUCLEOTIDE)
+        assert(row < 4);
+    assert(column >= 0);
+    assert(column < length);
     return row * length + column;
 }
 
@@ -106,7 +106,7 @@ float PWMatrix::getMaxSum() const {
     return maxSum;
 }
 
-void PWMatrix::setInfo(const UniprobeInfo& _info) {
+void PWMatrix::setInfo(const UniprobeInfo &_info) {
     info = _info;
 }
 
@@ -118,4 +118,4 @@ QMap<QString, QString> PWMatrix::getProperties() const {
     return info.getProperties();
 }
 
-}
+}    // namespace U2

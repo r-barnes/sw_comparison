@@ -19,22 +19,21 @@
  * MA 02110-1301, USA.
  */
 
-#include <QDir>
-#include <QApplication>
-#include <QPushButton>
-#include <QRadioButton>
-#include <QDialogButtonBox>
-#include <QGroupBox>
-
+#include <base_dialogs/MessageBoxFiller.h>
+#include <drivers/GTKeyboardDriver.h>
 #include <primitives/GTCheckBox.h>
 #include <primitives/GTComboBox.h>
-#include <drivers/GTKeyboardDriver.h>
 #include <primitives/GTLineEdit.h>
 #include <primitives/GTPlainTextEdit.h>
 #include <primitives/GTRadioButton.h>
 #include <primitives/GTWidget.h>
 
-#include <base_dialogs/MessageBoxFiller.h>
+#include <QApplication>
+#include <QDialogButtonBox>
+#include <QDir>
+#include <QGroupBox>
+#include <QPushButton>
+#include <QRadioButton>
 
 #include "ReplaceSubsequenceDialogFiller.h"
 
@@ -44,29 +43,24 @@ namespace U2 {
 ReplaceSubsequenceDialogFiller::ReplaceSubsequenceDialogFiller(HI::GUITestOpStatus &_os, const QString &_pasteDataHere, bool recalculateQuals)
     : Filler(_os, "EditSequenceDialog"),
       pasteDataHere(_pasteDataHere),
-      recalculateQuals(recalculateQuals)
-{
-
+      recalculateQuals(recalculateQuals) {
 }
 
 ReplaceSubsequenceDialogFiller::ReplaceSubsequenceDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario)
     : Filler(os, "EditSequenceDialog", scenario),
-      recalculateQuals(false)
-{
-
+      recalculateQuals(false) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
-void ReplaceSubsequenceDialogFiller::commonScenario()
-{
+void ReplaceSubsequenceDialogFiller::commonScenario() {
     QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog != NULL, "dialog not found");
 
-    QPlainTextEdit *plainText = dialog->findChild<QPlainTextEdit*>("sequenceEdit");
+    QPlainTextEdit *plainText = dialog->findChild<QPlainTextEdit *>("sequenceEdit");
     GT_CHECK(plainText != NULL, "plain text not found");
     //GTKeyboardDriver::keyClick( GTKeyboardDriver::key["a"], Qt::ControlModifier);
     //GTGlobals::sleep();
-    GTKeyboardDriver::keyClick( Qt::Key_Delete);
+    GTKeyboardDriver::keyClick(Qt::Key_Delete);
     GTGlobals::sleep();
     GTPlainTextEdit::setPlainText(os, plainText, pasteDataHere);
 
@@ -80,4 +74,4 @@ void ReplaceSubsequenceDialogFiller::commonScenario()
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

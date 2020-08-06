@@ -22,17 +22,15 @@
 #ifndef _U2_SEARCH_GENBANK_SEQUENCE_DIALOG_CONTROLLER_H_
 #define _U2_SEARCH_GENBANK_SEQUENCE_DIALOG_CONTROLLER_H_
 
-#include <U2Core/global.h>
+#include <QComboBox>
+#include <QDialog>
+#include <QLineEdit>
+#include <QList>
+#include <QScopedPointer>
+#include <QString>
 
 #include <U2Core/LoadRemoteDocumentTask.h>
-
-#include <QLineEdit>
-#include <QDialog>
-#include <QComboBox>
-
-#include <QList>
-#include <QString>
-#include <QScopedPointer>
+#include <U2Core/global.h>
 
 class Ui_SearchGenbankSequenceDialog;
 
@@ -46,8 +44,12 @@ struct QueryBlock {
 class NCBISearchContext {
 public:
     NCBISearchContext() {
-        rules << "AND" << "OR" << "NOT";
-        fields << "Author" << "Gene name"<< "Organism";
+        rules << "AND"
+              << "OR"
+              << "NOT";
+        fields << "Author"
+               << "Gene name"
+               << "Organism";
     }
 
     QStringList fields;
@@ -61,13 +63,15 @@ class QueryBlockWidget : public QWidget {
 private:
     NCBISearchContext ctx;
     QComboBox *conditionBox, *termBox;
-    QLineEdit* queryEdit;
+    QLineEdit *queryEdit;
 
 public:
-    QueryBlockWidget(QueryBuilderController* controller, bool first);
+    QueryBlockWidget(QueryBuilderController *controller, bool first);
     ~QueryBlockWidget();
     QString getQuery();
-    void setInputFocus() { queryEdit->setFocus(); }
+    void setInputFocus() {
+        queryEdit->setFocus();
+    }
 };
 
 class SearchGenbankSequenceDialogController;
@@ -75,12 +79,13 @@ class SearchGenbankSequenceDialogController;
 class QueryBuilderController : public QObject {
     Q_OBJECT
 private:
-    SearchGenbankSequenceDialogController* parentController;
-    QList<QueryBlockWidget*> queryBlockWidgets;
+    SearchGenbankSequenceDialogController *parentController;
+    QList<QueryBlockWidget *> queryBlockWidgets;
+
 public:
-    QueryBuilderController(SearchGenbankSequenceDialogController* parent);
+    QueryBuilderController(SearchGenbankSequenceDialogController *parent);
     ~QueryBuilderController();
-    void removeQueryBlockWidget(QPushButton* callbackButton);
+    void removeQueryBlockWidget(QPushButton *callbackButton);
 private slots:
     void sl_updateQuery();
     void sl_addQueryBlockWidget();
@@ -93,24 +98,24 @@ class U2GUI_EXPORT SearchGenbankSequenceDialogController : public QDialog {
 public:
     SearchGenbankSequenceDialogController(QWidget *p = NULL);
     ~SearchGenbankSequenceDialogController();
-    void addQueryBlockWidget(QWidget* w);
-    void removeQueryBlockWidget(QWidget* w);
-    void setQueryText(const QString& queryText);
+    void addQueryBlockWidget(QWidget *w);
+    void removeQueryBlockWidget(QWidget *w);
+    void setQueryText(const QString &queryText);
 
 private:
     void prepareSummaryRequestTask(const QStringList &results);
     QStringList splitIds(const QStringList &idsList);
     static QString getIdsString(const QStringList &idsList, int startIndex, int count);
 
-    QList<EntrezSummary> getSummaryResults() const ;
+    QList<EntrezSummary> getSummaryResults() const;
 
-    Ui_SearchGenbankSequenceDialog* ui;
-    QueryBuilderController* queryBlockController;
+    Ui_SearchGenbankSequenceDialog *ui;
+    QueryBuilderController *queryBlockController;
     QScopedPointer<ESearchResultHandler> searchResultHandler;
-    EntrezQueryTask* searchTask;
+    EntrezQueryTask *searchTask;
     QScopedPointer<ESummaryResultHandler> summaryResultHandler;
     Task *summaryTask;
-    QPushButton* downloadButton;
+    QPushButton *downloadButton;
 
     static const int MAX_IDS_PER_QUERY = 100;
 
@@ -118,9 +123,9 @@ public slots:
     void sl_searchButtonClicked();
     void sl_downloadButtonClicked();
     void sl_itemSelectionChanged();
-    void sl_taskStateChanged(Task* task);
+    void sl_taskStateChanged(Task *task);
 };
 
-} // namespace
+}    // namespace U2
 
-#endif //_U2_SEARCH_GENBANK_SEQUENCE_DIALOG_CONTROLLER_H_
+#endif    //_U2_SEARCH_GENBANK_SEQUENCE_DIALOG_CONTROLLER_H_

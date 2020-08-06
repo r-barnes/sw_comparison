@@ -19,8 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-#include "utils/GTUtilsDialog.h"
 #include <base_dialogs/GTFileDialog.h>
+
+#include "utils/GTUtilsDialog.h"
 
 namespace U2 {
 using namespace HI;
@@ -28,17 +29,18 @@ using namespace HI;
 class EditConnectionDialogFiller : public Filler {
 public:
     class Parameters {
-        public:
-        Parameters():
-            connectionName(""),
-            host(""),
-            port(""),
-            database(""),
-            login(""),
-            password(""),
-            rememberMe(false),
-            accept(true),
-            checkDefaults(false) {}
+    public:
+        Parameters()
+            : connectionName(""),
+              host(""),
+              port(""),
+              database(""),
+              login(""),
+              password(""),
+              rememberMe(false),
+              accept(true),
+              checkDefaults(false) {
+        }
 
         QString connectionName;
         QString host;
@@ -51,8 +53,8 @@ public:
         bool checkDefaults;
     };
 
-
-    enum ConnectionType {FROM_SETTINGS, MANUAL};
+    enum ConnectionType { FROM_SETTINGS,
+                          MANUAL };
     EditConnectionDialogFiller(HI::GUITestOpStatus &os, const Parameters &parameters, ConnectionType type);
     EditConnectionDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario);
     void commonScenario();
@@ -71,4 +73,4 @@ private:
     QString password;
 };
 
-} // U2
+}    // namespace U2

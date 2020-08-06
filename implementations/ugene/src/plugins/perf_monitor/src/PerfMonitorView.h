@@ -22,10 +22,10 @@
 #ifndef _U2_PERF_VIEW_H_
 #define _U2_PERF_VIEW_H_
 
-#include <U2Gui/MainWindow.h>
-
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
+
+#include <U2Gui/MainWindow.h>
 
 namespace U2 {
 
@@ -42,17 +42,17 @@ protected:
 
 private:
     void updateCounters();
-    PerfTreeItem* findCounterItem(const GCounter* c) const;
-    QTreeWidget* tree;
+    PerfTreeItem *findCounterItem(const GCounter *c) const;
+    QTreeWidget *tree;
 };
 
 class PerfTreeItem : public QTreeWidgetItem {
 public:
-    PerfTreeItem(GCounter* counter);
-    GCounter* counter;
+    PerfTreeItem(GCounter *counter);
+    GCounter *counter;
     void updateVisual();
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

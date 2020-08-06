@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ClarkSupportPlugin.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/ExternalToolRegistry.h>
 
@@ -28,7 +30,6 @@
 #include "ClarkBuildWorker.h"
 #include "ClarkClassifyWorker.h"
 #include "ClarkSupport.h"
-#include "ClarkSupportPlugin.h"
 #include "ClarkTests.h"
 
 namespace U2 {
@@ -36,15 +37,14 @@ namespace U2 {
 const QString ClarkSupportPlugin::PLUGIN_NAME = QObject::tr("CLARK external tool support");
 const QString ClarkSupportPlugin::PLUGIN_DESCRIPRION = QObject::tr("The plugin supports CLARK: fast, accurate and versatile sequence classification system (http://clark.cs.ucr.edu)");
 
-extern "C" Q_DECL_EXPORT Plugin* U2_PLUGIN_INIT_FUNC() {
+extern "C" Q_DECL_EXPORT Plugin *U2_PLUGIN_INIT_FUNC() {
     ClarkSupportPlugin *plugin = new ClarkSupportPlugin();
     return plugin;
 }
 
 ClarkSupportPlugin::ClarkSupportPlugin()
     : Plugin(PLUGIN_NAME, PLUGIN_DESCRIPRION),
-      testFactories(nullptr)
-{
+      testFactories(nullptr) {
     ExternalToolRegistry *etRegistry = AppContext::getExternalToolRegistry();
     CHECK(NULL != etRegistry, );
 
@@ -54,7 +54,7 @@ ClarkSupportPlugin::ClarkSupportPlugin()
     LocalWorkflow::ClarkClassifyWorkerFactory::init();
 
     // tests
-    GTestFormatRegistry* testFormatRegistry = AppContext::getTestFramework()->getTestFormatRegistry();
+    GTestFormatRegistry *testFormatRegistry = AppContext::getTestFramework()->getTestFormatRegistry();
     XMLTestFormat *xmlTestFormat = qobject_cast<XMLTestFormat *>(testFormatRegistry->findFormat("XML"));
     SAFE_POINT(nullptr != xmlTestFormat, "Can't find XML test format", );
 
@@ -69,7 +69,7 @@ ClarkSupportPlugin::ClarkSupportPlugin()
 }
 
 ClarkSupportPlugin::~ClarkSupportPlugin() {
-    GTestFormatRegistry* testFormatRegistry = AppContext::getTestFramework()->getTestFormatRegistry();
+    GTestFormatRegistry *testFormatRegistry = AppContext::getTestFramework()->getTestFormatRegistry();
     XMLTestFormat *xmlTestFormat = qobject_cast<XMLTestFormat *>(testFormatRegistry->findFormat("XML"));
     SAFE_POINT(nullptr != xmlTestFormat, "Can't find XML test format", );
 
@@ -82,4 +82,4 @@ ClarkSupportPlugin::~ClarkSupportPlugin() {
     ClarkSupport::unregisterTools(etRegistry);
 }
 
-}   // namespace U2
+}    // namespace U2

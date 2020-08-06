@@ -22,13 +22,12 @@
 #ifndef _U2_CIRCULAR_VIEW_SPLITTER_H_
 #define _U2_CIRCULAR_VIEW_SPLITTER_H_
 
-#include "CircularView.h"
-#include "CircularItems.h"
+#include <QAction>
 
 #include <U2View/ADVSplitWidget.h>
 
-#include <QAction>
-
+#include "CircularItems.h"
+#include "CircularView.h"
 
 class QScrollBar;
 
@@ -40,17 +39,21 @@ class RestrctionMapWidget;
 class CircularViewSplitter : public ADVSplitWidget {
     Q_OBJECT
 public:
-    CircularViewSplitter( AnnotatedDNAView* view);
+    CircularViewSplitter(AnnotatedDNAView *view);
     // there are no special object handling with this view
     // it only shows existing AO only
-    virtual bool acceptsGObject(GObject*) {return false;}
-    virtual void updateState(const QVariantMap& m);
-    virtual void saveState(QVariantMap& m);
-    void addView(CircularView* view, RestrctionMapWidget* rmapWidget);
+    virtual bool acceptsGObject(GObject *) {
+        return false;
+    }
+    virtual void updateState(const QVariantMap &m);
+    virtual void saveState(QVariantMap &m);
+    void addView(CircularView *view, RestrctionMapWidget *rmapWidget);
     void adaptSize();
-    void removeView(CircularView* view, RestrctionMapWidget* rmapWidget);
+    void removeView(CircularView *view, RestrctionMapWidget *rmapWidget);
     bool isEmpty();
-    const QList<CircularView*>& getViewList() const { return circularViewList; }
+    const QList<CircularView *> &getViewList() const {
+        return circularViewList;
+    }
     void updateViews();
 protected slots:
     void sl_export();
@@ -61,20 +64,21 @@ protected slots:
     void sl_updateZoomOutAction(bool);
     void sl_updateFitInViewAction(bool);
     void sl_toggleRestrictionMap(bool);
+
 private:
-    QSplitter*          splitter;
-    QScrollBar*         horScroll;
+    QSplitter *splitter;
+    QScrollBar *horScroll;
 
-    QAction* zoomInAction;
-    QAction* zoomOutAction;
-    QAction* fitInViewAction;
-    QAction* exportAction;
-    QAction* toggleRestrictionMapAction;
+    QAction *zoomInAction;
+    QAction *zoomOutAction;
+    QAction *fitInViewAction;
+    QAction *exportAction;
+    QAction *toggleRestrictionMapAction;
 
-    QList<CircularView*> circularViewList;
-    QList<RestrctionMapWidget*> restrictionMapWidgets;
+    QList<CircularView *> circularViewList;
+    QList<RestrctionMapWidget *> restrictionMapWidgets;
 };
 
-} //namespace U2
+}    //namespace U2
 
-#endif //_U2_CIRCULAR_VIEW_SPLITTER_H_
+#endif    //_U2_CIRCULAR_VIEW_SPLITTER_H_

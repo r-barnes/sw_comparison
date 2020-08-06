@@ -33,11 +33,12 @@ public:
     PortMapping(const QString &srcPortId, const QString &dstPortId);
 
     void addSlotMapping(const SlotMapping &value);
-    const QList<SlotMapping> & getMappings() const;
+    const QList<SlotMapping> &getMappings() const;
     QString getDstSlotId(const QString &srcSloId, U2OpStatus &os) const;
 
     void validate(const QMap<Descriptor, DataTypePtr> &srcType,
-        const QMap<Descriptor, DataTypePtr> &dstType, U2OpStatus &os) const;
+                  const QMap<Descriptor, DataTypePtr> &dstType,
+                  U2OpStatus &os) const;
 
     static PortMapping getMappingBySrcPort(const QString &srcPortId, const QList<PortMapping> &mappings, U2OpStatus &os);
 
@@ -45,16 +46,17 @@ private:
     QList<SlotMapping> slotList;
 
     void validateSlotsCount(const QMap<Descriptor, DataTypePtr> &srcType,
-        const QMap<Descriptor, DataTypePtr> &dstType, U2OpStatus &os) const;
+                            const QMap<Descriptor, DataTypePtr> &dstType,
+                            U2OpStatus &os) const;
     /** Returns found datatype */
-    DataTypePtr validateSlotId(const QString &portId, const QString &slotId,
-        const QMap<Descriptor, DataTypePtr> &type, U2OpStatus &os) const;
+    DataTypePtr validateSlotId(const QString &portId, const QString &slotId, const QMap<Descriptor, DataTypePtr> &type, U2OpStatus &os) const;
     void tryAddId(const QString &id,
-        QSet<QString> &idSet, U2OpStatus &os) const;
+                  QSet<QString> &idSet,
+                  U2OpStatus &os) const;
     void validateMappingsCount(const QMap<Descriptor, DataTypePtr> &srcType,
-        U2OpStatus &os) const;
+                               U2OpStatus &os) const;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_PORTMAPPING_H_
+#endif    // _U2_PORTMAPPING_H_

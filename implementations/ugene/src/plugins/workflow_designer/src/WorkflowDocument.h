@@ -22,7 +22,8 @@
 #ifndef _U2_WORKFLOW_FORMAT_H_
 #define _U2_WORKFLOW_FORMAT_H_
 
-#include "WorkflowDesignerPlugin.h"
+#include <QStringList>
+
 #include <U2Core/DocumentModel.h>
 #include <U2Core/GObject.h>
 
@@ -31,7 +32,7 @@
 #include <U2Gui/ObjectViewModel.h>
 #include <U2Gui/ObjectViewTasks.h>
 
-#include <QStringList>
+#include "WorkflowDesignerPlugin.h"
 
 class QDomDocument;
 
@@ -42,56 +43,64 @@ class WorkflowView;
 class WorkflowDocFormat : public TextDocumentFormat {
     Q_OBJECT
 public:
-    WorkflowDocFormat(QObject* p);
+    WorkflowDocFormat(QObject *p);
 
     static const DocumentFormatId FORMAT_ID;
 
-    virtual Document* createNewLoadedDocument(IOAdapterFactory* io, const GUrl& url, U2OpStatus& os, const QVariantMap& fs = QVariantMap());
+    virtual Document *createNewLoadedDocument(IOAdapterFactory *io, const GUrl &url, U2OpStatus &os, const QVariantMap &fs = QVariantMap());
 
-    virtual void storeDocument( Document* d, IOAdapter* io, U2OpStatus& os);
+    virtual void storeDocument(Document *d, IOAdapter *io, U2OpStatus &os);
 
 protected:
-    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& url = GUrl()) const;
+    virtual FormatCheckResult checkRawTextData(const QByteArray &rawData, const GUrl &url = GUrl()) const;
 
-    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& targetDb, const QVariantMap& hints, U2OpStatus& os);
+    virtual Document *loadTextDocument(IOAdapter *io, const U2DbiRef &targetDb, const QVariantMap &hints, U2OpStatus &os);
 };
 
 class WorkflowGObject : public GObject {
     Q_OBJECT
 public:
     static const GObjectType TYPE;
-    WorkflowGObject(const QString& objectName, const QString& s, const QVariantMap& map = QVariantMap())
-        : GObject(TYPE, objectName), serializedScene(s), view(NULL) { Q_UNUSED(map); }
+    WorkflowGObject(const QString &objectName, const QString &s, const QVariantMap &map = QVariantMap())
+        : GObject(TYPE, objectName), serializedScene(s), view(NULL) {
+        Q_UNUSED(map);
+    }
 
-    QString getSceneRawData() const {return serializedScene;}
-    void setSceneRawData(const QString & data);
-    virtual GObject* clone(const U2DbiRef& dbiRef, U2OpStatus& os, const QVariantMap &hints = QVariantMap()) const;
-    virtual bool isTreeItemModified () const;
-    void setView(WorkflowView* view);
-    WorkflowView* getView() const {return view;}
+    QString getSceneRawData() const {
+        return serializedScene;
+    }
+    void setSceneRawData(const QString &data);
+    virtual GObject *clone(const U2DbiRef &dbiRef, U2OpStatus &os, const QVariantMap &hints = QVariantMap()) const;
+    virtual bool isTreeItemModified() const;
+    void setView(WorkflowView *view);
+    WorkflowView *getView() const {
+        return view;
+    }
 
 protected:
     QString serializedScene;
-    WorkflowView* view;
+    WorkflowView *view;
 };
 
 class WorkflowViewFactory : public GObjectViewFactory {
     Q_OBJECT
 public:
     static const GObjectViewFactoryId ID;
-    WorkflowViewFactory(QObject* p = NULL) : GObjectViewFactory(ID, tr("Workflow Designer"), p) {}
+    WorkflowViewFactory(QObject *p = NULL)
+        : GObjectViewFactory(ID, tr("Workflow Designer"), p) {
+    }
 
-    virtual bool canCreateView(const MultiGSelection& multiSelection);
-    virtual Task* createViewTask(const MultiGSelection& multiSelection, bool single = false);
+    virtual bool canCreateView(const MultiGSelection &multiSelection);
+    virtual Task *createViewTask(const MultiGSelection &multiSelection, bool single = false);
 };
 
 class OpenWorkflowViewTask : public ObjectViewTask {
     Q_OBJECT
 public:
-    OpenWorkflowViewTask(Document* doc);
+    OpenWorkflowViewTask(Document *doc);
     virtual void open();
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

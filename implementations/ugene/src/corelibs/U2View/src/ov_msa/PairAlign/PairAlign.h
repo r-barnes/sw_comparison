@@ -22,24 +22,24 @@
 #ifndef _U2_PAIR_ALIGN_H
 #define _U2_PAIR_ALIGN_H
 
-#include <QList>
-#include <QString>
-#include <QStringList>
-#include <QWidget>
-#include <QLabel>
-#include <QPushButton>
-#include <QLineEdit>
-#include <QToolButton>
+#include <QCheckBox>
 #include <QComboBox>
 #include <QGroupBox>
-#include <QCheckBox>
+#include <QLabel>
+#include <QLineEdit>
+#include <QList>
+#include <QPushButton>
+#include <QString>
+#include <QStringList>
+#include <QToolButton>
 #include <QVBoxLayout>
+#include <QWidget>
 
 #include <U2Gui/SuggestCompleter.h>
 
-#include "ui_PairwiseAlignmentOptionsPanelWidget.h"
 #include "../MsaOpSavableTab.h"
 #include "../SequenceSelectorWidgetController.h"
+#include "ui_PairwiseAlignmentOptionsPanelWidget.h"
 
 namespace U2 {
 
@@ -57,11 +57,11 @@ class U2VIEW_EXPORT PairAlign : public QWidget, public Ui_PairwiseAlignmentOptio
     Q_DISABLE_COPY(PairAlign)
 
 public:
-    PairAlign(MSAEditor* _msa);
+    PairAlign(MSAEditor *_msa);
 
 private slots:
-    void sl_algorithmSelected(const QString& algorithmName);
-    void sl_subwidgetStateChanged(const QString& id);
+    void sl_algorithmSelected(const QString &algorithmName);
+    void sl_subwidgetStateChanged(const QString &id);
     void sl_inNewWindowCheckBoxChangeState(bool newState);
     void sl_alignButtonPressed();
     void sl_outputFileChanged();
@@ -79,7 +79,7 @@ private:
     void checkState();
     void updatePercentOfSimilarity();
     bool checkSequenceNames();
-    AlignmentAlgorithm* getAlgorithmById(const QString& algorithmId);
+    AlignmentAlgorithm *getAlgorithmById(const QString &algorithmId);
     /* Updates label with warning message. Types: 0 -> bad alphabet, 1 -> same sequences in selectors. */
     void updateWarningMessage(int warningMessageType);
     void initSaveController();
@@ -87,15 +87,15 @@ private:
     bool isValidSequenceId(qint64 sequenceId) const;
     static QString getDefaultFilePath();
 
-    MSAEditor* msa;
-    PairwiseAlignmentWidgetsSettings * pairwiseAlignmentWidgetsSettings;
-    MSADistanceAlgorithm* distanceCalcTask;
+    MSAEditor *msa;
+    PairwiseAlignmentWidgetsSettings *pairwiseAlignmentWidgetsSettings;
+    MSADistanceAlgorithm *distanceCalcTask;
 
-    AlignmentAlgorithmMainWidget* settingsWidget;       //created by factories on demand
+    AlignmentAlgorithmMainWidget *settingsWidget;    //created by factories on demand
 
-    ShowHideSubgroupWidget* showHideSequenceWidget;
-    ShowHideSubgroupWidget* showHideSettingsWidget;
-    ShowHideSubgroupWidget* showHideOutputWidget;
+    ShowHideSubgroupWidget *showHideSequenceWidget;
+    ShowHideSubgroupWidget *showHideSettingsWidget;
+    ShowHideSubgroupWidget *showHideOutputWidget;
 
     SequenceSelectorWidgetController *firstSeqSelectorWC;
     SequenceSelectorWidgetController *secondSeqSelectorWC;
@@ -112,10 +112,10 @@ private:
 
     bool sequencesChanged;
     bool sequenceNamesIsOk;
-    bool alphabetIsOk;      //no RNA alphabet allowed
+    bool alphabetIsOk;    //no RNA alphabet allowed
     bool canDoAlign;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // PAIR_ALIGN_H
+#endif    // PAIR_ALIGN_H

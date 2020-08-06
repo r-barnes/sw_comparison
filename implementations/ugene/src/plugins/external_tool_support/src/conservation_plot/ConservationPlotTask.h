@@ -38,15 +38,15 @@ class SaveDocumentTask;
 class ConservationPlotTask : public ExternalToolSupportTask {
     Q_OBJECT
 public:
-    ConservationPlotTask(const ConservationPlotSettings& _settings, Workflow::DbiDataStorage *storage, const QList<Workflow::SharedDbiDataHandler>& plotData);
+    ConservationPlotTask(const ConservationPlotSettings &_settings, Workflow::DbiDataStorage *storage, const QList<Workflow::SharedDbiDataHandler> &plotData);
     virtual ~ConservationPlotTask();
 
     virtual void prepare();
-    virtual QList<Task*> onSubTaskFinished(Task* subTask);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
     virtual void run();
     virtual void cleanup();
 
-    const ConservationPlotSettings & getSettings();
+    const ConservationPlotSettings &getSettings();
 
 private:
     ConservationPlotSettings settings;
@@ -55,7 +55,7 @@ private:
     Document *treatDoc;
     SaveDocumentTask *treatTask;
 
-    QMap<Document* , SaveDocumentTask* > docTaskMap;
+    QMap<Document *, SaveDocumentTask *> docTaskMap;
 
     Workflow::DbiDataStorage *storage;
     QList<Workflow::SharedDbiDataHandler> plotData;
@@ -68,20 +68,20 @@ private:
     static const QString TREAT_NAME;
 
 private:
-    Document* createDoc(const Workflow::SharedDbiDataHandler &annTableHandler, const QString& name);
+    Document *createDoc(const Workflow::SharedDbiDataHandler &annTableHandler, const QString &name);
     bool copyFile(const QString &src, const QString &dst);
 };
 
 class ConservationPlotLogParser : public ExternalToolLogParser {
 public:
     int getProgress();
-    void parseOutput(const QString& partOfLog);
-    void parseErrOutput(const QString& partOfLog);
+    void parseOutput(const QString &partOfLog);
+    void parseErrOutput(const QString &partOfLog);
 
 private:
     QString lastErrLine;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_CONSERVATION_PLOT_SUPPORT_TASK_
+#endif    // _U2_CONSERVATION_PLOT_SUPPORT_TASK_

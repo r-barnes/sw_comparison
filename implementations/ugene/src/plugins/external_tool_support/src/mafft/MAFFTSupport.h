@@ -23,7 +23,9 @@
 #define _U2_MAFFT_SUPPORT_H
 
 #include <U2Core/ExternalToolRegistry.h>
+
 #include <U2View/MSAEditor.h>
+
 #include "utils/ExternalToolSupportAction.h"
 
 namespace U2 {
@@ -31,30 +33,33 @@ namespace U2 {
 class MAFFTSupport : public ExternalTool {
     Q_OBJECT
 public:
-    MAFFTSupport(const QString& id, const QString& name, const QString& path = "");
-    GObjectViewWindowContext* getViewContext(){ return viewCtx; }
+    MAFFTSupport(const QString &id, const QString &name, const QString &path = "");
+    GObjectViewWindowContext *getViewContext() {
+        return viewCtx;
+    }
 
     static const QString ET_MAFFT;
     static const QString ET_MAFFT_ID;
     static const QString MAFFT_TMP_DIR;
 public slots:
     void sl_runWithExtFileSpecify();
+
 private:
-    GObjectViewWindowContext* viewCtx;
+    GObjectViewWindowContext *viewCtx;
 };
 
-class MAFFTSupportContext: public GObjectViewWindowContext {
+class MAFFTSupportContext : public GObjectViewWindowContext {
     Q_OBJECT
 public:
-    MAFFTSupportContext(QObject* p);
+    MAFFTSupportContext(QObject *p);
 
 protected slots:
     void sl_align_with_MAFFT();
 
 protected:
-    virtual void initViewContext(GObjectView* view);
-    virtual void buildMenu(GObjectView* view, QMenu* m);
+    virtual void initViewContext(GObjectView *view);
+    virtual void buildMenu(GObjectView *view, QMenu *m);
 };
 
-}//namespace
-#endif // _U2_MAFFT_SUPPORT_H
+}    // namespace U2
+#endif    // _U2_MAFFT_SUPPORT_H

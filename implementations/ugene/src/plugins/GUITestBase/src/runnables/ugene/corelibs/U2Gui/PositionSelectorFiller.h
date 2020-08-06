@@ -27,13 +27,16 @@
 namespace U2 {
 using namespace HI;
 
-    class GoToDialogFiller : public Filler {
-    public:
-        GoToDialogFiller(HI::GUITestOpStatus &_os, int _goTo) : Filler(_os, ""), goTo(_goTo){}
-        void commonScenario();
-    private:
-        int goTo;
-    };
-}
+class GoToDialogFiller : public Filler {
+public:
+    GoToDialogFiller(HI::GUITestOpStatus &_os, int _goTo)
+        : Filler(_os, ""), goTo(_goTo) {
+    }
+    void commonScenario();
+
+private:
+    int goTo;
+};
+}    // namespace U2
 
 #endif

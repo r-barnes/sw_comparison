@@ -23,6 +23,7 @@
 #define _GROUPER_SLOT_ACTION_
 
 #include <U2Core/global.h>
+
 #include <U2Lang/Datatype.h>
 #include <U2Lang/Descriptor.h>
 
@@ -111,6 +112,6 @@ private:
     GrouperSlotAction *action;
 };
 
-} // U2
+}    // namespace U2
 
-#endif //_GROUPER_SLOT_ACTION_
+#endif    //_GROUPER_SLOT_ACTION_

@@ -30,14 +30,14 @@ namespace LocalWorkflow {
 
 class ReadAnnotationsProto : public GenericReadDocProto {
 public:
-    enum Mode{
+    enum Mode {
         SPLIT,
         MERGE,
         MERGE_FILES
     };
 
     ReadAnnotationsProto();
-}; // ReadAnnotationsProto
+};    // ReadAnnotationsProto
 
 class ReadAnnotationsWorker : public GenericDocReader {
     Q_OBJECT
@@ -50,7 +50,7 @@ protected slots:
 
 protected:
     virtual void onTaskFinished(Task *task);
-    virtual Task * createReadTask(const QString &url, const QString &datasetName);
+    virtual Task *createReadTask(const QString &url, const QString &datasetName);
     virtual QString addReadDbObjectToData(const QString &objUrl, QVariantMap &data);
 
 private:
@@ -59,24 +59,24 @@ private:
 private:
     ReadAnnotationsProto::Mode mode;
     QList<QVariantMap> datasetData;
-}; // ReadAnnotationsWorker
-
+};    // ReadAnnotationsWorker
 
 class ReadAnnotationsWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
 
-    ReadAnnotationsWorkerFactory() : DomainFactory(ACTOR_ID) {}
+    ReadAnnotationsWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
     static void init();
     virtual Worker *createWorker(Actor *a);
 
-}; // ReadAnnotationsWorkerFactory
+};    // ReadAnnotationsWorkerFactory
 
 class ReadAnnotationsTask : public Task {
     Q_OBJECT
 public:
-    ReadAnnotationsTask(const QString &url, const QString &datasetName, WorkflowContext *context,
-                        bool mergeAnnotations, const QString& mergedAnnTableName = QString());
+    ReadAnnotationsTask(const QString &url, const QString &datasetName, WorkflowContext *context, bool mergeAnnotations, const QString &mergedAnnTableName = QString());
     virtual void prepare();
     virtual void run();
     virtual void cleanup();
@@ -93,7 +93,7 @@ private:
     QList<QVariantMap> results;
 };
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_READ_ANNOTATIONS_WORKER_
+#endif    // _U2_READ_ANNOTATIONS_WORKER_

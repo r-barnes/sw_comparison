@@ -19,28 +19,29 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef  _U2_CREATE_PHYTREE_SETTINGS_H
-#define  _U2_CREATE_PHYTREE_SETTINGS_H
+#ifndef _U2_CREATE_PHYTREE_SETTINGS_H
+#define _U2_CREATE_PHYTREE_SETTINGS_H
 
-#include <U2Core/global.h>
-#include <U2Core/GUrl.h>
-#include <QString>
 #include <QList>
+#include <QString>
 #include <QStringList>
 
-namespace U2{
+#include <U2Core/GUrl.h>
+#include <U2Core/global.h>
 
-class U2ALGORITHM_EXPORT CreatePhyTreeSettings{
+namespace U2 {
+
+class U2ALGORITHM_EXPORT CreatePhyTreeSettings {
 public:
     CreatePhyTreeSettings();
     QString algorithm;
     QString matrixId;
-    bool    displayWithAlignmentEditor;
-    bool    syncAlignmentWithTree;
-    GUrl    fileUrl;
+    bool displayWithAlignmentEditor;
+    bool syncAlignmentWithTree;
+    GUrl fileUrl;
     bool useGammaDistributionRates;
     double alphaFactor;
-    double ttRatio; // transition transversion ratio
+    double ttRatio;    // transition transversion ratio
     bool bootstrap;
     int replicates;
     int seed;
@@ -53,6 +54,6 @@ public:
     QStringList extToolArguments;
 };
 
-}
+}    // namespace U2
 
 #endif

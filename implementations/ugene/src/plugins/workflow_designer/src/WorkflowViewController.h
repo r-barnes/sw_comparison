@@ -25,14 +25,14 @@
 #include <QAction>
 #include <QGraphicsScene>
 
+#include <U2Gui/MainWindow.h>
+
 #include <U2Lang/ActorModel.h>
 #include <U2Lang/Aliasing.h>
 #include <U2Lang/AttributeInfo.h>
 #include <U2Lang/Schema.h>
 #include <U2Lang/SchemaConfig.h>
 #include <U2Lang/WorkflowRunTask.h>
-
-#include <U2Gui/MainWindow.h>
 
 class QComboBox;
 class QSplitter;
@@ -60,6 +60,7 @@ class BreakpointManagerView;
 class WorkflowInvestigationWidgetsController;
 class WorkflowTabView;
 class ExternalToolLogParser;
+class LoadWorkflowSceneTask;
 
 class WorkflowScene : public QGraphicsScene {
     Q_OBJECT
@@ -67,34 +68,51 @@ class WorkflowScene : public QGraphicsScene {
 public:
     WorkflowScene(WorkflowView *parent = 0);
     virtual ~WorkflowScene();
-    bool isModified() const {return modified;}
-    bool isLocked() const {return locked;}
+    bool isModified() const {
+        return modified;
+    }
+    bool isLocked() const {
+        return locked;
+    }
 
-    WorkflowView* getController() const { return controller; }
-    WorkflowAbstractRunner* getRunner() const {return runner;}
-    void setRunner(WorkflowAbstractRunner* r) {runner = r;}
+    WorkflowView *getController() const {
+        return controller;
+    }
+    WorkflowAbstractRunner *getRunner() const {
+        return runner;
+    }
+    void setRunner(WorkflowAbstractRunner *r) {
+        runner = r;
+    }
 
-    const QPointF& getLastMousePressPoint() const {return lastMousePressPoint;}
+    const QPointF &getLastMousePressPoint() const {
+        return lastMousePressPoint;
+    }
 
-    QList<Actor*> getSelectedActors() const;
+    QList<Actor *> getSelectedActors() const;
 
     void clearScene();
     void onModified();
 
-    void setupLinkCtxMenu(const QString& href, Actor* actor, const QPoint& pos);
+    void setupLinkCtxMenu(const QString &href, Actor *actor, const QPoint &pos);
 
-    WorkflowBusItem * addFlow(WorkflowPortItem *from, WorkflowPortItem *to, Link *link);
+    WorkflowBusItem *addFlow(WorkflowPortItem *from, WorkflowPortItem *to, Link *link);
 
 public slots:
     void sl_deleteItem();
     void sl_selectAll();
     void sl_deselectAll();
     void sl_reset();
-    void setLocked(bool b) {locked = b;}
+    void setLocked(bool b) {
+        locked = b;
+    }
     void setModified(bool b);
     void setModified();
     void centerView();
-    void setHint(int i) {hint=i; update();}
+    void setHint(int i) {
+        hint = i;
+        update();
+    }
     void sl_openDocuments();
     void sl_updateDocs() {
         emit configurationChanged();
@@ -109,30 +127,28 @@ signals:
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent * mouseEvent);
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent * contextMenuEvent);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent);
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *contextMenuEvent);
 
-    void dragEnterEvent(QGraphicsSceneDragDropEvent * event);
-    void dragMoveEvent(QGraphicsSceneDragDropEvent * event);
-    void dropEvent(QGraphicsSceneDragDropEvent * event);
-    void keyPressEvent (QKeyEvent* event);
-    void keyReleaseEvent (QKeyEvent* event);
+    void dragEnterEvent(QGraphicsSceneDragDropEvent *event);
+    void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
+    void dropEvent(QGraphicsSceneDragDropEvent *event);
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
 
-
-    void drawBackground(QPainter * painter, const QRectF & rect );
+    void drawBackground(QPainter *painter, const QRectF &rect);
 
 private:
-    WorkflowView* controller;
+    WorkflowView *controller;
     bool modified, locked;
 
-    WorkflowAbstractRunner* runner;
+    WorkflowAbstractRunner *runner;
     int hint;
-    QAction* openDocumentsAction;
-
+    QAction *openDocumentsAction;
 
     /* Point stores last mouse press position on the scene.  Used to insert new elements from context menu */
     QPointF lastMousePressPoint;
-}; // WorkflowScene
+};    // WorkflowScene
 
 class WorkflowView : public MWMDIWindow, public SchemaConfig {
     friend class DashboardManagerHelper;
@@ -140,46 +156,52 @@ class WorkflowView : public MWMDIWindow, public SchemaConfig {
     Q_OBJECT
     Q_DISABLE_COPY(WorkflowView)
 
-    WorkflowView(WorkflowGObject* go);
-    static WorkflowView * createInstance(WorkflowGObject *go);
+    WorkflowView(WorkflowGObject *go);
+    static WorkflowView *createInstance(WorkflowGObject *go);
 
 public:
-    static WorkflowView * openWD(WorkflowGObject *go);
+    static WorkflowView *openWD(WorkflowGObject *go);
     ~WorkflowView();
 
-    WorkflowEditor* getPropertyEditor() const { return propertyEditor; }
+    WorkflowEditor *getPropertyEditor() const {
+        return propertyEditor;
+    }
 
-    virtual void setupMDIToolbar(QToolBar* tb);
-    virtual void setupViewMenu(QMenu* n);
-    void setupContextMenu(QMenu* menu);
+    virtual void setupMDIToolbar(QToolBar *tb);
+    virtual void setupViewMenu(QMenu *n);
+    void setupContextMenu(QMenu *menu);
 
     void onModified();
     bool confirmModified();
 
-    ActorPrototype* selectedProto() const {
+    ActorPrototype *selectedProto() const {
         return currentProto;
     }
 
-    Actor* getActor() {
+    Actor *getActor() {
         return currentActor;
     }
     void addProcess(Actor *proc, const QPointF &pos);
     void removeProcessItem(WorkflowProcessItem *item);
     void removeBusItem(WorkflowBusItem *item);
     void onBusRemoved(Link *link);
-    Actor * createActor(ActorPrototype *proto, const QVariantMap &params) const;
-    WorkflowBusItem * tryBind(WorkflowPortItem *port1, WorkflowPortItem *port2);
+    Actor *createActor(ActorPrototype *proto, const QVariantMap &params) const;
+    WorkflowBusItem *tryBind(WorkflowPortItem *port1, WorkflowPortItem *port2);
 
-    WorkflowScene * getScene() const {return scene;}
-    Workflow::Schema * getSchema() const;
-    const Workflow::Metadata & getMeta();
-    const Workflow::Metadata & updateMeta();
-    Workflow::Metadata getMeta(const QList<WorkflowProcessItem*> &items);
+    WorkflowScene *getScene() const {
+        return scene;
+    }
+    Workflow::Schema *getSchema() const;
+    const Workflow::Metadata &getMeta();
+    const Workflow::Metadata &updateMeta();
+    Workflow::Metadata getMeta(const QList<WorkflowProcessItem *> &items);
 
-    void refreshView() {sl_refreshActorDocs();}
+    void refreshView() {
+        sl_refreshActorDocs();
+    }
 
     // SchemaConfig
-    virtual RunFileSystem * getRFS();
+    virtual RunFileSystem *getRFS();
     virtual QVariant getAttributeValue(const AttributeInfo &info) const;
     virtual void setAttributeValue(const AttributeInfo &info, const QVariant &value);
 
@@ -194,7 +216,7 @@ private slots:
     void sl_editItem();
     void sl_onSelectionChanged();
     void sl_showEditor();
-    void sl_selectPrototype(Workflow::ActorPrototype*, bool);
+    void sl_selectPrototype(Workflow::ActorPrototype *, bool);
     void sl_exportScene();
     void sl_saveScene();
     void sl_saveSceneAs();
@@ -206,8 +228,8 @@ private slots:
 
     void sl_copyItems();
     void sl_cutItems();
-    void sl_pasteItems(const QString& = QString(), bool updateSchemaInfo = false);
-    void sl_pasteSample(const QString&);
+    void sl_pasteItems(const QString & = QString(), bool updateSchemaInfo = false);
+    void sl_pasteSample(const QString &);
 
     void sl_setStyle();
     void sl_toggleStyle();
@@ -218,7 +240,7 @@ private slots:
     bool sl_validate(bool notify = true);
     void sl_estimate();
     void sl_estimationTaskFinished();
-    void sl_pickInfo(QListWidgetItem*);
+    void sl_pickInfo(QListWidgetItem *);
     void sl_launch();
     void sl_stop();
     void sl_pause(bool isPause = true);
@@ -233,7 +255,7 @@ private slots:
     void sl_createCmdlineBasedWorkerAction();
     void sl_appendExternalToolWorker();
     void sl_prototypeIsAboutToBeRemoved(Workflow::ActorPrototype *proto);
-    void sl_xmlSchemaLoaded(Task*);
+    void sl_xmlSchemaLoaded(Task *);
     void sl_editExternalTool();
     void sl_findPrototype();
     void sl_protoListModified();
@@ -252,8 +274,7 @@ private slots:
     void sl_highlightingRequested(const ActorId &actor);
     void sl_breakpointEnabled(const ActorId &actor);
     void sl_breakpointDisabled(const ActorId &actor);
-    void sl_convertMessages2Documents(const Workflow::Link *bus, const QString &messageType,
-        int messageNumber);
+    void sl_convertMessages2Documents(const Workflow::Link *bus, const QString &messageType, int messageNumber);
 
 protected:
     bool onCloseEvent();
@@ -267,8 +288,7 @@ private:
     void rescale(bool updateGui = true);
 
     void toggleDebugActionsState(bool enable);
-    void changeBreakpointState(const ActorId &actor, bool isBreakpointBeingAdded,
-    bool isBreakpointStateBeingChanged = false);
+    void changeBreakpointState(const ActorId &actor, bool isBreakpointBeingAdded, bool isBreakpointStateBeingChanged = false);
     WorkflowProcessItem *findItemById(ActorId actor) const;
     void addBottomWidgetsToInfoSplitter();
     void setInvestigationWidgetsVisible(bool visible);
@@ -299,16 +319,16 @@ private:
     void loadWizardResult(const QString &result);
     void procItemAdded();
 
-    DashboardManagerHelper * getDMHInstance();
+    DashboardManagerHelper *getDMHInstance();
 
 private:
     bool running;
     bool sceneRecreation;
-    WorkflowGObject* go;
+    WorkflowGObject *go;
     Schema *schema;
     Workflow::Metadata meta;
-    ActorPrototype* currentProto;
-    Actor* currentActor;
+    ActorPrototype *currentProto;
+    Actor *currentActor;
 
     QString lastPaste;
     int pasteCount;
@@ -317,73 +337,74 @@ private:
 
     QPointer<QMenu> elementsMenu;
 
-    QAction* deleteAction;
-    QAction* deleteShortcut;
-    QAction* selectAction;
-    QAction* copyAction;
-    QAction* pasteAction;
-    QAction* cutAction;
-    QAction* exportAction;
-    QAction* saveAction;
-    QAction* saveAsAction;
-    QAction* loadAction;
-    QAction* newAction;
-    QAction* createScriptAction;
-    QAction* editScriptAction;
-    QAction* createCmdlineBasedWorkerAction;
-    QAction* appendExternalTool;
-    QAction* editExternalToolAction;
-    QAction* configureParameterAliasesAction;
-    QAction* createGalaxyConfigAction;
-    QAction* configurePortAliasesAction;
-    QAction* importSchemaToElement;
-    QAction* runAction;
-    QAction* stopAction;
-    QAction* validateAction;
+    QAction *deleteAction;
+    QAction *deleteShortcut;
+    QAction *selectAction;
+    QAction *copyAction;
+    QAction *pasteAction;
+    QAction *cutAction;
+    QAction *exportAction;
+    QAction *saveAction;
+    QAction *saveAsAction;
+    QAction *loadAction;
+    QAction *newAction;
+    QAction *createScriptAction;
+    QAction *editScriptAction;
+    QAction *createCmdlineBasedWorkerAction;
+    QAction *appendExternalTool;
+    QAction *editExternalToolAction;
+    QAction *configureParameterAliasesAction;
+    QAction *createGalaxyConfigAction;
+    QAction *configurePortAliasesAction;
+    QAction *importSchemaToElement;
+    QAction *runAction;
+    QAction *stopAction;
+    QAction *validateAction;
     QAction *pauseAction;
     QAction *nextStepAction;
     QAction *toggleBreakpointAction;
     QAction *tickReadyAction;
     QAction *estimateAction;
 
-    QAction* findPrototypeAction;
-    QAction* unlockAction;
-    QAction* showWizard;
-    QAction* toggleDashboard;
-    QAction* loadSep;
-    QAction* runSep;
-    QAction* confSep;
-    QAction* extSep;
-    QAction* scaleSep;
-    QAction* scaleAction;
-    QAction* scriptAction;
-    QAction* dmAction;
-    QList<QAction*> styleActions;
-    QList<QAction*> scriptingActions;
+    QAction *findPrototypeAction;
+    QAction *unlockAction;
+    QAction *showWizard;
+    QAction *toggleDashboard;
+    QAction *loadSep;
+    QAction *runSep;
+    QAction *confSep;
+    QAction *extSep;
+    QAction *scaleSep;
+    QAction *scaleAction;
+    QAction *scriptAction;
+    QAction *dmAction;
+    QList<QAction *> styleActions;
+    QList<QAction *> scriptingActions;
     QComboBox *scaleComboBox;
 
     QAction *toggleBreakpointManager;
 
-    QSplitter*              splitter;
-    WorkflowPalette*        palette;
-    WorkflowEditor*         propertyEditor;
-    WorkflowTabView*        tabView;
-    WorkflowScene*          scene;
-    QGraphicsView*          sceneView;
-    SamplesWidget*          samples;
-    QTabWidget*             tabs;
-    QGroupBox*              errorList;
-    QListWidget*            infoList;
+    QSplitter *splitter;
+    WorkflowPalette *palette;
+    WorkflowEditor *propertyEditor;
+    WorkflowTabView *tabView;
+    WorkflowScene *scene;
+    QGraphicsView *sceneView;
+    SamplesWidget *samples;
+    QTabWidget *tabs;
+    QGroupBox *errorList;
+    QListWidget *infoList;
 
-    QSplitter*      infoSplitter;
+    QSplitter *infoSplitter;
 
     WorkflowDebugStatus *debugInfo;
     QList<QAction *> debugActions;
     BreakpointManagerView *breakpointView;
     QTabWidget *bottomTabs;
     WorkflowInvestigationWidgetsController *investigationWidgets;
+    QPointer<LoadWorkflowSceneTask> loadWorkflowSceneTask;
 
-    ExternalToolLogParser* rLogParser;
+    ExternalToolLogParser *rLogParser;
 };
 
 class SceneCreator {
@@ -391,17 +412,17 @@ public:
     SceneCreator(Schema *schema, const Workflow::Metadata &meta);
     virtual ~SceneCreator();
 
-    WorkflowScene * createScene(WorkflowView *controller);
-    WorkflowScene * recreateScene(WorkflowScene *scene);
+    WorkflowScene *createScene(WorkflowView *controller);
+    WorkflowScene *recreateScene(WorkflowScene *scene);
 
 private:
     Schema *schema;
     Workflow::Metadata meta;
     WorkflowScene *scene;
 
-    WorkflowScene * createScene();
-    WorkflowProcessItem * createProcess(Actor *actor);
-    void createBus(const QMap<Port*, WorkflowPortItem*> &ports, Link *link);
+    WorkflowScene *createScene();
+    WorkflowProcessItem *createProcess(Actor *actor);
+    void createBus(const QMap<Port *, WorkflowPortItem *> &ports, Link *link);
 };
 
 class DashboardManagerHelper : public QObject {
@@ -420,7 +441,6 @@ private:
     WorkflowView *parent;
 };
 
-}//namespace
-
+}    // namespace U2
 
 #endif

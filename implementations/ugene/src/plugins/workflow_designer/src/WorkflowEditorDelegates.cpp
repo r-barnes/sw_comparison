@@ -19,9 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-#include "WorkflowEditor.h"
-
 #include "WorkflowEditorDelegates.h"
+
+#include "WorkflowEditor.h"
 
 namespace U2 {
 
@@ -30,14 +30,13 @@ namespace U2 {
  ********************************/
 QWidget *ProxyDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const {
     //if (owner->custom)
-    QWidget* editor;
+    QWidget *editor;
     {
-        PropertyDelegate* itemDelegate = index.model()->data(index, DelegateRole).value<PropertyDelegate*>();
+        PropertyDelegate *itemDelegate = index.model()->data(index, DelegateRole).value<PropertyDelegate *>();
         if (itemDelegate) {
-            connect(itemDelegate, SIGNAL(commitData(QWidget*)), SIGNAL(commitData(QWidget*)));
+            connect(itemDelegate, SIGNAL(commitData(QWidget *)), SIGNAL(commitData(QWidget *)));
             editor = itemDelegate->createEditor(parent, option, index);
-        }
-        else{
+        } else {
             editor = QItemDelegate::createEditor(parent, option, index);
         }
     }
@@ -47,7 +46,7 @@ QWidget *ProxyDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem
 void ProxyDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
     //if (owner->custom)
     {
-        PropertyDelegate* itemDelegate = index.model()->data(index, DelegateRole).value<PropertyDelegate*>();
+        PropertyDelegate *itemDelegate = index.model()->data(index, DelegateRole).value<PropertyDelegate *>();
         if (itemDelegate) {
             itemDelegate->setEditorData(editor, index);
             return;
@@ -59,8 +58,8 @@ void ProxyDelegate::setEditorData(QWidget *editor, const QModelIndex &index) con
 void ProxyDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
     QVariant old;
     QVariant expanded;
-    PropertyDelegate* propertyDelegate = model->data(index, DelegateRole).value<PropertyDelegate*>();
-    if (/*owner->custom &&*/ propertyDelegate ) {
+    PropertyDelegate *propertyDelegate = model->data(index, DelegateRole).value<PropertyDelegate *>();
+    if (/*owner->custom &&*/ propertyDelegate) {
         old = model->data(index, ConfigurationEditor::ItemValueRole);
         propertyDelegate->setModelData(editor, model, index);
         expanded = model->data(index, ConfigurationEditor::ItemListValueRole);
@@ -68,13 +67,13 @@ void ProxyDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, con
         old = model->data(index, Qt::EditRole);
         QItemDelegate::setModelData(editor, model, index);
     }
-   /* QString name = model->data(index, DescriptorRole).value<Descriptor>().getId();
+    /* QString name = model->data(index, DescriptorRole).value<Descriptor>().getId();
     if (handlePropertyValueList(name, expanded)) {
         return;
     }*/
     QVariant val = model->data(index, (propertyDelegate == NULL) ? (int)Qt::EditRole : (int)ConfigurationEditor::ItemValueRole);
     if (val != old) {
-         QString name = model->data(index, DescriptorRole).value<Descriptor>().getId();
+        QString name = model->data(index, DescriptorRole).value<Descriptor>().getId();
         if (handlePropertyValueList(name, expanded)) {
             return;
         }
@@ -90,11 +89,12 @@ void ProxyDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, con
 /********************************
  * SuperDelegate
  ********************************/
-SuperDelegate::SuperDelegate(WorkflowEditor *parent) : ProxyDelegate(parent) {
+SuperDelegate::SuperDelegate(WorkflowEditor *parent)
+    : ProxyDelegate(parent) {
 }
 
-bool SuperDelegate::handlePropertyValueList(const QString& /*name*/, QVariant /*list*/) const {
+bool SuperDelegate::handlePropertyValueList(const QString & /*name*/, QVariant /*list*/) const {
     return true;
 }
 
-} // U2
+}    // namespace U2

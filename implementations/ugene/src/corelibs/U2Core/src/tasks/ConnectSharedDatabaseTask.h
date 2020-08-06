@@ -28,8 +28,7 @@
 
 namespace U2 {
 
-class U2CORE_EXPORT ConnectSharedDatabaseTask : public DocumentProviderTask
-{
+class U2CORE_EXPORT ConnectSharedDatabaseTask : public DocumentProviderTask {
     Q_OBJECT
 public:
     ConnectSharedDatabaseTask(const U2DbiRef &dbiRef, const QString &documentName, bool initializeDb);
@@ -44,6 +43,6 @@ private:
     bool initializeDb;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_CONNECT_SHARED_DATABASE_H_
+#endif    // _U2_CONNECT_SHARED_DATABASE_H_

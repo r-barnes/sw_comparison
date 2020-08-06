@@ -20,33 +20,34 @@
  */
 
 #include "FastqcSupport.h"
-#include "java/JavaSupport.h"
-#include "perl/PerlSupport.h"
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/DataPathRegistry.h>
 #include <U2Core/L10n.h>
-#include <U2Core/U2SafePoints.h>
-#include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/ScriptingToolRegistry.h>
+#include <U2Core/U2OpStatusUtils.h>
+#include <U2Core/U2SafePoints.h>
 
 #include <U2Formats/ConvertFileTask.h>
+
+#include "java/JavaSupport.h"
+#include "perl/PerlSupport.h"
 
 namespace U2 {
 
 const QString FastQCSupport::ET_FASTQC = "FastQC";
 const QString FastQCSupport::ET_FASTQC_ID = "USUPP_FASTQC";
 
-FastQCSupport::FastQCSupport(const QString& id, const QString& name, const QString& path) : ExternalTool(id, name, path)
-{
+FastQCSupport::FastQCSupport(const QString &id, const QString &name, const QString &path)
+    : ExternalTool(id, name, path) {
     if (AppContext::getMainWindow()) {
         icon = QIcon(":external_tool_support/images/cmdline.png");
         grayIcon = QIcon(":external_tool_support/images/cmdline_gray.png");
         warnIcon = QIcon(":external_tool_support/images/cmdline_warn.png");
     }
 
-    executableFileName="fastqc";
+    executableFileName = "fastqc";
 
     validMessage = "FastQC v";
     description = tr("<i>FastQC</i>: A quality control tool for high throughput sequence data.");
@@ -74,7 +75,7 @@ void FastQCSupport::sl_javaPathChanged() {
     validationArguments << java->getPath();
 }
 
-ExternalTool * FastQCSupport::getJava() {
+ExternalTool *FastQCSupport::getJava() {
     ExternalToolRegistry *registry = AppContext::getExternalToolRegistry();
     SAFE_POINT(NULL != registry, L10N::nullPointerError("External tool registry"), NULL);
     ExternalTool *java = registry->getById(JavaSupport::ET_JAVA_ID);
@@ -82,5 +83,4 @@ ExternalTool * FastQCSupport::getJava() {
     return java;
 }
 
-}//namespace
-
+}    // namespace U2

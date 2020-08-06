@@ -19,11 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "HRWizardSerializer.h"
+
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Lang/HRSchemaSerializer.h>
-
-#include "HRWizardSerializer.h"
 
 namespace U2 {
 namespace WorkflowSerialize {
@@ -60,15 +60,16 @@ const QString HRWizardParser::TEXT_COLOR("text-color");
 const QString HRWizardParser::BACKGROUND_COLOR("background-color");
 const QString HRWizardParser::HELP_PAGE_ID("help-page-id");
 
-HRWizardParser::HRWizardParser(Tokenizer &tokenizer, const QMap<QString, Actor*> &_actorMap)
-: tokenizer(tokenizer), actorMap(_actorMap), wizardName(Wizard::DEFAULT_NAME){}
+HRWizardParser::HRWizardParser(Tokenizer &tokenizer, const QMap<QString, Actor *> &_actorMap)
+    : tokenizer(tokenizer), actorMap(_actorMap), wizardName(Wizard::DEFAULT_NAME) {
+}
 
 HRWizardParser::~HRWizardParser() {
     qDeleteAll(pagesMap);
 }
 
-Wizard * HRWizardParser::takeResult() {
-    QList<WizardPage*> retPages = pages;
+Wizard *HRWizardParser::takeResult() {
+    QList<WizardPage *> retPages = pages;
     pages.clear();
     pagesMap.clear();
 
@@ -83,7 +84,7 @@ Wizard * HRWizardParser::takeResult() {
     return wizard;
 }
 
-Wizard * HRWizardParser::parseWizard(U2OpStatus &os) {
+Wizard *HRWizardParser::parseWizard(U2OpStatus &os) {
     bool autoRun = false;
     bool hasRunButton = true;
     bool hasDefaultsButton = true;
@@ -248,13 +249,11 @@ void HRWizardParser::parseNextIds(ParsedPairs &pairs, WizardPage *page, U2OpStat
 /* WizardWidgetParser */
 /************************************************************************/
 WizardWidgetParser::WizardWidgetParser(const QString &_title,
-    const QString &_data,
-    const QMap<QString, Actor*> &_actorMap,
-    QMap<QString, Variable> &_vars,
-    U2OpStatus &_os)
-: title(_title), data(_data), actorMap(_actorMap), vars(_vars), os(_os)
-{
-
+                                       const QString &_data,
+                                       const QMap<QString, Actor *> &_actorMap,
+                                       QMap<QString, Variable> &_vars,
+                                       U2OpStatus &_os)
+    : title(_title), data(_data), actorMap(_actorMap), vars(_vars), os(_os) {
 }
 
 void WizardWidgetParser::visit(AttributeWidget *aw) {
@@ -287,7 +286,7 @@ void WizardWidgetParser::visit(LogoWidget *lw) {
 }
 
 void WizardWidgetParser::visit(GroupWidget *gw) {
-    visit((WidgetsArea*)gw);
+    visit((WidgetsArea *)gw);
     CHECK_OP(os, );
 
     QString typeStr = pairs.equalPairs.value(HRWizardParser::TYPE, HRWizardParser::DEFAULT);
@@ -536,7 +535,7 @@ void WizardWidgetParser::getTitle(WidgetsArea *wa) {
     }
 }
 
-WizardWidget * WizardWidgetParser::createWidget(const QString &id) {
+WizardWidget *WizardWidgetParser::createWidget(const QString &id) {
     if (LogoWidget::ID == id) {
         return new LogoWidget();
     } else if (GroupWidget::ID == id) {
@@ -590,12 +589,10 @@ AttributeInfo WizardWidgetParser::parseInfo(const QString &attrStr, const QStrin
 /* PageContentParser */
 /************************************************************************/
 PageContentParser::PageContentParser(ParsedPairs &pairs,
-    const QMap<QString, Actor*> &actorMap,
-    QMap<QString, Variable> &vars,
-    U2OpStatus &os)
-: pairs(pairs), actorMap(actorMap), vars(vars), os(os)
-{
-
+                                     const QMap<QString, Actor *> &actorMap,
+                                     QMap<QString, Variable> &vars,
+                                     U2OpStatus &os)
+    : pairs(pairs), actorMap(actorMap), vars(vars), os(os) {
 }
 
 void PageContentParser::visit(DefaultPageContent *content) {
@@ -618,7 +615,8 @@ QString HRWizardSerializer::serialize(Wizard *wizard, int depth) {
 
     if (Wizard::DEFAULT_NAME != wizard->getName()) {
         wizardData += HRSchemaSerializer::makeEqualsPair(HRWizardParser::NAME,
-            wizard->getName(), depth + 1);
+                                                         wizard->getName(),
+                                                         depth + 1);
     }
 
     if (wizard->isAutoRun()) {
@@ -641,7 +639,9 @@ QString HRWizardSerializer::serialize(Wizard *wizard, int depth) {
     }
 
     return HRSchemaSerializer::makeBlock(HRWizardParser::WIZARD,
-        Constants::NO_NAME, wizardData, depth);
+                                         Constants::NO_NAME,
+                                         wizardData,
+                                         depth);
 }
 
 QString HRWizardSerializer::serializePage(WizardPage *page, int depth) {
@@ -651,11 +651,13 @@ QString HRWizardSerializer::serializePage(WizardPage *page, int depth) {
     pageData += HRWizardSerializer::serializeNextId(page, depth + 1);
     if (!page->getTitle().isEmpty()) {
         pageData += HRSchemaSerializer::makeEqualsPair(HRWizardParser::TITLE,
-            page->getTitle(), depth + 1);
+                                                       page->getTitle(),
+                                                       depth + 1);
     }
     if (DefaultPageContent::ID != page->getContent()->getTemplateId()) {
         pageData += HRSchemaSerializer::makeEqualsPair(HRWizardParser::TEMPLATE,
-            page->getContent()->getTemplateId(), depth + 1);
+                                                       page->getContent()->getTemplateId(),
+                                                       depth + 1);
     }
 
     PageContentSerializer cs(depth + 1);
@@ -663,10 +665,12 @@ QString HRWizardSerializer::serializePage(WizardPage *page, int depth) {
     pageData += cs.getResult();
 
     return HRSchemaSerializer::makeBlock(HRWizardParser::PAGE,
-        Constants::NO_NAME, pageData, depth);
+                                         Constants::NO_NAME,
+                                         pageData,
+                                         depth);
 }
 
-QString HRWizardSerializer::serializeResults(const QMap<QString, QList<Predicate> > results, int depth) {
+QString HRWizardSerializer::serializeResults(const QMap<QString, QList<Predicate>> results, int depth) {
     QString rData;
 
     foreach (const QString &result, results.keys()) {
@@ -679,7 +683,9 @@ QString HRWizardSerializer::serializeResults(const QMap<QString, QList<Predicate
     }
 
     return HRSchemaSerializer::makeBlock(HRWizardParser::RESULT,
-        Constants::NO_NAME, rData, depth);
+                                         Constants::NO_NAME,
+                                         rData,
+                                         depth);
 }
 
 QString HRWizardSerializer::serializeNextId(WizardPage *page, int depth) {
@@ -695,16 +701,16 @@ QString HRWizardSerializer::serializeNextId(WizardPage *page, int depth) {
         nextData += HRSchemaSerializer::makeEqualsPair(id, p.toString(), depth + 1);
     }
     return HRSchemaSerializer::makeBlock(HRWizardParser::NEXT,
-        Constants::NO_NAME, nextData, depth);
+                                         Constants::NO_NAME,
+                                         nextData,
+                                         depth);
 }
 
 /************************************************************************/
 /* WizardWidgetSerializer */
 /************************************************************************/
 WizardWidgetSerializer::WizardWidgetSerializer(int _depth)
-: depth(_depth)
-{
-
+    : depth(_depth) {
 }
 
 void WizardWidgetSerializer::visit(AttributeWidget *aw) {
@@ -716,12 +722,14 @@ void WizardWidgetSerializer::visit(WidgetsArea *wa) {
     // write title
     if (!wa->getTitle().isEmpty()) {
         wData += HRSchemaSerializer::makeEqualsPair(HRWizardParser::TITLE,
-            wa->getTitle(), depth + 1);
+                                                    wa->getTitle(),
+                                                    depth + 1);
     }
     // write label size
     if (wa->hasLabelSize()) {
         wData += HRSchemaSerializer::makeEqualsPair(HRWizardParser::LABEL_SIZE,
-            QString::number(wa->getLabelSize()), depth + 1);
+                                                    QString::number(wa->getLabelSize()),
+                                                    depth + 1);
     }
     // write additional info
     wData += addInfo;
@@ -733,40 +741,50 @@ void WizardWidgetSerializer::visit(WidgetsArea *wa) {
     }
 
     result = HRSchemaSerializer::makeBlock(wa->getName(),
-        Constants::NO_NAME, wData, depth);
+                                           Constants::NO_NAME,
+                                           wData,
+                                           depth);
 }
 
 void WizardWidgetSerializer::visit(GroupWidget *gw) {
     if (GroupWidget::HIDEABLE == gw->getType()) {
         addInfo = HRSchemaSerializer::makeEqualsPair(HRWizardParser::TYPE,
-            HRWizardParser::HIDEABLE, depth + 1);
+                                                     HRWizardParser::HIDEABLE,
+                                                     depth + 1);
     }
-    visit((WidgetsArea*)gw);
+    visit((WidgetsArea *)gw);
 }
 
 void WizardWidgetSerializer::visit(LogoWidget *lw) {
     QString wData;
     if (!lw->isDefault()) {
         wData += HRSchemaSerializer::makeEqualsPair(HRWizardParser::LOGO_PATH,
-            lw->getLogoPath(), depth + 1);
+                                                    lw->getLogoPath(),
+                                                    depth + 1);
     }
     result = HRSchemaSerializer::makeBlock(LogoWidget::ID,
-        Constants::NO_NAME, wData, depth);
+                                           Constants::NO_NAME,
+                                           wData,
+                                           depth);
 }
 
 void WizardWidgetSerializer::visit(ElementSelectorWidget *esw) {
     QString wData;
     wData += HRSchemaSerializer::makeEqualsPair(HRWizardParser::ELEMENT_ID,
-        esw->getActorId(), depth + 1);
+                                                esw->getActorId(),
+                                                depth + 1);
     if (!esw->getLabel().isEmpty()) {
         wData += HRSchemaSerializer::makeEqualsPair(AttributeInfo::LABEL,
-            esw->getLabel(), depth + 1);
+                                                    esw->getLabel(),
+                                                    depth + 1);
     }
     foreach (const SelectorValue &value, esw->getValues()) {
         wData += serializeSelectorValue(value, depth + 1);
     }
     result = HRSchemaSerializer::makeBlock(ElementSelectorWidget::ID,
-        Constants::NO_NAME, wData, depth);
+                                           Constants::NO_NAME,
+                                           wData,
+                                           depth);
 }
 
 void WizardWidgetSerializer::visit(PairedReadsWidget *dsw) {
@@ -775,7 +793,9 @@ void WizardWidgetSerializer::visit(PairedReadsWidget *dsw) {
         dData += serializeInfo(info, depth + 1);
     }
     result = HRSchemaSerializer::makeBlock(PairedReadsWidget::ID,
-        Constants::NO_NAME, dData, depth);
+                                           Constants::NO_NAME,
+                                           dData,
+                                           depth);
 }
 
 void WizardWidgetSerializer::visit(UrlAndDatasetWidget *ldsw) {
@@ -784,7 +804,9 @@ void WizardWidgetSerializer::visit(UrlAndDatasetWidget *ldsw) {
         dData += serializeInfo(info, depth + 1);
     }
     result = HRSchemaSerializer::makeBlock(UrlAndDatasetWidget::ID,
-        Constants::NO_NAME, dData, depth);
+                                           Constants::NO_NAME,
+                                           dData,
+                                           depth);
 }
 
 void WizardWidgetSerializer::visit(RadioWidget *rw) {
@@ -794,7 +816,9 @@ void WizardWidgetSerializer::visit(RadioWidget *rw) {
         rData += serializeValue(value, depth + 1);
     }
     result = HRSchemaSerializer::makeBlock(RadioWidget::ID,
-        Constants::NO_NAME, rData, depth);
+                                           Constants::NO_NAME,
+                                           rData,
+                                           depth);
 }
 
 void WizardWidgetSerializer::visit(SettingsWidget *sw) {
@@ -808,7 +832,9 @@ void WizardWidgetSerializer::visit(SettingsWidget *sw) {
     rData += HRSchemaSerializer::makeEqualsPair(HRWizardParser::TYPE, sw->type(), depth + 1);
     rData += HRSchemaSerializer::makeEqualsPair(HRWizardParser::LABEL, sw->label(), depth + 1);
     result = HRSchemaSerializer::makeBlock(SettingsWidget::ID,
-        Constants::NO_NAME, rData, depth);
+                                           Constants::NO_NAME,
+                                           rData,
+                                           depth);
 }
 
 void WizardWidgetSerializer::visit(BowtieWidget *bw) {
@@ -816,17 +842,22 @@ void WizardWidgetSerializer::visit(BowtieWidget *bw) {
     bData += serializeInfo(bw->idxDir, depth + 1);
     bData += serializeInfo(bw->idxName, depth + 1);
     result = HRSchemaSerializer::makeBlock(BowtieWidget::ID,
-        Constants::NO_NAME, bData, depth);
+                                           Constants::NO_NAME,
+                                           bData,
+                                           depth);
 }
 
 void WizardWidgetSerializer::visit(TophatSamplesWidget *tsw) {
     QString tsData;
     tsData += HRSchemaSerializer::makeEqualsPair(HRWizardParser::DATASETS_PROVIDER,
-        tsw->datasetsProvider, depth + 1);
+                                                 tsw->datasetsProvider,
+                                                 depth + 1);
     tsData += serializeInfo(tsw->samplesAttr, depth + 1);
 
     result = HRSchemaSerializer::makeBlock(TophatSamplesWidget::ID,
-        Constants::NO_NAME, tsData, depth);
+                                           Constants::NO_NAME,
+                                           tsData,
+                                           depth);
 }
 
 void WizardWidgetSerializer::visit(LabelWidget *lw) {
@@ -845,38 +876,50 @@ QString WizardWidgetSerializer::serializeSlotsMapping(const QList<SlotMapping> &
     QString smData;
     foreach (const SlotMapping &mapping, mappings) {
         smData += HRSchemaSerializer::makeEqualsPair(mapping.getSrcId(),
-            mapping.getDstId(), depth + 1);
+                                                     mapping.getDstId(),
+                                                     depth + 1);
     }
     return HRSchemaSerializer::makeBlock(HRWizardParser::SLOTS_MAPPRING,
-        Constants::NO_NAME, smData, depth);
+                                         Constants::NO_NAME,
+                                         smData,
+                                         depth);
 }
 
 QString WizardWidgetSerializer::serializePortMapping(const PortMapping &mapping, int depth) const {
     QString pmData;
     pmData += HRSchemaSerializer::makeEqualsPair(HRWizardParser::SRC_PORT,
-        mapping.getSrcId(), depth + 1);
+                                                 mapping.getSrcId(),
+                                                 depth + 1);
     pmData += HRSchemaSerializer::makeEqualsPair(HRWizardParser::DST_PORT,
-        mapping.getDstId(), depth + 1);
+                                                 mapping.getDstId(),
+                                                 depth + 1);
     pmData += serializeSlotsMapping(mapping.getMappings(), depth + 1);
     return HRSchemaSerializer::makeBlock(HRWizardParser::PORT_MAPPING,
-        Constants::NO_NAME, pmData, depth);
+                                         Constants::NO_NAME,
+                                         pmData,
+                                         depth);
 }
 
 QString WizardWidgetSerializer::serializeSelectorValue(const SelectorValue &value, int depth) const {
     QString vData;
     vData += HRSchemaSerializer::makeEqualsPair(HRWizardParser::ID,
-        value.getValue(), depth + 1);
+                                                value.getValue(),
+                                                depth + 1);
     vData += HRSchemaSerializer::makeEqualsPair(HRWizardParser::PROTOTYPE,
-        value.getProtoId(), depth + 1);
+                                                value.getProtoId(),
+                                                depth + 1);
     if (!value.getName().isEmpty()) {
         vData += HRSchemaSerializer::makeEqualsPair(HRWizardParser::NAME,
-            value.getName(), depth + 1);
+                                                    value.getName(),
+                                                    depth + 1);
     }
     foreach (const PortMapping &mapping, value.getMappings()) {
         vData += serializePortMapping(mapping, depth + 1);
     }
     return HRSchemaSerializer::makeBlock(HRWizardParser::VALUE,
-        Constants::NO_NAME, vData, depth);
+                                         Constants::NO_NAME,
+                                         vData,
+                                         depth);
 }
 
 QString WizardWidgetSerializer::serializeInfo(const AttributeInfo &info, int depth) const {
@@ -890,11 +933,10 @@ QString WizardWidgetSerializer::serializeInfo(const AttributeInfo &info, int dep
     }
 
     QString name = info.actorId + Constants::DOT + info.attrId;
-    return HRSchemaSerializer::makeBlock(name, Constants::NO_NAME,
-        iData, depth);
+    return HRSchemaSerializer::makeBlock(name, Constants::NO_NAME, iData, depth);
 }
 
-const QString & WizardWidgetSerializer::getResult() {
+const QString &WizardWidgetSerializer::getResult() {
     return result;
 }
 
@@ -902,9 +944,7 @@ const QString & WizardWidgetSerializer::getResult() {
 /* PageContentSerializer */
 /************************************************************************/
 PageContentSerializer::PageContentSerializer(int _depth)
-: depth(_depth)
-{
-
+    : depth(_depth) {
 }
 
 void PageContentSerializer::visit(DefaultPageContent *content) {
@@ -919,9 +959,9 @@ void PageContentSerializer::visit(DefaultPageContent *content) {
     }
 }
 
-const QString & PageContentSerializer::getResult() const {
+const QString &PageContentSerializer::getResult() const {
     return result;
 }
 
-} // WorkflowSerialize
-} // U2
+}    // namespace WorkflowSerialize
+}    // namespace U2

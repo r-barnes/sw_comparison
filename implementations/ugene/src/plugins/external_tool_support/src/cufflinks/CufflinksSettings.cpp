@@ -21,16 +21,14 @@
 
 #include "CufflinksSettings.h"
 
-
 namespace U2 {
 
-CufflinksSettings::CufflinksSettings() :
-    multiReadCorrect(false),
-    minIsoformFraction(0),
-    preMrnaFraction(0),
-    storage(NULL),
-    fromFile(false)
-{
+CufflinksSettings::CufflinksSettings()
+    : multiReadCorrect(false),
+      minIsoformFraction(0),
+      preMrnaFraction(0),
+      storage(NULL),
+      fromFile(false) {
 }
 
-} // namespace
+}    // namespace U2

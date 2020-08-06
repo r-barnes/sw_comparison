@@ -43,14 +43,14 @@ public:
     virtual void reset();
 
     static BaseBreakpointHitCounter *createInstance(BreakpointHitCountCondition
-        kindOfCondition = ALWAYS, const QVariant &hitCounterParameter
-        = QVariant::fromValue<quint32>(DEFAULT_HIT_COUNTER_PARAMETER));
+                                                        kindOfCondition = ALWAYS,
+                                                    const QVariant &hitCounterParameter = QVariant::fromValue<quint32>(DEFAULT_HIT_COUNTER_PARAMETER));
 
 protected:
     BreakpointHitCountCondition condition;
     quint32 hitCount;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_BASE_BREAKPOINT_HIT_COUNTER_H_
+#endif    // _U2_BASE_BREAKPOINT_HIT_COUNTER_H_

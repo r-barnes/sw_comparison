@@ -39,15 +39,15 @@ class SaveDocumentTask;
 class SeqPosTask : public ExternalToolSupportTask {
     Q_OBJECT
 public:
-    SeqPosTask(const SeqPosSettings& _settings, Workflow::DbiDataStorage *storage, const QList<Workflow::SharedDbiDataHandler>& _treatAnn);
+    SeqPosTask(const SeqPosSettings &_settings, Workflow::DbiDataStorage *storage, const QList<Workflow::SharedDbiDataHandler> &_treatAnn);
     virtual ~SeqPosTask();
 
     virtual void prepare();
-    virtual QList<Task*> onSubTaskFinished(Task* subTask);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
     virtual void run();
     virtual void cleanup();
 
-    const SeqPosSettings & getSettings();
+    const SeqPosSettings &getSettings();
     QStringList getOutputFiles();
 
 private:
@@ -68,9 +68,9 @@ private:
     static const QString TREAT_NAME;
 
 private:
-    Document* createDoc(const QList<Workflow::SharedDbiDataHandler> &annData, const QString& name);
+    Document *createDoc(const QList<Workflow::SharedDbiDataHandler> &annData, const QString &name);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_SEQPOS_SUPPORT_TASK_
+#endif    // _U2_SEQPOS_SUPPORT_TASK_

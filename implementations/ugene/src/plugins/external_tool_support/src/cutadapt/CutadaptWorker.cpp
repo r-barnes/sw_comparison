@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CutadaptWorker.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/Counter.h>
@@ -51,7 +53,6 @@
 #include <U2Lang/WorkflowMonitor.h>
 
 #include "CutadaptSupport.h"
-#include "CutadaptWorker.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -69,9 +70,9 @@ static const QString ANYWHERE_URL("anywhere-url");
 /* CutAdaptFastqPrompter */
 /************************************************************************/
 QString CutAdaptFastqPrompter::composeRichDoc() {
-    IntegralBusPort* input = qobject_cast<IntegralBusPort*>(target->getPort(BaseNGSWorker::INPUT_PORT));
-    const Actor* producer = input->getProducer(BaseSlots::URL_SLOT().getId());
-    QString unsetStr = "<font color='red'>"+tr("unset")+"</font>";
+    IntegralBusPort *input = qobject_cast<IntegralBusPort *>(target->getPort(BaseNGSWorker::INPUT_PORT));
+    const Actor *producer = input->getProducer(BaseSlots::URL_SLOT().getId());
+    QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
     QString producerName = tr(" from <u>%1</u>").arg(producer ? producer->getLabel() : unsetStr);
 
     QString doc = tr("Removes adapter sequences %1.").arg(producerName);
@@ -83,24 +84,21 @@ QString CutAdaptFastqPrompter::composeRichDoc() {
 /************************************************************************/
 void CutAdaptFastqWorkerFactory::init() {
     //init data path
-    U2DataPath* dataPath = NULL;
-    U2DataPathRegistry* dpr =  AppContext::getDataPathRegistry();
-    if (dpr){
-        U2DataPath* dp = dpr->getDataPathByName(CutadaptSupport::ADAPTERS_DATA_NAME);
-        if (dp && dp->isValid()){
+    U2DataPath *dataPath = NULL;
+    U2DataPathRegistry *dpr = AppContext::getDataPathRegistry();
+    if (dpr) {
+        U2DataPath *dp = dpr->getDataPathByName(CutadaptSupport::ADAPTERS_DATA_NAME);
+        if (dp && dp->isValid()) {
             dataPath = dp;
         }
     }
 
-    Descriptor desc( ACTOR_ID, CutAdaptFastqWorker::tr("Cut Adapter"),
-        CutAdaptFastqWorker::tr("Removes adapter sequences") );
+    Descriptor desc(ACTOR_ID, CutAdaptFastqWorker::tr("Cut Adapter"), CutAdaptFastqWorker::tr("Removes adapter sequences"));
 
-    QList<PortDescriptor*> p;
+    QList<PortDescriptor *> p;
     {
-        Descriptor inD(BaseNGSWorker::INPUT_PORT, CutAdaptFastqWorker::tr("Input File"),
-            CutAdaptFastqWorker::tr("Set of FASTQ reads files"));
-        Descriptor outD(BaseNGSWorker::OUTPUT_PORT, CutAdaptFastqWorker::tr("Output File"),
-            CutAdaptFastqWorker::tr("Output FASTQ file(s)"));
+        Descriptor inD(BaseNGSWorker::INPUT_PORT, CutAdaptFastqWorker::tr("Input File"), CutAdaptFastqWorker::tr("Set of FASTQ reads files"));
+        Descriptor outD(BaseNGSWorker::OUTPUT_PORT, CutAdaptFastqWorker::tr("Output File"), CutAdaptFastqWorker::tr("Output FASTQ file(s)"));
 
         QMap<Descriptor, DataTypePtr> inM;
         inM[BaseSlots::URL_SLOT()] = BaseTypes::STRING_TYPE();
@@ -111,66 +109,58 @@ void CutAdaptFastqWorkerFactory::init() {
         p << new PortDescriptor(outD, DataTypePtr(new MapDataType("cf.output-url", outM)), false, true);
     }
 
-    QList<Attribute*> a;
+    QList<Attribute *> a;
     {
-        Descriptor outDir(BaseNGSWorker::OUT_MODE_ID, CutAdaptFastqWorker::tr("Output folder"),
-            CutAdaptFastqWorker::tr("Select an output folder. <b>Custom</b> - specify the output folder in the 'Custom folder' parameter. "
-            "<b>Workflow</b> - internal workflow folder. "
-            "<b>Input file</b> - the folder of the input file."));
+        Descriptor outDir(BaseNGSWorker::OUT_MODE_ID, CutAdaptFastqWorker::tr("Output folder"), CutAdaptFastqWorker::tr("Select an output folder. <b>Custom</b> - specify the output folder in the 'Custom folder' parameter. "
+                                                                                                                        "<b>Workflow</b> - internal workflow folder. "
+                                                                                                                        "<b>Input file</b> - the folder of the input file."));
 
-        Descriptor customDir(BaseNGSWorker::CUSTOM_DIR_ID, CutAdaptFastqWorker::tr("Custom folder"),
-            CutAdaptFastqWorker::tr("Select the custom output folder."));
+        Descriptor customDir(BaseNGSWorker::CUSTOM_DIR_ID, CutAdaptFastqWorker::tr("Custom folder"), CutAdaptFastqWorker::tr("Select the custom output folder."));
 
-        Descriptor outName(BaseNGSWorker::OUT_NAME_ID, CutAdaptFastqWorker::tr("Output file name"),
-            CutAdaptFastqWorker::tr("A name of an output file. If default of empty value is provided the output name is the name of the first file with additional extension."));
+        Descriptor outName(BaseNGSWorker::OUT_NAME_ID, CutAdaptFastqWorker::tr("Output file name"), CutAdaptFastqWorker::tr("A name of an output file. If default of empty value is provided the output name is the name of the first file with additional extension."));
 
-        Descriptor adapters(ADAPTERS_URL, CutAdaptFastqWorker::tr("FASTA file with 3' adapters"),
-            CutAdaptFastqWorker::tr("A FASTA file with one or multiple sequences of adapter that were ligated to the 3' end. "
-                                    "The adapter itself and anything that follows is "
-                                    "trimmed. If the adapter sequence ends with the '$' "
-                                    "character, the adapter is anchored to the end of the "
-                                    "read and only found if it is a suffix of the read."));
+        Descriptor adapters(ADAPTERS_URL, CutAdaptFastqWorker::tr("FASTA file with 3' adapters"), CutAdaptFastqWorker::tr("A FASTA file with one or multiple sequences of adapter that were ligated to the 3' end. "
+                                                                                                                          "The adapter itself and anything that follows is "
+                                                                                                                          "trimmed. If the adapter sequence ends with the '$' "
+                                                                                                                          "character, the adapter is anchored to the end of the "
+                                                                                                                          "read and only found if it is a suffix of the read."));
 
-        Descriptor front(FRONT_URL, CutAdaptFastqWorker::tr("FASTA file with 5' adapters"),
-            CutAdaptFastqWorker::tr("A FASTA file with one or multiple sequences of adapters that were ligated to the 5' end. "
-                                                            "If the adapter sequence starts with the character '^', "
-                                                            "the adapter is 'anchored'. An anchored adapter must "
-                                                            "appear in its entirety at the 5' end of the read (it "
-                                                            "is a prefix of the read). A non-anchored adapter may "
-                                                            "appear partially at the 5' end, or it may occur within "
-                                                            "the read. If it is found within a read, the sequence "
-                                                            "preceding the adapter is also trimmed. In all cases, "
-                                                            "the adapter itself is trimmed."));
+        Descriptor front(FRONT_URL, CutAdaptFastqWorker::tr("FASTA file with 5' adapters"), CutAdaptFastqWorker::tr("A FASTA file with one or multiple sequences of adapters that were ligated to the 5' end. "
+                                                                                                                    "If the adapter sequence starts with the character '^', "
+                                                                                                                    "the adapter is 'anchored'. An anchored adapter must "
+                                                                                                                    "appear in its entirety at the 5' end of the read (it "
+                                                                                                                    "is a prefix of the read). A non-anchored adapter may "
+                                                                                                                    "appear partially at the 5' end, or it may occur within "
+                                                                                                                    "the read. If it is found within a read, the sequence "
+                                                                                                                    "preceding the adapter is also trimmed. In all cases, "
+                                                                                                                    "the adapter itself is trimmed."));
 
-
-        Descriptor anywhere(ANYWHERE_URL, CutAdaptFastqWorker::tr("FASTA file with 5' and 3' adapters"),
-            CutAdaptFastqWorker::tr("A FASTA file with one or multiple sequences of adapters that were ligated to the 5' end or 3' end."));
-
+        Descriptor anywhere(ANYWHERE_URL, CutAdaptFastqWorker::tr("FASTA file with 5' and 3' adapters"), CutAdaptFastqWorker::tr("A FASTA file with one or multiple sequences of adapters that were ligated to the 5' end or 3' end."));
 
         a << new Attribute(outDir, BaseTypes::NUM_TYPE(), false, QVariant(FileAndDirectoryUtils::WORKFLOW_INTERNAL));
-        Attribute* customDirAttr = new Attribute(customDir, BaseTypes::STRING_TYPE(), false, QVariant(""));
+        Attribute *customDirAttr = new Attribute(customDir, BaseTypes::STRING_TYPE(), false, QVariant(""));
         customDirAttr->addRelation(new VisibilityRelation(BaseNGSWorker::OUT_MODE_ID, FileAndDirectoryUtils::CUSTOM));
         a << customDirAttr;
-        a << new Attribute( outName, BaseTypes::STRING_TYPE(), false, QVariant(BaseNGSWorker::DEFAULT_NAME));
+        a << new Attribute(outName, BaseTypes::STRING_TYPE(), false, QVariant(BaseNGSWorker::DEFAULT_NAME));
 
-        Attribute* adaptersAttr = NULL;
-        if (dataPath){
-            const QList<QString>& dataNames = dataPath->getDataNames();
-            if (!dataNames.isEmpty()){
+        Attribute *adaptersAttr = NULL;
+        if (dataPath) {
+            const QList<QString> &dataNames = dataPath->getDataNames();
+            if (!dataNames.isEmpty()) {
                 adaptersAttr = new Attribute(adapters, BaseTypes::STRING_TYPE(), false, dataPath->getPathByName(dataNames.first()));
-            }else{
+            } else {
                 adaptersAttr = new Attribute(adapters, BaseTypes::STRING_TYPE(), false);
             }
-        }else{
+        } else {
             adaptersAttr = new Attribute(adapters, BaseTypes::STRING_TYPE(), false);
         }
         a << adaptersAttr;
 
-        a << new Attribute( front, BaseTypes::STRING_TYPE(), false, "");
-        a << new Attribute( anywhere, BaseTypes::STRING_TYPE(), false, "");
+        a << new Attribute(front, BaseTypes::STRING_TYPE(), false, "");
+        a << new Attribute(anywhere, BaseTypes::STRING_TYPE(), false, "");
     }
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
         QVariantMap directoryMap;
         QString fileDir = CutAdaptFastqWorker::tr("Input file");
@@ -186,10 +176,9 @@ void CutAdaptFastqWorkerFactory::init() {
         delegates[ADAPTERS_URL] = new URLDelegate("", "", false, false, false);
         delegates[FRONT_URL] = new URLDelegate("", "", false, false, false);
         delegates[ANYWHERE_URL] = new URLDelegate("", "", false, false, false);
-
     }
 
-    ActorPrototype* proto = new IntegralBusActorPrototype(desc, p, a);
+    ActorPrototype *proto = new IntegralBusActorPrototype(desc, p, a);
     proto->setEditor(new DelegateEditor(delegates));
     proto->setPrompter(new CutAdaptFastqPrompter());
     proto->addExternalTool(CutadaptSupport::ET_CUTADAPT_ID);
@@ -203,12 +192,10 @@ void CutAdaptFastqWorkerFactory::init() {
 /* CutAdaptFastqWorker */
 /************************************************************************/
 CutAdaptFastqWorker::CutAdaptFastqWorker(Actor *a)
-:BaseNGSWorker(a)
-{
-
+    : BaseNGSWorker(a) {
 }
 
-QVariantMap CutAdaptFastqWorker::getCustomParameters() const{
+QVariantMap CutAdaptFastqWorker::getCustomParameters() const {
     QVariantMap res;
     res.insert(ADAPTERS_URL, getValue<QString>(ADAPTERS_URL));
     res.insert(FRONT_URL, getValue<QString>(FRONT_URL));
@@ -216,7 +203,7 @@ QVariantMap CutAdaptFastqWorker::getCustomParameters() const{
     return res;
 }
 
-QString CutAdaptFastqWorker::getDefaultFileName() const{
+QString CutAdaptFastqWorker::getDefaultFileName() const {
     return ".cutadapt.fastq";
 }
 
@@ -230,68 +217,64 @@ Task *CutAdaptFastqWorker::getTask(const BaseNGSSetting &settings) const {
 //////////////////////////////////////////////////////
 //CutAdaptFastqTask
 CutAdaptFastqTask::CutAdaptFastqTask(const BaseNGSSetting &settings)
-    :BaseNGSTask(settings){
-
+    : BaseNGSTask(settings) {
     GCOUNTER(cvar, tvar, "NGS:FASTQCutAdaptTask");
 }
 
-void CutAdaptFastqTask::prepareStep(){
-    if(settings.customParameters[ADAPTERS_URL].toString().isEmpty()
-            && settings.customParameters[FRONT_URL].toString().isEmpty()
-            && settings.customParameters[ANYWHERE_URL].toString().isEmpty()){
-
+void CutAdaptFastqTask::prepareStep() {
+    if (settings.customParameters[ADAPTERS_URL].toString().isEmpty() && settings.customParameters[FRONT_URL].toString().isEmpty() && settings.customParameters[ANYWHERE_URL].toString().isEmpty()) {
         algoLog.trace("No adapter sequence files. Input file has been copied to output.");
 
         bool copied = QFile::copy(settings.inputUrl, settings.outDir + settings.outName);
         if (!copied) {
             algoLog.error(tr("Can not copy the result file to: %1").arg(settings.outDir + settings.outName));
         }
-    }else{
-        ExternalToolRunTask* etTask = getExternalToolTask(CutadaptSupport::ET_CUTADAPT_ID, new CutAdaptParser());
+    } else {
+        ExternalToolRunTask *etTask = getExternalToolTask(CutadaptSupport::ET_CUTADAPT_ID, new CutAdaptParser());
         CHECK(etTask != NULL, );
 
         addSubTask(etTask);
     }
 }
 
-QStringList CutAdaptFastqTask::getParameters(U2OpStatus &/*os*/) {
+QStringList CutAdaptFastqTask::getParameters(U2OpStatus & /*os*/) {
     QStringList res;
 
     QString val;
 
     val = settings.customParameters[ADAPTERS_URL].toString();
-    if(!val.isEmpty()){
+    if (!val.isEmpty()) {
         res << "-a";
         res << QString("file:%1").arg(val);
     }
 
     val = settings.customParameters[FRONT_URL].toString();
-    if(!val.isEmpty()){
+    if (!val.isEmpty()) {
         res << "-g";
         res << QString("file:%1").arg(val);
     }
 
     val = settings.customParameters[ANYWHERE_URL].toString();
-    if(!val.isEmpty()){
+    if (!val.isEmpty()) {
         res << "-b";
         res << QString("file:%1").arg(val);
     }
 
     const QString detectedFormat = FileAndDirectoryUtils::detectFormat(settings.inputUrl);
-    if(detectedFormat.isEmpty()){
+    if (detectedFormat.isEmpty()) {
         stateInfo.setError(tr("Unknown file format: ") + settings.inputUrl);
         return res;
     }
 
-    if(detectedFormat == BaseDocumentFormats::FASTA){
+    if (detectedFormat == BaseDocumentFormats::FASTA) {
         res << "-f";
         res << "fasta";
-    }else if (detectedFormat == BaseDocumentFormats::FASTQ){
-
+    } else if (detectedFormat == BaseDocumentFormats::FASTQ) {
         res << "-f";
         res << "fastq";
     }
-    res << "-m" << "1";
+    res << "-m"
+        << "1";
 
     res << settings.inputUrl;
 
@@ -300,7 +283,7 @@ QStringList CutAdaptFastqTask::getParameters(U2OpStatus &/*os*/) {
 
 const QStringList CutAdaptParser::stringsToIgnore = CutAdaptParser::initStringsToIgnore();
 
-void CutAdaptParser::parseErrOutput( const QString& partOfLog ) {
+void CutAdaptParser::parseErrOutput(const QString &partOfLog) {
     lastPartOfLog = partOfLog.split(QRegExp("(\n|\r)"));
     lastPartOfLog.first() = lastErrLine + lastPartOfLog.first();
     lastErrLine = lastPartOfLog.takeLast();
@@ -313,13 +296,13 @@ void CutAdaptParser::parseErrOutput( const QString& partOfLog ) {
 QString CutAdaptParser::parseTextForErrors(const QStringList &lastPartOfLog) {
     foreach (const QString &buf, lastPartOfLog) {
         bool ignoredStringFound = false;
-        foreach(const QString &ignoredStr, stringsToIgnore) {
+        foreach (const QString &ignoredStr, stringsToIgnore) {
             if (buf.contains(ignoredStr, Qt::CaseInsensitive)) {
                 ignoredStringFound = true;
                 break;
             }
         }
-        if(!ignoredStringFound && buf.contains("ERROR", Qt::CaseInsensitive)) {
+        if (!ignoredStringFound && buf.contains("ERROR", Qt::CaseInsensitive)) {
             return "Cut adapter: " + buf;
         }
     }
@@ -337,11 +320,10 @@ QStringList CutAdaptParser::initStringsToIgnore() {
     return result;
 }
 
-CutAdaptLogProcessor::CutAdaptLogProcessor(WorkflowMonitor *monitor, const QString &actor) :
-ExternalToolLogProcessor(),
-monitor(monitor),
-actor(actor) {
-
+CutAdaptLogProcessor::CutAdaptLogProcessor(WorkflowMonitor *monitor, const QString &actor)
+    : ExternalToolLogProcessor(),
+      monitor(monitor),
+      actor(actor) {
 }
 
 void CutAdaptLogProcessor::processLogMessage(const QString &message) {
@@ -351,5 +333,5 @@ void CutAdaptLogProcessor::processLogMessage(const QString &message) {
     }
 }
 
-} //LocalWorkflow
-} //U2
+}    // namespace LocalWorkflow
+}    // namespace U2

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "RemoveGapsFromSequenceTask.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/AppResources.h>
 #include <U2Core/AppSettings.h>
@@ -26,13 +28,10 @@
 #include <U2Core/MsaDbiUtils.h>
 #include <U2Core/UserApplicationsSettings.h>
 
-#include "RemoveGapsFromSequenceTask.h"
-
 namespace U2 {
 
-FindGapsInSequenceCallback::FindGapsInSequenceCallback(U2SequenceObject * const sequenceObject)
-    : sequenceObject(sequenceObject)
-{
+FindGapsInSequenceCallback::FindGapsInSequenceCallback(U2SequenceObject *const sequenceObject)
+    : sequenceObject(sequenceObject) {
     SAFE_POINT(NULL != sequenceObject, "Sequence object is NULL", );
 }
 
@@ -62,12 +61,11 @@ void FindGapsInSequenceCallback::addGaps(const QList<U2MsaGap> &gaps) {
     }
 }
 
-RemoveGapsFromSequenceTask::RemoveGapsFromSequenceTask(U2SequenceObject * const sequenceObject)
+RemoveGapsFromSequenceTask::RemoveGapsFromSequenceTask(U2SequenceObject *const sequenceObject)
     : Task(tr("Remove gaps from the sequence"), TaskFlags_FOSE_COSC),
       sequenceObject(sequenceObject),
       callback(sequenceObject),
-      findGapsTask(NULL)
-{
+      findGapsTask(NULL) {
     SAFE_POINT_EXT(NULL != sequenceObject, setError("Sequence object is NULL"), );
 }
 
@@ -92,4 +90,4 @@ void RemoveGapsFromSequenceTask::run() {
     }
 }
 
-}   // namespace U2
+}    // namespace U2

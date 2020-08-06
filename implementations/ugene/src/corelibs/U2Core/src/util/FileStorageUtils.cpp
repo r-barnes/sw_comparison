@@ -19,13 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "FileStorageUtils.h"
+
 #include <QFileInfo>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "FileStorageUtils.h"
 
 namespace U2 {
 
@@ -103,4 +103,4 @@ void FileStorageUtils::addSamToBamConvertInfo(const QString &samUrl, const QStri
     addFileToFileInfo(fToFInfo, process);
 }
 
-} // U2
+}    // namespace U2

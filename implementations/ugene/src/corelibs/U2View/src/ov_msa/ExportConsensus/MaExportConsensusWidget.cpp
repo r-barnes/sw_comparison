@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "MaExportConsensusWidget.h"
+
 #include <U2Algorithm/MSAConsensusAlgorithmRegistry.h>
 
 #include <U2Core/AppContext.h>
@@ -42,22 +44,19 @@
 #include <U2Gui/ShowHideSubgroupWidget.h>
 #include <U2Gui/U2WidgetStateStorage.h>
 
+#include <U2View/MaEditorTasks.h>
+
 #include "ov_msa/MaEditor.h"
 #include "ov_msa/view_rendering/MaEditorConsensusArea.h"
 #include "ov_msa/view_rendering/MaEditorWgt.h"
 
-#include <U2View/MaEditorTasks.h>
-
-#include "MaExportConsensusWidget.h"
-
 namespace U2 {
 
-MaExportConsensusWidget::MaExportConsensusWidget(MaEditor* ma_, QWidget *parent)
+MaExportConsensusWidget::MaExportConsensusWidget(MaEditor *ma_, QWidget *parent)
     : QWidget(parent),
       ma(ma_),
       savableWidget(this, GObjectViewUtils::findViewByName(ma_->getName())),
-      saveController(NULL)
-{
+      saveController(NULL) {
     setupUi(this);
 
     hintLabel->setStyleSheet(Theme::infoHintStyleSheet());
@@ -74,7 +73,7 @@ MaExportConsensusWidget::MaExportConsensusWidget(MaEditor* ma_, QWidget *parent)
     sl_consensusChanged(consensusArea->getConsensusAlgorithm()->getId());
 }
 
-void MaExportConsensusWidget::sl_exportClicked(){
+void MaExportConsensusWidget::sl_exportClicked() {
     GRUNTIME_NAMED_COUNTER(cvat, tvar, "Exporting of consensus", ma->getFactoryId());
     if (saveController->getSaveFileName().isEmpty()) {
         saveController->setPath(getDefaultFilePath());
@@ -88,7 +87,7 @@ void MaExportConsensusWidget::sl_exportClicked(){
     settings.url = saveController->getSaveFileName();
     settings.algorithm = ma->getUI()->getConsensusArea()->getConsensusAlgorithm()->clone();
 
-    ExportMaConsensusTask* exportTask = new ExportMaConsensusTask(settings);
+    ExportMaConsensusTask *exportTask = new ExportMaConsensusTask(settings);
     connect(exportTask, SIGNAL(si_stateChanged()), this, SLOT(sl_exportTaskStateChanged()));
     exportTaskUrls << exportTask->getConsensusUrl();
     TaskWatchdog::trackResourceExistence(ma->getMaObject(), exportTask, tr("A problem occurred during export consensus. The multiple alignment is no more available."));
@@ -96,22 +95,22 @@ void MaExportConsensusWidget::sl_exportClicked(){
     saveController->forceRoll(exportTaskUrls);
 }
 
-void MaExportConsensusWidget::showHint( bool showHint ){
-    if (showHint){
+void MaExportConsensusWidget::showHint(bool showHint) {
+    if (showHint) {
         hintLabel->show();
         keepGapsChb->hide();
-    }else{
+    } else {
         hintLabel->hide();
         keepGapsChb->show();
     }
 }
 
-void MaExportConsensusWidget::sl_consensusChanged(const QString& algoId) {
+void MaExportConsensusWidget::sl_consensusChanged(const QString &algoId) {
     MSAConsensusAlgorithmFactory *consAlgorithmFactory = AppContext::getMSAConsensusAlgorithmRegistry()->getAlgorithmFactory(algoId);
     SAFE_POINT(consAlgorithmFactory != NULL, "Fetched consensus algorithm factory is NULL", );
 
     if (consAlgorithmFactory->isSequenceLikeResult()) {
-        if (formatCb->count() == 1 ) { //only text
+        if (formatCb->count() == 1) {    //only text
             formatCb->addItem(DocumentFormatUtils::getFormatNameById(BaseDocumentFormats::PLAIN_GENBANK));
             formatCb->addItem(DocumentFormatUtils::getFormatNameById(BaseDocumentFormats::FASTA));
             formatCb->model()->sort(0);
@@ -120,7 +119,7 @@ void MaExportConsensusWidget::sl_consensusChanged(const QString& algoId) {
         }
         showHint(false);
     } else {
-        if (formatCb->count() == 3 ) { //all possible formats
+        if (formatCb->count() == 3) {    //all possible formats
             formatCb->setCurrentText(DocumentFormatUtils::getFormatNameById(BaseDocumentFormats::PLAIN_TEXT));
             formatCb->removeItem(formatCb->findText(DocumentFormatUtils::getFormatNameById(BaseDocumentFormats::FASTA)));
             formatCb->removeItem(formatCb->findText(DocumentFormatUtils::getFormatNameById(BaseDocumentFormats::PLAIN_GENBANK)));
@@ -132,7 +131,7 @@ void MaExportConsensusWidget::sl_consensusChanged(const QString& algoId) {
 }
 
 void MaExportConsensusWidget::sl_exportTaskStateChanged() {
-    ExportMaConsensusTask* exportTask = qobject_cast<ExportMaConsensusTask*>(sender());
+    ExportMaConsensusTask *exportTask = qobject_cast<ExportMaConsensusTask *>(sender());
     SAFE_POINT(exportTask != NULL, "ExportMaConsensusTask object is unexpectedly NULL", );
 
     if (exportTask->getState() == Task::State_Finished) {
@@ -161,5 +160,4 @@ QString MaExportConsensusWidget::getDefaultFilePath() const {
     return GUrlUtils::getDefaultDataPath() + "/" + ma->getMaObject()->getGObjectName() + "_consensus.txt";
 }
 
-
-}
+}    // namespace U2

@@ -22,8 +22,9 @@
 #ifndef _U2_UTIL_TEST_ACTIONS_H_
 #define _U2_UTIL_TEST_ACTIONS_H_
 
-#include <U2Test/XMLTestUtils.h>
 #include <QDomElement>
+
+#include <U2Test/XMLTestUtils.h>
 
 namespace U2 {
 
@@ -35,11 +36,11 @@ public:
     ReportResult report();
 
 private:
-    bool copyDirectry(const QString& from, const QString& to);
+    bool copyDirectry(const QString &from, const QString &to);
 
-    QString             fromUrl;
-    QString             toUrl;
-    bool                isDir;
+    QString fromUrl;
+    QString toUrl;
+    bool isDir;
 
     static const QString FROM_URL_ATTR;
     static const QString TO_URL_ATTR;
@@ -70,9 +71,9 @@ private:
 
 class UtilTestActions {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_UTIL_TEST_ACTIONS_H_
+#endif    // _U2_UTIL_TEST_ACTIONS_H_

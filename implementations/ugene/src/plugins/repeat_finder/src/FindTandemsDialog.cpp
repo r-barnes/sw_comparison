@@ -48,24 +48,22 @@
 
 namespace U2 {
 
-#define SETTINGS_ROOT               QString("plugin_find_repeats/")
-#define MIN_LEN_SETTINGS            QString("min_len")
-#define IDENTITY_SETTINGS           QString("identity")
+#define SETTINGS_ROOT QString("plugin_find_repeats/")
+#define MIN_LEN_SETTINGS QString("min_len")
+#define IDENTITY_SETTINGS QString("identity")
 
-FindTandemsTaskSettings FindTandemsDialog::defaultSettings()
-{
+FindTandemsTaskSettings FindTandemsDialog::defaultSettings() {
     FindTandemsTaskSettings res;
-    Settings* s = AppContext::getSettings();
+    Settings *s = AppContext::getSettings();
     res.minPeriod = (s->getValue(SETTINGS_ROOT + MIN_LEN_SETTINGS, 1).toInt());
     return res;
 }
 
-FindTandemsDialog::FindTandemsDialog(ADVSequenceObjectContext* _sc)
-: QDialog(_sc->getAnnotatedDNAView()->getWidget())
-{
+FindTandemsDialog::FindTandemsDialog(ADVSequenceObjectContext *_sc)
+    : QDialog(_sc->getAnnotatedDNAView()->getWidget()) {
     sc = _sc;
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742558");
+    new HelpButton(this, buttonBox, "46501087");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Start"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -80,8 +78,8 @@ FindTandemsDialog::FindTandemsDialog(ADVSequenceObjectContext* _sc)
     m.sequenceLen = sc->getSequenceObject()->getSequenceLength();
     ac = new CreateAnnotationWidgetController(m, this);
 
-    QWidget* caw = ac->getWidget();
-    QVBoxLayout* l = new QVBoxLayout();
+    QWidget *caw = ac->getWidget();
+    QVBoxLayout *l = new QVBoxLayout();
     l->setMargin(0);
     l->addWidget(caw);
     annotationsWidget->setLayout(l);
@@ -99,11 +97,10 @@ FindTandemsDialog::FindTandemsDialog(ADVSequenceObjectContext* _sc)
 
     int seqLen = sc->getSequenceLength();
 
-    rs=new RegionSelector(this, seqLen, false, sc->getSequenceSelection());
+    rs = new RegionSelector(this, seqLen, false, sc->getSequenceSelection());
     rangeSelectorLayout->addWidget(rs);
 
     setWindowIcon(QIcon(":/ugene/images/ugene_16.png"));
-
 }
 
 QStringList FindTandemsDialog::getAvailableAnnotationNames() const {
@@ -120,43 +117,43 @@ QStringList FindTandemsDialog::getAvailableAnnotationNames() const {
     return res;
 }
 
-void FindTandemsDialog::minPeriodChanged(int min){
-    maxPeriodBox->setValue(qMax(min,maxPeriodBox->value()));
+void FindTandemsDialog::minPeriodChanged(int min) {
+    maxPeriodBox->setValue(qMax(min, maxPeriodBox->value()));
 }
-void FindTandemsDialog::maxPeriodChanged(int max){
-    minPeriodBox->setValue(qMin(max,minPeriodBox->value()));
+void FindTandemsDialog::maxPeriodChanged(int max) {
+    minPeriodBox->setValue(qMin(max, minPeriodBox->value()));
 }
-void FindTandemsDialog::customization(){
+void FindTandemsDialog::customization() {
     repeatLenComboBox->setCurrentIndex(TSConstants::PresetCustom);
 }
-void FindTandemsDialog::presetSelected(int preset){
+void FindTandemsDialog::presetSelected(int preset) {
     int minPeriod = 1;
     int maxPeriod = INT_MAX;
-    const unsigned maxMicro=6;
-    const unsigned maxMini=30;
-    switch (preset){
-        case TSConstants::PresetAll:
-            break;
-        case TSConstants::PresetMicro:
-            maxPeriod=maxMicro;
-            break;
-        case TSConstants::PresetMini:
-            minPeriod=maxMicro+1;
-            maxPeriod=maxMini;
-            break;
-        case TSConstants::PresetBigPeriod:
-            minPeriod=maxMini+1;
-            break;
-        case TSConstants::PresetCustom:
-            return;
-        default:
-            break;
+    const unsigned maxMicro = 6;
+    const unsigned maxMini = 30;
+    switch (preset) {
+    case TSConstants::PresetAll:
+        break;
+    case TSConstants::PresetMicro:
+        maxPeriod = maxMicro;
+        break;
+    case TSConstants::PresetMini:
+        minPeriod = maxMicro + 1;
+        maxPeriod = maxMini;
+        break;
+    case TSConstants::PresetBigPeriod:
+        minPeriod = maxMini + 1;
+        break;
+    case TSConstants::PresetCustom:
+        return;
+    default:
+        break;
     }
     minPeriodBox->setValue(minPeriod);
     maxPeriodBox->setValue(maxPeriod);
 }
 
-bool FindTandemsDialog::getRegions(QCheckBox* cb, QLineEdit* le, QVector<U2Region>& res) {
+bool FindTandemsDialog::getRegions(QCheckBox *cb, QLineEdit *le, QVector<U2Region> &res) {
     bool enabled = cb->isChecked();
     QString names = le->text();
     if (!enabled || names.isEmpty()) {
@@ -180,7 +177,7 @@ bool FindTandemsDialog::getRegions(QCheckBox* cb, QLineEdit* le, QVector<U2Regio
 }
 
 U2Region FindTandemsDialog::getActiveRange(bool *ok) const {
-    U2Region region=rs->getRegion(ok);//todo add check on wrong region
+    U2Region region = rs->getRegion(ok);    //todo add check on wrong region
     return region;
 }
 
@@ -190,9 +187,9 @@ U2Region FindTandemsDialog::getActiveRange(bool *ok) const {
 void FindTandemsDialog::accept() {
     int minPeriod = minPeriodBox->value();
     int maxPeriod = maxPeriodBox->value();
-    bool isRegionOk=false;
+    bool isRegionOk = false;
     U2Region range = getActiveRange(&isRegionOk);
-    if(!isRegionOk){
+    if (!isRegionOk) {
         rs->showErrorMessage();
         return;
     }
@@ -206,7 +203,7 @@ void FindTandemsDialog::accept() {
     if (AppResourcePool::is32BitBuild()) {
         qint64 sequenceLen = sc->getSequenceObject()->getSequenceLength();
         if (sequenceLen > MAX_TANDEM_REPEAT_SEQUENCE_LENGTH_32_BIT_OS) {
-            QMessageBox::warning(this, L10N::warningTitle(),  tr("Sequence size is too large!"));
+            QMessageBox::warning(this, L10N::warningTitle(), tr("Sequence size is too large!"));
             return;
         }
     }
@@ -219,13 +216,13 @@ void FindTandemsDialog::accept() {
         return;
     }
     bool objectPrepared = ac->prepareAnnotationObject();
-    if (!objectPrepared){
+    if (!objectPrepared) {
         QMessageBox::warning(this, L10N::errorTitle(), tr("Cannot create an annotation object. Please check settings"));
         return;
     }
 
     FindTandemsTaskSettings settings;
-    const CreateAnnotationModel& cam = ac->getModel();
+    const CreateAnnotationModel &cam = ac->getModel();
     sc->getAnnotatedDNAView()->tryAddObject(ac->getModel().getAnnotationObject());
     settings.minPeriod = minPeriod;
     settings.maxPeriod = maxPeriod;
@@ -237,7 +234,7 @@ void FindTandemsDialog::accept() {
     settings.seqRegion = U2Region(0, seq.length());
     settings.reportSeqShift = range.startPos;
 
-    FindTandemsToAnnotationsTask* t = new FindTandemsToAnnotationsTask(settings, seq, cam.data->name, cam.groupName, cam.description, cam.annotationObjectRef);
+    FindTandemsToAnnotationsTask *t = new FindTandemsToAnnotationsTask(settings, seq, cam.data->name, cam.groupName, cam.description, cam.annotationObjectRef);
     AppContext::getTaskScheduler()->registerTopLevelTask(t);
 
     QDialog::accept();
@@ -245,7 +242,7 @@ void FindTandemsDialog::accept() {
 
 quint64 FindTandemsDialog::areaSize() const {
     quint64 range = getActiveRange().length;
-    if (range <=0) {
+    if (range <= 0) {
         return 0;
     }
     int minDist = 0;
@@ -260,7 +257,7 @@ quint64 FindTandemsDialog::areaSize() const {
 int FindTandemsDialog::estimateResultsCount() const {
     int len = 1;
 
-    quint64 nVariations  = areaSize(); //max possible results
+    quint64 nVariations = areaSize();    //max possible results
     double variationsPerLen = pow(double(4), double(len));
     quint64 res = quint64(nVariations / variationsPerLen);
     res = (res > 20) ? (res / 10) * 10 : res;
@@ -269,5 +266,4 @@ int FindTandemsDialog::estimateResultsCount() const {
     return res;
 }
 
-}//namespace
-
+}    // namespace U2

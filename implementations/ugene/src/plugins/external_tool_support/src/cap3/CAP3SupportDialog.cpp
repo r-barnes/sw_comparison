@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CAP3SupportDialog.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 
@@ -27,20 +29,18 @@
 #include <U2Gui/SaveDocumentController.h>
 #include <U2Gui/U2FileDialog.h>
 
-#include "CAP3SupportDialog.h"
 #include "CAP3SupportTask.h"
 
 namespace U2 {
 ////////////////////////////////////////
 //CAP3SupportDialog
 
-CAP3SupportDialog::CAP3SupportDialog(CAP3SupportTaskSettings& s, QWidget* parent)
+CAP3SupportDialog::CAP3SupportDialog(CAP3SupportTaskSettings &s, QWidget *parent)
     : QDialog(parent),
       settings(s),
-      saveController(NULL)
-{
+      saveController(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742610");
+    new HelpButton(this, buttonBox, "46501244");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Run"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -68,8 +68,7 @@ void CAP3SupportDialog::initSettings() {
     overlapPercentIdentityBox->setValue(settings.overlapPercentIdentityCutoff);
     if (settings.reverseReads) {
         reverseReadsBox->setChecked(true);
-    }
-    else {
+    } else {
         reverseReadsBox->setChecked(false);
     }
     overlapSimilarityScoreCutoffBox->setValue(settings.overlapSimilarityScoreCutoff);
@@ -90,34 +89,30 @@ void CAP3SupportDialog::initSaveController() {
     saveController = new SaveDocumentController(config, formats, this);
 }
 
-void CAP3SupportDialog::accept()
-{
+void CAP3SupportDialog::accept() {
     if (seqList->count() == 0) {
-        QMessageBox::information(this, windowTitle(),
-            tr("List of input files is empty!") );
+        QMessageBox::information(this, windowTitle(), tr("List of input files is empty!"));
         return;
     }
 
     int itemCount = seqList->count();
     for (int i = 0; i < itemCount; ++i) {
-        settings.inputFiles.append( seqList->item(i)->text() );
+        settings.inputFiles.append(seqList->item(i)->text());
     }
 
     QString outputPath = saveController->getSaveFileName();
-    if (outputPath.isEmpty() ) {
-        QMessageBox::information(this, windowTitle(),
-            tr("Result contig file name is not set!") );
+    if (outputPath.isEmpty()) {
+        QMessageBox::information(this, windowTitle(), tr("Result contig file name is not set!"));
         return;
     }
 
-    if(QFileInfo(outputPath).exists()) {
-        int result = QMessageBox::question(this, windowTitle(),
-                                           tr("Destination file already exists.\n"
-                                              "To overwrite the file, press 'Replace'.\n"
-                                              "To save under other name press 'Cancel' and change name in 'Result contig' field."),
+    if (QFileInfo(outputPath).exists()) {
+        int result = QMessageBox::question(this, windowTitle(), tr("Destination file already exists.\n"
+                                                                   "To overwrite the file, press 'Replace'.\n"
+                                                                   "To save under other name press 'Cancel' and change name in 'Result contig' field."),
                                            tr("Replace"),
                                            tr("Cancel"));
-        if(result == 1) {
+        if (result == 1) {
             return;
         }
     }
@@ -141,15 +136,14 @@ void CAP3SupportDialog::accept()
     QDialog::accept();
 }
 
-void CAP3SupportDialog::sl_onAddButtonClicked()
-{
+void CAP3SupportDialog::sl_onAddButtonClicked() {
     LastUsedDirHelper lod;
     QStringList fileNames = U2FileDialog::getOpenFileNames(this, tr("Add Sequences to Assembly"), lod.dir);
     if (fileNames.isEmpty()) {
         return;
     }
     lod.url = fileNames.at(fileNames.count() - 1);
-    foreach(const QString& f, fileNames) {
+    foreach (const QString &f, fileNames) {
         seqList->addItem(f);
     }
 
@@ -157,15 +151,13 @@ void CAP3SupportDialog::sl_onAddButtonClicked()
     saveController->setPath(url.dirPath() + "/" + url.baseFileName() + ".cap.ace");
 }
 
-void CAP3SupportDialog::sl_onRemoveButtonClicked()
-{
+void CAP3SupportDialog::sl_onRemoveButtonClicked() {
     int currentRow = seqList->currentRow();
     seqList->takeItem(currentRow);
 }
 
-void CAP3SupportDialog::sl_onRemoveAllButtonClicked()
-{
+void CAP3SupportDialog::sl_onRemoveAllButtonClicked() {
     seqList->clear();
 }
 
-}//namespace
+}    // namespace U2

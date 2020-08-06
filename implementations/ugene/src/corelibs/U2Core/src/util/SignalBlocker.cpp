@@ -23,10 +23,9 @@
 
 namespace U2 {
 
-SignalBlocker::SignalBlocker(QObject * const object) :
-    object(object),
-    previousState(true)
-{
+SignalBlocker::SignalBlocker(QObject *const object)
+    : object(object),
+      previousState(true) {
     previousState = object->blockSignals(true);
 }
 
@@ -34,4 +33,4 @@ SignalBlocker::~SignalBlocker() {
     object->blockSignals(previousState);
 }
 
-}   // namespace U2
+}    // namespace U2

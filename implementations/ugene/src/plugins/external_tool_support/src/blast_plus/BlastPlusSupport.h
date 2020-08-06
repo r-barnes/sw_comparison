@@ -23,6 +23,7 @@
 #define _U2_BLASTPLUS_SUPPORT_H
 
 #include <U2Core/ExternalToolRegistry.h>
+
 #include <U2Gui/ObjectViewModel.h>
 
 namespace U2 {
@@ -30,7 +31,7 @@ namespace U2 {
 class BlastPlusSupport : public ExternalTool {
     Q_OBJECT
 public:
-    BlastPlusSupport(const QString& id, const QString& name, const QString& path = "");
+    BlastPlusSupport(const QString &id, const QString &name, const QString &path = "");
 
     static const QString ET_BLASTN;
     static const QString ET_BLASTN_ID;
@@ -56,25 +57,26 @@ private:
     QString lastDBName;
 };
 
-class BlastPlusSupportContext: public GObjectViewWindowContext {
+class BlastPlusSupportContext : public GObjectViewWindowContext {
     Q_OBJECT
 public:
-    BlastPlusSupportContext(QObject* p);
+    BlastPlusSupportContext(QObject *p);
 
 protected slots:
     void sl_showDialog();
     void sl_fetchSequenceById();
 
 protected:
-    virtual void initViewContext(GObjectView* view);
-    virtual void buildMenu(GObjectView* view, QMenu* m);
+    virtual void initViewContext(GObjectView *view);
+    virtual void buildMenu(GObjectView *view, QMenu *m);
+
 private:
     QStringList toolIdList;
     QString lastDBPath;
     QString lastDBName;
     QString selectedId;
-    QAction* fetchSequenceByIdAction;
+    QAction *fetchSequenceByIdAction;
 };
 
-}//namespace
-#endif // _U2_BLASTPLUS_SUPPORT_H
+}    // namespace U2
+#endif    // _U2_BLASTPLUS_SUPPORT_H

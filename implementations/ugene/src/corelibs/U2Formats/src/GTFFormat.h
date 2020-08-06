@@ -32,61 +32,94 @@
 namespace U2 {
 
 /** Validates a line from a GTF file */
-class GTFLineValidateFlags
-{
+class GTFLineValidateFlags {
 public:
     GTFLineValidateFlags();
 
-    void setFlagIncorrectNumberOfFields() { incorrectNumberOfFields = true; }
-    void setFlagEmptyField() { emptyField = true; }
-    void setFlagIncorrectCoordinates() { incorrectCoordinates = true; }
-    void setFlagIncorrectScore() { incorrectScore = true; }
-    void setFlagIncorrectStrand() { incorrectStrand = true; }
-    void setIncorrectFrame() { incorrectFrame = true; }
-    void setFlagNoGeneIdAttribute() { noGeneIdAttribute = true; }
-    void setFlagNoTrascriptIdAttribute() { noTranscriptIdAttribute = true; }
-    void setFlagIncorrectFormatOfAttributes() { incorrectFormatOfAttributes = true; }
+    void setFlagIncorrectNumberOfFields() {
+        incorrectNumberOfFields = true;
+    }
+    void setFlagEmptyField() {
+        emptyField = true;
+    }
+    void setFlagIncorrectCoordinates() {
+        incorrectCoordinates = true;
+    }
+    void setFlagIncorrectScore() {
+        incorrectScore = true;
+    }
+    void setFlagIncorrectStrand() {
+        incorrectStrand = true;
+    }
+    void setIncorrectFrame() {
+        incorrectFrame = true;
+    }
+    void setFlagNoGeneIdAttribute() {
+        noGeneIdAttribute = true;
+    }
+    void setFlagNoTrascriptIdAttribute() {
+        noTranscriptIdAttribute = true;
+    }
+    void setFlagIncorrectFormatOfAttributes() {
+        incorrectFormatOfAttributes = true;
+    }
 
     FormatDetectionScore getFormatDetectionScore();
 
     bool isFileInvalid() {
         return incorrectNumberOfFields ||
-            emptyField ||
-            incorrectCoordinates ||
-            incorrectScore ||
-            incorrectStrand ||
-            incorrectFrame ||
-            incorrectFormatOfAttributes;
+               emptyField ||
+               incorrectCoordinates ||
+               incorrectScore ||
+               incorrectStrand ||
+               incorrectFrame ||
+               incorrectFormatOfAttributes;
     }
 
-    bool isIncorrectNumberOfFields() { return incorrectNumberOfFields; }
-    bool isEmptyField() { return emptyField; }
-    bool isIncorrectCoordinates() { return incorrectCoordinates; }
-    bool isIncorrectScore() { return incorrectScore; }
-    bool isIncorrectStrand() { return incorrectStrand; }
-    bool isIncorrectFrame() { return incorrectFrame; }
-    bool isGeneIdAbsent() { return noGeneIdAttribute; }
-    bool isTranscriptIdAbsent() { return noTranscriptIdAttribute; }
-    bool isIncorrectFormatOfAttributes() { return incorrectFormatOfAttributes; }
+    bool isIncorrectNumberOfFields() {
+        return incorrectNumberOfFields;
+    }
+    bool isEmptyField() {
+        return emptyField;
+    }
+    bool isIncorrectCoordinates() {
+        return incorrectCoordinates;
+    }
+    bool isIncorrectScore() {
+        return incorrectScore;
+    }
+    bool isIncorrectStrand() {
+        return incorrectStrand;
+    }
+    bool isIncorrectFrame() {
+        return incorrectFrame;
+    }
+    bool isGeneIdAbsent() {
+        return noGeneIdAttribute;
+    }
+    bool isTranscriptIdAbsent() {
+        return noTranscriptIdAttribute;
+    }
+    bool isIncorrectFormatOfAttributes() {
+        return incorrectFormatOfAttributes;
+    }
 
 private:
-    bool incorrectNumberOfFields; // There should be 9 fields
-    bool emptyField; // Each field shouldn't be empty or shouldn't consist of white spaces
-    bool incorrectCoordinates; // Start and end should be integer, start should be <= end
-    bool incorrectScore; // Should be float, or integer, or a dot('.'), i.e. empty
-    bool incorrectStrand; // Should be '+', '-', or '.'
-    bool incorrectFrame; // Should be 0, or 1, or 2, or '.'
-    bool noGeneIdAttribute; // "gene_id" attribute is required
-    bool noTranscriptIdAttribute; // "transcript_id" attribute is required
-    bool incorrectFormatOfAttributes; // Attributes must end in a semicolon which must then be separated
-                                      // from the start of any subsequent attribute by exactly one space
-                                      // character (NOT a tab character). Textual attributes should be
-                                      // surrounded by double quotes.
+    bool incorrectNumberOfFields;    // There should be 9 fields
+    bool emptyField;    // Each field shouldn't be empty or shouldn't consist of white spaces
+    bool incorrectCoordinates;    // Start and end should be integer, start should be <= end
+    bool incorrectScore;    // Should be float, or integer, or a dot('.'), i.e. empty
+    bool incorrectStrand;    // Should be '+', '-', or '.'
+    bool incorrectFrame;    // Should be 0, or 1, or 2, or '.'
+    bool noGeneIdAttribute;    // "gene_id" attribute is required
+    bool noTranscriptIdAttribute;    // "transcript_id" attribute is required
+    bool incorrectFormatOfAttributes;    // Attributes must end in a semicolon which must then be separated
+        // from the start of any subsequent attribute by exactly one space
+        // character (NOT a tab character). Textual attributes should be
+        // surrounded by double quotes.
 };
 
-
-struct GTFLineData
-{
+struct GTFLineData {
     QString seqName;
     QString source;
     QString feature;
@@ -97,11 +130,15 @@ struct GTFLineData
     QMap<QString, QString> attributes;
 };
 
-
-enum GTFLineFieldsIndeces {GTF_SEQ_NAME_INDEX = 0, GTF_SOURCE_INDEX = 1, GTF_FEATURE_INDEX = 2,
-    GTF_START_INDEX = 3, GTF_END_INDEX = 4, GTF_SCORE_INDEX = 5, GTF_STRAND_INDEX = 6,
-    GTF_FRAME_INDEX = 7, GTF_ATTRIBUTES_INDEX = 8};
-
+enum GTFLineFieldsIndeces { GTF_SEQ_NAME_INDEX = 0,
+                            GTF_SOURCE_INDEX = 1,
+                            GTF_FEATURE_INDEX = 2,
+                            GTF_START_INDEX = 3,
+                            GTF_END_INDEX = 4,
+                            GTF_SCORE_INDEX = 5,
+                            GTF_STRAND_INDEX = 6,
+                            GTF_FRAME_INDEX = 7,
+                            GTF_ATTRIBUTES_INDEX = 8 };
 
 class IOAdapter;
 
@@ -113,25 +150,25 @@ class U2FORMATS_EXPORT GTFFormat : public TextDocumentFormat {
     Q_OBJECT
 
 public:
-    GTFFormat(QObject* parent);
+    GTFFormat(QObject *parent);
 
-    virtual void storeDocument(Document* doc, IOAdapter* io, U2OpStatus& os);
+    virtual void storeDocument(Document *doc, IOAdapter *io, U2OpStatus &os);
 
 protected:
-    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& = GUrl()) const;
+    virtual FormatCheckResult checkRawTextData(const QByteArray &rawData, const GUrl & = GUrl()) const;
 
-    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& hints, U2OpStatus& os);
+    virtual Document *loadTextDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &hints, U2OpStatus &os);
 
 private:
-    GTFLineData parseAndValidateLine(QString line, GTFLineValidateFlags& status) const;
+    GTFLineData parseAndValidateLine(QString line, GTFLineValidateFlags &status) const;
 
     /**
     * A common method for parsing and validating an input GTF file.
     * It is used during loading the file or just getting the annotations data from it.
     */
-    QMap<QString, QList<SharedAnnotationData> > parseDocument(IOAdapter* io, U2OpStatus& os);
+    QMap<QString, QList<SharedAnnotationData>> parseDocument(IOAdapter *io, U2OpStatus &os);
 
-    void load(IOAdapter* io, QList<GObject*>& objects, const U2DbiRef& dbiRef, const QVariantMap &hints, U2OpStatus& os);
+    void load(IOAdapter *io, QList<GObject *> &objects, const U2DbiRef &dbiRef, const QVariantMap &hints, U2OpStatus &os);
 
     static const int FIELDS_COUNT_IN_EACH_LINE;
     static const QString NO_VALUE_STR;
@@ -139,14 +176,13 @@ private:
     static const QString CHROMOSOME;
     static const QString SOURCE_QUALIFIER_NAME;
     static const QString SCORE_QUALIFIER_NAME;
-    static const QString STRAND_QUALIFIER_NAME; // e.g. to detect if a value was in the original GTF file
-                                                // (when it is rewritten)
+    static const QString STRAND_QUALIFIER_NAME;    // e.g. to detect if a value was in the original GTF file
+        // (when it is rewritten)
     static const QString FRAME_QUALIFIER_NAME;
     static const QString GENE_ID_QUALIFIER_NAME;
     static const QString TRANSCRIPT_ID_QUALIFIER_NAME;
 };
 
-
-} // namespace
+}    // namespace U2
 
 #endif

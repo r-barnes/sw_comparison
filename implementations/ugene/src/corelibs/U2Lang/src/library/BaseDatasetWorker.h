@@ -37,11 +37,11 @@ public:
 
 protected:
     // BaseOneOneWorker
-    Task * processNextInputMessage() override;
-    Task * onInputEnded() override;
+    Task *processNextInputMessage() override;
+    Task *onInputEnded() override;
     QList<Message> fetchResult(Task *task, U2OpStatus &os) override;
 
-    virtual Task * createTask(const QList<Message> &messages) const = 0;
+    virtual Task *createTask(const QList<Message> &messages) const = 0;
     virtual QVariantMap getResult(Task *task, U2OpStatus &os) const = 0;
     virtual MessageMetadata generateMetadata(const QString &datasetName) const;
 
@@ -49,7 +49,7 @@ private:
     QString getDatasetName(const Message &message) const;
     bool datasetChanged(const Message &message) const;
     void takeMessage();
-    Task * onDatasetChanged();
+    Task *onDatasetChanged();
 
 private:
     bool datasetInited;
@@ -57,7 +57,7 @@ private:
     QList<Message> datasetMessages;
 };
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_BASE_DATASET_WORKER_H_
+#endif    // _U2_BASE_DATASET_WORKER_H_

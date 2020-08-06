@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ImportToDatabaseDialog.h"
+
 #include <QListView>
 #include <QMenu>
 
@@ -30,6 +32,7 @@
 #include <U2Core/ImportFileToDatabaseTask.h>
 #include <U2Core/ImportObjectToDatabaseTask.h>
 #include <U2Core/ImportToDatabaseTask.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/Task.h>
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2ObjectDbi.h>
@@ -40,29 +43,25 @@
 #include <U2Gui/MainWindow.h>
 #include <U2Gui/ProjectTreeController.h>
 #include <U2Gui/ProjectTreeItemSelectorDialog.h>
-#include <U2Core/QObjectScopedPointer.h>
 #include <U2Gui/U2FileDialog.h>
 
 #include "CommonImportOptionsDialog.h"
-#include "ImportToDatabaseDialog.h"
 #include "ItemToImportEditDialog.h"
 #include "ui_ImportToDatabaseDialog.h"
 
 namespace U2 {
 
-
-ImportToDatabaseDialog::ImportToDatabaseDialog(Document *dbConnection, const QString &defaultFolder, QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui_ImportToDatabaseDialog),
-    dbConnection(dbConnection),
-    baseFolder(U2DbiUtils::makeFolderCanonical(defaultFolder))
-{
+ImportToDatabaseDialog::ImportToDatabaseDialog(Document *dbConnection, const QString &defaultFolder, QWidget *parent)
+    : QDialog(parent),
+      ui(new Ui_ImportToDatabaseDialog),
+      dbConnection(dbConnection),
+      baseFolder(U2DbiUtils::makeFolderCanonical(defaultFolder)) {
     ui->setupUi(this);
     DIR_HELPER_NAME = "import_to_database";
     FILES_AND_FOLDERS = tr("Files and folders");
     OBJECTS_AND_DOCUMENTS = tr("Documents and objects");
-    
-    new HelpButton(this, ui->buttonBox, "24742694");
+
+    new HelpButton(this, ui->buttonBox, "46501291");
     init();
     connectSignals();
     updateState();
@@ -76,7 +75,7 @@ void ImportToDatabaseDialog::sl_selectionChanged() {
     updateState();
 }
 
-void ImportToDatabaseDialog::sl_itemDoubleClicked(QTreeWidgetItem* item, int column) {
+void ImportToDatabaseDialog::sl_itemDoubleClicked(QTreeWidgetItem *item, int column) {
     CHECK(COLUMN_FOLDER == column, );
     ui->twOrders->editItem(item, column);
 }
@@ -88,7 +87,7 @@ void ImportToDatabaseDialog::sl_itemChanged(QTreeWidgetItem *item, int column) {
 }
 
 void ImportToDatabaseDialog::sl_customContextMenuRequested(const QPoint &position) {
-    QTreeWidgetItem* item = ui->twOrders->currentItem();
+    QTreeWidgetItem *item = ui->twOrders->currentItem();
     CHECK(NULL != item, );
     CHECK(isEssential(item), );
 
@@ -107,7 +106,7 @@ void ImportToDatabaseDialog::sl_customContextMenuRequested(const QPoint &positio
 }
 
 void ImportToDatabaseDialog::sl_resetOptions() {
-    QTreeWidgetItem* item = ui->twOrders->currentItem();
+    QTreeWidgetItem *item = ui->twOrders->currentItem();
     CHECK(NULL != item, );
 
     const ImportToDatabaseOptions oldOptions = privateOptions.take(item);
@@ -117,7 +116,7 @@ void ImportToDatabaseDialog::sl_resetOptions() {
 
 void ImportToDatabaseDialog::sl_addFileClicked() {
     const QStringList fileList = getFilesToImport();
-    foreach (const QString& url, fileList) {
+    foreach (const QString &url, fileList) {
         addFile(url);
     }
 
@@ -132,8 +131,8 @@ void ImportToDatabaseDialog::sl_addFolderClicked() {
 }
 
 void ImportToDatabaseDialog::sl_addObjectClicked() {
-    QList<Document*> docsToImport;
-    QList<GObject*> objsToImport;
+    QList<Document *> docsToImport;
+    QList<GObject *> objsToImport;
     getProjectItemsToImport(docsToImport, objsToImport);
 
     addObjectsAndDocuments(docsToImport, objsToImport);
@@ -155,7 +154,7 @@ void ImportToDatabaseDialog::sl_optionsClicked() {
 }
 
 void ImportToDatabaseDialog::sl_editOptions() {
-    QTreeWidgetItem* item = ui->twOrders->currentItem();
+    QTreeWidgetItem *item = ui->twOrders->currentItem();
     CHECK(NULL != item, );
 
     ImportToDatabaseOptions currentOptions = privateOptions.value(item, commonOptions);
@@ -174,27 +173,27 @@ void ImportToDatabaseDialog::sl_editOptions() {
 }
 
 void ImportToDatabaseDialog::sl_removeClicked() {
-    QList<QTreeWidgetItem*> selectedItems = ui->twOrders->selectedItems();
+    QList<QTreeWidgetItem *> selectedItems = ui->twOrders->selectedItems();
     removeItems(selectedItems);
 
     updateState();
 }
 
 void ImportToDatabaseDialog::sl_taskFinished() {
-    Task* task = qobject_cast<Task*>(sender());
+    Task *task = qobject_cast<Task *>(sender());
     CHECK(NULL != task, );
     CHECK(task->isFinished(), );
 }
 
 void ImportToDatabaseDialog::accept() {
-    QList<Task*> importTasks;
+    QList<Task *> importTasks;
     importTasks << createImportFilesTasks();
     importTasks << createImportFoldersTasks();
     importTasks << createimportObjectsTasks();
     importTasks << createImportDocumentsTasks();
 
     if (!importTasks.isEmpty()) {
-        ImportToDatabaseTask* importTask = new ImportToDatabaseTask(importTasks, 1);
+        ImportToDatabaseTask *importTask = new ImportToDatabaseTask(importTasks, 1);
         AppContext::getTaskScheduler()->registerTopLevelTask(importTask);
     }
 
@@ -210,16 +209,16 @@ void ImportToDatabaseDialog::init() {
 }
 
 void ImportToDatabaseDialog::connectSignals() {
-    connect(ui->twOrders,       SIGNAL(itemSelectionChanged()),                     SLOT(sl_selectionChanged()));
-    connect(ui->twOrders,       SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),   SLOT(sl_itemDoubleClicked(QTreeWidgetItem*, int)));
-    connect(ui->twOrders,       SIGNAL(itemChanged(QTreeWidgetItem*, int)),         SLOT(sl_itemChanged(QTreeWidgetItem*, int)));
-    connect(ui->twOrders,       SIGNAL(customContextMenuRequested(QPoint)),         SLOT(sl_customContextMenuRequested(QPoint)));
+    connect(ui->twOrders, SIGNAL(itemSelectionChanged()), SLOT(sl_selectionChanged()));
+    connect(ui->twOrders, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), SLOT(sl_itemDoubleClicked(QTreeWidgetItem *, int)));
+    connect(ui->twOrders, SIGNAL(itemChanged(QTreeWidgetItem *, int)), SLOT(sl_itemChanged(QTreeWidgetItem *, int)));
+    connect(ui->twOrders, SIGNAL(customContextMenuRequested(QPoint)), SLOT(sl_customContextMenuRequested(QPoint)));
 
-    connect(ui->pbAddFiles,     SIGNAL(clicked()),  SLOT(sl_addFileClicked()));
-    connect(ui->pbAddFolder,    SIGNAL(clicked()),  SLOT(sl_addFolderClicked()));
-    connect(ui->pbAddObjects,   SIGNAL(clicked()),  SLOT(sl_addObjectClicked()));
-    connect(ui->pbOptions,      SIGNAL(clicked()),  SLOT(sl_optionsClicked()));
-    connect(ui->pbRemove,       SIGNAL(clicked()),  SLOT(sl_removeClicked()));
+    connect(ui->pbAddFiles, SIGNAL(clicked()), SLOT(sl_addFileClicked()));
+    connect(ui->pbAddFolder, SIGNAL(clicked()), SLOT(sl_addFolderClicked()));
+    connect(ui->pbAddObjects, SIGNAL(clicked()), SLOT(sl_addObjectClicked()));
+    connect(ui->pbOptions, SIGNAL(clicked()), SLOT(sl_optionsClicked()));
+    connect(ui->pbRemove, SIGNAL(clicked()), SLOT(sl_removeClicked()));
 }
 
 void ImportToDatabaseDialog::updateState() {
@@ -233,7 +232,7 @@ void ImportToDatabaseDialog::updateState() {
 }
 
 void ImportToDatabaseDialog::updateItemsState(const ImportToDatabaseOptions &oldOptions, const ImportToDatabaseOptions &newOptions) {
-    foreach (QTreeWidgetItem* item, folders) {
+    foreach (QTreeWidgetItem *item, folders) {
         if (privateOptions.contains(item)) {
             continue;
         }
@@ -274,9 +273,9 @@ void ImportToDatabaseDialog::markItem(QTreeWidgetItem *item, bool mark) {
 
 bool ImportToDatabaseDialog::isEssential(QTreeWidgetItem *item) const {
     return files.contains(item) ||
-            folders.contains(item) ||
-            treeItem2Document.contains(item) ||
-            treeItem2Object.contains(item);
+           folders.contains(item) ||
+           treeItem2Document.contains(item) ||
+           treeItem2Object.contains(item);
 }
 
 QStringList ImportToDatabaseDialog::getFilesToImport() {
@@ -289,11 +288,11 @@ QStringList ImportToDatabaseDialog::getFilesToImport() {
     }
 
     const QStringList fileList = U2FileDialog::getOpenFileNames(this,
-                                                               tr("Select files to import"),
-                                                               dirHelper.dir,
-                                                               "",
-                                                               NULL,
-                                                               QFileDialog::DontConfirmOverwrite | QFileDialog::ReadOnly | additionalOptions);
+                                                                tr("Select files to import"),
+                                                                dirHelper.dir,
+                                                                "",
+                                                                NULL,
+                                                                QFileDialog::DontConfirmOverwrite | QFileDialog::ReadOnly | additionalOptions);
     CHECK(!fileList.isEmpty(), fileList);
     dirHelper.url = QFileInfo(fileList.last()).absoluteFilePath();
 
@@ -312,21 +311,21 @@ QString ImportToDatabaseDialog::getFolderToImport() {
 #endif
 
     const QString dir = U2FileDialog::getExistingDirectory(this,
-                                                          tr("Select a folder to import"),
-                                                          dirHelper.dir,
-                                                          QFileDialog::ShowDirsOnly | additionalOptions);
+                                                           tr("Select a folder to import"),
+                                                           dirHelper.dir,
+                                                           QFileDialog::ShowDirsOnly | additionalOptions);
     CHECK(!dir.isEmpty(), dir);
     dirHelper.url = QFileInfo(dir).absoluteFilePath() + "/";
 
     return dir;
 }
 
-void ImportToDatabaseDialog::getProjectItemsToImport(QList<Document*>& docList, QList<GObject*>& objList) {
+void ImportToDatabaseDialog::getProjectItemsToImport(QList<Document *> &docList, QList<GObject *> &objList) {
     ProjectTreeControllerModeSettings settings;
 
     // do not show objects from the current database
-    QList<GObject*> docObjects = dbConnection->getObjects();
-    foreach (GObject* obj, docObjects) {
+    QList<GObject *> docObjects = dbConnection->getObjects();
+    foreach (GObject *obj, docObjects) {
         settings.excludeObjectList.append(obj);
     }
 
@@ -335,65 +334,63 @@ void ImportToDatabaseDialog::getProjectItemsToImport(QList<Document*>& docList, 
     ProjectTreeItemSelectorDialog::selectObjectsAndDocuments(settings, this, docList, objList);
 }
 
-void ImportToDatabaseDialog::addFolder(const QString& url) {
+void ImportToDatabaseDialog::addFolder(const QString &url) {
     CHECK(!url.isEmpty(), );
 
-    const QString dstFolder = commonOptions.createSubfolderForTopLevelFolder
-            ? U2DbiUtils::makeFolderCanonical(baseFolder + U2ObjectDbi::PATH_SEP + QFileInfo(url).fileName())
-            : baseFolder;
+    const QString dstFolder = commonOptions.createSubfolderForTopLevelFolder ? U2DbiUtils::makeFolderCanonical(baseFolder + U2ObjectDbi::PATH_SEP + QFileInfo(url).fileName()) : baseFolder;
 
-    QTreeWidgetItem* newItem = new QTreeWidgetItem(QStringList() << url << dstFolder);
+    QTreeWidgetItem *newItem = new QTreeWidgetItem(QStringList() << url << dstFolder);
     newItem->setIcon(COLUMN_ITEM_TEXT, QIcon(":U2Designer/images/directory.png"));
     newItem->setFlags(Qt::ItemIsEditable | newItem->flags());
     setFolderTooltip(newItem);
     folders << newItem;
 
-    QTreeWidgetItem* headerItem = getHeaderItem(FILE_AND_FOLDER);
+    QTreeWidgetItem *headerItem = getHeaderItem(FILE_AND_FOLDER);
     headerItem->addChild(newItem);
     headerItem->setExpanded(true);
 }
 
-void ImportToDatabaseDialog::addFile(const QString& url) {
+void ImportToDatabaseDialog::addFile(const QString &url) {
     CHECK(!url.isEmpty(), );
 
-    QTreeWidgetItem* newItem = new QTreeWidgetItem(QStringList() << url << baseFolder);
+    QTreeWidgetItem *newItem = new QTreeWidgetItem(QStringList() << url << baseFolder);
     newItem->setIcon(COLUMN_ITEM_TEXT, QIcon(":/core/images/document.png"));
     newItem->setFlags(Qt::ItemIsEditable | newItem->flags());
     setFileTooltip(newItem);
     files << newItem;
 
-    QTreeWidgetItem* headerItem = getHeaderItem(FILE_AND_FOLDER);
+    QTreeWidgetItem *headerItem = getHeaderItem(FILE_AND_FOLDER);
     headerItem->addChild(newItem);
     headerItem->setExpanded(true);
 }
 
-void ImportToDatabaseDialog::addObjectsAndDocuments(const QList<Document*>& docsToImport, const QList<GObject*>& objsToImport) {
-    foreach (Document* doc, docsToImport) {
+void ImportToDatabaseDialog::addObjectsAndDocuments(const QList<Document *> &docsToImport, const QList<GObject *> &objsToImport) {
+    foreach (Document *doc, docsToImport) {
         addDocument(doc);
     }
 
-    foreach (GObject* object, objsToImport) {
+    foreach (GObject *object, objsToImport) {
         addObject(object, NULL);
     }
 }
 
-void ImportToDatabaseDialog::addDocument(Document* document) {
+void ImportToDatabaseDialog::addDocument(Document *document) {
     CHECK(NULL != document, );
 
-    QTreeWidgetItem* newItem = new QTreeWidgetItem(QStringList() << document->getName() << baseFolder);
+    QTreeWidgetItem *newItem = new QTreeWidgetItem(QStringList() << document->getName() << baseFolder);
     newItem->setIcon(COLUMN_ITEM_TEXT, QIcon(":/core/images/document.png"));
     newItem->setFlags(Qt::ItemIsEditable | newItem->flags());
     setDocumentTooltip(newItem);
     treeItem2Document.insert(newItem, document);
 
-    QTreeWidgetItem* headerItem = getHeaderItem(OBJECT_AND_DOCUMENT);
+    QTreeWidgetItem *headerItem = getHeaderItem(OBJECT_AND_DOCUMENT);
     headerItem->addChild(newItem);
     headerItem->setExpanded(true);
 
     addSubObjects(document, newItem);
 }
 
-void ImportToDatabaseDialog::addObject(GObject *object, QTreeWidgetItem* parent) {
+void ImportToDatabaseDialog::addObject(GObject *object, QTreeWidgetItem *parent) {
     CHECK(NULL != object, );
     CHECK(NULL != object->getDocument(), );
 
@@ -407,7 +404,7 @@ void ImportToDatabaseDialog::addObject(GObject *object, QTreeWidgetItem* parent)
         dstFolder = U2DbiUtils::makeFolderCanonical(dstFolder);
     }
 
-    QTreeWidgetItem* newItem = new QTreeWidgetItem(QStringList() << objectText << dstFolder);
+    QTreeWidgetItem *newItem = new QTreeWidgetItem(QStringList() << objectText << dstFolder);
 
     if (NULL == parent) {
         treeItem2Object[newItem] = object;
@@ -423,8 +420,8 @@ void ImportToDatabaseDialog::addObject(GObject *object, QTreeWidgetItem* parent)
     parent->setExpanded(true);
 }
 
-void ImportToDatabaseDialog::addSubObjects(Document* document, QTreeWidgetItem* docItem) {
-    foreach (GObject* object, document->getObjects()) {
+void ImportToDatabaseDialog::addSubObjects(Document *document, QTreeWidgetItem *docItem) {
+    foreach (GObject *object, document->getObjects()) {
         addObject(object, docItem);
     }
 }
@@ -432,9 +429,9 @@ void ImportToDatabaseDialog::addSubObjects(Document* document, QTreeWidgetItem* 
 void ImportToDatabaseDialog::removeItems(QList<QTreeWidgetItem *> itemList) {
     CHECK(!itemList.isEmpty(), );
 
-    QSet<QTreeWidgetItem*> parents;
-    QSet<QTreeWidgetItem*> removedItems;
-    foreach (QTreeWidgetItem* item, itemList) {
+    QSet<QTreeWidgetItem *> parents;
+    QSet<QTreeWidgetItem *> removedItems;
+    foreach (QTreeWidgetItem *item, itemList) {
         if (NULL != item->parent()) {
             parents << item->parent();
         }
@@ -444,8 +441,8 @@ void ImportToDatabaseDialog::removeItems(QList<QTreeWidgetItem *> itemList) {
         }
     }
 
-    QList<QTreeWidgetItem*> emptyParents;
-    foreach (QTreeWidgetItem* parent, parents) {
+    QList<QTreeWidgetItem *> emptyParents;
+    foreach (QTreeWidgetItem *parent, parents) {
         if (!removedItems.contains(parent) && 0 == parent->childCount()) {
             emptyParents << parent;
         }
@@ -455,7 +452,7 @@ void ImportToDatabaseDialog::removeItems(QList<QTreeWidgetItem *> itemList) {
 }
 
 QList<QTreeWidgetItem *> ImportToDatabaseDialog::removeRecursively(QTreeWidgetItem *item) {
-    QList<QTreeWidgetItem*> removedItems;
+    QList<QTreeWidgetItem *> removedItems;
     CHECK(NULL != item, removedItems);
 
     for (int i = 0; i < item->childCount(); i++) {
@@ -474,9 +471,9 @@ QList<QTreeWidgetItem *> ImportToDatabaseDialog::removeRecursively(QTreeWidgetIt
     return removedItems;
 }
 
-QList<Task*> ImportToDatabaseDialog::createImportFilesTasks() const {
-    QList<Task*> tasks;
-    foreach (QTreeWidgetItem* fileTreeItem, files) {
+QList<Task *> ImportToDatabaseDialog::createImportFilesTasks() const {
+    QList<Task *> tasks;
+    foreach (QTreeWidgetItem *fileTreeItem, files) {
         tasks << new ImportFileToDatabaseTask(fileTreeItem->text(COLUMN_ITEM_TEXT),
                                               dbConnection->getDbiRef(),
                                               fileTreeItem->text(COLUMN_FOLDER),
@@ -486,8 +483,8 @@ QList<Task*> ImportToDatabaseDialog::createImportFilesTasks() const {
 }
 
 QList<Task *> ImportToDatabaseDialog::createImportFoldersTasks() const {
-    QList<Task*> tasks;
-    foreach (QTreeWidgetItem* folderTreeItem, folders) {
+    QList<Task *> tasks;
+    foreach (QTreeWidgetItem *folderTreeItem, folders) {
         tasks << new ImportDirToDatabaseTask(folderTreeItem->text(COLUMN_ITEM_TEXT),
                                              dbConnection->getDbiRef(),
                                              folderTreeItem->text(COLUMN_FOLDER),
@@ -497,8 +494,8 @@ QList<Task *> ImportToDatabaseDialog::createImportFoldersTasks() const {
 }
 
 QList<Task *> ImportToDatabaseDialog::createimportObjectsTasks() const {
-    QList<Task*> tasks;
-    foreach (QTreeWidgetItem* objectTreeItem, treeItem2Object.keys()) {
+    QList<Task *> tasks;
+    foreach (QTreeWidgetItem *objectTreeItem, treeItem2Object.keys()) {
         tasks << new ImportObjectToDatabaseTask(treeItem2Object[objectTreeItem],
                                                 dbConnection->getDbiRef(),
                                                 objectTreeItem->text(COLUMN_FOLDER));
@@ -507,8 +504,8 @@ QList<Task *> ImportToDatabaseDialog::createimportObjectsTasks() const {
 }
 
 QList<Task *> ImportToDatabaseDialog::createImportDocumentsTasks() const {
-    QList<Task*> tasks;
-    foreach (QTreeWidgetItem* documentTreeItem, treeItem2Document.keys()) {
+    QList<Task *> tasks;
+    foreach (QTreeWidgetItem *documentTreeItem, treeItem2Document.keys()) {
         tasks << new ImportDocumentToDatabaseTask(treeItem2Document[documentTreeItem],
                                                   dbConnection->getDbiRef(),
                                                   documentTreeItem->text(COLUMN_FOLDER),
@@ -517,12 +514,12 @@ QList<Task *> ImportToDatabaseDialog::createImportDocumentsTasks() const {
     return tasks;
 }
 
-QTreeWidgetItem* ImportToDatabaseDialog::getHeaderItem(HeaderType headerType) const {
+QTreeWidgetItem *ImportToDatabaseDialog::getHeaderItem(HeaderType headerType) const {
     const QString itemText = (FILE_AND_FOLDER == headerType ? FILES_AND_FOLDERS : OBJECTS_AND_DOCUMENTS);
-    const QList<QTreeWidgetItem*> itemsList = ui->twOrders->findItems(itemText, Qt::MatchExactly);
+    const QList<QTreeWidgetItem *> itemsList = ui->twOrders->findItems(itemText, Qt::MatchExactly);
 
     if (itemsList.isEmpty()) {
-        QTreeWidgetItem* headerItem = new QTreeWidgetItem(QStringList() << itemText);
+        QTreeWidgetItem *headerItem = new QTreeWidgetItem(QStringList() << itemText);
         ui->twOrders->addTopLevelItem(headerItem);
         return headerItem;
     }
@@ -535,9 +532,11 @@ void ImportToDatabaseDialog::setTooltip(QTreeWidgetItem *item) {
         setFileTooltip(item);
     } else if (folders.contains(item)) {
         setFolderTooltip(item);
-    } if (treeItem2Document.contains(item)) {
+    }
+    if (treeItem2Document.contains(item)) {
         setDocumentTooltip(item);
-    } if (treeItem2Object.contains(item)) {
+    }
+    if (treeItem2Object.contains(item)) {
         setObjectTooltip(item);
     }
 }
@@ -565,16 +564,16 @@ void ImportToDatabaseDialog::setFileTooltip(QTreeWidgetItem *item) {
     }
 
     switch (currentOptions.multiSequencePolicy) {
-        case ImportToDatabaseOptions::SEPARATE:
-            tooltip += "\n" + tr("If file contains more than one sequence, they will imported as separate objects");
-            break;
-        case ImportToDatabaseOptions::MERGE:
-            tooltip += "\n" + tr("If file contains more than one sequence, they will imported as single sequence with several 'Unknown' bases as separator") +
-                       "\n" + tr("Size of separator: %1").arg(currentOptions.mergeMultiSequencePolicySeparatorSize);
-            break;
-        case ImportToDatabaseOptions::MALIGNMENT:
-            tooltip += "\n" + tr("If file contains more than one sequence, they will be joined into the multiple alignment");
-            break;
+    case ImportToDatabaseOptions::SEPARATE:
+        tooltip += "\n" + tr("If file contains more than one sequence, they will imported as separate objects");
+        break;
+    case ImportToDatabaseOptions::MERGE:
+        tooltip += "\n" + tr("If file contains more than one sequence, they will imported as single sequence with several 'Unknown' bases as separator") +
+                   "\n" + tr("Size of separator: %1").arg(currentOptions.mergeMultiSequencePolicySeparatorSize);
+        break;
+    case ImportToDatabaseOptions::MALIGNMENT:
+        tooltip += "\n" + tr("If file contains more than one sequence, they will be joined into the multiple alignment");
+        break;
     }
 
     item->setToolTip(COLUMN_ITEM_TEXT, tooltip);
@@ -590,11 +589,11 @@ void ImportToDatabaseDialog::setFolderTooltip(QTreeWidgetItem *item) {
     }
 
     tooltip += tr("Folder:\n") +
-              item->text(COLUMN_ITEM_TEXT) +
-              "\n\n" +
-              tr("Import to: ") +
-              item->text(COLUMN_FOLDER) +
-              "\n";
+               item->text(COLUMN_ITEM_TEXT) +
+               "\n\n" +
+               tr("Import to: ") +
+               item->text(COLUMN_FOLDER) +
+               "\n";
 
     if (currentOptions.processFoldersRecursively) {
         tooltip += "\n" + tr("The folder will be processed recursively");
@@ -609,16 +608,16 @@ void ImportToDatabaseDialog::setFolderTooltip(QTreeWidgetItem *item) {
     }
 
     switch (currentOptions.multiSequencePolicy) {
-        case ImportToDatabaseOptions::SEPARATE:
-            tooltip += "\n" + tr("If file contains more than one sequence, they will imported as separate objects");
-            break;
-        case ImportToDatabaseOptions::MERGE:
-            tooltip += "\n" + tr("If file contains more than one sequence, they will imported as single sequence with several 'Unknown' bases as separator") +
-                       "\n" + tr("Size of separator: %1").arg(currentOptions.mergeMultiSequencePolicySeparatorSize);
-            break;
-        case ImportToDatabaseOptions::MALIGNMENT:
-            tooltip += "\n" + tr("If file contains more than one sequence, they will be joined into the multiple alignment");
-            break;
+    case ImportToDatabaseOptions::SEPARATE:
+        tooltip += "\n" + tr("If file contains more than one sequence, they will imported as separate objects");
+        break;
+    case ImportToDatabaseOptions::MERGE:
+        tooltip += "\n" + tr("If file contains more than one sequence, they will imported as single sequence with several 'Unknown' bases as separator") +
+                   "\n" + tr("Size of separator: %1").arg(currentOptions.mergeMultiSequencePolicySeparatorSize);
+        break;
+    case ImportToDatabaseOptions::MALIGNMENT:
+        tooltip += "\n" + tr("If file contains more than one sequence, they will be joined into the multiple alignment");
+        break;
     }
 
     item->setToolTip(COLUMN_ITEM_TEXT, tooltip);
@@ -662,4 +661,4 @@ void ImportToDatabaseDialog::setDocumentTooltip(QTreeWidgetItem *item) {
     item->setToolTip(COLUMN_FOLDER, tooltip);
 }
 
-}   // namespace U2
+}    // namespace U2

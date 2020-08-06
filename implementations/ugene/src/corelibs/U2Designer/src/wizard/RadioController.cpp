@@ -19,27 +19,24 @@
  * MA 02110-1301, USA.
  */
 
+#include "RadioController.h"
+
 #include <QButtonGroup>
 #include <QRadioButton>
 #include <QVBoxLayout>
-
-#include "RadioController.h"
 
 namespace U2 {
 
 static const char VAR_ID[] = "var_id";
 
 RadioController::RadioController(WizardController *wc, RadioWidget *_rw)
-: WidgetController(wc), rw(_rw)
-{
-
+    : WidgetController(wc), rw(_rw) {
 }
 
 RadioController::~RadioController() {
-
 }
 
-QWidget * RadioController::createGUI(U2OpStatus &/*os*/) {
+QWidget *RadioController::createGUI(U2OpStatus & /*os*/) {
     QWidget *result = new QWidget();
     QVBoxLayout *l = new QVBoxLayout(result);
     l->setMargin(0);
@@ -82,4 +79,4 @@ void RadioController::sl_buttonClicked(QAbstractButton *button) {
     wc->setVariableValue(rw->var(), id);
 }
 
-} // U2
+}    // namespace U2

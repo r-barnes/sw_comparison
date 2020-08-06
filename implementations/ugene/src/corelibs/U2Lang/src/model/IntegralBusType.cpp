@@ -19,36 +19,39 @@
  * MA 02110-1301, USA.
  */
 
-#include "IntegralBus.h"
 #include "IntegralBusType.h"
-#include "IntegralBusModel.h"
 
-#include <U2Lang/CoreLibConstants.h>
-#include <U2Lang/GrouperOutSlot.h>
 #include <U2Core/Log.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
+#include <U2Lang/CoreLibConstants.h>
+#include <U2Lang/GrouperOutSlot.h>
+
+#include "IntegralBus.h"
+#include "IntegralBusModel.h"
+
 namespace U2 {
 namespace Workflow {
 
-IntegralBusType::IntegralBusType(const Descriptor& d, const QMap<Descriptor, DataTypePtr>& m) : MapDataType(d, m) {
+IntegralBusType::IntegralBusType(const Descriptor &d, const QMap<Descriptor, DataTypePtr> &m)
+    : MapDataType(d, m) {
 }
 
-Descriptor IntegralBusType::assignSlotDesc(const Descriptor& d, const Port* p) {
+Descriptor IntegralBusType::assignSlotDesc(const Descriptor &d, const Port *p) {
     QString id = QString("%1:%2").arg(p->owner()->getId()).arg(d.getId());
     QString name = U2::Workflow::IntegralBusPort::tr("%1 (by %2)").arg(d.getDisplayName()).arg(p->owner()->getLabel());
     QString doc = d.getDocumentation();
     return Descriptor(id, name, doc);
 }
 
-ActorId IntegralBusType::parseSlotDesc(const QString& id) {
+ActorId IntegralBusType::parseSlotDesc(const QString &id) {
     U2OpStatus2Log os;
     IntegralBusSlot slot = IntegralBusSlot::fromString(id, os);
     return slot.actorId();
 }
 
-QString IntegralBusType::parseAttributeIdFromSlotDesc(const QString & str) {
+QString IntegralBusType::parseAttributeIdFromSlotDesc(const QString &str) {
     U2OpStatus2Log os;
     IntegralBusSlot slot = IntegralBusSlot::fromString(str, os);
     return slot.getId();
@@ -64,15 +67,15 @@ void IntegralBusType::remapSlotString(QString &slotStr, const QMap<ActorId, Acto
         ActorId newId = actorIdsMap[oldId];
         slot.replaceActorId(oldId, newId);
         QString newSlotStr = slot.toString();
-        coreLog.trace("remapping old="+slotStr+" to new="+newSlotStr);
+        coreLog.trace("remapping old=" + slotStr + " to new=" + newSlotStr);
         slotStr = newSlotStr;
     }
 }
 
-void IntegralBusType::remap(StrStrMap& busMap, const QMap<ActorId, ActorId>& m) {
-    foreach(QString key, busMap.uniqueKeys()) {
+void IntegralBusType::remap(StrStrMap &busMap, const QMap<ActorId, ActorId> &m) {
+    foreach (QString key, busMap.uniqueKeys()) {
         QStringList newValList;
-        foreach(QString val, busMap.value(key).split(";")) {
+        foreach (QString val, busMap.value(key).split(";")) {
             remapSlotString(val, m);
             newValList.append(val);
         }
@@ -117,7 +120,7 @@ inline static QString getNewDisplayName(const QString &oldName, const QString &p
     return result;
 }
 
-void IntegralBusType::addInputs(const Port* p, bool addPaths) {
+void IntegralBusType::addInputs(const Port *p, bool addPaths) {
     if (p->isInput()) {
         Actor *proc = p->owner();
         ActorPrototype *proto = proc->getProto();
@@ -127,9 +130,9 @@ void IntegralBusType::addInputs(const Port* p, bool addPaths) {
             grouperSlot = GrouperOutSlot::readable2busMap(slotStr);
         }
 
-        foreach(Port* peer, p->getLinks().uniqueKeys()) {
+        foreach (Port *peer, p->getLinks().uniqueKeys()) {
             DataTypePtr pt = peer->getType();
-            if (qobject_cast<IntegralBusPort*>(peer)) {
+            if (qobject_cast<IntegralBusPort *>(peer)) {
                 assert(pt->isMap());
                 QMap<Descriptor, DataTypePtr> types = pt->getDatatypesMap();
                 foreach (Descriptor d, types.keys()) {
@@ -156,17 +159,15 @@ void IntegralBusType::addInputs(const Port* p, bool addPaths) {
     }
 }
 
-void IntegralBusType::addOutput(DataTypePtr t, const Port* producer) {
-
+void IntegralBusType::addOutput(DataTypePtr t, const Port *producer) {
     if (t->isMap()) {
-        foreach(Descriptor d, t->getAllDescriptors()) {
+        foreach (Descriptor d, t->getAllDescriptors()) {
             map[assignSlotDesc(d, producer)] = t->getDatatypeByDescriptor(d);
         }
     } else {
         map[assignSlotDesc(*producer, producer)] = t;
     }
-
 }
 
-}//Workflow namespace
-}//GB2namespace
+}    // namespace Workflow
+}    // namespace U2

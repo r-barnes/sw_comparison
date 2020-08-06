@@ -22,9 +22,9 @@
 #ifndef _U2_PWM_CONVERSION_ALGORITHM_REGISTRY_H_
 #define _U2_PWM_CONVERSION_ALGORITHM_REGISTRY_H_
 
-#include "PWMConversionAlgorithm.h"
-
 #include <QStringList>
+
+#include "PWMConversionAlgorithm.h"
 
 namespace U2 {
 
@@ -34,22 +34,24 @@ class U2ALGORITHM_EXPORT PWMConversionAlgorithmRegistry : public QObject {
     Q_OBJECT
 
 public:
-    PWMConversionAlgorithmRegistry(QObject* p = NULL);
+    PWMConversionAlgorithmRegistry(QObject *p = NULL);
 
     ~PWMConversionAlgorithmRegistry();
 
-    PWMConversionAlgorithmFactory* getAlgorithmFactory(const QString& algoId);
+    PWMConversionAlgorithmFactory *getAlgorithmFactory(const QString &algoId);
 
-    void addAlgorithm(PWMConversionAlgorithmFactory* algo);
+    void addAlgorithm(PWMConversionAlgorithmFactory *algo);
 
-    QStringList getAlgorithmIds() const ;
+    QStringList getAlgorithmIds() const;
 
-    QList<PWMConversionAlgorithmFactory*> getAlgorithmFactories() const {return algorithms.values();}
+    QList<PWMConversionAlgorithmFactory *> getAlgorithmFactories() const {
+        return algorithms.values();
+    }
 
 private:
-    QMap<QString , PWMConversionAlgorithmFactory*> algorithms;
+    QMap<QString, PWMConversionAlgorithmFactory *> algorithms;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

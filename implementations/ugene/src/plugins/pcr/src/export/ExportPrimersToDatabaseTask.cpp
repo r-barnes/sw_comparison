@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportPrimersToDatabaseTask.h"
+
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/GObjectReference.h>
@@ -28,18 +30,15 @@
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/U2SequenceUtils.h>
 
-#include "ExportPrimersToDatabaseTask.h"
-
 namespace U2 {
 
-ExportPrimersToDatabaseTask::ExportPrimersToDatabaseTask(const QList<Primer> &primers, const U2DbiRef &dbiRef, const QString &folder) :
-    Task(tr("Export primers"), TaskFlags_FOSE_COSC | TaskFlag_OnlyNotificationReport),
-    primers(primers),
-    dbiRef(dbiRef),
-    folder(folder),
-    dbiSequences(dbiRef, stateInfo),
-    dbiAnnotations(dbiRef, stateInfo)
-{
+ExportPrimersToDatabaseTask::ExportPrimersToDatabaseTask(const QList<Primer> &primers, const U2DbiRef &dbiRef, const QString &folder)
+    : Task(tr("Export primers"), TaskFlags_FOSE_COSC | TaskFlag_OnlyNotificationReport),
+      primers(primers),
+      dbiRef(dbiRef),
+      folder(folder),
+      dbiSequences(dbiRef, stateInfo),
+      dbiAnnotations(dbiRef, stateInfo) {
     SAFE_POINT_EXT(!primers.isEmpty(), setError(L10N::badArgument("primers list")), );
     SAFE_POINT_EXT(dbiRef.isValid(), setError(L10N::badArgument("shared database reference")), );
     SAFE_POINT_EXT(folder.startsWith(U2ObjectDbi::ROOT_FOLDER), setError(L10N::badArgument("database folder")), );
@@ -87,4 +86,4 @@ const QMap<U2DataId, U2DataId> &ExportPrimersToDatabaseTask::getImportedObjectId
     return importedObjectIds;
 }
 
-}   // namespace U2
+}    // namespace U2

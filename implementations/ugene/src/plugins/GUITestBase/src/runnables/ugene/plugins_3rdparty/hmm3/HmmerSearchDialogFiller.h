@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-
 #ifndef _U2_HMMER_SEARCH_DIALOG_FILLER_H_
 #define _U2_HMMER_SEARCH_DIALOG_FILLER_H_
 
@@ -27,15 +26,17 @@
 namespace U2 {
 using namespace HI;
 
-class HmmerSearchDialogFiller : public Filler
-{
+class HmmerSearchDialogFiller : public Filler {
 public:
-    HmmerSearchDialogFiller(HI::GUITestOpStatus &os, QString _profile, QString _newFilePath): Filler(os, "HmmerSearchDialog"),
-    profile(_profile),
-    newFilePath(_newFilePath){}
+    HmmerSearchDialogFiller(HI::GUITestOpStatus &os, QString _profile, QString _newFilePath)
+        : Filler(os, "HmmerSearchDialog"),
+          profile(_profile),
+          newFilePath(_newFilePath) {
+    }
     virtual void commonScenario();
+
 private:
     QString profile, newFilePath;
 };
-}
-#endif // _U2_UHMM3_SEARCH_DIALOG_FILLER_H_
+}    // namespace U2
+#endif    // _U2_UHMM3_SEARCH_DIALOG_FILLER_H_

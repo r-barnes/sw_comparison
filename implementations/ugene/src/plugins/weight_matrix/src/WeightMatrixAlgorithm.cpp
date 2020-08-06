@@ -25,12 +25,12 @@
 
 namespace U2 {
 
-float WeightMatrixAlgorithm::getScore(const char* seq, int len, const PWMatrix& m, DNATranslation* complMap) {
+float WeightMatrixAlgorithm::getScore(const char *seq, int len, const PWMatrix &m, DNATranslation *complMap) {
     int l = m.getLength();
 
     float lower = m.getMinSum(), upper = m.getMaxSum();
     QByteArray complMapper = (complMap != NULL) ? complMap->getOne2OneMapper() : QByteArray();
-    assert ((upper - lower) > 1e-9);
+    assert((upper - lower) > 1e-9);
     float curr = 0;
     if (m.getType() == PWM_MONONUCLEOTIDE) {
         for (int i = 0; i < len && i < l; i++) {
@@ -40,13 +40,13 @@ float WeightMatrixAlgorithm::getScore(const char* seq, int len, const PWMatrix& 
     } else {
         for (int i = 0; i < len && i < l; i++) {
             char c1 = (complMap != NULL) ? complMapper[uchar(seq[len - i])] : seq[i];
-            char c2 = (complMap != NULL) ? complMapper[uchar(seq[len - (i+1)])] : seq[i+1];
+            char c2 = (complMap != NULL) ? complMapper[uchar(seq[len - (i + 1)])] : seq[i + 1];
             curr += m.getValue(DiProperty::index(c1, c2), i);
         }
     }
-    assert (curr >= lower);
-    assert (curr <= upper);
+    assert(curr >= lower);
+    assert(curr <= upper);
     return (curr - lower) / (upper - lower);
 }
 
-} //namespace
+}    // namespace U2

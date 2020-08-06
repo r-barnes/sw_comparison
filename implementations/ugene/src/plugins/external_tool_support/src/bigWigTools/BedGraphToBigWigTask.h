@@ -22,22 +22,24 @@
 #ifndef _U2_BEDGRAPH_TO_BIGWIG_TASK_H_
 #define _U2_BEDGRAPH_TO_BIGWIG_TASK_H_
 
-#include <U2Core/Task.h>
 #include <U2Core/ExternalToolRunTask.h>
+#include <U2Core/Task.h>
 
 namespace U2 {
 
-class BedGraphToBigWigSetting{
+class BedGraphToBigWigSetting {
 public:
-    BedGraphToBigWigSetting(): outDir(""), outName(""),inputUrl(""), genomePath(""),blockSize(256), itemsPerSlot(1024), uncompressed(false){}
+    BedGraphToBigWigSetting()
+        : outDir(""), outName(""), inputUrl(""), genomePath(""), blockSize(256), itemsPerSlot(1024), uncompressed(false) {
+    }
 
     QString outDir;
     QString outName;
     QString inputUrl;
     QString genomePath;
-    int     blockSize;
-    int     itemsPerSlot;
-    bool    uncompressed;
+    int blockSize;
+    int itemsPerSlot;
+    bool uncompressed;
 };
 
 class BedGraphToBigWigTask : public ExternalToolSupportTask {
@@ -48,28 +50,29 @@ public:
     void prepare();
     void run();
 
-    QString getResult(){return resultUrl;}
+    QString getResult() {
+        return resultUrl;
+    }
 
 protected:
-    QStringList getParameters(U2OpStatus& os);
+    QStringList getParameters(U2OpStatus &os);
 
 protected:
     BedGraphToBigWigSetting settings;
     QString resultUrl;
 };
 
-
 class BedGraphToBigWigParser : public ExternalToolLogParser {
 public:
     BedGraphToBigWigParser();
 
-    void parseOutput(const QString& partOfLog);
-    void parseErrOutput(const QString& partOfLog);
+    void parseOutput(const QString &partOfLog);
+    void parseErrOutput(const QString &partOfLog);
 
 private:
     QString lastErrLine;
 };
 
-}//namespace
+}    // namespace U2
 
-#endif // _U2_BEDGRAPH_TO_BIGWIG_TASK_H_
+#endif    // _U2_BEDGRAPH_TO_BIGWIG_TASK_H_

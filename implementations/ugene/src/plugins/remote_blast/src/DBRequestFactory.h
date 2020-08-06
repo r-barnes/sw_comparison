@@ -28,11 +28,12 @@
 
 namespace U2 {
 
-class BLASTFactory: public DataBaseFactory {
-    HttpRequest* getRequest(Task *t) {return new HttpRequestBLAST(t);}
+class BLASTFactory : public DataBaseFactory {
+    HttpRequest *getRequest(Task *t) {
+        return new HttpRequestBLAST(t);
+    }
 };
 
-}
-
+}    // namespace U2
 
 #endif

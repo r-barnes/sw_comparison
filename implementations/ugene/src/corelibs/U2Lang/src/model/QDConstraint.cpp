@@ -19,23 +19,24 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Lang/BaseTypes.h>
 #include "QDConstraint.h"
+
+#include <U2Lang/BaseTypes.h>
 
 namespace U2 {
 
 const QDConstraintType QDConstraintTypes::DISTANCE("QD_Distance_Constraint");
 
-QDDistanceConstraint::QDDistanceConstraint(const QList<QDSchemeUnit*>& _units, QDDistanceType type, int min, int max)
-: QDConstraint(_units, QDConstraintTypes::DISTANCE), distType(type) {
-    assert(_units.size()==2);
+QDDistanceConstraint::QDDistanceConstraint(const QList<QDSchemeUnit *> &_units, QDDistanceType type, int min, int max)
+    : QDConstraint(_units, QDConstraintTypes::DISTANCE), distType(type) {
+    assert(_units.size() == 2);
     cfg = new QDParameters;
 
     Descriptor mind(QDConstraintController::MIN_LEN_ATTR, QObject::tr("Min distance"), QObject::tr("Minimum distance"));
     Descriptor maxd(QDConstraintController::MAX_LEN_ATTR, QObject::tr("Max distance"), QObject::tr("Maximum distance"));
 
-    Attribute* minAttr = new Attribute(mind, BaseTypes::NUM_TYPE(), true, QVariant(min));
-    Attribute* maxAttr = new Attribute(maxd, BaseTypes::NUM_TYPE(), true, QVariant(max));
+    Attribute *minAttr = new Attribute(mind, BaseTypes::NUM_TYPE(), true, QVariant(min));
+    Attribute *maxAttr = new Attribute(maxd, BaseTypes::NUM_TYPE(), true, QVariant(max));
 
     cfg->addParameter(minAttr->getId(), minAttr);
     cfg->addParameter(maxAttr->getId(), maxAttr);
@@ -61,17 +62,17 @@ void QDDistanceConstraint::setMax(int max) {
     cfg->setParameter(QDConstraintController::MAX_LEN_ATTR, qVariantFromValue(max));
 }
 
-QString QDDistanceConstraint::getText(QDSchemeUnit*, QDSchemeUnit*) const {
+QString QDDistanceConstraint::getText(QDSchemeUnit *, QDSchemeUnit *) const {
     int minVal = getMin();
     int maxVal = getMax();
-    if(minVal==maxVal) {
+    if (minVal == maxVal) {
         return QString("%1 bp").arg(QString::number(minVal));
     }
     return QString("%1..%2 bp").arg(QString::number(minVal)).arg(QString::number(maxVal));
 }
 
 void QDDistanceConstraint::invert() {
-    units.swap(0,1);
+    units.swap(0, 1);
     setMin(-getMax());
     setMax(-getMin());
     distType = QDConstraintController::getInvertedType(distType);
@@ -87,35 +88,35 @@ const QString QDConstraintController::SRC_ATTR("src");
 const QString QDConstraintController::DST_ATTR("dst");
 
 QDDistanceType QDConstraintController::getInvertedType(QDDistanceType type) {
-    if (type==E2E) {
+    if (type == E2E) {
         return S2S;
     }
-    if (type==S2S) {
+    if (type == S2S) {
         return E2E;
     }
     return type;
 }
 
-bool QDConstraintController::match(QDConstraint* c, const QDResultUnit& r1, const QDResultUnit& r2, bool complement) {
-    QDDistanceConstraint* dc = static_cast<QDDistanceConstraint*>(c);
+bool QDConstraintController::match(QDConstraint *c, const QDResultUnit &r1, const QDResultUnit &r2, bool complement) {
+    QDDistanceConstraint *dc = static_cast<QDDistanceConstraint *>(c);
     assert(dc);
 
-    const U2Region& reg1 = r1->region;
-    const U2Region& reg2 = r2->region;
+    const U2Region &reg1 = r1->region;
+    const U2Region &reg2 = r2->region;
 
-    const QDDistanceType& dist = dc->distanceType();
+    const QDDistanceType &dist = dc->distanceType();
 
     int min = dc->getMin();
     int max = dc->getMax();
 
-    if(dc->getSource()==r1->owner) {
+    if (dc->getSource() == r1->owner) {
         if (complement) {
             return match(reg2, reg1, getInvertedType(dist), min, max);
         } else {
             return match(reg1, reg2, dist, min, max);
         }
     } else {
-        assert(dc->getSource()==r2->owner);
+        assert(dc->getSource() == r2->owner);
         if (complement) {
             return match(reg1, reg2, getInvertedType(dist), min, max);
         } else {
@@ -124,64 +125,58 @@ bool QDConstraintController::match(QDConstraint* c, const QDResultUnit& r1, cons
     }
 }
 
-bool QDConstraintController::match(const U2Region& srcReg,
-                                   const U2Region& dstReg,
-                                   const QDDistanceType& type,
+bool QDConstraintController::match(const U2Region &srcReg,
+                                   const U2Region &dstReg,
+                                   const QDDistanceType &type,
                                    int min,
-                                   int max)
-{
-    switch (type)
-    {
-    case E2S:
-        {
-            int srcEnds = srcReg.endPos();
-            int dstStarts = dstReg.startPos;
-            int distance = dstStarts - srcEnds;
-            if(distance<=max && distance>=min) {
-                return true;
-            }
+                                   int max) {
+    switch (type) {
+    case E2S: {
+        int srcEnds = srcReg.endPos();
+        int dstStarts = dstReg.startPos;
+        int distance = dstStarts - srcEnds;
+        if (distance <= max && distance >= min) {
+            return true;
         }
+    }
         return false;
-    case S2E:
-        {
-            int srcStarts = srcReg.startPos;
-            int dstEnds = dstReg.endPos();
-            int distance = dstEnds - srcStarts;
-            if(distance<=max && distance>=min) {
-                return true;
-            }
+    case S2E: {
+        int srcStarts = srcReg.startPos;
+        int dstEnds = dstReg.endPos();
+        int distance = dstEnds - srcStarts;
+        if (distance <= max && distance >= min) {
+            return true;
         }
+    }
         return false;
-    case S2S:
-        {
-            int srcStarts = srcReg.startPos;
-            int dstStarts = dstReg.startPos;
-            int distance = dstStarts - srcStarts;
-            if(distance<=max && distance>=min) {
-                return true;
-            }
+    case S2S: {
+        int srcStarts = srcReg.startPos;
+        int dstStarts = dstReg.startPos;
+        int distance = dstStarts - srcStarts;
+        if (distance <= max && distance >= min) {
+            return true;
         }
+    }
         return false;
-    case E2E:
-        {
-            int srcEnds = srcReg.endPos();
-            int dstEnds = dstReg.endPos();
-            int distance = dstEnds - srcEnds;
-            if(distance<=max && distance>=min) {
-                return true;
-            }
+    case E2E: {
+        int srcEnds = srcReg.endPos();
+        int dstEnds = dstReg.endPos();
+        int distance = dstEnds - srcEnds;
+        if (distance <= max && distance >= min) {
+            return true;
         }
+    }
         return false;
     }
     return false;
 }
 
-U2Region QDConstraintController::matchLocation(QDDistanceConstraint* dc, const QDResultUnit& r, bool complement) {
+U2Region QDConstraintController::matchLocation(QDDistanceConstraint *dc, const QDResultUnit &r, bool complement) {
     int start = 0;
     int end = 0;
 
-    QDSchemeUnit* src = NULL;
-    QDSchemeUnit* dst = NULL;
+    QDSchemeUnit *src = NULL;
+    QDSchemeUnit *dst = NULL;
     QDDistanceType type = dc->distanceType();
     int minDist = dc->getMin();
     int maxDist = dc->getMax();
@@ -195,10 +190,9 @@ U2Region QDConstraintController::matchLocation(QDDistanceConstraint* dc, const Q
         dst = dc->getDestination();
     }
 
-    if (src==r->owner) {
+    if (src == r->owner) {
         int len = dst->getActor()->getMaxResultLen();
-        switch (type)
-        {
+        switch (type) {
         case E2S:
             start = r->region.endPos() + minDist;
             end = r->region.endPos() + maxDist + len;
@@ -217,10 +211,9 @@ U2Region QDConstraintController::matchLocation(QDDistanceConstraint* dc, const Q
             break;
         }
     } else {
-        assert(dst==r->owner);
+        assert(dst == r->owner);
         int len = src->getActor()->getMaxResultLen();
-        switch (type)
-        {
+        switch (type) {
         case E2S:
             start = r->region.startPos - maxDist - len;
             end = r->region.startPos - minDist;
@@ -240,7 +233,7 @@ U2Region QDConstraintController::matchLocation(QDDistanceConstraint* dc, const Q
         }
     }
 
-    return U2Region(start, end-start);
+    return U2Region(start, end - start);
 }
 
-}//namespace
+}    // namespace U2

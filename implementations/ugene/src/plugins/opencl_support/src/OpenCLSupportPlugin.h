@@ -22,9 +22,10 @@
 #ifndef __OPENCL_SUPPORT_PLUGIN_H__
 #define __OPENCL_SUPPORT_PLUGIN_H__
 
-#include <U2Core/PluginModel.h>
 #include <U2Algorithm/OpenCLGpuRegistry.h>
 #include <U2Algorithm/OpenCLHelper.h>
+
+#include <U2Core/PluginModel.h>
 
 namespace U2 {
 
@@ -43,24 +44,25 @@ public:
     ~OpenCLSupportPlugin();
 
     OpenCLSupportError getError() const;
+
 private:
-    OpenCLSupportError obtainGpusInfo( QString & err );
+    OpenCLSupportError obtainGpusInfo(QString &err);
     void loadGpusSettings();
     void registerAvailableGpus();
     void unregisterAvailableGpus();
-    bool hasOPENCLError(cl_int err, QString& errMessage);
+    bool hasOPENCLError(cl_int err, QString &errMessage);
 
-//    static QString getCudaErrorString( CUresult code );
-    static QString getSettingsErrorString( OpenCLSupportError err );
+    //    static QString getCudaErrorString( CUresult code );
+    static QString getSettingsErrorString(OpenCLSupportError err);
 
     QList<OpenCLGpuModel *> gpus;
-    OpenCLHelper            openCLHelper;
+    OpenCLHelper openCLHelper;
 
-    OpenCLSupportError      err;
+    OpenCLSupportError err;
 
     const static char *RESOURCE_OPENCL_GPU_NAME;
 };
 
-}
+}    // namespace U2
 
-#endif //__OPENCL_SUPPORT_PLUGIN_H__
+#endif    //__OPENCL_SUPPORT_PLUGIN_H__

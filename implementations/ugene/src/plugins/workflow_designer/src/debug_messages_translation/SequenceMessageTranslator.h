@@ -26,16 +26,18 @@
 
 namespace U2 {
 
+class U2SequenceObject;
+
 class SequenceMessageTranslator : public BaseMessageTranslator {
 public:
-    SequenceMessageTranslator( const QVariant &atomicMessage, Workflow::WorkflowContext *initContext );
+    SequenceMessageTranslator(const QVariant &atomicMessage, Workflow::WorkflowContext *initContext);
 
-    QString getTranslation( ) const;
+    QString getTranslation() const;
 
 protected:
     U2SequenceObject *sequenceObject;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_SEQUENCE_MESSAGE_TRANSLATOR_H_
+#endif    // _U2_SEQUENCE_MESSAGE_TRANSLATOR_H_

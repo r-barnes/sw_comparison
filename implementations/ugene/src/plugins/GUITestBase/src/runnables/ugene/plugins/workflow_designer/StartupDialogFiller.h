@@ -23,6 +23,7 @@
 #define _U2_STARTUP_DIALOG_FILLER_H_
 
 #include <core/GUITestOpStatus.h>
+
 #include <U2Test/UGUITest.h>
 
 #include "utils/GTUtilsDialog.h"
@@ -43,6 +44,6 @@ private:
     const bool isPathValid;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_STARTUP_DIALOG_FILLER_H_
+#endif    // _U2_STARTUP_DIALOG_FILLER_H_

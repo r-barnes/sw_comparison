@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "GeneByGeneReportWorker.h"
+
 #include <QScopedPointer>
 
 #include <U2Core/AnnotationTableObject.h>
@@ -34,7 +36,6 @@
 #include <U2Lang/BaseTypes.h>
 #include <U2Lang/WorkflowEnv.h>
 
-#include "GeneByGeneReportWorker.h"
 #include "GeneByGeneReportTask.h"
 
 namespace U2 {
@@ -54,15 +55,11 @@ static const QString EXISTING_FILE("existing");
 static const QString IDENTITY("identity");
 static const QString ANN_NAME("annotation_name");
 
-
 /************************************************************************/
 /* Worker */
 /************************************************************************/
 GeneByGeneReportWorker::GeneByGeneReportWorker(Actor *p)
-    : BaseWorker(p)
-    , inChannel(NULL)
-{
-
+    : BaseWorker(p), inChannel(NULL) {
 }
 
 void GeneByGeneReportWorker::init() {
@@ -73,7 +70,6 @@ Task *GeneByGeneReportWorker::tick() {
     U2OpStatus2Log os;
 
     while (inChannel->hasMessage()) {
-
         Message m = getMessageAndSetupScriptValues(inChannel);
         QVariantMap data = m.getData().toMap();
 
@@ -83,7 +79,7 @@ Task *GeneByGeneReportWorker::tick() {
             return new FailTask(os.getError());
         }
 
-        if (data.contains(ANNOT_SLOT_ID)){
+        if (data.contains(ANNOT_SLOT_ID)) {
             annVar = data[ANNOT_SLOT_ID];
         }
         const QList<SharedAnnotationData> annData = StorageUtils::getAnnotationTable(context->getDataStorage(), annVar);
@@ -110,8 +106,7 @@ Task *GeneByGeneReportWorker::tick() {
     settings.identity = getValue<float>(IDENTITY);
     settings.annName = getValue<QString>(ANN_NAME);
 
-
-    Task* t = new GeneByGeneReportTask(settings, geneData);
+    Task *t = new GeneByGeneReportTask(settings, geneData);
     connect(t, SIGNAL(si_stateChanged()), SLOT(sl_taskFinished()));
     return t;
 }
@@ -121,7 +116,7 @@ void GeneByGeneReportWorker::cleanup() {
 }
 
 void GeneByGeneReportWorker::sl_taskFinished() {
-    GeneByGeneReportTask *t = dynamic_cast<GeneByGeneReportTask*>(sender());
+    GeneByGeneReportTask *t = dynamic_cast<GeneByGeneReportTask *>(sender());
     if (!t->isFinished() || t->hasError() || t->isCanceled()) {
         return;
     }
@@ -141,45 +136,42 @@ QStringList GeneByGeneReportWorker::getOutputFiles() {
 /* Factory */
 /************************************************************************/
 
-
 void GeneByGeneReportWorkerFactory::init() {
-
-    QList<PortDescriptor*> portDescs;
+    QList<PortDescriptor *> portDescs;
 
     //in port
     QMap<Descriptor, DataTypePtr> inTypeMap;
     Descriptor annDesc(ANNOT_SLOT_ID,
-        GeneByGeneReportWorker::tr("Input annotations"),
-        GeneByGeneReportWorker::tr("Gene annotations."));
+                       GeneByGeneReportWorker::tr("Input annotations"),
+                       GeneByGeneReportWorker::tr("Gene annotations."));
     inTypeMap[annDesc] = BaseTypes::ANNOTATION_TABLE_LIST_TYPE();
     Descriptor seqDesc(SEQ_SLOT_ID,
-        GeneByGeneReportWorker::tr("Input sequences"),
-        GeneByGeneReportWorker::tr("Gene sequences."));
+                       GeneByGeneReportWorker::tr("Input sequences"),
+                       GeneByGeneReportWorker::tr("Gene sequences."));
     inTypeMap[seqDesc] = BaseTypes::DNA_SEQUENCE_TYPE();
 
     Descriptor inPortDesc(IN_PORT_DESCR,
-        GeneByGeneReportWorker::tr("Gene by gene report data."),
-        GeneByGeneReportWorker::tr("Gene with similar regions to for report."));
+                          GeneByGeneReportWorker::tr("Gene by gene report data."),
+                          GeneByGeneReportWorker::tr("Gene with similar regions to for report."));
 
     DataTypePtr inTypeSet(new MapDataType(IN_TYPE_ID, inTypeMap));
     portDescs << new PortDescriptor(inPortDesc, inTypeSet, true);
 
-    QList<Attribute*> attrs;
+    QList<Attribute *> attrs;
     {
         Descriptor outFile(OUTPUT_FILE,
-            GeneByGeneReportWorker::tr("Output file"),
-            GeneByGeneReportWorker::tr("File to store a report."));
+                           GeneByGeneReportWorker::tr("Output file"),
+                           GeneByGeneReportWorker::tr("File to store a report."));
         Descriptor annName(ANN_NAME,
-            GeneByGeneReportWorker::tr("Annotation name"),
-            GeneByGeneReportWorker::tr("Annotation name used to compare genes and reference genomes."));
+                           GeneByGeneReportWorker::tr("Annotation name"),
+                           GeneByGeneReportWorker::tr("Annotation name used to compare genes and reference genomes."));
         Descriptor existingFile(EXISTING_FILE,
-            GeneByGeneReportWorker::tr("Existing file"),
-            GeneByGeneReportWorker::tr("If a target report already exists you should specify how to handle that. "
-            "<b>Merge</b> two table in one. <b>Overwrite</b> or <b>Rename</b> existing file."));
+                                GeneByGeneReportWorker::tr("Existing file"),
+                                GeneByGeneReportWorker::tr("If a target report already exists you should specify how to handle that. "
+                                                           "<b>Merge</b> two table in one. <b>Overwrite</b> or <b>Rename</b> existing file."));
         Descriptor identitiDescr(IDENTITY,
-            GeneByGeneReportWorker::tr("Identity cutoff"),
-            GeneByGeneReportWorker::tr("Identity between gene sequence length and annotation length in per cent. BLAST identity (if specified) is checked after."));
-
+                                 GeneByGeneReportWorker::tr("Identity cutoff"),
+                                 GeneByGeneReportWorker::tr("Identity between gene sequence length and annotation length in per cent. BLAST identity (if specified) is checked after."));
 
         attrs << new Attribute(outFile, BaseTypes::STRING_TYPE(), true, QVariant(""));
         attrs << new Attribute(annName, BaseTypes::STRING_TYPE(), true, QVariant("blast_result"));
@@ -187,7 +179,7 @@ void GeneByGeneReportWorkerFactory::init() {
         attrs << new Attribute(identitiDescr, BaseTypes::NUM_TYPE(), false, QVariant(90.0f));
     }
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
         delegates[OUTPUT_FILE] = new URLDelegate("", "", false, false);
         {
@@ -209,8 +201,8 @@ void GeneByGeneReportWorkerFactory::init() {
     }
 
     Descriptor protoDesc(GeneByGeneReportWorkerFactory::ACTOR_ID,
-        GeneByGeneReportWorker::tr("Gene-by-gene Approach Report"),
-        GeneByGeneReportWorker::tr("Output a table of genes found in a reference sequence."));
+                         GeneByGeneReportWorker::tr("Gene-by-gene Approach Report"),
+                         GeneByGeneReportWorker::tr("Output a table of genes found in a reference sequence."));
 
     ActorPrototype *proto = new IntegralBusActorPrototype(protoDesc, portDescs, attrs);
     proto->setPrompter(new GeneByGeneReportPrompter());
@@ -226,9 +218,9 @@ Worker *GeneByGeneReportWorkerFactory::createWorker(Actor *a) {
 QString GeneByGeneReportPrompter::composeRichDoc() {
     QString res = "";
 
-    Actor* seqProducer = qobject_cast<IntegralBusPort*>(target->getPort(IN_PORT_DESCR))->getProducer(SEQ_SLOT_ID);
+    Actor *seqProducer = qobject_cast<IntegralBusPort *>(target->getPort(IN_PORT_DESCR))->getProducer(SEQ_SLOT_ID);
 
-    QString unsetStr = "<font color='red'>"+tr("unset")+"</font>";
+    QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
     QString annUrl = seqProducer ? seqProducer->getLabel() : unsetStr;
 
     QString file = getHyperlink(OUTPUT_FILE, getURL(OUTPUT_FILE));
@@ -246,6 +238,5 @@ QString GeneByGeneReportPrompter::composeRichDoc() {
     return res;
 }
 
-} // LocalWorkflow
-} // U2
-
+}    // namespace LocalWorkflow
+}    // namespace U2

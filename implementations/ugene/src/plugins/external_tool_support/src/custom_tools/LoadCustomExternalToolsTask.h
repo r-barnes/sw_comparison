@@ -42,6 +42,6 @@ private:
     QList<CustomExternalTool *> tools;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_LOAD_CUSTOM_EXTERNAL_TOOLS_TASK_H_
+#endif    // _U2_LOAD_CUSTOM_EXTERNAL_TOOLS_TASK_H_

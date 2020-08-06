@@ -19,8 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2IdTypes.h>
-#include "GTUtilsProjectTreeView.h"
 #include "ProjectTreeItemSelectorDialogFiller.h"
 #include <drivers/GTKeyboardDriver.h>
 #include <drivers/GTMouseDriver.h>
@@ -31,32 +29,29 @@
 #include <QPushButton>
 #include <QTreeWidget>
 
+#include <U2Core/U2IdTypes.h>
+
+#include "GTUtilsProjectTreeView.h"
+
 namespace U2 {
 using namespace HI;
 
 #define GT_CLASS_NAME "ProjectTreeItemSelectorDialogFiller"
 
-ProjectTreeItemSelectorDialogFiller::ProjectTreeItemSelectorDialogFiller(HI::GUITestOpStatus &os, const QString& documentName, const QString &objectName,
-    const QSet<GObjectType> &acceptableTypes, SelectionMode mode, int expectedDocCount)
-    : Filler(os, "ProjectTreeItemSelectorDialogBase"), acceptableTypes(acceptableTypes), mode(mode), expectedDocCount(expectedDocCount)
-{
+ProjectTreeItemSelectorDialogFiller::ProjectTreeItemSelectorDialogFiller(HI::GUITestOpStatus &os, const QString &documentName, const QString &objectName, const QSet<GObjectType> &acceptableTypes, SelectionMode mode, int expectedDocCount)
+    : Filler(os, "ProjectTreeItemSelectorDialogBase"), acceptableTypes(acceptableTypes), mode(mode), expectedDocCount(expectedDocCount) {
     itemsToSelect.insert(documentName, QStringList() << objectName);
 }
 
-ProjectTreeItemSelectorDialogFiller::ProjectTreeItemSelectorDialogFiller(HI::GUITestOpStatus &os, const QMap<QString, QStringList> &itemsToSelect,
-    const QSet<GObjectType> &acceptableTypes, SelectionMode mode, int expectedDocCount)
+ProjectTreeItemSelectorDialogFiller::ProjectTreeItemSelectorDialogFiller(HI::GUITestOpStatus &os, const QMap<QString, QStringList> &itemsToSelect, const QSet<GObjectType> &acceptableTypes, SelectionMode mode, int expectedDocCount)
     : Filler(os, "ProjectTreeItemSelectorDialogBase"), itemsToSelect(itemsToSelect), acceptableTypes(acceptableTypes), mode(mode),
-    expectedDocCount(expectedDocCount)
-{
-
+      expectedDocCount(expectedDocCount) {
 }
 
-ProjectTreeItemSelectorDialogFiller::ProjectTreeItemSelectorDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario) :
-    Filler(os, "ProjectTreeItemSelectorDialogBase", scenario),
-    mode(Single),
-    expectedDocCount(0)
-{
-
+ProjectTreeItemSelectorDialogFiller::ProjectTreeItemSelectorDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario)
+    : Filler(os, "ProjectTreeItemSelectorDialogBase", scenario),
+      mode(Single),
+      expectedDocCount(0) {
 }
 
 namespace {
@@ -71,40 +66,34 @@ bool checkTreeRowCount(QTreeView *tree, int expectedDocCount) {
     return visibleItemCount == expectedDocCount;
 }
 
-}
+}    // namespace
 
 #define GT_METHOD_NAME "commonScenario"
-void ProjectTreeItemSelectorDialogFiller::commonScenario(){
-    GTGlobals::sleep(1000);
-    QWidget *dialog = QApplication::activeModalWidget();
-    GT_CHECK(dialog != NULL, "dialog was not found");
-
-    QTreeView* treeView = dialog->findChild<QTreeView*>();
-    GT_CHECK(treeView != NULL, "treeWidget is NULL");
-
-    if (-1 != expectedDocCount) {
+void ProjectTreeItemSelectorDialogFiller::commonScenario() {
+    QWidget *dialog = GTWidget::getActiveModalWidget(os);
+    QTreeView *treeView = GTWidget::findWidgetByType<QTreeView *>(os, dialog, "No tree widget found in dialog");
+    if (expectedDocCount != -1) {
         CHECK_SET_ERR(checkTreeRowCount(treeView, expectedDocCount), "Unexpected document count");
     }
 
     GTGlobals::FindOptions options;
     options.depth = GTGlobals::FindOptions::INFINITE_DEPTH;
 
-    if (Separate == mode) {
+    if (mode == Separate) {
         GTKeyboardDriver::keyPress(Qt::Key_Control);
     }
 
     bool firstIsSelected = false;
-    foreach (const QString& documentName, itemsToSelect.keys()) {
-        const QModelIndex documentIndex = GTUtilsProjectTreeView::findIndex(os, treeView, documentName, options);
+    foreach (const QString &documentName, itemsToSelect.keys()) {
+        QModelIndex documentIndex = GTUtilsProjectTreeView::findIndex(os, treeView, documentName, options);
         GTUtilsProjectTreeView::checkObjectTypes(os, treeView, acceptableTypes, documentIndex);
-
-        const QStringList objects = itemsToSelect.value(documentName);
+        QStringList objects = itemsToSelect.value(documentName);
         if (!objects.isEmpty()) {
-            foreach (const QString& objectName, itemsToSelect.value(documentName)) {
-                const QModelIndex objectIndex = GTUtilsProjectTreeView::findIndex(os, treeView, objectName, documentIndex, options);
+            foreach (const QString &objectName, itemsToSelect.value(documentName)) {
+                QModelIndex objectIndex = GTUtilsProjectTreeView::findIndex(os, treeView, objectName, documentIndex, options);
                 GTMouseDriver::moveTo(GTUtilsProjectTreeView::getItemCenter(os, treeView, objectIndex));
                 GTMouseDriver::click();
-                if (!firstIsSelected && Continuous == mode) {
+                if (!firstIsSelected && mode == Continuous) {
                     GTKeyboardDriver::keyPress(Qt::Key_Shift);
                     firstIsSelected = true;
                 }
@@ -117,13 +106,12 @@ void ProjectTreeItemSelectorDialogFiller::commonScenario(){
 
     switch (mode) {
     case Separate:
-        GTKeyboardDriver::keyClick( Qt::Key_Control);
+        GTKeyboardDriver::keyClick(Qt::Key_Control);
         break;
     case Continuous:
-        GTKeyboardDriver::keyClick( Qt::Key_Shift);
+        GTKeyboardDriver::keyClick(Qt::Key_Shift);
         break;
-    default:
-        ; // empty default section to avoid GCC warning
+    default:;    // empty default section to avoid GCC warning
     }
 
     GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
@@ -132,4 +120,4 @@ void ProjectTreeItemSelectorDialogFiller::commonScenario(){
 
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

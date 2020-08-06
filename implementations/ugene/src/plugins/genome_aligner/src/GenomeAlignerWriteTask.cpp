@@ -24,9 +24,8 @@
 namespace U2 {
 
 GenomeAlignerWriteTask::GenomeAlignerWriteTask(GenomeAlignerWriter *s)
-: Task("WriteAlignedReadsSubTask", TaskFlag_None),
-seqWriter(s), end(false), writing(false), readsWritten(0)
-{
+    : Task("WriteAlignedReadsSubTask", TaskFlag_None),
+      seqWriter(s), end(false), writing(false), readsWritten(0) {
 }
 
 void GenomeAlignerWriteTask::setSeqWriter(GenomeAlignerWriter *seqWriter) {
@@ -110,4 +109,4 @@ void GenomeAlignerWriteTask::setReadWritten(SearchQuery *read, SearchQuery *revC
     }
 }
 
-} // U2
+}    // namespace U2

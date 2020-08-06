@@ -47,8 +47,8 @@ public:
     static QScriptValue qtestSleepE(QScriptContext *ctx, QScriptEngine *eng);
     static QScriptValue qtestWaitE(QScriptContext *ctx, QScriptEngine *eng);
 
-    static void setQTest(QScriptEngine* curEng);
+    static void setQTest(QScriptEngine *curEng);
 };
-}//namespace
+}    // namespace U2
 
 #endif

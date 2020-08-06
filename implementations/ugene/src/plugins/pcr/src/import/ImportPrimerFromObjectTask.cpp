@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ImportPrimerFromObjectTask.h"
+
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/DocumentModel.h>
@@ -31,14 +33,13 @@
 
 #include "Primer.h"
 #include "PrimerLibrary.h"
-#include "ImportPrimerFromObjectTask.h"
 
 namespace U2 {
 
-ImportPrimerFromObjectTask::ImportPrimerFromObjectTask(GObject *object) :
-    Task(tr("Import primer from the shared database object: %1").arg(NULL == object ? "N/A" : object->getGObjectName()),
-    TaskFlags(TaskFlag_ReportingIsEnabled | TaskFlag_ReportingIsSupported)), validator(this)
-{
+ImportPrimerFromObjectTask::ImportPrimerFromObjectTask(GObject *object)
+    : Task(tr("Import primer from the shared database object: %1").arg(NULL == object ? "N/A" : object->getGObjectName()),
+           TaskFlags(TaskFlag_ReportingIsEnabled | TaskFlag_ReportingIsSupported)),
+      validator(this) {
     SAFE_POINT_EXT(NULL != object, setError(L10N::nullPointerError("an input object")), );
     SAFE_POINT_EXT(GObjectTypes::SEQUENCE == object->getGObjectType(), setError(tr("A non-sequence object was provided")), );
     sequenceObject = qobject_cast<U2SequenceObject *>(object);
@@ -76,4 +77,4 @@ QString ImportPrimerFromObjectTask::generateReport() const {
     return report.arg(Theme::successColorLabelHtmlStr()).arg(tr("success"));
 }
 
-}   // namespace U2
+}    // namespace U2

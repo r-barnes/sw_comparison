@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ProjectViewFilterModel.h"
+
 #include <QFontMetrics>
 
 #include <U2Core/AppContext.h>
@@ -33,23 +35,17 @@
 #include "ProjectUtils.h"
 #include "ProjectViewModel.h"
 
-#include "ProjectViewFilterModel.h"
-
 namespace U2 {
 
 ProjectViewFilterModel::ProjectViewFilterModel(ProjectViewModel *srcModel, const ProjectTreeControllerModeSettings &settings, QObject *p)
-    : QAbstractItemModel(p), settings(settings), srcModel(srcModel)
-{
+    : QAbstractItemModel(p), settings(settings), srcModel(srcModel) {
     SAFE_POINT(NULL != srcModel, L10N::nullPointerError("Project view model"), );
-    connect(&filterController, SIGNAL(si_objectsFiltered(const QString &, const QList<QPointer<GObject> > &)),
-        SLOT(sl_objectsFiltered(const QString &, const QList<QPointer<GObject> > &)));
+    connect(&filterController, SIGNAL(si_objectsFiltered(const QString &, const QList<QPointer<GObject>> &)), SLOT(sl_objectsFiltered(const QString &, const QList<QPointer<GObject>> &)));
     connect(&filterController, SIGNAL(si_filteringStarted()), SIGNAL(si_filteringStarted()));
     connect(&filterController, SIGNAL(si_filteringFinished()), SIGNAL(si_filteringFinished()));
 
-    connect(srcModel, SIGNAL(rowsAboutToBeRemoved(const QModelIndex &, int, int)),
-        SLOT(sl_rowsAboutToBeRemoved(const QModelIndex &, int, int)));
-    connect(srcModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
-        SLOT(sl_dataChanged(const QModelIndex &, const QModelIndex &)));
+    connect(srcModel, SIGNAL(rowsAboutToBeRemoved(const QModelIndex &, int, int)), SLOT(sl_rowsAboutToBeRemoved(const QModelIndex &, int, int)));
+    connect(srcModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), SLOT(sl_dataChanged(const QModelIndex &, const QModelIndex &)));
 }
 
 ProjectViewFilterModel::~ProjectViewFilterModel() {
@@ -58,8 +54,8 @@ ProjectViewFilterModel::~ProjectViewFilterModel() {
 
 namespace {
 
-QList<QPointer<Document> > getAllDocumentsSafely() {
-    QList<QPointer<Document> > result;
+QList<QPointer<Document>> getAllDocumentsSafely() {
+    QList<QPointer<Document>> result;
 
     Project *proj = AppContext::getProject();
     SAFE_POINT(NULL != proj, L10N::nullPointerError("project"), result);
@@ -69,14 +65,14 @@ QList<QPointer<Document> > getAllDocumentsSafely() {
     return result;
 }
 
-}
+}    // namespace
 
 void ProjectViewFilterModel::updateSettings(const ProjectTreeControllerModeSettings &newSettings) {
     settings = newSettings;
     clearFilterGroups();
 
     if (settings.isObjectFilterActive()) {
-        const QList<QPointer<Document> > allDocs = getAllDocumentsSafely();
+        const QList<QPointer<Document>> allDocs = getAllDocumentsSafely();
         CHECK(!allDocs.isEmpty(), );
         filterController.startFiltering(settings, allDocs);
     }
@@ -103,7 +99,7 @@ void ProjectViewFilterModel::addFilteredObject(const QString &filterGroupName, G
     endInsertRows();
 }
 
-FilteredProjectGroup * ProjectViewFilterModel::findFilterGroup(const QString &name) const {
+FilteredProjectGroup *ProjectViewFilterModel::findFilterGroup(const QString &name) const {
     SAFE_POINT(!name.isEmpty(), "Empty project filter group name", NULL);
 
     if (ProjectFilterNames::OBJ_NAME_FILTER_NAME == name) {
@@ -140,8 +136,7 @@ void ProjectViewFilterModel::addFilterGroup(const QString &name) {
 #endif
 
     FilteredProjectGroup *newGroup = new FilteredProjectGroup(name);
-    QList<FilteredProjectGroup *>::iterator insertionPlace = std::upper_bound(filterGroups.begin(), filterGroups.end(),
-        newGroup, FilteredProjectGroup::groupLessThan);
+    QList<FilteredProjectGroup *>::iterator insertionPlace = std::upper_bound(filterGroups.begin(), filterGroups.end(), newGroup, FilteredProjectGroup::groupLessThan);
 
     const int groupNumber = insertionPlace - filterGroups.begin();
     beginInsertRows(QModelIndex(), groupNumber, groupNumber);
@@ -196,7 +191,7 @@ int ProjectViewFilterModel::columnCount(const QModelIndex & /*parent*/) const {
     return 1;
 }
 
-void ProjectViewFilterModel::sl_objectsFiltered(const QString &groupName, const QList<QPointer<GObject> > &objs) {
+void ProjectViewFilterModel::sl_objectsFiltered(const QString &groupName, const QList<QPointer<GObject>> &objs) {
     foreach (const QPointer<GObject> &obj, objs) {
         const QString objPath = srcModel->getObjectFolder(obj->getDocument(), obj.data());
         if (!obj.isNull() && !ProjectUtils::isFolderInRecycleBinSubtree(objPath)) {
@@ -296,8 +291,7 @@ void ProjectViewFilterModel::sl_rowsAboutToBeRemoved(const QModelIndex &parent, 
     case ProjectViewModel::FOLDER: {
         Folder *folder = ProjectViewModel::toFolder(removedIndex);
         objectsBeingRemoved.append(srcModel->getFolderObjects(folder->getDocument(), folder->getFolderPath()));
-    }
-        break;
+    } break;
     case ProjectViewModel::DOCUMENT:
         objectsBeingRemoved.append(ProjectViewModel::toDocument(removedIndex)->getObjects());
         break;
@@ -362,7 +356,7 @@ QVariant ProjectViewFilterModel::getObjectData(const QModelIndex &index, int rol
     return result;
 }
 
-QMimeData * ProjectViewFilterModel::mimeData(const QModelIndexList &indexes) const {
+QMimeData *ProjectViewFilterModel::mimeData(const QModelIndexList &indexes) const {
     QSet<GObject *> uniqueObjs;
     foreach (const QModelIndex &index, indexes) {
         if (isObject(index)) {
@@ -402,18 +396,18 @@ bool ProjectViewFilterModel::isObject(const QModelIndex &index) {
     return OBJECT == getType(index);
 }
 
-QObject * ProjectViewFilterModel::toQObject(const QModelIndex &index) {
+QObject *ProjectViewFilterModel::toQObject(const QModelIndex &index) {
     QObject *internalObj = static_cast<QObject *>(index.internalPointer());
     SAFE_POINT(NULL != internalObj, "Invalid index data", NULL);
     return internalObj;
 }
 
-FilteredProjectGroup * ProjectViewFilterModel::toGroup(const QModelIndex &index) {
+FilteredProjectGroup *ProjectViewFilterModel::toGroup(const QModelIndex &index) {
     return qobject_cast<FilteredProjectGroup *>(toQObject(index));
 }
 
-WrappedObject * ProjectViewFilterModel::toObject(const QModelIndex &index) {
+WrappedObject *ProjectViewFilterModel::toObject(const QModelIndex &index) {
     return qobject_cast<WrappedObject *>(toQObject(index));
 }
 
-} // namespace U2
+}    // namespace U2

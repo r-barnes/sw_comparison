@@ -22,11 +22,11 @@
 #ifndef _U2_BAM_UTILS_H_
 #define _U2_BAM_UTILS_H_
 
+#include <U2Core/DNASequence.h>
+#include <U2Core/DocumentModel.h>
 #include <U2Core/GUrl.h>
 #include <U2Core/U2OpStatus.h>
-#include <U2Core/DNASequence.h>
 #include <U2Core/U2Region.h>
-#include <U2Core/DocumentModel.h>
 
 namespace U2 {
 
@@ -46,7 +46,7 @@ public:
     /**
      * Returns the url to the output BAM or SAM file
      */
-    static void convertToSamOrBam(const GUrl &samUrl, const GUrl &bamUrl, const ConvertOption &options, U2OpStatus &os );
+    static void convertToSamOrBam(const GUrl &samUrl, const GUrl &bamUrl, const ConvertOption &options, U2OpStatus &os);
 
     static bool isSortedBam(const GUrl &bamUrl, U2OpStatus &os);
 
@@ -71,9 +71,9 @@ public:
 
     static void writeDocument(Document *doc, U2OpStatus &os);
 
-    static void writeObjects(const QList<GObject*> &objects, const GUrl &url, const DocumentFormatId &formatId, U2OpStatus &os, const U2Region &desiredRegion = U2_REGION_MAX);
+    static void writeObjects(const QList<GObject *> &objects, const GUrl &url, const DocumentFormatId &formatId, U2OpStatus &os, const U2Region &desiredRegion = U2_REGION_MAX);
 
-    static bool isEqualByLength(const GUrl &fileUrl1, const GUrl &fileUrl2, U2OpStatus &os, bool isBAM = false );
+    static bool isEqualByLength(const GUrl &fileUrl1, const GUrl &fileUrl2, U2OpStatus &os, bool isBAM = false);
 
     /**
      * Returns the list of names of references (despite "*") found among reads.
@@ -89,7 +89,7 @@ public:
 //iterates over a FASTQ file (including zipped) with kseq from samtools
 class U2FORMATS_EXPORT FASTQIterator {
 public:
-    FASTQIterator(const QString& fileUrl, U2OpStatus &os);
+    FASTQIterator(const QString &fileUrl, U2OpStatus &os);
     virtual ~FASTQIterator();
 
     DNASequence next();
@@ -102,6 +102,6 @@ private:
     void *seq;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_BAM_UTILS_H_
+#endif    // _U2_BAM_UTILS_H_

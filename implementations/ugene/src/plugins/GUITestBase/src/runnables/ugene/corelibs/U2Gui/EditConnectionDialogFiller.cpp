@@ -19,27 +19,26 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-#include <QGroupBox>
-#include <QComboBox>
-
-#include "GTDatabaseConfig.h"
-#include "primitives/GTAction.h"
-#include <primitives/GTWidget.h>
-#include <primitives/GTSpinBox.h>
-#include <primitives/GTDoubleSpinBox.h>
 #include <primitives/GTCheckBox.h>
-#include <primitives/GTLineEdit.h>
 #include <primitives/GTComboBox.h>
+#include <primitives/GTDoubleSpinBox.h>
+#include <primitives/GTLineEdit.h>
 #include <primitives/GTRadioButton.h>
+#include <primitives/GTSpinBox.h>
+#include <primitives/GTWidget.h>
+
+#include <QApplication>
+#include <QComboBox>
+#include <QGroupBox>
 
 #include "EditConnectionDialogFiller.h"
+#include "GTDatabaseConfig.h"
+#include "primitives/GTAction.h"
 
 namespace U2 {
 
 EditConnectionDialogFiller::EditConnectionDialogFiller(HI::GUITestOpStatus &os, const Parameters &parameters, ConnectionType type)
-: Filler(os, "EditConnectionDialog"), parameters(parameters)
-{
+    : Filler(os, "EditConnectionDialog"), parameters(parameters) {
     if (FROM_SETTINGS == type) {
         this->parameters.host = GTDatabaseConfig::host();
         this->parameters.port = QString::number(GTDatabaseConfig::port());
@@ -49,30 +48,29 @@ EditConnectionDialogFiller::EditConnectionDialogFiller(HI::GUITestOpStatus &os, 
     }
 }
 
-EditConnectionDialogFiller::EditConnectionDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario) :
-    Filler(os, "EditConnectionDialog", scenario)
-{
+EditConnectionDialogFiller::EditConnectionDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario)
+    : Filler(os, "EditConnectionDialog", scenario) {
 }
 
 #define GT_CLASS_NAME "GTUtilsDialog::EditConnectionDialogFiller"
 #define GT_METHOD_NAME "run"
 
 void EditConnectionDialogFiller::commonScenario() {
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
-    QLineEdit* leName = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "leName", dialog));
+    QLineEdit *leName = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "leName", dialog));
     GT_CHECK(leName, "leName is NULL");
-    QLineEdit* leHost = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "leHost", dialog));
+    QLineEdit *leHost = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "leHost", dialog));
     GT_CHECK(leHost, "leHost is NULL");
-    QLineEdit* lePort = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "lePort", dialog));
+    QLineEdit *lePort = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "lePort", dialog));
     GT_CHECK(lePort, "lePort is NULL");
-    QLineEdit* leDatabase = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "leDatabase", dialog));
+    QLineEdit *leDatabase = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "leDatabase", dialog));
     GT_CHECK(leDatabase, "leDatabase is NULL");
-    QLineEdit* leLogin = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "leLogin", dialog));
+    QLineEdit *leLogin = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "leLogin", dialog));
     GT_CHECK(leLogin, "leLogin is NULL");
-    QLineEdit* lePassword = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "lePassword", dialog));
+    QLineEdit *lePassword = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "lePassword", dialog));
     GT_CHECK(lePassword, "lePassword is NULL");
-    QCheckBox* cbRemember = qobject_cast<QCheckBox*>(GTWidget::findWidget(os, "cbRemember", dialog));
+    QCheckBox *cbRemember = qobject_cast<QCheckBox *>(GTWidget::findWidget(os, "cbRemember", dialog));
     GT_CHECK(cbRemember, "cbRemember is NULL");
 
     if (parameters.checkDefaults) {
@@ -95,29 +93,27 @@ void EditConnectionDialogFiller::commonScenario() {
 #undef GT_CLASS_NAME
 
 AuthenticationDialogFiller::AuthenticationDialogFiller(HI::GUITestOpStatus &os, const QString &login, const QString &password)
-: Filler(os, "AuthenticationDialog"), login(login), password(password)
-{
-
+    : Filler(os, "AuthenticationDialog"), login(login), password(password) {
 }
 
 #define GT_CLASS_NAME "GTUtilsDialog::AuthenticationDialogFiller"
 #define GT_METHOD_NAME "commonScenario"
 
 void AuthenticationDialogFiller::commonScenario() {
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
-    QLineEdit* leLogin = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "leLogin", dialog));
+    QLineEdit *leLogin = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "leLogin", dialog));
     GT_CHECK(leLogin, "leLogin is NULL");
     if (leLogin->isEnabled()) {
         GTLineEdit::setText(os, leLogin, login);
     }
 
-    QLineEdit* lePassword = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "lePassword", dialog));
+    QLineEdit *lePassword = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "lePassword", dialog));
     GT_CHECK(lePassword, "lePassword is NULL");
     GTLineEdit::setText(os, lePassword, password);
 
-    QCheckBox* cbRemember = qobject_cast<QCheckBox*>(GTWidget::findWidget(os, "cbRemember", dialog));
+    QCheckBox *cbRemember = qobject_cast<QCheckBox *>(GTWidget::findWidget(os, "cbRemember", dialog));
     GT_CHECK(cbRemember, "cbRemember is NULL");
     GTCheckBox::setChecked(os, cbRemember, false);
 
@@ -127,4 +123,4 @@ void AuthenticationDialogFiller::commonScenario() {
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

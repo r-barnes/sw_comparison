@@ -50,11 +50,11 @@ private:
     void init(QString assemblyName);
     bool checkPermissions() const;
 
-    SaveDocumentController * saveController;
+    SaveDocumentController *saveController;
 
     static const QString DIR_HELPER_NAME;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_EXPORT_COVERAGE_DIALOG_H_
+#endif    // _U2_EXPORT_COVERAGE_DIALOG_H_

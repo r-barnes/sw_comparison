@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "TestRunnerTask.h"
+
 #include <QDir>
 #include <QFileInfo>
 
@@ -27,18 +29,15 @@
 #include <U2Core/Log.h>
 #include <U2Core/Timer.h>
 
-#include <U2Test/GTestFrameworkComponents.h>
 #include <U2Test/GTest.h>
-
-#include "TestRunnerTask.h"
+#include <U2Test/GTestFrameworkComponents.h>
 
 namespace U2 {
 
 static Logger teamcityLog(ULOG_CAT_TEAMCITY);
 
-TestRunnerTask::TestRunnerTask(const QList<GTestState*>& tests, const GTestEnvironment* _env, int testSizeToRun)
-: Task(tr("Test runner"), TaskFlag_NoRun), env(_env)
-{
+TestRunnerTask::TestRunnerTask(const QList<GTestState *> &tests, const GTestEnvironment *_env, int testSizeToRun)
+    : Task(tr("Test runner"), TaskFlag_NoRun), env(_env) {
     tpm = Task::Progress_Manual;
 
     setMaxParallelSubtasks(testSizeToRun);
@@ -47,87 +46,86 @@ TestRunnerTask::TestRunnerTask(const QList<GTestState*>& tests, const GTestEnvir
 
     awaitingTests = tests;
     totalTests = tests.size();
-    foreach(GTestState *t,awaitingTests){
+    foreach (GTestState *t, awaitingTests) {
         t->clearState();
     }
-    for (int i=0; !awaitingTests.isEmpty() && i < sizeToRun; i++){
-        GTestState *t=awaitingTests.takeFirst();
-        LoadTestTask* lt = new LoadTestTask(t);
+    for (int i = 0; !awaitingTests.isEmpty() && i < sizeToRun; i++) {
+        GTestState *t = awaitingTests.takeFirst();
+        LoadTestTask *lt = new LoadTestTask(t);
         addSubTask(lt);
     }
 }
 
-
-QList<Task*> TestRunnerTask::onSubTaskFinished(Task* subTask) {
+QList<Task *> TestRunnerTask::onSubTaskFinished(Task *subTask) {
     //update progress info: progress is a % of finished tests
 
     stateInfo.progress = 100 * finishedTests / totalTests;
 
-    QList<Task*> res;
-    if(isCanceled()){
+    QList<Task *> res;
+    if (isCanceled()) {
         return res;
     }
-    LoadTestTask* loader = qobject_cast<LoadTestTask*>(subTask);
+    LoadTestTask *loader = qobject_cast<LoadTestTask *>(subTask);
     if (loader == NULL) {
-        GTest* test = qobject_cast<GTest*>(subTask);
+        GTest *test = qobject_cast<GTest *>(subTask);
         assert(test);
         test->cleanup();
         if (!test->hasError()) {
             test->removeTempDir();
         }
-        GTestState* testState = stateByTest.value(test);
-        assert(testState!=NULL);
+        GTestState *testState = stateByTest.value(test);
+        assert(testState != NULL);
         assert(testState->isNew());
         if (test->hasError()) {
             testState->setFailed(test->getStateInfo().getError());
-            teamcityLog.info(QString("##teamcity[testStarted name='%1 : %2']").arg(testState->getTestRef()->getSuite()->getName(),testState->getTestRef()->getShortName()));
-            teamcityLog.info(QString("##teamcity[testFailed name='%1 : %2' message='%3' details='%3']").arg(testState->getTestRef()->getSuite()->getName(),testState->getTestRef()->getShortName(),QString(testState->getErrorMessage()).replace("'","|'").replace('\n',' ')));
-            teamcityLog.info(QString("##teamcity[testFinished name='%1 : %2']").arg(testState->getTestRef()->getSuite()->getName(),testState->getTestRef()->getShortName()));
+            teamcityLog.info(QString("##teamcity[testStarted name='%1 : %2']").arg(testState->getTestRef()->getSuite()->getName(), testState->getTestRef()->getShortName()));
+            teamcityLog.info(QString("##teamcity[testFailed name='%1 : %2' message='%3' details='%3']").arg(testState->getTestRef()->getSuite()->getName(), testState->getTestRef()->getShortName(), QString(testState->getErrorMessage()).replace("'", "|'").replace('\n', ' ')));
+            teamcityLog.info(QString("##teamcity[testFinished name='%1 : %2']").arg(testState->getTestRef()->getSuite()->getName(), testState->getTestRef()->getShortName()));
         } else {
             testState->setPassed();
-            teamcityLog.info(QString("##teamcity[testStarted name='%1 : %2']").arg(testState->getTestRef()->getSuite()->getName(),testState->getTestRef()->getShortName()));
-            teamcityLog.info(QString("##teamcity[testFinished name='%1 : %2' duration='%3']").arg(testState->getTestRef()->getSuite()->getName(), testState->getTestRef()->getShortName(),QString::number(GTimer::millisBetween(test->getTimeInfo().startTime, test->getTimeInfo().finishTime))));
+            teamcityLog.info(QString("##teamcity[testStarted name='%1 : %2']").arg(testState->getTestRef()->getSuite()->getName(), testState->getTestRef()->getShortName()));
+            teamcityLog.info(QString("##teamcity[testFinished name='%1 : %2' duration='%3']").arg(testState->getTestRef()->getSuite()->getName(), testState->getTestRef()->getShortName(), QString::number(GTimer::millisBetween(test->getTimeInfo().startTime, test->getTimeInfo().finishTime))));
         }
-        if(!awaitingTests.isEmpty()){
-            GTestState *t=awaitingTests.takeFirst();
+        if (!awaitingTests.isEmpty()) {
+            GTestState *t = awaitingTests.takeFirst();
             res.append(new LoadTestTask(t));
         }
     } else {
         finishedTests++;
-        GTestState* testState = loader->testState;
+        GTestState *testState = loader->testState;
         if (loader->hasError()) {
             testState->setFailed(loader->getStateInfo().getError());
-            teamcityLog.info(QString("##teamcity[testStarted name='%1 : %2']").arg(testState->getTestRef()->getSuite()->getName(),testState->getTestRef()->getShortName()));
-            teamcityLog.info(QString("##teamcity[testFailed name='%1 : %2' message='%3' details='%3']").arg(testState->getTestRef()->getSuite()->getName(),testState->getTestRef()->getShortName(),QString(testState->getErrorMessage()).replace("'","|'").replace('\n',' ')));
-            teamcityLog.info(QString("##teamcity[testFinished name='%1 : %2']").arg(testState->getTestRef()->getSuite()->getName(),testState->getTestRef()->getShortName()));
-        }  else  {
+            teamcityLog.info(QString("##teamcity[testStarted name='%1 : %2']").arg(testState->getTestRef()->getSuite()->getName(), testState->getTestRef()->getShortName()));
+            teamcityLog.info(QString("##teamcity[testFailed name='%1 : %2' message='%3' details='%3']").arg(testState->getTestRef()->getSuite()->getName(), testState->getTestRef()->getShortName(), QString(testState->getErrorMessage()).replace("'", "|'").replace('\n', ' ')));
+            teamcityLog.info(QString("##teamcity[testFinished name='%1 : %2']").arg(testState->getTestRef()->getSuite()->getName(), testState->getTestRef()->getShortName()));
+        } else {
             GTestFormatId id = testState->getTestRef()->getFormatId();
-            GTestFormat* tf = AppContext::getTestFramework()->getTestFormatRegistry()->findFormat(id);
+            GTestFormat *tf = AppContext::getTestFramework()->getTestFormatRegistry()->findFormat(id);
             if (tf == NULL) {
                 testState->setFailed(tr("Test format not supported: %1").arg(id));
-                teamcityLog.info(QString("##teamcity[testStarted name='%1 : %2']").arg(testState->getTestRef()->getSuite()->getName(),testState->getTestRef()->getShortName()));
-                teamcityLog.info(QString("##teamcity[testFailed name='%1 : %2' message='%3' details='%3']").arg(testState->getTestRef()->getSuite()->getName(),testState->getTestRef()->getShortName(),QString(testState->getErrorMessage()).replace("'","|'").replace('\n',' ').replace('\n',' ')));
-                teamcityLog.info(QString("##teamcity[testFinished name='%1 : %2']").arg(testState->getTestRef()->getSuite()->getName(),testState->getTestRef()->getShortName()));
+                teamcityLog.info(QString("##teamcity[testStarted name='%1 : %2']").arg(testState->getTestRef()->getSuite()->getName(), testState->getTestRef()->getShortName()));
+                teamcityLog.info(QString("##teamcity[testFailed name='%1 : %2' message='%3' details='%3']").arg(testState->getTestRef()->getSuite()->getName(), testState->getTestRef()->getShortName(), QString(testState->getErrorMessage()).replace("'", "|'").replace('\n', ' ').replace('\n', ' ')));
+                teamcityLog.info(QString("##teamcity[testFinished name='%1 : %2']").arg(testState->getTestRef()->getSuite()->getName(), testState->getTestRef()->getShortName()));
             } else {
                 QString err;
-                GTestEnvironment * newEnv = new GTestEnvironment();
+                GTestEnvironment *newEnv = new GTestEnvironment();
                 //caching newly created environment. will be deleted in cleanup()
-                mergedSuites.push_back( newEnv );
-                GTestEnvironment * testParentEnv = testState->getTestRef()->getSuite()->getEnv();
+                mergedSuites.push_back(newEnv);
+                GTestEnvironment *testParentEnv = testState->getTestRef()->getSuite()->getEnv();
                 QMap<QString, QString> parentVars = testParentEnv->getVars();
                 QList<QString> parentVarsNames = parentVars.keys();
-                foreach( const QString & parentVar, parentVarsNames ) {
-                    newEnv->setVar( parentVar, parentVars[parentVar] );
+                foreach (const QString &parentVar, parentVarsNames) {
+                    newEnv->setVar(parentVar, parentVars[parentVar]);
                 }
 
                 //overriding existing variables with global ones
                 QMap<QString, QString> globalEnvVars = env->getVars();
-                foreach( QString var, globalEnvVars.keys() ) {
-                    newEnv->setVar( var, globalEnvVars[var] );
+                foreach (QString var, globalEnvVars.keys()) {
+                    newEnv->setVar(var, globalEnvVars[var]);
                 }
 
                 // Set environment variables
-                const QString& suiteDir = QFileInfo(testState->getTestRef()->getSuite()->getURL()).absoluteDir().absolutePath();
+                const QString &suiteDir = QFileInfo(testState->getTestRef()->getSuite()->getURL()).absoluteDir().absolutePath();
                 if (newEnv->getVars().contains("COMMON_DATA_DIR")) {
                     newEnv->setVar("COMMON_DATA_DIR", suiteDir + newEnv->getVar("COMMON_DATA_DIR"));
                 }
@@ -162,17 +160,17 @@ QList<Task*> TestRunnerTask::onSubTaskFinished(Task* subTask) {
                 QString ugeneSamplesPath = ugeneDataPath + "/samples/";
                 newEnv->setVar("SAMPLE_DATA_DIR", ugeneSamplesPath);
 
-                const QString& testCaseDir = QFileInfo(testState->getTestRef()->getURL()).absoluteDir().absolutePath();
+                const QString &testCaseDir = QFileInfo(testState->getTestRef()->getURL()).absoluteDir().absolutePath();
                 newEnv->setVar("LOCAL_DATA_DIR", testCaseDir + "/_input/");
                 newEnv->setVar("EXPECTED_OUTPUT_DIR", testCaseDir + "/_expected/");
 
                 // Create the test
-                GTest* test = tf->createTest(testState->getTestRef()->getShortName(), NULL, newEnv, loader->testData, err);
+                GTest *test = tf->createTest(testState->getTestRef()->getShortName(), NULL, newEnv, loader->testData, err);
                 if (test == NULL) {
                     testState->setFailed(err);
-                    teamcityLog.info(QString("##teamcity[testStarted name='%1 : %2']").arg(testState->getTestRef()->getSuite()->getName(),testState->getTestRef()->getShortName()));
-                    teamcityLog.info(QString("##teamcity[testFailed name='%1 : %2' message='%3' details='%3']").arg(testState->getTestRef()->getSuite()->getName(),testState->getTestRef()->getShortName(),QString(testState->getErrorMessage()).replace("'","|'").replace('\n',' ')));
-                    teamcityLog.info(QString("##teamcity[testFinished name='%1 : %2']").arg(testState->getTestRef()->getSuite()->getName(),testState->getTestRef()->getShortName()));
+                    teamcityLog.info(QString("##teamcity[testStarted name='%1 : %2']").arg(testState->getTestRef()->getSuite()->getName(), testState->getTestRef()->getShortName()));
+                    teamcityLog.info(QString("##teamcity[testFailed name='%1 : %2' message='%3' details='%3']").arg(testState->getTestRef()->getSuite()->getName(), testState->getTestRef()->getShortName(), QString(testState->getErrorMessage()).replace("'", "|'").replace('\n', ' ')));
+                    teamcityLog.info(QString("##teamcity[testFinished name='%1 : %2']").arg(testState->getTestRef()->getSuite()->getName(), testState->getTestRef()->getShortName()));
                 } else {
                     int testTimeout = testState->getTestRef()->getSuite()->getTestTimeout();
                     test->setTimeOut(testTimeout);
@@ -191,27 +189,24 @@ QList<Task*> TestRunnerTask::onSubTaskFinished(Task* subTask) {
 }
 
 void TestRunnerTask::cleanup() {
-    qDeleteAll( mergedSuites );
+    qDeleteAll(mergedSuites);
     mergedSuites.clear();
     Task::cleanup();
 }
 
-
-LoadTestTask::LoadTestTask(GTestState* _testState)
-: Task( tr("TestLoader for %1").arg(_testState->getTestRef()->getShortName()), TaskFlag_None), testState(_testState)
-{
+LoadTestTask::LoadTestTask(GTestState *_testState)
+    : Task(tr("TestLoader for %1").arg(_testState->getTestRef()->getShortName()), TaskFlag_None), testState(_testState) {
 }
 
 void LoadTestTask::run() {
-    const QString& url = testState->getTestRef()->getURL();
+    const QString &url = testState->getTestRef()->getURL();
     QFile f(url);
     if (!f.open(QIODevice::ReadOnly)) {
-        stateInfo.setError(  tr("Cannot open file: %1").arg(url) );
+        stateInfo.setError(tr("Cannot open file: %1").arg(url));
         return;
     }
     testData = f.readAll();
     f.close();
 }
 
-
-} //namespace
+}    // namespace U2

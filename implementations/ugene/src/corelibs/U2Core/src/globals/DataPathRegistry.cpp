@@ -19,29 +19,28 @@
  * MA 02110-1301, USA.
  */
 
+#include "DataPathRegistry.h"
+
 #include <QFile>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/Settings.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "DataPathRegistry.h"
-
 namespace U2 {
 
 ////////////////////////////////////////
 //U2DataPath
-U2DataPath::U2DataPath(const QString& _name, const QString& _path, const QString& _descr, Options _options)
+U2DataPath::U2DataPath(const QString &_name, const QString &_path, const QString &_descr, Options _options)
     : name(_name),
       path(_path),
-      description (_descr),
+      description(_descr),
       options(_options),
-      valid(false)
-{
+      valid(false) {
     init();
 }
 
-QString U2DataPath::getPathByName(const QString &name) const{
+QString U2DataPath::getPathByName(const QString &name) const {
     QString res = "";
 
     if (dataItems.contains(name)) {
@@ -51,11 +50,11 @@ QString U2DataPath::getPathByName(const QString &name) const{
     return res;
 }
 
-bool U2DataPath::operator ==(const U2DataPath &other) const {
+bool U2DataPath::operator==(const U2DataPath &other) const {
     return (name == other.name) && (options == other.options);
 }
 
-bool U2DataPath::operator !=(const U2DataPath &other) const {
+bool U2DataPath::operator!=(const U2DataPath &other) const {
     return !(*this == other);
 }
 
@@ -86,7 +85,7 @@ void U2DataPath::init() {
 }
 
 void U2DataPath::fillDataItems(const QDir &dir, bool recursive) {
-    QFileInfoList infoList = dir.entryInfoList( QDir::Dirs | QDir::NoDotAndDotDot | QDir::Files);
+    QFileInfoList infoList = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Files);
 
     foreach (const QFileInfo &fi, infoList) {
         if (fi.isFile()) {
@@ -168,7 +167,7 @@ U2DataPathRegistry::~U2DataPathRegistry() {
     qDeleteAll(registry.values());
 }
 
-U2DataPath *U2DataPathRegistry::getDataPathByName(const QString& name) {
+U2DataPath *U2DataPathRegistry::getDataPathByName(const QString &name) {
     return registry.value(name, NULL);
 }
 
@@ -189,4 +188,4 @@ void U2DataPathRegistry::unregisterEntry(const QString &name) {
 QList<U2DataPath *> U2DataPathRegistry::getAllEntries() const {
     return registry.values();
 }
-}//namespace
+}    // namespace U2

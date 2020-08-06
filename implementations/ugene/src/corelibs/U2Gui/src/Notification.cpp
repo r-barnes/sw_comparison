@@ -19,24 +19,24 @@
  * MA 02110-1301, USA.
  */
 
+#include "Notification.h"
+
 #include <QApplication>
 #include <QStatusBar>
 #include <QTextBrowser>
 #include <QTime>
 
 #include <U2Core/AppContext.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/U2SafePoints.h>
 
-#include <U2Core/QObjectScopedPointer.h>
-
 #include "MainWindow.h"
-#include "Notification.h"
 
 namespace U2 {
 
-Notification::Notification(const QString &message, NotificationType _type, QAction *_action) :
-    QLabel(qobject_cast<QWidget *>(AppContext::getMainWindow())),
-    action(_action), type(_type) {
+Notification::Notification(const QString &message, NotificationType _type, QAction *_action)
+    : QLabel(qobject_cast<QWidget *>(AppContext::getMainWindow())),
+      action(_action), type(_type) {
     setMinimumWidth(TT_WIDTH);
     setMaximumWidth(TT_WIDTH);
     setMaximumHeight(TT_HEIGHT);
@@ -50,10 +50,10 @@ Notification::Notification(const QString &message, NotificationType _type, QActi
     setLayout(h);
     counter = 1;
 
-    QFontMetrics metrics(font(),this);
-    setText(metrics.elidedText(text, Qt::ElideRight, width()-50));
+    QFontMetrics metrics(font(), this);
+    setText(metrics.elidedText(text, Qt::ElideRight, width() - 50));
     setToolTip(text);
-    
+
     generateCSS(false);
     generateCSSforCloseButton(false);
 
@@ -65,7 +65,7 @@ Notification::Notification(const QString &message, NotificationType _type, QActi
     setMouseTracking(true);
 
     close->setAttribute(Qt::WA_Hover);
-    close->setFixedSize(16,16);
+    close->setFixedSize(16, 16);
 }
 
 void Notification::generateCSS(bool isHovered) {
@@ -73,27 +73,32 @@ void Notification::generateCSS(bool isHovered) {
     QString img;
     QString fontColor;
     QString border;
-    switch(type) {
-        case Info_Not: bgColor = "background-color: #BDE5F8;";
-            fontColor = "color: #00529B;";
-            img = "background-image: url(':core/images/info_notification.png');";
-            break;
-        case Error_Not: bgColor = "background-color: #FFBABA;";
-            fontColor = "color: #D8000C;";
-            img = "background-image: url(':core/images/error_notification.png');";
-            break;
-        case Report_Not: bgColor = "background-color: #BDE5F8;";
-            fontColor = "color: #00529B;";
-            img = "background-image: url(':core/images/info_notification.png');";
-            break;
-        case Warning_Not : bgColor = "background-color: #FCF8E3;";
-            fontColor = "color: #C09853;";
-            img = "background-image: url(':core/images/warning_notification.png');";
-            break;
-        default: assert(0);
+    switch (type) {
+    case Info_Not:
+        bgColor = "background-color: #BDE5F8;";
+        fontColor = "color: #00529B;";
+        img = "background-image: url(':core/images/info_notification.png');";
+        break;
+    case Error_Not:
+        bgColor = "background-color: #FFBABA;";
+        fontColor = "color: #D8000C;";
+        img = "background-image: url(':core/images/error_notification.png');";
+        break;
+    case Report_Not:
+        bgColor = "background-color: #BDE5F8;";
+        fontColor = "color: #00529B;";
+        img = "background-image: url(':core/images/info_notification.png');";
+        break;
+    case Warning_Not:
+        bgColor = "background-color: #FCF8E3;";
+        fontColor = "color: #C09853;";
+        img = "background-image: url(':core/images/warning_notification.png');";
+        break;
+    default:
+        assert(0);
     }
 
-    if(isHovered) {
+    if (isHovered) {
         border = "border: 2px solid;";
     } else {
         border = "border: 1px solid;";
@@ -114,14 +119,14 @@ void Notification::generateCSS(bool isHovered) {
 void Notification::generateCSSforCloseButton(bool isHovered) {
     QString css;
     QString background;
-    if(isHovered) {
+    if (isHovered) {
         css = "border: 1px solid;";
         background = "background-color: #C0C0C0;";
     } else {
         css = "border: none;";
         background = "background-color: transparent;";
     }
-    
+
     css.append("border-radius: 3px;");
     css.append("background-position: center center;");
     css.append("padding: 2px 2px 2px 2px;");
@@ -131,28 +136,28 @@ void Notification::generateCSSforCloseButton(bool isHovered) {
 }
 
 bool Notification::event(QEvent *e) {
-    if(e->type() == QEvent::ToolTip) {
+    if (e->type() == QEvent::ToolTip) {
         QHelpEvent *hEvent = static_cast<QHelpEvent *>(e);
         QToolTip::showText(hEvent->globalPos(), QString(text));
         return true;
     }
-    if(e->type() == QEvent::HoverEnter) {
+    if (e->type() == QEvent::HoverEnter) {
         generateCSS(true);
     }
-    if(e->type() == QEvent::HoverLeave) {
+    if (e->type() == QEvent::HoverLeave) {
         generateCSS(false);
     }
     return QWidget::event(e);
 }
 
 void Notification::mousePressEvent(QMouseEvent *ev) {
-    if(ev->button() == Qt::LeftButton) {
-        if(timer.isActive()) {
+    if (ev->button() == Qt::LeftButton) {
+        if (timer.isActive()) {
             dissapear();
         }
-        if(action) {
+        if (action) {
             action->trigger();
-        } else if(!timer.isActive()){
+        } else if (!timer.isActive()) {
             QObjectScopedPointer<QDialog> dlg = new QDialog(AppContext::getMainWindow()->getQMainWindow());
             dlg->setObjectName("NotificationDialog");
             QVBoxLayout vLayout;
@@ -188,7 +193,7 @@ void Notification::mousePressEvent(QMouseEvent *ev) {
             CHECK(!dlg.isNull(), );
 
             if (QDialog::Accepted == dialogResult) {
-                if(isDelete.isChecked()) {
+                if (isDelete.isChecked()) {
                     emit si_delete();
                 }
             }
@@ -200,18 +205,16 @@ void Notification::mousePressEvent(QMouseEvent *ev) {
     }
 }
 
-
-
 bool Notification::eventFilter(QObject *, QEvent *event) {
-    if(event->type() == QEvent::MouseButtonPress) {
-        QMouseEvent *e= static_cast<QMouseEvent*>(event);
-        if(e->button() == Qt::LeftButton) {
+    if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *e = static_cast<QMouseEvent *>(event);
+        if (e->button() == Qt::LeftButton) {
             emit si_delete();
             return true;
         }
-    } else if(event->type() == QEvent::HoverEnter) {
+    } else if (event->type() == QEvent::HoverEnter) {
         generateCSSforCloseButton(true);
-    } else if(event->type() == QEvent::HoverLeave) {
+    } else if (event->type() == QEvent::HoverLeave) {
         generateCSSforCloseButton(false);
     }
     return false;
@@ -223,7 +226,7 @@ void Notification::showNotification(int x, int y) {
     connect(&timer, SIGNAL(timeout()), SLOT(sl_timeout()));
     timer.start();
     show();
-    move(x,y);
+    move(x, y);
     resize(TT_WIDTH, 0);
 }
 
@@ -239,15 +242,14 @@ void Notification::dissapear() {
     emit si_dissapear();
 }
 
-
 void Notification::sl_timeout() {
     QRect rect = geometry();
-    if(rect.height() >= TT_HEIGHT) {
+    if (rect.height() >= TT_HEIGHT) {
         ++timeCounter;
-        if(timeCounter > 250) {
+        if (timeCounter > 250) {
             dissapear();
         }
-    } else {        
+    } else {
         move(rect.topLeft().x(), rect.topLeft().y() - 10);
         resize(TT_WIDTH, rect.height() + 10 > TT_HEIGHT ? TT_HEIGHT : rect.height() + 10);
     }
@@ -261,29 +263,29 @@ NotificationType Notification::getType() const {
     return type;
 }
 
-void Notification::increaseCounter(){
+void Notification::increaseCounter() {
     counter++;
-    QFontMetrics metrics(font(),this);
+    QFontMetrics metrics(font(), this);
     QString addText = "(" + QString::number(counter) + ")";
     int cWidth = metrics.width(addText);
-    setText(metrics.elidedText(text, Qt::ElideRight, width()-50 - cWidth ) + addText);
+    setText(metrics.elidedText(text, Qt::ElideRight, width() - 50 - cWidth) + addText);
 }
 
-NotificationStack::NotificationStack(QObject *o /* = NULL */): QObject(o), notificationPosition(0), notificationNumber(0) {
+NotificationStack::NotificationStack(QObject *o /* = NULL */)
+    : QObject(o), notificationPosition(0), notificationNumber(0) {
     w = new NotificationWidget(AppContext::getMainWindow()->getQMainWindow());
 }
 
-
 NotificationStack::~NotificationStack() {
-    foreach(Notification* t, notifications) {
+    foreach (Notification *t, notifications) {
         delete t;
     }
     delete w;
 }
 
 bool NotificationStack::hasError() const {
-    foreach(Notification *n, notifications) {
-        if(n->getType() == Error_Not) {
+    foreach (Notification *n, notifications) {
+        if (n->getType() == Error_Not) {
             return true;
         }
     }
@@ -291,18 +293,18 @@ bool NotificationStack::hasError() const {
 }
 
 void NotificationStack::addNotification(Notification *t) {
-    foreach(Notification *nt, notificationsOnScreen) {
-        if(nt->getText().split("]")[1] == t->getText().split("]")[1]) { //there is always minimum one ']' symbol
+    foreach (Notification *nt, notificationsOnScreen) {
+        if (nt->getText().split("]")[1] == t->getText().split("]")[1]) {    //there is always minimum one ']' symbol
             nt->increaseCounter();
             delete t;
             return;
         }
     }
 
-    if(notifications.count() >= MAX_NOTIFICATION) {
+    if (notifications.count() >= MAX_NOTIFICATION) {
         Notification *toRemove = notifications.takeAt(0);
-        if(!notificationsOnScreen.removeOne(toRemove)) {
-            if(notificationsOnScreen.contains(toRemove)) {
+        if (!notificationsOnScreen.removeOne(toRemove)) {
+            if (notificationsOnScreen.contains(toRemove)) {
                 notificationsOnScreen.removeOne(toRemove);
                 toRemove->deleteLater();
             }
@@ -316,7 +318,7 @@ void NotificationStack::addNotification(Notification *t) {
         notificationsOnScreen.append(t);
     }
     emit si_changed();
-    
+
     connect(t, SIGNAL(si_delete()), this, SLOT(sl_delete()), Qt::DirectConnection);
     if (onScreen || isModalWidgetActive) {
         QPoint pos = getBottomRightOfMainWindow();
@@ -331,13 +333,13 @@ void NotificationStack::addNotification(Notification *t) {
 
 void NotificationStack::sl_notificationDissapear() {
     notificationNumber = qMax(0, notificationNumber - 1);
-    notificationPosition = qMax(0, notificationPosition  - TT_HEIGHT);
+    notificationPosition = qMax(0, notificationPosition - TT_HEIGHT);
 
-    Notification *t = qobject_cast<Notification*>(sender());
+    Notification *t = qobject_cast<Notification *>(sender());
     addToNotificationWidget(t);
 }
 
-void NotificationStack::addToNotificationWidget(Notification* t) {
+void NotificationStack::addToNotificationWidget(Notification *t) {
     t->switchEmbeddedVisualState();
     t->show();
     t->setParent(w);
@@ -346,7 +348,7 @@ void NotificationStack::addToNotificationWidget(Notification* t) {
 }
 
 void NotificationStack::sl_delete() {
-    Notification *t = qobject_cast<Notification*>(sender());
+    Notification *t = qobject_cast<Notification *>(sender());
     int i = notifications.indexOf(t);
     assert(i != -1);
     w->removeNotification(t);
@@ -363,7 +365,7 @@ Notification *NotificationStack::getNotification(int row) const {
     return notifications[row];
 }
 
-QList <Notification *> NotificationStack::getItems() const {
+QList<Notification *> NotificationStack::getItems() const {
     return notifications;
 }
 
@@ -379,11 +381,10 @@ void NotificationStack::setFixed(bool val) {
     w->setFixed(val);
 }
 
-void NotificationStack::addNotification(const QString& message, NotificationType type, QAction *action) {
+void NotificationStack::addNotification(const QString &message, NotificationType type, QAction *action) {
     Notification *n = new Notification(message, type, action);
     AppContext::getMainWindow()->getNotificationStack()->addNotification(n);
 }
-
 
 QPoint NotificationStack::getBottomRightOfMainWindow() {
     QPoint pos;
@@ -392,12 +393,12 @@ QPoint NotificationStack::getBottomRightOfMainWindow() {
     pos = AppContext::getMainWindow()->getQMainWindow()->geometry().bottomRight();
 #else
     // Widget's rect doesn't know its real position on the screen. Lets calculate it manually.
-    QPoint topLeft = AppContext::getMainWindow()->getQMainWindow()->mapToGlobal(QPoint(0,0));
+    QPoint topLeft = AppContext::getMainWindow()->getQMainWindow()->mapToGlobal(QPoint(0, 0));
     QSize mainWindowSize = AppContext::getMainWindow()->getQMainWindow()->geometry().size();
-    pos = QPoint(topLeft.x() + mainWindowSize.width(), topLeft.y() + mainWindowSize.height());  // bottom right
-    pos -= QPoint(4, 27);  // Some space for the statusbar and window's edge.
+    pos = QPoint(topLeft.x() + mainWindowSize.width(), topLeft.y() + mainWindowSize.height());    // bottom right
+    pos -= QPoint(4, 27);    // Some space for the statusbar and window's edge.
 #endif
     return pos;
 }
 
-}
+}    // namespace U2

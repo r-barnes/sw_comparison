@@ -34,7 +34,7 @@ class U2SequenceObject;
 class HmmerSupport : public ExternalTool {
     Q_OBJECT
 public:
-    HmmerSupport(const QString& id, const QString &name);
+    HmmerSupport(const QString &id, const QString &name);
 
     static const QString BUILD_TOOL;
     static const QString BUILD_TOOL_ID;
@@ -79,8 +79,8 @@ private slots:
 private:
     void initViewContext(GObjectView *view);
 
-    QWidget * getParentWidget(QObject *sender);
-    U2SequenceObject * getSequenceInFocus(QObject *sender);
+    QWidget *getParentWidget(QObject *sender);
+    U2SequenceObject *getSequenceInFocus(QObject *sender);
 };
 
 class HmmerContext : public QObject {
@@ -99,11 +99,12 @@ class Hmmer3LogParser : public ExternalToolLogParser {
     Q_DISABLE_COPY(Hmmer3LogParser)
 public:
     Hmmer3LogParser();
-    void parseErrOutput(const QString& partOfLog);
+    void parseErrOutput(const QString &partOfLog);
+
 private:
     QString lastErrLine;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_HMMER_SUPPORT_H_
+#endif    // _U2_HMMER_SUPPORT_H_

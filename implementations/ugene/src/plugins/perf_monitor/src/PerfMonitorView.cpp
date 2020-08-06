@@ -21,18 +21,18 @@
 
 #include "PerfMonitorView.h"
 
+#include <QVBoxLayout>
+
 #include <U2Core/Counter.h>
 #include <U2Core/Timer.h>
 
-#include <QVBoxLayout>
-
 #ifdef Q_OS_LINUX
-#include <stdio.h>
-#include <sys/sysinfo.h>
+#    include <stdio.h>
+#    include <sys/sysinfo.h>
 #endif
 
 #ifdef Q_OS_WIN32
-#include <Psapi.h>
+#    include <Psapi.h>
 #endif
 
 namespace U2 {
@@ -46,7 +46,8 @@ static GCounter virtMemoryCounter("PerfMonitor::VIRTmemoryUsage", "mbytes", 1048
 static GCounter memoryCounter("PerfMonitor::memoryUsage", "mbytes", 1048576);
 #endif
 
-PerfMonitorView::PerfMonitorView() : MWMDIWindow(tr("Application counters")){
+PerfMonitorView::PerfMonitorView()
+    : MWMDIWindow(tr("Application counters")) {
     tree = new QTreeWidget();
     tree->setColumnCount(3);
     tree->setSortingEnabled(true);
@@ -56,7 +57,7 @@ PerfMonitorView::PerfMonitorView() : MWMDIWindow(tr("Application counters")){
     tree->headerItem()->setText(1, tr("Value"));
     tree->headerItem()->setText(2, tr("Scale"));
 
-    QVBoxLayout* l = new QVBoxLayout();
+    QVBoxLayout *l = new QVBoxLayout();
     l->setMargin(0);
     l->addWidget(tree);
     setLayout(l);
@@ -67,11 +68,11 @@ PerfMonitorView::PerfMonitorView() : MWMDIWindow(tr("Application counters")){
     struct sysinfo usage;
     sysinfo(&usage);
     virtMemoryCounter.totalCount = usage.totalram;
-    rssMemoryCounter.totalCount = 0; // not supported
+    rssMemoryCounter.totalCount = 0;    // not supported
 #endif
 #ifdef Q_OS_WIN32
     PROCESS_MEMORY_COUNTERS memCounter;
-    bool result = GetProcessMemoryInfo(GetCurrentProcess(), &memCounter, sizeof( memCounter ));
+    bool result = GetProcessMemoryInfo(GetCurrentProcess(), &memCounter, sizeof(memCounter));
     memoryCounter.totalCount = memCounter.WorkingSetSize;
 #endif
 
@@ -86,20 +87,20 @@ void PerfMonitorView::timerEvent(QTimerEvent *) {
     struct sysinfo usage;
     sysinfo(&usage);
     virtMemoryCounter.totalCount = usage.totalram;
-    rssMemoryCounter.totalCount = 0; // not supported
+    rssMemoryCounter.totalCount = 0;    // not supported
 #endif
 #ifdef Q_OS_WIN32
     PROCESS_MEMORY_COUNTERS memCounter;
-    bool result = GetProcessMemoryInfo(GetCurrentProcess(), &memCounter, sizeof( memCounter ));
+    bool result = GetProcessMemoryInfo(GetCurrentProcess(), &memCounter, sizeof(memCounter));
     memoryCounter.totalCount = memCounter.WorkingSetSize;
 #endif
     updateCounters();
 }
 
 void PerfMonitorView::updateCounters() {
-    foreach(GCounter* c, GCounter::allCounters()) {
-        PerfTreeItem* ci = findCounterItem(c);
-        if (ci!=NULL) {
+    foreach (GCounter *c, GCounter::allCounters()) {
+        PerfTreeItem *ci = findCounterItem(c);
+        if (ci != NULL) {
             ci->updateVisual();
         } else {
             ci = new PerfTreeItem(c);
@@ -108,9 +109,9 @@ void PerfMonitorView::updateCounters() {
     }
 }
 
-PerfTreeItem* PerfMonitorView::findCounterItem(const GCounter* c) const {
-    for (int i=0, n = tree->topLevelItemCount(); i<n; i++) {
-        PerfTreeItem* ci = static_cast<PerfTreeItem*>(tree->topLevelItem(i));
+PerfTreeItem *PerfMonitorView::findCounterItem(const GCounter *c) const {
+    for (int i = 0, n = tree->topLevelItemCount(); i < n; i++) {
+        PerfTreeItem *ci = static_cast<PerfTreeItem *>(tree->topLevelItem(i));
         if (ci->counter == c) {
             return ci;
         }
@@ -118,7 +119,8 @@ PerfTreeItem* PerfMonitorView::findCounterItem(const GCounter* c) const {
     return NULL;
 }
 
-PerfTreeItem::PerfTreeItem(GCounter* c) : counter(c) {
+PerfTreeItem::PerfTreeItem(GCounter *c)
+    : counter(c) {
     updateVisual();
 }
 
@@ -127,4 +129,4 @@ void PerfTreeItem::updateVisual() {
     setText(1, QString::number(counter->scaledTotal()));
     setText(2, counter->suffix);
 }
-} //namespace
+}    // namespace U2

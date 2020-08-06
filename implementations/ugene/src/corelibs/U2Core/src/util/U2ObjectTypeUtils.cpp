@@ -19,69 +19,67 @@
  * MA 02110-1301, USA.
  */
 
+#include "U2ObjectTypeUtils.h"
+
 #include <U2Core/GObjectTypes.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "U2ObjectTypeUtils.h"
-
 namespace U2 {
 
-GObjectType U2ObjectTypeUtils::toGObjectType( const U2DataType &dbType ) {
+GObjectType U2ObjectTypeUtils::toGObjectType(const U2DataType &dbType) {
     GObjectType result = GObjectTypes::UNKNOWN;
-    if ( U2Type::Sequence == dbType ) {
+    if (U2Type::Sequence == dbType) {
         result = GObjectTypes::SEQUENCE;
-    } else if ( U2Type::AnnotationTable == dbType ) {
+    } else if (U2Type::AnnotationTable == dbType) {
         result = GObjectTypes::ANNOTATION_TABLE;
-    } else if ( U2Type::PhyTree == dbType ) {
+    } else if (U2Type::PhyTree == dbType) {
         result = GObjectTypes::PHYLOGENETIC_TREE;
-    } else if ( U2Type::Chromatogram == dbType ) {
+    } else if (U2Type::Chromatogram == dbType) {
         result = GObjectTypes::CHROMATOGRAM;
-    } else if ( U2Type::BioStruct3D == dbType ) {
+    } else if (U2Type::BioStruct3D == dbType) {
         result = GObjectTypes::BIOSTRUCTURE_3D;
-    } else if ( U2Type::Assembly == dbType ) {
+    } else if (U2Type::Assembly == dbType) {
         result = GObjectTypes::ASSEMBLY;
-    } else if ( U2Type::Mca == dbType ) {
+    } else if (U2Type::Mca == dbType) {
         result = GObjectTypes::MULTIPLE_CHROMATOGRAM_ALIGNMENT;
-    } else if ( U2Type::Msa == dbType ) {
+    } else if (U2Type::Msa == dbType) {
         result = GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT;
-    } else if ( U2Type::VariantTrack == dbType ) {
+    } else if (U2Type::VariantTrack == dbType) {
         result = GObjectTypes::VARIANT_TRACK;
-    } else if ( U2Type::Text == dbType ) {
+    } else if (U2Type::Text == dbType) {
         result = GObjectTypes::TEXT;
     }
 
-    SAFE_POINT( GObjectTypes::UNKNOWN != result, "Unsupported object relation type detected!",
-        result );
+    SAFE_POINT(GObjectTypes::UNKNOWN != result, "Unsupported object relation type detected!", result);
     return result;
 }
 
-U2DataType U2ObjectTypeUtils::toDataType( const GObjectType &gType ) {
+U2DataType U2ObjectTypeUtils::toDataType(const GObjectType &gType) {
     U2DataType result = U2Type::Unknown;
-    if ( GObjectTypes::SEQUENCE == gType ) {
+    if (GObjectTypes::SEQUENCE == gType) {
         result = U2Type::Sequence;
-    } else if ( GObjectTypes::ANNOTATION_TABLE == gType ) {
+    } else if (GObjectTypes::ANNOTATION_TABLE == gType) {
         result = U2Type::AnnotationTable;
-    } else if ( GObjectTypes::PHYLOGENETIC_TREE == gType ) {
+    } else if (GObjectTypes::PHYLOGENETIC_TREE == gType) {
         result = U2Type::PhyTree;
-    } else if ( GObjectTypes::CHROMATOGRAM == gType ) {
+    } else if (GObjectTypes::CHROMATOGRAM == gType) {
         result = U2Type::Chromatogram;
-    } else if ( GObjectTypes::BIOSTRUCTURE_3D == gType ) {
+    } else if (GObjectTypes::BIOSTRUCTURE_3D == gType) {
         result = U2Type::BioStruct3D;
-    } else if ( GObjectTypes::ASSEMBLY == gType ) {
+    } else if (GObjectTypes::ASSEMBLY == gType) {
         result = U2Type::Assembly;
-    } else if ( GObjectTypes::MULTIPLE_CHROMATOGRAM_ALIGNMENT == gType ) {
+    } else if (GObjectTypes::MULTIPLE_CHROMATOGRAM_ALIGNMENT == gType) {
         result = U2Type::Mca;
-    } else if ( GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT == gType ) {
+    } else if (GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT == gType) {
         result = U2Type::Msa;
-    } else if ( GObjectTypes::VARIANT_TRACK == gType ) {
+    } else if (GObjectTypes::VARIANT_TRACK == gType) {
         result = U2Type::VariantTrack;
-    } else if ( GObjectTypes::TEXT == gType ) {
+    } else if (GObjectTypes::TEXT == gType) {
         result = U2Type::Text;
     }
 
-    SAFE_POINT( U2Type::Unknown != result, "Unsupported object relation type detected!",
-        result );
+    SAFE_POINT(U2Type::Unknown != result, "Unsupported object relation type detected!", result);
     return result;
 }
 
-} // namespace U2
+}    // namespace U2

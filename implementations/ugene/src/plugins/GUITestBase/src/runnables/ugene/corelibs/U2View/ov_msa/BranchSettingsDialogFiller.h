@@ -24,16 +24,17 @@
 
 #include "utils/GTUtilsDialog.h"
 
-namespace U2{
+namespace U2 {
 using namespace HI;
 
-class BranchSettingsDialogFiller : public Filler
-{
+class BranchSettingsDialogFiller : public Filler {
 public:
-    BranchSettingsDialogFiller(HI::GUITestOpStatus &os) : Filler(os,"BranchSettingsDialog"){}
+    BranchSettingsDialogFiller(HI::GUITestOpStatus &os)
+        : Filler(os, "BranchSettingsDialog") {
+    }
     void commonScenario();
 };
 
-}
+}    // namespace U2
 
-#endif // BRANCHSETTINGSDIALOGFILLER_H
+#endif    // BRANCHSETTINGSDIALOGFILLER_H

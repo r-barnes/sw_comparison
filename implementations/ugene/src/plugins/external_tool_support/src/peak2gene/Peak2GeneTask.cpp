@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "Peak2GeneTask.h"
+
 #include <QDir>
 
 #include <U2Core/AnnotationTableObject.h>
@@ -44,7 +46,6 @@
 #include "Gene2PeakFormatLoader.h"
 #include "Peak2GeneFormatLoader.h"
 #include "Peak2GeneSupport.h"
-#include "Peak2GeneTask.h"
 
 namespace U2 {
 
@@ -52,17 +53,8 @@ const QString Peak2GeneTask::BASE_DIR_NAME("peak2gene_tmp");
 const QString Peak2GeneTask::BASE_SUBDIR_NAME("peak2gene");
 const QString Peak2GeneTask::TREAT_NAME("treatment");
 
-Peak2GeneTask::Peak2GeneTask(const Peak2GeneSettings& settings, Workflow::DbiDataStorage *storage, const QList<Workflow::SharedDbiDataHandler>& treatAnn)
-: ExternalToolSupportTask("Peak2gene annotation", TaskFlag_CollectChildrenWarnings)
-, settings(settings)
-, storage(storage)
-, treatAnn(treatAnn)
-, treatDoc(NULL)
-, genesAto(NULL)
-, peaksAto(NULL)
-, treatTask(NULL)
-, etTask(NULL)
-{
+Peak2GeneTask::Peak2GeneTask(const Peak2GeneSettings &settings, Workflow::DbiDataStorage *storage, const QList<Workflow::SharedDbiDataHandler> &treatAnn)
+    : ExternalToolSupportTask("Peak2gene annotation", TaskFlag_CollectChildrenWarnings), settings(settings), storage(storage), treatAnn(treatAnn), treatDoc(NULL), genesAto(NULL), peaksAto(NULL), treatTask(NULL), etTask(NULL) {
     GCOUNTER(cvar, tvar, "NGS:Peak2GeneTask");
     SAFE_POINT_EXT(NULL != storage, setError(L10N::nullPointerError("workflow data storage")), );
 }
@@ -84,8 +76,8 @@ void Peak2GeneTask::cleanup() {
     //remove tmp files
     QString tmpDirPath = AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath(BASE_DIR_NAME);
     QDir tmpDir(tmpDirPath);
-    if(tmpDir.exists()){
-        foreach(QString file, tmpDir.entryList()){
+    if (tmpDir.exists()) {
+        foreach (QString file, tmpDir.entryList()) {
             tmpDir.remove(file);
         }
     }
@@ -103,10 +95,10 @@ void Peak2GeneTask::prepare() {
     addSubTask(treatTask);
 }
 
-Document* Peak2GeneTask::createDoc( const QList<Workflow::SharedDbiDataHandler>& annData, const QString& name){
-    Document* doc = NULL;
+Document *Peak2GeneTask::createDoc(const QList<Workflow::SharedDbiDataHandler> &annData, const QString &name) {
+    Document *doc = NULL;
 
-    QString docUrl = workingDir + "/" + name +".bed";
+    QString docUrl = workingDir + "/" + name + ".bed";
 
     DocumentFormat *bedFormat = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::BED);
     CHECK_EXT(NULL != bedFormat, stateInfo.setError("NULL bed format"), doc);
@@ -124,19 +116,18 @@ Document* Peak2GeneTask::createDoc( const QList<Workflow::SharedDbiDataHandler>&
     return doc;
 }
 
-QList<Task*> Peak2GeneTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> result;
+QList<Task *> Peak2GeneTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> result;
     CHECK(!subTask->isCanceled(), result);
     CHECK(!subTask->hasError(), result);
 
     if (treatTask == subTask) {
-            QStringList args = settings.getArguments(treatDoc->getURLString());
+        QStringList args = settings.getArguments(treatDoc->getURLString());
 
-            etTask = new ExternalToolRunTask(Peak2GeneSupport::ET_PEAK2GENE_ID, args, new ExternalToolLogParser(), workingDir);
-            setListenerForTask(etTask);
-            result << etTask;
-    }
-    else if (subTask == etTask) {
+        etTask = new ExternalToolRunTask(Peak2GeneSupport::ET_PEAK2GENE_ID, args, new ExternalToolLogParser(), workingDir);
+        setListenerForTask(etTask);
+        result << etTask;
+    } else if (subTask == etTask) {
         //read annotations
         genesUrl = workingDir + "/" + Peak2GeneSettings::DEFAULT_NAME + "_gene_annotation.txt";
         peaksUrl = workingDir + "/" + Peak2GeneSettings::DEFAULT_NAME + "_peaks_annotation.txt";
@@ -167,15 +158,15 @@ void Peak2GeneTask::run() {
     peaksAto->addAnnotations(peakAnnotations);
 }
 
-const Peak2GeneSettings& Peak2GeneTask::getSettings() const{
+const Peak2GeneSettings &Peak2GeneTask::getSettings() const {
     return settings;
 }
 
-AnnotationTableObject * Peak2GeneTask::getGenes() const {
+AnnotationTableObject *Peak2GeneTask::getGenes() const {
     return genesAto;
 }
 
-AnnotationTableObject * Peak2GeneTask::getPeaks() const {
+AnnotationTableObject *Peak2GeneTask::getPeaks() const {
     return peaksAto;
 }
 
@@ -187,4 +178,4 @@ const QString &Peak2GeneTask::getPeaksUrl() const {
     return genesUrl;
 }
 
-} // U2
+}    // namespace U2

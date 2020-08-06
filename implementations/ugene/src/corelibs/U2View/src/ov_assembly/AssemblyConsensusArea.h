@@ -22,24 +22,27 @@
 #ifndef __ASSEMBLY_CONSENSUS_AREA_H__
 #define __ASSEMBLY_CONSENSUS_AREA_H__
 
-#include "AssemblyReferenceArea.h"
-#include "AssemblyConsensusTask.h"
+#include <U2Algorithm/AssemblyConsensusAlgorithm.h>
 
 #include <U2Core/BackgroundTaskRunner.h>
-#include <U2Algorithm/AssemblyConsensusAlgorithm.h>
+
+#include "AssemblyConsensusTask.h"
+#include "AssemblyReferenceArea.h"
 
 namespace U2 {
 
 class AssemblyBrowserUi;
 
-class AssemblyConsensusArea: public AssemblySequenceArea {
+class AssemblyConsensusArea : public AssemblySequenceArea {
     Q_OBJECT
 public:
-    AssemblyConsensusArea(AssemblyBrowserUi * ui);
+    AssemblyConsensusArea(AssemblyBrowserUi *ui);
 
-    QMenu * getConsensusAlgorithmMenu();
-    QList<QAction*> getAlgorithmActions();
-    QAction* getDiffAction() { return diffAction; }
+    QMenu *getConsensusAlgorithmMenu();
+    QList<QAction *> getAlgorithmActions();
+    QAction *getDiffAction() {
+        return diffAction;
+    }
 
 public slots:
     void sl_exportConsensus();
@@ -65,11 +68,11 @@ private:
     void launchConsensusCalculation();
     void updateActions();
 
-    QMenu * contextMenu;
-    QMenu * consensusAlgorithmMenu;
-    QList<QAction*> algorithmActions;
-    QAction * diffAction;
-    QAction * exportConsensusVariationsAction;
+    QMenu *contextMenu;
+    QMenu *consensusAlgorithmMenu;
+    QList<QAction *> algorithmActions;
+    QAction *diffAction;
+    QAction *exportConsensusVariationsAction;
     QSharedPointer<AssemblyConsensusAlgorithm> consensusAlgorithm;
 
     ConsensusInfo cache;
@@ -79,6 +82,6 @@ private:
     BackgroundTaskRunner<ConsensusInfo> consensusTaskRunner;
 };
 
-} //ns
+}    // namespace U2
 
 #endif

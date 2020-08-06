@@ -22,8 +22,8 @@
 #ifndef _U2_MAX_INFO_STEP_H_
 #define _U2_MAX_INFO_STEP_H_
 
-#include "ui_MaxInfoSettingsWidget.h"
 #include "trimmomatic/TrimmomaticStep.h"
+#include "ui_MaxInfoSettingsWidget.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -33,7 +33,7 @@ class MaxInfoStep : public TrimmomaticStep {
 public:
     MaxInfoStep();
 
-    TrimmomaticStepSettingsWidget* createWidget() const;
+    TrimmomaticStepSettingsWidget *createWidget() const;
 
 private:
     QString serializeState(const QVariantMap &widgetState) const;
@@ -64,7 +64,7 @@ public:
     MaxInfoStep *createStep() const;
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_MAX_INFO_STEP_H_
+#endif    // _U2_MAX_INFO_STEP_H_

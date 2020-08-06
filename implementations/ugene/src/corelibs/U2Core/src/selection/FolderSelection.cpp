@@ -19,16 +19,14 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/SelectionTypes.h>
-
 #include "FolderSelection.h"
+
+#include <U2Core/SelectionTypes.h>
 
 namespace U2 {
 
 FolderSelection::FolderSelection(QObject *p)
-: GSelection(GSelectionTypes::FOLDERS, p)
-{
-
+    : GSelection(GSelectionTypes::FOLDERS, p) {
 }
 
 bool FolderSelection::isEmpty() const {
@@ -40,13 +38,13 @@ void FolderSelection::clear() {
     sl_selectionChanged();
 }
 
-const QList<Folder> & FolderSelection::getSelection() const {
+const QList<Folder> &FolderSelection::getSelection() const {
     return selection;
 }
 
 void FolderSelection::setSelection(const QList<Folder> &folders) {
-     selection = folders;
-     sl_selectionChanged();
+    selection = folders;
+    sl_selectionChanged();
 }
 
-} // U2
+}    // namespace U2

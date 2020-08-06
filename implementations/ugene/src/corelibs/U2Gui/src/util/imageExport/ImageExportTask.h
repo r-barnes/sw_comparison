@@ -22,10 +22,10 @@
 #ifndef _U2_IMAGE_EXPORT_TASK_H
 #define _U2_IMAGE_EXPORT_TASK_H
 
-#include <U2Core/global.h>
-#include <U2Core/Task.h>
-
 #include <QSize>
+
+#include <U2Core/Task.h>
+#include <U2Core/global.h>
 
 #define IMAGE_SIZE_LIMIT 32768
 
@@ -45,15 +45,14 @@ public:
 
     QString fileName;
     QString format;
-    QSize   imageSize;
-    int     imageQuality;
-    int     imageDpi;
+    QSize imageSize;
+    int imageQuality;
+    int imageDpi;
 
     static const QString SVG_FORMAT;
     static const QString PS_FORMAT;
     static const QString PDF_FORMAT;
 };
-
 
 class U2GUI_EXPORT ImageExportTask : public Task {
     Q_OBJECT
@@ -61,6 +60,7 @@ public:
     ImageExportTask(const ImageExportTaskSettings &settings);
     virtual void run() = 0;
     ReportResult report();
+
 protected:
     ImageExportTaskSettings settings;
     QString WRONG_FORMAT_MESSAGE;
@@ -80,43 +80,66 @@ typedef QFlags<ExportImageFormatFlag> ExportImageFormatPolicy;
 class U2GUI_EXPORT ImageExportController : public QObject {
     Q_OBJECT
 public:
-    ImageExportController(const ExportImageFormatPolicy& fPolicy = ExportImageFormatPolicy(EnableRasterFormats));
+    ImageExportController(const ExportImageFormatPolicy &fPolicy = ExportImageFormatPolicy(EnableRasterFormats));
 
-    Task*   getTaskInstance(const ImageExportTaskSettings &settings) const;
+    Task *getTaskInstance(const ImageExportTaskSettings &settings) const;
 
-    const QString&  getExportDescription() const { return shortDescription; }
-    QWidget*    getSettingsWidget();
+    const QString &getExportDescription() const {
+        return shortDescription;
+    }
+    QWidget *getSettingsWidget();
 
-    virtual int getImageWidth() const { return 0; }
-    virtual int getImageHeight() const { return 0; }
+    virtual int getImageWidth() const {
+        return 0;
+    }
+    virtual int getImageHeight() const {
+        return 0;
+    }
 
-    bool    isRasterFormatsEnabled() const { return formatPolicy.testFlag(EnableRasterFormats); }
-    bool    isSvgSupported() const { return formatPolicy.testFlag(SupportSvg); }
-    bool    isPdfSupported() const { return formatPolicy.testFlag(SupportPsAndPdf); }
+    bool isRasterFormatsEnabled() const {
+        return formatPolicy.testFlag(EnableRasterFormats);
+    }
+    bool isSvgSupported() const {
+        return formatPolicy.testFlag(SupportSvg);
+    }
+    bool isPdfSupported() const {
+        return formatPolicy.testFlag(SupportPsAndPdf);
+    }
 
-    bool    isExportDisabled() const { return !disableMessage.isEmpty(); }
-    QString getDisableMessage() const { return disableMessage; }
+    bool isExportDisabled() const {
+        return !disableMessage.isEmpty();
+    }
+    QString getDisableMessage() const {
+        return disableMessage;
+    }
 
 public slots:
-    virtual void sl_onFormatChanged(const QString&) {}
+    virtual void sl_onFormatChanged(const QString &) {
+    }
 
 signals:
     void si_disableExport(bool);
-    void si_showMessage(const QString& );
+    void si_showMessage(const QString &);
 
 protected:
     virtual void initSettingsWidget() = 0;
 
-    virtual Task* getExportToSvgTask(const ImageExportTaskSettings &) const { return NULL; }
-    virtual Task* getExportToPdfTask(const ImageExportTaskSettings &) const { return NULL; }
-    virtual Task* getExportToBitmapTask(const ImageExportTaskSettings &) const { return NULL; }
+    virtual Task *getExportToSvgTask(const ImageExportTaskSettings &) const {
+        return NULL;
+    }
+    virtual Task *getExportToPdfTask(const ImageExportTaskSettings &) const {
+        return NULL;
+    }
+    virtual Task *getExportToBitmapTask(const ImageExportTaskSettings &) const {
+        return NULL;
+    }
 
-    QWidget*        settingsWidget;
-    QString         shortDescription;
-    QString         disableMessage;
-    ExportImageFormatPolicy    formatPolicy;
+    QWidget *settingsWidget;
+    QString shortDescription;
+    QString disableMessage;
+    ExportImageFormatPolicy formatPolicy;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_IMAGE_EXPORT_TASK_H
+#endif    // _U2_IMAGE_EXPORT_TASK_H

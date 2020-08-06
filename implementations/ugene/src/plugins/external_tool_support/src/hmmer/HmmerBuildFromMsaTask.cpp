@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "HmmerBuildFromMsaTask.h"
+
 #include <QCoreApplication>
 #include <QDir>
 
@@ -30,7 +32,6 @@
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/UserApplicationsSettings.h>
 
-#include "HmmerBuildFromMsaTask.h"
 #include "utils/ExportTasks.h"
 
 namespace U2 {
@@ -41,12 +42,11 @@ HmmerBuildFromMsaTask::HmmerBuildFromMsaTask(const HmmerBuildSettings &settings,
       msa(msa),
       saveTask(NULL),
       hmmerTask(NULL),
-      removeWorkingDir(false)
-{
+      removeWorkingDir(false) {
     SAFE_POINT_EXT(!settings.profileUrl.isEmpty(), setError(tr("HMM profile URL is empty")), );
 }
 
-const QString & HmmerBuildFromMsaTask::getHmmUrl() const {
+const QString &HmmerBuildFromMsaTask::getHmmUrl() const {
     return settings.profileUrl;
 }
 
@@ -56,12 +56,12 @@ const QString PHMMER_TEMP_DIR = "hmmer";
 
 QString getTaskTempDirName(const QString &prefix, Task *task) {
     return prefix + QString::number(task->getTaskId()) + "_" +
-            QDate::currentDate().toString("dd.MM.yyyy") + "_" +
-            QTime::currentTime().toString("hh.mm.ss.zzz") + "_" +
-            QString::number(QCoreApplication::applicationPid());
+           QDate::currentDate().toString("dd.MM.yyyy") + "_" +
+           QTime::currentTime().toString("hh.mm.ss.zzz") + "_" +
+           QString::number(QCoreApplication::applicationPid());
 }
 
-}
+}    // namespace
 
 void HmmerBuildFromMsaTask::prepare() {
     prepareWorkingDir();
@@ -74,7 +74,7 @@ void HmmerBuildFromMsaTask::prepare() {
 }
 
 QList<Task *> HmmerBuildFromMsaTask::onSubTaskFinished(Task *subTask) {
-    QList<Task*> result;
+    QList<Task *> result;
     CHECK_OP(stateInfo, result);
     if (saveTask == subTask) {
         hmmerTask = new HmmerBuildTask(settings, saveTask->getUrl());
@@ -97,11 +97,11 @@ void HmmerBuildFromMsaTask::prepareWorkingDir() {
     }
 
     QDir workingDir(settings.workingDir);
-    if (workingDir.exists()){
+    if (workingDir.exists()) {
         ExternalToolSupportUtils::removeTmpDir(settings.workingDir, stateInfo);
         CHECK_OP(stateInfo, );
     }
-    if (!workingDir.mkpath(settings.workingDir)){
+    if (!workingDir.mkpath(settings.workingDir)) {
         setError(tr("Cannot create a folder for temporary files."));
         return;
     }
@@ -114,4 +114,4 @@ void HmmerBuildFromMsaTask::removeTempDir() {
     }
 }
 
-}   // namespace U2
+}    // namespace U2

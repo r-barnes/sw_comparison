@@ -21,32 +21,31 @@
 
 #include "PanView.h"
 
-#include "ADVSequenceObjectContext.h"
-#include "ADVSingleSequenceWidget.h"
-#include "PanViewRows.h"
-
-#include <U2Core/AnnotationModification.h>
-#include <U2Core/AnnotationSettings.h>
-#include <U2Core/AnnotationTableObject.h>
-#include <U2Core/AppContext.h>
-#include <U2Core/DNAAlphabet.h>
-#include <U2Core/DNASequenceSelection.h>
-#include <U2Core/DNASequenceObject.h>
-#include <U2Core/Log.h>
-#include <U2Core/SelectionModel.h>
-#include <U2Core/Timer.h>
-#include <U2Core/U2SafePoints.h>
-#include <U2Core/U2OpStatusUtils.h>
-
-#include <U2Gui/GraphUtils.h>
-#include <U2Gui/GScrollBar.h>
-
 #include <QDialog>
 #include <QFontMetrics>
 #include <QGridLayout>
 #include <QPainter>
 #include <QTextEdit>
 
+#include <U2Core/AnnotationModification.h>
+#include <U2Core/AnnotationSettings.h>
+#include <U2Core/AnnotationTableObject.h>
+#include <U2Core/AppContext.h>
+#include <U2Core/DNAAlphabet.h>
+#include <U2Core/DNASequenceObject.h>
+#include <U2Core/DNASequenceSelection.h>
+#include <U2Core/Log.h>
+#include <U2Core/SelectionModel.h>
+#include <U2Core/Timer.h>
+#include <U2Core/U2OpStatusUtils.h>
+#include <U2Core/U2SafePoints.h>
+
+#include <U2Gui/GScrollBar.h>
+#include <U2Gui/GraphUtils.h>
+
+#include "ADVSequenceObjectContext.h"
+#include "ADVSingleSequenceWidget.h"
+#include "PanViewRows.h"
 
 namespace U2 {
 
@@ -82,7 +81,7 @@ int PanViewLinesSettings::getCustomRulerLine(int n) const {
 }
 
 int PanViewLinesSettings::getFirstRowLine() const {
-    return numLines - 2 - (showMainRuler ? 1 : 0) - (showCustomRulers ? customRulers.count() : 0 );
+    return numLines - 2 - (showMainRuler ? 1 : 0) - (showCustomRulers ? customRulers.count() : 0);
 }
 
 int PanViewLinesSettings::getAdditionalLines() const {
@@ -98,21 +97,19 @@ bool PanViewLinesSettings::isRowVisible(int row) const {
 }
 
 PanView::ZoomUseObject::ZoomUseObject()
-: usingZoom(false), panView(NULL) {}
+    : usingZoom(false), panView(NULL) {
+}
 
 PanView::ZoomUseObject::ZoomUseObject(PanView *pv)
-: usingZoom(false) {
-
+    : usingZoom(false) {
     setPanView(pv);
 }
 
-PanView::ZoomUseObject::~ZoomUseObject(){
-
+PanView::ZoomUseObject::~ZoomUseObject() {
     releaseZoom();
 }
 
 void PanView::ZoomUseObject::setPanView(PanView *pv) {
-
     releaseZoom();
 
     Q_ASSERT(pv);
@@ -122,7 +119,6 @@ void PanView::ZoomUseObject::setPanView(PanView *pv) {
 }
 
 void PanView::ZoomUseObject::useZoom() {
-
     if (usingZoom || !panView) {
         return;
     }
@@ -131,7 +127,6 @@ void PanView::ZoomUseObject::useZoom() {
 }
 
 void PanView::ZoomUseObject::releaseZoom() {
-
     if (!usingZoom || !panView) {
         return;
     }
@@ -140,9 +135,8 @@ void PanView::ZoomUseObject::releaseZoom() {
 }
 
 #define MAX_VISIBLE_ROWS_ON_START 10
-PanView::PanView(QWidget* p, SequenceObjectContext* ctx, const PanViewRenderAreaFactory &renderFactory)
-    : GSequenceLineViewAnnotated(p, ctx)
-{
+PanView::PanView(QWidget *p, SequenceObjectContext *ctx, const PanViewRenderAreaFactory &renderFactory)
+    : GSequenceLineViewAnnotated(p, ctx) {
     rowBar = new QScrollBar(this);
     setObjectName("pan_view");
     settings = new PanViewLinesSettings();
@@ -165,7 +159,7 @@ PanView::PanView(QWidget* p, SequenceObjectContext* ctx, const PanViewRenderArea
     zoomOutAction->setObjectName("action_zoom_out_" + ctx->getSequenceObject()->getGObjectName());
     connect(zoomOutAction, SIGNAL(triggered()), SLOT(sl_zoomOutAction()));
 
-    zoomToSelectionAction= new QAction(QIcon(":/core/images/zoom_sel.png"), tr("Zoom to Selection"), this);
+    zoomToSelectionAction = new QAction(QIcon(":/core/images/zoom_sel.png"), tr("Zoom to Selection"), this);
     zoomToSelectionAction->setObjectName("action_zoom_to_selection_" + ctx->getSequenceObject()->getGObjectName());
     connect(zoomToSelectionAction, SIGNAL(triggered()), SLOT(sl_zoomToSelection()));
 
@@ -194,7 +188,7 @@ PanView::PanView(QWidget* p, SequenceObjectContext* ctx, const PanViewRenderArea
     syncOffset = 0;
 
     //can't move to the GSequenceLineViewAnnotated -> virtual calls does not work in  constructor
-    foreach(AnnotationTableObject *obj, ctx->getAnnotationObjects(true)) {
+    foreach (AnnotationTableObject *obj, ctx->getAnnotationObjects(true)) {
         registerAnnotations(obj->getAnnotations());
     }
 
@@ -205,13 +199,13 @@ PanView::PanView(QWidget* p, SequenceObjectContext* ctx, const PanViewRenderArea
 
     settings->numLines = qMin(MAX_VISIBLE_ROWS_ON_START, rowsManager->getNumRows() + settings->getAdditionalLines());
 
-    resize(width(), getRenderArea()->getRowLineHeight() * settings->numLines );
+    resize(width(), getRenderArea()->getRowLineHeight() * settings->numLines);
 
     pack();
 }
 
 void PanView::pack() {
-    QGridLayout* layout = new QGridLayout();
+    QGridLayout *layout = new QGridLayout();
     layout->setMargin(0);
     layout->setSpacing(0);
     layout->addWidget(renderArea, 0, 0, 1, 1);
@@ -226,7 +220,7 @@ PanView::~PanView() {
 
 void PanView::registerAnnotations(const QList<Annotation *> &l) {
     GTIMER(c1, t1, "PanView::registerAnnotations");
-    AnnotationSettingsRegistry* asr = AppContext::getAnnotationsSettingsRegistry();
+    AnnotationSettingsRegistry *asr = AppContext::getAnnotationsSettingsRegistry();
     foreach (Annotation *a, l) {
         AnnotationSettings *as = asr->getAnnotationSettings(a->getData());
         if (as->visible) {
@@ -248,17 +242,17 @@ void PanView::unregisterAnnotations(const QList<Annotation *> &l) {
 }
 
 void PanView::updateRows() {
-    PanViewRenderArea* ra = getRenderArea();
+    PanViewRenderArea *ra = getRenderArea();
     SAFE_POINT(ra != NULL, "PanViewRenderArea is NULL", );
-    /*ra->*/updateNumVisibleRows();
+    /*ra->*/ updateNumVisibleRows();
     int maxSteps = calculateNumRowBarSteps();
-    if (qAbs(rowBar->maximum() - rowBar->minimum())!=maxSteps) {
+    if (qAbs(rowBar->maximum() - rowBar->minimum()) != maxSteps) {
         updateRowBar();
     }
     updateActions();
 }
 
-int  PanView::calculateNumRowBarSteps() const {
+int PanView::calculateNumRowBarSteps() const {
     int visibleRows = settings->getNumVisibleRows();
     int numRows = rowsManager->getNumRows();
     int res = qMax(0, numRows - visibleRows);
@@ -266,14 +260,14 @@ int  PanView::calculateNumRowBarSteps() const {
 }
 
 void PanView::setNumVisibleRows(int rowNum) {
-    settings->numLines = qMin( rowNum, rowsManager->getNumRows() + settings->getAdditionalLines());
+    settings->numLines = qMin(rowNum, rowsManager->getNumRows() + settings->getAdditionalLines());
 
     addUpdateFlags(GSLV_UF_ViewResized);
     update();
 }
 
 void PanView::updateNumVisibleRows() {
-    setNumVisibleRows( renderArea->height() / getRenderArea()->getRowLineHeight() );
+    setNumVisibleRows(renderArea->height() / getRenderArea()->getRowLineHeight());
 }
 
 void PanView::updateRowBar() {
@@ -282,20 +276,20 @@ void PanView::updateRowBar() {
     int visibleRows = settings->getNumVisibleRows();
     int maxSteps = calculateNumRowBarSteps();
 
-    rowBar->setMinimum(-maxSteps); //inverted appearance
+    rowBar->setMinimum(-maxSteps);    //inverted appearance
     rowBar->setMaximum(0);
     rowBar->setSingleStep(1);
     rowBar->setPageStep(visibleRows - 1);
     int rowsOffset = qMin(maxSteps, settings->rowLinesOffset);
     settings->rowLinesOffset = rowsOffset;
-    rowBar->setSliderPosition( - rowsOffset);
+    rowBar->setSliderPosition(-rowsOffset);
     rowBar->setEnabled(maxSteps > 0);
 
     connect(rowBar, SIGNAL(valueChanged(int)), SLOT(sl_onRowBarMoved(int)));
 }
 
 void PanView::sl_onRowBarMoved(int v) {
-    settings->rowLinesOffset = - v; // '-' because of inverted appearance
+    settings->rowLinesOffset = -v;    // '-' because of inverted appearance
     addUpdateFlags(GSLV_UF_NeedCompleteRedraw);
     update();
 }
@@ -313,7 +307,7 @@ void PanView::sl_onAnnotationsModified(const QList<AnnotationModification> &anno
     GSequenceLineViewAnnotated::sl_onAnnotationsModified(annotationModifications);
 }
 
-void PanView::sl_onAnnotationSettingsChanged(const QStringList& changedSettings) {
+void PanView::sl_onAnnotationSettingsChanged(const QStringList &changedSettings) {
     AnnotationSettingsRegistry *asr = AppContext::getAnnotationsSettingsRegistry();
     foreach (const QString &name, changedSettings) {
         AnnotationSettings *as = asr->getAnnotationSettings(name);
@@ -331,7 +325,7 @@ void PanView::sl_onAnnotationSettingsChanged(const QStringList& changedSettings)
         foreach (Annotation *a, changed) {
             if (as->visible) {
                 rowsManager->addAnnotation(a);
-            } else  {
+            } else {
                 rowsManager->removeAnnotation(a);
             }
         }
@@ -340,7 +334,7 @@ void PanView::sl_onAnnotationSettingsChanged(const QStringList& changedSettings)
     GSequenceLineViewAnnotated::sl_onAnnotationSettingsChanged(changedSettings);
 }
 
-void PanView::setSelection(const U2Region& r) {
+void PanView::setSelection(const U2Region &r) {
     ctx->getSequenceSelection()->setRegion(r);
 }
 
@@ -350,13 +344,11 @@ void PanView::onVisibleRangeChanged(bool signal) {
 }
 
 void PanView::useZoom() {
-
     zoomUsing++;
     updateActions();
 }
 
 void PanView::releaseZoom() {
-
     if (zoomUsing) {
         zoomUsing--;
         updateActions();
@@ -366,7 +358,6 @@ void PanView::releaseZoom() {
 }
 
 void PanView::updateActions() {
-
     if (!zoomUsing) {
         zoomInAction->setDisabled(true);
         zoomOutAction->setDisabled(true);
@@ -380,14 +371,13 @@ void PanView::updateActions() {
     zoomInAction->setEnabled(visibleRange.length > minNuclsPerScreen);
     zoomOutAction->setEnabled(visibleRange.length < seqLen);
 
-    const QVector<U2Region>& sel = ctx->getSequenceSelection()->getSelectedRegions();
+    const QVector<U2Region> &sel = ctx->getSequenceSelection()->getSelectedRegions();
     if (!sel.isEmpty() && sel.first().length >= minNuclsPerScreen) {
         zoomToSelectionAction->setEnabled(true);
     } else {
         zoomToSelectionAction->setEnabled(false);
     }
     zoomToSequenceAction->setEnabled(visibleRange.startPos != 0 || visibleRange.endPos() != seqLen);
-
 }
 
 void PanView::sl_zoomInAction() {
@@ -399,8 +389,8 @@ void PanView::sl_zoomInAction() {
     }
     U2Region newVisibleRange = visibleRange;
     newVisibleRange.length = qMax((visibleRange.length + 1) / 2, (qint64)minNuclsPerScreen);
-    if (newVisibleRange.length!=visibleRange.length) {
-        newVisibleRange.startPos = visibleRange.startPos + (visibleRange.length - newVisibleRange.length)/2;
+    if (newVisibleRange.length != visibleRange.length) {
+        newVisibleRange.startPos = visibleRange.startPos + (visibleRange.length - newVisibleRange.length) / 2;
         setVisibleRange(newVisibleRange);
     }
 }
@@ -410,13 +400,13 @@ void PanView::sl_zoomOutAction() {
     U2Region newVisibleRange = visibleRange;
     newVisibleRange.length = qMin(visibleRange.length * 2, seqLen);
     if (newVisibleRange.length != visibleRange.length) {
-        newVisibleRange.startPos = qBound(qint64(0), visibleRange.startPos - (newVisibleRange.length - visibleRange.length)/2, seqLen-newVisibleRange.length);
-        assert(newVisibleRange.startPos >=0 && newVisibleRange.endPos() <= seqLen); //todo: move to setVisibleRange
+        newVisibleRange.startPos = qBound(qint64(0), visibleRange.startPos - (newVisibleRange.length - visibleRange.length) / 2, seqLen - newVisibleRange.length);
+        assert(newVisibleRange.startPos >= 0 && newVisibleRange.endPos() <= seqLen);    //todo: move to setVisibleRange
         setVisibleRange(newVisibleRange);
     }
 }
 
-void PanView::sl_onDNASelectionChanged(LRegionsSelection* s, const QVector<U2Region>& added, const QVector<U2Region>& removed) {
+void PanView::sl_onDNASelectionChanged(LRegionsSelection *s, const QVector<U2Region> &added, const QVector<U2Region> &removed) {
     GSequenceLineView::sl_onDNASelectionChanged(s, added, removed);
     updateActions();
 }
@@ -432,7 +422,7 @@ void PanView::sl_zoomToSelection() {
     if (visibleRange == selRegion) {
         return;
     }
-    SAFE_POINT(U2Region(0, ctx->getSequenceObject()->getSequenceLength()).contains(selRegion), "Invalid selection region",);
+    SAFE_POINT(U2Region(0, ctx->getSequenceObject()->getSequenceLength()).contains(selRegion), "Invalid selection region", );
     visibleRange = selRegion;
     onVisibleRangeChanged();
 }
@@ -444,8 +434,8 @@ void PanView::sl_zoomToSequence() {
     onVisibleRangeChanged();
 }
 
-void PanView::setVisibleRange(const U2Region& newRange, bool signal) {
-    assert(newRange.startPos >=0 && newRange.endPos() <= seqLen);
+void PanView::setVisibleRange(const U2Region &newRange, bool signal) {
+    assert(newRange.startPos >= 0 && newRange.endPos() <= seqLen);
 
     if (newRange.length < minNuclsPerScreen) {
         minNuclsPerScreen = newRange.length;
@@ -476,10 +466,9 @@ void PanView::centerRow(int row) {
     rowBar->setSliderPosition(sliderPos);
 }
 
-
 void PanView::sl_onRangeChangeRequest(qint64 start, qint64 end) {
     uiLog.trace(tr("range change request: [%1, %2]").arg(start).arg(end));
-    setVisibleRange(U2Region(start-1, end));
+    setVisibleRange(U2Region(start - 1, end));
 }
 
 void PanView::setNumBasesVisible(qint64 n) {
@@ -490,15 +479,15 @@ void PanView::setNumBasesVisible(qint64 n) {
     setVisibleRange(U2Region(newStart, nBases));
 }
 
-PanViewRenderArea* PanView::getRenderArea() const {
-    return qobject_cast<PanViewRenderArea*>(renderArea);
+PanViewRenderArea *PanView::getRenderArea() const {
+    return qobject_cast<PanViewRenderArea *>(renderArea);
 }
 
 QList<RulerInfo> PanView::getCustomRulers() const {
     return settings->customRulers;
 }
 
-void PanView::addCustomRuler(const RulerInfo& r) {
+void PanView::addCustomRuler(const RulerInfo &r) {
     settings->customRulers.append(r);
     if (settings->showCustomRulers) {
         addUpdateFlags(GSLV_UF_NeedCompleteRedraw);
@@ -507,8 +496,8 @@ void PanView::addCustomRuler(const RulerInfo& r) {
     toggleCustomRulersAction->setEnabled(true);
 }
 
-void PanView::removeCustomRuler(const QString& name) {
-    for (int i=0, n = settings->customRulers.count(); i < n; i++) {
+void PanView::removeCustomRuler(const QString &name) {
+    for (int i = 0, n = settings->customRulers.count(); i < n; i++) {
         if (settings->customRulers[i].name == name) {
             settings->customRulers.removeAt(i);
             break;
@@ -545,7 +534,6 @@ void PanView::sl_toggleCustomRulersVisibility(bool visible) {
     update();
 }
 
-
 void PanView::setSyncOffset(int o) {
     if (o == syncOffset) {
         return;
@@ -555,11 +543,11 @@ void PanView::setSyncOffset(int o) {
     update();
 }
 
-void PanView::sl_sequenceChanged(){
+void PanView::sl_sequenceChanged() {
     seqLen = ctx->getSequenceLength();
-    U2Region curSource(0, ctx->getSequenceLength()), newRange(0,0);
+    U2Region curSource(0, ctx->getSequenceLength()), newRange(0, 0);
     if (!curSource.contains(visibleRange)) {
-        if (curSource.length > visibleRange.length){
+        if (curSource.length > visibleRange.length) {
             newRange.startPos = visibleRange.startPos - (visibleRange.endPos() - curSource.endPos());
             newRange.length = visibleRange.length;
         } else {
@@ -571,7 +559,7 @@ void PanView::sl_sequenceChanged(){
     updateActions();
 }
 
-void PanView::hideEvent(QHideEvent *ev){
+void PanView::hideEvent(QHideEvent *ev) {
     zoomInAction->setDisabled(true);
     zoomOutAction->setDisabled(true);
     zoomToSelectionAction->setDisabled(true);
@@ -579,18 +567,18 @@ void PanView::hideEvent(QHideEvent *ev){
     QWidget::hideEvent(ev);
 }
 
-void PanView::showEvent(QShowEvent *ev){
+void PanView::showEvent(QShowEvent *ev) {
     QWidget::showEvent(ev);
     updateActions();
 }
 
-void PanView::sl_updateRows(){
+void PanView::sl_updateRows() {
     updateRows();
 }
 
 const U2Region PanView::getRegionToZoom() const {
-    const QVector<U2Region>& sel = ctx->getSequenceSelection()->getSelectedRegions();
-    const QList<Annotation*> annotationSel = getSequenceContext()->getAnnotationsSelection()->getAnnotations();
+    const QVector<U2Region> &sel = ctx->getSequenceSelection()->getSelectedRegions();
+    const QList<Annotation *> annotationSel = getSequenceContext()->getAnnotationsSelection()->getAnnotations();
     U2Region selRegion;
     if (!sel.isEmpty()) {
         selRegion = sel.first();
@@ -603,11 +591,10 @@ const U2Region PanView::getRegionToZoom() const {
 
 //////////////////////////////////////////////////////////////////////////
 /// render
-PanViewRenderArea::PanViewRenderArea(PanView* d, PanViewRenderer *renderer)
+PanViewRenderArea::PanViewRenderArea(PanView *d, PanViewRenderer *renderer)
     : GSequenceLineViewAnnotatedRenderArea(d),
       panView(d),
-      renderer(renderer)
-{
+      renderer(renderer) {
     SAFE_POINT(NULL != renderer, "Renderer is NULL", );
 }
 
@@ -615,8 +602,8 @@ PanViewRenderArea::~PanViewRenderArea() {
     delete renderer;
 }
 
-void PanViewRenderArea::drawAll(QPaintDevice* pd) {
-    GTIMER(c2,t2,"PanViewRenderArea::drawAll");
+void PanViewRenderArea::drawAll(QPaintDevice *pd) {
+    GTIMER(c2, t2, "PanViewRenderArea::drawAll");
     GSLV_UpdateFlags uf = view->getUpdateFlags();
     bool completeRedraw = uf.testFlag(GSLV_UF_NeedCompleteRedraw) || uf.testFlag(GSLV_UF_ViewResized) ||
                           uf.testFlag(GSLV_UF_VisibleRangeChanged) || uf.testFlag(GSLV_UF_AnnotationsChanged);
@@ -631,12 +618,12 @@ void PanViewRenderArea::drawAll(QPaintDevice* pd) {
     p.drawPixmap(0, 0, *cachedView);
 
     // SANGER_TODO: should not be this kind of connection
-//    ADVSingleSequenceWidget* ssw = panView->seqWidget;
-//    SAFE_POINT(ssw != NULL, "ADVSingleSequenceWidget is NULL", );
-//    if (!ssw->isOverviewCollapsed()) {
-//        //! VIEW_RENDERER_REFACTORING: consider to move frame drawing to renderer
-//        drawFrame(p);
-//    }
+    //    ADVSingleSequenceWidget* ssw = panView->seqWidget;
+    //    SAFE_POINT(ssw != NULL, "ADVSingleSequenceWidget is NULL", );
+    //    if (!ssw->isOverviewCollapsed()) {
+    //        //! VIEW_RENDERER_REFACTORING: consider to move frame drawing to renderer
+    //        drawFrame(p);
+    //    }
 
     renderer->drawSelection(p, QSize(pd->width(), pd->height()), view->getVisibleRange());
 
@@ -668,7 +655,7 @@ bool PanViewRenderArea::isSequenceCharsVisible() const {
 void PanViewRenderArea::resizeEvent(QResizeEvent *e) {
     view->addUpdateFlags(GSLV_UF_ViewResized);
 
-    PanView* pv = getPanView();
+    PanView *pv = getPanView();
     SAFE_POINT(pv != NULL, "Panview is NULL", );
     pv->updateNumVisibleRows();
     pv->updateRowBar();
@@ -676,4 +663,4 @@ void PanViewRenderArea::resizeEvent(QResizeEvent *e) {
     QWidget::resizeEvent(e);
 }
 
-} //namespace
+}    // namespace U2

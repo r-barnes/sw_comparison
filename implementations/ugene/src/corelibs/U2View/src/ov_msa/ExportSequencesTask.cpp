@@ -30,51 +30,50 @@
 #include <U2Core/DocumentSelection.h>
 #include <U2Core/GUrlUtils.h>
 #include <U2Core/IOAdapterUtils.h>
-#include <U2Core/MultiTask.h>
 #include <U2Core/MSAUtils.h>
+#include <U2Core/MultiTask.h>
 #include <U2Core/ProjectModel.h>
 #include <U2Core/SaveDocumentTask.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2SequenceUtils.h>
 
-#include <U2Gui/ObjectViewModel.h>
-
 #include <U2Formats/DocumentFormatUtils.h>
+
+#include <U2Gui/ObjectViewModel.h>
 
 namespace U2 {
 
-PrepareSequenceObjectsTask::PrepareSequenceObjectsTask(const MultipleSequenceAlignment& msa, const QSet<qint64>& rowIds, bool trimGaps)
+PrepareSequenceObjectsTask::PrepareSequenceObjectsTask(const MultipleSequenceAlignment &msa, const QSet<qint64> &rowIds, bool trimGaps)
     : Task(tr("Prepare sequences"), TaskFlag_None),
-    msa(msa),
-    rowIds(rowIds),
-    trimGaps(trimGaps)
-{}
+      msa(msa),
+      rowIds(rowIds),
+      trimGaps(trimGaps) {
+}
 
 void PrepareSequenceObjectsTask::run() {
     sequences = MSAUtils::ma2seq(msa, trimGaps, rowIds);
 }
 
-ExportSequencesTask::ExportSequencesTask(const MultipleSequenceAlignment& msa, const QSet<qint64>& rowIds, bool trimGaps, bool addToProjectFlag,
-    const QString& dirUrl, const DocumentFormatId& format, const QString& extension, const QString& customFileName) : Task(tr("Export selected sequences from alignment"), TaskFlags_NR_FOSE_COSC),
-    addToProjectFlag(addToProjectFlag),
-    dirUrl(dirUrl),
-    format(format),
-    extension(extension),
-    customFileName(customFileName),
-    prepareObjectsTask(NULL)
-{
+ExportSequencesTask::ExportSequencesTask(const MultipleSequenceAlignment &msa, const QSet<qint64> &rowIds, bool trimGaps, bool addToProjectFlag, const QString &dirUrl, const DocumentFormatId &format, const QString &extension, const QString &customFileName)
+    : Task(tr("Export selected sequences from alignment"), TaskFlags_NR_FOSE_COSC),
+      addToProjectFlag(addToProjectFlag),
+      dirUrl(dirUrl),
+      format(format),
+      extension(extension),
+      customFileName(customFileName),
+      prepareObjectsTask(NULL) {
     prepareObjectsTask = new PrepareSequenceObjectsTask(msa, rowIds, trimGaps);
     addSubTask(prepareObjectsTask);
 }
 
-QList<Task*> ExportSequencesTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> res;
+QList<Task *> ExportSequencesTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> res;
     CHECK_OP(stateInfo, res);
 
     if (subTask == prepareObjectsTask) {
-        QList<Task*> tasks;
+        QList<Task *> tasks;
         QSet<QString> existingFilenames;
-        foreach(const DNASequence& s, prepareObjectsTask->getSequences()) {
+        foreach (const DNASequence &s, prepareObjectsTask->getSequences()) {
             CHECK_OP(stateInfo, res);
             QString filename;
             if (customFileName.isEmpty()) {
@@ -87,7 +86,7 @@ QList<Task*> ExportSequencesTask::onSubTaskFinished(Task* subTask) {
             filePath = GUrlUtils::rollFileName(filePath, "_", existingFilenames);
             existingFilenames.insert(filePath);
             GUrl url(filePath);
-            IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
+            IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
             DocumentFormat *df = AppContext::getDocumentFormatRegistry()->getFormatById(format);
             SAFE_POINT(df != NULL, "Cant get DocuemtFormat by given DocumentFormatId", res);
             QScopedPointer<Document> doc(df->createNewLoadedDocument(iof, filePath, stateInfo));
@@ -111,4 +110,4 @@ QList<Task*> ExportSequencesTask::onSubTaskFinished(Task* subTask) {
     return res;
 }
 
-}
+}    // namespace U2

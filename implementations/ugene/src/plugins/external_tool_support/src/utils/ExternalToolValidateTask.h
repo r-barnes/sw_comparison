@@ -22,9 +22,10 @@
 #ifndef _U2_EXTERNAL_TOOL_VALIDATE_TASK_H
 #define _U2_EXTERNAL_TOOL_VALIDATE_TASK_H
 
-#include <U2Core/Task.h>
-#include <U2Core/MultiTask.h>
 #include <QProcess>
+
+#include <U2Core/MultiTask.h>
+#include <U2Core/Task.h>
 
 namespace U2 {
 
@@ -36,16 +37,27 @@ class ExternalToolSearchTask;
 class ExternalToolValidateTask : public Task {
     Q_OBJECT
 public:
-    ExternalToolValidateTask(const QString& toolId, const QString& toolName, TaskFlags flags = TaskFlag_None);
-    virtual ~ExternalToolValidateTask() {}
+    ExternalToolValidateTask(const QString &toolId, const QString &toolName, TaskFlags flags = TaskFlag_None);
+    virtual ~ExternalToolValidateTask() {
+    }
 
     virtual Task::ReportResult report() = 0;
 
-    bool isValidTool()  { return isValid; }
-    QString getToolId()  { return toolId; }
-    QString getToolName() { return toolName; }
-    QString getToolPath()  { return toolPath; }
-    QString getToolVersion()  { return version; }
+    bool isValidTool() {
+        return isValid;
+    }
+    QString getToolId() {
+        return toolId;
+    }
+    QString getToolName() {
+        return toolName;
+    }
+    QString getToolPath() {
+        return toolPath;
+    }
+    QString getToolVersion() {
+        return version;
+    }
 
 protected:
     QString toolId;
@@ -55,11 +67,11 @@ protected:
     bool isValid;
 };
 
-class ExternalToolJustValidateTask: public ExternalToolValidateTask {
+class ExternalToolJustValidateTask : public ExternalToolValidateTask {
     Q_OBJECT
     Q_DISABLE_COPY(ExternalToolJustValidateTask)
 public:
-    ExternalToolJustValidateTask(const QString& toolId, const QString& toolName, const QString& path);
+    ExternalToolJustValidateTask(const QString &toolId, const QString &toolName, const QString &path);
     virtual ~ExternalToolJustValidateTask();
 
     virtual void run();
@@ -69,60 +81,61 @@ public:
 
 private:
     void setEnvironment(ExternalTool *tool);
-    bool parseLog(const ExternalToolValidation& validation);
-    void checkVersion(const QString& partOfLog);
+    bool parseLog(const ExternalToolValidation &validation);
+    void checkVersion(const QString &partOfLog);
     void checkArchitecture(const QString &toolPath);
     void performAdditionalChecks();
 
-    QString     errorMsg;
+    QString errorMsg;
 
-    QList<ExternalToolValidation> validations; //original tool validation is the last one
+    QList<ExternalToolValidation> validations;    //original tool validation is the last one
 
-    QRegExp     checkVersionRegExp;
+    QRegExp checkVersionRegExp;
 
-    QString     lastErrLine;
-    QString     lastOutLine;
+    QString lastErrLine;
+    QString lastOutLine;
 
-    QProcess*   externalToolProcess;
+    QProcess *externalToolProcess;
 
-    ExternalTool* tool;
-    static const int CHECK_PERIOD_MS = 1000;
+    ExternalTool *tool;
+
     static const int TIMEOUT_MS = 30000;
+    static const int CHECK_PERIOD_MS = 1000;
 };
 
 class ExternalToolSearchAndValidateTask : public ExternalToolValidateTask {
     Q_OBJECT
 public:
-    ExternalToolSearchAndValidateTask(const QString& toolId, const QString& toolName);
+    ExternalToolSearchAndValidateTask(const QString &toolId, const QString &toolName);
 
     void prepare();
-    virtual QList<Task*> onSubTaskFinished(Task *subTask);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
     virtual Task::ReportResult report();
 
 private:
     QStringList toolPaths;
-    QString     errorMsg;
-    bool        toolIsFound;
-    ExternalToolSearchTask*     searchTask;
-    ExternalToolJustValidateTask*   validateTask;
+    QString errorMsg;
+    bool toolIsFound;
+    ExternalToolSearchTask *searchTask;
+    ExternalToolJustValidateTask *validateTask;
 };
 
 class ExternalToolsValidateTask : public SequentialMultiTask {
     Q_OBJECT
 public:
-    ExternalToolsValidateTask(const QList<Task*> &_tasks);
+    ExternalToolsValidateTask(const QList<Task *> &_tasks);
 
-    virtual QList<Task*> onSubTaskFinished(Task* subTask);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
 };
 
 class ExternalToolsInstallTask : public SequentialMultiTask {
     Q_OBJECT
 public:
-    ExternalToolsInstallTask(const QList<Task*> &_tasks);
+    ExternalToolsInstallTask(const QList<Task *> &_tasks);
 
-    virtual QList<Task*> onSubTaskFinished(Task* subTask);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
 };
 
-}   // namespace
+}    // namespace U2
 
-#endif // _U2_EXTERNAL_TOOL_VALIDATE_TASK_H
+#endif    // _U2_EXTERNAL_TOOL_VALIDATE_TASK_H

@@ -22,10 +22,11 @@
 #ifndef GT_UTILS_QUERY_DESIGNER_H
 #define GT_UTILS_QUERY_DESIGNER_H
 
-#include "GTGlobals.h"
+#include <QTreeWidget>
+
 #include <U2View/MSAEditorSequenceArea.h>
 
-#include <QTreeWidget>
+#include "GTGlobals.h"
 class QRectF;
 
 namespace U2 {
@@ -34,10 +35,10 @@ class GTUtilsQueryDesigner {
 public:
     static void openQueryDesigner(HI::GUITestOpStatus &os);
 
-    static QTreeWidgetItem* findAlgorithm(HI::GUITestOpStatus &os, QString itemName);
+    static QTreeWidgetItem *findAlgorithm(HI::GUITestOpStatus &os, QString itemName);
     static void addAlgorithm(HI::GUITestOpStatus &os, QString algName);
-    static QPoint getItemCenter(HI::GUITestOpStatus &os,QString itemName);
-    static QRect getItemRect(HI::GUITestOpStatus &os,QString itemName);
+    static QPoint getItemCenter(HI::GUITestOpStatus &os, QString itemName);
+    static QRect getItemRect(HI::GUITestOpStatus &os, QString itemName);
 
     static int getItemLeft(HI::GUITestOpStatus &os, QString itemName);
     static int getItemRight(HI::GUITestOpStatus &os, QString itemName);
@@ -45,5 +46,5 @@ public:
     static int getItemBottom(HI::GUITestOpStatus &os, QString itemName);
 };
 
-} // namespace
-#endif // GT_UTILS_QUERY_DESIGNER_H
+}    // namespace U2
+#endif    // GT_UTILS_QUERY_DESIGNER_H

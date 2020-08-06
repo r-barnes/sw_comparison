@@ -29,19 +29,17 @@ namespace U2 {
 class SWMulAlignSeqPrefixTag : public SWMulAlignResultNamesTag {
 public:
     inline SWMulAlignSeqPrefixTag(const QString _shorthand, const QString _label, const quint32 _prefixLength);
-    virtual QString expandTag(const QVariant & argument) const;
+    virtual QString expandTag(const QVariant &argument) const;
 
 private:
     quint32 prefixLength;
 };
-
-
 
 inline SWMulAlignSeqPrefixTag::SWMulAlignSeqPrefixTag(const QString _shorthand, const QString _label, const quint32 _prefixLength)
     : SWMulAlignResultNamesTag(_shorthand, _label), prefixLength(_prefixLength) {
     acceptableForSubseqNamesOnly = false;
 }
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_SW_MUL_ALIGN_SEQ_PREFIX_TAG_H_
+#endif    // _U2_SW_MUL_ALIGN_SEQ_PREFIX_TAG_H_

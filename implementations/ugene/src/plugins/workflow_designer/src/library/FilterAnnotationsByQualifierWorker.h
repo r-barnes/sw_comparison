@@ -27,14 +27,16 @@
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
 
-
 namespace U2 {
 namespace LocalWorkflow {
 
 class FilterAnnotationsByQualifierPrompter : public PrompterBase<FilterAnnotationsByQualifierPrompter> {
     Q_OBJECT
 public:
-    FilterAnnotationsByQualifierPrompter(Actor* p = 0) : PrompterBase<FilterAnnotationsByQualifierPrompter>(p) {}
+    FilterAnnotationsByQualifierPrompter(Actor *p = 0)
+        : PrompterBase<FilterAnnotationsByQualifierPrompter>(p) {
+    }
+
 protected:
     QString composeRichDoc();
 };
@@ -42,13 +44,15 @@ protected:
 class FilterAnnotationsByQualifierWorker : public BaseWorker {
     Q_OBJECT
 public:
-    FilterAnnotationsByQualifierWorker(Actor* a) : BaseWorker(a), input(NULL), output(NULL) {};
+    FilterAnnotationsByQualifierWorker(Actor *a)
+        : BaseWorker(a), input(NULL), output(NULL) {};
 
     virtual void init();
-    virtual Task* tick();
+    virtual Task *tick();
     virtual void cleanup();
 private slots:
     void sl_taskFinished(Task *t);
+
 private:
     IntegralBus *input, *output;
     QList<SharedAnnotationData> inputAnns;
@@ -58,17 +62,19 @@ class FilterAnnotationsByQualifierWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
     static void init();
-    FilterAnnotationsByQualifierWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual Worker* createWorker(Actor* a) { return new FilterAnnotationsByQualifierWorker(a); }
+    FilterAnnotationsByQualifierWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual Worker *createWorker(Actor *a) {
+        return new FilterAnnotationsByQualifierWorker(a);
+    }
 };
 
 class FilterAnnotationsByQualifierTask : public Task {
     Q_OBJECT
 public:
-    FilterAnnotationsByQualifierTask(QList<SharedAnnotationData> &annotations, const QString &qName, const QString& qVal, bool acceptAnns)
-        : Task(tr("Filter annotations by qualifier task"), TaskFlag_None), anns(annotations), qualName(qName), qualFilterVal(qVal), accept(acceptAnns)
-    {
-
+    FilterAnnotationsByQualifierTask(QList<SharedAnnotationData> &annotations, const QString &qName, const QString &qVal, bool acceptAnns)
+        : Task(tr("Filter annotations by qualifier task"), TaskFlag_None), anns(annotations), qualName(qName), qualFilterVal(qVal), accept(acceptAnns) {
     }
 
     void run();
@@ -79,7 +85,7 @@ private:
     bool accept;
 };
 
-} // LocalWorkflow namespace
-} // U2 namespace
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif //_U2_FILTER_ANNOTATIONS_BY_QUALIFIER_WORKER_H_
+#endif    //_U2_FILTER_ANNOTATIONS_BY_QUALIFIER_WORKER_H_

@@ -37,7 +37,10 @@ typedef PrompterBase<RepeatPrompter> RepeatPrompterBase;
 class RepeatPrompter : public RepeatPrompterBase {
     Q_OBJECT
 public:
-    RepeatPrompter(Actor* p = 0) : RepeatPrompterBase(p) {}
+    RepeatPrompter(Actor *p = 0)
+        : RepeatPrompterBase(p) {
+    }
+
 protected:
     QString composeRichDoc();
 };
@@ -45,10 +48,10 @@ protected:
 class RepeatWorker : public BaseWorker {
     Q_OBJECT
 public:
-    RepeatWorker(Actor* a);
+    RepeatWorker(Actor *a);
 
     virtual void init();
-    virtual Task* tick();
+    virtual Task *tick();
     virtual void cleanup();
 
 private slots:
@@ -56,9 +59,8 @@ private slots:
 
 protected:
     IntegralBus *input, *output;
-    QString resultName,transId;
+    QString resultName, transId;
     FindRepeatsTaskSettings cfg;
-
 };
 
 class RepeatWorkerFactory : public DomainFactory {
@@ -67,11 +69,15 @@ public:
     static void init();
     static FindRepeatsTaskSettings defaultSettings();
 
-    RepeatWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual Worker* createWorker(Actor* a) {return new RepeatWorker(a);}
+    RepeatWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual Worker *createWorker(Actor *a) {
+        return new RepeatWorker(a);
+    }
 };
 
-} // Workflow namespace
-} // U2 namespace
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

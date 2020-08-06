@@ -20,19 +20,20 @@
  * MA 02110-1301, USA.
  */
 
-#include <QDir>
-#include <QTextStream>
-#include <QFileInfo>
+#include "SpadesTask.h"
 
+#include <QDir>
+#include <QFileInfo>
+#include <QTextStream>
+
+#include <U2Core/AppResources.h>
+#include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/Counter.h>
 #include <U2Core/DocumentUtils.h>
-#include <U2Core/BaseDocumentFormats.h>
-#include <U2Core/AppResources.h>
-#include <U2Core/U2SafePoints.h>
 #include <U2Core/FileAndDirectoryUtils.h>
+#include <U2Core/U2SafePoints.h>
 
 #include "SpadesSupport.h"
-#include "SpadesTask.h"
 #include "SpadesWorker.h"
 
 namespace U2 {
@@ -48,9 +49,8 @@ const QString SpadesTask::YAML_FILE_NAME = "datasets.yaml";
 const QString SpadesTask::CONTIGS_NAME = "contigs.fasta";
 const QString SpadesTask::SCAFFOLDS_NAME = "scaffolds.fasta";
 
-SpadesTask::SpadesTask(const  GenomeAssemblyTaskSettings &settings):
-    GenomeAssemblyTask(settings, TaskFlags_NR_FOSCOE)
-{
+SpadesTask::SpadesTask(const GenomeAssemblyTaskSettings &settings)
+    : GenomeAssemblyTask(settings, TaskFlags_NR_FOSCOE) {
     GCOUNTER(cvar, tvar, "SpadesTask");
 }
 
@@ -58,11 +58,11 @@ void SpadesTask::prepare() {
     const QDir outDir = QFileInfo(settings.outDir.getURLString()).absoluteDir();
     if (!outDir.exists()) {
         stateInfo.setError(tr("Folder does not exist: ") + outDir.absolutePath());
-        return ;
+        return;
     }
     writeYamlReads();
-    if(hasError()){
-       return;
+    if (hasError()) {
+        return;
     }
 
     QStringList arguments;
@@ -117,9 +117,9 @@ Task::ReportResult SpadesTask::report() {
     CHECK(!isCanceled(), ReportResult_Finished);
 
     QString res = settings.outDir.getURLString() + "/" + SpadesTask::SCAFFOLDS_NAME;
-    if(!FileAndDirectoryUtils::isFileEmpty(res)){
+    if (!FileAndDirectoryUtils::isFileEmpty(res)) {
         resultUrl = res;
-    }else{
+    } else {
         stateInfo.setError(tr("File %1 has not been found in output folder %2").arg(SpadesTask::SCAFFOLDS_NAME).arg(settings.outDir.getURLString()));
     }
 
@@ -129,7 +129,6 @@ Task::ReportResult SpadesTask::report() {
     } else {
         stateInfo.setError(tr("File %1 has not been found in output folder %2").arg(SpadesTask::CONTIGS_NAME).arg(settings.outDir.getURLString()));
     }
-
 
     return ReportResult_Finished;
 }
@@ -147,15 +146,15 @@ QList<Task *> SpadesTask::onSubTaskFinished(Task * /*subTask*/) {
     return result;
 }
 
-void SpadesTask::writeYamlReads(){
-    QFile yaml (settings.outDir.getURLString() + QDir::separator() + YAML_FILE_NAME);
-    if(!yaml.open(QFile::WriteOnly)){
+void SpadesTask::writeYamlReads() {
+    QFile yaml(settings.outDir.getURLString() + QDir::separator() + YAML_FILE_NAME);
+    if (!yaml.open(QFile::WriteOnly)) {
         stateInfo.setError(QString("Cannot open write settings file %1").arg(settings.outDir.getURLString() + QDir::separator() + YAML_FILE_NAME));
         return;
     }
     QString res = "";
     res.append("[\n");
-    foreach (const AssemblyReads& r , settings.reads){
+    foreach (const AssemblyReads &r, settings.reads) {
         res.append("{\n");
 
         const bool isLibraryPaired = GenomeAssemblyUtils::isLibraryPaired(r.libName);
@@ -168,24 +167,23 @@ void SpadesTask::writeYamlReads(){
         if (!isLibraryPaired || r.readType == TYPE_INTERLACED) {
             res.append(QString("%1: [\n").arg(r.readType));
 
-            foreach(const GUrl& url, r.left) {
+            foreach (const GUrl &url, r.left) {
                 res.append(QString("\"%1\",\n").arg(url.getURLString()));
             }
             res.append("]\n");
         } else {
             res.append("left reads: [\n");
-            foreach(const GUrl& url, r.left) {
+            foreach (const GUrl &url, r.left) {
                 res.append(QString("\"%1\",\n").arg(url.getURLString()));
             }
             res.append("],\n");
             res.append("right reads: [\n");
-            foreach(const GUrl& url, r.right) {
+            foreach (const GUrl &url, r.right) {
                 res.append(QString("\"%1\",\n").arg(url.getURLString()));
             }
             res.append("],\n");
         }
         res.append("},\n");
-
     }
     res.append("]\n");
 
@@ -199,45 +197,40 @@ GenomeAssemblyTask *SpadesTaskFactory::createTaskInstance(const GenomeAssemblyTa
     return new SpadesTask(settings);
 }
 
-SpadesLogParser::SpadesLogParser():ExternalToolLogParser() {
-
+SpadesLogParser::SpadesLogParser()
+    : ExternalToolLogParser() {
 }
 
-void SpadesLogParser::parseOutput(const QString &partOfLog){
-    lastPartOfLog=partOfLog.split(QRegExp("(\n|\r)"));
-    lastPartOfLog.first()=lastLine+lastPartOfLog.first();
-    lastLine=lastPartOfLog.takeLast();
-    foreach(QString buf, lastPartOfLog){
-        if(buf.contains("== Error == ")
-            || buf.contains(" ERROR ")){
-                coreLog.error("Spades: " + buf);
-                setLastError(buf);
-        }else if (buf.contains("== Warning == ")
-                  || buf.contains(" WARN ")){
+void SpadesLogParser::parseOutput(const QString &partOfLog) {
+    lastPartOfLog = partOfLog.split(QRegExp("(\n|\r)"));
+    lastPartOfLog.first() = lastLine + lastPartOfLog.first();
+    lastLine = lastPartOfLog.takeLast();
+    foreach (QString buf, lastPartOfLog) {
+        if (buf.contains("== Error == ") || buf.contains(" ERROR ")) {
+            coreLog.error("Spades: " + buf);
+            setLastError(buf);
+        } else if (buf.contains("== Warning == ") || buf.contains(" WARN ")) {
             algoLog.info(buf);
-        }else {
+        } else {
             ioLog.trace(buf);
         }
     }
 }
 
-void SpadesLogParser::parseErrOutput(const QString &partOfLog){
-    lastPartOfLog=partOfLog.split(QRegExp("(\n|\r)"));
-    lastPartOfLog.first()=lastErrLine+lastPartOfLog.first();
-    lastErrLine=lastPartOfLog.takeLast();
-    foreach(QString buf, lastPartOfLog){
-        if(buf.contains("== Error == ")
-            || buf.contains(" ERROR ")){
-                coreLog.error("Spades: " + buf);
-                setLastError(buf);
-        }else if (buf.contains("== Warning == ")
-                  || buf.contains(" WARN ")){
+void SpadesLogParser::parseErrOutput(const QString &partOfLog) {
+    lastPartOfLog = partOfLog.split(QRegExp("(\n|\r)"));
+    lastPartOfLog.first() = lastErrLine + lastPartOfLog.first();
+    lastErrLine = lastPartOfLog.takeLast();
+    foreach (QString buf, lastPartOfLog) {
+        if (buf.contains("== Error == ") || buf.contains(" ERROR ")) {
+            coreLog.error("Spades: " + buf);
+            setLastError(buf);
+        } else if (buf.contains("== Warning == ") || buf.contains(" WARN ")) {
             algoLog.info(buf);
-        }else {
+        } else {
             algoLog.trace(buf);
         }
     }
 }
 
-} // namespace U2
-
+}    // namespace U2

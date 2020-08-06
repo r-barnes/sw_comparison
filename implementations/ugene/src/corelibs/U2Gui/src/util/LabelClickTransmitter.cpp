@@ -19,19 +19,18 @@
 * MA 02110-1301, USA.
 */
 
+#include "LabelClickTransmitter.h"
+
 #include <QAbstractButton>
 #include <QLabel>
 #include <QMouseEvent>
 
 #include <U2Core/U2SafePoints.h>
 
-#include "LabelClickTransmitter.h"
-
 namespace U2 {
 
 LabelClickTransmitter::LabelClickTransmitter(QLabel *label, QAbstractButton *button)
-: QObject(label), label(label), button(button)
-{
+    : QObject(label), label(label), button(button) {
     label->installEventFilter(this);
 }
 
@@ -49,4 +48,4 @@ bool LabelClickTransmitter::eventFilter(QObject *object, QEvent *event) {
     return false;
 }
 
-} // U2
+}    // namespace U2

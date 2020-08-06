@@ -19,26 +19,24 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Lang/WorkflowContext.h>
-
 #include "BaseMessageTranslator.h"
+
+#include <U2Lang/WorkflowContext.h>
 
 namespace U2 {
 
 using namespace Workflow;
 
-BaseMessageTranslator::BaseMessageTranslator( const QVariant &atomicMessage,
-    WorkflowContext *initContext ) : source( atomicMessage ), context( initContext )
-{
-
+BaseMessageTranslator::BaseMessageTranslator(const QVariant &atomicMessage,
+                                             WorkflowContext *initContext)
+    : source(atomicMessage), context(initContext) {
 }
 
-BaseMessageTranslator::~BaseMessageTranslator( ) {
-
+BaseMessageTranslator::~BaseMessageTranslator() {
 }
 
-QString BaseMessageTranslator::getTranslation( ) const {
-    return source.toString( );
+QString BaseMessageTranslator::getTranslation() const {
+    return source.toString();
 }
 
-} // namespace U2
+}    // namespace U2

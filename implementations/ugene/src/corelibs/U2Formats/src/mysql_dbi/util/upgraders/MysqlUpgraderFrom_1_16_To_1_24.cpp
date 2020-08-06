@@ -19,9 +19,10 @@
  * MA 02110-1301, USA.
  */
 
+#include "MysqlUpgraderFrom_1_16_To_1_24.h"
+
 #include <U2Core/U2AttributeUtils.h>
 
-#include "MysqlUpgraderFrom_1_16_To_1_24.h"
 #include "mysql_dbi/MysqlDbi.h"
 #include "mysql_dbi/MysqlObjectDbi.h"
 #include "mysql_dbi/util/MysqlHelpers.h"
@@ -33,9 +34,7 @@ const QString MysqlUpgraderFrom_1_16_To_1_24::HEADER_MARKER = "#";
 const QString MysqlUpgraderFrom_1_16_To_1_24::COLUMN_SEPARATOR = "\t";
 
 MysqlUpgraderFrom_1_16_To_1_24::MysqlUpgraderFrom_1_16_To_1_24(MysqlDbi *dbi)
-    : MysqlUpgrader(Version::parseVersion("1.16.0"), Version::parseVersion("1.24.0"), dbi)
-{
-
+    : MysqlUpgrader(Version::parseVersion("1.16.0"), Version::parseVersion("1.24.0"), dbi) {
 }
 
 void MysqlUpgraderFrom_1_16_To_1_24::upgrade(U2OpStatus &os) const {
@@ -83,7 +82,7 @@ QString convertInfo(const QString &additionalInfo, const QStringList &header) {
         convertedInfoMap.insert(U2Variant::VCF4_INFO, splittedInfo.takeFirst());
     }
 
-    static const int maxVcf4MandatoryColumnNumber = 7;      // VCF4 format supposes 8 mandatory columns
+    static const int maxVcf4MandatoryColumnNumber = 7;    // VCF4 format supposes 8 mandatory columns
     for (int i = maxVcf4MandatoryColumnNumber + 1; i < header.size(); i++) {
         convertedInfoMap.insert(header[i], splittedInfo.isEmpty() ? "." : splittedInfo.takeFirst());
     }
@@ -96,7 +95,7 @@ QString convertInfo(const QString &additionalInfo, const QStringList &header) {
     return StrPackUtils::packMap(convertedInfoMap);
 }
 
-}
+}    // namespace
 
 void MysqlUpgraderFrom_1_16_To_1_24::repackInfo(U2OpStatus &os, const QMap<U2DataId, QStringList> &trackId2header) const {
     coreLog.trace("Additional info repacking");
@@ -106,8 +105,8 @@ void MysqlUpgraderFrom_1_16_To_1_24::repackInfo(U2OpStatus &os, const QMap<U2Dat
 
     const qint64 variantsCount = U2SqlQuery("SELECT count(*) from Variant", dbi->getDbRef(), os).selectInt64();
 
-    static QString getQueryString ("SELECT id, track, additionalInfo FROM Variant");
-    static QString setQueryString ("UPDATE Variant SET additionalInfo = :additionalInfo WHERE id = :id");
+    static QString getQueryString("SELECT id, track, additionalInfo FROM Variant");
+    static QString setQueryString("UPDATE Variant SET additionalInfo = :additionalInfo WHERE id = :id");
     U2SqlQuery getQuery(getQueryString, dbi->getDbRef(), os);
     U2SqlQuery setQuery(setQueryString, dbi->getDbRef(), os);
 
@@ -160,7 +159,7 @@ void MysqlUpgraderFrom_1_16_To_1_24::extractAttributes(U2OpStatus &os, QMap<U2Da
     const qint64 tracksCount = U2SqlQuery("SELECT count(*) from VariantTrack", dbi->getDbRef(), os).selectInt64();
     CHECK_OP(os, );
 
-    QScopedPointer<U2DbiIterator<U2VariantTrack> > variantTracksIterator(dbi->getVariantDbi()->getVariantTracks(TrackType_All, os));
+    QScopedPointer<U2DbiIterator<U2VariantTrack>> variantTracksIterator(dbi->getVariantDbi()->getVariantTracks(TrackType_All, os));
     CHECK_OP(os, );
 
     qint64 number = 0;
@@ -214,4 +213,4 @@ void MysqlUpgraderFrom_1_16_To_1_24::splitFileHeader(const QString &fileHeader, 
     }
 }
 
-}   // namespace U2
+}    // namespace U2

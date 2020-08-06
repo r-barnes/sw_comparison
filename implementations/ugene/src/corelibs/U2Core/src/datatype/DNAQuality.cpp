@@ -20,6 +20,7 @@
  */
 
 #include "DNAQuality.h"
+
 #include "DNAChromatogram.h"
 
 namespace U2 {
@@ -36,13 +37,11 @@ const int DNAQuality::MIN_PHRED64_VALUE = 59;
 DNAQuality::DNAQuality(const QByteArray &qualScore)
     : qualCodes(qualScore),
       type(detectTypeByCodes(qualCodes)) {
-
 }
 
-DNAQuality::DNAQuality( const QByteArray& qualScore, DNAQualityType t)
+DNAQuality::DNAQuality(const QByteArray &qualScore, DNAQualityType t)
     : qualCodes(qualScore),
       type(t) {
-
 }
 
 qint64 DNAQuality::memoryHint() const {
@@ -52,7 +51,7 @@ qint64 DNAQuality::memoryHint() const {
     return m;
 }
 
-void DNAQuality::setQualCodes(const QByteArray& qualCodes) {
+void DNAQuality::setQualCodes(const QByteArray &qualCodes) {
     bool zeroQuality = true;
     int prev = -1;
     for (int i = 0; i < qualCodes.size(); i++) {
@@ -70,33 +69,34 @@ void DNAQuality::setQualCodes(const QByteArray& qualCodes) {
     }
 }
 
-int DNAQuality::getValue( int pos ) const {
-    assert(pos >=0 && pos < qualCodes.count());
-    return  type == DNAQualityType_Sanger ?
-        ( (int)qualCodes.at(pos) - 33 ) : ( (int)qualCodes.at(pos) - 64 );
+int DNAQuality::getValue(int pos) const {
+    assert(pos >= 0 && pos < qualCodes.count());
+    return type == DNAQualityType_Sanger ?
+               ((int)qualCodes.at(pos) - 33) :
+               ((int)qualCodes.at(pos) - 64);
 }
 
-char DNAQuality::encode( int val, DNAQualityType type ) {
-    if (type == DNAQualityType_Sanger ) {
-        return (char) ( (val <= 93 ? val : 93) + 33 );
+char DNAQuality::encode(int val, DNAQualityType type) {
+    if (type == DNAQualityType_Sanger) {
+        return (char)((val <= 93 ? val : 93) + 33);
     } else {
-        return (char) ( (val <= 62 ? val : 62) + 64 );
+        return (char)((val <= 62 ? val : 62) + 64);
     }
 }
 
-QString DNAQuality::getDNAQualityNameByType( DNAQualityType t ) {
-    switch(t){
-        case DnaQualityType_Solexa:
-            return SOLEXA;
-        case DNAQualityType_Illumina:
-            return ILLUMINA;
-        default:
-            return SANGER;
+QString DNAQuality::getDNAQualityNameByType(DNAQualityType t) {
+    switch (t) {
+    case DnaQualityType_Solexa:
+        return SOLEXA;
+    case DNAQualityType_Illumina:
+        return ILLUMINA;
+    default:
+        return SANGER;
     }
 }
 
-DNAQualityType DNAQuality::getDNAQualityTypeByName( const QString& name ) {
-    if ( name == SOLEXA) {
+DNAQualityType DNAQuality::getDNAQualityTypeByName(const QString &name) {
+    if (name == SOLEXA) {
         return DNAQualityType_Illumina;
     } else if (name == ILLUMINA) {
         return DNAQualityType_Illumina;
@@ -122,7 +122,7 @@ DNAQualityType DNAQuality::detectTypeByCodes(const QByteArray &qualCodes) {
 }
 
 DNAQualityType DNAQuality::detectTypeByMinMaxQualityValues(int minQualityValue, int maxQualityValue) {
-    return ( maxQualityValue >= MAX_PHRED33_VALUE && minQualityValue >= MIN_PHRED64_VALUE ) ? DNAQualityType_Illumina : DNAQualityType_Sanger;
+    return (maxQualityValue >= MAX_PHRED33_VALUE && minQualityValue >= MIN_PHRED64_VALUE) ? DNAQualityType_Illumina : DNAQualityType_Sanger;
 }
 
-} // U2
+}    // namespace U2

@@ -35,10 +35,10 @@ public:
     MimeDataIterator(const QMimeData *md);
 
     bool hasNextDocument() const;
-    Document * nextDocument();
+    Document *nextDocument();
 
     bool hasNextObject() const;
-    GObject * nextObject();
+    GObject *nextObject();
 
     bool hasNextFolder() const;
     Folder nextFolder();
@@ -47,11 +47,11 @@ private:
     int docIdx;
     int objectIdx;
     int folderIdx;
-    QList< QPointer<Document> > docs;
-    QList< QPointer<GObject> > objects;
+    QList<QPointer<Document>> docs;
+    QList<QPointer<GObject>> objects;
     QList<Folder> folders;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_MIMEDATAITERATOR_H_
+#endif    // _U2_MIMEDATAITERATOR_H_

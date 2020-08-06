@@ -25,13 +25,13 @@
 #include <3rdparty/zlib/zlib.h>
 
 #include <U2Core/IOAdapter.h>
+
 #include "VirtualOffset.h"
 
 namespace U2 {
 namespace BAM {
 
-class BgzfReader
-{
+class BgzfReader {
 public:
     BgzfReader(IOAdapter &ioAdapter);
     ~BgzfReader();
@@ -39,10 +39,11 @@ public:
     qint64 read(char *buff, qint64 maxSize);
     qint64 skip(qint64 size);
 
-    bool isEof()const;
+    bool isEof() const;
 
-    VirtualOffset getOffset()const;
+    VirtualOffset getOffset() const;
     void seek(VirtualOffset offset);
+
 private:
     void nextBlock();
 
@@ -54,7 +55,7 @@ private:
     bool endOfFile;
 };
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2
 
-#endif // _U2_BAM_BGZF_READER_H_
+#endif    // _U2_BAM_BGZF_READER_H_

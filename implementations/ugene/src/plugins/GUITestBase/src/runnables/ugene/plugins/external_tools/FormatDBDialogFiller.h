@@ -22,8 +22,9 @@
 #ifndef _U2_FORMAT_DB_DIALOG_FILLER_H_
 #define _U2_FORMAT_DB_DIALOG_FILLER_H_
 
-#include "utils/GTUtilsDialog.h"
 #include <base_dialogs/GTFileDialog.h>
+
+#include "utils/GTUtilsDialog.h"
 
 namespace U2 {
 using namespace HI;
@@ -32,12 +33,11 @@ class FormatDBSupportRunDialogFiller : public Filler {
 public:
     class Parameters {
     public:
-        Parameters():
-            justCancel(false), checkAlphabetType(false), alphabetType(Nucleotide), customFiller_3551(false)
-        {
-
+        Parameters()
+            : justCancel(false), checkAlphabetType(false), alphabetType(Nucleotide), customFiller_3551(false) {
         }
-        enum Type {Nucleotide, Protein};
+        enum Type { Nucleotide,
+                    Protein };
 
         bool justCancel;
         bool checkAlphabetType;
@@ -48,7 +48,6 @@ public:
         bool customFiller_3551;
     };
 
-
     FormatDBSupportRunDialogFiller(HI::GUITestOpStatus &os, const Parameters &parameters);
     void commonScenario();
 
@@ -56,6 +55,6 @@ private:
     Parameters parameters;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_FORMAT_DB_DIALOG_FILLER_H_
+#endif    // _U2_FORMAT_DB_DIALOG_FILLER_H_

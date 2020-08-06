@@ -19,20 +19,19 @@
  * MA 02110-1301, USA.
  */
 
+#include "MysqlUpgradeTask.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Formats/MysqlDbiUtils.h>
 
-#include "MysqlUpgradeTask.h"
-
 namespace U2 {
 
-MysqlUpgradeTask::MysqlUpgradeTask(const U2DbiRef &dbiRef) :
-    Task(tr("Upgrade mysql database"), TaskFlag_None),
-    dbiRef(dbiRef)
-{
+MysqlUpgradeTask::MysqlUpgradeTask(const U2DbiRef &dbiRef)
+    : Task(tr("Upgrade mysql database"), TaskFlag_None),
+      dbiRef(dbiRef) {
     SAFE_POINT_EXT(MYSQL_DBI_ID == dbiRef.dbiFactoryId, setError(QString("Unexpected dbi factory id: expect '%1', got '%2'").arg(MYSQL_DBI_ID).arg(dbiRef.dbiFactoryId)), );
 }
 
@@ -45,6 +44,4 @@ const U2DbiRef &MysqlUpgradeTask::getDbiRef() const {
     return dbiRef;
 }
 
-
-
-}   // namespace U2
+}    // namespace U2

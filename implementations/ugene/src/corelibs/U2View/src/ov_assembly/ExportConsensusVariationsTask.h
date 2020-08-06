@@ -22,13 +22,13 @@
 #ifndef _U2_EXPORT_CONSENSUS_VARIATIONS_TASK_H_
 #define _U2_EXPORT_CONSENSUS_VARIATIONS_TASK_H_
 
-#include "AssemblyConsensusTask.h"
-
 #include <QQueue>
 
 #include <U2Core/DocumentProviderTask.h>
-#include <U2Core/VariantTrackObject.h>
 #include <U2Core/U2VariantUtils.h>
+#include <U2Core/VariantTrackObject.h>
+
+#include "AssemblyConsensusTask.h"
 
 namespace U2 {
 
@@ -48,18 +48,22 @@ public:
     ExportConsensusVariationsTask(const ExportConsensusVariationsTaskSettings &settings_);
 
     virtual void prepare();
-    virtual QList<Task*> onSubTaskFinished(Task* subTask);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
 
     // implement ConsensusSettingsQueue interface
-    virtual int count() { return consensusRegions.count(); }
-    virtual bool hasNext() { return ! consensusRegions.isEmpty(); }
+    virtual int count() {
+        return consensusRegions.count();
+    }
+    virtual bool hasNext() {
+        return !consensusRegions.isEmpty();
+    }
     virtual AssemblyConsensusTaskSettings getNextSettings();
     virtual void reportResult(const ConsensusInfo &result);
 
 private:
     ExportConsensusVariationsTaskSettings settings;
-    AssemblyConsensusWorker * consensusTask;
-    VariantTrackObject* varTrackObject;
+    AssemblyConsensusWorker *consensusTask;
+    VariantTrackObject *varTrackObject;
 
     // A region to analyze at a time
     static const qint64 REGION_TO_ANALAYZE = 1000000;
@@ -68,6 +72,6 @@ private:
     QQueue<U2Region> consensusRegions;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif //_U2_EXPORT_CONSENSUS_VARIATIONS_TASK_H_
+#endif    //_U2_EXPORT_CONSENSUS_VARIATIONS_TASK_H_

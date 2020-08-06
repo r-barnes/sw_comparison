@@ -21,22 +21,22 @@
 
 #include "ConvertAssemblyToSAMDialogFiller.h"
 #include <primitives/GTWidget.h>
+
 #include <QApplication>
-#include <QPushButton>
 #include <QDialogButtonBox>
+#include <QPushButton>
 
 namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::ConvertAssemblytoSamFiller"
 #define GT_METHOD_NAME "commonScenario"
 void ConvertAssemblyToSAMDialogFiller::commonScenario() {
-
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
     GTFileDialogUtils *ob = new GTFileDialogUtils(os, databasePath, databaseFileName);
     GTUtilsDialog::waitForDialog(os, ob);
-    GTWidget::click(os, GTWidget::findWidget(os,"setDbPathButton",dialog));
+    GTWidget::click(os, GTWidget::findWidget(os, "setDbPathButton", dialog));
 
     GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
 }
@@ -44,4 +44,4 @@ void ConvertAssemblyToSAMDialogFiller::commonScenario() {
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

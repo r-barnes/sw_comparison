@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "GenbankLocationValidator.h"
+
 #include <QLineEdit>
 #include <QPushButton>
 
@@ -32,43 +34,41 @@
 
 #include <U2Gui/GUIUtils.h>
 
-#include "GenbankLocationValidator.h"
-
 namespace U2 {
 
-GenbankLocationValidator::GenbankLocationValidator( QPushButton *_okButton, int length, bool _isCircular, QLineEdit *_le)
-:QValidator(),
-okButton(_okButton), 
-isCircular(_isCircular), 
-seqLen(length),
-le(_le)
-{}
+GenbankLocationValidator::GenbankLocationValidator(QPushButton *_okButton, int length, bool _isCircular, QLineEdit *_le)
+    : QValidator(),
+      okButton(_okButton),
+      isCircular(_isCircular),
+      seqLen(length),
+      le(_le) {
+}
 
-QValidator::State GenbankLocationValidator::validate( QString &str, int &/*ii*/ ) const {
+QValidator::State GenbankLocationValidator::validate(QString &str, int & /*ii*/) const {
     U2Location loc;
     Genbank::LocationParser::ParsingResult parsingResult = Genbank::LocationParser::Success;
     if (isCircular) {
-        parsingResult = Genbank::LocationParser::parseLocation(str.toLatin1().constData(), str.length(), loc, seqLen );
+        parsingResult = Genbank::LocationParser::parseLocation(str.toLatin1().constData(), str.length(), loc, seqLen);
     } else {
-        parsingResult = Genbank::LocationParser::parseLocation(str.toLatin1().constData(), str.length(), loc, -1 );
+        parsingResult = Genbank::LocationParser::parseLocation(str.toLatin1().constData(), str.length(), loc, -1);
     }
 
     if (Genbank::LocationParser::Success == parsingResult) {
-        if (loc.data()->isEmpty()){
+        if (loc.data()->isEmpty()) {
             return failValidate();
         }
-        foreach(const U2Region &r, loc.data()->regions){
-            if(r.startPos < 0 || r.startPos >seqLen){
+        foreach (const U2Region &r, loc.data()->regions) {
+            if (r.startPos < 0 || r.startPos > seqLen) {
                 return failValidate();
             }
-            if(r.endPos() < 0 || r.endPos() >seqLen){
+            if (r.endPos() < 0 || r.endPos() > seqLen) {
                 return failValidate();
             }
         }
         okButton->setEnabled(true);
         GUIUtils::setWidgetWarning(le, false);
         return QValidator::Acceptable;
-    }else{
+    } else {
         return failValidate();
     }
 }
@@ -79,8 +79,8 @@ QValidator::State GenbankLocationValidator::failValidate() const {
     return QValidator::Intermediate;
 }
 
-GenbankLocationValidator::~GenbankLocationValidator(){
+GenbankLocationValidator::~GenbankLocationValidator() {
     okButton->setEnabled(true);
 }
 
-}
+}    // namespace U2

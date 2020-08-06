@@ -19,20 +19,18 @@
  * MA 02110-1301, USA.
  */
 
+#include "Wizard.h"
+
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Lang/WizardPage.h>
-
-#include "Wizard.h"
 
 namespace U2 {
 
 const QString Wizard::DEFAULT_NAME("Wizard");
 
-Wizard::Wizard(const QString &_name, const QList<WizardPage*> &_pages, const QString &_helpPageId)
-: name(_name), pages(_pages), autoRun(false), withRunButton(true), withDefaultsButton(true), helpPageId(_helpPageId)
-{
-
+Wizard::Wizard(const QString &_name, const QList<WizardPage *> &_pages, const QString &_helpPageId)
+    : name(_name), pages(_pages), autoRun(false), withRunButton(true), withDefaultsButton(true), helpPageId(_helpPageId) {
 }
 
 Wizard::~Wizard() {
@@ -42,11 +40,11 @@ Wizard::~Wizard() {
     pages.clear();
 }
 
-const QString & Wizard::getName() const {
+const QString &Wizard::getName() const {
     return name;
 }
 
-const QList<WizardPage*> & Wizard::getPages() const {
+const QList<WizardPage *> &Wizard::getPages() const {
     return pages;
 }
 
@@ -77,7 +75,7 @@ void Wizard::addResult(const QList<Predicate> &preds, const QString &result) {
     results[result] = preds;
 }
 
-QMap<QString, QList<Predicate> > Wizard::getResults() const {
+QMap<QString, QList<Predicate>> Wizard::getResults() const {
     return results;
 }
 
@@ -119,8 +117,8 @@ void Wizard::setHasDefaultsButton(bool value) {
     withDefaultsButton = value;
 }
 
-const QString Wizard::getHelpPageId()const {
+const QString Wizard::getHelpPageId() const {
     return helpPageId;
 }
 
-} // U2
+}    // namespace U2

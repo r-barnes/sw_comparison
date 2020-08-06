@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "PrepareWevoteTaxonomyDataTask.h"
+
 #include <QTextStream>
 
 #include <U2Core/AppContext.h>
@@ -28,7 +30,6 @@
 #include <U2Core/L10n.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "PrepareWevoteTaxonomyDataTask.h"
 #include "../../ngs_reads_classification/src/NgsReadsClassificationPlugin.h"
 
 namespace U2 {
@@ -42,8 +43,7 @@ const QString PrepareWevoteTaxonomyDataTask::SCIENTIFIC_NAME = "scientific_name"
 PrepareWevoteTaxonomyDataTask::PrepareWevoteTaxonomyDataTask(FileStorage::WorkflowProcess &_workflowProcess)
     : Task(tr("Prepare taxonomy data for WEVOTE"), TaskFlag_None),
       workflowProcess(_workflowProcess),
-      removeDestinationFiles(false)
-{
+      removeDestinationFiles(false) {
     U2DataPathRegistry *dataPathRegistry = AppContext::getDataPathRegistry();
     SAFE_POINT_EXT(NULL != dataPathRegistry, setError("U2DataPathRegistry is NULL"), );
 
@@ -137,4 +137,4 @@ void PrepareWevoteTaxonomyDataTask::prepareNodesFile() {
     FileStorageUtils::addFileToFileInfo(fileInfo, workflowProcess);
 }
 
-}   // namespace U2
+}    // namespace U2

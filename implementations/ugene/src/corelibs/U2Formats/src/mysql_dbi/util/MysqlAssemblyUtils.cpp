@@ -42,9 +42,9 @@ QByteArray getQuality(const U2AssemblyRead &read) {
     return QByteArray(read->readSequence.length(), char(0xFF));
 }
 
-}   // unnamed namespace
+}    // unnamed namespace
 
-QByteArray MysqlAssemblyUtils::packData(MysqlAssemblyDataMethod method, const U2AssemblyRead &read, U2OpStatus& os) {
+QByteArray MysqlAssemblyUtils::packData(MysqlAssemblyDataMethod method, const U2AssemblyRead &read, U2OpStatus &os) {
     const QByteArray &name = read->name;
     const QByteArray &seq = read->readSequence;
     QByteArray cigarText = U2AssemblyUtils::cigar2String(read->cigar);
@@ -55,7 +55,7 @@ QByteArray MysqlAssemblyUtils::packData(MysqlAssemblyDataMethod method, const U2
 
     SAFE_POINT_EXT(method == MysqlAssemblyDataMethod_NSCQ, os.setError(QString("Unsupported packing method: %1").arg(method)), "");
 
-    int nBytes = 1 + name.length() + 1  + seq.length() + 1 + cigarText.length() + 1 + qualityString.length();
+    int nBytes = 1 + name.length() + 1 + seq.length() + 1 + cigarText.length() + 1 + qualityString.length();
     nBytes += 1 + rnext.length() + 1 + pnext.length();
     if (!aux.isEmpty()) {
         if (!aux.isEmpty()) {
@@ -64,7 +64,7 @@ QByteArray MysqlAssemblyUtils::packData(MysqlAssemblyDataMethod method, const U2
     }
 
     QByteArray res(nBytes, Qt::Uninitialized);
-    char* data = res.data();
+    char *data = res.data();
     int pos = 0;
 
     // packing type
@@ -115,7 +115,7 @@ QByteArray MysqlAssemblyUtils::packData(MysqlAssemblyDataMethod method, const U2
     return res;
 }
 
-void MysqlAssemblyUtils::unpackData(const QByteArray& packedData, U2AssemblyRead &read, U2OpStatus& os) {
+void MysqlAssemblyUtils::unpackData(const QByteArray &packedData, U2AssemblyRead &read, U2OpStatus &os) {
     QByteArray &name = read->name;
     QByteArray &sequence = read->readSequence;
     QByteArray &qualityString = read->quality;
@@ -124,7 +124,7 @@ void MysqlAssemblyUtils::unpackData(const QByteArray& packedData, U2AssemblyRead
         os.setError(U2DbiL10n::tr("Packed data are empty"));
         return;
     }
-    const char* data = packedData.constData();
+    const char *data = packedData.constData();
 
     // packing type
     if (data[0] != '0') {
@@ -207,10 +207,9 @@ void MysqlAssemblyUtils::unpackData(const QByteArray& packedData, U2AssemblyRead
         os.setError(err);
     }
 }
-#if (QT_VERSION < 0x050400) //Qt 5.4
+#if (QT_VERSION < 0x050400)    //Qt 5.4
 namespace {
-int removeAll(QVector<U2CigarOp> *vector,const U2CigarOp &t)
-{
+int removeAll(QVector<U2CigarOp> *vector, const U2CigarOp &t) {
     const QVector<U2CigarOp>::const_iterator ce = vector->cend(), cit = std::find(vector->cbegin(), ce, t);
     if (cit == ce)
         return 0;
@@ -221,10 +220,10 @@ int removeAll(QVector<U2CigarOp> *vector,const U2CigarOp &t)
     vector->erase(it, e);
     return result;
 }
-}
+}    // namespace
 #endif
 
-void MysqlAssemblyUtils::calculateCoverage(U2SqlQuery& q, const U2Region& r, U2AssemblyCoverageStat& coverage, U2OpStatus& os) {
+void MysqlAssemblyUtils::calculateCoverage(U2SqlQuery &q, const U2Region &r, U2AssemblyCoverageStat &coverage, U2OpStatus &os) {
     int csize = coverage.size();
     SAFE_POINT(csize > 0, "illegal coverage vector size!", );
 
@@ -235,7 +234,7 @@ void MysqlAssemblyUtils::calculateCoverage(U2SqlQuery& q, const U2Region& r, U2A
         //read data and convert to data with cigar
         QByteArray data = q.getBlob(2);
         U2AssemblyRead read(new U2AssemblyReadData());
-        unpackData(data,read,os);
+        unpackData(data, read, os);
 
         U2Region readRegion(startPos, len);
         U2Region readCroppedRegion = readRegion.intersect(r);
@@ -250,35 +249,34 @@ void MysqlAssemblyUtils::calculateCoverage(U2SqlQuery& q, const U2Region& r, U2A
         foreach (const U2CigarToken &cigar, read->cigar) {
             cigarVector += QVector<U2CigarOp>(cigar.count, cigar.op);
         }
-#if (QT_VERSION < 0x050400) //Qt 5.4
-        removeAll(&cigarVector,U2CigarOp_I);
-        removeAll(&cigarVector,U2CigarOp_S);
-        removeAll(&cigarVector,U2CigarOp_P);
+#if (QT_VERSION < 0x050400)    //Qt 5.4
+        removeAll(&cigarVector, U2CigarOp_I);
+        removeAll(&cigarVector, U2CigarOp_S);
+        removeAll(&cigarVector, U2CigarOp_P);
 #else
         cigarVector.removeAll(U2CigarOp_I);
         cigarVector.removeAll(U2CigarOp_S);
         cigarVector.removeAll(U2CigarOp_P);
 #endif
-        if(r.startPos > startPos){
-            cigarVector = cigarVector.mid(r.startPos - startPos);//cut unneeded cigar string
+        if (r.startPos > startPos) {
+            cigarVector = cigarVector.mid(r.startPos - startPos);    //cut unneeded cigar string
         }
 
-        int firstCoverageIdx = (int)((readCroppedRegion.startPos - r.startPos)/ basesPerRange);
-        int lastCoverageIdx = (int)((readCroppedRegion.startPos + readCroppedRegion.length - r.startPos ) / basesPerRange) - 1;
+        int firstCoverageIdx = (int)((readCroppedRegion.startPos - r.startPos) / basesPerRange);
+        int lastCoverageIdx = (int)((readCroppedRegion.startPos + readCroppedRegion.length - r.startPos) / basesPerRange) - 1;
         for (int i = firstCoverageIdx; i <= lastCoverageIdx && i < csize; i++) {
-            switch (cigarVector[(i-firstCoverageIdx)*basesPerRange]){
-            case U2CigarOp_D: // skip the deletion
-            case U2CigarOp_N: // skip the skiped
+            switch (cigarVector[(i - firstCoverageIdx) * basesPerRange]) {
+            case U2CigarOp_D:    // skip the deletion
+            case U2CigarOp_N:    // skip the skiped
                 continue;
             default:
                 coverage[i]++;
             }
-
         }
     }
 }
 
-void MysqlAssemblyUtils::addToCoverage(U2AssemblyCoverageImportInfo& ii, const U2AssemblyRead& read) {
+void MysqlAssemblyUtils::addToCoverage(U2AssemblyCoverageImportInfo &ii, const U2AssemblyRead &read) {
     if (!ii.computeCoverage) {
         return;
     }
@@ -289,10 +287,10 @@ void MysqlAssemblyUtils::addToCoverage(U2AssemblyCoverageImportInfo& ii, const U
     foreach (const U2CigarToken &cigar, read->cigar) {
         cigarVector += QVector<U2CigarOp>(cigar.count, cigar.op);
     }
-#if (QT_VERSION < 0x050400) //Qt 5.4
-    removeAll(&cigarVector,U2CigarOp_I);
-    removeAll(&cigarVector,U2CigarOp_S);
-    removeAll(&cigarVector,U2CigarOp_P);
+#if (QT_VERSION < 0x050400)    //Qt 5.4
+    removeAll(&cigarVector, U2CigarOp_I);
+    removeAll(&cigarVector, U2CigarOp_S);
+    removeAll(&cigarVector, U2CigarOp_P);
 #else
     cigarVector.removeAll(U2CigarOp_I);
     cigarVector.removeAll(U2CigarOp_S);
@@ -301,14 +299,14 @@ void MysqlAssemblyUtils::addToCoverage(U2AssemblyCoverageImportInfo& ii, const U
 
     int startPos = (int)(read->leftmostPos / ii.coverageBasesPerPoint);
     int endPos = (int)((read->leftmostPos + read->effectiveLen - 1) / ii.coverageBasesPerPoint);
-    if(endPos > csize - 1) {
+    if (endPos > csize - 1) {
         endPos = csize - 1;
     }
-    int* coverageData = ii.coverage.data();
+    int *coverageData = ii.coverage.data();
     for (int i = startPos; i <= endPos && i < csize; i++) {
-        switch (cigarVector[(i-startPos)*ii.coverageBasesPerPoint]){
-        case U2CigarOp_D: // skip the deletion
-        case U2CigarOp_N: // skip the skiped
+        switch (cigarVector[(i - startPos) * ii.coverageBasesPerPoint]) {
+        case U2CigarOp_D:    // skip the deletion
+        case U2CigarOp_N:    // skip the skiped
             continue;
         default:
             coverageData[i]++;
@@ -316,4 +314,4 @@ void MysqlAssemblyUtils::addToCoverage(U2AssemblyCoverageImportInfo& ii, const U
     }
 }
 
-}   // namespace U2
+}    // namespace U2

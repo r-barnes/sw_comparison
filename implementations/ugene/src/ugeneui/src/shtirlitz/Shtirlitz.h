@@ -23,9 +23,10 @@
 #define __SHTIRLITZ_H__
 
 #include <QUuid>
+
 #include <U2Core/Task.h>
 
-namespace U2{
+namespace U2 {
 
 class Shtirlitz;
 
@@ -33,28 +34,29 @@ class Shtirlitz;
 //the system where UGENE is installed and about UGENE usage.
 class Shtirlitz {
 public:
-    //Sends all of the reports, if needed. 
-    static QList<Task*> wakeup();
+    //Sends all of the reports, if needed.
+    static QList<Task *> wakeup();
     //Sends custom reports, created by somebody other than Shtirlitz.
-    static Task * sendCustomReport( const QString & customReport );
+    static Task *sendCustomReport(const QString &customReport);
     //Saves to settings gathered during the current launch info
     static void saveGatheredInfo();
+
 private:
     //Creates and sends counters info (statistics about UGENE main tasks usage)
-    static Task * sendCountersReport();
+    static Task *sendCountersReport();
     //Creates and sends system info: OS, hardware platform, etc.
-    static Task * sendSystemReport();
+    static Task *sendSystemReport();
 
     static QString formCountersReport();
-    static QString formSystemReport(); 
+    static QString formSystemReport();
 
-    static void getOsNameAndVersion( QString & name, QString & version );
+    static void getOsNameAndVersion(QString &name, QString &version);
 
-    static void getFirstLaunchInfo(bool& allVersions, bool& majorVersions);
+    static void getFirstLaunchInfo(bool &allVersions, bool &majorVersions);
     static bool enabled();
 
     //ugly stub for convenience - calls ShtirlitzPlugin::tr
-    static QString tr( const char * str );
+    static QString tr(const char *str);
 
 private:
     //loads uuid from settings if necessary
@@ -68,8 +70,9 @@ private:
 class ShtirlitzTask : public Task {
     Q_OBJECT
 public:
-    ShtirlitzTask( const QString & _report );
+    ShtirlitzTask(const QString &_report);
     void run();
+
 private:
     QString report;
 };
@@ -81,7 +84,6 @@ public:
     void prepare();
 };
 
-} // U2
-
+}    // namespace U2
 
 #endif

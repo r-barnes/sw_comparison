@@ -27,22 +27,21 @@
 namespace U2 {
 using namespace HI;
 
-    class ExportChromatogramFiller : public Filler {
-    public:
-        enum FormatToUse {SCF};
-        ExportChromatogramFiller(HI::GUITestOpStatus &_os, const QString &_path, const QString &_name,
-                                        ExportChromatogramFiller::FormatToUse _format, bool reversed, bool complement, 
-                                        bool addDocumentToProject, GTGlobals::UseMethod method = GTGlobals::UseMouse);
-        void commonScenario();
-    private:
-        QString path, name;
-        GTGlobals::UseMethod useMethod;
-        FormatToUse format;
-        bool reversed;
-        bool complement;
-        bool addDocumentToProject;
-        QMap<FormatToUse, QString> comboBoxItems;
-    };
-}
+class ExportChromatogramFiller : public Filler {
+public:
+    enum FormatToUse { SCF };
+    ExportChromatogramFiller(HI::GUITestOpStatus &_os, const QString &_path, const QString &_name, ExportChromatogramFiller::FormatToUse _format, bool reversed, bool complement, bool addDocumentToProject, GTGlobals::UseMethod method = GTGlobals::UseMouse);
+    void commonScenario();
+
+private:
+    QString path, name;
+    GTGlobals::UseMethod useMethod;
+    FormatToUse format;
+    bool reversed;
+    bool complement;
+    bool addDocumentToProject;
+    QMap<FormatToUse, QString> comboBoxItems;
+};
+}    // namespace U2
 
 #endif

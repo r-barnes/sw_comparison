@@ -35,6 +35,7 @@ typedef QSharedDataPointer<DbiDataHandler> SharedDbiDataHandler;
 
 class U2LANG_EXPORT DbiDataHandler : public QSharedData {
     friend class DbiDataStorage;
+
 public:
     DbiDataHandler(const U2EntityRef &entRef, U2ObjectDbi *dbi, bool useGC);
     virtual ~DbiDataHandler();
@@ -55,8 +56,8 @@ private:
     DbiDataHandler &operator=(const DbiDataHandler &);
 };
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2
 
 Q_DECLARE_METATYPE(U2::Workflow::SharedDbiDataHandler);
 Q_DECLARE_METATYPE(QList<U2::Workflow::SharedDbiDataHandler>);

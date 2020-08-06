@@ -30,7 +30,7 @@
 namespace U2 {
 
 namespace Workflow {
-    class Actor;
+class Actor;
 }
 class Attribute;
 class RunFileSystem;
@@ -38,14 +38,15 @@ class SchemaConfig;
 
 class U2LANG_EXPORT FSItem {
     friend class RunFileSystem;
+
 public:
     FSItem();
     FSItem(const QString &name, bool isDirectory, FSItem *parent = NULL);
     ~FSItem();
 
-    FSItem * parent() const;
-    QVector<FSItem*> children() const;
-    FSItem * child(int pos) const;
+    FSItem *parent() const;
+    QVector<FSItem *> children() const;
+    FSItem *child(int pos) const;
     int row() const;
 
     bool isDir() const;
@@ -58,13 +59,13 @@ public:
     void removeChild(const QString &name, U2OpStatus &os);
     void noChildren();
 
-    static FSItem * getItem(const QVector<FSItem*> &items, const QString &name);
+    static FSItem *getItem(const QVector<FSItem *> &items, const QString &name);
 
 private:
     FSItem *parentItem;
     QString itemName;
     bool dir;
-    QVector<FSItem*> items;
+    QVector<FSItem *> items;
 };
 
 class U2LANG_EXPORT RunFileSystem : public QObject {
@@ -79,7 +80,7 @@ public:
     void removeItem(const QString &path, U2OpStatus &os);
     void reset();
 
-    FSItem * getRoot();
+    FSItem *getRoot();
 
     void test(const QString &file);
 
@@ -89,18 +90,18 @@ private:
 private:
     QStringList getPath(const QString &pathStr) const;
     bool getPath(const QString &pathStr, QStringList &parentPath, QString &name) const;
-    FSItem * find(const QStringList &path, bool &found);
-    FSItem * createPath(const QStringList &path, U2OpStatus &os);
+    FSItem *find(const QStringList &path, bool &found);
+    FSItem *createPath(const QStringList &path, U2OpStatus &os);
     QStringList test(FSItem &root);
 };
 
 class U2LANG_EXPORT RFSUtils {
 public:
-    static void initRFS(RunFileSystem &rfs, const QList<Workflow::Actor*> &actors, SchemaConfig *cfg);
+    static void initRFS(RunFileSystem &rfs, const QList<Workflow::Actor *> &actors, SchemaConfig *cfg);
     static bool isCorrectUrl(const QString &url);
     static bool isOutUrlAttribute(Attribute *attr, Workflow::Actor *actor, bool &dir);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_RUNFILESYSTEM_H_
+#endif    // _U2_RUNFILESYSTEM_H_

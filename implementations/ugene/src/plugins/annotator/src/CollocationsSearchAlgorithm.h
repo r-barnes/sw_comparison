@@ -30,16 +30,19 @@ namespace U2 {
 
 class CollocationsAlgorithmListener {
 public:
-    virtual ~CollocationsAlgorithmListener(){};
-    virtual void onResult(const U2Region& r) = 0;
+    virtual ~CollocationsAlgorithmListener() {};
+    virtual void onResult(const U2Region &r) = 0;
 };
 
 class CollocationsAlgorithmItem {
 public:
-    CollocationsAlgorithmItem(){}
-    CollocationsAlgorithmItem(const QString& _name) : name(_name){}
+    CollocationsAlgorithmItem() {
+    }
+    CollocationsAlgorithmItem(const QString &_name)
+        : name(_name) {
+    }
 
-    QString         name;
+    QString name;
     QVector<U2Region> regions;
 };
 
@@ -47,21 +50,20 @@ class CollocationsAlgorithmSettings;
 
 class CollocationsAlgorithm {
 public:
-    enum SearchType {NormalSearch, PartialSearch};
-    static void find(const QList<CollocationsAlgorithmItem>& items, TaskStateInfo& si,
-        CollocationsAlgorithmListener* l, const CollocationsAlgorithmSettings& cfg);
-private:
-    static void findN(const QList<CollocationsAlgorithmItem>& items, TaskStateInfo& si,
-                    CollocationsAlgorithmListener* l, const U2Region& searchRegion, qint64 distance);
-    static void findP(const QList<CollocationsAlgorithmItem>& items, TaskStateInfo& si,
-                    CollocationsAlgorithmListener* l, const U2Region& searchRegion, qint64 distance);
+    enum SearchType { NormalSearch,
+                      PartialSearch };
+    static void find(const QList<CollocationsAlgorithmItem> &items, TaskStateInfo &si, CollocationsAlgorithmListener *l, const CollocationsAlgorithmSettings &cfg);
 
+private:
+    static void findN(const QList<CollocationsAlgorithmItem> &items, TaskStateInfo &si, CollocationsAlgorithmListener *l, const U2Region &searchRegion, qint64 distance);
+    static void findP(const QList<CollocationsAlgorithmItem> &items, TaskStateInfo &si, CollocationsAlgorithmListener *l, const U2Region &searchRegion, qint64 distance);
 };
 
 class CollocationsAlgorithmSettings {
 public:
     CollocationsAlgorithmSettings()
-        : distance(-1), st(CollocationsAlgorithm::NormalSearch), includeBoundaries(true), strand(StrandOption_Both) {}
+        : distance(-1), st(CollocationsAlgorithm::NormalSearch), includeBoundaries(true), strand(StrandOption_Both) {
+    }
     U2Region searchRegion;
     int distance;
     CollocationsAlgorithm::SearchType st;
@@ -70,8 +72,5 @@ public:
     StrandOption strand;
 };
 
-
-} //namespace U2
+}    //namespace U2
 #endif
-
-

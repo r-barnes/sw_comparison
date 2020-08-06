@@ -24,8 +24,9 @@
 
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
-#include "GenomeAlignerTask.h"
+
 #include "GenomeAlignerIO.h"
+#include "GenomeAlignerTask.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -36,7 +37,10 @@ namespace LocalWorkflow {
 class GenomeAlignerBuildPrompter : public PrompterBase<GenomeAlignerBuildPrompter> {
     Q_OBJECT
 public:
-    GenomeAlignerBuildPrompter(Actor* p = 0) : PrompterBase<GenomeAlignerBuildPrompter>(p) {}
+    GenomeAlignerBuildPrompter(Actor *p = 0)
+        : PrompterBase<GenomeAlignerBuildPrompter>(p) {
+    }
+
 protected:
     QString composeRichDoc();
 };
@@ -44,10 +48,12 @@ protected:
 class GenomeAlignerBuildWorker : public BaseWorker {
     Q_OBJECT
 public:
-    GenomeAlignerBuildWorker(Actor* a) : BaseWorker(a), output(NULL), done(false) {}
+    GenomeAlignerBuildWorker(Actor *a)
+        : BaseWorker(a), output(NULL), done(false) {
+    }
     virtual void init();
     virtual bool isReady() const;
-    virtual Task* tick();
+    virtual Task *tick();
     virtual bool isDone() const;
     virtual void cleanup();
 private slots:
@@ -66,8 +72,12 @@ class GenomeAlignerBuildWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
     static void init();
-    GenomeAlignerBuildWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual Worker* createWorker(Actor* a) {return new GenomeAlignerBuildWorker(a);}
+    GenomeAlignerBuildWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual Worker *createWorker(Actor *a) {
+        return new GenomeAlignerBuildWorker(a);
+    }
 };
 
 /************************************************************************/
@@ -76,7 +86,10 @@ public:
 class GenomeAlignerIndexReaderPrompter : public PrompterBase<GenomeAlignerIndexReaderPrompter> {
     Q_OBJECT
 public:
-    GenomeAlignerIndexReaderPrompter(Actor* p = 0) : PrompterBase<GenomeAlignerIndexReaderPrompter>(p) {}
+    GenomeAlignerIndexReaderPrompter(Actor *p = 0)
+        : PrompterBase<GenomeAlignerIndexReaderPrompter>(p) {
+    }
+
 protected:
     QString composeRichDoc();
 };
@@ -84,10 +97,12 @@ protected:
 class GenomeAlignerIndexReaderWorker : public BaseWorker {
     Q_OBJECT
 public:
-    GenomeAlignerIndexReaderWorker(Actor* a) : BaseWorker(a), output(NULL), done(false) {}
+    GenomeAlignerIndexReaderWorker(Actor *a)
+        : BaseWorker(a), output(NULL), done(false) {
+    }
     virtual void init();
     virtual bool isReady() const;
-    virtual Task* tick();
+    virtual Task *tick();
     virtual bool isDone() const;
     virtual void cleanup();
 private slots:
@@ -95,7 +110,7 @@ private slots:
 
 protected:
     CommunicationChannel *output;
-    QString resultName,transId;
+    QString resultName, transId;
     GUrl indexUrl;
     bool done;
 };
@@ -104,11 +119,15 @@ class GenomeAlignerIndexReaderWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
     static void init();
-    GenomeAlignerIndexReaderWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual Worker* createWorker(Actor* a) {return new GenomeAlignerIndexReaderWorker(a);}
+    GenomeAlignerIndexReaderWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual Worker *createWorker(Actor *a) {
+        return new GenomeAlignerIndexReaderWorker(a);
+    }
 };
 
-} // Workflow namespace
-} // U2 namespace
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // GENOME_ALIGNER_INDEX_WORKER
+#endif    // GENOME_ALIGNER_INDEX_WORKER

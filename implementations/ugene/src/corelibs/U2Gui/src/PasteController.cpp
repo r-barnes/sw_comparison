@@ -21,30 +21,30 @@
 
 #include "PasteController.h"
 
+#include <QApplication>
+#include <QFileInfo>
+#include <QMimeData>
+#include <QUrl>
+
 #include <U2Core/AddDocumentTask.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
-#include <U2Core/GHints.h>
-#include <U2Core/DocumentUtils.h>
 #include <U2Core/DocumentImport.h>
+#include <U2Core/DocumentUtils.h>
+#include <U2Core/GHints.h>
 #include <U2Core/GUrl.h>
 #include <U2Core/GUrlUtils.h>
 #include <U2Core/IOAdapterUtils.h>
 #include <U2Core/L10n.h>
 #include <U2Core/ProjectModel.h>
+#include <U2Core/StringAdapter.h>
 #include <U2Core/Task.h>
 #include <U2Core/TaskSignalMapper.h>
-#include <U2Core/StringAdapter.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/UserApplicationsSettings.h>
 
 #include <U2Gui/OpenViewTask.h>
-
-#include <QApplication>
-#include <QFileInfo>
-#include <QMimeData>
-#include <QUrl>
 
 namespace U2 {
 namespace {
@@ -87,35 +87,34 @@ QString generateClipboardUrl(const QStringList &extensions, const QSet<QString> 
     return GUrlUtils::rollFileName(result, DocumentUtils::getNewDocFileNameExcludesHint().unite(excludedFilenames));
 }
 
-void saveFile(const QString& url, const QString& data){
+void saveFile(const QString &url, const QString &data) {
     QFile outputFile(url);
     outputFile.open(QIODevice::WriteOnly);
     outputFile.write(data.toLatin1());
     outputFile.close();
 }
 
-}
+}    // namespace
 ////////////////////
 ///PasteTaskImpl
 PasteTaskImpl::PasteTaskImpl(bool addToProject)
-:PasteTask(), addToProject(addToProject){
+    : PasteTask(), addToProject(addToProject) {
 }
 
-void PasteTaskImpl::run(){
-
+void PasteTaskImpl::run() {
 }
 
-QList<Task*> PasteTaskImpl::onSubTaskFinished(Task* task){
-    QList<Task*> res;
-    if (task->isCanceled() || task->hasError()){
+QList<Task *> PasteTaskImpl::onSubTaskFinished(Task *task) {
+    QList<Task *> res;
+    if (task->isCanceled() || task->hasError()) {
         return res;
     }
-    DocumentProviderTask* loadTask = qobject_cast<DocumentProviderTask*>(task);
-    if (loadTask != NULL){
-        Document* doc = loadTask->takeDocument();
+    DocumentProviderTask *loadTask = qobject_cast<DocumentProviderTask *>(task);
+    if (loadTask != NULL) {
+        Document *doc = loadTask->takeDocument();
         processDocument(doc);
         documents.append(doc);
-        if(addToProject){
+        if (addToProject) {
             res << new AddDocumentAndOpenViewTask(doc);
         }
     }
@@ -125,17 +124,17 @@ QList<Task*> PasteTaskImpl::onSubTaskFinished(Task* task){
 ///////////////////
 ///PasteFactoryImpl
 PasteFactoryImpl::PasteFactoryImpl(QObject *parent)
-    :PasteFactory(parent){
+    : PasteFactory(parent) {
     excludedFilenames = QSet<QString>();
 }
 
-PasteTask* PasteFactoryImpl::pasteTask(bool addToProject) {
-    PasteTask* res = NULL;
+PasteTask *PasteFactoryImpl::pasteTask(bool addToProject) {
+    PasteTask *res = NULL;
     const QClipboard *clipboard = QApplication::clipboard();
     const QMimeData *mdata = clipboard->mimeData();
     if (mdata->hasUrls()) {
         res = new PasteUrlsTask(mdata->urls(), addToProject);
-    }else{
+    } else {
         res = new PasteTextTask(clipboard, excludedFilenames, addToProject);
     }
 
@@ -144,18 +143,18 @@ PasteTask* PasteFactoryImpl::pasteTask(bool addToProject) {
     return res;
 }
 
-void PasteFactoryImpl::connectExclude(PasteTask *task){
-    TaskSignalMapper* loadTaskSignalMapper = new TaskSignalMapper(task);
+void PasteFactoryImpl::connectExclude(PasteTask *task) {
+    TaskSignalMapper *loadTaskSignalMapper = new TaskSignalMapper(task);
     connect(loadTaskSignalMapper, SIGNAL(si_taskFinished(Task *)), SLOT(sl_excludeBack()));
 }
 
 void PasteFactoryImpl::sl_excludeBack() {
-    TaskSignalMapper* mapper = qobject_cast<TaskSignalMapper*>(sender());
+    TaskSignalMapper *mapper = qobject_cast<TaskSignalMapper *>(sender());
     SAFE_POINT(mapper != NULL, "Incorrect sender", );
 
-    PasteTask *task =  qobject_cast<PasteTask*>(mapper->getTask());
+    PasteTask *task = qobject_cast<PasteTask *>(mapper->getTask());
     SAFE_POINT(task != NULL, "Can not convert to LoadDocumentTask", );
-    foreach (const GUrl& gurl, task->getUrls()){
+    foreach (const GUrl &gurl, task->getUrls()) {
         excludedFilenames.remove(gurl.getURLString());
     }
 }
@@ -163,7 +162,7 @@ void PasteFactoryImpl::sl_excludeBack() {
 ///////////////////////
 ///PasteTextTask
 PasteUrlsTask::PasteUrlsTask(const QList<QUrl> &toPasteUrls, bool addToProject)
-    :PasteTaskImpl(addToProject){
+    : PasteTaskImpl(addToProject) {
     QStringList dirs;
     foreach (const QUrl &url, toPasteUrls) {
         QString parsedUrl = parseUrl(url.toLocalFile());
@@ -179,9 +178,9 @@ PasteUrlsTask::PasteUrlsTask(const QList<QUrl> &toPasteUrls, bool addToProject)
         return;
     }
     CHECK(!urls.isEmpty(), );
-    foreach (const GUrl& url, urls){
-        DocumentProviderTask* loadDocTask = LoadDocumentTask::getCommonLoadDocTask(url);
-        if (loadDocTask){
+    foreach (const GUrl &url, urls) {
+        DocumentProviderTask *loadDocTask = LoadDocumentTask::getCommonLoadDocTask(url);
+        if (loadDocTask) {
             addSubTask(loadDocTask);
         }
     }
@@ -189,22 +188,21 @@ PasteUrlsTask::PasteUrlsTask(const QList<QUrl> &toPasteUrls, bool addToProject)
 
 ///////////////////////
 ///PasteTextTask
-PasteTextTask::PasteTextTask(const QClipboard* clipboard, QSet<QString>& excludedFilenames, bool addToProject)
-    :PasteTaskImpl(addToProject){
-
+PasteTextTask::PasteTextTask(const QClipboard *clipboard, QSet<QString> &excludedFilenames, bool addToProject)
+    : PasteTaskImpl(addToProject) {
     QString clipboardText = fetchClipboardText(clipboard, stateInfo);
     CHECK_OP(stateInfo, );
 
-    QScopedPointer<StringAdapterFactoryWithStringData> siof (new StringAdapterFactoryWithStringData(clipboardText));
-    QScopedPointer<IOAdapter> ioa (siof->createIOAdapter());
+    QScopedPointer<StringAdapterFactoryWithStringData> siof(new StringAdapterFactoryWithStringData(clipboardText));
+    QScopedPointer<IOAdapter> ioa(siof->createIOAdapter());
     SAFE_POINT(ioa->isOpen(), L10N::internalError("IOAdapter is not opened"), );
 
     QList<FormatDetectionResult> dfs = DocumentUtils::detectFormat(ioa.data());
-    if( dfs.isEmpty() ) {
+    if (dfs.isEmpty()) {
         setError(tr("Cannot detect file format"));
-        return ;
+        return;
     }
-    DocumentFormat * df = dfs.first().format;
+    DocumentFormat *df = dfs.first().format;
 
     QString clipboardUrl = generateClipboardUrl(df->getSupportedDocumentFileExtensions(), excludedFilenames);
     excludedFilenames.insert(clipboardUrl);
@@ -213,14 +211,15 @@ PasteTextTask::PasteTextTask(const QClipboard* clipboard, QSet<QString>& exclude
 
     saveFile(clipboardUrl, clipboardText);
 
-    IOAdapterFactory * iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById( IOAdapterUtils::url2io( clipboardUrl ) );
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(clipboardUrl));
     CHECK(iof != NULL, );
 
     QVariantMap hints;
-    hints[ProjectLoaderHint_DoNotAddToRecentDocuments] = true;
+    // We create a new file for the pasted content and can add it to the "Recent Files".
+    // hints[ProjectLoaderHint_DoNotAddToRecentDocuments] = true;
     hints[DocumentReadingMode_SequenceAsSeparateHint] = true;
-    LoadDocumentTask* loadDocumentTask = new LoadDocumentTask(df->getFormatId(), GUrl(clipboardUrl), iof, hints);
+    LoadDocumentTask *loadDocumentTask = new LoadDocumentTask(df->getFormatId(), GUrl(clipboardUrl), iof, hints);
     addSubTask(loadDocumentTask);
 }
 
-} // U2
+}    // namespace U2

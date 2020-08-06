@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "AnnotationTableObjectTest.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/DocumentModel.h>
@@ -32,23 +34,21 @@
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "AnnotationTableObjectTest.h"
-
 namespace U2 {
 
-#define VALUE_ATTR      "value"
-#define DOC_ATTR        "doc"
-#define OBJ_ATTR        "obj"
-#define NAME_ATTR       "name"
+#define VALUE_ATTR "value"
+#define DOC_ATTR "doc"
+#define OBJ_ATTR "obj"
+#define NAME_ATTR "name"
 #define ANNOTATION_ATTR "annotation"
-#define SEQUENCE_ATTR   "sequence"
-#define NUMBER_ATTR     "number"
+#define SEQUENCE_ATTR "sequence"
+#define NUMBER_ATTR "number"
 #define COMPLEMENT_ATTR "complement"
-#define QUALIFIER_ATTR  "qualifier"
-#define LOCATION_ATTR   "location"
-#define INDEX_ATTR      "index"
+#define QUALIFIER_ATTR "qualifier"
+#define LOCATION_ATTR "location"
+#define INDEX_ATTR "index"
 
-void GTest_CheckNumAnnotations::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_CheckNumAnnotations::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     objContextName = el.attribute(OBJ_ATTR);
@@ -76,7 +76,7 @@ Task::ReportResult GTest_CheckNumAnnotations::report() {
         return ReportResult_Finished;
     }
     assert(obj != NULL);
-    AnnotationTableObject *anntbl = qobject_cast<AnnotationTableObject*>(obj);
+    AnnotationTableObject *anntbl = qobject_cast<AnnotationTableObject *>(obj);
     const QList<Annotation *> annList = anntbl->getAnnotations();
     if (num != annList.size()) {
         stateInfo.setError(QString("annotations count not matched: %1, expected %2 ").arg(annList.size()).arg(num));
@@ -86,7 +86,7 @@ Task::ReportResult GTest_CheckNumAnnotations::report() {
 
 //////////////////////////////////////////////////////////////////////////
 
-void GTest_FindAnnotationByNum::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_FindAnnotationByNum::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     result = NULL;
@@ -102,7 +102,7 @@ void GTest_FindAnnotationByNum::init(XMLTestFormat *tf, const QDomElement& el) {
     }
     bool ok = false;
     number = num_str.toInt(&ok);
-    if(!ok || number < 0) {
+    if (!ok || number < 0) {
         stateInfo.setError(QString("invalid value: %1").arg(NUMBER_ATTR));
         return;
     }
@@ -117,8 +117,8 @@ Task::ReportResult GTest_FindAnnotationByNum::report() {
         return ReportResult_Finished;
     }
 
-    AnnotationTableObject *anntbl = qobject_cast<AnnotationTableObject*>(obj);
-    if (anntbl == NULL){
+    AnnotationTableObject *anntbl = qobject_cast<AnnotationTableObject *>(obj);
+    if (anntbl == NULL) {
         stateInfo.setError(QString("qobject_cast error: null-pointer annotation table"));
         return ReportResult_Finished;
     }
@@ -147,7 +147,7 @@ void GTest_FindAnnotationByNum::cleanup() {
 
 //---------------------------------------------------------------
 
-void GTest_FindAnnotationByName::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_FindAnnotationByName::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     result = NULL;
@@ -166,7 +166,7 @@ void GTest_FindAnnotationByName::init(XMLTestFormat *tf, const QDomElement& el) 
     if (!num_str.isEmpty()) {
         bool ok = false;
         number = num_str.toInt(&ok);
-        if(!ok || number < 0) {
+        if (!ok || number < 0) {
             stateInfo.setError(QString("invalid value: %1").arg(NUMBER_ATTR));
             return;
         }
@@ -189,7 +189,7 @@ Task::ReportResult GTest_FindAnnotationByName::report() {
         return ReportResult_Finished;
     }
 
-    AnnotationTableObject *anntbl = qobject_cast<AnnotationTableObject*>(obj);
+    AnnotationTableObject *anntbl = qobject_cast<AnnotationTableObject *>(obj);
     if (anntbl == NULL) {
         stateInfo.setError(QString("qobject_cast error: null-pointer annotation table"));
         return ReportResult_Finished;
@@ -229,7 +229,7 @@ void GTest_FindAnnotationByName::cleanup() {
 
 //---------------------------------------------------------------
 
-void GTest_CheckAnnotationName::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_CheckAnnotationName::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     annCtxName = el.attribute(ANNOTATION_ATTR);
@@ -243,7 +243,6 @@ void GTest_CheckAnnotationName::init(XMLTestFormat *tf, const QDomElement& el) {
         failMissingValue(NAME_ATTR);
         return;
     }
-
 }
 
 Task::ReportResult GTest_CheckAnnotationName::report() {
@@ -261,7 +260,7 @@ Task::ReportResult GTest_CheckAnnotationName::report() {
 
 //---------------------------------------------------------------
 
-void GTest_CheckAnnotationSequence::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_CheckAnnotationSequence::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     aCtxName = el.attribute(ANNOTATION_ATTR);
@@ -284,14 +283,14 @@ void GTest_CheckAnnotationSequence::init(XMLTestFormat *tf, const QDomElement& e
 }
 
 Task::ReportResult GTest_CheckAnnotationSequence::report() {
-    U2SequenceObject* dnaObj = getContext<U2SequenceObject>(this, seqCtxName);
+    U2SequenceObject *dnaObj = getContext<U2SequenceObject>(this, seqCtxName);
     if (dnaObj == NULL) {
         stateInfo.setError("Invalid sequence context");
         return ReportResult_Finished;
     }
 
-    GTestAnnotationDataItem *annCtx = getContext<GTestAnnotationDataItem>(this,aCtxName);
-    if (annCtx == NULL){
+    GTestAnnotationDataItem *annCtx = getContext<GTestAnnotationDataItem>(this, aCtxName);
+    if (annCtx == NULL) {
         stateInfo.setError(QString("invalid annotation context"));
         return ReportResult_Finished;
     }
@@ -311,7 +310,7 @@ Task::ReportResult GTest_CheckAnnotationSequence::report() {
 
 //---------------------------------------------------------------
 
-void GTest_CheckAnnotationLocation::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_CheckAnnotationLocation::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     annCtxName = el.attribute(ANNOTATION_ATTR);
@@ -319,19 +318,19 @@ void GTest_CheckAnnotationLocation::init(XMLTestFormat *tf, const QDomElement& e
         failMissingValue(OBJ_ATTR);
         return;
     }
-    QString loc=el.attribute(LOCATION_ATTR);
+    QString loc = el.attribute(LOCATION_ATTR);
     if (loc.isEmpty()) {
         failMissingValue(LOCATION_ATTR);
         return;
     }
 
-    QString complement_str=el.attribute(COMPLEMENT_ATTR);
+    QString complement_str = el.attribute(COMPLEMENT_ATTR);
     if (complement_str.isEmpty()) {
         failMissingValue(COMPLEMENT_ATTR);
         return;
     }
     bool ok = false;
-    strand  = complement_str.toInt(&ok) ? U2Strand::Complementary : U2Strand::Direct;
+    strand = complement_str.toInt(&ok) ? U2Strand::Complementary : U2Strand::Direct;
     if (!ok) {
         failMissingValue(COMPLEMENT_ATTR);
     }
@@ -339,46 +338,45 @@ void GTest_CheckAnnotationLocation::init(XMLTestFormat *tf, const QDomElement& e
     QRegExp rx("(\\d+)(..)(\\d+)");
     int pos = 0;
     while ((pos = rx.indexIn(loc, pos)) != -1) {
-        qint64 start=rx.cap(1).toLongLong();
-        qint64 end=rx.cap(3).toLongLong();
-        location.append(U2Region(start-1,end-start+1));
+        qint64 start = rx.cap(1).toLongLong();
+        qint64 end = rx.cap(3).toLongLong();
+        location.append(U2Region(start - 1, end - start + 1));
         pos += rx.matchedLength();
     }
-
 }
 
 Task::ReportResult GTest_CheckAnnotationLocation::report() {
-    GTestAnnotationDataItem *annCtx = getContext<GTestAnnotationDataItem>(this,annCtxName);
-    if(annCtx==NULL){
+    GTestAnnotationDataItem *annCtx = getContext<GTestAnnotationDataItem>(this, annCtxName);
+    if (annCtx == NULL) {
         stateInfo.setError(QString("invalid annotation context"));
         return ReportResult_Finished;
     }
     const SharedAnnotationData annotation = annCtx->getAnnotation();
 
     int n = location.size();
-    const QVector<U2Region>& alocation = annotation->location->regions;
-    if (n!=alocation.size()) {
+    const QVector<U2Region> &alocation = annotation->location->regions;
+    if (n != alocation.size()) {
         stateInfo.setError(QString("number of regions not matched: expected: %1, actual %2").arg(n).arg(alocation.size()));
         QString msg = "Check location regions:\n";
-        foreach(const U2Region& r, alocation) {
-            msg+=QString::number(r.startPos+1)+".." + QString::number(r.endPos())+",\n";
+        foreach (const U2Region &r, alocation) {
+            msg += QString::number(r.startPos + 1) + ".." + QString::number(r.endPos()) + ",\n";
         }
         msg += "END";
         algoLog.trace(msg);
         return ReportResult_Finished;
     }
     for (int i = 0; i < n; i++) {
-        const U2Region& al = alocation[i];
+        const U2Region &al = alocation[i];
         bool matched = false;
         for (int j = 0; j < n; j++) {
-            const U2Region& l = location[j];
+            const U2Region &l = location[j];
             if (l == al) {
                 matched = true;
                 break;
             }
         }
         if (!matched) {
-            stateInfo.setError(QString("location not matched, idx=%1, \"%2..%3\"").arg(i).arg(al.startPos+1).arg(al.endPos()));
+            stateInfo.setError(QString("location not matched, idx=%1, \"%2..%3\"").arg(i).arg(al.startPos + 1).arg(al.endPos()));
             return ReportResult_Finished;
         }
     }
@@ -391,8 +389,7 @@ Task::ReportResult GTest_CheckAnnotationLocation::report() {
     return ReportResult_Finished;
 }
 
-
-void GTest_CheckAnnotationQualifier::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_CheckAnnotationQualifier::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     annCtxName = el.attribute(ANNOTATION_ATTR);
@@ -401,17 +398,17 @@ void GTest_CheckAnnotationQualifier::init(XMLTestFormat *tf, const QDomElement& 
         return;
     }
 
-    qName=el.attribute(QUALIFIER_ATTR);
+    qName = el.attribute(QUALIFIER_ATTR);
     if (qName.isEmpty()) {
         failMissingValue(QUALIFIER_ATTR);
         return;
     }
-    qValue =el.attribute(VALUE_ATTR);
+    qValue = el.attribute(VALUE_ATTR);
 }
 
 Task::ReportResult GTest_CheckAnnotationQualifier::report() {
-    GTestAnnotationDataItem *annCtx = getContext<GTestAnnotationDataItem>(this,annCtxName);
-    if (annCtx == NULL){
+    GTestAnnotationDataItem *annCtx = getContext<GTestAnnotationDataItem>(this, annCtxName);
+    if (annCtx == NULL) {
         stateInfo.setError(QString("invalid annotation context"));
         return ReportResult_Finished;
     }
@@ -425,7 +422,7 @@ Task::ReportResult GTest_CheckAnnotationQualifier::report() {
 
     bool ok = false;
     QString value;
-    foreach(const U2Qualifier& q, res) {
+    foreach (const U2Qualifier &q, res) {
         if (q.name == qName) {
             value = q.value;
             if (value == qValue) {
@@ -440,8 +437,7 @@ Task::ReportResult GTest_CheckAnnotationQualifier::report() {
     return ReportResult_Finished;
 }
 
-
-void GTest_CheckAnnotationQualifierIsAbsent::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_CheckAnnotationQualifierIsAbsent::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     annCtxName = el.attribute(ANNOTATION_ATTR);
@@ -450,17 +446,16 @@ void GTest_CheckAnnotationQualifierIsAbsent::init(XMLTestFormat *tf, const QDomE
         return;
     }
 
-    qName=el.attribute(QUALIFIER_ATTR);
+    qName = el.attribute(QUALIFIER_ATTR);
     if (qName.isEmpty()) {
         failMissingValue(QUALIFIER_ATTR);
         return;
     }
 }
 
-
 Task::ReportResult GTest_CheckAnnotationQualifierIsAbsent::report() {
     GTestAnnotationDataItem *annCtx = getContext<GTestAnnotationDataItem>(this, annCtxName);
-    if (annCtx == NULL){
+    if (annCtx == NULL) {
         stateInfo.setError(QString("invalid annotation context"));
         return ReportResult_Finished;
     }
@@ -473,9 +468,8 @@ Task::ReportResult GTest_CheckAnnotationQualifierIsAbsent::report() {
     return ReportResult_Finished;
 }
 
-
 //---------------------------------------------------------------
-void GTest_CheckAnnotationsNumInTwoObjects::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_CheckAnnotationsNumInTwoObjects::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     docContextName = el.attribute(DOC_ATTR);
@@ -496,52 +490,51 @@ void GTest_CheckAnnotationsNumInTwoObjects::init(XMLTestFormat *tf, const QDomEl
     } else {
         compareNumObjects = true;
     }
-
 }
 
 Task::ReportResult GTest_CheckAnnotationsNumInTwoObjects::report() {
-    Document* doc = getContext<Document>(this, docContextName);
+    Document *doc = getContext<Document>(this, docContextName);
     if (doc == NULL) {
         stateInfo.setError(QString("document not found %1").arg(docContextName));
         return ReportResult_Finished;
     }
-    Document* doc2 = getContext<Document>(this, secondDocContextName);
+    Document *doc2 = getContext<Document>(this, secondDocContextName);
     if (doc2 == NULL) {
         stateInfo.setError(QString("document not found %1").arg(secondDocContextName));
         return ReportResult_Finished;
     }
 
-    const QList<GObject*>& objs = doc->getObjects();
-    const QList<GObject*>& objs2 = doc2->getObjects();
-    GObject*obj=NULL;
-    AnnotationTableObject * myAnnotation = NULL;
-    AnnotationTableObject * myAnnotation2 = NULL;
+    const QList<GObject *> &objs = doc->getObjects();
+    const QList<GObject *> &objs2 = doc2->getObjects();
+    GObject *obj = NULL;
+    AnnotationTableObject *myAnnotation = NULL;
+    AnnotationTableObject *myAnnotation2 = NULL;
 
-    for(int i=0;(i!=objs.size())&&(i!=objs2.size());i++){
+    for (int i = 0; (i != objs.size()) && (i != objs2.size()); i++) {
         obj = objs.at(i);
         GObject *obj2 = objs2.at(i);
 
-        if((obj->getGObjectType() == GObjectTypes::ANNOTATION_TABLE)&&(obj2->getGObjectType() == GObjectTypes::ANNOTATION_TABLE)){
-            myAnnotation = qobject_cast<AnnotationTableObject*>(obj);
-            if(myAnnotation == NULL){
+        if ((obj->getGObjectType() == GObjectTypes::ANNOTATION_TABLE) && (obj2->getGObjectType() == GObjectTypes::ANNOTATION_TABLE)) {
+            myAnnotation = qobject_cast<AnnotationTableObject *>(obj);
+            if (myAnnotation == NULL) {
                 stateInfo.setError(QString("can't cast to annotation from: %1 in position %2").arg(obj->getGObjectName()).arg(i));
                 return ReportResult_Finished;
             }
-            myAnnotation2 = qobject_cast<AnnotationTableObject*>(obj2);
-            if(myAnnotation2 == NULL){
+            myAnnotation2 = qobject_cast<AnnotationTableObject *>(obj2);
+            if (myAnnotation2 == NULL) {
                 stateInfo.setError(QString("can't cast to annotation from: %1 in position %2").arg(obj2->getGObjectName()).arg(i));
                 return ReportResult_Finished;
             }
-//////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////
             const QList<Annotation *> annList = myAnnotation->getAnnotations();
             const QList<Annotation *> annList2 = myAnnotation2->getAnnotations();
             int annotationsCount1 = 0;
-            foreach(Annotation* annotation, annList) {
+            foreach (Annotation *annotation, annList) {
                 annotationsCount1 += (annotation->getType() != U2FeatureTypes::Comment) ? 1 : 0;
             }
 
             int annotationsCount2 = 0;
-            foreach(Annotation* annotation, annList2) {
+            foreach (Annotation *annotation, annList2) {
                 annotationsCount2 += (annotation->getType() != U2FeatureTypes::Comment) ? 1 : 0;
             }
 
@@ -550,9 +543,8 @@ Task::ReportResult GTest_CheckAnnotationsNumInTwoObjects::report() {
                 return ReportResult_Finished;
             }
 
-//////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////
         }
-
     }
 
     if (!compareNumObjects) {
@@ -572,7 +564,7 @@ Task::ReportResult GTest_CheckAnnotationsNumInTwoObjects::report() {
 }
 
 //---------------------------------------------------------------
-void GTest_CheckAnnotationsLocationsInTwoObjects::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_CheckAnnotationsLocationsInTwoObjects::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     docContextName = el.attribute(DOC_ATTR);
@@ -593,11 +585,10 @@ void GTest_CheckAnnotationsLocationsInTwoObjects::init(XMLTestFormat *tf, const 
     } else {
         compareNumObjects = true;
     }
-
 }
 
 struct AnnotationsLess {
-    bool operator() (Annotation *a1, Annotation *a2) const {
+    bool operator()(Annotation *a1, Annotation *a2) const {
         if (a1->getStrand() != a2->getStrand()) {
             return a1->getStrand().getDirectionValue() < a2->getStrand().getDirectionValue();
         }
@@ -635,12 +626,12 @@ struct AnnotationsLess {
 };
 
 Task::ReportResult GTest_CheckAnnotationsLocationsInTwoObjects::report() {
-    Document* doc = getContext<Document>(this, docContextName);
+    Document *doc = getContext<Document>(this, docContextName);
     if (doc == NULL) {
         stateInfo.setError(QString("document not found %1").arg(docContextName));
         return ReportResult_Finished;
     }
-    Document* doc2 = getContext<Document>(this, secondDocContextName);
+    Document *doc2 = getContext<Document>(this, secondDocContextName);
     if (doc2 == NULL) {
         stateInfo.setError(QString("document not found %1").arg(secondDocContextName));
         return ReportResult_Finished;
@@ -656,18 +647,18 @@ Task::ReportResult GTest_CheckAnnotationsLocationsInTwoObjects::report() {
         obj = objs.at(i);
         GObject *obj2 = objs2.at(i);
 
-        if ((obj->getGObjectType() == GObjectTypes::ANNOTATION_TABLE)&&(obj2->getGObjectType() == GObjectTypes::ANNOTATION_TABLE)) {
-            myAnnotation = qobject_cast<AnnotationTableObject*>(obj);
-            if(myAnnotation == NULL){
+        if ((obj->getGObjectType() == GObjectTypes::ANNOTATION_TABLE) && (obj2->getGObjectType() == GObjectTypes::ANNOTATION_TABLE)) {
+            myAnnotation = qobject_cast<AnnotationTableObject *>(obj);
+            if (myAnnotation == NULL) {
                 stateInfo.setError(QString("can't cast to annotation from: %1 in position %2").arg(obj->getGObjectName()).arg(i));
                 return ReportResult_Finished;
             }
-            myAnnotation2 = qobject_cast<AnnotationTableObject*>(obj2);
-            if(myAnnotation2 == NULL){
+            myAnnotation2 = qobject_cast<AnnotationTableObject *>(obj2);
+            if (myAnnotation2 == NULL) {
                 stateInfo.setError(QString("can't cast to annotation from: %1 in position %2").arg(obj2->getGObjectName()).arg(i));
                 return ReportResult_Finished;
             }
-//////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////
             QList<Annotation *> annList1 = myAnnotation->getAnnotations();
             QList<Annotation *> annList2 = myAnnotation2->getAnnotations();
             qSort(annList1.begin(), annList1.end(), AnnotationsLess());
@@ -688,13 +679,13 @@ Task::ReportResult GTest_CheckAnnotationsLocationsInTwoObjects::report() {
                     const QString locationString1 = U1AnnotationUtils::buildLocationString(*l1);
                     const QString locationString2 = U1AnnotationUtils::buildLocationString(*l2);
                     stateInfo.setError(QString("annotations locations not matched. A1 location is '%1', A2 location is '%2'")
-                        .arg(locationString1).arg(locationString2));
+                                           .arg(locationString1)
+                                           .arg(locationString2));
                     return ReportResult_Finished;
                 }
             }
-//////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////
         }
-
     }
 
     if (!compareNumObjects) {
@@ -714,7 +705,7 @@ Task::ReportResult GTest_CheckAnnotationsLocationsInTwoObjects::report() {
 }
 
 //---------------------------------------------------------------
-void GTest_CheckAnnotationsLocationsAndNumReorderdered::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_CheckAnnotationsLocationsAndNumReorderdered::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     doc1CtxName = el.attribute(DOC_ATTR);
@@ -740,26 +731,26 @@ static bool findAnnotationByLocation(const QList<Annotation *> &anns, const QVec
 }
 
 Task::ReportResult GTest_CheckAnnotationsLocationsAndNumReorderdered::report() {
-    Document* doc1 = getContext<Document>(this, doc1CtxName);
+    Document *doc1 = getContext<Document>(this, doc1CtxName);
     if (doc1 == NULL) {
         stateInfo.setError(QString("document not found %1").arg(doc1CtxName));
         return ReportResult_Finished;
     }
-    Document* doc2 = getContext<Document>(this, doc2CtxName);
+    Document *doc2 = getContext<Document>(this, doc2CtxName);
     if (doc2 == NULL) {
         stateInfo.setError(QString("document not found %1").arg(doc2CtxName));
         return ReportResult_Finished;
     }
 
-    QList<GObject*> objs1 = doc1->findGObjectByType(GObjectTypes::ANNOTATION_TABLE);
-    QList<GObject*> objs2 = doc2->findGObjectByType(GObjectTypes::ANNOTATION_TABLE);
-    if(objs1.size() != objs2.size()) {
+    QList<GObject *> objs1 = doc1->findGObjectByType(GObjectTypes::ANNOTATION_TABLE);
+    QList<GObject *> objs2 = doc2->findGObjectByType(GObjectTypes::ANNOTATION_TABLE);
+    if (objs1.size() != objs2.size()) {
         setError(QString("Number of annotation table objects not matched: %1 and %2").arg(objs1.size()).arg(objs2.size()));
         return ReportResult_Finished;
     }
-    for(int i = 0; i < objs1.size(); ++i) {
-        AnnotationTableObject * ato1 = qobject_cast<AnnotationTableObject*>(objs1.at(i));
-        AnnotationTableObject * ato2 = qobject_cast<AnnotationTableObject*>(objs2.at(i));
+    for (int i = 0; i < objs1.size(); ++i) {
+        AnnotationTableObject *ato1 = qobject_cast<AnnotationTableObject *>(objs1.at(i));
+        AnnotationTableObject *ato2 = qobject_cast<AnnotationTableObject *>(objs2.at(i));
         assert(ato1 != NULL && ato2 != NULL);
         QList<Annotation *> anns1 = ato1->getAnnotations();
         QList<Annotation *> anns2 = ato2->getAnnotations();
@@ -774,8 +765,7 @@ Task::ReportResult GTest_CheckAnnotationsLocationsAndNumReorderdered::report() {
             }
         }
         if (anns1.size() != anns2.size()) {
-            setError(QString("annotations count not matched for %3 and %4: %1 and %2").arg(anns1.size()).
-                arg(anns2.size()).arg(ato1->getGObjectName()).arg(ato2->getGObjectName()));
+            setError(QString("annotations count not matched for %3 and %4: %1 and %2").arg(anns1.size()).arg(anns2.size()).arg(ato1->getGObjectName()).arg(ato2->getGObjectName()));
         }
         for (int j = 0; j < anns1.size(); ++j) {
             Annotation *a1 = anns1.at(i);
@@ -789,7 +779,7 @@ Task::ReportResult GTest_CheckAnnotationsLocationsAndNumReorderdered::report() {
 }
 
 //---------------------------------------------------------------
-void GTest_CheckAnnotationsQualifiersInTwoObjects::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_CheckAnnotationsQualifiersInTwoObjects::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     docContextName = el.attribute(DOC_ATTR);
@@ -806,39 +796,39 @@ void GTest_CheckAnnotationsQualifiersInTwoObjects::init(XMLTestFormat *tf, const
 }
 
 Task::ReportResult GTest_CheckAnnotationsQualifiersInTwoObjects::report() {
-    Document* doc = getContext<Document>(this, docContextName);
+    Document *doc = getContext<Document>(this, docContextName);
     if (doc == NULL) {
         stateInfo.setError(QString("document not found %1").arg(docContextName));
         return ReportResult_Finished;
     }
-    Document* doc2 = getContext<Document>(this, secondDocContextName);
+    Document *doc2 = getContext<Document>(this, secondDocContextName);
     if (doc2 == NULL) {
         stateInfo.setError(QString("document not found %1").arg(secondDocContextName));
         return ReportResult_Finished;
     }
 
-    const QList<GObject*>& objs = doc->getObjects();
-    const QList<GObject*>& objs2 = doc2->getObjects();
-    GObject*obj=NULL;
-    AnnotationTableObject * myAnnotation = NULL;
-    AnnotationTableObject * myAnnotation2 = NULL;
+    const QList<GObject *> &objs = doc->getObjects();
+    const QList<GObject *> &objs2 = doc2->getObjects();
+    GObject *obj = NULL;
+    AnnotationTableObject *myAnnotation = NULL;
+    AnnotationTableObject *myAnnotation2 = NULL;
 
-    for(int i=0;(i!=objs.size())&&(i!=objs2.size());i++){
+    for (int i = 0; (i != objs.size()) && (i != objs2.size()); i++) {
         obj = objs.at(i);
         GObject *obj2 = objs2.at(i);
 
-        if((obj->getGObjectType() == GObjectTypes::ANNOTATION_TABLE)&&(obj2->getGObjectType() == GObjectTypes::ANNOTATION_TABLE)){
-            myAnnotation = qobject_cast<AnnotationTableObject*>(obj);
-            if(myAnnotation == NULL){
+        if ((obj->getGObjectType() == GObjectTypes::ANNOTATION_TABLE) && (obj2->getGObjectType() == GObjectTypes::ANNOTATION_TABLE)) {
+            myAnnotation = qobject_cast<AnnotationTableObject *>(obj);
+            if (myAnnotation == NULL) {
                 stateInfo.setError(QString("can't cast to annotation from: %1 in position %2").arg(obj->getGObjectName()).arg(i));
                 return ReportResult_Finished;
             }
-            myAnnotation2 = qobject_cast<AnnotationTableObject*>(obj2);
-            if(myAnnotation2 == NULL){
+            myAnnotation2 = qobject_cast<AnnotationTableObject *>(obj2);
+            if (myAnnotation2 == NULL) {
                 stateInfo.setError(QString("can't cast to annotation from: %1 in position %2").arg(obj2->getGObjectName()).arg(i));
                 return ReportResult_Finished;
             }
-//////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////
             const QList<Annotation *> annList = myAnnotation->getAnnotations();
             QList<Annotation *> annList2 = myAnnotation2->getAnnotations();
 
@@ -857,9 +847,8 @@ Task::ReportResult GTest_CheckAnnotationsQualifiersInTwoObjects::report() {
                     return ReportResult_Finished;
                 }
             }
-//////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////
         }
-
     }
 
     if (objs.size() != objs2.size()) {
@@ -875,7 +864,7 @@ Task::ReportResult GTest_CheckAnnotationsQualifiersInTwoObjects::report() {
 }
 
 //---------------------------------------------------------------
-void GTest_CheckAnnotationsNamesInTwoObjects::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_CheckAnnotationsNamesInTwoObjects::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     docContextName = el.attribute(DOC_ATTR);
@@ -892,39 +881,39 @@ void GTest_CheckAnnotationsNamesInTwoObjects::init(XMLTestFormat *tf, const QDom
 }
 
 Task::ReportResult GTest_CheckAnnotationsNamesInTwoObjects::report() {
-    Document* doc = getContext<Document>(this, docContextName);
+    Document *doc = getContext<Document>(this, docContextName);
     if (doc == NULL) {
         stateInfo.setError(QString("document not found %1").arg(docContextName));
         return ReportResult_Finished;
     }
-    Document* doc2 = getContext<Document>(this, secondDocContextName);
+    Document *doc2 = getContext<Document>(this, secondDocContextName);
     if (doc2 == NULL) {
         stateInfo.setError(QString("document not found %1").arg(secondDocContextName));
         return ReportResult_Finished;
     }
 
-    const QList<GObject*>& objs = doc->getObjects();
-    const QList<GObject*>& objs2 = doc2->getObjects();
-    GObject*obj=NULL;
-    AnnotationTableObject * myAnnotation = NULL;
-    AnnotationTableObject * myAnnotation2 = NULL;
+    const QList<GObject *> &objs = doc->getObjects();
+    const QList<GObject *> &objs2 = doc2->getObjects();
+    GObject *obj = NULL;
+    AnnotationTableObject *myAnnotation = NULL;
+    AnnotationTableObject *myAnnotation2 = NULL;
 
-    for(int i=0;(i!=objs.size())&&(i!=objs2.size());i++){
+    for (int i = 0; (i != objs.size()) && (i != objs2.size()); i++) {
         obj = objs.at(i);
         GObject *obj2 = objs2.at(i);
 
-        if((obj->getGObjectType() == GObjectTypes::ANNOTATION_TABLE)&&(obj2->getGObjectType() == GObjectTypes::ANNOTATION_TABLE)){
-            myAnnotation = qobject_cast<AnnotationTableObject*>(obj);
-            if(myAnnotation == NULL){
+        if ((obj->getGObjectType() == GObjectTypes::ANNOTATION_TABLE) && (obj2->getGObjectType() == GObjectTypes::ANNOTATION_TABLE)) {
+            myAnnotation = qobject_cast<AnnotationTableObject *>(obj);
+            if (myAnnotation == NULL) {
                 stateInfo.setError(QString("can't cast to annotation from: %1 in position %2").arg(obj->getGObjectName()).arg(i));
                 return ReportResult_Finished;
             }
-            myAnnotation2 = qobject_cast<AnnotationTableObject*>(obj2);
-            if(myAnnotation2 == NULL){
+            myAnnotation2 = qobject_cast<AnnotationTableObject *>(obj2);
+            if (myAnnotation2 == NULL) {
                 stateInfo.setError(QString("can't cast to annotation from: %1 in position %2").arg(obj2->getGObjectName()).arg(i));
                 return ReportResult_Finished;
             }
-//////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////
             const QList<Annotation *> annList = myAnnotation->getAnnotations();
             const QList<Annotation *> annList2 = myAnnotation2->getAnnotations();
 
@@ -941,9 +930,8 @@ Task::ReportResult GTest_CheckAnnotationsNamesInTwoObjects::report() {
                     return ReportResult_Finished;
                 }
             }
-//////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////
         }
-
     }
     if (objs.size() != objs2.size()) {
         QString error("Number of objects in doc1 mismatches: [%1=%2] vs [%3=%4]");
@@ -957,8 +945,7 @@ Task::ReportResult GTest_CheckAnnotationsNamesInTwoObjects::report() {
     return ReportResult_Finished;
 }
 
-
-void GTest_FindAnnotationByLocation::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_FindAnnotationByLocation::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     result = NULL;
@@ -975,18 +962,18 @@ void GTest_FindAnnotationByLocation::init(XMLTestFormat *tf, const QDomElement& 
         return;
     }
     QStringList regNums = regionStr.split("..");
-    if (regNums.size()!=2) {
+    if (regNums.size() != 2) {
         failMissingValue(LOCATION_ATTR);
         return;
     }
-    bool ok=false;
+    bool ok = false;
     location.startPos = regNums[0].toInt(&ok) - 1;
-    if(!ok) {
+    if (!ok) {
         failMissingValue(LOCATION_ATTR);
         return;
     }
-    location.length= regNums[1].toInt(&ok)-location.startPos;
-    if(!ok) {
+    location.length = regNums[1].toInt(&ok) - location.startPos;
+    if (!ok) {
         failMissingValue(LOCATION_ATTR);
         return;
     }
@@ -996,13 +983,12 @@ void GTest_FindAnnotationByLocation::init(XMLTestFormat *tf, const QDomElement& 
     QString complStr = el.attribute(COMPLEMENT_ATTR);
     if (complStr == "true") {
         strand = U2Strand::Complementary;
-    } else if(complStr == "false") {
+    } else if (complStr == "false") {
         strand = U2Strand::Direct;
     } else {
         failMissingValue(COMPLEMENT_ATTR);
         return;
     }
-
 }
 
 Task::ReportResult GTest_FindAnnotationByLocation::report() {
@@ -1010,13 +996,13 @@ Task::ReportResult GTest_FindAnnotationByLocation::report() {
         return ReportResult_Finished;
     }
     GObject *obj = getContext<GObject>(this, objContextName);
-    if(obj==NULL) {
+    if (obj == NULL) {
         stateInfo.setError(QString("invalid GTest_FindGObjectByName context"));
         return ReportResult_Finished;
     }
 
-    AnnotationTableObject *anntbl = qobject_cast<AnnotationTableObject*>(obj);
-    if(anntbl==NULL){
+    AnnotationTableObject *anntbl = qobject_cast<AnnotationTableObject *>(obj);
+    if (anntbl == NULL) {
         stateInfo.setError(QString("qobject_cast error: null-pointer annotation table"));
         return ReportResult_Finished;
     }
@@ -1037,7 +1023,7 @@ Task::ReportResult GTest_FindAnnotationByLocation::report() {
         }
     }
     if (result == NULL) {
-        stateInfo.setError(QString("annotation not found! region: %1..%2").arg(location.startPos+1).arg(location.endPos()));
+        stateInfo.setError(QString("annotation not found! region: %1..%2").arg(location.startPos + 1).arg(location.endPos()));
         return ReportResult_Finished;
     }
     if (!annotationContextName.isEmpty()) {
@@ -1056,7 +1042,7 @@ void GTest_FindAnnotationByLocation::cleanup() {
 
 //---------------------------------------------------------------
 
-void GTest_CreateTmpAnnotationObject::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_CreateTmpAnnotationObject::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     aobj = NULL;
@@ -1075,7 +1061,7 @@ Task::ReportResult GTest_CreateTmpAnnotationObject::report() {
     U2OpStatusImpl os;
     const U2DbiRef dbiRef = AppContext::getDbiRegistry()->getSessionTmpDbiRef(os);
     SAFE_POINT_OP(os, ReportResult_Finished);
-    aobj =  new AnnotationTableObject(objContextName, dbiRef);
+    aobj = new AnnotationTableObject(objContextName, dbiRef);
 
     if (aobj != NULL) {
         addContext(objContextName, aobj);
@@ -1084,7 +1070,7 @@ Task::ReportResult GTest_CreateTmpAnnotationObject::report() {
 }
 
 void GTest_CreateTmpAnnotationObject::cleanup() {
-    if (aobj!=NULL && !objContextName.isEmpty()) {
+    if (aobj != NULL && !objContextName.isEmpty()) {
         removeContext(objContextName);
     }
     delete aobj;
@@ -1093,8 +1079,8 @@ void GTest_CreateTmpAnnotationObject::cleanup() {
 }
 
 //---------------------------------------------------------------
-QList<XMLTestFactory*> AnnotationTableObjectTest::createTestFactories() {
-    QList<XMLTestFactory*> res;
+QList<XMLTestFactory *> AnnotationTableObjectTest::createTestFactories() {
+    QList<XMLTestFactory *> res;
     res.append(GTest_CheckNumAnnotations::createFactory());
     res.append(GTest_FindAnnotationByNum::createFactory());
     res.append(GTest_FindAnnotationByLocation::createFactory());
@@ -1113,4 +1099,4 @@ QList<XMLTestFactory*> AnnotationTableObjectTest::createTestFactories() {
     return res;
 }
 
-}//namespace
+}    // namespace U2

@@ -20,22 +20,22 @@
  */
 
 #include "QueryEditor.h"
-#include "QueryProcCfgModel.h"
-#include "QueryProcCfgDelegate.h"
-#include "QDDocument.h"
-#include "QueryViewController.h"
-#include "QueryViewItems.h"
+
+#include <QRegExpValidator>
 
 #include <U2Lang/Attribute.h>
 #include <U2Lang/WorkflowUtils.h>
 
-
-#include <QRegExpValidator>
-
+#include "QDDocument.h"
+#include "QueryProcCfgDelegate.h"
+#include "QueryProcCfgModel.h"
+#include "QueryViewController.h"
+#include "QueryViewItems.h"
 
 namespace U2 {
 
-QueryEditor::QueryEditor(QWidget* parent/* =0 */) : QWidget(parent), current(NULL) {
+QueryEditor::QueryEditor(QWidget *parent /* =0 */)
+    : QWidget(parent), current(NULL) {
     setupUi(this);
     caption->setMinimumHeight(nameEdit->sizeHint().height());
 
@@ -52,7 +52,7 @@ QueryEditor::QueryEditor(QWidget* parent/* =0 */) : QWidget(parent), current(NUL
     table->verticalHeader()->hide();
     table->verticalHeader()->setDefaultSectionSize(QFontMetrics(QFont()).height() + 6);
     table->setItemDelegate(new QueryProcCfgDelegate(this));
-    table->setMinimumHeight(height()/2);
+    table->setMinimumHeight(height() / 2);
 
     reset();
 
@@ -63,12 +63,12 @@ QueryEditor::QueryEditor(QWidget* parent/* =0 */) : QWidget(parent), current(NUL
     connect(cfgModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)), SIGNAL(modified()));
 }
 
-void QueryEditor::setCurrentAttribute(const QString& id) {
+void QueryEditor::setCurrentAttribute(const QString &id) {
     QModelIndex modelIndex = cfgModel->modelIndexById(id);
 
     QModelIndex prev = table->selectionModel()->currentIndex();
 
-    if (modelIndex==prev) {
+    if (modelIndex == prev) {
         table->selectionModel()->reset();
     }
     table->setCurrentIndex(modelIndex);
@@ -76,14 +76,14 @@ void QueryEditor::setCurrentAttribute(const QString& id) {
 }
 
 void QueryEditor::sl_setLabel() {
-    if (current->getParameters()->getLabel()!=nameEdit->text()) {
+    if (current->getParameters()->getLabel() != nameEdit->text()) {
         current->getParameters()->setLabel(nameEdit->text());
         emit modified();
     }
 }
 
 void QueryEditor::sl_setKey() {
-    if (current->getParameters()->getAnnotationKey()!=keyEdit->text()) {
+    if (current->getParameters()->getAnnotationKey() != keyEdit->text()) {
         current->getParameters()->setAnnotationKey(keyEdit->text());
         emit modified();
     }
@@ -91,7 +91,7 @@ void QueryEditor::sl_setKey() {
 
 void QueryEditor::sl_setDirection(int index) {
     QDStrandOption dir = QDStrandOption(index);
-    if (current->getStrand()!=dir) {
+    if (current->getStrand() != dir) {
         current->setStrand(dir);
         emit modified();
     }
@@ -106,7 +106,7 @@ void QueryEditor::sl_showPropDoc() {
     }
 }
 
-void QueryEditor::setDescriptor(const Descriptor* d, const QString& hint) {
+void QueryEditor::setDescriptor(const Descriptor *d, const QString &hint) {
     QString text = d ? WorkflowUtils::getRichDoc(*d) + "<br><br>" + hint : hint;
     if (text.isEmpty()) {
         text = tr("Select an element to inspect.");
@@ -114,7 +114,7 @@ void QueryEditor::setDescriptor(const Descriptor* d, const QString& hint) {
     doc->setText(text);
 }
 
-void QueryEditor::showProto(QDActorPrototype* proto) {
+void QueryEditor::showProto(QDActorPrototype *proto) {
     if (proto) {
         caption->setText(tr("Element Name"));
         caption->show();
@@ -132,7 +132,7 @@ void QueryEditor::showProto(QDActorPrototype* proto) {
         directionCombo->setDisabled(true);
 
         setDescriptor(&proto->getDescriptor(),
-            tr("To configure the algorithm element parameters go to the \"Parameters\" area below."));
+                      tr("To configure the algorithm element parameters go to the \"Parameters\" area below."));
         cfgModel->setConfiguration(proto->getEditor(), proto->getParameters());
         tableSplitter->show();
         tableSplitter->setDisabled(true);
@@ -141,8 +141,8 @@ void QueryEditor::showProto(QDActorPrototype* proto) {
     }
 }
 
-void QueryEditor::edit(QDConstraint* constraint) {
-    if(constraint) {
+void QueryEditor::edit(QDConstraint *constraint) {
+    if (constraint) {
         caption->setText("");
         caption->hide();
         annotationLbl->setText("");
@@ -163,9 +163,9 @@ void QueryEditor::edit(QDConstraint* constraint) {
     }
 }
 
-void QueryEditor::edit(QDActor* a) {
+void QueryEditor::edit(QDActor *a) {
     current = a;
-    if(a) {
+    if (a) {
         caption->setText(tr("Element Name"));
         caption->show();
         annotationLbl->setText(tr("Annotate As"));
@@ -187,7 +187,7 @@ void QueryEditor::edit(QDActor* a) {
         }
 
         setDescriptor(&a->getProto()->getDescriptor(),
-            tr("To configure the algorithm element parameters go to the \"Parameters\" area below."));
+                      tr("To configure the algorithm element parameters go to the \"Parameters\" area below."));
         cfgModel->setConfiguration(a->getParameters());
         a->updateEditor();
         tableSplitter->show();
@@ -215,4 +215,4 @@ void QueryEditor::reset() {
     propDoc->setText("");
 }
 
-}//namespace
+}    // namespace U2

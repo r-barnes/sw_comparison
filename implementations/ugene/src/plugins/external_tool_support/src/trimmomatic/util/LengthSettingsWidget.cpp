@@ -19,10 +19,12 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
+#include "LengthSettingsWidget.h"
+
 #include <QIntValidator>
 
-#include "LengthSettingsWidget.h"
+#include <U2Core/U2SafePoints.h>
+
 #include "LineEditHighlighter.h"
 
 namespace U2 {
@@ -97,5 +99,5 @@ QVariantMap LengthSettingsWidget::parseState(const QString &command, const QStri
     return state;
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

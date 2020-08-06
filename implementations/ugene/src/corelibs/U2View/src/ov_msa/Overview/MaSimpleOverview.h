@@ -22,11 +22,11 @@
 #ifndef _U2_MSA_SIMPLE_OVERVIEW_H_
 #define _U2_MSA_SIMPLE_OVERVIEW_H_
 
+#include <QWidget>
+
 #include <U2Core/global.h>
 
-#include <QWidget>
 #include "MaOverview.h"
-
 
 namespace U2 {
 
@@ -35,7 +35,6 @@ class MaEditorWgt;
 class MSAEditorSequenceArea;
 class MsaColorScheme;
 class MsaHighlightingScheme;
-
 
 class U2VIEW_EXPORT MaSimpleOverview : public MaOverview {
     Q_OBJECT
@@ -66,10 +65,10 @@ private:
 private:
     mutable QPixmap cachedMSAOverview;
 
-    mutable bool    redrawMsaOverview;
-    mutable bool    redrawSelection;
+    mutable bool redrawMsaOverview;
+    mutable bool redrawSelection;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_MSA_SIMPLE_OVERVIEW_H_
+#endif    // _U2_MSA_SIMPLE_OVERVIEW_H_

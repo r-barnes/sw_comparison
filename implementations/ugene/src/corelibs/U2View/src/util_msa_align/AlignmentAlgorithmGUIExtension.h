@@ -22,15 +22,15 @@
 #ifndef _U2_ALIGNMENT_ALGORITHM_GUI_EXTENSION_H_
 #define _U2_ALIGNMENT_ALGORITHM_GUI_EXTENSION_H_
 
-#include <U2Core/global.h>
-
-#include <QObject>
 #include <QMap>
-#include <QVariantMap>
+#include <QObject>
+#include <QPointer>
 #include <QString>
 #include <QVariant>
-#include <QPointer>
+#include <QVariantMap>
 #include <QWidget>
+
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -39,17 +39,17 @@ class AbstractAlignmentTaskSettings;
 // These classes are intended for extending alignment GUIs
 // with options specific to the align algorithm
 
-class U2VIEW_EXPORT AlignmentAlgorithmMainWidget : public QWidget
-{
+class U2VIEW_EXPORT AlignmentAlgorithmMainWidget : public QWidget {
     Q_OBJECT
 
 public:
-    AlignmentAlgorithmMainWidget(QWidget* parent, QVariantMap* s);
+    AlignmentAlgorithmMainWidget(QWidget *parent, QVariantMap *s);
     virtual ~AlignmentAlgorithmMainWidget();
 
     virtual QVariantMap getAlignmentAlgorithmCustomSettings(bool append);
 
-    virtual void updateWidget(){}
+    virtual void updateWidget() {
+    }
 
 public slots:
     void sl_externSettingsInvalide();
@@ -58,25 +58,25 @@ protected:
     virtual void fillInnerSettings();
 
 protected:
-    QVariantMap innerSettings;        //inner settings
-    QVariantMap* externSettings;      //extern settings (from msa)
-    bool externSettingsExists;                  //msa editor is alive, pointer externSettings is valid
+    QVariantMap innerSettings;    //inner settings
+    QVariantMap *externSettings;    //extern settings (from msa)
+    bool externSettingsExists;    //msa editor is alive, pointer externSettings is valid
 };
 
 class U2VIEW_EXPORT AlignmentAlgorithmGUIExtensionFactory : public QObject {
     Q_OBJECT
 
 public:
-    virtual AlignmentAlgorithmMainWidget* createMainWidget(QWidget* parent, QVariantMap* s) = 0;
-    virtual bool hasMainWidget(const QWidget* parent);
+    virtual AlignmentAlgorithmMainWidget *createMainWidget(QWidget *parent, QVariantMap *s) = 0;
+    virtual bool hasMainWidget(const QWidget *parent);
 
 protected slots:
-    virtual void sl_widgetDestroyed(QObject * obj);
+    virtual void sl_widgetDestroyed(QObject *obj);
 
 protected:
-    QMap<const QWidget*, AlignmentAlgorithmMainWidget*> mainWidgets;
+    QMap<const QWidget *, AlignmentAlgorithmMainWidget *> mainWidgets;
 };
 
-}   //namespace
+}    // namespace U2
 
-#endif  //_U2_ALIGNMENT_ALGORITHM_GUI_EXTENSION_H_
+#endif    //_U2_ALIGNMENT_ALGORITHM_GUI_EXTENSION_H_

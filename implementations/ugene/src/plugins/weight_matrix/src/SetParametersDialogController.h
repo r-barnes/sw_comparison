@@ -34,13 +34,13 @@ class SetParametersDialogController : public QDialog, public Ui_SetDefaultParame
     Q_OBJECT
 
 public:
-    SetParametersDialogController(QWidget* w = NULL);
+    SetParametersDialogController(QWidget *w = NULL);
 
 private slots:
     void sl_onOkButton();
     void sl_onSliderMoved(int);
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

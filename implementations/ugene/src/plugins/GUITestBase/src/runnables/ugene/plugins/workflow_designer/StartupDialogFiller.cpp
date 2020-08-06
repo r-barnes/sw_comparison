@@ -19,32 +19,31 @@
  * MA 02110-1301, USA.
  */
 
+#include "StartupDialogFiller.h"
+#include <base_dialogs/MessageBoxFiller.h>
+#include <primitives/GTLineEdit.h>
+#include <primitives/GTWidget.h>
+
 #include <QApplication>
 #include <QLineEdit>
 #include <QPushButton>
 
-#include "StartupDialogFiller.h"
-#include <primitives/GTLineEdit.h>
-#include <primitives/GTWidget.h>
-#include <base_dialogs/MessageBoxFiller.h>
 #include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::StartupDialogFiller"
 
-StartupDialogFiller::StartupDialogFiller(HI::GUITestOpStatus &os, const QString &path, bool isPathValid) :
-    Filler(os, "StartupDialog"),
-    path(path),
-    isPathValid(isPathValid)
-{
-
+StartupDialogFiller::StartupDialogFiller(HI::GUITestOpStatus &os, const QString &path, bool isPathValid)
+    : Filler(os, "StartupDialog"),
+      path(path),
+      isPathValid(isPathValid) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
 void StartupDialogFiller::commonScenario() {
     GTGlobals::sleep(1000);
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
     if (path != UGUITest::sandBoxDir) {

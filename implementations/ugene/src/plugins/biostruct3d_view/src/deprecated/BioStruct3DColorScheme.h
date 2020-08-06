@@ -22,12 +22,13 @@
 #ifndef _U2_BIOSTRUCT3D_COLORSCHEME_H
 #define _U2_BIOSTRUCT3D_COLORSCHEME_H
 
-#include <U2Core/BioStruct3D.h>
 #include <QColor>
-#include <QMap>
 #include <QHash>
-#include <QPair>
 #include <QLinkedList>
+#include <QMap>
+#include <QPair>
+
+#include <U2Core/BioStruct3D.h>
 
 #include "GraphicUtils.h"
 
@@ -49,30 +50,29 @@ public:
     static const QList<QString> factoriesNames();
 
     //! @return Concreete factory by name.
-    static const BioStruct3DColorSchemeFactory* getFactory(const QString &name);
+    static const BioStruct3DColorSchemeFactory *getFactory(const QString &name);
 
     //! @return Constructed color scheme by factory name.
-    static BioStruct3DColorScheme* createColorScheme(const QString &name, const BioStruct3DObject *biostruct);
+    static BioStruct3DColorScheme *createColorScheme(const QString &name, const BioStruct3DObject *biostruct);
 
 private:
     //! Hidden constructor. Called by getInstance()
     BioStruct3DColorSchemeRegistry();
 
     //! Returns singleton instance of registry.
-    static BioStruct3DColorSchemeRegistry* getInstance();
+    static BioStruct3DColorSchemeRegistry *getInstance();
 
     //! Registers all render factories.
     void registerFactories();
 
 private:
-    QMap<QString, BioStruct3DColorSchemeFactory*> factories;
-};  // class BioStruct3DColorSchemeRegistry
-
+    QMap<QString, BioStruct3DColorSchemeFactory *> factories;
+};    // class BioStruct3DColorSchemeRegistry
 
 //!  Abstract factory for BioStruct3DColorScheme
 class BioStruct3DColorSchemeFactory {
 public:
-    virtual BioStruct3DColorScheme* createInstance(const BioStruct3DObject *biostruct) const = 0;
+    virtual BioStruct3DColorScheme *createInstance(const BioStruct3DObject *biostruct) const = 0;
     //! Method creates factories
 };
 
@@ -81,7 +81,9 @@ public: \
     static const QString schemeName; \
     class Factory : public BioStruct3DColorSchemeFactory { \
     public: \
-        BioStruct3DColorScheme* createInstance(const BioStruct3DObject *biostructObj) const { return new c(biostructObj); } \
+        BioStruct3DColorScheme *createInstance(const BioStruct3DObject *biostructObj) const { \
+            return new c(biostructObj); \
+        } \
     };
 
 //! Abstract BioStruct3DColorScheme
@@ -96,16 +98,16 @@ protected:
 public:
     virtual ~BioStruct3DColorScheme() {};
 
-    Color4f getAtomColor(const SharedAtom& atom) const;
+    Color4f getAtomColor(const SharedAtom &atom) const;
 
-    void updateSelectionRegion(int chainID, const QVector<U2Region>& added, const QVector<U2Region>& removed);
-    bool isInSelection(const SharedAtom& atom) const;
+    void updateSelectionRegion(int chainID, const QVector<U2Region> &added, const QVector<U2Region> &removed);
+    bool isInSelection(const SharedAtom &atom) const;
 
     void setSelectionColor(QColor color);
     void setUnselectedShadingLevel(float shading);
 
 protected:
-    virtual Color4f getSchemeAtomColor(const SharedAtom& atom) const;
+    virtual Color4f getSchemeAtomColor(const SharedAtom &atom) const;
 
 protected:
     Color4f defaultAtomColor;
@@ -115,23 +117,21 @@ protected:
 
 private:
     float unselectedShading;
-};  // class BioStruct3DColorScheme
-
+};    // class BioStruct3DColorScheme
 
 class ChemicalElemColorScheme : public BioStruct3DColorScheme {
     QHash<int, Color4f> elementColorMap;
     ChemicalElemColorScheme(const BioStruct3DObject *biostruct);
-    virtual Color4f getSchemeAtomColor(const SharedAtom& atom) const;
+    virtual Color4f getSchemeAtomColor(const SharedAtom &atom) const;
 
 public:
     COLOR_SCHEME_FACTORY(ChemicalElemColorScheme)
-};  // class ChemicalElemColorScheme
-
+};    // class ChemicalElemColorScheme
 
 class ChainsColorScheme : public BioStruct3DColorScheme {
     QMap<int, Color4f> chainColorMap;
     ChainsColorScheme(const BioStruct3DObject *biostruct);
-    virtual Color4f getSchemeAtomColor(const SharedAtom& atom) const;
+    virtual Color4f getSchemeAtomColor(const SharedAtom &atom) const;
 
 private:
     //! @return Molecular chain colors for biostruct object.
@@ -139,8 +139,7 @@ private:
 
 public:
     COLOR_SCHEME_FACTORY(ChainsColorScheme)
-};  // class ChainsColorScheme
-
+};    // class ChainsColorScheme
 
 class SecStructColorScheme : public BioStruct3DColorScheme {
     struct MolStructs {
@@ -149,7 +148,7 @@ class SecStructColorScheme : public BioStruct3DColorScheme {
     QMap<QByteArray, Color4f> secStrucColorMap;
     QMap<int, MolStructs> molMap;
     SecStructColorScheme(const BioStruct3DObject *biostruct);
-    virtual Color4f getSchemeAtomColor(const SharedAtom& atom) const;
+    virtual Color4f getSchemeAtomColor(const SharedAtom &atom) const;
 
 private:
     //! @return Secondary structure annotation colors for biostruct object.
@@ -157,7 +156,7 @@ private:
 
 public:
     COLOR_SCHEME_FACTORY(SecStructColorScheme)
-};  // class SecStructColorScheme
+};    // class SecStructColorScheme
 
 /** One color scheme for debug purposes */
 class SimpleColorScheme : public BioStruct3DColorScheme {
@@ -169,8 +168,8 @@ private:
 
 public:
     COLOR_SCHEME_FACTORY(SimpleColorScheme)
-};  // class SimpleColorScheme
+};    // class SimpleColorScheme
 
-}   // namespace U2
+}    // namespace U2
 
-#endif //_U2_BIOSTRUCT3D_COLORSCHEME_H_
+#endif    //_U2_BIOSTRUCT3D_COLORSCHEME_H_

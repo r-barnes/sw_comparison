@@ -19,9 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/DNAChromatogram.h>
-
 #include "DnaChromatogramUtils.h"
+
+#include <U2Core/DNAChromatogram.h>
 
 namespace U2 {
 
@@ -54,4 +54,4 @@ void DnaChromatogramUtils::crop(DNAChromatogram &chromatogram, int startPos, int
     chromatogram.prob_T = chromatogram.prob_T.mid(startPos, length);
 }
 
-}   // namespace U2
+}    // namespace U2

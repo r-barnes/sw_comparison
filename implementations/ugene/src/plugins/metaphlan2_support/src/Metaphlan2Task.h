@@ -28,7 +28,7 @@ namespace U2 {
 
 class CalculateSequencesNumberTask;
 
-struct  Metaphlan2TaskSettings {
+struct Metaphlan2TaskSettings {
     Metaphlan2TaskSettings();
 
     bool isPairedEnd;
@@ -51,26 +51,26 @@ struct  Metaphlan2TaskSettings {
 class Metaphlan2ClassifyTask : public ExternalToolSupportTask {
     Q_OBJECT
 public:
-    Metaphlan2ClassifyTask(const Metaphlan2TaskSettings& settings);
+    Metaphlan2ClassifyTask(const Metaphlan2TaskSettings &settings);
 
-    const QString& getBowtie2OutputUrl() const;
-    const QString& getOutputUrl() const;
+    const QString &getBowtie2OutputUrl() const;
+    const QString &getOutputUrl() const;
 
 private:
     void prepare() override;
-    QList<Task*> onSubTaskFinished(Task* subTask) override;
+    QList<Task *> onSubTaskFinished(Task *subTask) override;
     QStringList getArguments();
     void prepareClassifyTask();
     DocumentFormatId detectInputFormats();
-    DocumentFormatId detectFormat(const GUrl& url);
+    DocumentFormatId detectFormat(const GUrl &url);
 
     bool needToCountSequences;
     int sequencesNumber;
     const Metaphlan2TaskSettings settings;
-    ExternalToolRunTask* classifyTask;
-    CalculateSequencesNumberTask* calculateSequencesNumberTask;
+    ExternalToolRunTask *classifyTask;
+    CalculateSequencesNumberTask *calculateSequencesNumberTask;
 };
 
-}
+}    // namespace U2
 
-#endif // _U2_METAPHLAN2_TASK_H_
+#endif    // _U2_METAPHLAN2_TASK_H_

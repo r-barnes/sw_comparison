@@ -48,7 +48,7 @@ public:
 
 private:
     QList<Message> fetchResult(Task *task, U2OpStatus &os);
-    Task * createTask(const Message &message, U2OpStatus &os);
+    Task *createTask(const Message &message, U2OpStatus &os);
 
     IntegralBus *inputUrlPort;
     IntegralBus *outputUrlPort;
@@ -61,10 +61,9 @@ public:
     RenameChomosomeInVariationWorkerFactory();
     static void init();
     Worker *createWorker(Actor *actor);
-
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_RENAME_CHOMOSOME_IN_VARIATION_WORKER_H_
+#endif    // _U2_RENAME_CHOMOSOME_IN_VARIATION_WORKER_H_

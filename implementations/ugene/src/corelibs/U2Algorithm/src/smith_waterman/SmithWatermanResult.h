@@ -28,7 +28,7 @@ namespace U2 {
 
 struct U2ALGORITHM_EXPORT SmithWatermanResult {
     SharedAnnotationData toAnnotation(const QString &name) const;
-    bool operator <(const SmithWatermanResult &op1) const;
+    bool operator<(const SmithWatermanResult &op1) const;
 
     U2Strand strand;
     bool trans;
@@ -58,6 +58,6 @@ private:
     QList<SmithWatermanResult> result;
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

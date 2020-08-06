@@ -24,8 +24,8 @@
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/DataPathRegistry.h>
-#include <U2Core/U2SafePoints.h>
 #include <U2Core/U2OpStatusUtils.h>
+#include <U2Core/U2SafePoints.h>
 
 #include <U2Formats/ConvertFileTask.h>
 
@@ -36,33 +36,32 @@ const QString BigWigSupport::ET_BIGWIG_ID = "USUPP_BED_GRAPH_TO_BIG_WIG";
 const QString BigWigSupport::GENOMES_DATA_NAME = "Genome files";
 const QString BigWigSupport::GENOMES_DIR_NAME = "genome_lengths";
 
-BigWigSupport::BigWigSupport(const QString& id, const QString& name, const QString& path) : ExternalTool(id, name, path)
-{
+BigWigSupport::BigWigSupport(const QString &id, const QString &name, const QString &path)
+    : ExternalTool(id, name, path) {
     if (AppContext::getMainWindow()) {
         icon = QIcon(":external_tool_support/images/cmdline.png");
         grayIcon = QIcon(":external_tool_support/images/cmdline_gray.png");
         warnIcon = QIcon(":external_tool_support/images/cmdline_warn.png");
     }
 #ifdef Q_OS_WIN
-    executableFileName="bedGraphToBigWig.exe";
+    executableFileName = "bedGraphToBigWig.exe";
 #else
-    #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-    executableFileName="bedGraphToBigWig";
-    #endif
+#    if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+    executableFileName = "bedGraphToBigWig";
+#    endif
 #endif
-    validMessage="bedGraphToBigWig";
-    description=tr("<i>bedGraphToBigWig</i>: converts bedGrapth to bigWig.");
+    validMessage = "bedGraphToBigWig";
+    description = tr("<i>bedGraphToBigWig</i>: converts bedGrapth to bigWig.");
 
-    versionRegExp=QRegExp("bedGraphToBigWig v (\\d+)");
+    versionRegExp = QRegExp("bedGraphToBigWig v (\\d+)");
     validationArguments << "";
-    toolKitName="bedGraphToBigWig";
+    toolKitName = "bedGraphToBigWig";
 
-    U2DataPathRegistry* dpr = AppContext::getDataPathRegistry();
-    if (dpr){
-        U2DataPath* dp = new U2DataPath(GENOMES_DATA_NAME, QString(PATH_PREFIX_DATA) + ":" + GENOMES_DIR_NAME, "", U2DataPath::CutFileExtension);
+    U2DataPathRegistry *dpr = AppContext::getDataPathRegistry();
+    if (dpr) {
+        U2DataPath *dp = new U2DataPath(GENOMES_DATA_NAME, QString(PATH_PREFIX_DATA) + ":" + GENOMES_DIR_NAME, "", U2DataPath::CutFileExtension);
         dpr->registerEntry(dp);
     }
 }
 
-}//namespace
-
+}    // namespace U2

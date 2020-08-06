@@ -24,9 +24,7 @@
 namespace U2 {
 
 MsaHighlightingSchemeNoColors::MsaHighlightingSchemeNoColors(QObject *parent, const MsaHighlightingSchemeFactory *factory, MultipleAlignmentObject *maObj)
-    : MsaHighlightingScheme(parent, factory, maObj)
-{
-
+    : MsaHighlightingScheme(parent, factory, maObj) {
 }
 
 void MsaHighlightingSchemeNoColors::process(const char refChar, char &seqChar, QColor &color, bool &highlight, int refCharColumn, int refCharRow) const {
@@ -35,14 +33,11 @@ void MsaHighlightingSchemeNoColors::process(const char refChar, char &seqChar, Q
 }
 
 MsaHighlightingSchemeNoColorsFactory::MsaHighlightingSchemeNoColorsFactory(QObject *parent, const QString &id, const QString &name, const AlphabetFlags &supportedAlphabets)
-    : MsaHighlightingSchemeFactory(parent, id, name, supportedAlphabets, true)
-{
-
+    : MsaHighlightingSchemeFactory(parent, id, name, supportedAlphabets, true) {
 }
 
-MsaHighlightingScheme * MsaHighlightingSchemeNoColorsFactory::create(QObject *parent, MultipleAlignmentObject *maObj) const {
+MsaHighlightingScheme *MsaHighlightingSchemeNoColorsFactory::create(QObject *parent, MultipleAlignmentObject *maObj) const {
     return new MsaHighlightingSchemeNoColors(parent, this, maObj);
 }
 
-
-}   // namespace U2
+}    // namespace U2

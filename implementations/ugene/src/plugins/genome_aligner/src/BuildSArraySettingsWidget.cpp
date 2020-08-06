@@ -19,14 +19,16 @@
  * MA 02110-1301, USA.
  */
 
+#include "BuildSArraySettingsWidget.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/AppResources.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/GUrl.h>
 #include <U2Core/UserApplicationsSettings.h>
+
 #include <U2Gui/DialogUtils.h>
 
-#include "BuildSArraySettingsWidget.h"
 #include "GenomeAlignerTask.h"
 
 static const int MIN_PART_SIZE = 1;
@@ -34,9 +36,10 @@ static const int DEFAULT_PART_SIZE = 10;
 
 namespace U2 {
 
-BuildSArraySettingsWidget::BuildSArraySettingsWidget(QWidget* parent) : DnaAssemblyAlgorithmBuildIndexWidget(parent) {
-	setupUi(this);
-	layout()->setContentsMargins(0,0,0,0);
+BuildSArraySettingsWidget::BuildSArraySettingsWidget(QWidget *parent)
+    : DnaAssemblyAlgorithmBuildIndexWidget(parent) {
+    setupUi(this);
+    layout()->setContentsMargins(0, 0, 0, 0);
 
     connect(partSlider, SIGNAL(valueChanged(int)), SLOT(sl_onPartSliderChanged(int)));
 
@@ -44,33 +47,33 @@ BuildSArraySettingsWidget::BuildSArraySettingsWidget(QWidget* parent) : DnaAssem
     partSlider->setEnabled(false);
 
     partSizeLabel->setText(QByteArray::number(partSlider->value()) + " Mb");
-    totalSizeLabel->setText(QByteArray::number(partSlider->value()*13) + " Mb");
+    totalSizeLabel->setText(QByteArray::number(partSlider->value() * 13) + " Mb");
     systemSizeLabel->setText(QByteArray::number(systemSize) + " Mb");
 }
 
-QMap<QString,QVariant> BuildSArraySettingsWidget::getBuildIndexCustomSettings() {
-	QMap<QString,QVariant> settings;
+QMap<QString, QVariant> BuildSArraySettingsWidget::getBuildIndexCustomSettings() {
+    QMap<QString, QVariant> settings;
 
     settings.insert(GenomeAlignerTask::OPTION_SEQ_PART_SIZE, partSlider->value());
 
-	return settings;
+    return settings;
 }
 
 QString BuildSArraySettingsWidget::getIndexFileExtension() {
-	return "";
+    return "";
 }
 
 void BuildSArraySettingsWidget::sl_onPartSliderChanged(int value) {
     partSizeLabel->setText(QByteArray::number(value) + " Mb");
-    totalSizeLabel->setText(QByteArray::number(value*13) + " Mb");
+    totalSizeLabel->setText(QByteArray::number(value * 13) + " Mb");
 }
 
-GUrl BuildSArraySettingsWidget::buildIndexUrl(const GUrl& url) {
+GUrl BuildSArraySettingsWidget::buildIndexUrl(const GUrl &url) {
     QString refUrl = url.getURLString();
     QFile file(refUrl);
     if (file.exists()) {
-        int fileSize = 1 + (int)(file.size()/(1024*1024));
-        int maxPartSize = qMin(fileSize*13, systemSize)/13;
+        int fileSize = 1 + (int)(file.size() / (1024 * 1024));
+        int maxPartSize = qMin(fileSize * 13, systemSize) / 13;
         partSlider->setMinimum(MIN_PART_SIZE);
         partSlider->setMaximum(maxPartSize);
         partSlider->setEnabled(true);
@@ -79,4 +82,4 @@ GUrl BuildSArraySettingsWidget::buildIndexUrl(const GUrl& url) {
     return GUrl();
 }
 
-} //namespace
+}    // namespace U2

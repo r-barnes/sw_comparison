@@ -24,12 +24,13 @@
 
 #include <assert.h>
 
-#include <QSharedPointer>
 #include <QByteArray>
 #include <QListIterator>
-#include <U2Core/U2Dbi.h>
-#include <U2Core/U2Assembly.h>
+#include <QSharedPointer>
+
 #include <U2Core/AssemblyObject.h>
+#include <U2Core/U2Assembly.h>
+#include <U2Core/U2Dbi.h>
 #include <U2Core/U2OpStatusUtils.h>
 
 #include <U2Gui/MainWindow.h>
@@ -48,20 +49,22 @@ class OptionsPanel;
 class AssemblyBrowser : public GObjectView {
     Q_OBJECT
 public:
-    AssemblyBrowser(QString viewName, AssemblyObject * o);
+    AssemblyBrowser(QString viewName, AssemblyObject *o);
     // some pre-opening checks
     bool checkValid(U2OpStatus &os);
 
     // from GObjectView
-    virtual void buildStaticToolbar(QToolBar* tb);
-    virtual void buildStaticMenu(QMenu* m);
+    virtual void buildStaticToolbar(QToolBar *tb);
+    virtual void buildStaticMenu(QMenu *m);
     virtual QVariantMap saveState();
-    virtual Task* updateViewTask(const QString& stateName, const QVariantMap& stateData);
-    virtual OptionsPanel* getOptionsPanel();
+    virtual Task *updateViewTask(const QString &stateName, const QVariantMap &stateData);
+    virtual OptionsPanel *getOptionsPanel();
 
     void setGlobalCoverageInfo(CoverageInfo info);
     QList<CoveredRegion> getCoveredRegions() const;
-    inline bool areCoveredRegionsReady() const {return coverageReady;}
+    inline bool areCoveredRegionsReady() const {
+        return coverageReady;
+    }
 
     // Local coverage cache is where calculated coverage for current visible region is stored
     void setLocalCoverageCache(CoverageInfo coverage);
@@ -95,46 +98,76 @@ public:
     bool areLettersVisible() const;
 
     // offsets in assembly
-    inline qint64 getXOffsetInAssembly() const {return xOffsetInAssembly; }
-    inline qint64 getYOffsetInAssembly() const {return yOffsetInAssembly; }
+    inline qint64 getXOffsetInAssembly() const {
+        return xOffsetInAssembly;
+    }
+    inline qint64 getYOffsetInAssembly() const {
+        return yOffsetInAssembly;
+    }
 
-    U2Region getVisibleBasesRegion() const { return U2Region(xOffsetInAssembly, basesVisible()); }
-    U2Region getVisibleRowsRegion() const { return U2Region(yOffsetInAssembly, rowsVisible()); }
+    U2Region getVisibleBasesRegion() const {
+        return U2Region(xOffsetInAssembly, basesVisible());
+    }
+    U2Region getVisibleRowsRegion() const {
+        return U2Region(yOffsetInAssembly, rowsVisible());
+    }
 
     void setXOffsetInAssembly(qint64 x);
     void setYOffsetInAssembly(qint64 y);
     void setOffsetsInAssembly(qint64 x, qint64 y);
-    qint64 normalizeXoffset(qint64 x)const;
-    qint64 normalizeYoffset(qint64 y)const;
+    qint64 normalizeXoffset(qint64 x) const;
+    qint64 normalizeYoffset(qint64 y) const;
 
     void adjustOffsets(qint64 dx, qint64 dy);
 
-    void navigateToRegion(const U2Region & region);
+    void navigateToRegion(const U2Region &region);
 
     // other
-    inline QSharedPointer<AssemblyModel> getModel() const {return model;}
-    inline QFont getFont() const {return font;}
+    inline QSharedPointer<AssemblyModel> getModel() const {
+        return model;
+    }
+    inline QFont getFont() const {
+        return font;
+    }
     void setFocusToPosSelector();
-    inline AssemblyBrowserUi* getMainWidget() { return ui; }
+    inline AssemblyBrowserUi *getMainWidget() {
+        return ui;
+    }
 
-    AssemblyObject* getAssemblyObject() const {return gobject;}
+    AssemblyObject *getAssemblyObject() const {
+        return gobject;
+    }
 
-    AssemblyCellRendererFactoryRegistry * getCellRendererRegistry() { return cellRendererRegistry; }
+    AssemblyCellRendererFactoryRegistry *getCellRendererRegistry() {
+        return cellRendererRegistry;
+    }
 
-    QAction * getReadHintEnabledAction() { return readHintEnabledAction; }
-    QAction * getCoordsOnRulerAction() { return showCoordsOnRulerAction; }
-    QAction * getCoverageOnRulerAction() { return showCoverageOnRulerAction; }
-    QAction * getSetReferenceAction() { return setReferenceAction; }
+    QAction *getReadHintEnabledAction() {
+        return readHintEnabledAction;
+    }
+    QAction *getCoordsOnRulerAction() {
+        return showCoordsOnRulerAction;
+    }
+    QAction *getCoverageOnRulerAction() {
+        return showCoverageOnRulerAction;
+    }
+    QAction *getSetReferenceAction() {
+        return setReferenceAction;
+    }
 
     //public utility functions for zooming
-    bool canPerformZoomIn() const {return zoomInAction->isEnabled();}
-    bool canPerformZoomOut() const {return zoomOutAction->isEnabled();}
+    bool canPerformZoomIn() const {
+        return zoomInAction->isEnabled();
+    }
+    bool canPerformZoomOut() const {
+        return zoomOutAction->isEnabled();
+    }
 
     bool onCloseEvent();
 
 public slots:
-    void sl_zoomIn(const QPoint & pos = QPoint());
-    void sl_zoomOut(const QPoint & pos = QPoint());
+    void sl_zoomIn(const QPoint &pos = QPoint());
+    void sl_zoomOut(const QPoint &pos = QPoint());
     void sl_zoomToReads();
     void sl_coveredRegionClicked(const QString link);
     void sl_extractAssemblyRegion();
@@ -145,9 +178,9 @@ signals:
     void si_coverageReady();
 
 protected:
-    virtual QWidget * createWidget();
-    virtual bool eventFilter(QObject*, QEvent*);
-    virtual void onObjectRenamed(GObject* obj, const QString& oldName);
+    virtual QWidget *createWidget();
+    virtual bool eventFilter(QObject *, QEvent *);
+    virtual void onObjectRenamed(GObject *obj, const QString &oldName);
 
 private slots:
     void sl_onPosChangeRequest(int);
@@ -170,7 +203,7 @@ private:
     void updateOverviewTypeActions();
     void clear();
     // returns error string
-    QString tryAddObject(GObject * obj);
+    QString tryAddObject(GObject *obj);
     bool isAssemblyObjectLocked(bool showDialog = true) const;
 
     // utility functions for zooming
@@ -186,13 +219,13 @@ private:
 
     QString chooseReferenceUrl() const;
     void loadReferenceFromFile();
-    void showReferenceLoadingError(const QList<GObject*> &sequenceObjects, const QString &url) const;
+    void showReferenceLoadingError(const QList<GObject *> &sequenceObjects, const QString &url) const;
     void setReference(const Document *doc);
 
 private:
-    AssemblyBrowserUi * ui;
+    AssemblyBrowserUi *ui;
 
-    AssemblyObject * gobject;
+    AssemblyObject *gobject;
     U2OpStatusImpl dbiOpStatus;
     QSharedPointer<AssemblyModel> model;
 
@@ -207,22 +240,22 @@ private:
 
     CoverageInfo localCoverageCache;
 
-    AssemblyCellRendererFactoryRegistry * cellRendererRegistry;
+    AssemblyCellRendererFactoryRegistry *cellRendererRegistry;
 
-    QAction * zoomInAction;
-    QAction * zoomOutAction;
-    QAction * posSelectorAction;
-    PositionSelector * posSelector;
-    QList<QAction*> overviewScaleTypeActions;
-    QAction * showCoordsOnRulerAction;
-    QAction * showCoverageOnRulerAction;
-    QAction * readHintEnabledAction;
-    QAction * saveScreenShotAction;
-    QAction * exportToSamAction;
-    QAction * setReferenceAction;
-    QAction * extractAssemblyRegionAction;
+    QAction *zoomInAction;
+    QAction *zoomOutAction;
+    QAction *posSelectorAction;
+    PositionSelector *posSelector;
+    QList<QAction *> overviewScaleTypeActions;
+    QAction *showCoordsOnRulerAction;
+    QAction *showCoverageOnRulerAction;
+    QAction *readHintEnabledAction;
+    QAction *saveScreenShotAction;
+    QAction *exportToSamAction;
+    QAction *setReferenceAction;
+    QAction *extractAssemblyRegionAction;
 
-    Task * loadReferenceTask;
+    Task *loadReferenceTask;
 
     const static int MAX_CELL_WIDTH = 300;
     const static double INITIAL_ZOOM_FACTOR;
@@ -231,7 +264,6 @@ private:
     const static int LETTER_VISIBLE_WIDTH = 7;
     const static int CELL_VISIBLE_WIDTH = 1;
 };
-
 
 class AssemblyOverview;
 class ZoomableAssemblyOverview;
@@ -245,34 +277,51 @@ class AssemblyAnnotationsArea;
 class U2VIEW_EXPORT AssemblyBrowserUi : public QWidget {
     Q_OBJECT
 public:
-    AssemblyBrowserUi(AssemblyBrowser * browser);
+    AssemblyBrowserUi(AssemblyBrowser *browser);
 
-    inline QSharedPointer<AssemblyModel> getModel() const {return browser->getModel();}
-    inline AssemblyBrowser * getWindow() const {return browser;}
+    inline QSharedPointer<AssemblyModel> getModel() const {
+        return browser->getModel();
+    }
+    inline AssemblyBrowser *getWindow() const {
+        return browser;
+    }
 
-    inline AssemblyReadsArea * getReadsArea() const {return readsArea;}
-    inline ZoomableAssemblyOverview * getOverview() const {return zoomableOverview;}
-    inline AssemblyRuler * getRuler() const {return ruler;}
-    inline AssemblyReferenceArea * getReferenceArea() const {return referenceArea;}
-    inline AssemblyConsensusArea * getConsensusArea() const {return consensusArea;}
-    inline AssemblyAnnotationsArea * getAnnotationsArea() const {return annotationsArea;}
-    inline bool isCorrectView() const {return !nothingToVisualize;}
+    inline AssemblyReadsArea *getReadsArea() const {
+        return readsArea;
+    }
+    inline ZoomableAssemblyOverview *getOverview() const {
+        return zoomableOverview;
+    }
+    inline AssemblyRuler *getRuler() const {
+        return ruler;
+    }
+    inline AssemblyReferenceArea *getReferenceArea() const {
+        return referenceArea;
+    }
+    inline AssemblyConsensusArea *getConsensusArea() const {
+        return consensusArea;
+    }
+    inline AssemblyAnnotationsArea *getAnnotationsArea() const {
+        return annotationsArea;
+    }
+    inline bool isCorrectView() const {
+        return !nothingToVisualize;
+    }
 
     QColor getCoverageColor(double grayCoeff);
 
 private:
-    AssemblyBrowser * browser;
-    ZoomableAssemblyOverview * zoomableOverview;
-    AssemblyReferenceArea * referenceArea;
-    AssemblyConsensusArea * consensusArea;
-    AssemblyCoverageGraph * coverageGraph;
-    AssemblyRuler * ruler;
-    AssemblyReadsArea * readsArea;
-    AssemblyAnnotationsArea * annotationsArea;
+    AssemblyBrowser *browser;
+    ZoomableAssemblyOverview *zoomableOverview;
+    AssemblyReferenceArea *referenceArea;
+    AssemblyConsensusArea *consensusArea;
+    AssemblyCoverageGraph *coverageGraph;
+    AssemblyRuler *ruler;
+    AssemblyReadsArea *readsArea;
+    AssemblyAnnotationsArea *annotationsArea;
     bool nothingToVisualize;
 };
 
-
-} //ns
+}    // namespace U2
 
 #endif

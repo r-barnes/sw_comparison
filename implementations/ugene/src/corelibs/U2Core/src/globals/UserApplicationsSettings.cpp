@@ -21,11 +21,6 @@
 
 #include "UserApplicationsSettings.h"
 
-#include <U2Core/AppContext.h>
-#include <U2Core/Settings.h>
-#include <U2Core/U2OpStatusUtils.h>
-#include <U2Core/GUrlUtils.h>
-
 #include <QApplication>
 #include <QDesktopServices>
 #include <QDialogButtonBox>
@@ -36,26 +31,31 @@
 #include <QStyle>
 #include <QStyleFactory>
 
+#include <U2Core/AppContext.h>
+#include <U2Core/GUrlUtils.h>
+#include <U2Core/Settings.h>
+#include <U2Core/U2OpStatusUtils.h>
+
 namespace U2 {
 
-#define SETTINGS_ROOT   QString("/user_apps/")
-#define WEB_BROWSER     QString("web_browser")
-#define USE_DEFAULT_WEB_BROWSER     QString("use_default_web_browser")
-#define TRANSLATION     QString("translation_file")
+#define SETTINGS_ROOT QString("/user_apps/")
+#define WEB_BROWSER QString("web_browser")
+#define USE_DEFAULT_WEB_BROWSER QString("use_default_web_browser")
+#define TRANSLATION QString("translation_file")
 #define LAST_PROJECT_FLAG QString("open_last_project")
 #define SAVE_PROJECT_STATE QString("save_project")
-#define VISUAL_STYLE    QString("style")
-#define DOWNLOAD_DIR    QString("download_file")
-#define CUSTOM_EXTERNAL_TOOL_CONFIGS_DIR    QString("custom_external_tool_configs_dir")
+#define VISUAL_STYLE QString("style")
+#define DOWNLOAD_DIR QString("download_file")
+#define CUSTOM_EXTERNAL_TOOL_CONFIGS_DIR QString("custom_external_tool_configs_dir")
 #define RECENTLY_DOWNLOADED QString("recently_downloaded")
 #define TEMPORARY_DIR QString("temporary_dir")
 #define DATA_DIR QString("data_dir")
 #define COLLECTING_STATISTICS QString("collecting_statistics")
-#define WINDOW_LAYOUT  QString("tabbed_windows")
+#define WINDOW_LAYOUT QString("tabbed_windows")
 #define RESET_SETTINGS_FLAG QString("reset_settings")
-#define FILE_STORAGE_DIR    QString("file_storage_dir")
-#define UPDATES_ENABLED     QString("check_updates")
-#define SKIP_UPDATE_PREFIX  QString("skip_update_")
+#define FILE_STORAGE_DIR QString("file_storage_dir")
+#define UPDATES_ENABLED QString("check_updates")
+#define SKIP_UPDATE_PREFIX QString("skip_update_")
 
 //TODO: create a special ENV header to keep all env-vars ugene depends
 #define UGENE_SKIP_TMP_DIR_CLEANUP "UGENE_SKIP_TMP_DIR_CLEANUP"
@@ -64,7 +64,6 @@ UserAppsSettings::UserAppsSettings() {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     cleanupTmpDir = !env.contains(UGENE_SKIP_TMP_DIR_CLEANUP);
 }
-
 
 UserAppsSettings::~UserAppsSettings() {
     if (cleanupTmpDir) {
@@ -75,7 +74,6 @@ UserAppsSettings::~UserAppsSettings() {
     }
 }
 
-
 QString UserAppsSettings::getWebBrowserURL() const {
     return AppContext::getSettings()->getValue(SETTINGS_ROOT + WEB_BROWSER, QString("")).toString();
 }
@@ -84,8 +82,7 @@ bool UserAppsSettings::useDefaultWebBrowser() const {
     return AppContext::getSettings()->getValue(SETTINGS_ROOT + USE_DEFAULT_WEB_BROWSER, true).toBool();
 }
 
-
-void UserAppsSettings::setWebBrowserURL(const QString& url) {
+void UserAppsSettings::setWebBrowserURL(const QString &url) {
     return AppContext::getSettings()->setValue(SETTINGS_ROOT + WEB_BROWSER, url);
 }
 void UserAppsSettings::setUseDefaultWebBrowser(bool state) {
@@ -95,7 +92,7 @@ void UserAppsSettings::setUseDefaultWebBrowser(bool state) {
 QString UserAppsSettings::getTranslationFile() const {
     return AppContext::getSettings()->getValue(SETTINGS_ROOT + TRANSLATION, QString("")).toString();
 }
-void UserAppsSettings::setTranslationFile(const QString& fn) {
+void UserAppsSettings::setTranslationFile(const QString &fn) {
     return AppContext::getSettings()->setValue(SETTINGS_ROOT + TRANSLATION, fn);
 }
 
@@ -127,8 +124,8 @@ QString UserAppsSettings::getVisualStyle() const {
     QString defaultStyle = QApplication::style()->objectName();
 
 #ifdef Q_OS_WIN
-#define DEFAULT_STYLE_NAME ".NET"
-    const char* version = qVersion();
+#    define DEFAULT_STYLE_NAME ".NET"
+    const char *version = qVersion();
     if (QString("4.4.0") != version) {
         if (QStyleFactory::keys().contains(DEFAULT_STYLE_NAME)) {
             defaultStyle = DEFAULT_STYLE_NAME;
@@ -139,7 +136,7 @@ QString UserAppsSettings::getVisualStyle() const {
     return AppContext::getSettings()->getValue(SETTINGS_ROOT + VISUAL_STYLE, defaultStyle).toString();
 }
 
-void UserAppsSettings::setVisualStyle(const QString& newStyle) {
+void UserAppsSettings::setVisualStyle(const QString &newStyle) {
     return AppContext::getSettings()->setValue(SETTINGS_ROOT + VISUAL_STYLE, newStyle.toLower());
 }
 
@@ -147,7 +144,7 @@ QString UserAppsSettings::getDownloadDirPath() const {
     return AppContext::getSettings()->getValue(SETTINGS_ROOT + DOWNLOAD_DIR, QDir::homePath() + "/.UGENE_downloaded").toString();
 }
 
-void UserAppsSettings::setDownloadDirPath(const QString& newPath) const {
+void UserAppsSettings::setDownloadDirPath(const QString &newPath) const {
     AppContext::getSettings()->setValue(SETTINGS_ROOT + DOWNLOAD_DIR, newPath);
 }
 
@@ -162,7 +159,7 @@ void UserAppsSettings::setCustomToolsConfigsDirPath(const QString &newPath) cons
     Settings *s = AppContext::getSettings();
     s->setValue(SETTINGS_ROOT + CUSTOM_EXTERNAL_TOOL_CONFIGS_DIR, newPath);
 
-    if(oldPath != newPath) {
+    if (oldPath != newPath) {
         QDir dir(oldPath);
         if (!dir.exists()) {
             return;
@@ -182,7 +179,7 @@ QStringList UserAppsSettings::getRecentlyDownloadedFileNames() const {
     return AppContext::getSettings()->getValue(SETTINGS_ROOT + RECENTLY_DOWNLOADED, empty).toStringList();
 }
 
-void UserAppsSettings::setRecentlyDownloadedFileNames(const QStringList& fileNames) const {
+void UserAppsSettings::setRecentlyDownloadedFileNames(const QStringList &fileNames) const {
     AppContext::getSettings()->setValue(SETTINGS_ROOT + RECENTLY_DOWNLOADED, fileNames);
 }
 
@@ -190,7 +187,7 @@ QString UserAppsSettings::getUserTemporaryDirPath() const {
     return AppContext::getSettings()->getValue(SETTINGS_ROOT + TEMPORARY_DIR, QStandardPaths::writableLocation(QStandardPaths::TempLocation)).toString();
 }
 
-void UserAppsSettings::setUserTemporaryDirPath(const QString& newPath) {
+void UserAppsSettings::setUserTemporaryDirPath(const QString &newPath) {
     AppContext::getSettings()->setValue(SETTINGS_ROOT + TEMPORARY_DIR, newPath);
     emit si_temporaryPathChanged();
 }
@@ -205,7 +202,7 @@ QString UserAppsSettings::getDefaultDataDirPath() const {
     return dirpath;
 }
 
-void UserAppsSettings::setDefaultDataDirPath(const QString& newPath) {
+void UserAppsSettings::setDefaultDataDirPath(const QString &newPath) {
     AppContext::getSettings()->setValue(SETTINGS_ROOT + DATA_DIR, newPath);
 }
 
@@ -226,8 +223,7 @@ void UserAppsSettings::setTabbedWindowLayout(bool b) {
     emit si_windowLayoutChanged();
 }
 
-
-QString UserAppsSettings::getCurrentProcessTemporaryDirPath(const QString& domain) const {
+QString UserAppsSettings::getCurrentProcessTemporaryDirPath(const QString &domain) const {
     qint64 pid = QCoreApplication::applicationPid();
     QString tmpDirPath = getUserTemporaryDirPath() + "/" + QString("ugene_tmp/p%1").arg(pid);
     if (!domain.isEmpty()) {
@@ -293,4 +289,4 @@ void UserAppsSettings::skipUpdate(const QString &versionString) {
     AppContext::getSettings()->setValue(SETTINGS_ROOT + SKIP_UPDATE_PREFIX + versionString, true);
 }
 
-}//namespace
+}    // namespace U2

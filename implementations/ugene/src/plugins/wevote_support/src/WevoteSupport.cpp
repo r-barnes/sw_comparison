@@ -27,12 +27,11 @@ const QString WevoteSupport::TOOL_NAME = "WEVOTE";
 const QString WevoteSupport::TOOL_ID = "USUPP_WEVOTE";
 
 WevoteSupport::WevoteSupport()
-    : ExternalTool(TOOL_ID, TOOL_NAME, "")
-{
+    : ExternalTool(TOOL_ID, TOOL_NAME, "") {
     validMessage = "less than the required minimum number of options";
     executableFileName = "WEVOTE";
     description = tr("WEVOTE (WEighted VOting Taxonomic idEntification) is a metagenome shortgun sequencing DNA reads classifier "
                      "based on an ensemble of other classification methods. In UGENE one can use the following methods: Kraken, CLARK, DIAMOND.");
 }
 
-}   // namespace U2
+}    // namespace U2

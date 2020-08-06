@@ -21,17 +21,15 @@
 
 #include "SmithWatermanTests.h"
 
-#include <U2Core/DNASequenceObject.h>
-
+#include <U2Algorithm/SmithWatermanSettings.h>
 #include <U2Algorithm/SmithWatermanTaskFactoryRegistry.h>
-#include <U2Core/AppContext.h>
 #include <U2Algorithm/SubstMatrixRegistry.h>
 
-#include <U2Algorithm/SmithWatermanSettings.h>
-#include <U2Core/SequenceWalkerTask.h>
+#include <U2Core/AppContext.h>
+#include <U2Core/DNASequenceObject.h>
 #include <U2Core/SMatrix.h>
+#include <U2Core/SequenceWalkerTask.h>
 #include <U2Core/U2SafePoints.h>
-
 
 #define FILE_SUBSTITUTION_MATRIX_ATTR "subst_f"
 #define FILE_FASTA_CONTAIN_SEQUENCE_ATTR "seq_f"
@@ -46,7 +44,7 @@
 using namespace std;
 namespace U2 {
 
-void GTest_SmithWatermnan::sortByScore(QList<SmithWatermanResult> & resultsForSort) {
+void GTest_SmithWatermnan::sortByScore(QList<SmithWatermanResult> &resultsForSort) {
     for (int i = 0; i < resultsForSort.size(); i++) {
         for (int j = i + 1; j < resultsForSort.size(); j++) {
             if (resultsForSort.at(i).score < resultsForSort.at(j).score) {
@@ -56,23 +54,22 @@ void GTest_SmithWatermnan::sortByScore(QList<SmithWatermanResult> & resultsForSo
             }
             if (resultsForSort.at(i).score == resultsForSort.at(j).score &&
                 resultsForSort.at(i).refSubseq.startPos > resultsForSort.at(j).refSubseq.startPos) {
-                    SmithWatermanResult buf = resultsForSort.at(i);
-                    resultsForSort[i] = resultsForSort.at(j);
-                    resultsForSort[j] = buf;
+                SmithWatermanResult buf = resultsForSort.at(i);
+                resultsForSort[i] = resultsForSort.at(j);
+                resultsForSort[j] = buf;
             }
             if (resultsForSort.at(i).score == resultsForSort.at(j).score &&
                 resultsForSort.at(i).refSubseq.startPos == resultsForSort.at(j).refSubseq.startPos &&
                 resultsForSort.at(i).refSubseq.length > resultsForSort.at(j).refSubseq.length) {
-                    SmithWatermanResult buf = resultsForSort.at(i);
-                    resultsForSort[i] = resultsForSort.at(j);
-                    resultsForSort[j] = buf;
+                SmithWatermanResult buf = resultsForSort.at(i);
+                resultsForSort[i] = resultsForSort.at(j);
+                resultsForSort[j] = buf;
             }
         }
     }
 }
 
-
-void GTest_SmithWatermnan::init(XMLTestFormat *, const QDomElement& el) {
+void GTest_SmithWatermnan::init(XMLTestFormat *, const QDomElement &el) {
     searchSeqDocName = el.attribute(FILE_FASTA_CONTAIN_SEQUENCE_ATTR);
     if (searchSeqDocName.isEmpty()) {
         failMissingValue(FILE_FASTA_CONTAIN_SEQUENCE_ATTR);
@@ -95,9 +92,9 @@ void GTest_SmithWatermnan::init(XMLTestFormat *, const QDomElement& el) {
     bool ok = false;
 
     if (!buffer.isEmpty()) {
-        ok=false;
+        ok = false;
         gapOpen = buffer.toInt(&ok);
-        if(!ok) {
+        if (!ok) {
             failMissingValue(GAP_OPEN_ATTR);
             return;
         }
@@ -105,9 +102,9 @@ void GTest_SmithWatermnan::init(XMLTestFormat *, const QDomElement& el) {
 
     buffer = el.attribute(GAP_EXT_ATTR);
     if (!buffer.isEmpty()) {
-        ok=false;
+        ok = false;
         gapExtension = buffer.toInt(&ok);
-        if(!ok) {
+        if (!ok) {
             failMissingValue(GAP_EXT_ATTR);
             return;
         }
@@ -115,9 +112,9 @@ void GTest_SmithWatermnan::init(XMLTestFormat *, const QDomElement& el) {
 
     buffer = el.attribute(PERCENT_OF_SCORE_ATTR);
     if (!buffer.isEmpty()) {
-        ok=false;
+        ok = false;
         percentOfScore = buffer.toFloat(&ok);
-        if(!ok) {
+        if (!ok) {
             failMissingValue(PERCENT_OF_SCORE_ATTR);
             return;
         }
@@ -141,12 +138,10 @@ void GTest_SmithWatermnan::init(XMLTestFormat *, const QDomElement& el) {
     }
 }
 
-
 void GTest_SmithWatermnan::prepare() {
-
     //get search sequence
-    U2SequenceObject * searchSeqObj = getContext<U2SequenceObject>(this, searchSeqDocName);
-    if(searchSeqObj==NULL){
+    U2SequenceObject *searchSeqObj = getContext<U2SequenceObject>(this, searchSeqDocName);
+    if (searchSeqObj == NULL) {
         stateInfo.setError(QString("error can't cast to sequence from GObject"));
         return;
     }
@@ -154,8 +149,8 @@ void GTest_SmithWatermnan::prepare() {
     CHECK_OP(stateInfo, );
 
     //get pattern sequence
-    U2SequenceObject * patternSeqObj = getContext<U2SequenceObject>(this, patternSeqDocName);
-    if(patternSeqObj==NULL){
+    U2SequenceObject *patternSeqObj = getContext<U2SequenceObject>(this, patternSeqDocName);
+    if (patternSeqObj == NULL) {
         stateInfo.setError(QString("error can't cast to sequence from GObject"));
         return;
     }
@@ -165,7 +160,7 @@ void GTest_SmithWatermnan::prepare() {
     //set subst matrix
 
     QString pathToCommonData = getEnv()->getVar("COMMON_DATA_DIR");
-    if(patternSeqObj==NULL){
+    if (patternSeqObj == NULL) {
         stateInfo.setError(QString("error can't get path to common_data dir"));
         return;
     }
@@ -193,36 +188,34 @@ void GTest_SmithWatermnan::prepare() {
     s.resultListener = NULL;
     s.resultFilter = 0;
 
-    if( !machinePath.isEmpty() ) { /* run smith-waterman on remote machine */
-    //TODO: BUG-001870
+    if (!machinePath.isEmpty()) { /* run smith-waterman on remote machine */
+        //TODO: BUG-001870
         assert(0);
         //         SmithWatermanLocalTaskSettings localTaskSettings( s );
-//         RemoteMachine * machine = NULL;
-//         if( !SerializeUtils::deserializeRemoteMachineSettingsFromFile( machinePath, &machine ) ) {
-//             setError( QString( "Cannot create remote machine from '%1'" ).arg( machinePath ) );
-//             return;
-//         }
-//         assert( NULL != machine );
-//         swAlgorithmTask = new RemoteTask( SmithWatermanLocalTaskFactory::ID, localTaskSettings, machine );
+        //         RemoteMachine * machine = NULL;
+        //         if( !SerializeUtils::deserializeRemoteMachineSettingsFromFile( machinePath, &machine ) ) {
+        //             setError( QString( "Cannot create remote machine from '%1'" ).arg( machinePath ) );
+        //             return;
+        //         }
+        //         assert( NULL != machine );
+        //         swAlgorithmTask = new RemoteTask( SmithWatermanLocalTaskFactory::ID, localTaskSettings, machine );
     } else { /* run on local machine */
         s.resultListener = new SmithWatermanResultListener();
         if (0 != AppContext::getSmithWatermanTaskFactoryRegistry()->getFactory(impl)) {
-            swAlgorithmTask = (Task *) AppContext::getSmithWatermanTaskFactoryRegistry()->getFactory(impl)->getTaskInstance(s, "tests SmithWaterman");
+            swAlgorithmTask = (Task *)AppContext::getSmithWatermanTaskFactoryRegistry()->getFactory(impl)->getTaskInstance(s, "tests SmithWaterman");
         } else {
             stateInfo.setError(QString("Not known impl of Smith-Waterman: %1").arg(impl));
             return;
         }
     }
     addSubTask(swAlgorithmTask);
-
 }
 
 bool GTest_SmithWatermnan::parseExpected_res() {
-
     SWresult swRes;
     QStringList expectedList = expected_res.split(tr("**"));
 
-    foreach(QString res, expectedList) {
+    foreach (QString res, expectedList) {
         QStringList resValues = res.split(tr(","));
         if (resValues.size() != 2) {
             stateInfo.setError(QString("wrong count values in expected result: %1").arg(resValues.size()));
@@ -232,14 +225,14 @@ bool GTest_SmithWatermnan::parseExpected_res() {
         //////// first enterval
         QStringList bounds = resValues.at(1).split(tr(".."));
         if (bounds.size() != 2) {
-            stateInfo.setError(  QString("wrong region in expected result %1").arg(resValues.at(1)) );
+            stateInfo.setError(QString("wrong region in expected result %1").arg(resValues.at(1)));
             return false;
         }
         bool startOk, finishOk;
         int start = bounds.first().toInt(&startOk);
         int finish = bounds.last().toInt(&finishOk);
         if (startOk && finishOk != true) {
-            stateInfo.setError(  QString("wrong region in expected result %1").arg(resValues.at(1)) );
+            stateInfo.setError(QString("wrong region in expected result %1").arg(resValues.at(1)));
             return false;
         }
         swRes.sInterval.startPos = start;
@@ -247,17 +240,17 @@ bool GTest_SmithWatermnan::parseExpected_res() {
 
         start = resValues.at(0).toInt(&startOk);
         if (startOk != true) {
-            stateInfo.setError(  QString("wrong scorein expected result %1").arg(resValues.at(0)) );
+            stateInfo.setError(QString("wrong scorein expected result %1").arg(resValues.at(0)));
             return false;
         }
-        swRes.score= start;
+        swRes.score = start;
 
         expectedRes.append(swRes);
     }
     return true;
 }
 
-bool GTest_SmithWatermnan::toInt(QString & str, int & num) {
+bool GTest_SmithWatermnan::toInt(QString &str, int &num) {
     bool ok = false;
     if (!str.isEmpty()) {
         num = str.toInt(&ok);
@@ -265,51 +258,45 @@ bool GTest_SmithWatermnan::toInt(QString & str, int & num) {
     return ok;
 }
 
-
 Task::ReportResult GTest_SmithWatermnan::report() {
-
     propagateSubtaskError();
-    if( hasError() ) {
+    if (hasError()) {
         return ReportResult_Finished;
     }
 
     QList<SmithWatermanResult> resultList;
-    if( !machinePath.isEmpty() ) { /* remote task used */
+    if (!machinePath.isEmpty()) { /* remote task used */
         //TODO: BUG-0001870
-//         RemoteTask * remoteSW = qobject_cast<RemoteTask*>( swAlgorithmTask );
-//         assert( NULL != remoteSW );
-//         SmithWatermanLocalTaskResult * result = dynamic_cast<SmithWatermanLocalTaskResult*>( remoteSW->getResult() );
-//         assert( NULL != result );
-//         resultList = result->getResult();
+        //         RemoteTask * remoteSW = qobject_cast<RemoteTask*>( swAlgorithmTask );
+        //         assert( NULL != remoteSW );
+        //         SmithWatermanLocalTaskResult * result = dynamic_cast<SmithWatermanLocalTaskResult*>( remoteSW->getResult() );
+        //         assert( NULL != result );
+        //         resultList = result->getResult();
     } else { /* task on local machine */
         resultList = s.resultListener->popResults();
     }
     sortByScore(resultList);
 
-
     if (expectedRes.size() != resultList.size()) {
         stateInfo.setError(QString("Not expected result: count result not coincide, expected: %1, current: %2")
-                                   .arg(expectedRes.size())
-                                   .arg(resultList.size()));
+                               .arg(expectedRes.size())
+                               .arg(resultList.size()));
         return ReportResult_Finished;
     }
 
     for (int i = 0; i < resultList.size(); i++) {
         if (expectedRes.at(i).score != resultList.at(i).score ||
             expectedRes.at(i).sInterval != resultList.at(i).refSubseq) {
-                stateInfo.setError(QString("Not expected result"));
-                return ReportResult_Finished;
+            stateInfo.setError(QString("Not expected result"));
+            return ReportResult_Finished;
         }
     }
-
 
     return ReportResult_Finished;
 }
 
-
-void GTest_SmithWatermnanPerf::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_SmithWatermnanPerf::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
-
 
     searchSeqDocName = el.attribute(FILE_FASTA_CONTAIN_SEQUENCE_ATTR);
     if (searchSeqDocName.isEmpty()) {
@@ -336,10 +323,9 @@ void GTest_SmithWatermnanPerf::init(XMLTestFormat *tf, const QDomElement& el) {
 }
 
 void GTest_SmithWatermnanPerf::prepare() {
-
     //get search sequence
-    U2SequenceObject * searchSeqObj = getContext<U2SequenceObject>(this, searchSeqDocName);
-    if(searchSeqObj==NULL){
+    U2SequenceObject *searchSeqObj = getContext<U2SequenceObject>(this, searchSeqDocName);
+    if (searchSeqObj == NULL) {
         stateInfo.setError(QString("error can't cast to sequence from GObject"));
         return;
     }
@@ -347,8 +333,8 @@ void GTest_SmithWatermnanPerf::prepare() {
     CHECK_OP(stateInfo, );
 
     //get pattern sequence
-    U2SequenceObject * patternSeqObj = getContext<U2SequenceObject>(this, patternSeqDocName);
-    if(patternSeqObj==NULL){
+    U2SequenceObject *patternSeqObj = getContext<U2SequenceObject>(this, patternSeqDocName);
+    if (patternSeqObj == NULL) {
         stateInfo.setError(QString("error can't cast to sequence from GObject"));
         return;
     }
@@ -360,7 +346,7 @@ void GTest_SmithWatermnanPerf::prepare() {
     //set subst matrix
 
     QString pathToCommonData = getEnv()->getVar("COMMON_DATA_DIR");
-    if(patternSeqObj==NULL){
+    if (patternSeqObj == NULL) {
         stateInfo.setError(QString("error can't get path to common_data dir"));
         return;
     }
@@ -389,21 +375,21 @@ void GTest_SmithWatermnanPerf::prepare() {
     s.resultFilter = 0;
     s.resultListener = new SmithWatermanResultListener();
     if (0 != AppContext::getSmithWatermanTaskFactoryRegistry()->getFactory(impl)) {
-        swAlgorithmTask = (Task *) AppContext::getSmithWatermanTaskFactoryRegistry()->getFactory(impl)->getTaskInstance(s, "test SW performance");
+        swAlgorithmTask = (Task *)AppContext::getSmithWatermanTaskFactoryRegistry()->getFactory(impl)->getTaskInstance(s, "test SW performance");
     } else {
-         stateInfo.setError(QString("Not known impl of Smith-Waterman: %1").arg(impl));
-           return;
+        stateInfo.setError(QString("Not known impl of Smith-Waterman: %1").arg(impl));
+        return;
     }
     addSubTask(swAlgorithmTask);
 }
 
 Task::ReportResult GTest_SmithWatermnanPerf::report() {
     propagateSubtaskError();
-    if( hasError() ) {
+    if (hasError()) {
         return ReportResult_Finished;
     }
 
     return ReportResult_Finished;
 }
 
-}
+}    // namespace U2

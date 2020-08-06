@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "WriteSequenceValidator.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/U2SafePoints.h>
@@ -27,19 +29,15 @@
 #include <U2Lang/BaseSlots.h>
 #include <U2Lang/SupportClass.h>
 
-#include "WriteSequenceValidator.h"
-
 namespace U2 {
 namespace Workflow {
 
 WriteSequenceValidator::WriteSequenceValidator(const QString &attr, const QString &port, const QString &slot)
-: ScreenedParamValidator(attr, port, slot)
-{
-
+    : ScreenedParamValidator(attr, port, slot) {
 }
 
 bool WriteSequenceValidator::validate(const Configuration *cfg, NotificationsList &notificationList) const {
-    const Actor *actor = dynamic_cast<const Actor*>(cfg);
+    const Actor *actor = dynamic_cast<const Actor *>(cfg);
     SAFE_POINT(NULL != actor, "NULL actor", false);
     if (!isAnnotationsBinded(actor)) {
         return true;
@@ -56,7 +54,7 @@ bool WriteSequenceValidator::validate(const Configuration *cfg, NotificationsLis
     return true;
 }
 
-DocumentFormat * WriteSequenceValidator::getFormatSafe(const Actor *actor) {
+DocumentFormat *WriteSequenceValidator::getFormatSafe(const Actor *actor) {
     Attribute *attr = actor->getParameter(BaseAttributes::DOCUMENT_FORMAT_ATTRIBUTE().getId());
     SAFE_POINT(NULL != attr, "NULL format attribute", NULL);
     CHECK(actor->isAttributeVisible(attr), NULL);
@@ -95,5 +93,5 @@ bool WriteSequencePortValidator::validate(const IntegralBusPort *port, Notificat
     return result;
 }
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

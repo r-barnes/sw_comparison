@@ -19,15 +19,14 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/Task.h>
-
 #include "TaskSignalMapper.h"
+
+#include <U2Core/Task.h>
 
 namespace U2 {
 
 TaskSignalMapper::TaskSignalMapper(Task *t)
-    : QObject(t), task(t)
-{
+    : QObject(t), task(t) {
     connect(t, SIGNAL(si_stateChanged()), SLOT(sl_taskStateChanged()), Qt::DirectConnection);
 }
 
@@ -54,8 +53,8 @@ void TaskSignalMapper::sl_taskStateChanged() {
     }
 }
 
-Task * TaskSignalMapper::getTask() const {
+Task *TaskSignalMapper::getTask() const {
     return task;
 }
 
-} //namespace U2
+}    //namespace U2

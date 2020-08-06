@@ -22,14 +22,13 @@
 #ifndef _U2_TOPHAT_SETTINGS_H_
 #define _U2_TOPHAT_SETTINGS_H_
 
-#include "../RnaSeqCommon.h"
-
 #include <U2Core/DNASequenceObject.h>
 
 #include <U2Lang/DbiDataHandler.h>
 #include <U2Lang/DbiDataStorage.h>
 #include <U2Lang/WorkflowContext.h>
 
+#include "../RnaSeqCommon.h"
 
 namespace U2 {
 
@@ -44,64 +43,63 @@ public:
     QStringList urls;
     QStringList pairedUrls;
 
-    QList<Workflow::SharedDbiDataHandler>   seqIds;
-    QList<Workflow::SharedDbiDataHandler>   pairedSeqIds;
+    QList<Workflow::SharedDbiDataHandler> seqIds;
+    QList<Workflow::SharedDbiDataHandler> pairedSeqIds;
 
-    Workflow::WorkflowContext*              workflowContext;
+    Workflow::WorkflowContext *workflowContext;
 
 public:
     void cleanupReads();
 };
 
-class TopHatSettings
-{
+class TopHatSettings {
 public:
     TopHatSettings();
 
     // Workflow element parameters
-    QString             bowtieIndexPathAndBasename;
-    int                 mateInnerDistance;
-    int                 mateStandardDeviation;
-    RnaSeqLibraryType   libraryType;
-    bool                noNovelJunctions;
-    QString             rawJunctions;
-    QString             knownTranscript;
-    int                 maxMultihits;
-    int                 segmentLength;
-    bool                fusionSearch;
-    bool                transcriptomeOnly;
-    int                 transcriptomeMaxHits;
-    bool                prefilterMultihits;
-    int                 minAnchorLength;
-    int                 spliceMismatches;
-    int                 readMismatches;
-    int                 segmentMismatches;
-    bool                solexa13quals;
-    BowtieMode          bowtieMode;
-    bool                useBowtie1;
-    QString             bowtiePath;
-    QString             samtoolsPath;
-    QString             resultPrefix;
-    QString             datasetName;
+    QString bowtieIndexPathAndBasename;
+    int mateInnerDistance;
+    int mateStandardDeviation;
+    RnaSeqLibraryType libraryType;
+    bool noNovelJunctions;
+    QString rawJunctions;
+    QString knownTranscript;
+    int maxMultihits;
+    int segmentLength;
+    bool fusionSearch;
+    bool transcriptomeOnly;
+    int transcriptomeMaxHits;
+    bool prefilterMultihits;
+    int minAnchorLength;
+    int spliceMismatches;
+    int readMismatches;
+    int segmentMismatches;
+    bool solexa13quals;
+    BowtieMode bowtieMode;
+    bool useBowtie1;
+    QString bowtiePath;
+    QString samtoolsPath;
+    QString resultPrefix;
+    QString datasetName;
     /** Working folder for the TopHat tool */
-    QString             outDir;
+    QString outDir;
 
-    TopHatInputData     data;
+    TopHatInputData data;
 
-    QString             referenceInputType;
-    QString             referenceGenome;
-    QString             buildIndexPathAndBasename;
+    QString referenceInputType;
+    QString referenceGenome;
+    QString buildIndexPathAndBasename;
 
 public:
     void cleanupReads();
-    Workflow::WorkflowContext * workflowContext() const;
-    Workflow::DbiDataStorage * storage() const;
+    Workflow::WorkflowContext *workflowContext() const;
+    Workflow::DbiDataStorage *storage() const;
 
     static uint getThreadsCount();
 
     static const QString INDEX;
     static const QString SEQUENCE;
 };
-}
+}    // namespace U2
 
 #endif

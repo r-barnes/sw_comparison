@@ -31,12 +31,13 @@ class ExportReadsDialogFiller : public Filler {
 public:
     ExportReadsDialogFiller(HI::GUITestOpStatus &os, const QString &filePath, const QString format = "FASTA", bool addToProject = true);
     void commonScenario();
+
 private:
     QString filePath;
     QString format;
-    bool    addToProject;
+    bool addToProject;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_EXPORT_READS_DIALOG_FILLER_H_
+#endif    // _U2_EXPORT_READS_DIALOG_FILLER_H_

@@ -22,16 +22,15 @@
 #ifndef _U2_CLUSTALO_SUPPORT_TASK_H
 #define _U2_CLUSTALO_SUPPORT_TASK_H
 
-#include "utils/ExportTasks.h"
-
 #include <U2Core/ExternalToolRunTask.h>
-#include <U2Core/IOAdapter.h>
 #include <U2Core/GObjectReference.h>
+#include <U2Core/IOAdapter.h>
 #include <U2Core/MultipleSequenceAlignment.h>
 #include <U2Core/MultipleSequenceAlignmentObject.h>
 #include <U2Core/SaveDocumentTask.h>
 #include <U2Core/Task.h>
 
+#include "utils/ExportTasks.h"
 
 namespace U2 {
 
@@ -80,78 +79,82 @@ class LoadDocumentTask;
 
 class ClustalOSupportTaskSettings {
 public:
-    ClustalOSupportTaskSettings() {reset();}
+    ClustalOSupportTaskSettings() {
+        reset();
+    }
     void reset();
 
-    int     numIterations;          // --iterations, --iter=<n>       Number of (combined guide-tree/HMM) iterations
-    int     maxGuidetreeIterations; // --max-guidetree-iterations=<n> Maximum number guidetree iterations
-    int     maxHMMIterations;       // --max-hmm-iterations=<n>       Maximum number of HMM iterations
+    int numIterations;    // --iterations, --iter=<n>       Number of (combined guide-tree/HMM) iterations
+    int maxGuidetreeIterations;    // --max-guidetree-iterations=<n> Maximum number guidetree iterations
+    int maxHMMIterations;    // --max-hmm-iterations=<n>       Maximum number of HMM iterations
 
-    bool    setAutoOptions;         // --auto                         Set options automatically (might overwrite some of your options)
-    int     numberOfProcessors;     // --threads=<n>                  Number of processors to use
-    QString inputFilePath;          // -i, --in, --infile={<file>,-}  Multiple sequence input file (- for stdin)
+    bool setAutoOptions;    // --auto                         Set options automatically (might overwrite some of your options)
+    int numberOfProcessors;    // --threads=<n>                  Number of processors to use
+    QString inputFilePath;    // -i, --in, --infile={<file>,-}  Multiple sequence input file (- for stdin)
     QString outputFilePath;
 };
-
 
 class ClustalOSupportTask : public ExternalToolSupportTask {
     Q_OBJECT
     Q_DISABLE_COPY(ClustalOSupportTask)
 public:
-    ClustalOSupportTask(const MultipleSequenceAlignment& _inputMsa, const GObjectReference& _objRef, const ClustalOSupportTaskSettings& settings);
+    ClustalOSupportTask(const MultipleSequenceAlignment &_inputMsa, const GObjectReference &_objRef, const ClustalOSupportTaskSettings &settings);
     ~ClustalOSupportTask();
 
     void prepare();
     Task::ReportResult report();
 
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
-    MultipleSequenceAlignment                  resultMA;
+    MultipleSequenceAlignment resultMA;
+
 private:
-    MultipleSequenceAlignment                  inputMsa;
-    GObjectReference            objRef;
-    QPointer<Document>          tmpDoc;
-    QString                     url;
+    MultipleSequenceAlignment inputMsa;
+    GObjectReference objRef;
+    QPointer<Document> tmpDoc;
+    QString url;
 
-    SaveAlignmentTask*          saveTemporaryDocumentTask;
-    ExternalToolRunTask*        clustalOTask;
-    LoadDocumentTask*           loadTemporyDocumentTask;
+    SaveAlignmentTask *saveTemporaryDocumentTask;
+    ExternalToolRunTask *clustalOTask;
+    LoadDocumentTask *loadTemporyDocumentTask;
     ClustalOSupportTaskSettings settings;
-    QPointer<StateLock>         lock;
+    QPointer<StateLock> lock;
 };
 
 class ClustalOWithExtFileSpecifySupportTask : public Task {
     Q_OBJECT
     Q_DISABLE_COPY(ClustalOWithExtFileSpecifySupportTask)
 public:
-    ClustalOWithExtFileSpecifySupportTask(const ClustalOSupportTaskSettings& settings);
+    ClustalOWithExtFileSpecifySupportTask(const ClustalOSupportTaskSettings &settings);
     ~ClustalOWithExtFileSpecifySupportTask();
     void prepare();
     Task::ReportResult report();
 
-    QList<Task*> onSubTaskFinished(Task* subTask);
-private:
-    MultipleSequenceAlignmentObject*           mAObject;
-    Document*                   currentDocument;
-    bool                        cleanDoc;
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
-    SaveDocumentTask*           saveDocumentTask;
-    LoadDocumentTask*           loadDocumentTask;
-    ClustalOSupportTask*        clustalOSupportTask;
+private:
+    MultipleSequenceAlignmentObject *mAObject;
+    Document *currentDocument;
+    bool cleanDoc;
+
+    SaveDocumentTask *saveDocumentTask;
+    LoadDocumentTask *loadDocumentTask;
+    ClustalOSupportTask *clustalOSupportTask;
     ClustalOSupportTaskSettings settings;
 };
 
 class ClustalOLogParser : public ExternalToolLogParser {
 public:
     ClustalOLogParser();
-    void parseOutput(const QString& partOfLog);
+    void parseOutput(const QString &partOfLog);
     int getProgress();
+
 private:
     /* Last line printed to stdout */
-    QString     lastLine;
+    QString lastLine;
     /* If any error occurred, this variable will be non-empty */
-    QString     lastError;
+    QString lastError;
 };
 
-}//namespace
-#endif // _U2_CLUSTALO_SUPPORT_TASK_H
+}    // namespace U2
+#endif    // _U2_CLUSTALO_SUPPORT_TASK_H

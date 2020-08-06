@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "HmmerBuildDialog.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 
@@ -31,34 +33,31 @@
 #include <U2Gui/SaveDocumentController.h>
 #include <U2Gui/U2FileDialog.h>
 
-#include "HmmerBuildDialog.h"
 #include "HmmerBuildFromFileTask.h"
 #include "HmmerBuildFromMsaTask.h"
 
 namespace U2 {
 
 UHMM3BuildDialogModel::UHMM3BuildDialogModel()
-    : alignmentUsing(false)
-{
-
+    : alignmentUsing(false) {
 }
 
-const QString HmmerBuildDialog::MA_FILES_DIR_ID     = "uhmmer3_build_ma_files_dir";
-const QString HmmerBuildDialog::HMM_FILES_DIR_ID    = "uhmmer3_build_hmm_files_dir";
+const QString HmmerBuildDialog::MA_FILES_DIR_ID = "uhmmer3_build_ma_files_dir";
+const QString HmmerBuildDialog::HMM_FILES_DIR_ID = "uhmmer3_build_hmm_files_dir";
 
 void HmmerBuildDialog::setSignalsAndSlots() {
     QPushButton *okButton = buttonBox->button(QDialogButtonBox::Ok);
     QPushButton *cancelButton = buttonBox->button(QDialogButtonBox::Cancel);
 
-    connect(maOpenFileButton,       SIGNAL(clicked()),      SLOT(sl_maOpenFileButtonClicked()));
-    connect(okButton,               SIGNAL(clicked()),      SLOT(sl_buildButtonClicked()));
-    connect(cancelButton,           SIGNAL(clicked()),      SLOT(sl_cancelButtonClicked()));
-    connect(mcFastRadioButton,      SIGNAL(toggled(bool)),  SLOT(sl_fastMCRadioButtonChanged(bool)));
-    connect(wblosumRSWRadioButton,  SIGNAL(toggled(bool)),  SLOT(sl_wblosumRSWRadioButtonChanged(bool)));
-    connect(eentESWRadioButton,     SIGNAL(toggled(bool)),  SLOT(sl_eentESWRadioButtonChanged(bool)));
-    connect(eclustESWRadioButton,   SIGNAL(toggled(bool)),  SLOT(sl_eclustESWRadioButtonChanged(bool)));
-    connect(esetESWRadioButton,     SIGNAL(toggled(bool)),  SLOT(sl_esetESWRadioButtonChanged(bool)));
-    
+    connect(maOpenFileButton, SIGNAL(clicked()), SLOT(sl_maOpenFileButtonClicked()));
+    connect(okButton, SIGNAL(clicked()), SLOT(sl_buildButtonClicked()));
+    connect(cancelButton, SIGNAL(clicked()), SLOT(sl_cancelButtonClicked()));
+    connect(mcFastRadioButton, SIGNAL(toggled(bool)), SLOT(sl_fastMCRadioButtonChanged(bool)));
+    connect(wblosumRSWRadioButton, SIGNAL(toggled(bool)), SLOT(sl_wblosumRSWRadioButtonChanged(bool)));
+    connect(eentESWRadioButton, SIGNAL(toggled(bool)), SLOT(sl_eentESWRadioButtonChanged(bool)));
+    connect(eclustESWRadioButton, SIGNAL(toggled(bool)), SLOT(sl_eclustESWRadioButtonChanged(bool)));
+    connect(esetESWRadioButton, SIGNAL(toggled(bool)), SLOT(sl_esetESWRadioButtonChanged(bool)));
+
     //temporary disabling of strange label/spinbox
     fragThreshDoubleSpinBox->setVisible(false);
     fragthreshLabel->setVisible(false);
@@ -66,12 +65,12 @@ void HmmerBuildDialog::setSignalsAndSlots() {
 
 void HmmerBuildDialog::initialize() {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742593");
+    new HelpButton(this, buttonBox, "46501166");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Build"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
     initSaveController();
-    setModelValues(); // build settings are default here
+    setModelValues();    // build settings are default here
     setSignalsAndSlots();
 }
 
@@ -90,14 +89,13 @@ void HmmerBuildDialog::initSaveController() {
     saveController = new SaveDocumentController(config, formatsInfo, this);
 }
 
-HmmerBuildDialog::HmmerBuildDialog(const MultipleSequenceAlignment &ma, QWidget * parent)
+HmmerBuildDialog::HmmerBuildDialog(const MultipleSequenceAlignment &ma, QWidget *parent)
     : QDialog(parent),
-      saveController(NULL)
-{
+      saveController(NULL) {
     initialize();
     model.alignment = ma->getCopy();
     model.alignmentUsing = !model.alignment->isEmpty();
-    
+
     if (model.alignmentUsing) {
         maLoadFromFileEdit->hide();
         maLoadFromFileLabel->hide();
@@ -124,38 +122,37 @@ void HmmerBuildDialog::setModelValues() {
 
 void HmmerBuildDialog::sl_maOpenFileButtonClicked() {
     LastUsedDirHelper helper(MA_FILES_DIR_ID);
-    helper.url = U2FileDialog::getOpenFileName(this, tr("Select multiple alignment file"),
-        helper, DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT , true));
+    helper.url = U2FileDialog::getOpenFileName(this, tr("Select multiple alignment file"), helper, DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT, true));
     if (!helper.url.isEmpty()) {
         maLoadFromFileEdit->setText(helper.url);
     }
 }
 
 void HmmerBuildDialog::getModelValues() {
-    model.buildSettings.symfrac     = symfracDoubleSpinBox->value();
-    model.buildSettings.wid         = widRSWDoubleSpinBox->value();
-    model.buildSettings.eid         = eidESWDoubleSpinBox->value();
-    model.buildSettings.eset        = esetESWDoubleSpinBox->value();
-    model.buildSettings.eml         = emlSpinBox->value();
-    model.buildSettings.emn         = emnSpinBox->value();
-    model.buildSettings.evl         = evlSpinBox->value();
-    model.buildSettings.evn         = evnSpinBox->value();
-    model.buildSettings.efl         = eflSpinBox->value();
-    model.buildSettings.efn         = efnSpinBox->value();
-    model.buildSettings.eft         = eftDoubleSpinBox->value();
-    model.buildSettings.seed        = seedSpinBox->value();
-    model.buildSettings.esigma      = esigmaDoubleSpinBox->value();
-    model.buildSettings.fragtresh   = fragThreshDoubleSpinBox->value();
+    model.buildSettings.symfrac = symfracDoubleSpinBox->value();
+    model.buildSettings.wid = widRSWDoubleSpinBox->value();
+    model.buildSettings.eid = eidESWDoubleSpinBox->value();
+    model.buildSettings.eset = esetESWDoubleSpinBox->value();
+    model.buildSettings.eml = emlSpinBox->value();
+    model.buildSettings.emn = emnSpinBox->value();
+    model.buildSettings.evl = evlSpinBox->value();
+    model.buildSettings.evn = evnSpinBox->value();
+    model.buildSettings.efl = eflSpinBox->value();
+    model.buildSettings.efn = efnSpinBox->value();
+    model.buildSettings.eft = eftDoubleSpinBox->value();
+    model.buildSettings.seed = seedSpinBox->value();
+    model.buildSettings.esigma = esigmaDoubleSpinBox->value();
+    model.buildSettings.fragtresh = fragThreshDoubleSpinBox->value();
     if (0 != ereESWDoubleSpinBox->value()) {
         model.buildSettings.ere = ereESWDoubleSpinBox->value();
     }
-    
+
     if (mcFastRadioButton->isChecked()) {
         model.buildSettings.modelConstructionStrategy = HmmerBuildSettings::p7_ARCH_FAST;
     } else {
         model.buildSettings.modelConstructionStrategy = HmmerBuildSettings::p7_ARCH_HAND;
     }
-    
+
     if (wgscRSWRadioButton->isChecked()) {
         model.buildSettings.relativeSequenceWeightingStrategy = HmmerBuildSettings::p7_WGT_GSC;
     } else if (wblosumRSWRadioButton->isChecked()) {
@@ -169,7 +166,7 @@ void HmmerBuildDialog::getModelValues() {
     } else {
         assert(false);
     }
-    
+
     if (eentESWRadioButton->isChecked()) {
         model.buildSettings.effectiveSequenceWeightingStrategy = HmmerBuildSettings::p7_EFFN_ENTROPY;
     } else if (eclustESWRadioButton->isChecked()) {
@@ -181,13 +178,13 @@ void HmmerBuildDialog::getModelValues() {
     } else {
         assert(false);
     }
-    
+
     model.buildSettings.profileUrl = saveController->getSaveFileName();
     model.inputFile = maLoadFromFileEdit->text();
 }
 
 QString HmmerBuildDialog::checkModel() {
-//    assert(checkUHMM3BuildSettings(&model.buildSettings.inner));
+    //    assert(checkUHMM3BuildSettings(&model.buildSettings.inner));
     if (!model.alignmentUsing && model.inputFile.isEmpty()) {
         return tr("input file is empty");
     }
@@ -204,15 +201,15 @@ void HmmerBuildDialog::sl_buildButtonClicked() {
         QMessageBox::critical(this, tr("Error: bad arguments!"), err);
         return;
     }
-    
-    Task * buildTask = NULL;
+
+    Task *buildTask = NULL;
     if (model.alignmentUsing) {
         buildTask = new HmmerBuildFromMsaTask(model.buildSettings, model.alignment);
     } else {
         buildTask = new HmmerBuildFromFileTask(model.buildSettings, model.inputFile);
     }
     assert(NULL != buildTask);
-    
+
     AppContext::getTaskScheduler()->registerTopLevelTask(buildTask);
     QDialog::accept();
 }
@@ -247,4 +244,4 @@ void HmmerBuildDialog::sl_esetESWRadioButtonChanged(bool checked) {
     esetESWDoubleSpinBox->setEnabled(checked);
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -26,21 +26,27 @@
 
 namespace U2 {
 
-class U2LANG_EXPORT SlotRelationDescriptor{
+class U2LANG_EXPORT SlotRelationDescriptor {
 public:
-    SlotRelationDescriptor(const QString& portId, const QString& slotId, const QVariantList& valuesWithEnabledSlot)
-        : portId(portId), slotId(slotId), valuesWithEnabledSlot(valuesWithEnabledSlot) {}
-    virtual ~SlotRelationDescriptor() {}
+    SlotRelationDescriptor(const QString &portId, const QString &slotId, const QVariantList &valuesWithEnabledSlot)
+        : portId(portId), slotId(slotId), valuesWithEnabledSlot(valuesWithEnabledSlot) {
+    }
+    virtual ~SlotRelationDescriptor() {
+    }
 
-    virtual SlotRelationDescriptor *clone() const { return new SlotRelationDescriptor(*this); }
+    virtual SlotRelationDescriptor *clone() const {
+        return new SlotRelationDescriptor(*this);
+    }
 
-    virtual bool isSlotEnabled(const QVariant& attrValue) const { return valuesWithEnabledSlot.contains(attrValue); }
+    virtual bool isSlotEnabled(const QVariant &attrValue) const {
+        return valuesWithEnabledSlot.contains(attrValue);
+    }
 
-    QString       portId;
-    QString       slotId;
-    QVariantList  valuesWithEnabledSlot;
+    QString portId;
+    QString slotId;
+    QVariantList valuesWithEnabledSlot;
 };
 
-} // U2 namespace
+}    // namespace U2
 
-#endif // _U2_SLOT_RELATION_H_
+#endif    // _U2_SLOT_RELATION_H_

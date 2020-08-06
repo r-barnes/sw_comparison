@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExternalToolUtils.h"
+
 #include <QFile>
 #include <QFileInfo>
 #include <QMessageBox>
@@ -33,7 +35,6 @@
 #include <U2Gui/AppSettingsGUI.h>
 
 #include "ExternalToolSupportSettingsController.h"
-#include "ExternalToolUtils.h"
 
 namespace U2 {
 
@@ -48,11 +49,11 @@ void ExternalToolUtils::checkExtToolsPath(const QStringList &ids) {
             missingTools << tool->getName();
         }
     }
-    if (!missingTools.isEmpty()){
+    if (!missingTools.isEmpty()) {
         QString mergedNames = missingTools.join(", ");
 
         QObjectScopedPointer<QMessageBox> msgBox = new QMessageBox;
-        msgBox->setWindowTitle("BLAST: "+ QString(mergedNames));
+        msgBox->setWindowTitle("BLAST: " + QString(mergedNames));
         msgBox->setText(tr("Paths for the following tools are not selected: %1.").arg(mergedNames));
         msgBox->setInformativeText(tr("Do you want to select it now?"));
         msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
@@ -74,10 +75,16 @@ void ExternalToolUtils::checkExtToolsPath(const QStringList &ids) {
 }
 
 void ExternalToolUtils::addDefaultCistromeDirToSettings() {
-    const QString cistromeDefaultPath = QFileInfo(QString(PATH_PREFIX_DATA) + QString(":") + "cistrome").absoluteFilePath();
+    QString cistromeDefaultPath;
+    QString customDataDir = qgetenv("UGENE_DATA_PATH");
+    if (!customDataDir.isEmpty()) {
+        cistromeDefaultPath = QFileInfo(customDataDir + "/cistrome").absoluteFilePath();
+    } else {
+        cistromeDefaultPath = QFileInfo(QString(PATH_PREFIX_DATA) + QString(":") + "cistrome").absoluteFilePath();
+    }
 
-    const bool defaultExists = QFile::exists(cistromeDefaultPath);
-    const QString savedValue = AppContext::getSettings()->getValue(CISTROME_DATA_DIR).toString();
+    bool defaultExists = QFile::exists(cistromeDefaultPath);
+    QString savedValue = AppContext::getSettings()->getValue(CISTROME_DATA_DIR).toString();
 
     bool addNew = savedValue.isEmpty() && defaultExists;
     bool removeOld = !savedValue.isEmpty() && !QFile::exists(savedValue);
@@ -90,17 +97,16 @@ void ExternalToolUtils::addDefaultCistromeDirToSettings() {
     }
 }
 
-void ExternalToolUtils::addCistromeDataPath(const QString& dataName, const QString& dirName, bool entriesAreFolders) {
-    U2DataPathRegistry* dpr = AppContext::getDataPathRegistry();
+void ExternalToolUtils::addCistromeDataPath(const QString &dataName, const QString &dirName, bool entriesAreFolders) {
+    U2DataPathRegistry *dpr = AppContext::getDataPathRegistry();
     CHECK(NULL != dpr, );
 
     const QString dataPath = AppContext::getSettings()->getValue(CISTROME_DATA_DIR).toString() + QDir::separator() + dirName;
-    U2DataPath* dp = new U2DataPath(dataName, dataPath, "", U2DataPath::CutFileExtension | (entriesAreFolders ? U2DataPath::AddOnlyFolders : U2DataPath::None));
+    U2DataPath *dp = new U2DataPath(dataName, dataPath, "", U2DataPath::CutFileExtension | (entriesAreFolders ? U2DataPath::AddOnlyFolders : U2DataPath::None));
     bool ok = dpr->registerEntry(dp);
     if (!ok) {
         delete dp;
     }
 }
 
-}   // namespace U2
-
+}    // namespace U2

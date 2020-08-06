@@ -19,8 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "WorkflowRunSerializedSchemeTask.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/Counter.h>
+
 #include <U2Lang/Schema.h>
 #include <U2Lang/ScriptContext.h>
 #include <U2Lang/WorkflowEnv.h>
@@ -29,90 +32,87 @@
 #include <U2Lang/WorkflowRunTask.h>
 #include <U2Lang/WorkflowUtils.h>
 
-#include "WorkflowRunSerializedSchemeTask.h"
-
 namespace U2 {
 
 /////// BaseSerializedSchemeRunner implementation /////////////////////////////////////////////////
 
-BaseSerializedSchemeRunner::BaseSerializedSchemeRunner( const QString &_pathToScheme,
-    ScriptableScheduler *_scheduler, QStringList &outputFiles )
-    : Task( tr( "Workflow run from serialized scheme" ), TaskFlag_NoRun ),
-    workflowResultFiles( outputFiles ), pathToScheme( _pathToScheme ), scheduler( _scheduler )
-{
-
+BaseSerializedSchemeRunner::BaseSerializedSchemeRunner(const QString &_pathToScheme,
+                                                       ScriptableScheduler *_scheduler,
+                                                       QStringList &outputFiles)
+    : Task(tr("Workflow run from serialized scheme"), TaskFlag_NoRun),
+      workflowResultFiles(outputFiles), pathToScheme(_pathToScheme), scheduler(_scheduler) {
 }
 
 /////// WorkflowRunSerializedSchemeTask implementation ////////////////////////////////////////////
 
-WorkflowRunSerializedSchemeTask::WorkflowRunSerializedSchemeTask( const QString &_pathToScheme,
-    ScriptableScheduler *_scheduler, QStringList &outputFiles )
-    : BaseSerializedSchemeRunner( _pathToScheme, _scheduler, outputFiles ), scheme( NULL ),
-    loadTask( NULL ), runTask( NULL )
-{
-    GCOUNTER( cvar, tvar, "workflow_run_from_script" );
+WorkflowRunSerializedSchemeTask::WorkflowRunSerializedSchemeTask(const QString &_pathToScheme,
+                                                                 ScriptableScheduler *_scheduler,
+                                                                 QStringList &outputFiles)
+    : BaseSerializedSchemeRunner(_pathToScheme, _scheduler, outputFiles), scheme(NULL),
+      loadTask(NULL), runTask(NULL) {
+    GCOUNTER(cvar, tvar, "workflow_run_from_script");
 
-    loadTask = createLoadSchemeTask( );
-    if ( NULL != loadTask ) {
-        addSubTask( loadTask );
+    loadTask = createLoadSchemeTask();
+    if (NULL != loadTask) {
+        addSubTask(loadTask);
     }
 }
 
-WorkflowRunSerializedSchemeTask::~WorkflowRunSerializedSchemeTask( ) {
+WorkflowRunSerializedSchemeTask::~WorkflowRunSerializedSchemeTask() {
     delete scheme;
 }
 
-QList<Task *> WorkflowRunSerializedSchemeTask::onSubTaskFinished( Task *subtask ) {
-    Q_ASSERT( NULL != subtask );
+QList<Task *> WorkflowRunSerializedSchemeTask::onSubTaskFinished(Task *subtask) {
+    Q_ASSERT(NULL != subtask);
     QList<Task *> res;
 
-    propagateSubtaskError( );
-    if ( hasError( ) || isCanceled( ) ) {
+    propagateSubtaskError();
+    if (hasError() || isCanceled()) {
         return res;
     }
 
-    if ( loadTask == subtask ) {
-        Q_ASSERT( scheme == loadTask->getSchema( ) );
-        QMap<ActorId, ActorId> remapping = loadTask->getRemapping( );
+    if (loadTask == subtask) {
+        Q_ASSERT(scheme == loadTask->getSchema());
+        QMap<ActorId, ActorId> remapping = loadTask->getRemapping();
 
-        if ( scheme->getDomain( ).isEmpty( ) ) {
-            QList<QString> domainsId = WorkflowEnv::getDomainRegistry( )->getAllIds( );
-            Q_ASSERT( !domainsId.isEmpty( ) );
-            if ( !domainsId.isEmpty( ) ) {
-                scheme->setDomain( domainsId.first( ) );
+        if (scheme->getDomain().isEmpty()) {
+            QList<QString> domainsId = WorkflowEnv::getDomainRegistry()->getAllIds();
+            Q_ASSERT(!domainsId.isEmpty());
+            if (!domainsId.isEmpty()) {
+                scheme->setDomain(domainsId.first());
             }
         }
 
         QStringList errorList;
-        bool good = WorkflowUtils::validate( *scheme, errorList );
-        if ( !good ) {
-            setError( "\n\n" + errorList.join( "\n\n" ) );
+        bool good = WorkflowUtils::validate(*scheme, errorList);
+        if (!good) {
+            setError("\n\n" + errorList.join("\n\n"));
             return res;
         }
         // AppContext::getScriptContext( )->setWorkflowScheduler( scheduler );
-        runTask = new WorkflowRunTask( *scheme, remapping );
-        res.append( runTask );
-    } else if ( runTask == subtask ) {
-        const QList<Workflow::WorkflowMonitor *> workflowMonitors = runTask->getMonitors( );
-        foreach ( Workflow::WorkflowMonitor *monitor, workflowMonitors ) {
-            foreach ( Workflow::Monitor::FileInfo file, monitor->getOutputFiles( ) ) {
-                workflowResultFiles.append( file.url );
+        runTask = new WorkflowRunTask(*scheme, remapping);
+        res.append(runTask);
+    } else if (runTask == subtask) {
+        const QList<Workflow::WorkflowMonitor *> workflowMonitors = runTask->getMonitors();
+        foreach (Workflow::WorkflowMonitor *monitor, workflowMonitors) {
+            foreach (Workflow::Monitor::FileInfo file, monitor->getOutputFiles()) {
+                workflowResultFiles.append(file.url);
             }
         }
     }
     return res;
 }
 
-LoadWorkflowTask * WorkflowRunSerializedSchemeTask::createLoadSchemeTask( ) {
-    const QString approvedPath = WorkflowUtils::findPathToSchemaFile( pathToScheme );
-    if( approvedPath.isEmpty( ) ) {
-        setError( tr( "Cannot find workflow: %1" ).arg( pathToScheme ) );
+LoadWorkflowTask *WorkflowRunSerializedSchemeTask::createLoadSchemeTask() {
+    const QString approvedPath = WorkflowUtils::findPathToSchemaFile(pathToScheme);
+    if (approvedPath.isEmpty()) {
+        setError(tr("Cannot find workflow: %1").arg(pathToScheme));
         return NULL;
     }
 
-    scheme = new Schema( );
-    scheme->setDeepCopyFlag( true );
-    return new LoadWorkflowTask( scheme, NULL, approvedPath );
+    scheme = new Schema();
+    scheme->setDeepCopyFlag(true);
+    return new LoadWorkflowTask(scheme, NULL, approvedPath);
 }
 
-} // namespace U2
+}    // namespace U2

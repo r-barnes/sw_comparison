@@ -19,26 +19,26 @@
  * MA 02110-1301, USA.
  */
 
+#include "AlignMsaAction.h"
+
 #include <U2Core/U2SafePoints.h>
 
 #include <U2View/MSAEditor.h>
 
-#include "AlignMsaAction.h"
-
 namespace U2 {
 
-MSAEditor* AlignMsaAction::getMsaEditor() const {
-    MSAEditor* e = qobject_cast<MSAEditor*>(getObjectView());
+MSAEditor *AlignMsaAction::getMsaEditor() const {
+    MSAEditor *e = qobject_cast<MSAEditor *>(getObjectView());
     SAFE_POINT(e != NULL, "Can't get an appropriate MSA Editor", NULL);
     return e;
 }
 
 void AlignMsaAction::sl_updateState() {
-    StateLockableItem* item = qobject_cast<StateLockableItem*>(sender());
+    StateLockableItem *item = qobject_cast<StateLockableItem *>(sender());
     SAFE_POINT(item != NULL, "Unexpected sender: expect StateLockableItem", );
-    MSAEditor* msaEditor = getMsaEditor();
+    MSAEditor *msaEditor = getMsaEditor();
     CHECK(msaEditor != NULL, );
     setEnabled(!item->isStateLocked() && !msaEditor->isAlignmentEmpty());
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -26,8 +26,8 @@
 #include <QList>
 #include <QObject>
 
-#include <U2Core/global.h>
 #include <U2Core/ExternalToolRegistry.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -47,19 +47,24 @@ public:
     virtual void start();
     virtual void stop();
 
-    virtual void check(const QString& toolId, const QString& toolPath, ExternalToolValidationListener* listener);
-    virtual void check(const QStringList& toolId, const StrStrMap& toolPaths, ExternalToolValidationListener* listener);
+    virtual void check(const QString &toolId, const QString &toolPath, ExternalToolValidationListener *listener);
+    virtual void check(const QStringList &toolId, const StrStrMap &toolPaths, ExternalToolValidationListener *listener);
 
-    virtual void validate(const QString& toolId, ExternalToolValidationListener* listener = nullptr);
-    virtual void validate(const QString& toolId, const QString& path, ExternalToolValidationListener* listener = nullptr);
-    virtual void validate(const QStringList& toolIds, ExternalToolValidationListener* listener = nullptr);
-    virtual void validate(const QStringList& toolIds, const StrStrMap& toolPaths, ExternalToolValidationListener* listener = nullptr);
+    virtual void validate(const QString &toolId, ExternalToolValidationListener *listener = nullptr);
+    virtual void validate(const QString &toolId, const QString &path, ExternalToolValidationListener *listener = nullptr);
+    virtual void validate(const QStringList &toolIds, ExternalToolValidationListener *listener = nullptr);
+    virtual void validate(const QStringList &toolIds, const StrStrMap &toolPaths, ExternalToolValidationListener *listener = nullptr);
 
-    virtual bool isValid(const QString& toolIds) const;
-    virtual ExternalToolState getToolState(const QString& toolId) const;
+    virtual bool isValid(const QString &toolIds) const;
+
+    virtual bool isStartupCheckFinished() const {
+        return startupChecks;
+    }
+
+    virtual ExternalToolState getToolState(const QString &toolId) const;
 
 signals:
-    void si_validationComplete(const QStringList& toolIds, QObject* receiver = nullptr, const char* slot = nullptr);
+    void si_validationComplete(const QStringList &toolIds, QObject *receiver = nullptr, const char *slot = nullptr);
 
 private slots:
     void sl_checkTaskStateChanged();
@@ -74,25 +79,26 @@ private slots:
 private:
     void innerStart();
     void checkStartupTasksState();
-    QString addTool(ExternalTool* tool);
-    bool dependenciesAreOk(const QString& toolId);
-    void validateTools(const StrStrMap& toolPaths = StrStrMap(), ExternalToolValidationListener* listener = nullptr);
+    void markStartupCheckAsFinished();
+    QString addTool(ExternalTool *tool);
+    bool dependenciesAreOk(const QString &toolId);
+    void validateTools(const StrStrMap &toolPaths = StrStrMap(), ExternalToolValidationListener *listener = nullptr);
     void loadCustomTools();
     void searchTools();
-    void setToolPath(const QString& toolId, const QString& toolPath);
-    void setToolValid(const QString& toolId, bool isValid);
+    void setToolPath(const QString &toolId, const QString &toolPath);
+    void setToolValid(const QString &toolId, bool isValid);
 
-    ExternalToolRegistry* etRegistry;
+    ExternalToolRegistry *etRegistry;
     QList<QString> validateList;
     QList<QString> searchList;
     StrStrMap dependencies;    // master - vassal
     QMap<QString, ExternalToolState> toolStates;
-    QMap<ExternalToolsValidateTask*, ExternalToolValidationListener*> listeners;
+    QMap<ExternalToolsValidateTask *, ExternalToolValidationListener *> listeners;
     bool startupChecks;
 
     static const int MAX_PARALLEL_SUBTASKS = 5;
 };
 
-}   //namespace
+}    // namespace U2
 
-#endif // _U2_EXTERNAL_TOOL_VALIDATION_MANAGER_H_
+#endif    // _U2_EXTERNAL_TOOL_VALIDATION_MANAGER_H_

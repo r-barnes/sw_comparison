@@ -22,41 +22,35 @@
 #ifndef _U2_SETTINGSDIALOG_H_
 #define _U2_SETTINGSDIALOG_H_
 
+#include <QColorDialog>
+
+#include "AnaglyphRenderer.h"
 #include "BioStruct3DGLWidget.h"
 #include "ui_SettingsDialog.h"
-#include "AnaglyphRenderer.h"
-
-#include <QColorDialog>
 
 namespace U2 {
 
-
-class GlassesColorScheme
-{
+class GlassesColorScheme {
 public:
     QColor leftEyeColor;
     QColor rightEyeColor;
 
     QString name;
 
-    GlassesColorScheme()
-    {
-        name="";
-        leftEyeColor=QColor(0, 0, 0);
+    GlassesColorScheme() {
+        name = "";
+        leftEyeColor = QColor(0, 0, 0);
         rightEyeColor = leftEyeColor;
     }
 
-    GlassesColorScheme(QString name, QColor leftEyeColor, QColor rightEyeColor)
-    {
+    GlassesColorScheme(QString name, QColor leftEyeColor, QColor rightEyeColor) {
         this->name = name;
         this->leftEyeColor = leftEyeColor;
         this->rightEyeColor = rightEyeColor;
     }
 };
 
-
-class BioStruct3DSettingsDialog : public QDialog, private Ui_SettingsDialog
-{
+class BioStruct3DSettingsDialog : public QDialog, private Ui_SettingsDialog {
     Q_OBJECT
 
 public:
@@ -76,11 +70,10 @@ private slots:
     void sl_setRightEyeColor();
     void sl_swapColors();
 
-
 public:
     // anaglyph related settings
     AnaglyphStatus getAnaglyphStatus() const;
-    const AnaglyphSettings& getAnaglyphSettings() const;
+    const AnaglyphSettings &getAnaglyphSettings() const;
 
     void setAnaglyphStatus(AnaglyphStatus status);
     void setAnaglyphSettings(const AnaglyphSettings &settings);
@@ -88,11 +81,11 @@ public:
     void setRightEyeColor(QColor rightEyecolor);
     void setLeftEyeColor(QColor leftEyecolor);
 
-    QColor getBackgroundColor()const;
-    QColor getSelectionColor()const;
+    QColor getBackgroundColor() const;
+    QColor getSelectionColor() const;
 
-    float getRenderDetailLevel()const;
-    int getShadingLevel()const;
+    float getRenderDetailLevel() const;
+    int getShadingLevel() const;
 
     void setBackgroundColor(QColor color);
     void setSelectionColor(QColor color);
@@ -116,7 +109,6 @@ private:
     QColor backgroundColor;
     QColor selectionColor;
 
-
     int renderDetailLevel;
     int shadingLevel;
 
@@ -124,6 +116,6 @@ private:
     AnaglyphSettings anaglyphSettings;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_SETTINGSDIALOG_H_
+#endif    // _U2_SETTINGSDIALOG_H_

@@ -22,9 +22,9 @@
 #ifndef _U2_BUILT_IN_PWM_CONVERSION_ALGORITHMS_H_
 #define _U2_BUILT_IN_PWM_CONVERSION_ALGORITHMS_H_
 
-#include <U2Core/global.h>
-
 #include <QString>
+
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -36,6 +36,6 @@ public:
     static const QString NLG_ALGO;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

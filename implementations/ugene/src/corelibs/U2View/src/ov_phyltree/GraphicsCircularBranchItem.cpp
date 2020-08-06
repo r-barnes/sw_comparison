@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "GraphicsCircularBranchItem.h"
+
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QPainter>
@@ -30,18 +32,17 @@
 #include <U2Core/PhyTreeObject.h>
 
 #include "GraphicsButtonItem.h"
-#include "GraphicsCircularBranchItem.h"
 #include "GraphicsRectangularBranchItem.h"
 #include "TreeViewerUtils.h"
 
 namespace U2 {
 
 #ifndef M_PI
-#define M_PI 3.14159265358979323846
+#    define M_PI 3.14159265358979323846
 #endif
 
-GraphicsCircularBranchItem::GraphicsCircularBranchItem(QGraphicsItem* parent, qreal h, GraphicsRectangularBranchItem* from, double nodeValue)
-: GraphicsBranchItem(true, nodeValue), height(h), direction(from->getDirection()), visible(true) {
+GraphicsCircularBranchItem::GraphicsCircularBranchItem(QGraphicsItem *parent, qreal h, GraphicsRectangularBranchItem *from, double nodeValue)
+    : GraphicsBranchItem(true, nodeValue), height(h), direction(from->getDirection()), visible(true) {
     setParentItem(parent);
     settings = from->getSettings();
     qreal w = from->getWidth();
@@ -64,7 +65,6 @@ GraphicsCircularBranchItem::GraphicsCircularBranchItem(QGraphicsItem* parent, qr
     }
     setLabelPositions();
     setPen(from->pen());
-
 }
 
 QRectF GraphicsCircularBranchItem::boundingRect() const {
@@ -75,7 +75,7 @@ QRectF GraphicsCircularBranchItem::boundingRect() const {
     return QRectF(-w, direction == GraphicsBranchItem::up ? 0 : -h, w, h);
 }
 
-void GraphicsCircularBranchItem::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWidget*) {
+void GraphicsCircularBranchItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
     if (!visible)
         return;
     painter->setPen(pen());
@@ -87,10 +87,9 @@ void GraphicsCircularBranchItem::paint(QPainter *painter, const QStyleOptionGrap
 }
 
 QPainterPath GraphicsCircularBranchItem::shape() const {
-
     QPainterPath path;
 
-    qreal rad = 30.0; // all hardcode will be deleted later during complete refactoring
+    qreal rad = 30.0;    // all hardcode will be deleted later during complete refactoring
     QRectF rect(-2 * rad - width, -rad, 2 * rad, 2 * rad);
 
     path.lineTo(width, 0);
@@ -100,7 +99,7 @@ QPainterPath GraphicsCircularBranchItem::shape() const {
 }
 
 void GraphicsCircularBranchItem::setLabelPositions() {
-    if(nameText != NULL) {
+    if (nameText != NULL) {
         QRectF rect = nameText->boundingRect();
         qreal h = rect.height();
         nameText->setPos(GraphicsBranchItem::TextSpace, -h * 0.5);
@@ -109,7 +108,7 @@ void GraphicsCircularBranchItem::setLabelPositions() {
             nameText->setTransform(QTransform().translate(p.x(), p.y()).rotate(180).translate(-p.x(), -p.y()));
         }
     }
-    if(distanceText != NULL) {
+    if (distanceText != NULL) {
         QRectF rect = distanceText->boundingRect();
         if (distanceText->scenePos().x() < 0) {
             QPointF p(rect.center().x(), rect.height());
@@ -119,4 +118,4 @@ void GraphicsCircularBranchItem::setLabelPositions() {
     }
 }
 
-}//namespace
+}    // namespace U2

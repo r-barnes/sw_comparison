@@ -21,20 +21,19 @@
 
 #include "SequencesToMSAWorker.h"
 
-#include <U2Core/TaskSignalMapper.h>
 #include <U2Core/FailTask.h>
+#include <U2Core/TaskSignalMapper.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Designer/DelegateEditors.h>
 
-#include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/ActorPrototypeRegistry.h>
+#include <U2Lang/BaseActorCategories.h>
+#include <U2Lang/BasePorts.h>
 #include <U2Lang/BaseSlots.h>
 #include <U2Lang/BaseTypes.h>
-#include <U2Lang/BasePorts.h>
-#include <U2Lang/BaseActorCategories.h>
-
+#include <U2Lang/WorkflowEnv.h>
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -48,9 +47,10 @@ void SequencesToMSAWorker::init() {
     outPort = ports.value(BasePorts::OUT_MSA_PORT_ID());
 }
 
-void SequencesToMSAWorker::cleanup() {}
+void SequencesToMSAWorker::cleanup() {
+}
 
-Task* SequencesToMSAWorker::tick() {
+Task *SequencesToMSAWorker::tick() {
     if (inPort->hasMessage()) {
         Message inputMessage = getMessageAndSetupScriptValues(inPort);
         QVariantMap qm = inputMessage.getData().toMap();
@@ -65,8 +65,8 @@ Task* SequencesToMSAWorker::tick() {
         data.append(seq);
     }
     if (!inPort->hasMessage() && inPort->isEnded()) {
-        Task* t = new MSAFromSequencesTask(data);
-        connect(new TaskSignalMapper(t), SIGNAL(si_taskFinished(Task*)), SLOT(sl_onTaskFinished(Task*)));
+        Task *t = new MSAFromSequencesTask(data);
+        connect(new TaskSignalMapper(t), SIGNAL(si_taskFinished(Task *)), SLOT(sl_onTaskFinished(Task *)));
         return t;
     }
     return NULL;
@@ -78,14 +78,14 @@ void MSAFromSequencesTask::run() {
     ma->setAlphabet(seq.alphabet);
     ma->addRow(seq.getName(), seq.seq);
 
-    for (int i=1; i<sequences_.size(); i++) {
+    for (int i = 1; i < sequences_.size(); i++) {
         DNASequence sqnc = sequences_.at(i);
         ma->addRow(sqnc.getName(), sqnc.seq);
     }
 }
 
-void SequencesToMSAWorker::sl_onTaskFinished(Task* t) {
-    MSAFromSequencesTask* maTask = qobject_cast<MSAFromSequencesTask*>(t);
+void SequencesToMSAWorker::sl_onTaskFinished(Task *t) {
+    MSAFromSequencesTask *maTask = qobject_cast<MSAFromSequencesTask *>(t);
     MultipleSequenceAlignment ma = maTask->getResult();
 
     if (!ma->isEmpty()) {
@@ -93,10 +93,10 @@ void SequencesToMSAWorker::sl_onTaskFinished(Task* t) {
             ma->setName("Multiple alignment");
         }
 
-        SAFE_POINT(NULL != outPort, "NULL outPort!",);
+        SAFE_POINT(NULL != outPort, "NULL outPort!", );
         SharedDbiDataHandler msaId = context->getDataStorage()->putAlignment(ma);
 
-        outPort->put( Message(BaseTypes::MULTIPLE_ALIGNMENT_TYPE(), qVariantFromValue<SharedDbiDataHandler>(msaId)) );
+        outPort->put(Message(BaseTypes::MULTIPLE_ALIGNMENT_TYPE(), qVariantFromValue<SharedDbiDataHandler>(msaId)));
     }
 
     SAFE_POINT(inPort->isEnded(), "Internal error. The workflow is broken", );
@@ -109,38 +109,38 @@ void SequencesToMSAWorker::sl_onTaskFinished(Task* t) {
 const QString SequencesToMSAWorkerFactory::ACTOR_ID("sequences-to-msa");
 
 void SequencesToMSAWorkerFactory::init() {
-    QList<PortDescriptor*> p; QList<Attribute*> a;
+    QList<PortDescriptor *> p;
+    QList<Attribute *> a;
     {
         Descriptor id(BasePorts::IN_SEQ_PORT_ID(),
-            SequencesToMSAWorker::tr("Input sequences"),
-            SequencesToMSAWorker::tr("Sequences to be joined into alignment."));
+                      SequencesToMSAWorker::tr("Input sequences"),
+                      SequencesToMSAWorker::tr("Sequences to be joined into alignment."));
 
         Descriptor od(BasePorts::OUT_MSA_PORT_ID(),
-            SequencesToMSAWorker::tr("Result alignment"),
-            SequencesToMSAWorker::tr("Alignment created from the given sequences."));
+                      SequencesToMSAWorker::tr("Result alignment"),
+                      SequencesToMSAWorker::tr("Alignment created from the given sequences."));
 
         QMap<Descriptor, DataTypePtr> inM;
         inM[BaseSlots::DNA_SEQUENCE_SLOT()] = BaseTypes::DNA_SEQUENCE_TYPE();
-        p << new PortDescriptor(id, DataTypePtr(new MapDataType("seq2msa.seq", inM)), true,
-            false, IntegralBusPort::BLIND_INPUT);
+        p << new PortDescriptor(id, DataTypePtr(new MapDataType("seq2msa.seq", inM)), true, false, IntegralBusPort::BLIND_INPUT);
 
         QMap<Descriptor, DataTypePtr> outM;
         outM[BaseSlots::MULTIPLE_ALIGNMENT_SLOT()] = BaseTypes::MULTIPLE_ALIGNMENT_TYPE();
         p << new PortDescriptor(od, DataTypePtr(new MapDataType("seq2msa.msa", outM)), false /*input*/, true /*multi*/);
     }
 
-    Descriptor desc( SequencesToMSAWorkerFactory::ACTOR_ID,
-        SequencesToMSAWorker::tr("Join Sequences into Alignment"),
-        SequencesToMSAWorker::tr("Creates multiple sequence alignment from sequences.") );
-    ActorPrototype * proto = new IntegralBusActorPrototype( desc, p, QList<Attribute*>() );
+    Descriptor desc(SequencesToMSAWorkerFactory::ACTOR_ID,
+                    SequencesToMSAWorker::tr("Join Sequences into Alignment"),
+                    SequencesToMSAWorker::tr("Creates multiple sequence alignment from sequences."));
+    ActorPrototype *proto = new IntegralBusActorPrototype(desc, p, QList<Attribute *>());
 
-    proto->setEditor(new DelegateEditor(QMap<QString, PropertyDelegate*>()));
-    proto->setPrompter( new SequencesToMSAPromter() );
-    WorkflowEnv::getProtoRegistry()->registerProto( BaseActorCategories::CATEGORY_ALIGNMENT(), proto );
+    proto->setEditor(new DelegateEditor(QMap<QString, PropertyDelegate *>()));
+    proto->setPrompter(new SequencesToMSAPromter());
+    WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_ALIGNMENT(), proto);
 
-    DomainFactory* localDomain = WorkflowEnv::getDomainRegistry()->getById( LocalDomainFactory::ID );
-    localDomain->registerEntry( new SequencesToMSAWorkerFactory() );
+    DomainFactory *localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
+    localDomain->registerEntry(new SequencesToMSAWorkerFactory());
 }
 
-} //LocalWorkflow namespace
-} //U2 namespace
+}    // namespace LocalWorkflow
+}    // namespace U2

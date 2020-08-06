@@ -22,26 +22,28 @@
 #ifndef _U2_ALIGNMENT_LOGO_H_
 #define _U2_ALIGNMENT_LOGO_H_
 
-#include <U2Core/global.h>
-#include <U2Core/DNAAlphabet.h>
-#include <U2Core/MultipleSequenceAlignment.h>
-#include <U2Core/MultipleAlignmentInfo.h>
-
-#include <QMainWindow>
 #include <QGraphicsItem>
+#include <QMainWindow>
+
+#include <U2Core/DNAAlphabet.h>
+#include <U2Core/MultipleAlignmentInfo.h>
+#include <U2Core/MultipleSequenceAlignment.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
 class MSAEditor;
 
-enum SequenceType {Auto, NA, AA};
+enum SequenceType { Auto,
+                    NA,
+                    AA };
 /************************************************************************/
 /* Settings                                                             */
 /************************************************************************/
 class U2VIEW_EXPORT AlignmentLogoSettings {
 public:
-
-    AlignmentLogoSettings(const MultipleSequenceAlignment& _ma) : ma(_ma->getCopy()) {
+    AlignmentLogoSettings(const MultipleSequenceAlignment &_ma)
+        : ma(_ma->getCopy()) {
         for (int i = 0; i < 256; i++) {
             colorScheme[i] = Qt::black;
         }
@@ -100,11 +102,11 @@ public:
         colorScheme.insert('W', Qt::blue);*/
     }
 
-    MultipleSequenceAlignment              ma;
-    SequenceType            sequenceType;
-    int                     startPos;
-    int                     len;
-    QColor                  colorScheme[256];
+    MultipleSequenceAlignment ma;
+    SequenceType sequenceType;
+    int startPos;
+    int len;
+    QColor colorScheme[256];
 
 private:
     AlignmentLogoSettings();
@@ -115,32 +117,32 @@ private:
 /************************************************************************/
 class U2VIEW_EXPORT AlignmentLogoRenderArea : public QWidget {
 public:
-    AlignmentLogoRenderArea(const AlignmentLogoSettings& s, QWidget* p);
-    void replaceSettings(const AlignmentLogoSettings& s);
+    AlignmentLogoRenderArea(const AlignmentLogoSettings &s, QWidget *p);
+    void replaceSettings(const AlignmentLogoSettings &s);
 
 protected:
-    virtual void paintEvent(QPaintEvent* e);
-    virtual void resizeEvent(QResizeEvent* e);
+    virtual void paintEvent(QPaintEvent *e);
+    virtual void resizeEvent(QResizeEvent *e);
 
     void evaluateHeights();
     void sortCharsByHeight();
     qreal getH(int pos);
 
 private:
-    AlignmentLogoSettings           settings;
-    qreal                           s;//4||20
-    qreal                           error;
-    QVector<char>*                  acceptableChars;
-    QVector<char>                   bases;
-    QVector<char>                   aminoacids;
+    AlignmentLogoSettings settings;
+    qreal s;    //4||20
+    qreal error;
+    QVector<char> *acceptableChars;
+    QVector<char> bases;
+    QVector<char> aminoacids;
 
-    QVector<QVector<char> >         columns;
+    QVector<QVector<char>> columns;
     //frequency and height of a particular char at position
-    QVector<qreal>                  frequencies[256];
-    QVector<qreal>                  heights[256];
+    QVector<qreal> frequencies[256];
+    QVector<qreal> heights[256];
 
-    int                             bitWidth;
-    int                             bitHeight;
+    int bitWidth;
+    int bitHeight;
 };
 
 /************************************************************************/
@@ -148,20 +150,21 @@ private:
 /************************************************************************/
 class AlignmentLogoItem : public QGraphicsItem {
 public:
-    AlignmentLogoItem(char _ch, QPointF _baseline, int _charWidth, int _charHeight, QFont _font, QColor _color=Qt::black);
+    AlignmentLogoItem(char _ch, QPointF _baseline, int _charWidth, int _charHeight, QFont _font, QColor _color = Qt::black);
 
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget /* = 0 */);
+
 private:
-    char            ch;
-    QPointF         baseline;
-    int             charWidth;
-    int             charHeight;
-    QFont           font;
-    QColor          color;
-    QPainterPath    path;
+    char ch;
+    QPointF baseline;
+    int charWidth;
+    int charHeight;
+    QFont font;
+    QColor color;
+    QPainterPath path;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

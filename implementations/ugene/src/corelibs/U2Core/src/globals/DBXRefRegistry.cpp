@@ -20,16 +20,18 @@
  */
 
 #include "DBXRefRegistry.h"
-#include <U2Core/Log.h>
 
 #include <QFile>
 #include <QTextStream>
+
+#include <U2Core/Log.h>
 
 namespace U2 {
 
 #define DB_XREF_FILE_NAME "DBXRefRegistry.txt"
 
-DBXRefRegistry::DBXRefRegistry(QObject *p) : QObject(p) {
+DBXRefRegistry::DBXRefRegistry(QObject *p)
+    : QObject(p) {
     QFile file(QString(PATH_PREFIX_DATA) + ":" + DB_XREF_FILE_NAME);
 
     if (!file.exists() || !file.open(QIODevice::ReadOnly)) {
@@ -52,11 +54,11 @@ DBXRefRegistry::DBXRefRegistry(QObject *p) : QObject(p) {
     }
     file.close();
 }
-QScriptValue DBXRefRegistry::toScriptValue(QScriptEngine *engine, DBXRefRegistry* const &in) {
+QScriptValue DBXRefRegistry::toScriptValue(QScriptEngine *engine, DBXRefRegistry *const &in) {
     return engine->newQObject(in);
 }
 
-void DBXRefRegistry::fromScriptValue(const QScriptValue &object, DBXRefRegistry* &out) {
+void DBXRefRegistry::fromScriptValue(const QScriptValue &object, DBXRefRegistry *&out) {
     out = qobject_cast<DBXRefRegistry *>(object.toQObject());
 }
 
@@ -83,4 +85,4 @@ void DBXRefInfo::setupToEngine(QScriptEngine *engine) {
     qScriptRegisterMetaType(engine, toScriptValue, fromScriptValue);
 }
 
-}//namespace
+}    // namespace U2

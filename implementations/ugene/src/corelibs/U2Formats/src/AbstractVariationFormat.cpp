@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "AbstractVariationFormat.h"
+
 #include <U2Core/GAutoDeleteList.h>
 #include <U2Core/IOAdapter.h>
 #include <U2Core/L10n.h>
@@ -34,18 +36,16 @@
 #include <U2Core/U2VariantDbi.h>
 #include <U2Core/VariantTrackObject.h>
 
-#include "AbstractVariationFormat.h"
-
 namespace U2 {
 
 const QString AbstractVariationFormat::META_INFO_START = "##";
 const QString AbstractVariationFormat::HEADER_START = "#";
 const QString AbstractVariationFormat::COLUMNS_SEPARATOR = "\t";
 
-QList<U2Variant> splitVariants(const U2Variant& v, const QList<QString>& altAllel){
+QList<U2Variant> splitVariants(const U2Variant &v, const QList<QString> &altAllel) {
     QList<U2Variant> res;
 
-    foreach(const QString& alt, altAllel){
+    foreach (const QString &alt, altAllel) {
         U2Variant var = v;
 
         var.obsData = alt.toLatin1();
@@ -56,21 +56,19 @@ QList<U2Variant> splitVariants(const U2Variant& v, const QList<QString>& altAlle
     return res;
 }
 
-
-AbstractVariationFormat::AbstractVariationFormat(QObject *p, const DocumentFormatId& id, const QStringList &fileExts, bool _isSupportHeader)
+AbstractVariationFormat::AbstractVariationFormat(QObject *p, const DocumentFormatId &id, const QStringList &fileExts, bool _isSupportHeader)
     : TextDocumentFormat(p, id, DocumentFormatFlags_SW, fileExts),
       isSupportHeader(_isSupportHeader),
-      maxColumnNumber(0)
-{
+      maxColumnNumber(0) {
     supportedObjectTypes += GObjectTypes::VARIANT_TRACK;
     formatDescription = tr("SNP formats are used to store single-nucleotide polymorphism data");
     indexing = AbstractVariationFormat::ZeroBased;
 }
 
 namespace {
-const int LOCAL_READ_BUFF_SIZE = 10 * 1024; // 10 Kb
+const int LOCAL_READ_BUFF_SIZE = 10 * 1024;    // 10 Kb
 
-inline QByteArray readLine(IOAdapter *io, char *buffer, int bufferSize, U2OpStatus& os) {
+inline QByteArray readLine(IOAdapter *io, char *buffer, int bufferSize, U2OpStatus &os) {
     QByteArray result;
     bool terminatorFound = false;
     do {
@@ -91,7 +89,7 @@ void addStringAttribute(U2OpStatus &os, U2Dbi *dbi, const U2VariantTrack &varian
     dbi->getAttributeDbi()->createStringAttribute(attribute, os);
 }
 
-}
+}    // namespace
 
 #define CHR_PREFIX "chr"
 
@@ -100,17 +98,17 @@ Document *AbstractVariationFormat::loadTextDocument(IOAdapter *io, const U2DbiRe
     SAFE_POINT_OP(os, NULL);
     U2Dbi *dbi = con.dbi;
 
-    SAFE_POINT(dbi->getVariantDbi() , "Variant DBI is NULL!", NULL);
-    SAFE_POINT(io, "IO adapter is NULL!",  NULL);
+    SAFE_POINT(dbi->getVariantDbi(), "Variant DBI is NULL!", NULL);
+    SAFE_POINT(io, "IO adapter is NULL!", NULL);
     SAFE_POINT(io->isOpen(), QString("IO adapter is not open %1").arg(io->getURL().getURLString()), NULL);
 
     QByteArray readBuff(LOCAL_READ_BUFF_SIZE + 1, 0);
-    char* buff = readBuff.data();
+    char *buff = readBuff.data();
 
-    SplitAlleles splitting = fs.contains(DocumentReadingMode_SplitVariationAlleles)? AbstractVariationFormat::Split : AbstractVariationFormat::NoSplit;
+    SplitAlleles splitting = fs.contains(DocumentReadingMode_SplitVariationAlleles) ? AbstractVariationFormat::Split : AbstractVariationFormat::NoSplit;
 
     //TODO: load snps with chunks of fixed size to avoid memory consumption
-    QMap<QString, QList<U2Variant> > snpsMap;
+    QMap<QString, QList<U2Variant>> snpsMap;
 
     QString metaInfo;
     QStringList header;
@@ -157,13 +155,13 @@ Document *AbstractVariationFormat::loadTextDocument(IOAdapter *io, const U2DbiRe
                 break;
             case ColumnRole_StartPos:
                 v.startPos = columnData.toInt();
-                if (indexing == AbstractVariationFormat::OneBased){
+                if (indexing == AbstractVariationFormat::OneBased) {
                     v.startPos -= 1;
                 }
                 break;
             case ColumnRole_EndPos:
                 v.endPos = columnData.toInt();
-                if (indexing == AbstractVariationFormat::OneBased){
+                if (indexing == AbstractVariationFormat::OneBased) {
                     v.endPos -= 1;
                 }
                 break;
@@ -171,9 +169,9 @@ Document *AbstractVariationFormat::loadTextDocument(IOAdapter *io, const U2DbiRe
                 v.refData = columnData.toLatin1();
                 break;
             case ColumnRole_ObsData:
-                if (splitting == AbstractVariationFormat::Split){
+                if (splitting == AbstractVariationFormat::Split) {
                     altAllele = columnData.trimmed().split(',');
-                }else{
+                } else {
                     v.obsData = columnData.toLatin1();
                 }
                 break;
@@ -202,17 +200,15 @@ Document *AbstractVariationFormat::loadTextDocument(IOAdapter *io, const U2DbiRe
             v.publicId = QString("%1v%2").arg(prefix).arg(snpsMap[seqName].count() + 1).toLatin1();
         }
 
-        if (splitting == AbstractVariationFormat::Split){
-            const QList<U2Variant>& allelVariants = splitVariants(v, altAllele);
-            if (altAllele.isEmpty()){
+        if (splitting == AbstractVariationFormat::Split) {
+            const QList<U2Variant> &allelVariants = splitVariants(v, altAllele);
+            if (altAllele.isEmpty()) {
                 continue;
             }
             snpsMap[seqName].append(allelVariants);
-        }else{
+        } else {
             snpsMap[seqName].append(v);
         }
-
-
 
     } while (!io->isEof());
     CHECK_EXT(!io->hasError(), os.setError(io->errorString()), NULL);
@@ -222,7 +218,7 @@ Document *AbstractVariationFormat::loadTextDocument(IOAdapter *io, const U2DbiRe
     const QString folder = fs.value(DBI_FOLDER_HINT, U2ObjectDbi::ROOT_FOLDER).toString();
 
     //create empty track
-    if (snpsMap.isEmpty()){
+    if (snpsMap.isEmpty()) {
         U2VariantTrack track;
         track.sequenceName = "unknown";
         dbi->getVariantDbi()->createVariantTrack(track, TrackType_All, folder, os);
@@ -252,7 +248,7 @@ Document *AbstractVariationFormat::loadTextDocument(IOAdapter *io, const U2DbiRe
         addStringAttribute(os, dbi, track, U2VariantTrack::HEADER_ATTIBUTE, StrPackUtils::packStringList(header));
         CHECK_OP(os, NULL);
 
-        const QList<U2Variant>& vars = snpsMap.value(seqName);
+        const QList<U2Variant> &vars = snpsMap.value(seqName);
         BufferedDbiIterator<U2Variant> bufIter(vars);
         dbi->getVariantDbi()->addVariantsToTrack(track, &bufIter, os);
         CHECK_OP(os, NULL);
@@ -265,7 +261,7 @@ Document *AbstractVariationFormat::loadTextDocument(IOAdapter *io, const U2DbiRe
     }
 
     QString lockReason;
-    Document* doc = new Document(this, io->getFactory(), io->getURL(), dbiRef, objects.qlist, fs, lockReason);
+    Document *doc = new Document(this, io->getFactory(), io->getURL(), dbiRef, objects.qlist, fs, lockReason);
     objects.qlist.clear();
     return doc;
 }
@@ -276,7 +272,7 @@ FormatCheckResult AbstractVariationFormat::checkRawTextData(const QByteArray &da
     int mismatchesNumber = 0;
     int cellsNumber = 0;
     foreach (const QString &l, lines) {
-        bool skipLastLine = (1 != lines.size()) && (idx == lines.size()-1);
+        bool skipLastLine = (1 != lines.size()) && (idx == lines.size() - 1);
         if (skipLastLine) {
             continue;
         }
@@ -285,7 +281,7 @@ FormatCheckResult AbstractVariationFormat::checkRawTextData(const QByteArray &da
         idx++;
         if (line.startsWith(META_INFO_START)) {
             bool isFormatMatched = line.contains("format=" + formatName);
-            if(isFormatMatched) {
+            if (isFormatMatched) {
                 return FormatDetection_Matched;
             }
             continue;
@@ -296,42 +292,41 @@ FormatCheckResult AbstractVariationFormat::checkRawTextData(const QByteArray &da
             return FormatDetection_NotMatched;
         }
 
-        for(int columnNumber = 0; columnNumber < cols.size(); columnNumber++) {
+        for (int columnNumber = 0; columnNumber < cols.size(); columnNumber++) {
             cellsNumber++;
             ColumnRole role = columnRoles.value(columnNumber, ColumnRole_Unknown);
             QString col = cols.at(columnNumber);
             bool isCorrect = !col.isEmpty();
-            if(!isCorrect) {
+            if (!isCorrect) {
                 mismatchesNumber++;
                 continue;
             }
             QRegExp wordExp("\\D+");
-            switch(role) {
-                case ColumnRole_StartPos:
-                    col.toInt(&isCorrect);
-                    break;
-                case ColumnRole_EndPos:
-                    col.toInt(&isCorrect);
-                    break;
-                case ColumnRole_RefData:
-                    isCorrect = wordExp.exactMatch(col);
-                    break;
-                case ColumnRole_ObsData:
-                    isCorrect = wordExp.exactMatch(col);
-                    break;
-                default:
-                    break;
+            switch (role) {
+            case ColumnRole_StartPos:
+                col.toInt(&isCorrect);
+                break;
+            case ColumnRole_EndPos:
+                col.toInt(&isCorrect);
+                break;
+            case ColumnRole_RefData:
+                isCorrect = wordExp.exactMatch(col);
+                break;
+            case ColumnRole_ObsData:
+                isCorrect = wordExp.exactMatch(col);
+                break;
+            default:
+                break;
             }
-            if(!isCorrect) {
+            if (!isCorrect) {
                 mismatchesNumber++;
             }
         }
-
     }
     if (0 == idx) {
         return FormatDetection_NotMatched;
     }
-    if(cellsNumber > 0 && 0 == mismatchesNumber) {
+    if (cellsNumber > 0 && 0 == mismatchesNumber) {
         return FormatDetection_Matched;
     }
     return FormatDetection_AverageSimilarity;
@@ -339,7 +334,7 @@ FormatCheckResult AbstractVariationFormat::checkRawTextData(const QByteArray &da
 
 void AbstractVariationFormat::storeDocument(Document *doc, IOAdapter *io, U2OpStatus &os) {
     const QList<GObject *> variantTrackObjects = doc->findGObjectByType(GObjectTypes::VARIANT_TRACK);
-    if(!variantTrackObjects.isEmpty()) {
+    if (!variantTrackObjects.isEmpty()) {
         storeHeader(variantTrackObjects.first(), io, os);
     }
 
@@ -350,12 +345,12 @@ void AbstractVariationFormat::storeDocument(Document *doc, IOAdapter *io, U2OpSt
     }
 }
 
-void AbstractVariationFormat::storeEntry(IOAdapter *io, const QMap< GObjectType, QList<GObject*> > &objectsMap, U2OpStatus &os) {
+void AbstractVariationFormat::storeEntry(IOAdapter *io, const QMap<GObjectType, QList<GObject *>> &objectsMap, U2OpStatus &os) {
     SAFE_POINT(objectsMap.contains(GObjectTypes::VARIANT_TRACK), "Variation entry storing: no variations", );
-    const QList<GObject*> &vars = objectsMap[GObjectTypes::VARIANT_TRACK];
+    const QList<GObject *> &vars = objectsMap[GObjectTypes::VARIANT_TRACK];
     SAFE_POINT(1 == vars.size(), "Variation entry storing: variation objects count error", );
 
-    VariantTrackObject *trackObj = dynamic_cast<VariantTrackObject*>(vars.first());
+    VariantTrackObject *trackObj = dynamic_cast<VariantTrackObject *>(vars.first());
     SAFE_POINT(NULL != trackObj, "Variation entry storing: NULL variation object", );
 
     storeTrack(io, trackObj, os);
@@ -365,14 +360,14 @@ void AbstractVariationFormat::storeTrack(IOAdapter *io, const VariantTrackObject
     CHECK(NULL != trackObj, );
     U2VariantTrack track = trackObj->getVariantTrack(os);
     CHECK_OP(os, );
-    QScopedPointer<U2DbiIterator<U2Variant> > varsIter(trackObj->getVariants(U2_REGION_MAX, os));
+    QScopedPointer<U2DbiIterator<U2Variant>> varsIter(trackObj->getVariants(U2_REGION_MAX, os));
     CHECK_OP(os, );
 
     const QStringList header = getHeader(trackObj, os);
     CHECK_OP(os, );
 
     QByteArray snpString;
-    while (varsIter->hasNext()){
+    while (varsIter->hasNext()) {
         U2Variant variant = varsIter->next();
 
         snpString.clear();
@@ -455,7 +450,7 @@ void AbstractVariationFormat::storeHeader(GObject *obj, IOAdapter *io, U2OpStatu
 
     SAFE_POINT_EXT(GObjectTypes::VARIANT_TRACK == obj->getGObjectType(), os.setError("Invalid GObjectType"), );
 
-    VariantTrackObject *trackObj = qobject_cast<VariantTrackObject*>(obj);
+    VariantTrackObject *trackObj = qobject_cast<VariantTrackObject *>(obj);
     SAFE_POINT_EXT(NULL != trackObj, os.setError("Can't cast GObject to VariantTrackObject"), );
 
     const QString metaInfo = getMetaInfo(trackObj, os);
@@ -484,4 +479,4 @@ QStringList AbstractVariationFormat::getHeader(const VariantTrackObject *variant
     return StrPackUtils::unpackStringList(packedHeader);
 }
 
-} // U2
+}    // namespace U2

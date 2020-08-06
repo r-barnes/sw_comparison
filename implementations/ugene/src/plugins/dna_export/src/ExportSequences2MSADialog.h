@@ -22,11 +22,11 @@
 #ifndef _U2_EXPORT_SEQ2MSA_DIALOG_H_
 #define _U2_EXPORT_SEQ2MSA_DIALOG_H_
 
+#include <ui_ExportSequences2MSADialog.h>
+
 #include <QDialog>
 
 #include <U2Core/global.h>
-
-#include <ui_ExportSequences2MSADialog.h>
 
 namespace U2 {
 
@@ -35,26 +35,26 @@ class SaveDocumentController;
 class ExportSequences2MSADialog : public QDialog, private Ui_ExportSequences2MSADialog {
     Q_OBJECT
 public:
-    ExportSequences2MSADialog(QWidget* p, const QString& defaultUrl = QString() );
+    ExportSequences2MSADialog(QWidget *p, const QString &defaultUrl = QString());
 
-    void setOkButtonText(const QString& text) const;
-    void setFileLabelText(const QString& text) const;
+    void setOkButtonText(const QString &text) const;
+    void setFileLabelText(const QString &text) const;
 
     virtual void accept();
 
 public:
     QString url;
     DocumentFormatId format;
-    bool    addToProjectFlag;
-    bool    useGenbankHeader;
+    bool addToProjectFlag;
+    bool useGenbankHeader;
 
 private:
     void initSaveController(const QString &defaultUrl);
 
-    SaveDocumentController* saveController;
-    QPushButton* okButton;
+    SaveDocumentController *saveController;
+    QPushButton *okButton;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

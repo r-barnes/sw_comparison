@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CreateSequenceFromTextAndOpenViewTask.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/DocumentSelection.h>
@@ -31,20 +33,18 @@
 
 #include <U2Gui/OpenViewTask.h>
 
-#include "CreateSequenceFromTextAndOpenViewTask.h"
 #include "ImportSequenceFromRawDataTask.h"
 
 namespace U2 {
 
-CreateSequenceFromTextAndOpenViewTask::CreateSequenceFromTextAndOpenViewTask(const QList<DNASequence> &sequences, const QString &formatId, const GUrl &saveToPath, bool saveImmediately) :
-    Task(tr("Create sequence from raw data"), TaskFlags_NR_FOSE_COSC),
-    sequences(sequences),
-    saveToPath(saveToPath),
-    saveImmediately(saveImmediately),
-    openProjectTask(NULL),
-    importedSequences(0),
-    document(NULL)
-{
+CreateSequenceFromTextAndOpenViewTask::CreateSequenceFromTextAndOpenViewTask(const QList<DNASequence> &sequences, const QString &formatId, const GUrl &saveToPath, bool saveImmediately)
+    : Task(tr("Create sequence from raw data"), TaskFlags_NR_FOSE_COSC),
+      sequences(sequences),
+      saveToPath(saveToPath),
+      saveImmediately(saveImmediately),
+      openProjectTask(NULL),
+      importedSequences(0),
+      document(NULL) {
     format = AppContext::getDocumentFormatRegistry()->getFormatById(formatId);
     SAFE_POINT_EXT(NULL != format, setError(QString("An unknown document format: %1").arg(formatId)), );
 }
@@ -95,7 +95,7 @@ QList<Task *> CreateSequenceFromTextAndOpenViewTask::prepareImportSequenceTasks(
     return importTasks;
 }
 
-Document * CreateSequenceFromTextAndOpenViewTask::createEmptyDocument() {
+Document *CreateSequenceFromTextAndOpenViewTask::createEmptyDocument() {
     IOAdapterFactory *ioAdapterFactory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(saveToPath));
     SAFE_POINT_EXT(NULL != ioAdapterFactory, setError("IO adapter factory is NULL"), NULL);
     return format->createNewLoadedDocument(ioAdapterFactory, saveToPath, stateInfo);
@@ -115,4 +115,4 @@ void CreateSequenceFromTextAndOpenViewTask::addDocument() {
     project->addDocument(document);
 }
 
-}   // namespace U2
+}    // namespace U2

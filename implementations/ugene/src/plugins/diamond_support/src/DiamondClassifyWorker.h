@@ -24,8 +24,8 @@
 
 #include <U2Lang/LocalDomain.h>
 
-#include "DiamondClassifyTask.h"
 #include "../ngs_reads_classification/src/TaxonomySupport.h"
+#include "DiamondClassifyTask.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -33,7 +33,7 @@ namespace LocalWorkflow {
 class DiamondClassifyWorker : public BaseWorker {
     Q_OBJECT
 public:
-    DiamondClassifyWorker(Actor* actor);
+    DiamondClassifyWorker(Actor *actor);
 
     void init();
     Task *tick();
@@ -51,7 +51,7 @@ private:
     static const QString DIAMOND_DIR;
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_DIAMOND_CLASSIFY_WORKER_H_
+#endif    // _U2_DIAMOND_CLASSIFY_WORKER_H_

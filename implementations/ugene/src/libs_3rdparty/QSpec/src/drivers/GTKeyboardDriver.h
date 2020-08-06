@@ -54,8 +54,8 @@ public:
     // fails if key == 0
     // Linux: fails if there is an opening X display error
 
-    static bool keyClick(char key, Qt::KeyboardModifiers = Qt::NoModifier);
-    static bool keyClick(Qt::Key, Qt::KeyboardModifiers = Qt::NoModifier);
+    static bool keyClick(char key, Qt::KeyboardModifiers = Qt::NoModifier, bool waitForMainThread = true);
+    static bool keyClick(Qt::Key, Qt::KeyboardModifiers = Qt::NoModifier, bool waitForMainThread = true);
     static bool keySequence(const QString &str, Qt::KeyboardModifiers = Qt::NoModifier);
 
     static bool keyPress(char key, Qt::KeyboardModifiers = Qt::NoModifier);

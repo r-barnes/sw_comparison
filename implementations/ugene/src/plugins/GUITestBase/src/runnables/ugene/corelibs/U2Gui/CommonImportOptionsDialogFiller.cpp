@@ -19,31 +19,31 @@
  * MA 02110-1301, USA.
  */
 
+#include "CommonImportOptionsDialogFiller.h"
+#include <primitives/GTWidget.h>
+
 #include <QApplication>
 
 #include <U2Gui/ImportOptionsWidget.h>
 
-#include "CommonImportOptionsDialogFiller.h"
 #include "ImportOptionsWidgetFiller.h"
-#include <primitives/GTWidget.h>
 
 namespace U2 {
 using namespace HI;
 #define GT_CLASS_NAME "GTUtilsDialog::CommonImportOptionsDialogFiller"
 
-CommonImportOptionsDialogFiller::CommonImportOptionsDialogFiller(HI::GUITestOpStatus& os, const QVariantMap& data) :
-    Filler(os, "CommonImportOptionsDialog"),
-    data(data)
-{
+CommonImportOptionsDialogFiller::CommonImportOptionsDialogFiller(HI::GUITestOpStatus &os, const QVariantMap &data)
+    : Filler(os, "CommonImportOptionsDialog"),
+      data(data) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
 void CommonImportOptionsDialogFiller::commonScenario() {
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(NULL != dialog, "activeModalWidget is NULL");
     GTWidget::clickWindowTitle(os, dialog);
 
-    ImportOptionsWidget* optionsWidget = qobject_cast<ImportOptionsWidget*>(GTWidget::findWidget(os, "optionsWidget", dialog));
+    ImportOptionsWidget *optionsWidget = qobject_cast<ImportOptionsWidget *>(GTWidget::findWidget(os, "optionsWidget", dialog));
     GT_CHECK(NULL != optionsWidget, "optionsWidget is NULL");
 
     ImportOptionsWidgetFiller::fill(os, optionsWidget, data);
@@ -55,4 +55,4 @@ void CommonImportOptionsDialogFiller::commonScenario() {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

@@ -23,6 +23,7 @@
 #define _U2_PREPARE_TO_IMPORT_TASK_H
 
 #include <U2Core/Task.h>
+#include <U2Core/GUrl.h>
 #include <U2Core/U2OpStatusUtils.h>
 
 namespace U2 {
@@ -30,9 +31,9 @@ namespace BAM {
 
 class PrepareToImportTask : public Task {
 public:
-    PrepareToImportTask( const GUrl& assebmlyUrl, bool sam, const QString& refUrl, const QString &workingDir );
+    PrepareToImportTask(const GUrl &assebmlyUrl, bool sam, const QString &refUrl, const QString &workingDir);
     void run();
-    const GUrl& getSourceUrl() const;
+    const GUrl &getSourceUrl() const;
     bool isNewURL();
 
 private:
@@ -53,7 +54,7 @@ private:
     bool needToCopyFasta() const;
 };
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2
 
 #endif

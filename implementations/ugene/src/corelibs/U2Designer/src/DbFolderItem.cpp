@@ -19,19 +19,19 @@
  * MA 02110-1301, USA.
  */
 
+#include "DbFolderItem.h"
+
 #include <U2Core/Folder.h>
 #include <U2Core/U2ObjectDbi.h>
 
 #include <U2Lang/SharedDbUrlUtils.h>
 
 #include "ui_DbFolderOptions.h"
-#include "DbFolderItem.h"
 
 namespace U2 {
 
 DbFolderItem::DbFolderItem(const QString &url, QListWidget *parent)
-    : UrlItem(url, parent), options(new DbFolderOptions())
-{
+    : UrlItem(url, parent), options(new DbFolderOptions()) {
     connect(options, SIGNAL(si_dataChanged()), SIGNAL(si_dataChanged()));
 
     QIcon dirIcon = QIcon(QString(":U2Designer/images/database_folder.png"));
@@ -53,7 +53,7 @@ DbFolderItem::~DbFolderItem() {
     delete options;
 }
 
-QWidget * DbFolderItem::getOptionsWidget() {
+QWidget *DbFolderItem::getOptionsWidget() {
     return options;
 }
 
@@ -73,8 +73,7 @@ bool DbFolderItem::isRecursive() const {
 /* DbFolderOptions */
 /************************************************************************/
 DbFolderOptions::DbFolderOptions(QWidget *parent)
-    : QWidget(parent), ui(new Ui_DbFolderOptions)
-{
+    : QWidget(parent), ui(new Ui_DbFolderOptions) {
     ui->setupUi(this);
     connect(ui->recursiveBox, SIGNAL(clicked(bool)), SIGNAL(si_dataChanged()));
 }
@@ -91,4 +90,4 @@ bool DbFolderOptions::isRecursive() const {
     return ui->recursiveBox->isChecked();
 }
 
-} // namespace U2
+}    // namespace U2

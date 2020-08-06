@@ -23,10 +23,9 @@
 #define _U2_FEATURE_TABLE_OBJECT_TESTS_H_
 
 #include <core/dbi/DbiTest.h>
+#include <unittest.h>
 
 #include <U2Core/AnnotationTableObject.h>
-
-#include <unittest.h>
 
 namespace U2 {
 
@@ -35,13 +34,13 @@ public:
     static void init();
     static void shutdown();
 
-    static U2FeatureDbi * getFeatureDbi();
+    static U2FeatureDbi *getFeatureDbi();
 
 protected:
     static TestDbiProvider dbiProvider;
 
 private:
-    static U2FeatureDbi * featureDbi;
+    static U2FeatureDbi *featureDbi;
 };
 
 DECLARE_TEST(FeatureTableObjectUnitTest, createEmptyFeaturesTableObject);
@@ -59,7 +58,7 @@ DECLARE_TEST(FeatureTableObjectUnitTest, getAnnotationsByName);
 DECLARE_TEST(FeatureTableObjectUnitTest, getAnnotationsByRegion);
 DECLARE_TEST(FeatureTableObjectUnitTest, checkConstraints);
 
-}//namespace
+}    // namespace U2
 
 DECLARE_METATYPE(FeatureTableObjectUnitTest, createEmptyFeaturesTableObject)
 DECLARE_METATYPE(FeatureTableObjectUnitTest, addAnnotationSingleRegion)
@@ -75,4 +74,4 @@ DECLARE_METATYPE(FeatureTableObjectUnitTest, getAnnotationsByName)
 DECLARE_METATYPE(FeatureTableObjectUnitTest, getAnnotationsByRegion)
 DECLARE_METATYPE(FeatureTableObjectUnitTest, checkConstraints)
 
-#endif //_U2_FEATURE_TABLE_OBJECT_TESTS_H_
+#endif    //_U2_FEATURE_TABLE_OBJECT_TESTS_H_

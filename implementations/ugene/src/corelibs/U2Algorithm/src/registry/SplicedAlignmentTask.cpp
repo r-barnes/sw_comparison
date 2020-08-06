@@ -23,15 +23,12 @@
 
 namespace U2 {
 
-SplicedAlignmentTask::SplicedAlignmentTask(const SplicedAlignmentTaskConfig& cfg) :
-    Task(tr("SplicedAlignmentTask"), TaskFlag_None), config(cfg)
-{
-
+SplicedAlignmentTask::SplicedAlignmentTask(const SplicedAlignmentTaskConfig &cfg)
+    : Task(tr("SplicedAlignmentTask"), TaskFlag_None), config(cfg) {
 }
 
-SplicedAlignmentTask::SplicedAlignmentTask(const QString &taskName, TaskFlags flags, const SplicedAlignmentTaskConfig &cfg) :
-    Task(taskName, flags), config(cfg)
-{
+SplicedAlignmentTask::SplicedAlignmentTask(const QString &taskName, TaskFlags flags, const SplicedAlignmentTaskConfig &cfg)
+    : Task(taskName, flags), config(cfg) {
 }
 
-} //namespace
+}    // namespace U2

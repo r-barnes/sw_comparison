@@ -19,11 +19,11 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-
 #include <primitives/GTCheckBox.h>
 #include <primitives/GTSpinBox.h>
 #include <primitives/GTWidget.h>
+
+#include <QApplication>
 
 #include "GraphLabelsSelectDialogFiller.h"
 
@@ -32,16 +32,16 @@ namespace U2 {
 #define GT_CLASS_NAME "GTUtilsDialog::GraphLabelsSelectDialogFiller"
 #define GT_METHOD_NAME "commonScenario"
 
-void GraphLabelsSelectDialogFiller::commonScenario(){
-    QWidget* dialog = QApplication::activeModalWidget();
+void GraphLabelsSelectDialogFiller::commonScenario() {
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
-    if(windowSize != -1){
-        QSpinBox* stepSpinBox = GTWidget::findExactWidget<QSpinBox*>(os, "stepSpinBox", dialog);
+    if (windowSize != -1) {
+        QSpinBox *stepSpinBox = GTWidget::findExactWidget<QSpinBox *>(os, "stepSpinBox", dialog);
         GTSpinBox::setValue(os, stepSpinBox, windowSize, GTGlobals::UseKeyBoard);
     }
 
-    QCheckBox* usedIntervalsCheck = GTWidget::findExactWidget<QCheckBox*>(os, "usedIntervalsCheck", dialog);
+    QCheckBox *usedIntervalsCheck = GTWidget::findExactWidget<QCheckBox *>(os, "usedIntervalsCheck", dialog);
     GTCheckBox::setChecked(os, usedIntervalsCheck, selectedAreaCheck);
 
     GTUtilsDialog::clickButtonBox(os, QDialogButtonBox::Ok);
@@ -50,4 +50,4 @@ void GraphLabelsSelectDialogFiller::commonScenario(){
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

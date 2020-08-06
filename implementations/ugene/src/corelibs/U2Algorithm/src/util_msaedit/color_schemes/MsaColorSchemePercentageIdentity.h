@@ -43,13 +43,13 @@ private slots:
 protected:
     void updateCache() const;
 
-    mutable QVector<quint32>    indentCache;
-    mutable int                 cacheVersion;
-    int                         objVersion;
-    QColor                      colorsByRange[4];
-    int                         mask4[4];
-    mutable char                tmpChars[4];
-    mutable int                 tmpRanges[4];
+    mutable QVector<quint32> indentCache;
+    mutable int cacheVersion;
+    int objVersion;
+    QColor colorsByRange[4];
+    int mask4[4];
+    mutable char tmpChars[4];
+    mutable int tmpRanges[4];
 };
 
 class MsaColorSchemePercentageIdentityFactory : public MsaColorSchemeFactory {
@@ -57,10 +57,9 @@ class MsaColorSchemePercentageIdentityFactory : public MsaColorSchemeFactory {
 public:
     MsaColorSchemePercentageIdentityFactory(QObject *parent, const QString &id, const QString &name, const AlphabetFlags &supportedAlphabets);
 
-    MsaColorScheme * create(QObject *parent, MultipleAlignmentObject *maObj) const;
+    MsaColorScheme *create(QObject *parent, MultipleAlignmentObject *maObj) const;
 };
 
+}    // namespace U2
 
-}   // namespace U2
-
-#endif // _U2_MSA_COLOR_SCHEME_PERCENTAGE_IDENTITY_H_
+#endif    // _U2_MSA_COLOR_SCHEME_PERCENTAGE_IDENTITY_H_

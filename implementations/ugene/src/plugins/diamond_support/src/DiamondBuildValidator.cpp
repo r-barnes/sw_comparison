@@ -19,10 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "DiamondBuildValidator.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DataPathRegistry.h>
 
-#include "DiamondBuildValidator.h"
 #include "../ngs_reads_classification/src/NgsReadsClassificationPlugin.h"
 
 namespace U2 {
@@ -40,7 +41,8 @@ bool DiamondBuildValidator::validateTaxonomy(const Actor *actor, NotificationsLi
 
     U2DataPath *taxonomyDataPath = dataPathRegistry->getDataPathByName(NgsReadsClassificationPlugin::TAXONOMY_DATA_ID);
     CHECK_EXT(NULL != taxonomyDataPath && taxonomyDataPath->isValid(),
-              problemList << WorkflowNotification(tr("Taxonomy classification data from NCBI are not available."), actor->getId()), false);
+              problemList << WorkflowNotification(tr("Taxonomy classification data from NCBI are not available."), actor->getId()),
+              false);
 
     const QString missingFileMessage = tr("Taxonomy classification data from NCBI are not full: file '%1' is missing.");
 
@@ -57,5 +59,5 @@ bool DiamondBuildValidator::validateTaxonomy(const Actor *actor, NotificationsLi
     return isValid;
 }
 
-}   // namespace Workflow
-}   // namespace U2
+}    // namespace Workflow
+}    // namespace U2

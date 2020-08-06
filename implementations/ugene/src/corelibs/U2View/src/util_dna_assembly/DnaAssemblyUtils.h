@@ -23,8 +23,8 @@
 #define _U2_DNA_ASSEMBLEY_UTILS_H_
 
 #include <U2Algorithm/DnaAssemblyMultiTask.h>
-#include <U2Core/ExternalToolRunTask.h>
 
+#include <U2Core/ExternalToolRunTask.h>
 
 namespace U2 {
 
@@ -44,7 +44,6 @@ private slots:
     void sl_showGenomeAssemblyDialog();
     void sl_showBuildIndexDialog();
     void sl_showConvertToSamDialog();
-
 };
 
 class FilterUnpairedReadsTask : public Task {
@@ -52,12 +51,13 @@ class FilterUnpairedReadsTask : public Task {
 public:
     FilterUnpairedReadsTask(const DnaAssemblyToRefTaskSettings &settings);
     void run();
-    const QList<ShortReadSet>& getFilteredReadList() const { return filteredReads; }
+    const QList<ShortReadSet> &getFilteredReadList() const {
+        return filteredReads;
+    }
 
 private:
-    QString getTmpFilePath(const GUrl& initialFile);
-    void compareFiles(const GUrl& upstream, const GUrl& downstream,
-                      const GUrl& upstreamFiltered, const GUrl& downstreamFiltered);
+    QString getTmpFilePath(const GUrl &initialFile);
+    void compareFiles(const GUrl &upstream, const GUrl &downstream, const GUrl &upstreamFiltered, const GUrl &downstreamFiltered);
 
     DnaAssemblyToRefTaskSettings settings;
     QList<ShortReadSet> filteredReads;
@@ -70,8 +70,8 @@ public:
     DnaAssemblyTaskWithConversions(const DnaAssemblyToRefTaskSettings &settings, bool viewResult = false, bool justBuildIndex = false);
 
     void prepare();
-    QList<Task*> onSubTaskFinished(Task *subTask);
-    const DnaAssemblyToRefTaskSettings& getSettings() const;
+    QList<Task *> onSubTaskFinished(Task *subTask);
+    const DnaAssemblyToRefTaskSettings &getSettings() const;
     ReportResult report();
 
 private:
@@ -82,7 +82,6 @@ private:
     DnaAssemblyMultiTask *assemblyTask;
 };
 
-} // U2
+}    // namespace U2
 
-
-#endif // _U2_DNA_ASSEMBLEY_TASK_H_
+#endif    // _U2_DNA_ASSEMBLEY_TASK_H_

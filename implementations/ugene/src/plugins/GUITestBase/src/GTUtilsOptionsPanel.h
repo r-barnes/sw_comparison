@@ -27,13 +27,12 @@
 namespace U2 {
 
 class GTUtilsOptionsPanel {
-
 public:
-    static void runFindPatternWithHotKey(const QString& pattern, HI::GUITestOpStatus& os);
+    static void runFindPatternWithHotKey(const QString &pattern, HI::GUITestOpStatus &os);
 
-    static void resizeToMaximum(HI::GUITestOpStatus& os);
+    static void resizeToMaximum(HI::GUITestOpStatus &os);
 };
 
-} // namespace
+}    // namespace U2
 
-#endif //_U2_GUI_OPTIONS_PANEL_UTILS_H_
+#endif    //_U2_GUI_OPTIONS_PANEL_UTILS_H_

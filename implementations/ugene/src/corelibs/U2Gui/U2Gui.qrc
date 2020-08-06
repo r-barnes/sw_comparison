@@ -187,6 +187,5 @@
         <file>images/zoom_sel.png</file>
         <file>images/zoom_view.png</file>
         <file>images/zoom_whole.png</file>
-        <file>javascript/WebPageInitialize.js</file>
     </qresource>
 </RCC>

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "MsaObjectTests.h"
+
 #include <QDomElement>
 
 #include <U2Core/DNASequenceObject.h>
@@ -27,14 +29,12 @@
 #include <U2Core/MultipleSequenceAlignmentObject.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "MsaObjectTests.h"
-
 namespace U2 {
 
 const QString GTest_CompareTwoMsa::DOC1_ATTR = "doc1";
 const QString GTest_CompareTwoMsa::DOC2_ATTR = "doc2";
 
-void GTest_CompareTwoMsa::init(XMLTestFormat *, const QDomElement& element) {
+void GTest_CompareTwoMsa::init(XMLTestFormat *, const QDomElement &element) {
     docContextName = element.attribute(DOC1_ATTR);
     if (docContextName.isEmpty()) {
         failMissingValue(DOC1_ATTR);
@@ -56,10 +56,7 @@ Task::ReportResult GTest_CompareTwoMsa::report() {
     CHECK_EXT(1 == objs1.size(), setError(QString("document '%1' contains several objects: the comparison not implemented").arg(docContextName)), ReportResult_Finished);
 
     MultipleSequenceAlignmentObject *msa1 = qobject_cast<MultipleSequenceAlignmentObject *>(objs1.first());
-    CHECK_EXT(NULL != msa1, setError(QString("document '%1' contains an incorrect object: expected '%2', got '%3'")
-                                     .arg(docContextName)
-                                     .arg(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT)
-                                     .arg(objs1.first()->getGObjectType())), ReportResult_Finished);
+    CHECK_EXT(NULL != msa1, setError(QString("document '%1' contains an incorrect object: expected '%2', got '%3'").arg(docContextName).arg(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT).arg(objs1.first()->getGObjectType())), ReportResult_Finished);
 
     Document *doc2 = getContext<Document>(this, secondDocContextName);
     CHECK_EXT(NULL != doc2, setError(QString("document not found: %1").arg(secondDocContextName)), ReportResult_Finished);
@@ -68,21 +65,19 @@ Task::ReportResult GTest_CompareTwoMsa::report() {
     CHECK_EXT(1 == objs2.size(), setError(QString("document '%1' contains several objects: the comparison not implemented").arg(secondDocContextName)), ReportResult_Finished);
 
     MultipleSequenceAlignmentObject *msa2 = qobject_cast<MultipleSequenceAlignmentObject *>(objs2.first());
-    CHECK_EXT(NULL != msa2, setError(QString("document '%1' contains an incorrect object: expected '%2', got '%3'")
-                                     .arg(secondDocContextName)
-                                     .arg(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT)
-                                     .arg(objs2.first()->getGObjectType())), ReportResult_Finished);
+    CHECK_EXT(NULL != msa2, setError(QString("document '%1' contains an incorrect object: expected '%2', got '%3'").arg(secondDocContextName).arg(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT).arg(objs2.first()->getGObjectType())), ReportResult_Finished);
 
     const qint64 rowsNumber1 = msa1->getNumRows();
     const qint64 rowsNumber2 = msa2->getNumRows();
     CHECK_EXT(rowsNumber1 == rowsNumber2,
               setError(QString("The rows numbers differ: the object '%1' from the document '%2' contains %3 rows, the object '%4' from the document '%5' contains %6 rows")
-              .arg(msa1->getGObjectName())
-              .arg(docContextName)
-              .arg(rowsNumber1)
-              .arg(msa2->getGObjectName())
-              .arg(secondDocContextName)
-              .arg(rowsNumber2)), ReportResult_Finished);
+                           .arg(msa1->getGObjectName())
+                           .arg(docContextName)
+                           .arg(rowsNumber1)
+                           .arg(msa2->getGObjectName())
+                           .arg(secondDocContextName)
+                           .arg(rowsNumber2)),
+              ReportResult_Finished);
 
     for (int i = 0; i < rowsNumber1; i++) {
         const MultipleSequenceAlignmentRow row1 = msa1->getMsaRow(i);
@@ -95,9 +90,9 @@ Task::ReportResult GTest_CompareTwoMsa::report() {
 }
 
 QList<XMLTestFactory *> MsaObjectTests::createTestFactories() {
-    QList<XMLTestFactory*> res;
+    QList<XMLTestFactory *> res;
     res.append(GTest_CompareTwoMsa::createFactory());
     return res;
 }
 
-}   // namespace U2
+}    // namespace U2

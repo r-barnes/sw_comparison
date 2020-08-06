@@ -19,13 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "WorkflowDebugStatus.h"
+
 #include <QCoreApplication>
 
 #include <U2Core/U2SafePoints.h>
 
 #include "WorkflowBreakpointSharedInfo.h"
 #include "WorkflowDebugMessageParser.h"
-#include "WorkflowDebugStatus.h"
 
 const QString INVESTIGATION_TABLE_TYPE = "Type";
 const QString INVESTIGATION_TABLE_VALUE = "Value";
@@ -35,9 +36,7 @@ namespace U2 {
 QList<BreakpointLabel> WorkflowDebugStatus::existingBreakpointLabels = QList<BreakpointLabel>();
 
 WorkflowDebugStatus::WorkflowDebugStatus(QObject *parent)
-    : QObject(parent), paused(false), isStepIsolated(false), context(NULL), parser(NULL)
-{
-
+    : QObject(parent), paused(false), isStepIsolated(false), context(NULL), parser(NULL) {
 }
 
 WorkflowDebugStatus::~WorkflowDebugStatus() {
@@ -46,24 +45,24 @@ WorkflowDebugStatus::~WorkflowDebugStatus() {
 }
 
 void WorkflowDebugStatus::setContext(WorkflowContext *initContext) {
-    SAFE_POINT( NULL != initContext, "Invalid workflow context!", );
+    SAFE_POINT(NULL != initContext, "Invalid workflow context!", );
     context = initContext;
-    if ( Q_LIKELY( NULL != parser ) ) {
-        parser->setContext( initContext );
+    if (Q_LIKELY(NULL != parser)) {
+        parser->setContext(initContext);
     }
 }
 
-void WorkflowDebugStatus::setMessageParser( WorkflowDebugMessageParser *initParser ) {
-    SAFE_POINT( NULL != initParser, "Invalid workflow context!", );
+void WorkflowDebugStatus::setMessageParser(WorkflowDebugMessageParser *initParser) {
+    SAFE_POINT(NULL != initParser, "Invalid workflow context!", );
     parser = initParser;
 }
 
-WorkflowDebugMessageParser * WorkflowDebugStatus::getMessageParser( ) const {
+WorkflowDebugMessageParser *WorkflowDebugStatus::getMessageParser() const {
     return parser;
 }
 
 void WorkflowDebugStatus::setPause(bool pause) {
-    if(pause != paused) {
+    if (pause != paused) {
         paused = pause;
         emit si_pauseStateChanged(paused);
     }
@@ -83,7 +82,7 @@ bool WorkflowDebugStatus::isCurrentStepIsolated() const {
 }
 
 void WorkflowDebugStatus::addBreakpointToActor(const ActorId &actor) {
-    if(!hasBreakpoint(actor)) {
+    if (!hasBreakpoint(actor)) {
         breakpoints.append(new WorkflowBreakpoint(actor, context));
         emit si_breakpointAdded(actor);
     }
@@ -96,11 +95,11 @@ void WorkflowDebugStatus::removeBreakpointFromActor(const ActorId &actor) {
 }
 
 void WorkflowDebugStatus::checkActorForBreakpoint(const Actor *actor) {
-    if(isBreakpointActivated(actor)) {
+    if (isBreakpointActivated(actor)) {
         setPause(true);
         emit si_breakpointIsReached(actor->getId());
     }
-    if(isStepIsolated) {
+    if (isStepIsolated) {
         isStepIsolated = false;
         setPause(true);
     }
@@ -122,15 +121,14 @@ void WorkflowDebugStatus::sl_executionFinished() {
     setPause(false);
     isStepIsolated = false;
 
-    foreach(WorkflowBreakpoint *breakpoint, breakpoints) {
+    foreach (WorkflowBreakpoint *breakpoint, breakpoints) {
         breakpoint->resetHitCounter();
         breakpoint->setContext(NULL);
     }
 }
 
 void WorkflowDebugStatus::respondToInvestigator(const WorkflowInvestigationData &investigationInfo,
-    const Workflow::Link *bus)
-{
+                                                const Workflow::Link *bus) {
     emit si_busInvestigationRespond(investigationInfo, bus);
 }
 
@@ -144,8 +142,8 @@ void WorkflowDebugStatus::requestForSingleStep(const ActorId &actor) {
 }
 
 WorkflowBreakpoint *WorkflowDebugStatus::getBreakpointForActor(const ActorId &actor) const {
-    foreach(WorkflowBreakpoint *breakpoint, breakpoints) {
-        if(actor == breakpoint->getActorId()) {
+    foreach (WorkflowBreakpoint *breakpoint, breakpoints) {
+        if (actor == breakpoint->getActorId()) {
             return breakpoint;
         }
     }
@@ -154,7 +152,7 @@ WorkflowBreakpoint *WorkflowDebugStatus::getBreakpointForActor(const ActorId &ac
 
 bool WorkflowDebugStatus::isBreakpointActivated(const Actor *actor) const {
     WorkflowBreakpoint *breakpoint = getBreakpointForActor(actor->getId());
-    if(NULL != breakpoint && breakpoint->isEnabled()) {
+    if (NULL != breakpoint && breakpoint->isEnabled()) {
         breakpoint->setContext(context);
         return breakpoint->hit(actor->getCondition());
     } else {
@@ -167,10 +165,10 @@ bool WorkflowDebugStatus::hasBreakpoint(const ActorId &actor) const {
 }
 
 void WorkflowDebugStatus::setBreakpointEnabled(const ActorId &actor, bool enabled) {
-    foreach(WorkflowBreakpoint *breakpoint, breakpoints) {
-        if(actor == breakpoint->getActorId()) {
+    foreach (WorkflowBreakpoint *breakpoint, breakpoints) {
+        if (actor == breakpoint->getActorId()) {
             breakpoint->setEnabled(enabled);
-            if(enabled) {
+            if (enabled) {
                 emit si_breakpointEnabled(actor);
             } else {
                 emit si_breakpointDisabled(actor);
@@ -192,7 +190,7 @@ QStringList WorkflowDebugStatus::getBreakpointLabels(const ActorId &actor) const
 }
 
 void WorkflowDebugStatus::addNewAvailableBreakpointLabels(const QStringList &newLabels) const {
-    foreach(QString label, newLabels) {
+    foreach (QString label, newLabels) {
         existingBreakpointLabels.append(label);
     }
 }
@@ -202,8 +200,7 @@ QStringList WorkflowDebugStatus::getAvailableBreakpointLabels() const {
 }
 
 const BreakpointHitCounterDump WorkflowDebugStatus::getHitCounterDumpForActor(const ActorId &actor)
-    const
-{
+    const {
     WorkflowBreakpoint *breakpoint = getBreakpointForActor(actor);
     Q_ASSERT(NULL != breakpoint);
     return breakpoint->getHitCounterDump();
@@ -215,9 +212,7 @@ void WorkflowDebugStatus::resetHitCounterForActor(const ActorId &actor) const {
     breakpoint->resetHitCounter();
 }
 
-void WorkflowDebugStatus::setHitCounterForActor(const ActorId &actor, BreakpointHitCountCondition
-    typeOfCounter, quint32 parameter)
-{
+void WorkflowDebugStatus::setHitCounterForActor(const ActorId &actor, BreakpointHitCountCondition typeOfCounter, quint32 parameter) {
     WorkflowBreakpoint *breakpoint = getBreakpointForActor(actor);
     Q_ASSERT(NULL != breakpoint);
     breakpoint->setHitCounter(typeOfCounter, parameter);
@@ -245,8 +240,7 @@ BreakpointConditionDump WorkflowDebugStatus::getConditionDumpForActor(const Acto
 }
 
 void WorkflowDebugStatus::setConditionParameterForActor(const ActorId &actor,
-BreakpointConditionParameter newParameter)
-{
+                                                        BreakpointConditionParameter newParameter) {
     WorkflowBreakpoint *breakpoint = getBreakpointForActor(actor);
     Q_ASSERT(NULL != breakpoint);
     breakpoint->setConditionParameter(newParameter);
@@ -259,16 +253,16 @@ void WorkflowDebugStatus::setConditionEnabledForActor(const ActorId &actor, bool
 }
 
 void WorkflowDebugStatus::setConditionTextForActor(const ActorId &actor,
-    const QString &newCondition)
-{
+                                                   const QString &newCondition) {
     WorkflowBreakpoint *breakpoint = getBreakpointForActor(actor);
     Q_ASSERT(NULL != breakpoint);
     breakpoint->setConditionText(newCondition);
 }
 
 void WorkflowDebugStatus::convertMessagesToDocuments(const Workflow::Link *bus,
-    const QString &messageType, int messageNumber, const QString &schemeName)
-{
+                                                     const QString &messageType,
+                                                     int messageNumber,
+                                                     const QString &schemeName) {
     emit si_convertMessages2Documents(bus, messageType, messageNumber, schemeName);
 }
 
@@ -280,4 +274,4 @@ QList<ActorId> WorkflowDebugStatus::getActorsWithBreakpoints() const {
     return result;
 }
 
-} // namespace U2
+}    // namespace U2

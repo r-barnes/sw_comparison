@@ -43,23 +43,28 @@ enum RelationType {
 class U2LANG_EXPORT AttributeRelation {
 public:
     AttributeRelation(const QString &relatedAttrId)
-        : relatedAttrId(relatedAttrId) {}
-    virtual ~AttributeRelation() {}
+        : relatedAttrId(relatedAttrId) {
+    }
+    virtual ~AttributeRelation() {
+    }
 
     /**
      * Updates tags of delegates
      */
-    virtual QVariant getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue,
-        DelegateTags *infTags = NULL, DelegateTags *depTags = NULL) const = 0;
+    virtual QVariant getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue, DelegateTags *infTags = NULL, DelegateTags *depTags = NULL) const = 0;
     virtual RelationType getType() const = 0;
     virtual void updateDelegateTags(const QVariant &influencingValue, DelegateTags *dependentTags) const;
-    QString getRelatedAttrId() const {return relatedAttrId;}
+    QString getRelatedAttrId() const {
+        return relatedAttrId;
+    }
 
     /**
      * Some relations changes value of the dependent attribute,
      * other relations changes only some properties of attributes (e.g. visibility)
      */
-    virtual bool valueChangingRelation() const {return true;}
+    virtual bool valueChangingRelation() const {
+        return true;
+    }
 
     virtual AttributeRelation *clone() const = 0;
 
@@ -75,16 +80,19 @@ public:
     VisibilityRelation(const QString &relatedAttrId, const QVariantList &visibilityValues, bool invertVisibilityRules = false);
     VisibilityRelation(const QString &relatedAttrId, const QVariant &visibilityValue, bool invertVisibilityRules = false);
 
-    virtual QVariant getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue,
-        DelegateTags *infTags, DelegateTags *depTags) const;
-    virtual RelationType getType() const {return VISIBILITY;}
-    virtual bool valueChangingRelation() const {return false;}
+    virtual QVariant getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue, DelegateTags *infTags, DelegateTags *depTags) const;
+    virtual RelationType getType() const {
+        return VISIBILITY;
+    }
+    virtual bool valueChangingRelation() const {
+        return false;
+    }
 
     VisibilityRelation *clone() const;
 
 private:
-    QVariantList    visibilityValues;
-    bool            invertAffectResult;
+    QVariantList visibilityValues;
+    bool invertAffectResult;
 };
 
 /**
@@ -93,12 +101,14 @@ private:
 class U2LANG_EXPORT FileExtensionRelation : public AttributeRelation {
 public:
     FileExtensionRelation(const QString &relatedAttrId)
-        : AttributeRelation(relatedAttrId){}
+        : AttributeRelation(relatedAttrId) {
+    }
 
-    virtual QVariant getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue,
-        DelegateTags *infTags, DelegateTags *depTags) const;
+    virtual QVariant getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue, DelegateTags *infTags, DelegateTags *depTags) const;
     virtual void updateDelegateTags(const QVariant &influencingValue, DelegateTags *dependentTags) const;
-    virtual RelationType getType() const {return FILE_EXTENSION;}
+    virtual RelationType getType() const {
+        return FILE_EXTENSION;
+    }
 
     FileExtensionRelation *clone() const;
 };
@@ -109,11 +119,13 @@ public:
 class U2LANG_EXPORT ValuesRelation : public AttributeRelation {
 public:
     ValuesRelation(const QString &relatedAttrId, const QVariantMap &_dependencies)
-        : AttributeRelation(relatedAttrId), dependencies(_dependencies){}
-    virtual RelationType getType() const {return CUSTOM_VALUE_CHANGER;}
+        : AttributeRelation(relatedAttrId), dependencies(_dependencies) {
+    }
+    virtual RelationType getType() const {
+        return CUSTOM_VALUE_CHANGER;
+    }
 
-    virtual QVariant getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue,
-        DelegateTags *infTags, DelegateTags *depTags) const;
+    virtual QVariant getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue, DelegateTags *infTags, DelegateTags *depTags) const;
     virtual void updateDelegateTags(const QVariant &influencingValue, DelegateTags *dependentTags) const;
 
     ValuesRelation *clone() const;
@@ -122,6 +134,6 @@ private:
     QVariantMap dependencies;
 };
 
-} // U2 namespace
+}    // namespace U2
 
-#endif // _U2_ATTRIBUTE_RELATION_H_
+#endif    // _U2_ATTRIBUTE_RELATION_H_

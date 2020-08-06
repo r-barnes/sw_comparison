@@ -24,7 +24,6 @@
 
 #include <U2Lang/Attribute.h>
 #include <U2Lang/ReadDbObjActorPrototype.h>
-
 #include <U2Lang/WorkflowUtils.h>
 
 namespace U2 {
@@ -39,12 +38,12 @@ class GenericMAActorProto : public GenericReadDocProto {
 public:
     static const QString TYPE;
     GenericMAActorProto();
-    virtual bool isAcceptableDrop(const QMimeData*, QVariantMap*) const;
+    virtual bool isAcceptableDrop(const QMimeData *, QVariantMap *) const;
 };
 
 class GenericSeqActorProto : public GenericReadDocProto {
 public:
-    enum Mode{
+    enum Mode {
         SPLIT,
         MERGE,
     };
@@ -56,7 +55,7 @@ public:
     static const QString TYPE;
 
     GenericSeqActorProto();
-    virtual bool isAcceptableDrop(const QMimeData*, QVariantMap*) const;
+    virtual bool isAcceptableDrop(const QMimeData *, QVariantMap *) const;
 };
 
 class SeqReadPrompter;
@@ -65,11 +64,14 @@ typedef PrompterBase<SeqReadPrompter> SeqReadPrompterBase;
 class SeqReadPrompter : public SeqReadPrompterBase {
     Q_OBJECT
 public:
-    SeqReadPrompter(Actor* p = 0) : SeqReadPrompterBase(p) {}
+    SeqReadPrompter(Actor *p = 0)
+        : SeqReadPrompterBase(p) {
+    }
+
 protected:
     QString composeRichDoc();
 };
 
-}//namespace Workflow
-}//namespace U2
+}    //namespace Workflow
+}    //namespace U2
 #endif

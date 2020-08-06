@@ -25,26 +25,24 @@
 #include <primitives/GTWidget.h>
 
 #include <QApplication>
-#include <QPushButton>
 #include <QDialogButtonBox>
+#include <QPushButton>
 
 namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::SequenceReadingModeSelectorDialogFiller"
 
-SequenceReadingModeSelectorDialogFiller::SequenceReadingModeSelectorDialogFiller(HI::GUITestOpStatus &_os, CustomScenario *c) :
-    Filler(_os, "SequenceReadingModeSelectorDialog", c),
-    cancel(false)
-{
-
+SequenceReadingModeSelectorDialogFiller::SequenceReadingModeSelectorDialogFiller(HI::GUITestOpStatus &_os, CustomScenario *c)
+    : Filler(_os, "SequenceReadingModeSelectorDialog", c),
+      cancel(false) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
-void SequenceReadingModeSelectorDialogFiller::commonScenario()
-{   GTGlobals::sleep(1000);
+void SequenceReadingModeSelectorDialogFiller::commonScenario() {
+    GTGlobals::sleep(1000);
     QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog != NULL, "dialog not found");
-    QDialogButtonBox *buttonBox = dialog->findChild<QDialogButtonBox*>(QString::fromUtf8("buttonBox"));
+    QDialogButtonBox *buttonBox = dialog->findChild<QDialogButtonBox *>(QString::fromUtf8("buttonBox"));
     GT_CHECK(buttonBox != NULL, "buttonBox not found");
     if (cancel) {
         QPushButton *button = buttonBox->button(QDialogButtonBox::Cancel);
@@ -53,26 +51,26 @@ void SequenceReadingModeSelectorDialogFiller::commonScenario()
         return;
     }
     if (readingMode == Separate) {
-        QRadioButton *separateRB = dialog->findChild<QRadioButton*>(QString::fromUtf8("separateRB"));
+        QRadioButton *separateRB = dialog->findChild<QRadioButton *>(QString::fromUtf8("separateRB"));
         GT_CHECK(separateRB != NULL, "radio button not found");
         GTRadioButton::click(os, separateRB);
     }
     if (readingMode == Merge) {
-        QRadioButton *mergeRB = dialog->findChild<QRadioButton*>(QString::fromUtf8("mergeRB"));
+        QRadioButton *mergeRB = dialog->findChild<QRadioButton *>(QString::fromUtf8("mergeRB"));
         GT_CHECK(mergeRB != NULL, "radio button not found");
         GTRadioButton::click(os, mergeRB);
 
-        QSpinBox *mergeSpinBox = dialog->findChild<QSpinBox*>(QString::fromUtf8("mergeSpinBox"));
+        QSpinBox *mergeSpinBox = dialog->findChild<QSpinBox *>(QString::fromUtf8("mergeSpinBox"));
         GT_CHECK(mergeSpinBox != NULL, "merge spin box not found");
         GTSpinBox::setValue(os, mergeSpinBox, bases, GTGlobals::UseKeyBoard);
     }
     if (readingMode == Join) {
-        QRadioButton *malignmentRB = dialog->findChild<QRadioButton*>(QString::fromUtf8("malignmentRB"));
+        QRadioButton *malignmentRB = dialog->findChild<QRadioButton *>(QString::fromUtf8("malignmentRB"));
         GT_CHECK(malignmentRB != NULL, "radio button not found");
         GTRadioButton::click(os, malignmentRB);
     }
     if (readingMode == Align) {
-        QRadioButton *refalignmentRB = dialog->findChild<QRadioButton*>(QString::fromUtf8("refalignmentRB"));
+        QRadioButton *refalignmentRB = dialog->findChild<QRadioButton *>(QString::fromUtf8("refalignmentRB"));
         GT_CHECK(refalignmentRB != NULL, "radio button not found");
         GTRadioButton::click(os, refalignmentRB);
     }
@@ -82,4 +80,4 @@ void SequenceReadingModeSelectorDialogFiller::commonScenario()
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

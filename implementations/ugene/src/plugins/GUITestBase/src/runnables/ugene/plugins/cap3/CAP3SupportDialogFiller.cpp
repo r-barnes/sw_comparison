@@ -19,10 +19,10 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-
 #include <base_dialogs/GTFileDialog.h>
 #include <primitives/GTWidget.h>
+
+#include <QApplication>
 
 #include "CAP3SupportDialogFiller.h"
 
@@ -31,13 +31,13 @@ namespace U2 {
 #define GT_CLASS_NAME "StructuralAlignmentDialogFiller"
 #define GT_METHOD_NAME "run"
 
-void CAP3SupportDialogFiller::commonScenario(){
+void CAP3SupportDialogFiller::commonScenario() {
     QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog != NULL, "dialog not found");
 
     foreach (QString file, input) {
         int num = file.lastIndexOf('/');
-        if (num == -1){
+        if (num == -1) {
             num = file.lastIndexOf('\\');
             GT_CHECK(num != -1, QString("String %1 not looks like file path").arg(file))
         }
@@ -49,7 +49,7 @@ void CAP3SupportDialogFiller::commonScenario(){
     }
 
     int num = output.lastIndexOf('/');
-    if (num == -1){
+    if (num == -1) {
         num = output.lastIndexOf('\\');
         GT_CHECK(num != -1, QString("String %1 not looks like file path").arg(output))
     }
@@ -64,6 +64,4 @@ void CAP3SupportDialogFiller::commonScenario(){
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-
-}
-
+}    // namespace U2

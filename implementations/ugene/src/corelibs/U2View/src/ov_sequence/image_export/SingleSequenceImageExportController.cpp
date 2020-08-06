@@ -20,9 +20,6 @@
  */
 
 #include "SingleSequenceImageExportController.h"
-#include "SingleSequenceImageExportTask.h"
-#include "SequenceExportSettingsWidget.h"
-#include "SequencePainter.h"
 
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/U2OpStatusUtils.h>
@@ -30,50 +27,55 @@
 
 #include <U2View/ADVSingleSequenceWidget.h>
 
+#include "SequenceExportSettingsWidget.h"
+#include "SequencePainter.h"
+#include "SingleSequenceImageExportTask.h"
+
 namespace U2 {
 
 /************************************************************************/
 /* SingleSequenceImageExportController */
 /************************************************************************/
-SingleSequenceImageExportController::SingleSequenceImageExportController(ADVSingleSequenceWidget* seqWidget)
+SingleSequenceImageExportController::SingleSequenceImageExportController(ADVSingleSequenceWidget *seqWidget)
     : ImageExportController(ExportImageFormatPolicy(EnableRasterFormats | SupportSvg)),
       sequenceWidget(seqWidget),
-      seqSettingsWidget(NULL)
-{
-    SAFE_POINT( seqWidget != NULL, tr("Sequence Widget is NULL"), );
+      seqSettingsWidget(NULL) {
+    SAFE_POINT(seqWidget != NULL, tr("Sequence Widget is NULL"), );
     shortDescription = tr("Sequence");
 
-    U2SequenceObject* seqObject = sequenceWidget->getSequenceObject();
-    SAFE_POINT( seqObject != NULL, tr("Sequence Object is NULL"), );
+    U2SequenceObject *seqObject = sequenceWidget->getSequenceObject();
+    SAFE_POINT(seqObject != NULL, tr("Sequence Object is NULL"), );
     customExportSettings = QSharedPointer<SequenceExportSettings>(new SequenceExportSettings(seqObject->getSequenceLength(), ExportCurrentView));
     connect(customExportSettings.data(), SIGNAL(si_changed()), SLOT(sl_customSettingsChanged()));
 
     initSettingsWidget();
 
-    currentPainter = SequencePainterFactory::createPainter(sequenceWidget, qobject_cast<SequenceExportSettings*>(customExportSettings)->getType());
+    currentPainter = SequencePainterFactory::createPainter(sequenceWidget, qobject_cast<SequenceExportSettings *>(customExportSettings)->getType());
 }
 
 void SingleSequenceImageExportController::initSettingsWidget() {
-    U2SequenceObject* seqObject = sequenceWidget->getSequenceObject();
-    SAFE_POINT( seqObject != NULL, tr("Sequence Object is NULL"), );
+    U2SequenceObject *seqObject = sequenceWidget->getSequenceObject();
+    SAFE_POINT(seqObject != NULL, tr("Sequence Object is NULL"), );
 
     settingsWidget = new SequenceExportSettingsWidget(seqObject, customExportSettings, sequenceWidget->getSequenceSelection());
 }
 
-
-Task* SingleSequenceImageExportController::getExportToPdfTask(const ImageExportTaskSettings &s) const {
+Task *SingleSequenceImageExportController::getExportToPdfTask(const ImageExportTaskSettings &s) const {
     return new SequenceImageExportToPdfTask(currentPainter,
-                                            customExportSettings, s);
+                                            customExportSettings,
+                                            s);
 }
 
-Task* SingleSequenceImageExportController::getExportToSvgTask(const ImageExportTaskSettings &s) const {
+Task *SingleSequenceImageExportController::getExportToSvgTask(const ImageExportTaskSettings &s) const {
     return new SequenceImageExportToSvgTask(currentPainter,
-                                            customExportSettings,s);
+                                            customExportSettings,
+                                            s);
 }
 
-Task* SingleSequenceImageExportController::getExportToBitmapTask(const ImageExportTaskSettings &s) const {
+Task *SingleSequenceImageExportController::getExportToBitmapTask(const ImageExportTaskSettings &s) const {
     return new SequenceImageExportToBitmapTask(currentPainter,
-                                               customExportSettings, s);
+                                               customExportSettings,
+                                               s);
 }
 
 void SingleSequenceImageExportController::sl_onFormatChanged(const QString &f) {
@@ -87,7 +89,7 @@ void SingleSequenceImageExportController::sl_customSettingsChanged() {
 
 void SingleSequenceImageExportController::checkExportSettings() {
     currentPainter.clear();
-    currentPainter = SequencePainterFactory::createPainter(sequenceWidget, qobject_cast<SequenceExportSettings*>(customExportSettings)->getType());
+    currentPainter = SequencePainterFactory::createPainter(sequenceWidget, qobject_cast<SequenceExportSettings *>(customExportSettings)->getType());
 
     QSize size = currentPainter->getImageSize(customExportSettings.data());
     if (size.width() > IMAGE_SIZE_LIMIT || size.height() > IMAGE_SIZE_LIMIT) {
@@ -97,7 +99,7 @@ void SingleSequenceImageExportController::checkExportSettings() {
         return;
     }
 
-    if (qobject_cast<SequenceExportSettings*>(customExportSettings)->getType() == ExportZoomedView && size.width() < 5) {
+    if (qobject_cast<SequenceExportSettings *>(customExportSettings)->getType() == ExportZoomedView && size.width() < 5) {
         disableMessage = tr("Warning: selected region is too small. Try to Zoom In.");
         emit si_disableExport(true);
         emit si_showMessage(disableMessage);
@@ -119,5 +121,4 @@ void SingleSequenceImageExportController::checkExportSettings() {
     emit si_showMessage("");
 }
 
-
-} // namespace
+}    // namespace U2

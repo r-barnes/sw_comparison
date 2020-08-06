@@ -20,21 +20,23 @@
  */
 
 #include "AssemblyReadsAreaHint.h"
-#include "AssemblyReadsArea.h"
+
+#include <QApplication>
+#include <QBoxLayout>
+#include <QMouseEvent>
 
 #include <U2Core/U2AssemblyUtils.h>
 
-#include <QMouseEvent>
-#include <QApplication>
-#include <QBoxLayout>
+#include "AssemblyReadsArea.h"
 
 namespace U2 {
 
 const QPoint AssemblyReadsAreaHint::OFFSET_FROM_CURSOR(13, 13);
 static const int HINT_MAX_WIDTH = 200;
 
-AssemblyReadsAreaHint::AssemblyReadsAreaHint(QWidget * p): QFrame(p), label(new QLabel(this)) {
-    QBoxLayout * top = new QVBoxLayout(this);
+AssemblyReadsAreaHint::AssemblyReadsAreaHint(QWidget *p)
+    : QFrame(p), label(new QLabel(this)) {
+    QBoxLayout *top = new QVBoxLayout(this);
     top->setMargin(2);
     setLayout(top);
     top->addWidget(label);
@@ -64,15 +66,15 @@ AssemblyReadsAreaHint::AssemblyReadsAreaHint(QWidget * p): QFrame(p), label(new 
     setObjectName("AssemblyReadsAreaHint");
 }
 
-static QString getCigarString(const QString & ci) {
-    if(ci.isEmpty()) {
+static QString getCigarString(const QString &ci) {
+    if (ci.isEmpty()) {
         return QObject::tr("no information");
     }
 
     QString cigar;
-    for(int i = 0; i < ci.size(); ++i) {
+    for (int i = 0; i < ci.size(); ++i) {
         QChar ch = ci.at(i);
-        if(ch.isNumber()) {
+        if (ch.isNumber()) {
             cigar.append(ch);
         } else {
             cigar.append(QString("<b>%1 </b>").arg(ch));
@@ -81,15 +83,15 @@ static QString getCigarString(const QString & ci) {
     return cigar;
 }
 
-QString getReadSequence(const QByteArray & bytes) {
+QString getReadSequence(const QByteArray &bytes) {
     QString ret(bytes);
-    if(ret.size() < AssemblyReadsAreaHint::LETTER_MAX_COUNT) {
+    if (ret.size() < AssemblyReadsAreaHint::LETTER_MAX_COUNT) {
         return ret;
     }
     return ret.mid(0, AssemblyReadsAreaHint::LETTER_MAX_COUNT) + "...";
 }
 
-QString AssemblyReadsAreaHint::getReadDataAsString(const U2AssemblyRead & r) {
+QString AssemblyReadsAreaHint::getReadDataAsString(const U2AssemblyRead &r) {
     QString ret;
     ret += QString("> %1\n").arg(QString(r->name));
     ret += QString("%1\n\n").arg(QString(r->readSequence));
@@ -104,7 +106,7 @@ QString AssemblyReadsAreaHint::getReadDataAsString(const U2AssemblyRead & r) {
         bool onCompl = ReadFlagsUtils::isComplementaryRead(r->flags);
         ret += QString("Strand: %1\n").arg(onCompl ? QObject::tr("complement") : QObject::tr("direct"));
     }
-    if(ReadFlagsUtils::isUnmappedRead(r->flags)) {
+    if (ReadFlagsUtils::isUnmappedRead(r->flags)) {
         ret += "Unmapped\n";
     }
     return ret;
@@ -112,12 +114,12 @@ QString AssemblyReadsAreaHint::getReadDataAsString(const U2AssemblyRead & r) {
 
 QString getReadNameWrapped(QString n) {
     QString ret;
-    while(!n.isEmpty()) {
+    while (!n.isEmpty()) {
         n = n.trimmed();
-        if(n.size() > AssemblyReadsAreaHint::LETTER_MAX_COUNT) {
+        if (n.size() > AssemblyReadsAreaHint::LETTER_MAX_COUNT) {
             QString sub = n.mid(0, AssemblyReadsAreaHint::LETTER_MAX_COUNT);
             int pos = sub.lastIndexOf(QRegExp("\\s+"));
-            if(pos == -1) {
+            if (pos == -1) {
                 pos = sub.size();
             }
             ret += sub.mid(0, pos) + "<br>";
@@ -132,10 +134,7 @@ QString getReadNameWrapped(QString n) {
 
 static QString formatReadPosString(U2AssemblyRead r) {
     qint64 len = U2AssemblyUtils::getEffectiveReadLength(r);
-    return QString("<b>From</b>&nbsp;%1&nbsp;<b>to</b>&nbsp;%2&nbsp;<b>Row</b>:&nbsp;%3").
-        arg(r->leftmostPos + 1).
-        arg(r->leftmostPos + len).
-        arg(r->packedViewRow + 1);
+    return QString("<b>From</b>&nbsp;%1&nbsp;<b>to</b>&nbsp;%2&nbsp;<b>Row</b>:&nbsp;%3").arg(r->leftmostPos + 1).arg(r->leftmostPos + len).arg(r->packedViewRow + 1);
 }
 
 static QString formatReadInfo(U2AssemblyRead r) {
@@ -152,7 +151,7 @@ static QString formatReadInfo(U2AssemblyRead r) {
         text += QString("<tr><td><b>Strand</b>:&nbsp;%1</td></tr>").arg(onCompl ? QObject::tr("complement") : QObject::tr("direct"));
     }
     text += QString("<tr><td><b>Read sequence</b>:&nbsp;%1</td></tr>").arg(getReadSequence(r->readSequence));
-    if(ReadFlagsUtils::isUnmappedRead(r->flags)) {
+    if (ReadFlagsUtils::isUnmappedRead(r->flags)) {
         text += QString("<tr><td><b><font color=\"red\">%1</font></b></td></tr>").arg(QObject::tr("Unmapped"));
     }
     return text;
@@ -164,16 +163,16 @@ void AssemblyReadsAreaHint::setData(U2AssemblyRead r, QList<U2AssemblyRead> mate
     text += formatReadInfo(r);
 
     int nMates = mates.length();
-    if(nMates == 1) {
+    if (nMates == 1) {
         U2AssemblyRead pair = mates.first();
         text += QString("<tr><td>&nbsp;</td></tr><tr><td><b>Paired read:</b></td></tr>");
         text += formatReadInfo(pair);
-    } else if(nMates > 0) {
+    } else if (nMates > 0) {
         text += QString("<tr><td><b>%1 more segments in read:</b></td></tr>").arg(nMates);
-        foreach(U2AssemblyRead mate, mates) {
+        foreach (U2AssemblyRead mate, mates) {
             text += QString("<tr><td>&nbsp;-&nbsp;%1 <b>Length</b> %2</td></tr>")
-                    .arg(formatReadPosString(mate))
-                    .arg(U2AssemblyUtils::getEffectiveReadLength(mate));
+                        .arg(formatReadPosString(mate))
+                        .arg(U2AssemblyUtils::getEffectiveReadLength(mate));
         }
     }
     text += "</table>";
@@ -181,10 +180,10 @@ void AssemblyReadsAreaHint::setData(U2AssemblyRead r, QList<U2AssemblyRead> mate
     setMaximumHeight(layout()->minimumSize().height());
 }
 
-bool AssemblyReadsAreaHint::eventFilter(QObject *, QEvent * event) {
-    QMouseEvent * e = dynamic_cast<QMouseEvent*>(event);
-    if(e != NULL) {
-        QWidget * p = qobject_cast<QWidget*>(parent());
+bool AssemblyReadsAreaHint::eventFilter(QObject *, QEvent *event) {
+    QMouseEvent *e = dynamic_cast<QMouseEvent *>(event);
+    if (e != NULL) {
+        QWidget *p = qobject_cast<QWidget *>(parent());
         QMouseEvent eventToParent(e->type(), p->mapFromGlobal(QCursor::pos()), e->button(), e->buttons(), e->modifiers());
         QApplication::sendEvent(p, &eventToParent);
         return true;
@@ -194,17 +193,17 @@ bool AssemblyReadsAreaHint::eventFilter(QObject *, QEvent * event) {
 }
 
 void AssemblyReadsAreaHint::leaveEvent(QEvent *) {
-    AssemblyReadsArea * p = qobject_cast<AssemblyReadsArea*>(parent());
+    AssemblyReadsArea *p = qobject_cast<AssemblyReadsArea *>(parent());
     QPoint curInParentCoords = p->mapFromGlobal(QCursor::pos());
-    if(!p->rect().contains(curInParentCoords)) {
+    if (!p->rect().contains(curInParentCoords)) {
         p->sl_hideHint();
     }
 }
 
-void AssemblyReadsAreaHint::mouseMoveEvent(QMouseEvent * e) {
-    AssemblyReadsArea * p = qobject_cast<AssemblyReadsArea*>(parent());
+void AssemblyReadsAreaHint::mouseMoveEvent(QMouseEvent *e) {
+    AssemblyReadsArea *p = qobject_cast<AssemblyReadsArea *>(parent());
     p->sl_hideHint();
     QFrame::mouseMoveEvent(e);
 }
 
-} // U2
+}    // namespace U2

@@ -19,30 +19,31 @@
  * MA 02110-1301, USA.
  */
 
-#include <QListWidget>
-#include <QDir>
-#include <U2Core/global.h>
-#include <U2Core/U2SafePoints.h>
-#include "primitives/GTAction.h"
+#include <base_dialogs/MessageBoxFiller.h>
 #include <drivers/GTKeyboardDriver.h>
-#include "primitives/GTMenu.h"
 #include <drivers/GTMouseDriver.h>
 #include <primitives/GTWidget.h>
-#include <base_dialogs/MessageBoxFiller.h>
-#include "runnables/ugene/corelibs/U2Gui/EditConnectionDialogFiller.h"
-#include "runnables/ugene/corelibs/U2Gui/ProjectTreeItemSelectorDialogFiller.h"
-#include "runnables/ugene/corelibs/U2Gui/SharedConnectionsDialogFiller.h"
-#include "runnables/ugene/plugins/workflow_designer/StartupDialogFiller.h"
-#include "runnables/ugene/plugins/workflow_designer/WorkflowMetadialogFiller.h"
+
+#include <QDir>
+#include <QListWidget>
+
+#include <U2Core/U2SafePoints.h>
+#include <U2Core/global.h>
 
 #include "GTDatabaseConfig.h"
+#include "GTTestsSharedDbWd.h"
 #include "GTUtilsEscClicker.h"
 #include "GTUtilsLog.h"
 #include "GTUtilsMdi.h"
 #include "GTUtilsTaskTreeView.h"
 #include "GTUtilsWorkflowDesigner.h"
-
-#include "GTTestsSharedDbWd.h"
+#include "primitives/GTAction.h"
+#include "primitives/GTMenu.h"
+#include "runnables/ugene/corelibs/U2Gui/EditConnectionDialogFiller.h"
+#include "runnables/ugene/corelibs/U2Gui/ProjectTreeItemSelectorDialogFiller.h"
+#include "runnables/ugene/corelibs/U2Gui/SharedConnectionsDialogFiller.h"
+#include "runnables/ugene/plugins/workflow_designer/StartupDialogFiller.h"
+#include "runnables/ugene/plugins/workflow_designer/WorkflowMetadialogFiller.h"
 
 namespace U2 {
 namespace GUITest_common_scenarios_shared_db_wd {
@@ -65,10 +66,10 @@ void createTestConnection(HI::GUITestOpStatus &os) {
         GTUtilsDialog::waitForDialog(os, new EditConnectionDialogFiller(os, params, EditConnectionDialogFiller::FROM_SETTINGS));
     }
 
-    CHECK_SET_ERR_RESULT(!lt.hasError(), "errors in log", );
+    CHECK_SET_ERR_RESULT(!lt.hasErrors(), "Errors in log: " + lt.getJoinedErrorString(), );
 }
 
-}
+}    // namespace
 
 GUI_TEST_CLASS_DEFINITION(read_gui_test_0001) {
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
@@ -285,9 +286,9 @@ GUI_TEST_CLASS_DEFINITION(read_gui_test_0010) {
     QSet<GObjectType> acceptableTypes;
     acceptableTypes << GObjectTypes::SEQUENCE;
     QMap<QString, QStringList> doc2Objects;
-    doc2Objects["ugene_gui_test"] << "et0001_sequence" << "et0007_seq";
-    GTUtilsDialog::waitForDialog(os, new ProjectTreeItemSelectorDialogFiller(os, doc2Objects, acceptableTypes,
-        ProjectTreeItemSelectorDialogFiller::Separate));
+    doc2Objects["ugene_gui_test"] << "et0001_sequence"
+                                  << "et0007_seq";
+    GTUtilsDialog::waitForDialog(os, new ProjectTreeItemSelectorDialogFiller(os, doc2Objects, acceptableTypes, ProjectTreeItemSelectorDialogFiller::Separate));
 
     QWidget *addFromDbButton = GTWidget::findWidget(os, "addFromDbButton");
 
@@ -296,9 +297,9 @@ GUI_TEST_CLASS_DEFINITION(read_gui_test_0010) {
     GTGlobals::sleep();
 
     QMap<QString, QStringList> doc2Items;
-    doc2Items["ugene_gui_test"] << "export_test_0007" << "export_test_0009";
-    GTUtilsDialog::waitForDialog(os, new ProjectTreeItemSelectorDialogFiller(os, doc2Items, acceptableTypes,
-        ProjectTreeItemSelectorDialogFiller::Continuous));
+    doc2Items["ugene_gui_test"] << "export_test_0007"
+                                << "export_test_0009";
+    GTUtilsDialog::waitForDialog(os, new ProjectTreeItemSelectorDialogFiller(os, doc2Items, acceptableTypes, ProjectTreeItemSelectorDialogFiller::Continuous));
 
     GTWidget::click(os, addFromDbButton);
 
@@ -322,9 +323,9 @@ GUI_TEST_CLASS_DEFINITION(read_gui_test_0011) {
     QSet<GObjectType> acceptableTypes;
     acceptableTypes << GObjectTypes::SEQUENCE;
     QMap<QString, QStringList> doc2Objects;
-    doc2Objects["ugene_gui_test"] << "et0007_seq" << "et0001_sequence";
-    GTUtilsDialog::waitForDialog(os, new ProjectTreeItemSelectorDialogFiller(os, doc2Objects, acceptableTypes,
-        ProjectTreeItemSelectorDialogFiller::Continuous));
+    doc2Objects["ugene_gui_test"] << "et0007_seq"
+                                  << "et0001_sequence";
+    GTUtilsDialog::waitForDialog(os, new ProjectTreeItemSelectorDialogFiller(os, doc2Objects, acceptableTypes, ProjectTreeItemSelectorDialogFiller::Continuous));
 
     QWidget *addFromDbButton = GTWidget::findWidget(os, "addFromDbButton");
 
@@ -333,9 +334,10 @@ GUI_TEST_CLASS_DEFINITION(read_gui_test_0011) {
     GTGlobals::sleep();
 
     QMap<QString, QStringList> doc2Items;
-    doc2Items["ugene_gui_test"] << "pt0001_dir2" << "pt0005_human_T1" << "pt0006_dir2";
-    GTUtilsDialog::waitForDialog(os, new ProjectTreeItemSelectorDialogFiller(os, doc2Items, acceptableTypes,
-        ProjectTreeItemSelectorDialogFiller::Separate));
+    doc2Items["ugene_gui_test"] << "pt0001_dir2"
+                                << "pt0005_human_T1"
+                                << "pt0006_dir2";
+    GTUtilsDialog::waitForDialog(os, new ProjectTreeItemSelectorDialogFiller(os, doc2Items, acceptableTypes, ProjectTreeItemSelectorDialogFiller::Separate));
 
     GTWidget::click(os, addFromDbButton);
 
@@ -365,8 +367,7 @@ GUI_TEST_CLASS_DEFINITION(read_gui_neg_test_0012) {
 
     QSet<GObjectType> acceptableTypes;
     acceptableTypes << GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT;
-    GTUtilsDialog::waitForDialog(os, new ProjectTreeItemSelectorDialogFiller(os, "ugene_gui_test", "et0003_alignment", acceptableTypes,
-        ProjectTreeItemSelectorDialogFiller::Single, 1));
+    GTUtilsDialog::waitForDialog(os, new ProjectTreeItemSelectorDialogFiller(os, "ugene_gui_test", "et0003_alignment", acceptableTypes, ProjectTreeItemSelectorDialogFiller::Single, 1));
 
     QWidget *addFromDbButton = GTWidget::findWidget(os, "addFromDbButton");
 
@@ -377,7 +378,8 @@ GUI_TEST_CLASS_DEFINITION(read_gui_neg_test_0012) {
 
 GUI_TEST_CLASS_DEFINITION(write_gui_test_0001_1) {
     createTestConnection(os);
-    GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Connect to UGENE shared database...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                << "Connect to UGENE shared database...");
 
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
     GTUtilsWorkflowDesigner::addAlgorithm(os, "Write Alignment");
@@ -402,7 +404,8 @@ GUI_TEST_CLASS_DEFINITION(write_gui_test_0001_1) {
 
 GUI_TEST_CLASS_DEFINITION(write_gui_test_0001_2) {
     createTestConnection(os);
-    GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Connect to UGENE shared database...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                << "Connect to UGENE shared database...");
 
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
     GTUtilsWorkflowDesigner::addAlgorithm(os, "Write Sequence");
@@ -425,12 +428,12 @@ GUI_TEST_CLASS_DEFINITION(write_gui_test_0001_2) {
     GTUtilsWorkflowDesigner::setParameter(os, "Database", 0, GTUtilsWorkflowDesigner::comboValue);
     CHECK_OP(os, );
     CHECK_SET_ERR("/" == GTUtilsWorkflowDesigner::getParameter(os, "Output path"), "Unexpected parameter default value");
-
 }
 
 GUI_TEST_CLASS_DEFINITION(write_gui_test_0002) {
     createTestConnection(os);
-    GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Connect to UGENE shared database...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                << "Connect to UGENE shared database...");
 
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
     GTUtilsWorkflowDesigner::addAlgorithm(os, "Write FASTA");
@@ -456,17 +459,17 @@ GUI_TEST_CLASS_DEFINITION(write_gui_test_0003) {
 
     GTWidget::click(os, GTWidget::findWidget(os, "browsePathBtn"));
 
-    GTWidget::click(os, GTWidget::findWidget(os,"sceneView"));
+    GTWidget::click(os, GTWidget::findWidget(os, "sceneView"));
     GTUtilsWorkflowDesigner::click(os, "Write NGS Reads Assembly");
 
     GTUtilsWorkflowDesigner::setParameter(os, "Database", 1, GTUtilsWorkflowDesigner::comboValue);
-
 
     QList<SharedConnectionsDialogFiller::Action> actions;
     actions << SharedConnectionsDialogFiller::Action(SharedConnectionsDialogFiller::Action::CLICK, connectionName);
     actions << SharedConnectionsDialogFiller::Action(SharedConnectionsDialogFiller::Action::CONNECT, connectionName);
     GTUtilsDialog::waitForDialog(os, new SharedConnectionsDialogFiller(os, actions));
-    GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Connect to UGENE shared database...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                << "Connect to UGENE shared database...");
 }
 
 GUI_TEST_CLASS_DEFINITION(open_uwl_gui_test_0001) {
@@ -497,7 +500,8 @@ GUI_TEST_CLASS_DEFINITION(save_uwl_gui_test_0001) {
     GTLogTracer l;
 
     createTestConnection(os);
-    GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Connect to UGENE shared database...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                << "Connect to UGENE shared database...");
 
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
     GTUtilsWorkflowDesigner::addAlgorithm(os, "Write Variants");
@@ -524,8 +528,7 @@ GUI_TEST_CLASS_DEFINITION(save_uwl_gui_test_0002) {
 
     QMap<QString, QStringList> doc2Objects;
     doc2Objects["ugene_gui_test"] /*<< "et0002_features"*/ << "view_test_0001";
-    GTUtilsDialog::waitForDialog(os, new ProjectTreeItemSelectorDialogFiller(os, doc2Objects, QSet<GObjectType>(),
-        ProjectTreeItemSelectorDialogFiller::Separate));
+    GTUtilsDialog::waitForDialog(os, new ProjectTreeItemSelectorDialogFiller(os, doc2Objects, QSet<GObjectType>(), ProjectTreeItemSelectorDialogFiller::Separate));
 
     QWidget *addFromDbButton = GTWidget::findWidget(os, "addFromDbButton");
     GTWidget::click(os, addFromDbButton);
@@ -549,8 +552,7 @@ GUI_TEST_CLASS_DEFINITION(run_workflow_gui_test_0001_1) {
     GTUtilsWorkflowDesigner::setParameter(os, "Output file", "output.aln", GTUtilsWorkflowDesigner::textValue);
 
     GTUtilsDialog::waitForDialog(os, new AuthenticationDialogFiller(os, "invalid_user", "pass"));
-    GTUtilsDialog::waitForDialog(os, new MessageBoxDialogFiller(os, QMessageBox::Ok,
-        "Please fix issues listed in the error list (located under workflow)."));
+    GTUtilsDialog::waitForDialog(os, new MessageBoxDialogFiller(os, QMessageBox::Ok, "Please fix issues listed in the error list (located under workflow)."));
 
     GTWidget::click(os, GTAction::button(os, "Run workflow"));
     GTGlobals::sleep(5000);
@@ -585,8 +587,7 @@ GUI_TEST_CLASS_DEFINITION(run_workflow_gui_test_0002) {
     GTUtilsWorkflowDesigner::setParameter(os, "Output file", "output.snp", GTUtilsWorkflowDesigner::textValue);
 
     GTUtilsDialog::waitForDialog(os, new AuthenticationDialogFiller(os, GTDatabaseConfig::login(), GTDatabaseConfig::password()));
-    GTUtilsDialog::waitForDialog(os, new MessageBoxDialogFiller(os, QMessageBox::Ok,
-        "Please fix issues listed in the error list (located under workflow)."));
+    GTUtilsDialog::waitForDialog(os, new MessageBoxDialogFiller(os, QMessageBox::Ok, "Please fix issues listed in the error list (located under workflow)."));
 
     GTWidget::click(os, GTAction::button(os, "Run workflow"));
     GTGlobals::sleep(25000);
@@ -617,8 +618,7 @@ GUI_TEST_CLASS_DEFINITION(run_workflow_gui_test_0003) {
     GTUtilsWorkflowDesigner::setParameter(os, "Merge annotation tables", true, GTUtilsWorkflowDesigner::comboValue);
     GTUtilsWorkflowDesigner::setParameter(os, "Annotation object name", "run_workflow_gui_test_0003", GTUtilsWorkflowDesigner::textValue);
 
-    GTUtilsWorkflowDesigner::connect(os, GTUtilsWorkflowDesigner::getWorker(os, "Read Annotations"),
-        GTUtilsWorkflowDesigner::getWorker(os, "Write Annotations"));
+    GTUtilsWorkflowDesigner::connect(os, GTUtilsWorkflowDesigner::getWorker(os, "Read Annotations"), GTUtilsWorkflowDesigner::getWorker(os, "Write Annotations"));
 
     GTWidget::click(os, GTAction::button(os, "Run workflow"));
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -635,8 +635,7 @@ GUI_TEST_CLASS_DEFINITION(run_workflow_gui_test_0004) {
 
     GTUtilsWorkflowDesigner::addAlgorithm(os, "Read Plain Text");
     GTUtilsWorkflowDesigner::addAlgorithm(os, "Write Plain Text");
-    GTUtilsWorkflowDesigner::connect(os, GTUtilsWorkflowDesigner::getWorker(os, "Read Plain Text"),
-    GTUtilsWorkflowDesigner::getWorker(os, "Write Plain Text"));
+    GTUtilsWorkflowDesigner::connect(os, GTUtilsWorkflowDesigner::getWorker(os, "Read Plain Text"), GTUtilsWorkflowDesigner::getWorker(os, "Write Plain Text"));
 
     GTUtilsWorkflowDesigner::click(os, "Read Plain Text");
     GTUtilsWorkflowDesigner::setDatasetInputFile(os, testDir + "_common_data/text/text.txt");
@@ -645,11 +644,10 @@ GUI_TEST_CLASS_DEFINITION(run_workflow_gui_test_0004) {
     GTUtilsWorkflowDesigner::setParameter(os, "Data storage", 1, GTUtilsWorkflowDesigner::comboValue);
     GTUtilsWorkflowDesigner::setParameter(os, "Database", 0, GTUtilsWorkflowDesigner::comboValue);
 
-    GTUtilsDialog::waitForDialog(os, new MessageBoxDialogFiller(os, QMessageBox::Ok,
-        "Please fix issues listed in the error list (located under workflow)."));
+    GTUtilsDialog::waitForDialog(os, new MessageBoxDialogFiller(os, QMessageBox::Ok, "Please fix issues listed in the error list (located under workflow)."));
 
     GTWidget::click(os, GTAction::button(os, "Run workflow"));
-    GTGlobals::sleep(10000); //neccessary sleep
+    GTGlobals::sleep(10000);    //neccessary sleep
 
     GTUtilsWorkflowDesigner::checkErrorList(os, "You do not have write permissions to the database");
 }
@@ -680,8 +678,7 @@ GUI_TEST_CLASS_DEFINITION(run_workflow_gui_test_0005_2) {
     GTUtilsWorkflowDesigner::setDatasetInputFile(os, testDir + "_common_data/fasta/aaa.fa");
 
     GTUtilsDialog::waitForDialog(os, new AuthenticationDialogFiller(os, GTDatabaseConfig::login(), "invalid_password"));
-    GTUtilsDialog::waitForDialog(os, new MessageBoxDialogFiller(os, QMessageBox::Ok,
-        "Please fix issues listed in the error list (located under workflow)."));
+    GTUtilsDialog::waitForDialog(os, new MessageBoxDialogFiller(os, QMessageBox::Ok, "Please fix issues listed in the error list (located under workflow)."));
 
     GTWidget::click(os, GTAction::button(os, "Run workflow"));
 
@@ -697,8 +694,7 @@ GUI_TEST_CLASS_DEFINITION(run_workflow_gui_test_0006) {
     GTUtilsWorkflowDesigner::setDatasetInputFile(os, testDir + "_common_data/ugenedb/1.bam.ugenedb");
 
     GTUtilsDialog::waitForDialog(os, new AuthenticationDialogFiller(os, GTDatabaseConfig::login(), GTDatabaseConfig::password()));
-    GTUtilsDialog::waitForDialog(os, new MessageBoxDialogFiller(os, QMessageBox::Ok,
-        "Please fix issues listed in the error list (located under workflow)."));
+    GTUtilsDialog::waitForDialog(os, new MessageBoxDialogFiller(os, QMessageBox::Ok, "Please fix issues listed in the error list (located under workflow)."));
 
     GTWidget::click(os, GTAction::button(os, "Run workflow"));
     GTGlobals::sleep();
@@ -711,15 +707,15 @@ GUI_TEST_CLASS_DEFINITION(run_workflow_gui_test_0006) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_3726) {
-//    1. Open WD.
+    //    1. Open WD.
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
     GTUtilsWorkflowDesigner::addAlgorithm(os, "Read Sequence", true);
-//    2. Add "Read Sequence" to the scene.
+    //    2. Add "Read Sequence" to the scene.
     createTestConnection(os);
-//    3. Press "Add data from shared databases" on the property editor.
-//    Expected state: the "Shared Database Connections" dialog has appeared.
-//    4. Double mouse click on "UGENE public database" (or any other with sequences stored in it).
-//    Expected state: the dialog disappeared. In a few seconds DB has been connected and the "Select Item" dialog has appeared.
+    //    3. Press "Add data from shared databases" on the property editor.
+    //    Expected state: the "Shared Database Connections" dialog has appeared.
+    //    4. Double mouse click on "UGENE public database" (or any other with sequences stored in it).
+    //    Expected state: the dialog disappeared. In a few seconds DB has been connected and the "Select Item" dialog has appeared.
     QSet<GObjectType> acceptableTypes;
     acceptableTypes << GObjectTypes::SEQUENCE;
     GTUtilsDialog::waitForDialog(os, new ProjectTreeItemSelectorDialogFiller(os, "ugene_gui_test", "et0001_sequence", acceptableTypes));
@@ -728,14 +724,14 @@ GUI_TEST_CLASS_DEFINITION(test_3726) {
     GTWidget::click(os, addFromDbButton);
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
-//    5. Choose "chrI" in "UGENE public database/genomes/C. elegans (ce6)" and press "OK".
-//    Expected state: the "Read Sequence" worker has got the "chrI" blue link in its body.
+    //    5. Choose "chrI" in "UGENE public database/genomes/C. elegans (ce6)" and press "OK".
+    //    Expected state: the "Read Sequence" worker has got the "chrI" blue link in its body.
 
-//    6. Right click on the link.
+    //    6. Right click on the link.
     GTUtilsWorkflowDesigner::clickLink(os, "Read Sequence", Qt::RightButton);
-//    Current state: a context menu appears with the "Open document(s)" item. Two successive error message boxes appear if you click the item.
-//    Expected state: nothing happens.
+    //    Current state: a context menu appears with the "Open document(s)" item. Two successive error message boxes appear if you click the item.
+    //    Expected state: nothing happens.
 }
 
-} // GUITest_common_scenarios_shared_db_wd
-} // U2
+}    // namespace GUITest_common_scenarios_shared_db_wd
+}    // namespace U2

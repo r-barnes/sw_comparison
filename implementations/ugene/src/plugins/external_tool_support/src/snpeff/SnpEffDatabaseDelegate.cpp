@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "SnpEffDatabaseDelegate.h"
+
 #include <QLayout>
 #include <QMessageBox>
 #include <QPushButton>
@@ -31,7 +33,6 @@
 #include <U2Gui/HelpButton.h>
 
 #include "ExternalToolSupportSettingsController.h"
-#include "SnpEffDatabaseDelegate.h"
 #include "SnpEffDatabaseListModel.h"
 #include "SnpEffSupport.h"
 #include "java/JavaSupport.h"
@@ -42,10 +43,10 @@ namespace LocalWorkflow {
 /************************************************************************/
 /* SnpEffDatabaseDialog */
 /************************************************************************/
-SnpEffDatabaseDialog::SnpEffDatabaseDialog(QWidget* parent)
+SnpEffDatabaseDialog::SnpEffDatabaseDialog(QWidget *parent)
     : QDialog(parent) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24740244");
+    new HelpButton(this, buttonBox, "46500556");
 
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Select"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -62,13 +63,13 @@ SnpEffDatabaseDialog::SnpEffDatabaseDialog(QWidget* parent)
     tableView->verticalHeader()->hide();
 
     connect(tableView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(accept()));
-    connect(tableView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), SLOT(sl_selectionChanged()));
+    connect(tableView->selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)), SLOT(sl_selectionChanged()));
 
     setMinimumSize(600, 400);
 }
 
 QString SnpEffDatabaseDialog::getDatabase() const {
-    QItemSelectionModel* model = tableView->selectionModel();
+    QItemSelectionModel *model = tableView->selectionModel();
     SAFE_POINT(model != NULL, "Selection model is NULL", QString());
     QModelIndexList selection = model->selectedRows();
     SAFE_POINT(selection.size() == 1, "Invalid selection state", QString());
@@ -128,15 +129,15 @@ void SnpEffDatabasePropertyWidget::sl_showDialog() {
         CHECK(!msgBox.isNull(), );
 
         switch (ret) {
-           case QMessageBox::Yes:
-               AppContext::getAppSettingsGUI()->showSettingsDialog(ExternalToolSupportSettingsPageId);
-               break;
-           case QMessageBox::No:
-               return;
-           default:
-               assert(false);
-               break;
-         }
+        case QMessageBox::Yes:
+            AppContext::getAppSettingsGUI()->showSettingsDialog(ExternalToolSupportSettingsPageId);
+            break;
+        case QMessageBox::No:
+            return;
+        default:
+            assert(false);
+            break;
+        }
         return;
     }
 
@@ -156,40 +157,38 @@ SnpEffDatabaseDelegate::SnpEffDatabaseDelegate(QObject *parent)
     : PropertyDelegate(parent) {
 }
 
-QWidget* SnpEffDatabaseDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &/*option*/,
-                                              const QModelIndex &/*index*/) const {
-    SnpEffDatabasePropertyWidget* editor = new SnpEffDatabasePropertyWidget(parent);
+QWidget *SnpEffDatabaseDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem & /*option*/, const QModelIndex & /*index*/) const {
+    SnpEffDatabasePropertyWidget *editor = new SnpEffDatabasePropertyWidget(parent);
     connect(editor, SIGNAL(si_valueChanged(QVariant)), SLOT(sl_commit()));
     return editor;
 }
 
-PropertyWidget * SnpEffDatabaseDelegate::createWizardWidget(U2OpStatus & /*os*/, QWidget *parent) const {
+PropertyWidget *SnpEffDatabaseDelegate::createWizardWidget(U2OpStatus & /*os*/, QWidget *parent) const {
     return new SnpEffDatabasePropertyWidget(parent);
 }
 
 void SnpEffDatabaseDelegate::setEditorData(QWidget *editor,
                                            const QModelIndex &index) const {
     QVariant val = index.model()->data(index, ConfigurationEditor::ItemValueRole);
-    SnpEffDatabasePropertyWidget *propertyWidget = dynamic_cast<SnpEffDatabasePropertyWidget*>(editor);
+    SnpEffDatabasePropertyWidget *propertyWidget = dynamic_cast<SnpEffDatabasePropertyWidget *>(editor);
     propertyWidget->setValue(val);
 }
 
-void SnpEffDatabaseDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
-                                          const QModelIndex &index) const {
-    SnpEffDatabasePropertyWidget *propertyWidget = dynamic_cast<SnpEffDatabasePropertyWidget*>(editor);
+void SnpEffDatabaseDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
+    SnpEffDatabasePropertyWidget *propertyWidget = dynamic_cast<SnpEffDatabasePropertyWidget *>(editor);
     QString val = propertyWidget->value().toString();
     model->setData(index, val, ConfigurationEditor::ItemValueRole);
 }
 
-PropertyDelegate* SnpEffDatabaseDelegate::clone() {
+PropertyDelegate *SnpEffDatabaseDelegate::clone() {
     return new SnpEffDatabaseDelegate(parent());
 }
 
 void SnpEffDatabaseDelegate::sl_commit() {
-    SnpEffDatabasePropertyWidget* editor = static_cast<SnpEffDatabasePropertyWidget*>(sender());
+    SnpEffDatabasePropertyWidget *editor = static_cast<SnpEffDatabasePropertyWidget *>(sender());
     CHECK(editor != NULL, );
     emit commitData(editor);
 }
 
-} // namespace LocalWorkflow
-} // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

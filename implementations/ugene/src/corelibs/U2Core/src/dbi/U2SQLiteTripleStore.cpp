@@ -33,15 +33,11 @@ namespace U2 {
 /* Triplet */
 /************************************************************************/
 U2Triplet::U2Triplet(const QString &_key, const QString &_role, const QString &_value)
-: id(-1), key(_key), role(_role), value(_value)
-{
-
+    : id(-1), key(_key), role(_role), value(_value) {
 }
 
-U2Triplet::U2Triplet(const U2Triplet& other)
-: id(other.id), key(other.key), role(other.role), value(other.value)
-{
-
+U2Triplet::U2Triplet(const U2Triplet &other)
+    : id(other.id), key(other.key), role(other.role), value(other.value) {
 }
 
 QString U2Triplet::getKey() const {
@@ -60,9 +56,7 @@ QString U2Triplet::getValue() const {
 /* Owner */
 /************************************************************************/
 Owner::Owner(const QString &_name)
-: id(-1), name(_name)
-{
-
+    : id(-1), name(_name) {
 }
 
 Owner::Owner(const Owner &owner) {
@@ -142,7 +136,7 @@ void U2SQLiteTripleStore::init(const QString &url, U2OpStatus &os) {
 }
 
 static int isEmptyCallback(void *o, int argc, char ** /*argv*/, char ** /*column*/) {
-    int* res = (int*)o;
+    int *res = (int *)o;
     *res = argc;
     return 0;
 }
@@ -151,7 +145,7 @@ bool U2SQLiteTripleStore::isEmpty(U2OpStatus &os) const {
     QMutexLocker lock(&db->lock);
     QByteArray showTablesQuery = "SELECT * FROM sqlite_master WHERE type='table';";
     int nTables = 0;
-    char* err;
+    char *err;
     int rc = sqlite3_exec(db->handle, showTablesQuery.constData(), isEmptyCallback, &nTables, &err);
     if (rc != SQLITE_OK) {
         os.setError(TripleStoreL10N::tr("Error checking SQLite database: %1!").arg(err));
@@ -164,7 +158,10 @@ bool U2SQLiteTripleStore::isEmpty(U2OpStatus &os) const {
 void U2SQLiteTripleStore::createTables(U2OpStatus &os) {
     QMutexLocker lock(&db->lock);
     SQLiteWriteQuery("CREATE TABLE Triplets (id INTEGER PRIMARY KEY AUTOINCREMENT, "
-        "key TEXT NOT NULL, role TEXT NOT NULL, value TEXT NOT NULL)", db, os).execute();
+                     "key TEXT NOT NULL, role TEXT NOT NULL, value TEXT NOT NULL)",
+                     db,
+                     os)
+        .execute();
 }
 
 void U2SQLiteTripleStore::shutdown(U2OpStatus &os) {
@@ -199,7 +196,7 @@ void U2SQLiteTripleStore::addValue(const U2Triplet &value, U2OpStatus &os) {
     this->getTripletId(value, found, os);
     CHECK_OP(os, );
 
-    if (!found) { // insert triplet
+    if (!found) {    // insert triplet
         this->insertTriplet(value, os);
         CHECK_OP(os, );
     }
@@ -302,4 +299,4 @@ void U2SQLiteTripleStore::removeValue(const U2Triplet &value, U2OpStatus &os) {
     q.execute();
 }
 
-} // U2
+}    // namespace U2

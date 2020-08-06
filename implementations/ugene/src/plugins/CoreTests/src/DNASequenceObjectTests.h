@@ -22,10 +22,11 @@
 #ifndef _U2_DNASEQUENCE_OBJECT_TESTS_H_
 #define _U2_DNASEQUENCE_OBJECT_TESTS_H_
 
-#include <U2Test/XMLTestUtils.h>
-
 #include <QDomElement>
+
 #include <U2Core/DNAAlphabet.h>
+
+#include <U2Test/XMLTestUtils.h>
 
 namespace U2 {
 
@@ -39,8 +40,7 @@ class GTest_DNASequenceSize : public XmlTest {
 
     QString objContextName;
 
-    int     seqSize;
-
+    int seqSize;
 };
 
 class GTest_DNASequenceAlphabet : public XmlTest {
@@ -61,10 +61,10 @@ class GTest_DNASequencePart : public XmlTest {
 
     ReportResult report();
 
-    QString     objContextName;
+    QString objContextName;
 
-    QByteArray  subseq;
-    int         startPos;
+    QByteArray subseq;
+    int startPos;
 };
 
 class GTest_DNASequenceAlphabetType : public XmlTest {
@@ -73,7 +73,7 @@ class GTest_DNASequenceAlphabetType : public XmlTest {
 
     ReportResult report();
 
-    QString         objContextName;
+    QString objContextName;
 
     DNAAlphabetType alphabetType;
 };
@@ -89,15 +89,14 @@ class GTest_DNASequenceAlphabetId : public XmlTest {
     QString alpId;
 };
 
-
 class GTest_DNASequenceQualityScores : public XmlTest {
     Q_OBJECT
-        SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNASequenceQualityScores, "check-sequence-quality-scores");
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNASequenceQualityScores, "check-sequence-quality-scores");
 
     ReportResult report();
 
-    QString     objContextName;
-    QByteArray  qualityScores;
+    QString objContextName;
+    QByteArray qualityScores;
 };
 
 class GTest_DNASequenceQualityValue : public XmlTest {
@@ -107,8 +106,8 @@ class GTest_DNASequenceQualityValue : public XmlTest {
     ReportResult report();
 
     QString objContextName;
-    int     pos;
-    int     expectedVal;
+    int pos;
+    int expectedVal;
 };
 
 class GTest_CompareDNASequenceQualityInTwoObjects : public XmlTest {
@@ -167,8 +166,7 @@ class GTest_DNAMulSequenceSize : public XmlTest {
 
     QString objContextName;
 
-    int     seqSize;
-
+    int seqSize;
 };
 
 class GTest_DNAMulSequencePart : public XmlTest {
@@ -177,40 +175,36 @@ class GTest_DNAMulSequencePart : public XmlTest {
 
     ReportResult report();
 
-    QString     objContextName;
+    QString objContextName;
 
-    QByteArray  subseq;
-    int         startPos;
-    QString     seqName;
-
+    QByteArray subseq;
+    int startPos;
+    QString seqName;
 };
 
 class GTest_DNAMulSequenceName : public XmlTest {
     Q_OBJECT
-        SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNAMulSequenceName, "check-Msequence-name");
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNAMulSequenceName, "check-Msequence-name");
 
     ReportResult report();
 
-    QString     objContextName;
+    QString objContextName;
 
-    QString     seqName;
-
+    QString seqName;
 };
 
 class GTest_DNAMulSequenceQuality : public XmlTest {
     Q_OBJECT
-        SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNAMulSequenceQuality, "check-Msequence-quality");
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNAMulSequenceQuality, "check-Msequence-quality");
 
     ReportResult report();
 
-    QString     objContextName;
+    QString objContextName;
 
-    QByteArray  expectedQuality;
-    int         startPos;
-    QString     seqName;
-
+    QByteArray expectedQuality;
+    int startPos;
+    QString seqName;
 };
-
 
 class GTest_DNASequencInMulSequence : public XmlTest {
     Q_OBJECT
@@ -220,8 +214,7 @@ class GTest_DNASequencInMulSequence : public XmlTest {
 
     QString objContextName;
 
-    int     seqInMSeq;
-
+    int seqInMSeq;
 };
 class GTest_DNAcompareMulSequencesInTwoObjects : public XmlTest {
     Q_OBJECT
@@ -251,11 +244,10 @@ class GTest_DNAcompareMulSequencesAlphabetIdInTwoObjects : public XmlTest {
     QString secondDocContextName;
 };
 
-
 class DNASequenceObjectTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-}//namespace
+}    // namespace U2
 #endif

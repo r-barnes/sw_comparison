@@ -32,14 +32,13 @@ namespace U2 {
 class WorkflowDumpPlugin : public Plugin {
     Q_OBJECT
 public:
-    WorkflowDumpPlugin ();
+    WorkflowDumpPlugin();
     //~WorkflowDumpPlugin ();
 
 private slots:
     void sl_dumpWorkers();
-
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

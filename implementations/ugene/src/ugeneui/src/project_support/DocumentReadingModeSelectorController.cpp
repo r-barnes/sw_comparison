@@ -19,34 +19,34 @@
  * MA 02110-1301, USA.
  */
 
+#include "DocumentReadingModeSelectorController.h"
+
 #include <U2Algorithm/DnaAssemblyAlgRegistry.h>
 
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentUtils.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Formats/DocumentFormatUtils.h>
 
 #include <U2Gui/HelpButton.h>
-#include <U2Core/QObjectScopedPointer.h>
 
-#include "DocumentReadingModeSelectorController.h"
 #include "ui_SequenceReadingModeSelectorDialog.h"
 
-namespace U2{
+namespace U2 {
 
-
-bool DocumentReadingModeSelectorController::adjustReadingMode(FormatDetectionResult& dr, bool forceOptions, bool optionsAlreadyChoosed) {
+bool DocumentReadingModeSelectorController::adjustReadingMode(FormatDetectionResult &dr, bool forceOptions, bool optionsAlreadyChoosed) {
     // only sequence reading mode options are supported today
 
-    // sequence reading: 
-        // 1. as separate sequences
-        // 2. as a single merged sequence
-        // 3. as a multiple sequence alignment
-        // 4. as reads to be aligned to reference
+    // sequence reading:
+    // 1. as separate sequences
+    // 2. as a single merged sequence
+    // 3. as a multiple sequence alignment
+    // 4. as reads to be aligned to reference
 
-    QVariantMap& props = dr.rawDataCheckResult.properties;
-    if(optionsAlreadyChoosed){
+    QVariantMap &props = dr.rawDataCheckResult.properties;
+    if (optionsAlreadyChoosed) {
         return true;
     }
     bool sequenceFound = props.value(RawDataCheckResult_Sequence).toBool();
@@ -59,13 +59,13 @@ bool DocumentReadingModeSelectorController::adjustReadingMode(FormatDetectionRes
     bool sequenceWithGaps = props.value(RawDataCheckResult_SequenceWithGaps).toBool();
     int minSequenceSize = props.value(RawDataCheckResult_MinSequenceSize).toInt();
     int maxSequenceSize = props.value(RawDataCheckResult_MinSequenceSize).toInt();
-    
+
     if (!sequenceFound) {
         return true;
     }
 
     if (!forceOptions) {
-        // if no multiple sequences -> no options, just 
+        // if no multiple sequences -> no options, just
         if (!multipleSequences) {
             return true;
         }
@@ -80,24 +80,24 @@ bool DocumentReadingModeSelectorController::adjustReadingMode(FormatDetectionRes
     d->setModal(true);
     ui.setupUi(d.data());
 
-    new HelpButton(d.data(), ui.buttonBox, "24742289");
+    new HelpButton(d.data(), ui.buttonBox, "");
 
     bool canBeShortReads = minSequenceSize > 0 && maxSequenceSize < 2000;
     bool haveReadAligners = !AppContext::getDnaAssemblyAlgRegistry()->getRegisteredAlgorithmIds().isEmpty();
     ui.refalignmentRB->setEnabled(canBeShortReads && haveReadAligners);
-    bool mostProbableAreShortReads = canBeShortReads && (dr.format!=NULL && dr.format->getFormatId() == BaseDocumentFormats::FASTQ);//TODO: move to separate function
-    ui.refalignmentRB->setChecked(ui.refalignmentRB->isEnabled() && mostProbableAreShortReads); 
+    bool mostProbableAreShortReads = canBeShortReads && (dr.format != NULL && dr.format->getFormatId() == BaseDocumentFormats::FASTQ);    //TODO: move to separate function
+    ui.refalignmentRB->setChecked(ui.refalignmentRB->isEnabled() && mostProbableAreShortReads);
 
-    bool canBeMsa = forceOptions || (multipleSequences && maxSequenceSize/(minSequenceSize+1) < 20);
+    bool canBeMsa = forceOptions || (multipleSequences && maxSequenceSize / (minSequenceSize + 1) < 20);
     ui.malignmentRB->setEnabled(canBeMsa);
     bool mostProbableIsMsa = sequenceWithGaps;
     ui.malignmentRB->setChecked(ui.malignmentRB->isEnabled() && mostProbableIsMsa);
 
     ui.previewEdit->setPlainText(dr.rawData);
-    
+
     const int rc = d->exec();
     CHECK(!d.isNull(), false);
-    
+
     if (rc == QDialog::Rejected) {
         return false;
     }
@@ -121,4 +121,4 @@ bool DocumentReadingModeSelectorController::adjustReadingMode(FormatDetectionRes
     return true;
 }
 
-} //namespace
+}    // namespace U2

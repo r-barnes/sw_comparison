@@ -19,13 +19,12 @@
  * MA 02110-1301, USA.
  */
 
-#include <math.h>
-
-#include <QGraphicsItem>
-
 #include <drivers/GTMouseDriver.h>
+#include <math.h>
 #include <primitives/GTWidget.h>
 #include <utils/GTThread.h>
+
+#include <QGraphicsItem>
 
 #include <U2Core/U2SafePoints.h>
 
@@ -38,21 +37,18 @@
 namespace U2 {
 using namespace HI;
 
-const int widthMin = 7;
-const int widthMax = 9;
-
 #define GT_CLASS_NAME "GTUtilsPhyTree"
 
 #define GT_METHOD_NAME "getNodes"
-QList<QGraphicsItem *> GTUtilsPhyTree::getNodes(HI::GUITestOpStatus &os, int width){
-    QList<QGraphicsItem *> result;
+QList<GraphicsButtonItem *> GTUtilsPhyTree::getNodes(HI::GUITestOpStatus &os) {
+    QList<GraphicsButtonItem *> result;
     QGraphicsView *treeView = qobject_cast<QGraphicsView *>(GTWidget::findWidget(os, "treeView"));
     GT_CHECK_RESULT(treeView, "treeView not found", result);
-
     QList<QGraphicsItem *> list = treeView->scene()->items();
-    foreach (QGraphicsItem *item, list) {
-        if (qRound(item->boundingRect().width()) == width) {
-            result.append(item);
+    for (QGraphicsItem *item : list) {
+        bool isNodeItem = item->data(NODE_TREE_ITEM_KIND_KEY).toBool();
+        if (isNodeItem) {
+            result.append((GraphicsButtonItem *)item);
         }
     }
     return result;
@@ -60,43 +56,48 @@ QList<QGraphicsItem *> GTUtilsPhyTree::getNodes(HI::GUITestOpStatus &os, int wid
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getSelectedNodes"
-QList<QGraphicsItem*> GTUtilsPhyTree::getSelectedNodes(HI::GUITestOpStatus &os){
-    return getNodes(os, widthMax);
+QList<GraphicsButtonItem *> GTUtilsPhyTree::getSelectedNodes(HI::GUITestOpStatus &os) {
+    QList<GraphicsButtonItem *> nodes = getNodes(os);
+    QList<GraphicsButtonItem *> selectedNodes;
+    for (auto node : nodes) {
+        if (node->getIsSelected()) {
+            selectedNodes << node;
+        }
+    }
+    return selectedNodes;
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getUnselectedNodes"
-QList<QGraphicsItem*> GTUtilsPhyTree::getUnselectedNodes(HI::GUITestOpStatus &os){
-    return getNodes(os, widthMin);
-}
-#undef GT_METHOD_NAME
-
-#define GT_METHOD_NAME "getNodes"
-QList<QGraphicsItem*> GTUtilsPhyTree::getNodes(HI::GUITestOpStatus &os){
-    QList<QGraphicsItem*> result;
-    result.append(getSelectedNodes(os));
-    result.append(getUnselectedNodes(os));
-    return result;
+QList<GraphicsButtonItem *> GTUtilsPhyTree::getUnselectedNodes(HI::GUITestOpStatus &os) {
+    QList<GraphicsButtonItem *> nodes = getNodes(os);
+    QList<GraphicsButtonItem *> unselectedNodes;
+    for (auto node : nodes) {
+        if (node->getIsSelected()) {
+            unselectedNodes << node;
+        }
+    }
+    return unselectedNodes;
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getLabels"
-QList<QGraphicsSimpleTextItem*> GTUtilsPhyTree::getLabels(HI::GUITestOpStatus &os, QGraphicsView *treeView){
-    QList<QGraphicsSimpleTextItem*> result;
-    if(treeView == NULL){
-        treeView = qobject_cast<QGraphicsView*>(GTWidget::findWidget(os, "treeView"));
+QList<QGraphicsSimpleTextItem *> GTUtilsPhyTree::getLabels(HI::GUITestOpStatus &os, QGraphicsView *treeView) {
+    QList<QGraphicsSimpleTextItem *> result;
+    if (treeView == NULL) {
+        treeView = qobject_cast<QGraphicsView *>(GTWidget::findWidget(os, "treeView"));
     }
     GT_CHECK_RESULT(treeView, "treeView not found", result);
-    QList<QGraphicsItem*> list = treeView->scene()->items();
+    QList<QGraphicsItem *> list = treeView->scene()->items();
 
-    foreach(QGraphicsItem* item, list){
-        QGraphicsSimpleTextItem* textItem = qgraphicsitem_cast<QGraphicsSimpleTextItem*>(item);
-        if(textItem){
+    foreach (QGraphicsItem *item, list) {
+        QGraphicsSimpleTextItem *textItem = qgraphicsitem_cast<QGraphicsSimpleTextItem *>(item);
+        if (textItem) {
             bool ok;
             QString s = textItem->text();
             s.toDouble(&ok);
-            if(!ok){
-                result<<textItem;
+            if (!ok) {
+                result << textItem;
             }
         }
     }
@@ -104,32 +105,32 @@ QList<QGraphicsSimpleTextItem*> GTUtilsPhyTree::getLabels(HI::GUITestOpStatus &o
 }
 #undef GT_METHOD_NAME
 
-QList<QGraphicsSimpleTextItem*> GTUtilsPhyTree::getVisiableLabels(HI::GUITestOpStatus &os, QGraphicsView *treeView){
-    QList<QGraphicsSimpleTextItem*> result;
-    foreach(QGraphicsSimpleTextItem* item, getLabels(os, treeView)){
-        if(item->isVisible()){
-            result<<item;
+QList<QGraphicsSimpleTextItem *> GTUtilsPhyTree::getVisibleLabels(HI::GUITestOpStatus &os, QGraphicsView *treeView) {
+    QList<QGraphicsSimpleTextItem *> result;
+    foreach (QGraphicsSimpleTextItem *item, getLabels(os, treeView)) {
+        if (item->isVisible()) {
+            result << item;
         }
     }
     return result;
 }
 
 #define GT_METHOD_NAME "getDistances"
-QList<QGraphicsSimpleTextItem*> GTUtilsPhyTree::getDistances(HI::GUITestOpStatus &os, QGraphicsView *treeView){
-    QList<QGraphicsSimpleTextItem*> result;
-    if(treeView == NULL){
-        treeView = qobject_cast<QGraphicsView*>(GTWidget::findWidget(os, "treeView"));
+QList<QGraphicsSimpleTextItem *> GTUtilsPhyTree::getDistances(HI::GUITestOpStatus &os, QGraphicsView *treeView) {
+    QList<QGraphicsSimpleTextItem *> result;
+    if (treeView == NULL) {
+        treeView = qobject_cast<QGraphicsView *>(GTWidget::findWidget(os, "treeView"));
     }
     GT_CHECK_RESULT(treeView, "treeView not found", result);
-    QList<QGraphicsItem*> list = treeView->scene()->items();
+    QList<QGraphicsItem *> list = treeView->scene()->items();
 
-    foreach(QGraphicsItem* item, list){
-        QGraphicsSimpleTextItem* textItem = qgraphicsitem_cast<QGraphicsSimpleTextItem*>(item);
-        if(textItem){
+    foreach (QGraphicsItem *item, list) {
+        QGraphicsSimpleTextItem *textItem = qgraphicsitem_cast<QGraphicsSimpleTextItem *>(item);
+        if (textItem) {
             bool ok;
             textItem->text().toDouble(&ok);
-            if(ok){
-                result<<textItem;
+            if (ok) {
+                result << textItem;
             }
         }
     }
@@ -137,26 +138,26 @@ QList<QGraphicsSimpleTextItem*> GTUtilsPhyTree::getDistances(HI::GUITestOpStatus
 }
 #undef GT_METHOD_NAME
 
-QList<QGraphicsSimpleTextItem*> GTUtilsPhyTree::getVisiableDistances(HI::GUITestOpStatus &os, QGraphicsView *treeView){
-    QList<QGraphicsSimpleTextItem*> result;
-    foreach(QGraphicsSimpleTextItem* item, getDistances(os, treeView)){
-        if(item->isVisible()){
-            result<<item;
+QList<QGraphicsSimpleTextItem *> GTUtilsPhyTree::getVisiableDistances(HI::GUITestOpStatus &os, QGraphicsView *treeView) {
+    QList<QGraphicsSimpleTextItem *> result;
+    foreach (QGraphicsSimpleTextItem *item, getDistances(os, treeView)) {
+        if (item->isVisible()) {
+            result << item;
         }
     }
     return result;
 }
 #define GT_METHOD_NAME "getDistancesValues"
-QList<double> GTUtilsPhyTree::getDistancesValues(HI::GUITestOpStatus &os){
+QList<double> GTUtilsPhyTree::getDistancesValues(HI::GUITestOpStatus &os) {
     QList<double> result;
-    QList<QGraphicsSimpleTextItem*> distList = getDistances(os);
+    QList<QGraphicsSimpleTextItem *> distList = getDistances(os);
 
-    foreach(QGraphicsSimpleTextItem* item, distList){
+    foreach (QGraphicsSimpleTextItem *item, distList) {
         bool ok;
         QString s = item->text();
         double d = s.toDouble(&ok);
-        if(ok){
-            result<<d;
+        if (ok) {
+            result << d;
         }
     }
 
@@ -165,12 +166,12 @@ QList<double> GTUtilsPhyTree::getDistancesValues(HI::GUITestOpStatus &os){
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getLabelsText"
-QStringList GTUtilsPhyTree::getLabelsText(HI::GUITestOpStatus &os){
+QStringList GTUtilsPhyTree::getLabelsText(HI::GUITestOpStatus &os) {
     QStringList result;
-    QList<QGraphicsSimpleTextItem*> labelList = getLabels(os);
+    QList<QGraphicsSimpleTextItem *> labelList = getLabels(os);
 
-    foreach(QGraphicsSimpleTextItem* item, labelList){
-        result<<item->text();
+    foreach (QGraphicsSimpleTextItem *item, labelList) {
+        result << item->text();
     }
 
     return result;
@@ -178,8 +179,8 @@ QStringList GTUtilsPhyTree::getLabelsText(HI::GUITestOpStatus &os){
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getGlobalCoord"
-QPoint GTUtilsPhyTree::getGlobalCoord(HI::GUITestOpStatus& os,QGraphicsItem *item){
-    QGraphicsView* treeView = qobject_cast<QGraphicsView*>(GTWidget::findWidget(os, "treeView"));
+QPoint GTUtilsPhyTree::getGlobalCoord(HI::GUITestOpStatus &os, QGraphicsItem *item) {
+    QGraphicsView *treeView = qobject_cast<QGraphicsView *>(GTWidget::findWidget(os, "treeView"));
     GT_CHECK_RESULT(treeView, "treeView not found", QPoint());
 
     QPointF sceneCoord = item->mapToScene(item->boundingRect().topLeft());
@@ -193,11 +194,22 @@ QPoint GTUtilsPhyTree::getGlobalCoord(HI::GUITestOpStatus& os,QGraphicsItem *ite
 
 #define GT_METHOD_NAME "clickNode"
 void GTUtilsPhyTree::clickNode(HI::GUITestOpStatus &os, GraphicsButtonItem *node) {
-    GT_CHECK(NULL != node, "Node to click is NULL");
+    GT_CHECK(node != nullptr, "Node to click is NULL");
     node->ensureVisible();
     GTThread::waitForMainThread();
-    GTMouseDriver::moveTo(getGlobalCoord(os, node));
+    GTMouseDriver::moveTo(getGlobalCoord(os, node) - QPoint(2, 0));
     GTMouseDriver::click();
+}
+#undef GT_METHOD_NAME
+
+#define GT_METHOD_NAME "doubleClickNode"
+void GTUtilsPhyTree::doubleClickNode(HI::GUITestOpStatus &os, GraphicsButtonItem *node) {
+    GT_CHECK(node != nullptr, "Node to doubleClickNode is NULL");
+    node->ensureVisible();
+    GTThread::waitForMainThread();
+    GTMouseDriver::moveTo(getGlobalCoord(os, node) - QPoint(2, 0));
+    GTMouseDriver::doubleClick();
+    GTThread::waitForMainThread();
 }
 #undef GT_METHOD_NAME
 
@@ -211,7 +223,7 @@ qreal GTUtilsPhyTree::getNodeDistance(HI::GUITestOpStatus &os, GraphicsButtonIte
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getTreeViewerUi"
-TreeViewerUI * GTUtilsPhyTree::getTreeViewerUi(HI::GUITestOpStatus &os) {
+TreeViewerUI *GTUtilsPhyTree::getTreeViewerUi(HI::GUITestOpStatus &os) {
     return GTWidget::findExactWidget<TreeViewerUI *>(os, "treeView", GTUtilsMdi::activeWindow(os));
 }
 #undef GT_METHOD_NAME
@@ -250,7 +262,7 @@ QList<qreal> GTUtilsPhyTree::getOrderedRectangularBranchesDistances(HI::GUITestO
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getRootRectangularNode"
-GraphicsButtonItem * GTUtilsPhyTree::getRootRectangularNode(HI::GUITestOpStatus &os) {
+GraphicsButtonItem *GTUtilsPhyTree::getRootRectangularNode(HI::GUITestOpStatus &os) {
     GraphicsRectangularBranchItem *rootBranch = getRootRectangularBranch(os);
     GT_CHECK_RESULT(NULL != rootBranch, "Root branch is NULL", NULL);
     return rootBranch->getButton();
@@ -258,7 +270,7 @@ GraphicsButtonItem * GTUtilsPhyTree::getRootRectangularNode(HI::GUITestOpStatus 
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getRootRectangularBranch"
-GraphicsRectangularBranchItem * GTUtilsPhyTree::getRootRectangularBranch(HI::GUITestOpStatus &os) {
+GraphicsRectangularBranchItem *GTUtilsPhyTree::getRootRectangularBranch(HI::GUITestOpStatus &os) {
     TreeViewerUI *treeViewerUi = getTreeViewerUi(os);
     GT_CHECK_RESULT(NULL != treeViewerUi, "TreeViewerUI is NULL", NULL);
 
@@ -318,4 +330,4 @@ bool GTUtilsPhyTree::rectangularBranchLessThan(GraphicsRectangularBranchItem *fi
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

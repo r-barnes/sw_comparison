@@ -43,12 +43,12 @@
 <context>
     <name>U2::DeviationGraphFactory</name>
     <message>
-        <location filename="../src/DeviationGraph.cpp" line="35"/>
+        <location filename="../src/DeviationGraph.cpp" line="36"/>
         <source>AT Deviation (A-T)/(A+T)</source>
         <translation>AT отклонение (A-T)/(A+T)</translation>
     </message>
     <message>
-        <location filename="../src/DeviationGraph.cpp" line="37"/>
+        <location filename="../src/DeviationGraph.cpp" line="38"/>
         <source>GC Deviation (G-C)/(G+C)</source>
         <translation>GC отклонение (G-C)/(G+C)</translation>
     </message>
@@ -64,7 +64,7 @@
 <context>
     <name>U2::KarlinGraphFactory</name>
     <message>
-        <location filename="../src/KarlinSignatureDifferenceGraph.cpp" line="37"/>
+        <location filename="../src/KarlinSignatureDifferenceGraph.cpp" line="36"/>
         <source>Karlin Signature Difference</source>
         <translation>Различия Karlin Signature</translation>
     </message>

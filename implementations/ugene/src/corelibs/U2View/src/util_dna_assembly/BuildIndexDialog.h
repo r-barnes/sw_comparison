@@ -22,31 +22,32 @@
 #ifndef _U2_BUILD_INDEX_DIALOG_H_
 #define _U2_BUILD_INDEX_DIALOG_H_
 
-#include <U2Core/GUrl.h>
 #include <ui_BuildIndexFromRefDialog.h>
 
 #include <QVariant>
+
+#include <U2Core/GUrl.h>
 
 namespace U2 {
 
 class DnaAssemblyAlgRegistry;
 class DnaAssemblyAlgorithmBuildIndexWidget;
 
-class BuildIndexDialog : public QDialog, private Ui_BuildIndexFromRefDialog    {
+class BuildIndexDialog : public QDialog, private Ui_BuildIndexFromRefDialog {
     Q_OBJECT
 
 public:
-    BuildIndexDialog(const DnaAssemblyAlgRegistry* registry, QWidget* p = NULL);
+    BuildIndexDialog(const DnaAssemblyAlgRegistry *registry, QWidget *p = NULL);
     const GUrl getRefSeqUrl();
     const QString getAlgorithmName();
     const QString getIndexFileName();
-    QMap<QString,QVariant> getCustomSettings();
+    QMap<QString, QVariant> getCustomSettings();
 
 private:
     const DnaAssemblyAlgRegistry *assemblyRegistry;
     DnaAssemblyAlgorithmBuildIndexWidget *customGUI;
     static QString genomePath;
-    void buildIndexUrl(const GUrl& url);
+    void buildIndexUrl(const GUrl &url);
     void updateState();
     void addGuiExtension();
     void accept();
@@ -57,6 +58,6 @@ private slots:
     void sl_onAlgorithmChanged(const QString &text);
 };
 
-} // namespace
+}    // namespace U2
 
-#endif //  _U2_BUILD_INDEX_DIALOG_H_
+#endif    //  _U2_BUILD_INDEX_DIALOG_H_

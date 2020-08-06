@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ETSProjectViewItemsContoller.h"
+
 #include <QMainWindow>
 #include <QMessageBox>
 
@@ -29,6 +31,7 @@
 #include <U2Core/DocumentSelection.h>
 #include <U2Core/GObjectSelection.h>
 #include <U2Core/GObjectUtils.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/SelectionModel.h>
 #include <U2Core/SelectionUtils.h>
 #include <U2Core/U2OpStatusUtils.h>
@@ -37,68 +40,56 @@
 
 #include <U2Gui/MainWindow.h>
 #include <U2Gui/ProjectView.h>
-#include <U2Core/QObjectScopedPointer.h>
 
-#include "ETSProjectViewItemsContoller.h"
 #include "ExternalToolSupportSettings.h"
 #include "ExternalToolSupportSettingsController.h"
-#include "blast/FormatDBSupport.h"
-#include "blast/FormatDBSupportRunDialog.h"
-#include "blast/FormatDBSupportTask.h"
+#include "blast_plus/FormatDBSupport.h"
+#include "blast_plus/FormatDBSupportRunDialog.h"
+#include "blast_plus/FormatDBSupportTask.h"
 
 namespace U2 {
 
-ETSProjectViewItemsContoller::ETSProjectViewItemsContoller(QObject* p) : QObject(p) {
-    formatDBOnSelectionAction = new ExternalToolSupportAction(tr("FormatDB..."), this, QStringList(FormatDBSupport::ET_FORMATDB_ID));
+ETSProjectViewItemsContoller::ETSProjectViewItemsContoller(QObject *p)
+    : QObject(p) {
     makeBLASTDBOnSelectionAction = new ExternalToolSupportAction(tr("BLAST+ make DB..."), this, QStringList(FormatDBSupport::ET_MAKEBLASTDB_ID));
-    formatDBOnSelectionAction->setObjectName(FormatDBSupport::ET_FORMATDB_ID);
-    connect(formatDBOnSelectionAction,SIGNAL(triggered()), SLOT(sl_runFormatDBOnSelection()));
-    connect(makeBLASTDBOnSelectionAction,SIGNAL(triggered()), SLOT(sl_runFormatDBOnSelection()));
+    connect(makeBLASTDBOnSelectionAction, SIGNAL(triggered()), SLOT(sl_runMakeBlastDbOnSelection()));
 
-    ProjectView* pv = AppContext::getProjectView();
-    assert(pv!=NULL);
-    connect(pv, SIGNAL(si_onDocTreePopupMenuRequested(QMenu&)), SLOT(sl_addToProjectViewMenu(QMenu&)));
+    ProjectView *pv = AppContext::getProjectView();
+    assert(pv != NULL);
+    connect(pv, SIGNAL(si_onDocTreePopupMenuRequested(QMenu &)), SLOT(sl_addToProjectViewMenu(QMenu &)));
 }
 
-void ETSProjectViewItemsContoller::sl_addToProjectViewMenu(QMenu& m) {
+void ETSProjectViewItemsContoller::sl_addToProjectViewMenu(QMenu &m) {
+    ProjectView *pv = AppContext::getProjectView();
+    assert(pv != NULL);
 
-    ProjectView* pv = AppContext::getProjectView();
-    assert(pv!=NULL);
-
-    MultiGSelection ms; //ms.addSelection(pv->getGObjectSelection());
+    MultiGSelection ms;    //ms.addSelection(pv->getGObjectSelection());
     ms.addSelection(pv->getDocumentSelection());
-    QList<Document*> set = SelectionUtils::getSelectedDocs(ms);
-    bool hasFastaDocs=false;
-    foreach(Document* doc,set){
-        if(doc->getDocumentFormatId() == BaseDocumentFormats::FASTA){
-            hasFastaDocs=true;
+    QList<Document *> set = SelectionUtils::getSelectedDocs(ms);
+    bool hasFastaDocs = false;
+    foreach (Document *doc, set) {
+        if (doc->getDocumentFormatId() == BaseDocumentFormats::FASTA) {
+            hasFastaDocs = true;
             break;
         }
     }
     if (hasFastaDocs) {
-        QMenu* subMenu = m.addMenu(tr("BLAST"));
+        QMenu *subMenu = m.addMenu(tr("BLAST"));
         subMenu->menuAction()->setObjectName(ACTION_BLAST_SUBMENU);
         subMenu->setIcon(QIcon(":external_tool_support/images/ncbi.png"));
-        subMenu->addAction(formatDBOnSelectionAction);
         subMenu->addAction(makeBLASTDBOnSelectionAction);
     }
 }
 
-void ETSProjectViewItemsContoller::sl_runFormatDBOnSelection(){
-    ExternalToolSupportAction* s = qobject_cast<ExternalToolSupportAction*>(sender());
+void ETSProjectViewItemsContoller::sl_runMakeBlastDbOnSelection() {
+    ExternalToolSupportAction *s = qobject_cast<ExternalToolSupportAction *>(sender());
     assert(s != NULL);
-    assert((s->getToolIds().contains(FormatDBSupport::ET_FORMATDB_ID))||(s->getToolIds().contains(FormatDBSupport::ET_MAKEBLASTDB_ID)));
     //Check that formatDB and temporary folder path defined
-    if (AppContext::getExternalToolRegistry()->getById(s->getToolIds().at(0))->getPath().isEmpty()){
+    if (AppContext::getExternalToolRegistry()->getById(s->getToolIds().at(0))->getPath().isEmpty()) {
         QObjectScopedPointer<QMessageBox> msgBox = new QMessageBox;
         QString toolName = AppContext::getExternalToolRegistry()->getById(s->getToolIds().at(0))->getName();
-        if(s->getToolIds().at(0) == FormatDBSupport::ET_FORMATDB_ID){
-            msgBox->setWindowTitle("BLAST " + toolName);
-            msgBox->setText(tr("Path for BLAST %1 tool not selected.").arg(toolName));
-        }else{
-            msgBox->setWindowTitle("BLAST+ "+s->getToolIds().at(0));
-            msgBox->setText(tr("Path for BLAST+ %1 tool not selected.").arg(toolName));
-        }
+        msgBox->setWindowTitle("BLAST+ " + s->getToolIds().at(0));
+        msgBox->setText(tr("Path for BLAST+ %1 tool not selected.").arg(toolName));
         msgBox->setInformativeText(tr("Do you want to select it now?"));
         msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
         msgBox->setDefaultButton(QMessageBox::Yes);
@@ -106,42 +97,42 @@ void ETSProjectViewItemsContoller::sl_runFormatDBOnSelection(){
         CHECK(!msgBox.isNull(), );
 
         switch (ret) {
-           case QMessageBox::Yes:
-               AppContext::getAppSettingsGUI()->showSettingsDialog(ExternalToolSupportSettingsPageId);
-               break;
-           case QMessageBox::No:
-               return;
-               break;
-           default:
-               assert(false);
-               break;
-         }
+        case QMessageBox::Yes:
+            AppContext::getAppSettingsGUI()->showSettingsDialog(ExternalToolSupportSettingsPageId);
+            break;
+        case QMessageBox::No:
+            return;
+            break;
+        default:
+            assert(false);
+            break;
+        }
     }
-    if (AppContext::getExternalToolRegistry()->getById(s->getToolIds().at(0))->getPath().isEmpty()){
+    if (AppContext::getExternalToolRegistry()->getById(s->getToolIds().at(0))->getPath().isEmpty()) {
         return;
     }
     U2OpStatus2Log os(LogLevel_DETAILS);
     ExternalToolSupportSettings::checkTemporaryDir(os);
     CHECK_OP(os, );
 
-    ProjectView* pv = AppContext::getProjectView();
-    assert(pv!=NULL);
+    ProjectView *pv = AppContext::getProjectView();
+    assert(pv != NULL);
 
     MultiGSelection ms;
     ms.addSelection(pv->getGObjectSelection());
     ms.addSelection(pv->getDocumentSelection());
     FormatDBSupportTaskSettings settings;
-    foreach(Document* doc,pv->getDocumentSelection()->getSelectedDocuments()){
-        if(doc->getDocumentFormatId() == BaseDocumentFormats::FASTA){
+    foreach (Document *doc, pv->getDocumentSelection()->getSelectedDocuments()) {
+        if (doc->getDocumentFormatId() == BaseDocumentFormats::FASTA) {
             settings.inputFilesPath.append(doc->getURLString());
 
-            const QList<GObject*>& objects = doc->getObjects();
-            SAFE_POINT(!objects.isEmpty( ), "FASTA document: sequence objects count error", );
-            U2SequenceObject *seqObj = dynamic_cast<U2SequenceObject*>(objects.first());
-            if ( NULL != seqObj ) {
+            const QList<GObject *> &objects = doc->getObjects();
+            SAFE_POINT(!objects.isEmpty(), "FASTA document: sequence objects count error", );
+            U2SequenceObject *seqObj = dynamic_cast<U2SequenceObject *>(objects.first());
+            if (NULL != seqObj) {
                 SAFE_POINT(seqObj->getAlphabet() != NULL,
                            QString("Alphabet for '%1' is not set").arg(seqObj->getGObjectName()), );
-                const DNAAlphabet* alphabet = seqObj->getAlphabet();
+                const DNAAlphabet *alphabet = seqObj->getAlphabet();
                 settings.isInputAmino = alphabet->isAmino();
             }
         }
@@ -152,11 +143,11 @@ void ETSProjectViewItemsContoller::sl_runFormatDBOnSelection(){
     formatDBRunDialog->exec();
     CHECK(!formatDBRunDialog.isNull(), );
 
-    if (formatDBRunDialog->result() != QDialog::Accepted){
+    if (formatDBRunDialog->result() != QDialog::Accepted) {
         return;
     }
-    FormatDBSupportTask* formatDBSupportTask = new FormatDBSupportTask(toolId, settings);
+    FormatDBSupportTask *formatDBSupportTask = new FormatDBSupportTask(toolId, settings);
     AppContext::getTaskScheduler()->registerTopLevelTask(formatDBSupportTask);
 }
 
-}//namespace
+}    // namespace U2

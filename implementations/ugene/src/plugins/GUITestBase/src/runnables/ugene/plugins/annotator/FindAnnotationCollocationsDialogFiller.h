@@ -22,21 +22,23 @@
 #ifndef _U2_FIND_ANNOTATION_COLLOCATIONS_DIALOG_FILLER_H_
 #define _U2_FIND_ANNOTATION_COLLOCATIONS_DIALOG_FILLER_H_
 
-#include "utils/GTUtilsDialog.h"
-
 #include <QToolButton>
+
+#include "utils/GTUtilsDialog.h"
 
 namespace U2 {
 using namespace HI;
 
 class FindAnnotationCollocationsDialogFiller : public Filler {
 public:
-    FindAnnotationCollocationsDialogFiller(HI::GUITestOpStatus &os): Filler(os, "FindAnnotationCollocationsDialog"){}
+    FindAnnotationCollocationsDialogFiller(HI::GUITestOpStatus &os)
+        : Filler(os, "FindAnnotationCollocationsDialog") {
+    }
     void commonScenario();
-    QToolButton* getPlusButton() const;
-    QList<QToolButton*> getMinusButtons() const;
+    QToolButton *getPlusButton() const;
+    QList<QToolButton *> getMinusButtons() const;
 };
 
-} //namespace U2
+}    //namespace U2
 
-#endif // _U2_FIND_ANNOTATION_COLLOCATIONS_DIALOG_FILLER_H_
+#endif    // _U2_FIND_ANNOTATION_COLLOCATIONS_DIALOG_FILLER_H_

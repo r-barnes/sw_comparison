@@ -33,7 +33,7 @@ namespace U2 {
 #define ROWS_LIST_ATTR "rows"
 #define FORCE_USE_UGENE_ALIGNER_ATTR "useUgeneAligner"
 
-void GTest_Realign::init(XMLTestFormat* tf, const QDomElement& el) {
+void GTest_Realign::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     forceUseUgeneAligner = false;
@@ -52,7 +52,7 @@ void GTest_Realign::init(XMLTestFormat* tf, const QDomElement& el) {
 
     QStringList rowsIndexesToAlignStringList = rows.split(",");
     bool conversionIsOk = false;
-    foreach(const QString & str, rowsIndexesToAlignStringList) {
+    foreach (const QString &str, rowsIndexesToAlignStringList) {
         qint64 rowIndex = str.toUInt(&conversionIsOk);
         if (!conversionIsOk) {
             wrongValue(ROWS_LIST_ATTR);
@@ -74,25 +74,25 @@ void GTest_Realign::prepare() {
         return;
     }
 
-    QList<GObject*> list = doc->findGObjectByType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT);
+    QList<GObject *> list = doc->findGObjectByType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT);
     if (list.size() == 0) {
         stateInfo.setError(QString("container of object with type \"%1\" is empty").arg(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT));
         return;
     }
 
-    GObject* obj = list.first();
+    GObject *obj = list.first();
     if (obj == NULL) {
         stateInfo.setError(QString("object with type \"%1\" not found").arg(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT));
         return;
     }
     assert(obj != NULL);
-    msaObj = qobject_cast<MultipleSequenceAlignmentObject*>(obj);
+    msaObj = qobject_cast<MultipleSequenceAlignmentObject *>(obj);
     if (msaObj == NULL) {
         stateInfo.setError(QString("error can't cast to multiple alignment from GObject"));
         return;
     }
     QSet<qint64> rowIdsToRealign;
-    foreach(const qint64 index, rowsIndexesToAlign) {
+    foreach (const qint64 index, rowsIndexesToAlign) {
         rowIdsToRealign.insert(msaObj->getMultipleAlignment()->getRowsIds().at(index));
     }
     realignTask = new RealignSequencesInAlignmentTask(msaObj, rowIdsToRealign);
@@ -113,10 +113,10 @@ void GTest_Realign::cleanup() {
     XmlTest::cleanup();
 }
 
-QList<XMLTestFactory*> RealignTests::createTestFactories() {
-    QList<XMLTestFactory*> res;
+QList<XMLTestFactory *> RealignTests::createTestFactories() {
+    QList<XMLTestFactory *> res;
     res.append(GTest_Realign::createFactory());
     return res;
 }
 
-}
+}    // namespace U2

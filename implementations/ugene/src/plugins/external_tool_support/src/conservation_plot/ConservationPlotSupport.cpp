@@ -20,12 +20,13 @@
  */
 
 #include "ConservationPlotSupport.h"
-#include "python/PythonSupport.h"
-#include "R/RSupport.h"
-#include "utils/ExternalToolUtils.h"
 
 #include <U2Core/AppContext.h>
 #include <U2Core/Settings.h>
+
+#include "R/RSupport.h"
+#include "python/PythonSupport.h"
+#include "utils/ExternalToolUtils.h"
 
 namespace U2 {
 
@@ -34,9 +35,8 @@ const QString ConservationPlotSupport::ET_CONSERVATION_PLOT_ID = "USUPP_CONSERVA
 const QString ConservationPlotSupport::CONSERVATION_DIR_NAME = "phastCons";
 const QString ConservationPlotSupport::CONSERVATION_DATA_NAME = "conservation_data";
 
-ConservationPlotSupport::ConservationPlotSupport(const QString& id, const QString &name)
-: ExternalTool(id, name, "")
-{
+ConservationPlotSupport::ConservationPlotSupport(const QString &id, const QString &name)
+    : ExternalTool(id, name, "") {
     initialize();
 }
 
@@ -59,7 +59,7 @@ void ConservationPlotSupport::initialize() {
     validMessage = "conservation_plot.py ";
     validationArguments << "--version";
 
-    versionRegExp=QRegExp(executableFileName + " (\\d+\\.\\d+)");
+    versionRegExp = QRegExp(executableFileName + " (\\d+\\.\\d+)");
 
     ExternalToolUtils::addDefaultCistromeDirToSettings();
     ExternalToolUtils::addCistromeDataPath(CONSERVATION_DATA_NAME, CONSERVATION_DIR_NAME, true);
@@ -67,4 +67,4 @@ void ConservationPlotSupport::initialize() {
     muted = true;
 }
 
-} // U2
+}    // namespace U2

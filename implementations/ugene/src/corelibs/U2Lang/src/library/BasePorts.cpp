@@ -72,5 +72,5 @@ const QString BasePorts::IN_ASSEMBLY_PORT_ID() {
     return "in-assembly";
 }
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

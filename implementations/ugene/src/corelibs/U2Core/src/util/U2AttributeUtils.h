@@ -22,8 +22,8 @@
 #ifndef _U2_ATTRIBUTE_UTILS_H_
 #define _U2_ATTRIBUTE_UTILS_H_
 
-#include <U2Core/U2Type.h>
 #include <U2Core/U2Attribute.h>
+#include <U2Core/U2Type.h>
 
 namespace U2 {
 
@@ -39,29 +39,27 @@ class U2OpStatus;
 class U2CORE_EXPORT U2AttributeUtils : public QObject {
     Q_OBJECT
 private:
-    U2AttributeUtils(){}
+    U2AttributeUtils() {
+    }
+
 public:
+    static U2IntegerAttribute findIntegerAttribute(U2AttributeDbi *adbi, const U2DataId &objectId, const QString &name, U2OpStatus &os);
 
-    static U2IntegerAttribute findIntegerAttribute(U2AttributeDbi* adbi, const U2DataId& objectId, const QString& name, U2OpStatus& os);
+    static U2RealAttribute findRealAttribute(U2AttributeDbi *adbi, const U2DataId &objectId, const QString &name, U2OpStatus &os);
 
-    static U2RealAttribute findRealAttribute(U2AttributeDbi* adbi, const U2DataId& objectId, const QString& name, U2OpStatus& os);
+    static U2ByteArrayAttribute findByteArrayAttribute(U2AttributeDbi *adbi, const U2DataId &objectId, const QString &name, U2OpStatus &os);
 
-    static U2ByteArrayAttribute findByteArrayAttribute(U2AttributeDbi* adbi, const U2DataId& objectId, const QString& name, U2OpStatus& os);
-
-    static U2StringAttribute findStringAttribute(U2AttributeDbi* adbi, const U2DataId& objectId, const QString& name, U2OpStatus& os);
+    static U2StringAttribute findStringAttribute(U2AttributeDbi *adbi, const U2DataId &objectId, const QString &name, U2OpStatus &os);
 
     static void init(U2Attribute &attr, const U2Object &obj, const QString &name);
 
-    static void removeAttribute(U2AttributeDbi* adbi, const U2DataId& attrId, U2OpStatus& os);
+    static void removeAttribute(U2AttributeDbi *adbi, const U2DataId &attrId, U2OpStatus &os);
 
-    static void copyObjectAttributes(const U2DataId &srcObjId, const U2DataId &dstObjId,
-        U2AttributeDbi *srcAttributeDbi, U2AttributeDbi *dstAttributeDbi,
-        U2OpStatus &os);
+    static void copyObjectAttributes(const U2DataId &srcObjId, const U2DataId &dstObjId, U2AttributeDbi *srcAttributeDbi, U2AttributeDbi *dstAttributeDbi, U2OpStatus &os);
 
     static void copyObjectAttributes(const U2EntityRef &srcObjRef, const U2EntityRef &dstObjRef, U2OpStatus &os);
 };
 
-} //namespace
-
+}    // namespace U2
 
 #endif

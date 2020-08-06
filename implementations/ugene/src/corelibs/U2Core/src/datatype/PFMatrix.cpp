@@ -20,21 +20,23 @@
  */
 
 #include "PFMatrix.h"
-#include "DIProperties.h"
 
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/U2OpStatusUtils.h>
 
+#include "DIProperties.h"
 
 namespace U2 {
 
-JasparInfo::JasparInfo(): properties(QMap<QString, QString>()) {
+JasparInfo::JasparInfo()
+    : properties(QMap<QString, QString>()) {
 }
 
-JasparInfo::JasparInfo(const QMap<QString, QString>& props): properties(props) {
+JasparInfo::JasparInfo(const QMap<QString, QString> &props)
+    : properties(props) {
 }
 
-JasparInfo::JasparInfo(const QString& line) {
+JasparInfo::JasparInfo(const QString &line) {
     QStringList parsedData = line.split(";");
     QString idData = parsedData.first();
     QStringList base = idData.split(QRegExp("\\s"));
@@ -65,14 +67,15 @@ QMap<QString, QString> JasparInfo::getProperties() const {
     return properties;
 }
 
-PFMatrix::PFMatrix(const MultipleSequenceAlignment &align, PFMatrixType _type): type(_type) {
+PFMatrix::PFMatrix(const MultipleSequenceAlignment &align, PFMatrixType _type)
+    : type(_type) {
     assert(align->hasEqualLength());
     const int sequenceLength = align->getMsaRows().first()->getUngappedLength();
     length = (type == PFM_MONONUCLEOTIDE) ? sequenceLength : sequenceLength - 1;
-    assert (length > 0);
+    assert(length > 0);
     int size = (type == PFM_MONONUCLEOTIDE) ? 4 : 16;
     data.resize(size * length);
-    memset(data.data(), 0, size*length*sizeof(int));
+    memset(data.data(), 0, size * length * sizeof(int));
     U2OpStatus2Log os;
     if (type == PFM_MONONUCLEOTIDE) {
         for (int i = 0, n = align->getNumRows(); i < n; i++) {
@@ -87,28 +90,29 @@ PFMatrix::PFMatrix(const MultipleSequenceAlignment &align, PFMatrixType _type): 
             const QByteArray row = align->getMsaRow(i)->getSequence().seq;
             for (int j = 0; j < length; j++) {
                 char curr = row[j];
-                char next = row[j+1];
+                char next = row[j + 1];
                 data[DiProperty::index(curr, next) * length + j]++;
             }
         }
     }
 }
 
-PFMatrix::PFMatrix(const QList<DNASequence *> &seq, PFMatrixType _type) : type(_type) {
+PFMatrix::PFMatrix(const QList<DNASequence *> &seq, PFMatrixType _type)
+    : type(_type) {
     assert(seq.length() > 0);
 
     length = seq[0]->length();
     for (int i = 0, n = seq.length(); i < n; i++) {
-        assert (seq[i]->alphabet->getType() == DNAAlphabet_NUCL);
-        assert (length == seq[i]->length());
+        assert(seq[i]->alphabet->getType() == DNAAlphabet_NUCL);
+        assert(length == seq[i]->length());
     }
     int size = (type == PFM_MONONUCLEOTIDE) ? 4 : 16;
     length = (type == PFM_MONONUCLEOTIDE) ? seq[0]->length() : seq[0]->length() - 1;
     data.resize(size * length);
-    memset(data.data(), 0, size*length*sizeof(int));
+    memset(data.data(), 0, size * length * sizeof(int));
     if (type == PFM_MONONUCLEOTIDE) {
         for (int i = 0, n = seq.size(); i < n; i++) {
-            const QByteArray& row = seq[i]->seq;
+            const QByteArray &row = seq[i]->seq;
             for (int j = 0; j < length; j++) {
                 char curr = row[j];
                 data[DiProperty::index(curr) * length + j]++;
@@ -116,53 +120,53 @@ PFMatrix::PFMatrix(const QList<DNASequence *> &seq, PFMatrixType _type) : type(_
         }
     } else {
         for (int i = 0, n = seq.size(); i < n; i++) {
-            const QByteArray& row = seq[i]->seq;
+            const QByteArray &row = seq[i]->seq;
             for (int j = 0; j < length; j++) {
                 char curr = row[j];
-                char next = row[j+1];
+                char next = row[j + 1];
                 data[DiProperty::index(curr, next) * length + j]++;
             }
         }
     }
 }
 
-PFMatrix::PFMatrix(const QVarLengthArray<int>& _data, const PFMatrixType _type):
-    type(_type) {
-    assert (_data.size() % 4 == 0);
+PFMatrix::PFMatrix(const QVarLengthArray<int> &_data, const PFMatrixType _type)
+    : type(_type) {
+    assert(_data.size() % 4 == 0);
     if (_type == PFM_DINUCLEOTIDE) {
-        assert (_data.size() % 16 == 0);
+        assert(_data.size() % 16 == 0);
     }
     data = _data;
     length = (_type == PFM_MONONUCLEOTIDE) ? (_data.size() / 4) : (_data.size() / 16);
 }
 
-PFMatrix PFMatrix::convertDi2Mono(const PFMatrix& source) {
-    assert (source.getType() == PFM_DINUCLEOTIDE);
+PFMatrix PFMatrix::convertDi2Mono(const PFMatrix &source) {
+    assert(source.getType() == PFM_DINUCLEOTIDE);
     int size = 4;
     int len = source.getLength();
-    QVarLengthArray<int> matrix(size*(len+1));
-    memset(matrix.data(), 0, size*(len+1)*sizeof(int));
+    QVarLengthArray<int> matrix(size * (len + 1));
+    memset(matrix.data(), 0, size * (len + 1) * sizeof(int));
 
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < len; j++) {
             for (int k = 0; k < 4; k++) {
-                matrix[i*(len+1) + j] += source.data[source.index((i << 2) + k, j)];
+                matrix[i * (len + 1) + j] += source.data[source.index((i << 2) + k, j)];
             }
         }
         for (int k = 0; k < 4; k++) {
-            matrix[i*(len+1) + len] += source.data[source.index((k << 2) + i, len - 1)];
+            matrix[i * (len + 1) + len] += source.data[source.index((k << 2) + i, len - 1)];
         }
     }
     return PFMatrix(matrix, PFM_MONONUCLEOTIDE);
 }
 
-
 int PFMatrix::index(int row, int column) const {
-    assert (row >= 0);
-    assert (row < 16);
-    if (type == PFM_MONONUCLEOTIDE) assert (row < 4);
-    assert (column >= 0);
-    assert (column < length);
+    assert(row >= 0);
+    assert(row < 16);
+    if (type == PFM_MONONUCLEOTIDE)
+        assert(row < 4);
+    assert(column >= 0);
+    assert(column < length);
     return row * length + column;
 }
 
@@ -179,7 +183,7 @@ int PFMatrix::getValue(int row, int column) const {
     return data[pos];
 }
 
-void PFMatrix::setInfo(const U2::JasparInfo &in){
+void PFMatrix::setInfo(const U2::JasparInfo &in) {
     info = in;
 }
 
@@ -191,4 +195,4 @@ QMap<QString, QString> PFMatrix::getProperties() const {
     return info.getProperties();
 }
 
-}
+}    // namespace U2

@@ -36,7 +36,7 @@ public:
     SettingsController(WizardController *wc, SettingsWidget *sw);
     virtual ~SettingsController();
 
-    virtual QWidget * createGUI(U2OpStatus &os);
+    virtual QWidget *createGUI(U2OpStatus &os);
 
     static const QString TYPE_URL;
 private slots:
@@ -45,13 +45,13 @@ private slots:
 
 private:
     SettingsWidget *sw;
-    QLineEdit* lineEdit;
+    QLineEdit *lineEdit;
 
 private:
-    QWidget* createUrlSettingsWidget(U2OpStatus &os);
+    QWidget *createUrlSettingsWidget(U2OpStatus &os);
     QString getSettingValue();
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_SETTINGS_CONTROLLER_H_
+#endif    // _U2_SETTINGS_CONTROLLER_H_

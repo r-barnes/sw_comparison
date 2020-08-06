@@ -19,27 +19,25 @@
  * MA 02110-1301, USA.
  */
 
+#include "MultipleSequenceAlignmentWalker.h"
+
 #include <U2Core/L10n.h>
 #include <U2Core/MultipleSequenceAlignmentObject.h>
 #include <U2Core/U2OpStatus.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "MultipleSequenceAlignmentWalker.h"
 
 namespace U2 {
 
 class RowWalker {
 public:
     RowWalker(const MultipleSequenceAlignmentRow &row, char gapChar)
-    : row(row), gaps(row->getGapModel()), seqPos(0), gapChar(gapChar)
-    {
-
+        : row(row), gaps(row->getGapModel()), seqPos(0), gapChar(gapChar) {
     }
 
     QByteArray nextData(int startPos, int length, U2OpStatus &os) {
         QByteArray result = row->getSequence().constSequence().mid(seqPos, length);
 
-        if (gaps.isEmpty()) { // add trailing gaps if it is possible
+        if (gaps.isEmpty()) {    // add trailing gaps if it is possible
             seqPos += result.length();
             return result + gapsBytes(length - result.length());
         }
@@ -62,7 +60,7 @@ public:
         }
         CHECK_OP(os, "");
 
-        if (result.length() < length) { // add trailing gaps if it is possible
+        if (result.length() < length) {    // add trailing gaps if it is possible
             gapsInserted += length - result.length();
             result += gapsBytes(length - result.length());
         }
@@ -98,9 +96,8 @@ private:
             outRegion = U2MsaGap(endPos + 1, outRegionLength);
         }
 
-        SAFE_POINT_EXT((startPos + length >= inRegion.offset + inRegion.gap)
-                    && (inRegion.gap + outRegion.gap == gap.gap),
-                    os.setError(L10N::internalError() + MultipleSequenceAlignmentObject::tr(" Incorrect gap splitting")), );
+        SAFE_POINT_EXT((startPos + length >= inRegion.offset + inRegion.gap) && (inRegion.gap + outRegion.gap == gap.gap),
+                       os.setError(L10N::internalError() + MultipleSequenceAlignmentObject::tr(" Incorrect gap splitting")), );
     }
 
     QByteArray gapsBytes(int length) const {
@@ -118,9 +115,8 @@ private:
 /* MultipleSequenceAlignmentWalker */
 /************************************************************************/
 MultipleSequenceAlignmentWalker::MultipleSequenceAlignmentWalker(const MultipleSequenceAlignment &msa, char gapChar)
-: msa(msa), currentOffset(0)
-{
-    for (int i=0; i<msa->getNumRows(); i++) {
+    : msa(msa), currentOffset(0) {
+    for (int i = 0; i < msa->getNumRows(); i++) {
         rowWalkerList << new RowWalker(msa->getMsaRow(i), gapChar);
     }
 }
@@ -141,7 +137,7 @@ QList<QByteArray> MultipleSequenceAlignmentWalker::nextData(int length, U2OpStat
     int charsRemain = msa->getLength() - currentOffset;
     int chunkSize = (charsRemain < length) ? charsRemain : length;
 
-    for (int i=0; i<msa->getNumRows(); i++) {
+    for (int i = 0; i < msa->getNumRows(); i++) {
         QByteArray rowBytes = rowWalkerList[i]->nextData(currentOffset, chunkSize, os);
         CHECK_OP(os, QList<QByteArray>());
         result << rowBytes;
@@ -150,4 +146,4 @@ QList<QByteArray> MultipleSequenceAlignmentWalker::nextData(int length, U2OpStat
     return result;
 }
 
-} // U2
+}    // namespace U2

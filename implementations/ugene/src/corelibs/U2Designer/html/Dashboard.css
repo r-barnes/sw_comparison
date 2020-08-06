@@ -20,7 +20,7 @@
  */
 
 body {
-    background: url("qrc:///U2Designer/images/background.png") repeat scroll 0% 0% transparent;
+    background: url("qrc:///U2Designer/images/background.png") repeat scroll 0 0 transparent;
 }
 
 #wrapper {
@@ -40,7 +40,7 @@ body {
 }
 
 .widget {
-    width:  auto;
+    width: auto;
     height: auto;
 
     position: relative;
@@ -69,7 +69,7 @@ body {
 }
 
 .widget-content > :last-child {
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 .dash-tab-name {
@@ -77,14 +77,14 @@ body {
 }
 
 .dash-menu-line {
-    background: url("qrc:///U2Designer/images/background-menu.png") repeat scroll 0% 0% transparent;
+    background: url("qrc:///U2Designer/images/background-menu.png") repeat scroll 0 0 transparent;
     padding-left: 20px;
     margin-bottom: 30px;
     min-width: 500px;
 }
 
 .dash-nav > .active > a, .dash-nav > .active > a:hover, .dash-nav > .active > a:focus {
-    background: url("qrc:///U2Designer/images/background-menu-button.png") repeat scroll 0% 0% transparent;
+    background: url("qrc:///U2Designer/images/background-menu-button.png") repeat scroll 0 0 transparent;
     color: white;
 }
 
@@ -106,7 +106,7 @@ body {
 
 .table {
     width: 100%;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 .table th {
@@ -120,7 +120,7 @@ table.table-fixed {
 
 .progress-wrapper {
     width: 200px;
-    margin: 0px auto;
+    margin: 0 auto;
 }
 
 .progress-container {
@@ -130,7 +130,7 @@ table.table-fixed {
 
 .small-bar {
     width: 100%;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 .file-button-ctn {
@@ -152,13 +152,13 @@ table.table-fixed {
 .params-nav-tabs > .active > a,
 .params-nav-tabs > .active > a:hover,
 .params-nav-tabs > .active > a:focus {
-  color: rgb(51, 51, 51);
+    color: rgb(51, 51, 51);
 }
 
 .params-nav-tabs > li > a,
 .params-nav-tabs > li > a:hover,
 .params-nav-tabs > li > a:focus {
-  color: rgb(136, 136, 136);
+    color: rgb(136, 136, 136);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: pre-line;
@@ -173,8 +173,8 @@ table.table-fixed {
 }
 
 #status-bar {
-    padding: 8px 0px;
-    margin-bottom: 0px;
+    padding: 8px 0;
+    margin-bottom: 0;
 }
 
 #status-message {
@@ -223,165 +223,176 @@ table.table-fixed {
     opacity: 0.8;
 }
 
-.tree 
-{
+.tree {
     width: 1015px;
-    background-color:#fbfbfb;
-    min-height:20px;
-    padding:8px;
-    margin-bottom:20px;
-    border:1px solid #ddd;
+    background-color: #fbfbfb;
+    min-height: 20px;
+    padding: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
     -webkit-border-radius: 6px;
-}
-.tree li {
-    list-style-type:none;
-    margin:0;
-    padding:10px 5px 0 5px;
-    position:relative
-}
-.tree li::before, .tree li::after {
-    content:'';
-    left:-20px;
-    position:absolute;
-    right:auto
-}
-.tree li::before {
-    border-left:1px solid #999;
-    bottom:50px;
-    height:100%;
-    top:0;
-    width:1px
-}
-.tree li::after {
-    border-top:1px solid #999;
-    height:20px;
-    top:25px;
-    width:25px
-}
-.tree li span {
-    -webkit-border-radius: 6px;
-    border:1px solid #999;
-    display:inline-block;
-    padding:3px 8px;
-    text-decoration:none
-}
-.tree li.parent_li>span {
-    cursor:pointer
-}
-.tree>ul>li::before, .tree>ul>li::after {
-    border:0
-}
-.tree li:last-child::before {
-    height:26px
-}
-span.hoverIntent, span.hoverIntent+ul li span {
-    background-color:#eee;
-    border:1px solid #94a0b4;
-    color:#000
 }
 
-span.badge
-{
+.tree li {
+    list-style-type: none;
+    margin: 0;
+    padding: 10px 5px 0 5px;
+    position: relative
+}
+
+.tree li::before, .tree li::after {
+    content: '';
+    left: -20px;
+    position: absolute;
+    right: auto
+}
+
+.tree li::before {
+    border-left: 1px solid #999;
+    bottom: 50px;
+    height: 100%;
+    top: 0;
+    width: 1px
+}
+
+.tree li::after {
+    border-top: 1px solid #999;
+    height: 20px;
+    top: 25px;
+    width: 25px
+}
+
+.tree li span {
+    -webkit-border-radius: 6px;
+    border: 1px solid #999;
+    display: inline-block;
+    padding: 3px 8px;
+    text-decoration: none
+}
+
+.tree li.parent_li > span {
+    cursor: pointer
+}
+
+.tree > ul > li::before, .tree > ul > li::after {
+    border: 0
+}
+
+.tree li:last-child::before {
+    height: 26px
+}
+
+span.hoverIntent, span.hoverIntent + ul li span {
+    background-color: #eee;
+    border: 1px solid #94a0b4;
+    color: #000
+}
+
+span.badge {
     word-break: break-all;
     -webkit-hyphens: auto;
 }
-span.badge.command
-{
-    background-color:#79ACAC;
-}
-span.badge.program-path     /* deprecated: new dashboards won't contain elements of this class, it was replaced with 'span.badge.command' */
-{
-    background-color:#BCBC90;
-}
-span.badge.tool-info
-{
-    background-color:#9999CC;
-}
-span.badge.tool-args        /* deprecated: new dashboards won't contain elements of this class, it was replaced with 'span.badge.command' */
-{
-    background-color:#79ACAC;
+
+span.badge.command {
+    background-color: #79ACAC;
 }
 
-span.badge.badge-success
+span.badge.program-path /* deprecated: new dashboards won't contain elements of this class, it was replaced with 'span.badge.command' */
 {
-    background-color:#50A976;
+    background-color: #BCBC90;
 }
-span.badge.badge-important
-{
-    background-color:#CC6666;
+
+span.badge.tool-info {
+    background-color: #9999CC;
 }
-span.badge.actor-node
+
+span.badge.tool-args /* deprecated: new dashboards won't contain elements of this class, it was replaced with 'span.badge.command' */
 {
-    background-color:#92939E;
+    background-color: #79ACAC;
 }
-span.badge.actor-tick-node
-{
-    background-color:#bdb0a0;
+
+span.badge.badge-success {
+    background-color: #50A976;
 }
-span.badge.tool-node
-{
-    background-color:#bdb0a0;
+
+span.badge.badge-important {
+    background-color: #CC6666;
 }
-span.badge.badge-info
-{
-    background-color:#6699CC;
+
+span.badge.actor-node {
+    background-color: #92939E;
 }
-span.badge.run-info
-{
-    background-color:#CC9966;
-    position: relative; 
+
+span.badge.actor-tick-node {
+    background-color: #bdb0a0;
 }
-span.content
-{
+
+span.badge.tool-node {
+    background-color: #bdb0a0;
+}
+
+span.badge.badge-info {
+    background-color: #6699CC;
+}
+
+span.badge.run-info {
+    background-color: #CC9966;
+    position: relative;
+}
+
+span.content {
     word-break: break-all;
     -webkit-hyphens: auto;
     width: 830px;
 }
-span.badge.limitation-message
-{
+
+span.badge.limitation-message {
     background-color: #CC6666;
 }
-a.log-folder-link
-{
+
+a.log-folder-link {
     text-decoration: underline;
     color: inherit;
 }
-a.log-file-link
-{
+
+a.log-file-link {
     text-decoration: underline;
     color: inherit;
 }
-.dropdown-menu.context
-{
-    display: block; 
-    position: absolute; 
-    margin-bottom: 5px; 
+
+.dropdown-menu.context {
+    display: block;
+    position: absolute;
+    margin-bottom: 5px;
     *width: 180px;
 }
-.copyRunInfo 
-{
-    position: absolute; 
+
+.copyRunInfo {
+    position: absolute;
     display: inline-block;
     background-image: url("qrc:///U2Designer/images/copy.png");
     background-repeat: no-repeat;
-    background-position:center;
+    background-position: center;
     border: 1px solid #999;
     border-left: 1px solid white;
     height: 22px;
     width: 22px;
     -webkit-border-radius: 0 6px 6px 0;
     margin-top: -4px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
     margin-left: 3px;
     padding: 0;
     background-color: inherit;
 }
+
 .copyRunInfo.hoverIntent {
     background-color: #333333;
 }
+
 .copyRunInfo.hoverIntent.pressed {
     background-color: #b8b8b8;
 }
+
 .problem-icon {
     height: 20px;
     display: block;

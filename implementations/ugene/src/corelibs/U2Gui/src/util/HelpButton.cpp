@@ -19,47 +19,44 @@
  * MA 02110-1301, USA.
  */
 
+#include "HelpButton.h"
+
 #include <QComboBox>
 #include <QPushButton>
 
 #include <U2Gui/GUIUtils.h>
 
-#include "HelpButton.h"
-
-namespace U2{
+namespace U2 {
 
 const QString HelpButton::INVALID_VALUE = "invalid";
 
-HelpButton::HelpButton(QObject *parent, QDialogButtonBox *b, const QString& _pageId) 
-: QObject(parent), pageId(_pageId), dialogBox(b)
-{
+HelpButton::HelpButton(QObject *parent, QDialogButtonBox *b, const QString &_pageId)
+    : QObject(parent), pageId(_pageId), dialogBox(b) {
     helpButton = new QPushButton(tr("Help"));
     connect(helpButton, SIGNAL(clicked()), SLOT(sl_buttonClicked()));
     dialogBox->addButton(helpButton, QDialogButtonBox::HelpRole);
 }
 
-HelpButton::HelpButton(QObject *parent, QAbstractButton *hb, const QString& _pageId) 
-: QObject(parent), pageId(_pageId), helpButton(NULL), dialogBox(NULL)
-{
+HelpButton::HelpButton(QObject *parent, QAbstractButton *hb, const QString &_pageId)
+    : QObject(parent), pageId(_pageId), helpButton(NULL), dialogBox(NULL) {
     connect(hb, SIGNAL(clicked()), SLOT(sl_buttonClicked()));
 }
 
-void HelpButton::sl_buttonClicked(){
-    GUIUtils::runWebBrowser("http://ugene.net/wiki/pages/viewpage.action?pageId="+pageId+"&from=ugene");
+void HelpButton::sl_buttonClicked() {
+    GUIUtils::runWebBrowser("http://ugene.net/wiki/pages/viewpage.action?pageId=" + pageId + "&from=ugene");
 }
 
-void HelpButton::updatePageId( const QString &newPageId ){
+void HelpButton::updatePageId(const QString &newPageId) {
     pageId = newPageId;
 }
 
-ComboboxDependentHelpButton::ComboboxDependentHelpButton( QObject *parent, QDialogButtonBox *b, QComboBox *_cb, const QMap<QString, QString> &_pageMap )
-: HelpButton(parent, b, "")
-, pageMap(_pageMap)
-, cb(_cb){}
+ComboboxDependentHelpButton::ComboboxDependentHelpButton(QObject *parent, QDialogButtonBox *b, QComboBox *_cb, const QMap<QString, QString> &_pageMap)
+    : HelpButton(parent, b, ""), pageMap(_pageMap), cb(_cb) {
+}
 
-void ComboboxDependentHelpButton::sl_buttonClicked(){
+void ComboboxDependentHelpButton::sl_buttonClicked() {
     QString pageId = pageMap[cb->currentText()];
-    GUIUtils::runWebBrowser("http://ugene.net/wiki/pages/viewpage.action?pageId="+pageId+"&from=ugene");
+    GUIUtils::runWebBrowser("http://ugene.net/wiki/pages/viewpage.action?pageId=" + pageId + "&from=ugene");
 }
 
-}
+}    // namespace U2

@@ -22,14 +22,15 @@
 #ifndef _U2_CALCULATE_SEQUENCES_NUMBER_TASK_H_
 #define _U2_CALCULATE_SEQUENCES_NUMBER_TASK_H_
 
-#include <U2Core/global.h>
 #include <U2Core/Task.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
 class U2FORMATS_EXPORT CalculateSequencesNumberTask : public Task {
+    Q_OBJECT
 public:
-    CalculateSequencesNumberTask(const QString& url);
+    CalculateSequencesNumberTask(const QString &url);
 
     int getSequencesNumber() const;
 
@@ -40,5 +41,5 @@ private:
     int sequencesNumber;
 };
 
-}
+}    // namespace U2
 #endif

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DocActors.h"
+
 #include <QApplication>
 
 #include <U2Core/DocumentModel.h>
@@ -37,7 +39,6 @@
 
 #include "../util/DatasetValidator.h"
 #include "CoreLib.h"
-#include "DocActors.h"
 
 namespace U2 {
 namespace Workflow {
@@ -45,21 +46,21 @@ namespace Workflow {
 /****************************
  * DocActorProto
  *****************************/
-DocActorProto::DocActorProto(const DocumentFormatId& _fid, const Descriptor& _desc, const QList<PortDescriptor*>& _ports,
-                             const QList<Attribute*>& _attrs ) : ReadDbObjActorPrototype(_desc, _ports, _attrs), fid(_fid) {
+DocActorProto::DocActorProto(const DocumentFormatId &_fid, const Descriptor &_desc, const QList<PortDescriptor *> &_ports, const QList<Attribute *> &_attrs)
+    : ReadDbObjActorPrototype(_desc, _ports, _attrs), fid(_fid) {
 }
 
-DocActorProto::DocActorProto(const Descriptor& _desc, const GObjectType& t, const QList<PortDescriptor*>& _ports,
-                             const QList<Attribute*>& _attrs ) : ReadDbObjActorPrototype(_desc, _ports, _attrs), type(t) {
+DocActorProto::DocActorProto(const Descriptor &_desc, const GObjectType &t, const QList<PortDescriptor *> &_ports, const QList<Attribute *> &_attrs)
+    : ReadDbObjActorPrototype(_desc, _ports, _attrs), type(t) {
 }
 
-bool DocActorProto::isAcceptableDrop(const QMimeData * md, QVariantMap * params, const QString & urlAttrId ) const {
-    QList<DocumentFormat*> fs;
+bool DocActorProto::isAcceptableDrop(const QMimeData *md, QVariantMap *params, const QString &urlAttrId) const {
+    QList<DocumentFormat *> fs;
     QString url = WorkflowUtils::getDropUrl(fs, md);
-    foreach(DocumentFormat* df, fs) {
+    foreach (DocumentFormat *df, fs) {
         if (fid == df->getFormatId()) {
             if (params) {
-                params->insert( urlAttrId, url );
+                params->insert(urlAttrId, url);
             }
             return true;
         }
@@ -68,50 +69,46 @@ bool DocActorProto::isAcceptableDrop(const QMimeData * md, QVariantMap * params,
 }
 
 QString DocActorProto::prepareDocumentFilter() {
-    if( !fid.isEmpty() ) {
-        return FormatUtils::prepareDocumentsFileFilter( fid, true );
+    if (!fid.isEmpty()) {
+        return FormatUtils::prepareDocumentsFileFilter(fid, true);
     } else {
-        assert( !type.isEmpty() );
-        return FormatUtils::prepareDocumentsFileFilterByObjType( type, true );
+        assert(!type.isEmpty());
+        return FormatUtils::prepareDocumentsFileFilterByObjType(type, true);
     }
 }
 
 /****************************
  * ReadDocActorProto
  *****************************/
-ReadDocActorProto::ReadDocActorProto(const DocumentFormatId& _fid, const Descriptor& _desc, const QList<PortDescriptor*>& _ports,
-                                     const QList<Attribute*>& _attrs ) : DocActorProto( _fid, _desc, _ports, _attrs ) {
+ReadDocActorProto::ReadDocActorProto(const DocumentFormatId &_fid, const Descriptor &_desc, const QList<PortDescriptor *> &_ports, const QList<Attribute *> &_attrs)
+    : DocActorProto(_fid, _desc, _ports, _attrs) {
     attrs << new URLAttribute(BaseAttributes::URL_IN_ATTRIBUTE(), BaseTypes::URL_DATASETS_TYPE(), true);
     setValidator(new DatasetValidator());
 }
 
-bool ReadDocActorProto::isAcceptableDrop(const QMimeData * md, QVariantMap * params ) const {
-    return DocActorProto::isAcceptableDrop( md, params, BaseAttributes::URL_IN_ATTRIBUTE().getId() );
+bool ReadDocActorProto::isAcceptableDrop(const QMimeData *md, QVariantMap *params) const {
+    return DocActorProto::isAcceptableDrop(md, params, BaseAttributes::URL_IN_ATTRIBUTE().getId());
 }
 
 /****************************
  * WriteDocActorProto
  *****************************/
-WriteDocActorProto::WriteDocActorProto(const DocumentFormatId& _fid, const Descriptor& _desc, const QList<PortDescriptor*>& _ports,
-    const QString & portId, const QList<Attribute*>& _attrs, bool canWriteToSharedDB, bool addValidator, bool addPortValidator)
-    : DocActorProto( _fid, _desc, _ports, _attrs ), outPortId(portId)
-{
+WriteDocActorProto::WriteDocActorProto(const DocumentFormatId &_fid, const Descriptor &_desc, const QList<PortDescriptor *> &_ports, const QString &portId, const QList<Attribute *> &_attrs, bool canWriteToSharedDB, bool addValidator, bool addPortValidator)
+    : DocActorProto(_fid, _desc, _ports, _attrs), outPortId(portId) {
     construct(canWriteToSharedDB, addValidator, addPortValidator);
 }
 
-WriteDocActorProto::WriteDocActorProto(const Descriptor& _desc, const GObjectType & t, const QList<PortDescriptor*>& _ports,
-    const QString & portId, const QList<Attribute*>& _attrs, bool canWriteToSharedDB, bool addValidator, bool addPortValidator)
-    : DocActorProto(_desc, t, _ports, _attrs), outPortId(portId)
-{
+WriteDocActorProto::WriteDocActorProto(const Descriptor &_desc, const GObjectType &t, const QList<PortDescriptor *> &_ports, const QString &portId, const QList<Attribute *> &_attrs, bool canWriteToSharedDB, bool addValidator, bool addPortValidator)
+    : DocActorProto(_desc, t, _ports, _attrs), outPortId(portId) {
     construct(canWriteToSharedDB, addValidator, addPortValidator);
 }
 
-bool WriteDocActorProto::isAcceptableDrop(const QMimeData * md, QVariantMap * params ) const {
-    return DocActorProto::isAcceptableDrop( md, params, BaseAttributes::URL_OUT_ATTRIBUTE().getId() );
+bool WriteDocActorProto::isAcceptableDrop(const QMimeData *md, QVariantMap *params) const {
+    return DocActorProto::isAcceptableDrop(md, params, BaseAttributes::URL_OUT_ATTRIBUTE().getId());
 }
 
 void WriteDocActorProto::construct(bool canWriteToSharedDb, bool addValidator, bool addPortValidator) {
-    QMap< QString, PropertyDelegate* > delegateMap;
+    QMap<QString, PropertyDelegate *> delegateMap;
 
     if (canWriteToSharedDb) {
         attrs.prepend(new Attribute(BaseAttributes::DATA_STORAGE_ATTRIBUTE(), BaseTypes::STRING_TYPE(), false, BaseAttributes::LOCAL_FS_DATA_STORAGE()));
@@ -126,7 +123,7 @@ void WriteDocActorProto::construct(bool canWriteToSharedDb, bool addValidator, b
         delegateMap[BaseAttributes::DATABASE_ATTRIBUTE().getId()] = new ComboBoxWithDbUrlsDelegate;
     }
 
-    urlAttr = new Attribute(BaseAttributes::URL_OUT_ATTRIBUTE(), BaseTypes::STRING_TYPE(), false );
+    urlAttr = new Attribute(BaseAttributes::URL_OUT_ATTRIBUTE(), BaseTypes::STRING_TYPE(), false);
     attrs << urlAttr;
     Attribute *suffixAttr = new Attribute(BaseAttributes::URL_SUFFIX(), BaseTypes::STRING_TYPE(), false);
     attrs << suffixAttr;
@@ -156,16 +153,17 @@ void WriteDocActorProto::construct(bool canWriteToSharedDb, bool addValidator, b
  *****************************/
 QString WriteGenbankPrompter::composeRichDoc() {
     QString outPortId = target->getInputPorts().first()->getId();
-    IntegralBusPort* input = qobject_cast<IntegralBusPort*>(target->getPort(outPortId));
-    Actor* seqProducer = input->getProducer(BaseSlots::DNA_SEQUENCE_SLOT().getId());
+    IntegralBusPort *input = qobject_cast<IntegralBusPort *>(target->getPort(outPortId));
+    Actor *seqProducer = input->getProducer(BaseSlots::DNA_SEQUENCE_SLOT().getId());
     QString seqName = seqProducer ? tr(" sequence from <u>%1</u>").arg(seqProducer->getLabel()) : "";
     QString annName = getProducers(outPortId, BaseSlots::ANNOTATION_TABLE_SLOT().getId());
     if (!annName.isEmpty()) {
         annName = tr(" set of annotations from <u>%1</u>").arg(annName);
     }
 
-    QString url = getScreenedURL( qobject_cast<IntegralBusPort*>(target->getPort(outPortId)),
-        BaseAttributes::URL_OUT_ATTRIBUTE().getId(), BaseSlots::URL_SLOT().getId() );
+    QString url = getScreenedURL(qobject_cast<IntegralBusPort *>(target->getPort(outPortId)),
+                                 BaseAttributes::URL_OUT_ATTRIBUTE().getId(),
+                                 BaseSlots::URL_SLOT().getId());
     url = getHyperlink(BaseAttributes::URL_OUT_ATTRIBUTE().getId(), url);
 
     QString data;
@@ -193,30 +191,32 @@ const QString generatedStr = "<font color='blue'>" + QApplication::translate("Wr
 }
 QString WriteFastaPrompter::composeRichDoc() {
     QString outPortId = target->getInputPorts().first()->getId();
-    IntegralBusPort* input = qobject_cast<IntegralBusPort*>(target->getPort(outPortId));
-    QString url = getScreenedURL(qobject_cast<IntegralBusPort*>(target->getPort(outPortId)),
-        BaseAttributes::URL_OUT_ATTRIBUTE().getId(), BaseSlots::URL_SLOT().getId(), generatedStr);
+    IntegralBusPort *input = qobject_cast<IntegralBusPort *>(target->getPort(outPortId));
+    QString url = getScreenedURL(qobject_cast<IntegralBusPort *>(target->getPort(outPortId)),
+                                 BaseAttributes::URL_OUT_ATTRIBUTE().getId(),
+                                 BaseSlots::URL_SLOT().getId(),
+                                 generatedStr);
     url = getHyperlink(BaseAttributes::URL_OUT_ATTRIBUTE().getId(), url);
 
-    Actor* seqProducer = input->getProducer(BaseSlots::DNA_SEQUENCE_SLOT().getId());
+    Actor *seqProducer = input->getProducer(BaseSlots::DNA_SEQUENCE_SLOT().getId());
     if (!seqProducer) {
         QString doc = tr("Writes sequence(s) in %1 format to <u>%2</u>.").arg(format).arg(url);
         return doc;
     }
 
     QString doc = tr("Writes sequence(s) from <u>%1</u> in %2 format to  <u>%3</u>.")
-        .arg(seqProducer->getLabel())
-        .arg(format)
-        .arg(url);
+                      .arg(seqProducer->getLabel())
+                      .arg(format)
+                      .arg(url);
 
     return doc;
 }
 
-ActorDocument* WriteFastaPrompter::createDescription(Actor* a) {
-    WriteFastaPrompter* doc = new WriteFastaPrompter(format, a);
+ActorDocument *WriteFastaPrompter::createDescription(Actor *a) {
+    WriteFastaPrompter *doc = new WriteFastaPrompter(format, a);
     doc->connect(a, SIGNAL(si_labelChanged()), SLOT(sl_actorModified()));
     doc->connect(a, SIGNAL(si_modified()), SLOT(sl_actorModified()));
-    foreach(Workflow::Port* input, a->getInputPorts()) {
+    foreach (Workflow::Port *input, a->getInputPorts()) {
         doc->connect(input, SIGNAL(bindingChanged()), SLOT(sl_actorModified()));
     }
     return doc;
@@ -226,7 +226,7 @@ ActorDocument* WriteFastaPrompter::createDescription(Actor* a) {
  * WriteDocPrompter
  *****************************/
 QString WriteDocPrompter::composeRichDoc() {
-    const QString unsetStr = "<font color='red'>"+tr("unset")+"</font>";
+    const QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
 
     const QString outPortId = target->getInputPorts().first()->getId();
     Attribute *dataStorageAttr = target->getParameter(BaseAttributes::DATA_STORAGE_ATTRIBUTE().getId());
@@ -241,8 +241,7 @@ QString WriteDocPrompter::composeRichDoc() {
         url = dbPathAttr->getAttributePureValue().toString();
         url = getHyperlink(BaseAttributes::DB_PATH().getId(), url);
     } else if (dataStorage == BaseAttributes::LOCAL_FS_DATA_STORAGE()) {
-        url = getScreenedURL(qobject_cast<IntegralBusPort*>(target->getPort(outPortId)), BaseAttributes::URL_OUT_ATTRIBUTE().getId(),
-            BaseSlots::URL_SLOT().getId(), generatedStr);
+        url = getScreenedURL(qobject_cast<IntegralBusPort *>(target->getPort(outPortId)), BaseAttributes::URL_OUT_ATTRIBUTE().getId(), BaseSlots::URL_SLOT().getId(), generatedStr);
         url = getHyperlink(BaseAttributes::URL_OUT_ATTRIBUTE().getId(), url);
     } else {
         FAIL("Unexpected attribute value", QString());
@@ -260,7 +259,7 @@ QString WriteDocPrompter::composeRichDoc() {
         QString dbName = SharedDbUrlUtils::getDbShortNameFromEntityUrl(dbUrl);
         dbName = dbName.isEmpty() ? unsetStr : getHyperlink(BaseAttributes::DATABASE_ATTRIBUTE().getId(), dbName);
 
-        result = spec.left(spec.size() - 1); // remove last dot
+        result = spec.left(spec.size() - 1);    // remove last dot
         result += tr(" in the ") + "<u>%3</u>" + tr(" database.");
         return result.arg(producers).arg(url).arg(dbName);
     } else {
@@ -273,12 +272,12 @@ QString WriteDocPrompter::composeRichDoc() {
  *****************************/
 QString ReadDocPrompter::composeRichDoc() {
     if (spec.contains("%1")) {
-        const QString& id = BaseAttributes::URL_IN_ATTRIBUTE().getId();
+        const QString &id = BaseAttributes::URL_IN_ATTRIBUTE().getId();
         return spec.arg(getHyperlink(id, getURL(id)));
     } else {
         return spec;
     }
 }
 
-}//namespace Workflow
-}//namespace U2
+}    //namespace Workflow
+}    //namespace U2

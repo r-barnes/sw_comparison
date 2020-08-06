@@ -23,6 +23,7 @@
 #define _U2_REPEAT_PLUGIN_H_
 
 #include <U2Core/PluginModel.h>
+
 #include <U2Gui/ObjectViewModel.h>
 
 namespace U2 {
@@ -33,23 +34,22 @@ public:
     RepeatFinderPlugin();
 
 private:
-    GObjectViewWindowContext* viewCtx;
+    GObjectViewWindowContext *viewCtx;
 };
 
-class RepeatViewContext: public GObjectViewWindowContext {
+class RepeatViewContext : public GObjectViewWindowContext {
     Q_OBJECT
 public:
-    RepeatViewContext(QObject* p);
+    RepeatViewContext(QObject *p);
 
 protected slots:
     void sl_showDialog();
     void sl_showTandemDialog();
 
 protected:
-    virtual void initViewContext(GObjectView* view);
+    virtual void initViewContext(GObjectView *view);
 };
 
-
-} //namespace
+}    // namespace U2
 
 #endif

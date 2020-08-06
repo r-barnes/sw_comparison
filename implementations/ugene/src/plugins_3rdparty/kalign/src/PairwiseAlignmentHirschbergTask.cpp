@@ -1,31 +1,32 @@
 #include "PairwiseAlignmentHirschbergTask.h"
-#include "KalignTask.h"
 
-#include <U2Core/AppContext.h>
-#include <U2Core/Task.h>
-#include <U2Core/U2OpStatusUtils.h>
-#include <U2Core/U2SequenceDbi.h>
-#include <U2Core/U2DbiUtils.h>
-#include <U2Core/U2MsaDbi.h>
-#include <U2Core/U2Msa.h>
-#include <U2Core/U2SafePoints.h>
-#include <U2Core/DNAAlphabet.h>
-#include <U2Core/U2AlphabetUtils.h>
-#include <U2Core/MultipleSequenceAlignment.h>
-#include <U2Core/MultipleSequenceAlignmentObject.h>
-#include <U2Core/MultipleSequenceAlignmentImporter.h>
-#include <U2Core/IOAdapterUtils.h>
-#include <U2Core/BaseDocumentFormats.h>
-#include <U2Core/ProjectModel.h>
+#include <QRegExp>
+#include <QString>
+#include <QVariant>
 
 #include <U2Algorithm/MsaUtilTasks.h>
 
-#include <U2Lang/WorkflowSettings.h>
-#include <U2Lang/SimpleWorkflowTask.h>
+#include <U2Core/AppContext.h>
+#include <U2Core/BaseDocumentFormats.h>
+#include <U2Core/DNAAlphabet.h>
+#include <U2Core/IOAdapterUtils.h>
+#include <U2Core/MultipleSequenceAlignment.h>
+#include <U2Core/MultipleSequenceAlignmentImporter.h>
+#include <U2Core/MultipleSequenceAlignmentObject.h>
+#include <U2Core/ProjectModel.h>
+#include <U2Core/Task.h>
+#include <U2Core/U2AlphabetUtils.h>
+#include <U2Core/U2DbiUtils.h>
+#include <U2Core/U2Msa.h>
+#include <U2Core/U2MsaDbi.h>
+#include <U2Core/U2OpStatusUtils.h>
+#include <U2Core/U2SafePoints.h>
+#include <U2Core/U2SequenceDbi.h>
 
-#include <QVariant>
-#include <QString>
-#include <QRegExp>
+#include <U2Lang/SimpleWorkflowTask.h>
+#include <U2Lang/WorkflowSettings.h>
+
+#include "KalignTask.h"
 
 namespace U2 {
 
@@ -41,9 +42,7 @@ PairwiseAlignmentHirschbergTaskSettings::PairwiseAlignmentHirschbergTaskSettings
       gapOpen(0),
       gapExtd(0),
       gapTerm(0),
-      bonusScore(0)
-{
-
+      bonusScore(0) {
 }
 
 PairwiseAlignmentHirschbergTaskSettings::~PairwiseAlignmentHirschbergTaskSettings() {
@@ -60,33 +59,33 @@ bool PairwiseAlignmentHirschbergTaskSettings::convertCustomSettings() {
     return true;
 }
 
-PairwiseAlignmentHirschbergTask::PairwiseAlignmentHirschbergTask(PairwiseAlignmentHirschbergTaskSettings* _settings)
+PairwiseAlignmentHirschbergTask::PairwiseAlignmentHirschbergTask(PairwiseAlignmentHirschbergTaskSettings *_settings)
     : PairwiseAlignmentTask(TaskFlag_NoRun),
       settings(_settings),
-      kalignSubTask(NULL),
-      workflowKalignSubTask(NULL)
-{
-    SAFE_POINT(settings != NULL, "Task settings are not defined.", );
+      kalignSubTask(nullptr),
+      workflowKalignSubTask(nullptr),
+      alphabet(nullptr) {
+    SAFE_POINT(settings != nullptr, "Task settings are not defined.", );
     SAFE_POINT(settings->convertCustomSettings() && settings->isValid(), "Invalid task settings.", );
 
     U2OpStatus2Log os;
     DbiConnection con(settings->msaRef.dbiRef, os);
-    CHECK_OP(os, );
+    CHECK_OP_EXT(os, setError("Failed to get reference to DB"), );
     U2Sequence sequence = con.dbi->getSequenceDbi()->getSequenceObject(settings->firstSequenceRef.entityId, os);
-    CHECK_OP(os, );
+    CHECK_OP_EXT(os, setError("Failed to get first sequence"), );
     first = con.dbi->getSequenceDbi()->getSequenceData(sequence.id, U2Region(0, sequence.length), os);
-    CHECK_OP(os, );
+    CHECK_OP_EXT(os, setError("Failed to get first sequence data"), );
     QString firstName = sequence.visualName;
 
     sequence = con.dbi->getSequenceDbi()->getSequenceObject(settings->secondSequenceRef.entityId, os);
-    CHECK_OP(os, );
+    CHECK_OP_EXT(os, setError("Failed to get second sequence"), );
     second = con.dbi->getSequenceDbi()->getSequenceData(sequence.id, U2Region(0, sequence.length), os);
-    CHECK_OP(os, );
+    CHECK_OP_EXT(os, setError("Failed to get first sequence data"), );
     QString secondName = sequence.visualName;
     con.close(os);
 
     alphabet = U2AlphabetUtils::getById(settings->alphabet);
-    SAFE_POINT(alphabet != NULL, "Albhabet is invalid.", );
+    SAFE_POINT(alphabet != nullptr, "Albhabet is invalid.", );
 
     ma = MultipleSequenceAlignment(firstName + " vs. " + secondName, alphabet);
     ma->addRow(firstName, first);
@@ -108,8 +107,8 @@ PairwiseAlignmentHirschbergTask::~PairwiseAlignmentHirschbergTask() {
     delete settings;
 }
 
-QList<Task*> PairwiseAlignmentHirschbergTask::onSubTaskFinished(Task *subTask) {
-    QList<Task*> res;
+QList<Task *> PairwiseAlignmentHirschbergTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> res;
     if (hasError() || isCanceled()) {
         return res;
     }
@@ -118,12 +117,12 @@ QList<Task*> PairwiseAlignmentHirschbergTask::onSubTaskFinished(Task *subTask) {
     }
 
     if (subTask == kalignSubTask) {
-        if (settings->inNewWindow == true) {
+        if (settings->inNewWindow) {
             TaskStateInfo localStateInfo;
-            Project * currentProject = AppContext::getProject();
+            Project *currentProject = AppContext::getProject();
 
-            DocumentFormat * format = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::CLUSTAL_ALN);
-            Document * alignmentDoc = NULL;
+            DocumentFormat *format = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::CLUSTAL_ALN);
+            Document *alignmentDoc = nullptr;
 
             QString newFileUrl = settings->resultFileName.getURLString();
             changeGivenUrlIfDocumentExists(newFileUrl, currentProject);
@@ -133,7 +132,7 @@ QList<Task*> PairwiseAlignmentHirschbergTask::onSubTaskFinished(Task *subTask) {
 
             MultipleSequenceAlignment resultMa = kalignSubTask->resultMA;
 
-            MultipleSequenceAlignmentObject * docObject = MultipleSequenceAlignmentImporter::createAlignment(alignmentDoc->getDbiRef(), resultMa, localStateInfo);
+            MultipleSequenceAlignmentObject *docObject = MultipleSequenceAlignmentImporter::createAlignment(alignmentDoc->getDbiRef(), resultMa, localStateInfo);
             CHECK_OP(localStateInfo, res);
 
             alignmentDoc->addObject(docObject);
@@ -141,7 +140,7 @@ QList<Task*> PairwiseAlignmentHirschbergTask::onSubTaskFinished(Task *subTask) {
             SaveDocFlags flags = SaveDoc_Overwrite;
             flags |= SaveDoc_OpenAfter;
             res << new SaveDocumentTask(alignmentDoc, flags);
-        } else {        //in current window
+        } else {    //in current window
             U2OpStatus2Log os;
             DbiConnection con(settings->msaRef.dbiRef, os);
             CHECK_OP(os, res);
@@ -175,14 +174,14 @@ Task::ReportResult PairwiseAlignmentHirschbergTask::report() {
     return ReportResult_Finished;
 }
 
-void PairwiseAlignmentHirschbergTask::changeGivenUrlIfDocumentExists(QString & givenUrl, const Project * curProject) {
-    if(NULL != curProject->findDocumentByURL(GUrl(givenUrl))) {
-        for(size_t i = 1; ; i++) {
+void PairwiseAlignmentHirschbergTask::changeGivenUrlIfDocumentExists(QString &givenUrl, const Project *curProject) {
+    if (curProject->findDocumentByURL(GUrl(givenUrl)) != nullptr) {
+        for (size_t i = 1;; i++) {
             QString tmpUrl = givenUrl;
-            QRegExp dotWithExtensionRegExp ("\\.{1,1}[^\\.]*$|^[^\\.]*$");
+            QRegExp dotWithExtensionRegExp("\\.{1,1}[^\\.]*$|^[^\\.]*$");
             dotWithExtensionRegExp.lastIndexIn(tmpUrl);
             tmpUrl.replace(dotWithExtensionRegExp.capturedTexts().last(), "(" + QString::number(i) + ")" + dotWithExtensionRegExp.capturedTexts().last());
-            if(NULL == curProject->findDocumentByURL(GUrl(tmpUrl))) {
+            if (curProject->findDocumentByURL(GUrl(tmpUrl)) == nullptr) {
                 givenUrl = tmpUrl;
                 break;
             }
@@ -190,4 +189,4 @@ void PairwiseAlignmentHirschbergTask::changeGivenUrlIfDocumentExists(QString & g
     }
 }
 
-}   //namespace
+}    // namespace U2

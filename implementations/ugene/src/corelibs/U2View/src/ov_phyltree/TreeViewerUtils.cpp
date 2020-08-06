@@ -19,19 +19,19 @@
  * MA 02110-1301, USA.
  */
 
+#include "TreeViewerUtils.h"
+
 #include <QMessageBox>
 
 #include <U2Gui/LastUsedDirHelper.h>
 #include <U2Gui/U2FileDialog.h>
 
-#include "TreeViewerUtils.h"
-
 #define IMAGE_DIR "image"
 
 namespace U2 {
 
-QFont* TreeViewerUtils::font = NULL;
-const char* TreeViewerUtils::IMAGE_FILTERS =
+QFont *TreeViewerUtils::font = NULL;
+const char *TreeViewerUtils::IMAGE_FILTERS =
     "BMP - Windows Bitmap (*.bmp);;"
     "GIF - Graphic Interchange Format (*.gif);;"
     "JPG/JPEG format (*.jpg);;"
@@ -42,7 +42,7 @@ const char* TreeViewerUtils::IMAGE_FILTERS =
     "XBM - X11 Bitmap (*.xbm);;"
     "XPM - X11 Pixmap (*.xpm)";
 
-void TreeViewerUtils::saveImageDialog(const QString& filters, QString &fileName, QString &format) {
+void TreeViewerUtils::saveImageDialog(const QString &filters, QString &fileName, QString &format) {
     LastUsedDirHelper lod(IMAGE_DIR);
     int i = fileName.lastIndexOf('.');
     if (i != -1) {
@@ -58,9 +58,7 @@ void TreeViewerUtils::saveImageDialog(const QString& filters, QString &fileName,
     if (!fileName.endsWith("." + format)) {
         fileName.append("." + format);
         if (QFile::exists(fileName)) {
-            QMessageBox::StandardButtons b = QMessageBox::warning(0, QObject::tr("Replace file"),
-                QObject::tr("%1 already exists.\nDo you want to replace it?").arg(fileName),
-                QMessageBox::Yes | QMessageBox::No);
+            QMessageBox::StandardButtons b = QMessageBox::warning(0, QObject::tr("Replace file"), QObject::tr("%1 already exists.\nDo you want to replace it?").arg(fileName), QMessageBox::Yes | QMessageBox::No);
             if (QMessageBox::Yes != b) {
                 return;
             }
@@ -68,11 +66,11 @@ void TreeViewerUtils::saveImageDialog(const QString& filters, QString &fileName,
     }
 }
 
-const QFont& TreeViewerUtils::getFont() {
+const QFont &TreeViewerUtils::getFont() {
     if (font == NULL) {
         font = new QFont();
     }
     return *font;
 }
 
-}
+}    // namespace U2

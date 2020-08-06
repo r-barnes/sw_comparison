@@ -22,10 +22,10 @@
 #ifndef _U2_DNA_ALPHABET_H_
 #define _U2_DNA_ALPHABET_H_
 
-#include <U2Core/global.h>
-#include <U2Core/U2Region.h>
-
 #include <QBitArray>
+
+#include <U2Core/U2Region.h>
+#include <U2Core/global.h>
 namespace U2 {
 
 class U2CORE_EXPORT BaseDNAAlphabetIds : public QObject {
@@ -40,73 +40,98 @@ public:
     static const QString AMINO_EXTENDED();
 };
 
-
-
 class U2CORE_EXPORT DNAAlphabet {
-
 public:
+    DNAAlphabet(const QString &id, const QString &name, DNAAlphabetType t, const QBitArray &map, Qt::CaseSensitivity caseMode, char defSym);
 
-    DNAAlphabet(const QString& id, const QString& name, DNAAlphabetType t, const QBitArray& map, Qt::CaseSensitivity caseMode, char defSym);
+    const QBitArray &getMap() const {
+        return map;
+    }
 
-    const QBitArray& getMap() const {return map;}
+    const QString &getName() const {
+        return name;
+    }
 
-    const QString& getName() const {return name;}
+    const QString &getId() const {
+        return id;
+    }
 
-    const QString& getId() const {return id;}
+    bool contains(char c) const {
+        return map.at(c);
+    }
 
-    bool contains(char c) const {return map.at(c);}
+    bool containsAll(const char *str, int len) const;
 
-    bool containsAll(const char* str, int len) const;
+    DNAAlphabetType getType() const {
+        return type;
+    }
 
-    DNAAlphabetType getType() const {return type;}
+    bool isCaseSensitive() const {
+        return caseMode == Qt::CaseSensitive;
+    }
 
-    bool isCaseSensitive() const {return caseMode == Qt::CaseSensitive;}
+    char getDefaultSymbol() const {
+        return defSym;
+    }
 
-    char getDefaultSymbol() const {return defSym;}
+    bool isDefault() const {
+        return id.contains("DEFAULT");
+    }
 
-    bool isDefault() const {return id.contains("DEFAULT");}
+    bool isExtended() const {
+        return id.contains("EXTENDED");
+    }
 
-    bool isExtended() const {return id.contains("EXTENDED");}
+    bool isRaw() const {
+        return type == DNAAlphabet_RAW;
+    }
 
-    bool isRaw() const {return type == DNAAlphabet_RAW;}
+    bool isNucleic() const {
+        return type == DNAAlphabet_NUCL;
+    }
 
-    bool isNucleic() const {return type == DNAAlphabet_NUCL;}
+    bool isAmino() const {
+        return type == DNAAlphabet_AMINO;
+    }
 
-    bool isAmino() const {return type == DNAAlphabet_AMINO;}
+    bool isDNA() const {
+        return id.contains("DNA");
+    }
 
-    bool isDNA() const {return id.contains("DNA");}
-
-    bool isRNA() const {return id.contains("RNA");}
+    bool isRNA() const {
+        return id.contains("RNA");
+    }
 
     // returns sorted array of all chars used in alphabet
     // forceBothCases == true : even case-insensitive alphabet will return both cases
     // forceBothCases == false: case-sensitivity in result depends on alphabets case-sensitivity
     QByteArray getAlphabetChars(bool forceBothCases = false) const;
 
-    int getNumAlphabetChars() const {return numChars;}
+    int getNumAlphabetChars() const {
+        return numChars;
+    }
 
 private:
-    QString             id;
-    QString             name;
-    DNAAlphabetType     type;
-    QBitArray           map;
+    QString id;
+    QString name;
+    DNAAlphabetType type;
+    QBitArray map;
     Qt::CaseSensitivity caseMode;
-    char                defSym;
-    int                 numChars;
+    char defSym;
+    int numChars;
 };
 
 class U2CORE_EXPORT DNAAlphabetRegistry : public QObject {
 public:
-    virtual bool registerAlphabet(const DNAAlphabet* a) = 0;
+    virtual bool registerAlphabet(const DNAAlphabet *a) = 0;
 
-    virtual void unregisterAlphabet(const DNAAlphabet* a) = 0;
+    virtual void unregisterAlphabet(const DNAAlphabet *a) = 0;
 
-    virtual const DNAAlphabet* findById(const QString& id) const = 0;
+    virtual const DNAAlphabet *findById(const QString &id) const = 0;
 
-    virtual QList<const DNAAlphabet*> getRegisteredAlphabets() const =  0;
+    virtual QList<const DNAAlphabet *> getRegisteredAlphabets() const = 0;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif
-

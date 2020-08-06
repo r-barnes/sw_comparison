@@ -32,7 +32,7 @@ namespace U2 {
 class PythonSupport : public RunnerTool {
     Q_OBJECT
 public:
-    PythonSupport(const QString& id, const QString& name, const QString& path = "");
+    PythonSupport(const QString &id, const QString &name, const QString &path = "");
 
     static const QString ET_PYTHON;
     static const QString ET_PYTHON_ID;
@@ -41,13 +41,13 @@ public:
 class PythonModuleSupport : public ExternalToolModule {
     Q_OBJECT
 public:
-    PythonModuleSupport(const QString& id, const QString& name);
+    PythonModuleSupport(const QString &id, const QString &name);
 };
 
 class PythonModuleDjangoSupport : public PythonModuleSupport {
     Q_OBJECT
 public:
-    PythonModuleDjangoSupport(const QString& id, const QString& name);
+    PythonModuleDjangoSupport(const QString &id, const QString &name);
 
     static const QString ET_PYTHON_DJANGO;
     static const QString ET_PYTHON_DJANGO_ID;
@@ -56,7 +56,7 @@ public:
 class PythonModuleNumpySupport : public PythonModuleSupport {
     Q_OBJECT
 public:
-    PythonModuleNumpySupport(const QString& id, const QString& name);
+    PythonModuleNumpySupport(const QString &id, const QString &name);
 
     static const QString ET_PYTHON_NUMPY;
     static const QString ET_PYTHON_NUMPY_ID;
@@ -65,12 +65,11 @@ public:
 class PythonModuleBioSupport : public PythonModuleSupport {
     Q_OBJECT
 public:
-    PythonModuleBioSupport(const QString& id, const QString& name);
+    PythonModuleBioSupport(const QString &id, const QString &name);
 
     static const QString ET_PYTHON_BIO;
     static const QString ET_PYTHON_BIO_ID;
 };
 
-
-}//namespace
-#endif // _U2_PYTHON_SUPPORT_H_
+}    // namespace U2
+#endif    // _U2_PYTHON_SUPPORT_H_

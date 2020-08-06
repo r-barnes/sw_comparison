@@ -23,8 +23,8 @@
 
 #include <U2View/McaEditor.h>
 
-#include "GTUtilsMcaEditorStatusWidget.h"
 #include "GTUtilsMcaEditor.h"
+#include "GTUtilsMcaEditorStatusWidget.h"
 
 using namespace HI;
 
@@ -185,4 +185,4 @@ bool GTUtilsMcaEditorStatusWidget::isGapInRead(GUITestOpStatus &os) {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

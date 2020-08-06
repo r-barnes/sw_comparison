@@ -22,15 +22,16 @@
 #ifndef _U2_TCOFFEE_DAILOG_FILLER_H_
 #define _U2_TCOFFEE_DAILOG_FILLER_H_
 
-#include "utils/GTUtilsDialog.h"
 #include <limits.h>
 
-namespace U2{
+#include "utils/GTUtilsDialog.h"
+
+namespace U2 {
 using namespace HI;
 
 class TCoffeeDailogFiller : public Filler {
 public:
-    TCoffeeDailogFiller(HI::GUITestOpStatus& os, int gapOpen = INT_MAX, int gapExt = INT_MAX, int numOfIters = INT_MAX);
+    TCoffeeDailogFiller(HI::GUITestOpStatus &os, int gapOpen = INT_MAX, int gapExt = INT_MAX, int numOfIters = INT_MAX);
 
     void commonScenario();
 
@@ -40,5 +41,5 @@ private:
     int numOfIters;
 };
 
-}
-#endif // _U2_TCOFFEE_DAILOG_FILLER_H_
+}    // namespace U2
+#endif    // _U2_TCOFFEE_DAILOG_FILLER_H_

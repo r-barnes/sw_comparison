@@ -22,14 +22,13 @@
 #ifndef _U2_DET_VIEW_SEQUENCE_EDITOR_H_
 #define _U2_DET_VIEW_SEQUENCE_EDITOR_H_
 
-#include <QObject>
-
 #include <QColor>
 #include <QDialog>
 #include <QMouseEvent>
+#include <QObject>
 #include <QTimer>
 
-#include <U2Core/Log.h> // TODO_SVEDIT: remove later
+#include <U2Core/Log.h>    // TODO_SVEDIT: remove later
 #include <U2Core/U2Region.h>
 
 namespace U2 {
@@ -44,17 +43,23 @@ class DetViewSequenceEditor : public QObject {
     Q_OBJECT
 public:
     // DetView can be reduced to GSequenceView or template for MA
-    DetViewSequenceEditor(DetView* view);
+    DetViewSequenceEditor(DetView *view);
     ~DetViewSequenceEditor();
 
     void reset();
     bool isEditMode() const;
-    QAction* getEditAction() const { return editAction; }
+    QAction *getEditAction() const {
+        return editAction;
+    }
 
     bool eventFilter(QObject *watched, QEvent *event);
 
-    int             getCursorPosition() const { return cursor; }
-    QColor          getCursorColor() const { return cursorColor; }
+    int getCursorPosition() const {
+        return cursor;
+    }
+    QColor getCursorColor() const {
+        return cursorColor;
+    }
 
 private:
     void setCursor(int newPos);
@@ -63,24 +68,24 @@ private:
     void insertChar(int character);
     void deleteChar(int key);
 
-    void modifySequence(U2SequenceObject* seqObj, const U2Region &region, const DNASequence &sequence);
+    void modifySequence(U2SequenceObject *seqObj, const U2Region &region, const DNASequence &sequence);
     void cancelSelectionResizing();
 
 private slots:
     void sl_editMode(bool active);
     void sl_changeCursorColor();
     void sl_objectLockStateChanged();
-    void sl_paste(Task* pasteTask);
+    void sl_paste(Task *pasteTask);
 
 private:
-    int         cursor; // TODO_SVEDIT: can be separate class
-    QColor      cursorColor;
-    QTimer      animationTimer;
-    DetView*    view;
+    int cursor;    // TODO_SVEDIT: can be separate class
+    QColor cursorColor;
+    QTimer animationTimer;
+    DetView *view;
 
-    QAction*    editAction;
+    QAction *editAction;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_DET_VIEW_SEQUENCE_EDITOR_H_
+#endif    // _U2_DET_VIEW_SEQUENCE_EDITOR_H_

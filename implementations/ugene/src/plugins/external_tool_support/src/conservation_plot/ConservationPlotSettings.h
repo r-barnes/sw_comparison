@@ -22,35 +22,31 @@
 #ifndef _U2_CONSERVATION_PLOT_SETTINGS_
 #define _U2_CONSERVATION_PLOT_SETTINGS_
 
-
 #include <QList>
 #include <QString>
 #include <QStringList>
 
 namespace U2 {
 
-
 class ConservationPlotSettings {
 public:
-
     ConservationPlotSettings();
 
-    QString     outFile;
-    QString     title;
-    QString     label;
-    QString     assemblyVersion;
-    qint64      windowSize;
-    qint64      height;
-    qint64      width;
+    QString outFile;
+    QString title;
+    QString label;
+    QString assemblyVersion;
+    qint64 windowSize;
+    qint64 height;
+    qint64 width;
 
 public:
-     QStringList getArguments(const QList<QString>& bedFiles);
+    QStringList getArguments(const QList<QString> &bedFiles);
 
 private:
     void initDefault();
-
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_CONSERVATION_PLOT_SETTINGS_
+#endif    // _U2_CONSERVATION_PLOT_SETTINGS_

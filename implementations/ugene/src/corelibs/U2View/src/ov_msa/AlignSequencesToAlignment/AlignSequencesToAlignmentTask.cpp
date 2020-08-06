@@ -19,6 +19,15 @@
  * MA 02110-1301, USA.
  */
 
+#include "AlignSequencesToAlignmentTask.h"
+
+#include <QDir>
+#include <QMessageBox>
+
+#include <U2Algorithm/AbstractAlignmentTask.h>
+#include <U2Algorithm/AlignmentAlgorithmsRegistry.h>
+#include <U2Algorithm/BaseAlignmentAlgorithmsIds.h>
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/DocumentModel.h>
@@ -36,18 +45,10 @@
 #include <U2Core/U2MsaDbi.h>
 #include <U2Core/U2SequenceUtils.h>
 
-#include <U2Gui/U2FileDialog.h>
 #include <U2Gui/ProjectView.h>
+#include <U2Gui/U2FileDialog.h>
+
 #include <U2View/MSAEditor.h>
-
-#include <U2Algorithm/AlignmentAlgorithmsRegistry.h>
-#include <U2Algorithm/AbstractAlignmentTask.h>
-#include <U2Algorithm/BaseAlignmentAlgorithmsIds.h>
-
-#include "AlignSequencesToAlignmentTask.h"
-
-#include <QDir>
-#include <QMessageBox>
 
 namespace U2 {
 
@@ -59,50 +60,48 @@ const int LoadSequencesTask::maxErrorListSize = 5;
 SequenceObjectsExtractor::SequenceObjectsExtractor()
     : seqsAlphabet(NULL),
       extractFromMsa(false),
-      sequencesMaxLength(0)
-{
-
+      sequencesMaxLength(0) {
 }
 
-void SequenceObjectsExtractor::setAlphabet(const DNAAlphabet* newAlphabet) {
+void SequenceObjectsExtractor::setAlphabet(const DNAAlphabet *newAlphabet) {
     seqsAlphabet = newAlphabet;
 }
 
-void SequenceObjectsExtractor::extractSequencesFromDocuments(const QList<Document*>& documentsList) {
-    foreach(Document* curDocument, documentsList) {
+void SequenceObjectsExtractor::extractSequencesFromDocuments(const QList<Document *> &documentsList) {
+    foreach (Document *curDocument, documentsList) {
         extractSequencesFromDocument(curDocument);
     }
 }
 
-void SequenceObjectsExtractor::extractSequencesFromDocument(Document* doc) {
+void SequenceObjectsExtractor::extractSequencesFromDocument(Document *doc) {
     extractSequencesFromObjects(doc->getObjects());
 }
 
-void SequenceObjectsExtractor::extractSequencesFromObjects(const QList<GObject*>& objects) {
-    foreach(GObject* object, objects) {
-        Document* doc = object->getDocument();
-        if(doc != NULL) {
-            if(!usedDocuments.contains(doc)){
+void SequenceObjectsExtractor::extractSequencesFromObjects(const QList<GObject *> &objects) {
+    foreach (GObject *object, objects) {
+        Document *doc = object->getDocument();
+        if (doc != NULL) {
+            if (!usedDocuments.contains(doc)) {
                 usedDocuments << doc;
             }
         }
 
-        if(object->getGObjectType() == GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT) {
+        if (object->getGObjectType() == GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT) {
             extractFromMsa = true;
-            MultipleSequenceAlignmentObject* curObj = qobject_cast<MultipleSequenceAlignmentObject*>(object);
-            SAFE_POINT(curObj != NULL, "MultipleSequenceAlignmentObject is null",);
+            MultipleSequenceAlignmentObject *curObj = qobject_cast<MultipleSequenceAlignmentObject *>(object);
+            SAFE_POINT(curObj != NULL, "MultipleSequenceAlignmentObject is null", );
 
             checkAlphabet(curObj->getAlphabet(), curObj->getGObjectName());
             sequencesMaxLength = qMax(sequencesMaxLength, curObj->getLength());
 
-            foreach(const MultipleSequenceAlignmentRow& row, curObj->getMsa()->getMsaRows()) {
+            foreach (const MultipleSequenceAlignmentRow &row, curObj->getMsa()->getMsaRows()) {
                 U2EntityRef seqRef(curObj->getEntityRef().dbiRef, row->getRowDbInfo().sequenceId);
                 sequenceRefs << seqRef;
                 sequenceNames << row->getName();
             }
-        } else if(object->getGObjectType() == GObjectTypes::SEQUENCE) {
-            U2SequenceObject* dnaObj = qobject_cast<U2SequenceObject*>(object);
-            SAFE_POINT(dnaObj != NULL, "U2SequenceObject is null",);
+        } else if (object->getGObjectType() == GObjectTypes::SEQUENCE) {
+            U2SequenceObject *dnaObj = qobject_cast<U2SequenceObject *>(object);
+            SAFE_POINT(dnaObj != NULL, "U2SequenceObject is null", );
             sequencesMaxLength = qMax(sequencesMaxLength, dnaObj->getSequenceLength());
             sequenceRefs << dnaObj->getEntityRef();
             sequenceNames << dnaObj->getSequenceName();
@@ -112,12 +111,12 @@ void SequenceObjectsExtractor::extractSequencesFromObjects(const QList<GObject*>
     }
 }
 
-void SequenceObjectsExtractor::checkAlphabet(const DNAAlphabet* newAlphabet, const QString& objectName) {
-    if(seqsAlphabet == NULL) {
+void SequenceObjectsExtractor::checkAlphabet(const DNAAlphabet *newAlphabet, const QString &objectName) {
+    if (seqsAlphabet == NULL) {
         seqsAlphabet = newAlphabet;
     } else {
-        const DNAAlphabet* commonAlphabet = U2AlphabetUtils::deriveCommonAlphabet(newAlphabet, seqsAlphabet);
-        if(commonAlphabet == NULL) {
+        const DNAAlphabet *commonAlphabet = U2AlphabetUtils::deriveCommonAlphabet(newAlphabet, seqsAlphabet);
+        if (commonAlphabet == NULL) {
             errorList << objectName;
         } else {
             seqsAlphabet = commonAlphabet;
@@ -125,45 +124,43 @@ void SequenceObjectsExtractor::checkAlphabet(const DNAAlphabet* newAlphabet, con
     }
 }
 
-const QStringList& SequenceObjectsExtractor::getErrorList() const {
+const QStringList &SequenceObjectsExtractor::getErrorList() const {
     return errorList;
 }
 
-const DNAAlphabet* SequenceObjectsExtractor::getAlphabet() const {
+const DNAAlphabet *SequenceObjectsExtractor::getAlphabet() const {
     return seqsAlphabet;
 }
 
-const QList<U2EntityRef>& SequenceObjectsExtractor::getSequenceRefs() const {
+const QList<U2EntityRef> &SequenceObjectsExtractor::getSequenceRefs() const {
     return sequenceRefs;
 }
 
-const QStringList& SequenceObjectsExtractor::getSequenceNames() const {
+const QStringList &SequenceObjectsExtractor::getSequenceNames() const {
     return sequenceNames;
 }
 qint64 SequenceObjectsExtractor::getMaxSequencesLength() const {
     return sequencesMaxLength;
 }
 
-const QList<Document*>& SequenceObjectsExtractor::getUsedDocuments() const {
+const QList<Document *> &SequenceObjectsExtractor::getUsedDocuments() const {
     return usedDocuments;
 }
 
 /************************************************************************/
 /* LoadSequencesTask */
 /************************************************************************/
-LoadSequencesTask::LoadSequencesTask(const DNAAlphabet* msaAlphabet, const QStringList& fileWithSequencesUrls)
-: Task(tr("Load sequences task"), TaskFlag_NoRun), msaAlphabet(msaAlphabet), urls(fileWithSequencesUrls), extractor()
-{
+LoadSequencesTask::LoadSequencesTask(const DNAAlphabet *msaAlphabet, const QStringList &fileWithSequencesUrls)
+    : Task(tr("Load sequences task"), TaskFlag_NoRun), msaAlphabet(msaAlphabet), urls(fileWithSequencesUrls), extractor() {
     assert(!fileWithSequencesUrls.isEmpty());
     extractor.setAlphabet(msaAlphabet);
 }
 
-void LoadSequencesTask::prepare()
-{
-    foreach( const QString& fileWithSequencesUrl, urls) {
+void LoadSequencesTask::prepare() {
+    foreach (const QString &fileWithSequencesUrl, urls) {
         QList<FormatDetectionResult> detectedFormats = DocumentUtils::detectFormat(fileWithSequencesUrl);
         if (!detectedFormats.isEmpty()) {
-            LoadDocumentTask* loadTask = LoadDocumentTask::getDefaultLoadDocTask(fileWithSequencesUrl, { {DocumentFormat::STRONG_FORMAT_ACCORDANCE, true} });
+            LoadDocumentTask *loadTask = LoadDocumentTask::getDefaultLoadDocTask(fileWithSequencesUrl, {{DocumentFormat::STRONG_FORMAT_ACCORDANCE, true}});
             if (loadTask != nullptr) {
                 addSubTask(loadTask);
             }
@@ -177,15 +174,15 @@ void LoadSequencesTask::prepare()
     }
 }
 
-QList<Task*> LoadSequencesTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> subTasks;
+QList<Task *> LoadSequencesTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> subTasks;
 
     propagateSubtaskError();
-    if (subTask->isCanceled() || isCanceled() || hasError() ) {
+    if (subTask->isCanceled() || isCanceled() || hasError()) {
         return subTasks;
     }
 
-    LoadDocumentTask* loadTask = qobject_cast<LoadDocumentTask*>(subTask);
+    LoadDocumentTask *loadTask = qobject_cast<LoadDocumentTask *>(subTask);
     SAFE_POINT(loadTask != NULL, "LoadDocumentTask is null", subTasks);
 
     CHECK(loadTask->getDocument() != NULL, subTasks);
@@ -208,33 +205,30 @@ void LoadSequencesTask::setupError() {
 Task::ReportResult LoadSequencesTask::report() {
     CHECK_OP(stateInfo, ReportResult_Finished);
 
-    if(!extractor.getErrorList().isEmpty()) {
+    if (!extractor.getErrorList().isEmpty()) {
         setupError();
     }
-    if(extractor.getSequenceRefs().isEmpty()) {
+    if (extractor.getSequenceRefs().isEmpty()) {
         QString filesSeparator(", ");
         setError(tr("There are no sequences to align in the document(s): %1").arg(urls.join(filesSeparator)));
         return ReportResult_Finished;
     }
-    if(U2AlphabetUtils::deriveCommonAlphabet(extractor.getAlphabet(), msaAlphabet) == nullptr) {
+    if (U2AlphabetUtils::deriveCommonAlphabet(extractor.getAlphabet(), msaAlphabet) == nullptr) {
         setError(tr("Sequences have incompatible alphabets"));
     }
     return ReportResult_Finished;
 }
 
-const SequenceObjectsExtractor& LoadSequencesTask::getExtractor() const {
+const SequenceObjectsExtractor &LoadSequencesTask::getExtractor() const {
     return extractor;
 }
-
-
 
 /************************************************************************/
 /* AlignSequencesToAlignmentTask */
 /************************************************************************/
-AlignSequencesToAlignmentTask::AlignSequencesToAlignmentTask(MultipleSequenceAlignmentObject* obj, const SequenceObjectsExtractor& extractor, bool _forceUseUgeneNativeAligner)
+AlignSequencesToAlignmentTask::AlignSequencesToAlignmentTask(MultipleSequenceAlignmentObject *obj, const SequenceObjectsExtractor &extractor, bool _forceUseUgeneNativeAligner)
     : Task(tr("Align sequences to alignment task"), TaskFlags_NR_FOSE_COSC), maObj(obj), stateLock(NULL), docStateLock(NULL),
-    sequencesMaxLength(extractor.getMaxSequencesLength()), extr(extractor)
-{
+      sequencesMaxLength(extractor.getMaxSequencesLength()), extr(extractor) {
     if (_forceUseUgeneNativeAligner) {
         settings.algorithmName = BaseAlignmentAlgorithmsIds::ALIGN_SEQUENCES_TO_ALIGNMENT_BY_UGENE;
     }
@@ -247,8 +241,7 @@ AlignSequencesToAlignmentTask::AlignSequencesToAlignmentTask(MultipleSequenceAli
     initialMsaAlphabet = obj->getAlphabet();
 }
 
-void AlignSequencesToAlignmentTask::prepare()
-{
+void AlignSequencesToAlignmentTask::prepare() {
     if (maObj.isNull()) {
         stateInfo.setError(tr("Object is empty."));
         return;
@@ -258,11 +251,11 @@ void AlignSequencesToAlignmentTask::prepare()
         stateInfo.setError(tr("Object is locked for modifications."));
         return;
     }
-    Document* document =  maObj->getDocument();
+    Document *document = maObj->getDocument();
     if (document != nullptr) {
         docStateLock = new StateLock("Lock MSA for align sequences to alignment", StateLockFlag_LiveLock);
         document->lockState(docStateLock);
-        foreach(Document * curDoc, usedDocuments) {
+        foreach (Document *curDoc, usedDocuments) {
             curDoc->lockState(docStateLock);
         }
     }
@@ -270,19 +263,18 @@ void AlignSequencesToAlignmentTask::prepare()
     stateLock = new StateLock("Align sequences to alignment", StateLockFlag_LiveLock);
     maObj->lockState(stateLock);
 
-    AlignmentAlgorithmsRegistry* alignmentRegistry = AppContext::getAlignmentAlgorithmsRegistry();
+    AlignmentAlgorithmsRegistry *alignmentRegistry = AppContext::getAlignmentAlgorithmsRegistry();
     SAFE_POINT(NULL != alignmentRegistry, "AlignmentAlgorithmsRegistry is NULL.", );
-    AlignmentAlgorithm* addAlgorithm = alignmentRegistry->getAlgorithm(settings.algorithmName);
+    AlignmentAlgorithm *addAlgorithm = alignmentRegistry->getAlgorithm(settings.algorithmName);
     SAFE_POINT_EXT(NULL != addAlgorithm, setError(QString("Can not find \"%1\" algorithm").arg(settings.algorithmName)), );
     addSubTask(addAlgorithm->getFactory()->getTaskInstance(&settings));
 }
 
 void AlignSequencesToAlignmentTask::fillSettingsByDefault() {
-    AlignmentAlgorithmsRegistry* alignmentRegistry = AppContext::getAlignmentAlgorithmsRegistry();
+    AlignmentAlgorithmsRegistry *alignmentRegistry = AppContext::getAlignmentAlgorithmsRegistry();
     SAFE_POINT(NULL != alignmentRegistry, "AlignmentAlgorithmsRegistry is NULL.", );
     if (settings.algorithmName.isEmpty()) {
-        if (alignmentRegistry->getAvailableAlgorithmIds(AddToAlignment).contains(BaseAlignmentAlgorithmsIds::ALIGN_SEQUENCES_TO_ALIGNMENT_BY_MAFFT)
-            && maObj->getMultipleAlignment()->getNumRows() != 0) {
+        if (alignmentRegistry->getAvailableAlgorithmIds(AddToAlignment).contains(BaseAlignmentAlgorithmsIds::ALIGN_SEQUENCES_TO_ALIGNMENT_BY_MAFFT) && maObj->getMultipleAlignment()->getNumRows() != 0) {
             settings.algorithmName = BaseAlignmentAlgorithmsIds::ALIGN_SEQUENCES_TO_ALIGNMENT_BY_MAFFT;
         } else {
             settings.algorithmName = BaseAlignmentAlgorithmsIds::ALIGN_SEQUENCES_TO_ALIGNMENT_BY_UGENE;
@@ -294,16 +286,16 @@ void AlignSequencesToAlignmentTask::fillSettingsByDefault() {
 }
 
 Task::ReportResult AlignSequencesToAlignmentTask::report() {
-    if(stateLock != NULL) {
+    if (stateLock != NULL) {
         maObj->unlockState(stateLock);
         delete stateLock;
     }
 
-    if(docStateLock != NULL) {
-        Document* document =  maObj->getDocument();
+    if (docStateLock != NULL) {
+        Document *document = maObj->getDocument();
         document->unlockState(docStateLock);
 
-        foreach(Document* curDoc, usedDocuments) {
+        foreach (Document *curDoc, usedDocuments) {
             curDoc->unlockState(docStateLock);
         }
 
@@ -312,7 +304,7 @@ Task::ReportResult AlignSequencesToAlignmentTask::report() {
     MaModificationInfo mi;
     mi.alphabetChanged = extr.getAlphabet()->getId() != initialMsaAlphabet->getId();
     mi.rowListChanged = true;
-    if(!hasError() && !isCanceled()) {
+    if (!hasError() && !isCanceled()) {
         maObj->updateCachedMultipleAlignment(mi);
     }
 
@@ -322,8 +314,9 @@ Task::ReportResult AlignSequencesToAlignmentTask::report() {
 /************************************************************************/
 /* LoadSequencesAndAlignToAlignmentTask */
 /************************************************************************/
-LoadSequencesAndAlignToAlignmentTask::LoadSequencesAndAlignToAlignmentTask(MultipleSequenceAlignmentObject* obj, const QStringList& urls, bool _forceUseUgeneNativeAligner)
-: Task(tr("Load sequences and add to alignment task"), TaskFlag_NoRun | TaskFlag_CollectChildrenWarnings), urls(urls), maObj(obj), loadSequencesTask(nullptr), forceUseUgeneNativeAligner(_forceUseUgeneNativeAligner) {}
+LoadSequencesAndAlignToAlignmentTask::LoadSequencesAndAlignToAlignmentTask(MultipleSequenceAlignmentObject *obj, const QStringList &urls, bool _forceUseUgeneNativeAligner)
+    : Task(tr("Load sequences and add to alignment task"), TaskFlag_NoRun | TaskFlag_CollectChildrenWarnings), urls(urls), maObj(obj), loadSequencesTask(nullptr), forceUseUgeneNativeAligner(_forceUseUgeneNativeAligner) {
+}
 
 void LoadSequencesAndAlignToAlignmentTask::prepare() {
     SAFE_POINT_EXT(maObj != nullptr, setError("MultipleSequenceAlignmentObject is null"), );
@@ -333,11 +326,11 @@ void LoadSequencesAndAlignToAlignmentTask::prepare() {
     addSubTask(loadSequencesTask);
 }
 
-QList<Task*> LoadSequencesAndAlignToAlignmentTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> subTasks;
+QList<Task *> LoadSequencesAndAlignToAlignmentTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> subTasks;
     propagateSubtaskError();
-    if(subTask == loadSequencesTask && !loadSequencesTask->hasError() && !loadSequencesTask->isCanceled()) {
-        AlignSequencesToAlignmentTask* alignSequencesToAlignmentTask = new AlignSequencesToAlignmentTask(maObj, loadSequencesTask->getExtractor(), forceUseUgeneNativeAligner);
+    if (subTask == loadSequencesTask && !loadSequencesTask->hasError() && !loadSequencesTask->isCanceled()) {
+        AlignSequencesToAlignmentTask *alignSequencesToAlignmentTask = new AlignSequencesToAlignmentTask(maObj, loadSequencesTask->getExtractor(), forceUseUgeneNativeAligner);
         alignSequencesToAlignmentTask->setSubtaskProgressWeight(95);
         subTasks << alignSequencesToAlignmentTask;
     }
@@ -348,12 +341,14 @@ bool LoadSequencesAndAlignToAlignmentTask::propagateSubtaskError() {
     if (hasError()) {
         return true;
     }
-    Task* badChild = getSubtaskWithErrors();
+    Task *badChild = getSubtaskWithErrors();
     if (nullptr != badChild) {
         stateInfo.setError(tr("Data from the \"%1\" file can't be alignment to the \"%2\" alignment - %3")
-            .arg(QFileInfo(urls.first()).fileName()).arg(maObj->getGObjectName()).arg(badChild->getError().toLower()));
+                               .arg(QFileInfo(urls.first()).fileName())
+                               .arg(maObj->getGObjectName())
+                               .arg(badChild->getError().toLower()));
     }
     return stateInfo.hasError();
 }
 
-}
+}    // namespace U2

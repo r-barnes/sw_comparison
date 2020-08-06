@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "MsaColorSchemePercentageIdentity.h"
+
 #include <QColor>
 
 #include <U2Algorithm/MSAConsensusUtils.h>
@@ -26,19 +28,16 @@
 #include <U2Core/MultipleAlignment.h>
 #include <U2Core/MultipleAlignmentObject.h>
 
-#include "MsaColorSchemePercentageIdentity.h"
-
 namespace U2 {
 
 MsaColorSchemePercentageIdentity::MsaColorSchemePercentageIdentity(QObject *parent, const MsaColorSchemeFactory *factory, MultipleAlignmentObject *maObj)
     : MsaColorScheme(parent, factory, maObj),
       cacheVersion(0),
-      objVersion(1)
-{
-    mask4[0]=81;
-    mask4[1]=61;
-    mask4[2]=41;
-    mask4[3]=25;
+      objVersion(1) {
+    mask4[0] = 81;
+    mask4[1] = 61;
+    mask4[2] = 41;
+    mask4[3] = 25;
 
     colorsByRange[0] = QColor("#6464FF");
     colorsByRange[1] = QColor("#9999FF");
@@ -94,13 +93,12 @@ void MsaColorSchemePercentageIdentity::updateCache() const {
     cacheVersion = objVersion;
 }
 
-MsaColorSchemePercentageIdentityFactory::MsaColorSchemePercentageIdentityFactory(QObject *parent, const QString &id, const QString &name, const AlphabetFlags &supportedAlphabets) : MsaColorSchemeFactory(parent, id, name, supportedAlphabets)
-{
-
+MsaColorSchemePercentageIdentityFactory::MsaColorSchemePercentageIdentityFactory(QObject *parent, const QString &id, const QString &name, const AlphabetFlags &supportedAlphabets)
+    : MsaColorSchemeFactory(parent, id, name, supportedAlphabets) {
 }
 
-MsaColorScheme * MsaColorSchemePercentageIdentityFactory::create(QObject *parent, MultipleAlignmentObject *maObj) const {
+MsaColorScheme *MsaColorSchemePercentageIdentityFactory::create(QObject *parent, MultipleAlignmentObject *maObj) const {
     return new MsaColorSchemePercentageIdentity(parent, this, maObj);
 }
 
-}   // namespace U2
+}    // namespace U2

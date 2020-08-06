@@ -29,8 +29,8 @@ namespace U2 {
 class Metaphlan2Support : public ExternalTool {
     Q_OBJECT
 public:
-    Metaphlan2Support(const QString& id, const QString& name, const QString& path = "");
-    void performAdditionalChecks(const QString& toolPath);
+    Metaphlan2Support(const QString &id, const QString &name, const QString &path = "");
+    void performAdditionalChecks(const QString &toolPath);
 
     static const QString TOOL_NAME;
     static const QString TOOL_ID;
@@ -42,5 +42,5 @@ public:
     static const QString ET_PYTHON_NUMPY_ID;
 };
 
-}//namespace
-#endif // _U2_METAPHLAN_SUPPORT_H_
+}    // namespace U2
+#endif    // _U2_METAPHLAN_SUPPORT_H_

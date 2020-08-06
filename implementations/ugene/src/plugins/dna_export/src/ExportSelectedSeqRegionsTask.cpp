@@ -19,12 +19,12 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportSelectedSeqRegionsTask.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/U2SequenceUtils.h>
-
-#include "ExportSelectedSeqRegionsTask.h"
 
 namespace U2 {
 
@@ -60,18 +60,21 @@ void adjustAnnotationLocations(const U2Region &r, QList<SharedAnnotationData> &a
     }
 }
 
-}
+}    // namespace
 
 //////////////////////////////////////////////////////////////////////////
 /// CreateExportItemsFromSeqRegionsTask
 //////////////////////////////////////////////////////////////////////////
 
 CreateExportItemsFromSeqRegionsTask::CreateExportItemsFromSeqRegionsTask(const QPointer<U2SequenceObject> &seqObject,
-    const QList<QPointer<AnnotationTableObject> > &connectedAts, const QVector<U2Region> &regions, const ExportSequenceTaskSettings &exportSettings,
-    const DNATranslation *aminoTrans, const DNATranslation *backTranslation, const DNATranslation *complTrans)
+                                                                         const QList<QPointer<AnnotationTableObject>> &connectedAts,
+                                                                         const QVector<U2Region> &regions,
+                                                                         const ExportSequenceTaskSettings &exportSettings,
+                                                                         const DNATranslation *aminoTrans,
+                                                                         const DNATranslation *backTranslation,
+                                                                         const DNATranslation *complTrans)
     : Task(tr("Extract sequences from regions task"), TaskFlag_None), seqObject(seqObject), annotations(connectedAts), regions(regions),
-    exportSettings(exportSettings), aminoTrans(aminoTrans), backTranslation(backTranslation), complTrans(complTrans)
-{
+      exportSettings(exportSettings), aminoTrans(aminoTrans), backTranslation(backTranslation), complTrans(complTrans) {
     CHECK(isSeqObjectValid(seqObject, stateInfo), );
 
     foreach (const QPointer<AnnotationTableObject> &aobj, annotations) {
@@ -82,7 +85,7 @@ CreateExportItemsFromSeqRegionsTask::CreateExportItemsFromSeqRegionsTask(const Q
     }
 }
 
-const ExportSequenceTaskSettings & CreateExportItemsFromSeqRegionsTask::getExportSettings() const {
+const ExportSequenceTaskSettings &CreateExportItemsFromSeqRegionsTask::getExportSettings() const {
     return exportSettings;
 }
 
@@ -101,7 +104,7 @@ QList<SharedAnnotationData> CreateExportItemsFromSeqRegionsTask::findAnnotations
 }
 
 void CreateExportItemsFromSeqRegionsTask::run() {
-    const qint64 sequenceChunkMaxLength = 4194304; // 4 MiB chunk
+    const qint64 sequenceChunkMaxLength = 4194304;    // 4 MiB chunk
     const U2DbiRef dbiRef = AppContext::getDbiRegistry()->getSessionTmpDbiRef(stateInfo);
     SAFE_POINT_OP(stateInfo, );
 
@@ -178,12 +181,9 @@ void CreateExportItemsFromSeqRegionsTask::run() {
 /// ExportSelectedSeqRegionsTask
 //////////////////////////////////////////////////////////////////////////
 
-ExportSelectedSeqRegionsTask::ExportSelectedSeqRegionsTask(U2SequenceObject *seqObject, const QSet<AnnotationTableObject *> &connectedAts,
-    const QVector<U2Region> &regions, const ExportSequenceTaskSettings &exportSettings, const DNATranslation *aminoTrans,
-    const DNATranslation *backTrans, const DNATranslation *complTrans)
+ExportSelectedSeqRegionsTask::ExportSelectedSeqRegionsTask(U2SequenceObject *seqObject, const QSet<AnnotationTableObject *> &connectedAts, const QVector<U2Region> &regions, const ExportSequenceTaskSettings &exportSettings, const DNATranslation *aminoTrans, const DNATranslation *backTrans, const DNATranslation *complTrans)
     : DocumentProviderTask(tr("Export selected regions from a sequence task"), TaskFlags_NR_FOSE_COSC), seqObject(seqObject),
-    regions(regions), exportSettings(exportSettings), aminoTrans(aminoTrans), backTrans(backTrans), complTrans(complTrans)
-{
+      regions(regions), exportSettings(exportSettings), aminoTrans(aminoTrans), backTrans(backTrans), complTrans(complTrans) {
     CHECK(isSeqObjectValid(seqObject, stateInfo), );
 
     foreach (AnnotationTableObject *aObj, connectedAts) {
@@ -197,8 +197,7 @@ ExportSelectedSeqRegionsTask::ExportSelectedSeqRegionsTask(U2SequenceObject *seq
 }
 
 void ExportSelectedSeqRegionsTask::prepare() {
-    CreateExportItemsFromSeqRegionsTask *t = new CreateExportItemsFromSeqRegionsTask(seqObject, annotations, regions,
-        exportSettings, aminoTrans, backTrans, complTrans);
+    CreateExportItemsFromSeqRegionsTask *t = new CreateExportItemsFromSeqRegionsTask(seqObject, annotations, regions, exportSettings, aminoTrans, backTrans, complTrans);
     addSubTask(t);
 }
 
@@ -220,4 +219,4 @@ QList<Task *> ExportSelectedSeqRegionsTask::onSubTaskFinished(Task *subTask) {
     return resultTasks;
 }
 
-} // namespace U2
+}    // namespace U2

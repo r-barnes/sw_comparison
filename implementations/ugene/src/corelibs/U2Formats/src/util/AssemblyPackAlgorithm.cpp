@@ -21,15 +21,15 @@
 
 #include "AssemblyPackAlgorithm.h"
 
-#include <U2Core/Timer.h>
 #include <U2Core/GAutoDeleteList.h>
 #include <U2Core/Log.h>
+#include <U2Core/Timer.h>
 #include <U2Core/U2Assembly.h>
 #include <U2Core/U2Region.h>
 
 namespace U2 {
 
-static qint64 selectProw(qint64* tails, qint64 start, qint64 end) {
+static qint64 selectProw(qint64 *tails, qint64 start, qint64 end) {
     for (int i = 0; i < PACK_TAIL_SIZE; i++) {
         if (tails[i] <= start) {
             tails[i] = end;
@@ -49,7 +49,7 @@ PackAlgorithmContext::PackAlgorithmContext() {
 
 #define PACK_TRACE_CHECKPOINT 100000
 
-void AssemblyPackAlgorithm::pack(PackAlgorithmAdapter& adapter, U2AssemblyPackStat& stat, U2OpStatus& os) {
+void AssemblyPackAlgorithm::pack(PackAlgorithmAdapter &adapter, U2AssemblyPackStat &stat, U2OpStatus &os) {
     //Algorithm idea:
     //  select * reads ordered by start position
     //  keep tack (tail) of used rows to assign packed row for reads (N elements)
@@ -63,7 +63,7 @@ void AssemblyPackAlgorithm::pack(PackAlgorithmAdapter& adapter, U2AssemblyPackSt
     gauto_array<qint64> tails(new qint64[PACK_TAIL_SIZE]);
     qFill(tails.get(), tails.get() + PACK_TAIL_SIZE, -1);
 
-    QScopedPointer< U2DbiIterator<PackAlgorithmData> > allReadsIterator(adapter.selectAllReads(os));
+    QScopedPointer<U2DbiIterator<PackAlgorithmData>> allReadsIterator(adapter.selectAllReads(os));
     PackAlgorithmContext ctx;
     while (allReadsIterator->hasNext() && !os.isCoR()) {
         PackAlgorithmData read = allReadsIterator->next();
@@ -81,7 +81,7 @@ void AssemblyPackAlgorithm::pack(PackAlgorithmAdapter& adapter, U2AssemblyPackSt
     perfLog.trace(QString("Assembly: algorithm pack time: %1 seconds").arg((GTimer::currentTimeMicros() - t0) / float(1000 * 1000)));
 }
 
-int AssemblyPackAlgorithm::packRead(const U2Region& reg, PackAlgorithmContext& ctx, U2OpStatus&) {
+int AssemblyPackAlgorithm::packRead(const U2Region &reg, PackAlgorithmContext &ctx, U2OpStatus &) {
     int prow = selectProw(ctx.tails.data(), reg.startPos, reg.endPos());
     if (prow == -1) {
         if (reg.startPos > ctx.peakEnd) {
@@ -95,4 +95,4 @@ int AssemblyPackAlgorithm::packRead(const U2Region& reg, PackAlgorithmContext& c
     return prow;
 }
 
-} //namespace
+}    // namespace U2

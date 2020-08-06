@@ -33,28 +33,26 @@ class U2CORE_EXPORT CreateAnnotationsTask : public Task {
 public:
     // Adds annotations to the object. Waits object to be unlocked if needed
     // Works only in a context of active project
-                                    CreateAnnotationsTask(AnnotationTableObject *o, const QList<SharedAnnotationData> &data,
-                                        const QString &group = QString());
-                                    CreateAnnotationsTask(const GObjectReference &ref, const QList<SharedAnnotationData> &data,
-                                        const QString &group = QString());
-                                    CreateAnnotationsTask(AnnotationTableObject *o, const QMap<QString, QList<SharedAnnotationData> > &data);
+    CreateAnnotationsTask(AnnotationTableObject *o, const QList<SharedAnnotationData> &data, const QString &group = QString());
+    CreateAnnotationsTask(const GObjectReference &ref, const QList<SharedAnnotationData> &data, const QString &group = QString());
+    CreateAnnotationsTask(AnnotationTableObject *o, const QMap<QString, QList<SharedAnnotationData>> &data);
 
-    void                            run();
-    ReportResult                    report();
-    AnnotationTableObject *         getGObject() const;
-    int                             getAnnotationCount() const;
-    QList<Annotation *>             getResultAnnotations() const;
+    void run();
+    ReportResult report();
+    AnnotationTableObject *getGObject() const;
+    int getAnnotationCount() const;
+    QList<Annotation *> getResultAnnotations() const;
 
 private:
-    void                                            initAnnObjectRef();
+    void initAnnObjectRef();
 
-    GObjectReference                                aRef;
-    QPointer<AnnotationTableObject>                 aobj;
-    QMap<AnnotationGroup *, QList<Annotation *> >   group2Annotations;
-    QMap<QString, QList<SharedAnnotationData> >     aData;
-    QList<Annotation *>                             resultAnnotations;
+    GObjectReference aRef;
+    QPointer<AnnotationTableObject> aobj;
+    QMap<AnnotationGroup *, QList<Annotation *>> group2Annotations;
+    QMap<QString, QList<SharedAnnotationData>> aData;
+    QList<Annotation *> resultAnnotations;
 };
 
-} //namespace U2
+}    //namespace U2
 
 #endif

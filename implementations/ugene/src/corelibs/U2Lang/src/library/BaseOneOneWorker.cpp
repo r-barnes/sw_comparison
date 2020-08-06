@@ -19,18 +19,16 @@
 * MA 02110-1301, USA.
 */
 
+#include "BaseOneOneWorker.h"
+
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "BaseOneOneWorker.h"
 
 namespace U2 {
 namespace LocalWorkflow {
 
 BaseOneOneWorker::BaseOneOneWorker(Actor *a, bool autoTransitBus, const QString &inPortId, const QString &outPortId)
-: BaseWorker(a, autoTransitBus), inPortId(inPortId), outPortId(outPortId), input(NULL), output(NULL), prepared(false)
-{
-
+    : BaseWorker(a, autoTransitBus), inPortId(inPortId), outPortId(outPortId), input(NULL), output(NULL), prepared(false) {
 }
 
 void BaseOneOneWorker::init() {
@@ -40,7 +38,7 @@ void BaseOneOneWorker::init() {
     SAFE_POINT(NULL != output, QString("Output port '%1' is NULL").arg(outPortId), );
 }
 
-Task * BaseOneOneWorker::tick() {
+Task *BaseOneOneWorker::tick() {
     if (!prepared) {
         U2OpStatusImpl os;
         Task *prepareTask = prepare(os);
@@ -68,16 +66,15 @@ Task * BaseOneOneWorker::tick() {
     return NULL;
 }
 
-Task * BaseOneOneWorker::createPrepareTask(U2OpStatus &/*os*/) const {
+Task *BaseOneOneWorker::createPrepareTask(U2OpStatus & /*os*/) const {
     return NULL;
 }
 
-void BaseOneOneWorker::onPrepared(Task * /*task*/, U2OpStatus &/*os*/) {
-
+void BaseOneOneWorker::onPrepared(Task * /*task*/, U2OpStatus & /*os*/) {
 }
 
 void BaseOneOneWorker::sl_taskFinished() {
-    Task *task = dynamic_cast<Task*>(sender());
+    Task *task = dynamic_cast<Task *>(sender());
     CHECK(NULL != task, );
     CHECK(task->isFinished() && !task->isCanceled() && !task->hasError(), );
     U2OpStatusImpl os;
@@ -93,7 +90,7 @@ void BaseOneOneWorker::sl_taskFinished() {
 }
 
 void BaseOneOneWorker::sl_prepared() {
-    Task *task = dynamic_cast<Task*>(sender());
+    Task *task = dynamic_cast<Task *>(sender());
     CHECK(NULL != task, );
     CHECK(task->isFinished(), );
     if (task->isCanceled() || task->hasError()) {
@@ -111,7 +108,7 @@ void BaseOneOneWorker::sl_prepared() {
     }
 }
 
-Task * BaseOneOneWorker::prepare(U2OpStatus &os) {
+Task *BaseOneOneWorker::prepare(U2OpStatus &os) {
     CHECK(!prepared, NULL);
     Task *task = createPrepareTask(os);
     if (os.hasError()) {
@@ -126,5 +123,5 @@ Task * BaseOneOneWorker::prepare(U2OpStatus &os) {
     return task;
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

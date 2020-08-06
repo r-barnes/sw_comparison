@@ -22,15 +22,15 @@
 #ifndef _U2_BIOSTRUCT3D_H_
 #define _U2_BIOSTRUCT3D_H_
 
-#include <U2Core/Vector3D.h>
-#include <U2Core/global.h>
-#include <U2Core/AnnotationData.h>
-#include <U2Core/Matrix44.h>
-
-#include <QString>
 #include <QList>
 #include <QMap>
 #include <QSharedData>
+#include <QString>
+
+#include <U2Core/AnnotationData.h>
+#include <U2Core/Matrix44.h>
+#include <U2Core/Vector3D.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -38,33 +38,46 @@ class U2Region;
 
 class U2CORE_EXPORT ResidueIndex {
     int resId;
-    int order; // to keep order of residues in the chain
+    int order;    // to keep order of residues in the chain
     char insCode;
+
 public:
-    ResidueIndex() : resId(0), order(0), insCode(' ') {}
-    ResidueIndex(int residueIdx, char insertionCode) : resId(residueIdx), order(0), insCode(insertionCode) {}
-    bool operator<(const ResidueIndex& other) const;
-    bool operator==(const ResidueIndex& other) const;
-    bool operator!=(const ResidueIndex& other) const;
-    int toInt() const { return resId; }
-    void setOrder(int ord) { order = ord; }
+    ResidueIndex()
+        : resId(0), order(0), insCode(' ') {
+    }
+    ResidueIndex(int residueIdx, char insertionCode)
+        : resId(residueIdx), order(0), insCode(insertionCode) {
+    }
+    bool operator<(const ResidueIndex &other) const;
+    bool operator==(const ResidueIndex &other) const;
+    bool operator!=(const ResidueIndex &other) const;
+    int toInt() const {
+        return resId;
+    }
+    void setOrder(int ord) {
+        order = ord;
+    }
 
     int getOrder() const;
     char getInsCode() const;
 };
 
-
 //! Represents biopolimer residue
 class ResidueData : public QSharedData {
 public:
     enum Type {
-        TYPE_UNKNOWN, TYPE_PROTEIN, TYPE_DNA, TYPE_RNA
+        TYPE_UNKNOWN,
+        TYPE_PROTEIN,
+        TYPE_DNA,
+        TYPE_RNA
     };
     Type type;
     QByteArray name;
     char acronym;
     int chainIndex;
-    ResidueData() : type(TYPE_UNKNOWN), acronym(' '), chainIndex(0) {}
+    ResidueData()
+        : type(TYPE_UNKNOWN), acronym(' '), chainIndex(0) {
+    }
 };
 
 typedef QSharedDataPointer<ResidueData> SharedResidue;
@@ -86,7 +99,6 @@ public:
         temperature = -1.0;
         occupancy = 0;
     }
-
 };
 
 typedef QSharedDataPointer<AtomData> SharedAtom;
@@ -95,18 +107,31 @@ typedef QSharedDataPointer<AtomData> SharedAtom;
 class Bond {
     SharedAtom atom1;
     SharedAtom atom2;
+
 public:
-    Bond(const SharedAtom& a1, const SharedAtom& a2) : atom1(a1), atom2(a2) {}
-    const SharedAtom getAtom1() const { return atom1; }
-    const SharedAtom getAtom2() const { return atom2; }
+    Bond(const SharedAtom &a1, const SharedAtom &a2)
+        : atom1(a1), atom2(a2) {
+    }
+    const SharedAtom getAtom1() const {
+        return atom1;
+    }
+    const SharedAtom getAtom2() const {
+        return atom2;
+    }
 };
 
 //! Represents protein secondary structure: alpha-helix, beta-strand, turn
 class SecondaryStructure : public QSharedData {
 public:
     enum Type {
-        Type_None = -1, Type_AlphaHelix, Type_PiHelix, Type_310Helix,
-        Type_BetaStrand, Type_BetaBridge, Type_Turn, Type_BendRegion
+        Type_None = -1,
+        Type_AlphaHelix,
+        Type_PiHelix,
+        Type_310Helix,
+        Type_BetaStrand,
+        Type_BetaBridge,
+        Type_Turn,
+        Type_BendRegion
     };
 
     Type type;
@@ -116,7 +141,8 @@ public:
     int endSequenceNumber;
 
 public:
-    SecondaryStructure() : type(Type_None) {
+    SecondaryStructure()
+        : type(Type_None) {
         startSequenceNumber = 0;
         endSequenceNumber = 0;
         chainIndex = 0;
@@ -143,13 +169,17 @@ public:
 
 class MoleculeData : public QSharedData {
 public:
-    MoleculeData() : chainId(0), engineered(false) {}
-    MoleculeData(const QString& molName) : name(molName), chainId(0), engineered(false) {}
+    MoleculeData()
+        : chainId(0), engineered(false) {
+    }
+    MoleculeData(const QString &molName)
+        : name(molName), chainId(0), engineered(false) {
+    }
     QMap<ResidueIndex, SharedResidue> residueMap;
 
     // this list used by biostrct renderers
     // its indexes are NOT model ids taken from PDB
-    QMap <int, Molecule3DModel> models;
+    QMap<int, Molecule3DModel> models;
 
     QString name;
     char chainId;
@@ -175,16 +205,20 @@ public:
     /** This is not deep copy constructor */
     BioStruct3D(const BioStruct3D &other);
 
-    QMap <int, SharedMolecule> moleculeMap;
-    QMap <int, AtomCoordSet> modelMap;
+    QMap<int, SharedMolecule> moleculeMap;
+    QMap<int, AtomCoordSet> modelMap;
     QList<SharedSecondaryStructure> secondaryStructures;
     QList<Bond> interMolecularBonds;
     QString descr;
     QByteArray pdbId;
 
     // Const member functions
-    double getRadius()  const { return radius; }
-    const Vector3D& getCenter() const { return rotationCenter; }
+    double getRadius() const {
+        return radius;
+    }
+    const Vector3D &getCenter() const {
+        return rotationCenter;
+    }
 
     void setRadius(double value);
     void setCenter(const Vector3D &value);
@@ -195,7 +229,7 @@ public:
     int getNumberOfAtoms() const;
     QList<SharedAtom> getAllAtoms() const;
     int getNumberOfResidues() const;
-    static int residueIndexToInt(const ResidueIndex& idx);
+    static int residueIndexToInt(const ResidueIndex &idx);
     const SharedAtom getAtomById(int index, int modelIndex) const;
     const SharedResidue getResidueById(int chainIndex, ResidueIndex residueIndex) const;
 
@@ -216,19 +250,23 @@ public:
     void calcCenterAndMaxDistance();
 
     /** Generates the map: chainId <-> annotations */
-    QMap<int, QList<SharedAnnotationData> > generateAnnotations() const;
+    QMap<int, QList<SharedAnnotationData>> generateAnnotations() const;
 
     /** Biostruct 3D model should be transforemd with this matrix */
-    void setTransform(const Matrix44 &m) { transform = m; }
-    const Matrix44& getTransform() const { return transform; }
+    void setTransform(const Matrix44 &m) {
+        transform = m;
+    }
+    const Matrix44 &getTransform() const {
+        return transform;
+    }
 
 public:
     // Static methods
     static const QString getSecStructTypeName(SecondaryStructure::Type type);
 
 private:
-    QMap<int, QList<SharedAnnotationData> > generateChainAnnotations() const;
-    void generateSecStructureAnnotations(QMap<int, QList<SharedAnnotationData> > &result) const;
+    QMap<int, QList<SharedAnnotationData>> generateChainAnnotations() const;
+    void generateSecStructureAnnotations(QMap<int, QList<SharedAnnotationData>> &result) const;
 
 private:
     double radius;
@@ -239,16 +277,21 @@ private:
 //! Shared data for BioStruct3DSelection
 class BioStruct3DChainSelectionData : public QSharedData {
 public:
-    BioStruct3DChainSelectionData() : QSharedData() {}
-    BioStruct3DChainSelectionData(const BioStruct3DChainSelectionData &other) : QSharedData(), selection(other.selection) {}
+    BioStruct3DChainSelectionData()
+        : QSharedData() {
+    }
+    BioStruct3DChainSelectionData(const BioStruct3DChainSelectionData &other)
+        : QSharedData(), selection(other.selection) {
+    }
 
-    ~BioStruct3DChainSelectionData() {}
+    ~BioStruct3DChainSelectionData() {
+    }
 
     // <chainId, residueId> presented in map believed to be selected
     // can be optimized on assumption that residue ids are continual
     QMultiMap<int, int> selection;
 
-};  // class BioStruct3DChainSelectionData
+};    // class BioStruct3DChainSelectionData
 
 //! Represents residue chain selection on BioStruct3D.
 class U2CORE_EXPORT BioStruct3DChainSelection {
@@ -256,10 +299,14 @@ public:
     BioStruct3DChainSelection(const BioStruct3D &biostruct);
     BioStruct3DChainSelection(const BioStruct3DChainSelection &other);
 
-    const BioStruct3D &getBioStruct3D() const { return biostruct; }
+    const BioStruct3D &getBioStruct3D() const {
+        return biostruct;
+    }
 
     bool inSelection(int chainId, int residueId) const;
-    bool isEmpty() const { return data->selection.isEmpty(); }
+    bool isEmpty() const {
+        return data->selection.isEmpty();
+    }
 
     void add(int chain, const U2Region &region);
     void add(int chain, const QVector<U2Region> &regions);
@@ -273,10 +320,8 @@ public:
 private:
     const BioStruct3D &biostruct;
     QSharedDataPointer<BioStruct3DChainSelectionData> data;
-};  // class U2CORE_EXPORT BioStruct3DChainSelection
+};    // class U2CORE_EXPORT BioStruct3DChainSelection
 
-} // namespace U2
+}    // namespace U2
 
-
-
-#endif // _U2_BIOSTRUCT3D_H_
+#endif    // _U2_BIOSTRUCT3D_H_

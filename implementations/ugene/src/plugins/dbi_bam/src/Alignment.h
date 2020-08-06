@@ -22,24 +22,21 @@
 #ifndef _U2_BAM_ALIGNMENT_H_
 #define _U2_BAM_ALIGNMENT_H_
 
-#include <U2Core/U2Assembly.h>
-
 #include <QFlags>
 #include <QList>
 #include <QMap>
 #include <QVariant>
 
+#include <U2Core/U2Assembly.h>
+
 namespace U2 {
 namespace BAM {
 
-class Alignment
-{
+class Alignment {
 public:
-    class CigarOperation
-    {
+    class CigarOperation {
     public:
-        enum Operation
-        {
+        enum Operation {
             AlignmentMatch,
             Insertion,
             Deletion,
@@ -51,29 +48,30 @@ public:
             SequenceMismatch
         };
         CigarOperation(int length, Operation operation);
-        int getLength()const;
-        Operation getOperation()const;
+        int getLength() const;
+        Operation getOperation() const;
         void setLength(int length);
         void setOperation(Operation operation);
+
     private:
         int length;
         Operation operation;
     };
     Alignment();
-    int getReferenceId()const;
-    int getPosition()const;
-    int getBin()const;
-    int getMapQuality()const;
-    qint64 getFlags()const;
-    int getNextReferenceId()const;
-    QByteArray getNextReferenceName()const;
-    int getNextPosition()const;
-    int getTemplateLength()const;
-    const QByteArray &getName()const;
-    const QList<CigarOperation> &getCigar()const;
-    const QByteArray &getSequence()const;
-    const QByteArray &getQuality()const;
-    const QList<U2AuxData> & getAuxData()const;
+    int getReferenceId() const;
+    int getPosition() const;
+    int getBin() const;
+    int getMapQuality() const;
+    qint64 getFlags() const;
+    int getNextReferenceId() const;
+    QByteArray getNextReferenceName() const;
+    int getNextPosition() const;
+    int getTemplateLength() const;
+    const QByteArray &getName() const;
+    const QList<CigarOperation> &getCigar() const;
+    const QByteArray &getSequence() const;
+    const QByteArray &getQuality() const;
+    const QList<U2AuxData> &getAuxData() const;
     void setReferenceId(int referenceId);
     void setPosition(int position);
     void setBin(int bin);
@@ -91,6 +89,7 @@ public:
 
     static int computeLength(const QList<CigarOperation> &cigar);
     static int computeLength(const QList<U2CigarToken> &cigar);
+
 private:
     int referenceId;
     int position;
@@ -108,7 +107,7 @@ private:
     QList<U2AuxData> aux;
 };
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2
 
-#endif // _U2_BAM_ALIGNMENT_H_
+#endif    // _U2_BAM_ALIGNMENT_H_

@@ -21,9 +21,9 @@
 
 #include <math.h>
 
-#include "StrPackUtils.h"
-
 #include <U2Core/U2SafePoints.h>
+
+#include "StrPackUtils.h"
 
 namespace U2 {
 
@@ -64,7 +64,7 @@ QStringList StrPackUtils::unpackStringList(const QString &string, Options option
 
 QString StrPackUtils::packMap(const QVariantMap &map, Options options) {
     StrStrMap newMap;
-    foreach(const QString& key, map.keys()) {
+    foreach (const QString &key, map.keys()) {
         QVariant mapValue = map.value(key);
         SAFE_POINT(mapValue.canConvert<QString>(), tr("QVariant value can't be converted to string"), QString());
 
@@ -106,7 +106,7 @@ QBitArray StrPackUtils::initCharactersToEscape() {
 }
 
 QString StrPackUtils::escapeCharacters(QString string) {
-    string.replace('\\', QString("\\\\"));      // escape '\' first
+    string.replace('\\', QString("\\\\"));    // escape '\' first
     for (int i = 0; i < charactersToEscape.size(); i++) {
         if (charactersToEscape[i] && (char)i != '\\') {
             const char c = (char)i;
@@ -133,4 +133,4 @@ QString StrPackUtils::wrapString(const QString &string, Options options) {
     return wrapChar + string + wrapChar;
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -22,43 +22,43 @@
 #ifndef _U2_GRAPHPACK_DEVIATION_H_
 #define _U2_GRAPHPACK_DEVIATION_H_
 
-#include "DNAGraphPackPlugin.h"
+#include <QAction>
+#include <QBitArray>
+#include <QList>
+#include <QPair>
 
 #include <U2View/GSequenceGraphView.h>
 
-#include <QAction>
-#include <QList>
-#include <QBitArray>
-#include <QPair>
+#include "DNAGraphPackPlugin.h"
 
 namespace U2 {
 
 class DeviationGraphFactory : public GSequenceGraphFactory {
     Q_OBJECT
 public:
-    enum GDeviationType { GC, AT };
-    DeviationGraphFactory(GDeviationType t, QObject* p);
-    QList<QSharedPointer<GSequenceGraphData> > createGraphs(GSequenceGraphView* v);
-    bool isEnabled(const U2SequenceObject* o) const;
+    enum GDeviationType { GC,
+                          AT };
+    DeviationGraphFactory(GDeviationType t, QObject *p);
+    QList<QSharedPointer<GSequenceGraphData>> createGraphs(GSequenceGraphView *v);
+    bool isEnabled(const U2SequenceObject *o) const;
+
 private:
     QPair<char, char> devPair;
 };
 
 class DeviationGraphAlgorithm : public GSequenceGraphAlgorithm {
 public:
-    DeviationGraphAlgorithm(const QPair<char, char>& _p);
+    DeviationGraphAlgorithm(const QPair<char, char> &_p);
 
-    void calculate(QVector<float>& res, U2SequenceObject* o, const U2Region& r, const GSequenceGraphWindowData* d, U2OpStatus &os);
+    void calculate(QVector<float> &res, U2SequenceObject *o, const U2Region &r, const GSequenceGraphWindowData *d, U2OpStatus &os);
 
 private:
-    void windowStrategyWithoutMemorize(QVector<float>& res, const QByteArray& seq, int startPos,
-        const GSequenceGraphWindowData* d, int nSteps, U2OpStatus &os);
-    void sequenceStrategyWithMemorize(QVector<float>& res, const QByteArray& seq, const U2Region& vr,
-        const GSequenceGraphWindowData* d, U2OpStatus &os);
-    QPair<int, int> matchOnStep(const QByteArray& seq, int begin, int end);
+    void windowStrategyWithoutMemorize(QVector<float> &res, const QByteArray &seq, int startPos, const GSequenceGraphWindowData *d, int nSteps, U2OpStatus &os);
+    void sequenceStrategyWithMemorize(QVector<float> &res, const QByteArray &seq, const U2Region &vr, const GSequenceGraphWindowData *d, U2OpStatus &os);
+    QPair<int, int> matchOnStep(const QByteArray &seq, int begin, int end);
 
     QPair<char, char> p;
 };
 
-} // namespace
+}    // namespace U2
 #endif

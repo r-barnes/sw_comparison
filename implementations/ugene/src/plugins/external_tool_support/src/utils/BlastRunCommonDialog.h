@@ -22,26 +22,31 @@
 #ifndef _U2_BLAST_RUN_COMMON_DIALOG_H
 #define _U2_BLAST_RUN_COMMON_DIALOG_H
 
-#include <QDialog>
-#include <U2Core/DNASequenceObject.h>
-#include <U2Gui/DialogUtils.h>
 #include <ui_BlastAllSupportDialog.h>
+
+#include <QDialog>
+
+#include <U2Core/DNASequenceObject.h>
+
 #include <U2Gui/CreateAnnotationWidgetController.h>
-#include "BlastTaskSettings.h"
+#include <U2Gui/DialogUtils.h>
+
 #include "BlastDBSelectorWidgetController.h"
+#include "BlastTaskSettings.h"
 
 namespace U2 {
 
 class BlastRunCommonDialog : public QDialog, public Ui_BlastAllSupportDialog {
     Q_OBJECT
 public:
-    enum BlastType {BlastAll, BlastPlus};
+    enum BlastType { BlastAll,
+                     BlastPlus };
     BlastRunCommonDialog(QWidget *parent, BlastType blastType, bool useCompValues, QStringList compValues);
 
-    const BlastTaskSettings &getSettings()const;
-    QPushButton* okButton;
-    QPushButton* cancelButton;
-    QPushButton* restoreButton;
+    const BlastTaskSettings &getSettings() const;
+    QPushButton *okButton;
+    QPushButton *cancelButton;
+    QPushButton *restoreButton;
 protected slots:
     virtual void sl_runQuery() = 0;
     virtual void sl_lineEditChanged() = 0;
@@ -52,13 +57,14 @@ protected slots:
     void sl_megablastChecked();
     void sl_restoreDefault();
     void sl_onCompStatsChanged();
+
 protected:
-    void getSettings(BlastTaskSettings& settings);
+    void getSettings(BlastTaskSettings &settings);
     void enableStrandBox(bool enable);
 
-    BlastTaskSettings                   settings;
-    bool                                needRestoreDefault;
-    CreateAnnotationWidgetController*   ca_c;
+    BlastTaskSettings settings;
+    bool needRestoreDefault;
+    CreateAnnotationWidgetController *ca_c;
     BlastDBSelectorWidgetController *dbSelector;
 
 private:
@@ -67,5 +73,5 @@ private:
     bool useCompValues;
     QStringList compValues;
 };
-}//namespace
-#endif // _U2_BLAST_RUN_COMMON_DIALOG_H
+}    // namespace U2
+#endif    // _U2_BLAST_RUN_COMMON_DIALOG_H

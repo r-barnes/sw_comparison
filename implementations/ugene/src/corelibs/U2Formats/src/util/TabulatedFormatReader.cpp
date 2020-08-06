@@ -19,19 +19,18 @@
  * MA 02110-1301, USA.
  */
 
+#include "TabulatedFormatReader.h"
+
 #include <U2Core/IOAdapter.h>
 #include <U2Core/L10n.h>
 #include <U2Core/U2OpStatus.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "TabulatedFormatReader.h"
-
 namespace U2 {
 
-TabulatedFormatReader::TabulatedFormatReader(U2OpStatus &os, IOAdapter *ioAdapter) :
-    ioAdapter(ioAdapter),
-    currentLine(0)
-{
+TabulatedFormatReader::TabulatedFormatReader(U2OpStatus &os, IOAdapter *ioAdapter)
+    : ioAdapter(ioAdapter),
+      currentLine(0) {
     CHECK_EXT(NULL != ioAdapter, os.setError(L10N::nullPointerError("IO adapter")), );
     CHECK_EXT(ioAdapter->isOpen(), os.setError(tr("IO adapter is not opened")), );
 
@@ -52,7 +51,7 @@ qint64 TabulatedFormatReader::getCurrentLineNumber() const {
     return currentLine;
 }
 
-const QStringList & TabulatedFormatReader::getComments() const {
+const QStringList &TabulatedFormatReader::getComments() const {
     return comments;
 }
 
@@ -91,4 +90,4 @@ void TabulatedFormatReader::storeLine(const QString &line) {
     currentLine++;
 }
 
-}   // namespace U2
+}    // namespace U2

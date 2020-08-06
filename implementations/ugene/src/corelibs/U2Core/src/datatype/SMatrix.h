@@ -22,10 +22,10 @@
 #ifndef _U2_SUBST_MATRIX_H
 #define _U2_SUBST_MATRIX_H
 
-#include <U2Core/global.h>
-#include <U2Core/DNAAlphabet.h>
-
 #include <QVarLengthArray>
+
+#include <U2Core/DNAAlphabet.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -34,58 +34,73 @@ public:
     char c1;
     char c2;
     float score;
-    SScore(char _c1, char _c2, float _score) : c1(_c1), c2(_c2), score(_score){}
+    SScore(char _c1, char _c2, float _score)
+        : c1(_c1), c2(_c2), score(_score) {
+    }
 };
 
 // Substitution, Scoring or Weight matrix model.
 // Example: Blosum70, PAM200, VTML200
 class U2CORE_EXPORT SMatrix {
 public:
-    SMatrix(const QString& name, const DNAAlphabet* alphabet,
-                const QList<SScore>& rawMatrix,
-                const QString& description = QString());
+    SMatrix(const QString &name, const DNAAlphabet *alphabet, const QList<SScore> &rawMatrix, const QString &description = QString());
 
     //constructs empty anonymous matrix
-    SMatrix() { alphabet = NULL, minChar = 0; maxChar = 0; charsInRow = 0;}
+    SMatrix() {
+        alphabet = NULL, minChar = 0;
+        maxChar = 0;
+        charsInRow = 0;
+    }
 
-    bool isEmpty() const {return scores.size() == 0;}
+    bool isEmpty() const {
+        return scores.size() == 0;
+    }
 
     float getScore(char c1, char c2) const;
 
     void setScore(char c1, char c2, float score);
 
-    const QString& getName()  const {return name;}
+    const QString &getName() const {
+        return name;
+    }
 
-    const QString& getDescription()  const {return description;}
+    const QString &getDescription() const {
+        return description;
+    }
 
-    const DNAAlphabet* getAlphabet() const {return alphabet;}
+    const DNAAlphabet *getAlphabet() const {
+        return alphabet;
+    }
 
-    float getMinScore() const {return minScore;}
+    float getMinScore() const {
+        return minScore;
+    }
 
-    float getMaxScore() const {return maxScore;}
+    float getMaxScore() const {
+        return maxScore;
+    }
 
     //TODO: make this class serializable
     QVariant toQVariant() const;
 
-    static SMatrix fromQVariant(const QVariant& v);
+    static SMatrix fromQVariant(const QVariant &v);
 
 private:
     int getScoreIdx(char c1, char c2) const;
     void copyCharValues(char src, char dst);
 
-    QString                 name;
-    QString                 description;
+    QString name;
+    QString description;
 
-    const DNAAlphabet*            alphabet;
-    QVarLengthArray<float>  scores;          //TODO: make scores integer ?
-    char                    minChar;   // used for optimization of scores size. Minimal character in the alphabet.
-    char                    maxChar;   // used for optimization of scores size. Maximum character in the alphabet.
-    int                     charsInRow;
-    float                   minScore;
-    float                   maxScore;
-    QByteArray              validCharacters; // used only for debugging now. Use array but not Set since number of characters is low
+    const DNAAlphabet *alphabet;
+    QVarLengthArray<float> scores;    //TODO: make scores integer ?
+    char minChar;    // used for optimization of scores size. Minimal character in the alphabet.
+    char maxChar;    // used for optimization of scores size. Maximum character in the alphabet.
+    int charsInRow;
+    float minScore;
+    float maxScore;
+    QByteArray validCharacters;    // used only for debugging now. Use array but not Set since number of characters is low
 };
-
 
 inline float SMatrix::getScore(char c1, char c2) const {
     int idx = getScoreIdx(c1, c2);
@@ -106,6 +121,6 @@ inline int SMatrix::getScoreIdx(char c1, char c2) const {
     return d1 * charsInRow + d2;
 }
 
-} // namespace
+}    // namespace U2
 
 #endif

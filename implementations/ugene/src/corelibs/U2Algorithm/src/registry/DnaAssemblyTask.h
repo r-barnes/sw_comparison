@@ -34,35 +34,41 @@ class Document;
 class U2ALGORITHM_EXPORT ShortReadSet {
 public:
     enum LibraryType {
-        SingleEndReads, PairedEndReads
+        SingleEndReads,
+        PairedEndReads
     };
 
     enum MateOrder {
-        UpstreamMate, DownstreamMate
+        UpstreamMate,
+        DownstreamMate
     };
 
     GUrl url;
     LibraryType type;
     MateOrder order;
-    ShortReadSet(const GUrl& _url) : url(_url), type(SingleEndReads), order(UpstreamMate) {}
-    ShortReadSet(const GUrl& _url, LibraryType t, MateOrder m) : url(_url), type(t), order(m) {}
+    ShortReadSet(const GUrl &_url)
+        : url(_url), type(SingleEndReads), order(UpstreamMate) {
+    }
+    ShortReadSet(const GUrl &_url, LibraryType t, MateOrder m)
+        : url(_url), type(t), order(m) {
+    }
 };
 
 class U2ALGORITHM_EXPORT DnaAssemblyToRefTaskSettings {
 public:
     DnaAssemblyToRefTaskSettings();
 
-    void setCustomSettings(const QMap<QString, QVariant>& settings);
-    QVariant getCustomValue(const QString& optionName, const QVariant& defaultVal) const;
-    bool hasCustomValue(const QString & name) const;
-    void setCustomValue(const QString& optionName, const QVariant& val);
+    void setCustomSettings(const QMap<QString, QVariant> &settings);
+    QVariant getCustomValue(const QString &optionName, const QVariant &defaultVal) const;
+    bool hasCustomValue(const QString &name) const;
+    void setCustomValue(const QString &optionName, const QVariant &val);
     QList<GUrl> getShortReadUrls() const;
 
 public:
-    QString indexDir;       // if prebuiltIndex is true
-    QString indexBasename;  // if prebuiltIndex is true
+    QString indexDir;    // if prebuiltIndex is true
+    QString indexBasename;    // if prebuiltIndex is true
     QList<ShortReadSet> shortReadSets;
-    GUrl refSeqUrl;         // if prebuiltIndex is false
+    GUrl refSeqUrl;    // if prebuiltIndex is false
     GUrl resultFileName;
     QString indexFileName;
     QString algName;
@@ -87,15 +93,19 @@ class U2ALGORITHM_EXPORT DnaAssemblyToReferenceTask : public ExternalToolSupport
 public:
     DnaAssemblyToReferenceTask(const DnaAssemblyToRefTaskSettings &settings, TaskFlags flags = TaskFlags_FOSCOE, bool justBuildIndex = false);
 
-    bool hasResult() const {return hasResults;}
-    const DnaAssemblyToRefTaskSettings& getSettings() const{return settings;}
+    bool hasResult() const {
+        return hasResults;
+    }
+    const DnaAssemblyToRefTaskSettings &getSettings() const {
+        return settings;
+    }
 
     static bool isIndexUrl(const QString &url, const QStringList &indexSuffixes);
     static QString getBaseUrl(const QString &url, const QStringList &indexSuffixes);
-    static bool isPrebuiltIndex(const QString &baseFileName, const QStringList& indexExtensions);
+    static bool isPrebuiltIndex(const QString &baseFileName, const QStringList &indexExtensions);
 
 protected:
-    void setUpIndexBuilding(const QStringList& indexExtensions);
+    void setUpIndexBuilding(const QStringList &indexExtensions);
 
     DnaAssemblyToRefTaskSettings settings;
     bool justBuildIndex;
@@ -104,19 +114,22 @@ protected:
 
 class U2ALGORITHM_EXPORT DnaAssemblyToRefTaskFactory {
 public:
-    virtual DnaAssemblyToReferenceTask* createTaskInstance(const DnaAssemblyToRefTaskSettings& settings, bool justBuildIndex = false) = 0;
-    virtual ~DnaAssemblyToRefTaskFactory() {}
+    virtual DnaAssemblyToReferenceTask *createTaskInstance(const DnaAssemblyToRefTaskSettings &settings, bool justBuildIndex = false) = 0;
+    virtual ~DnaAssemblyToRefTaskFactory() {
+    }
 };
 
 #define DNA_ASSEMBLEY_TO_REF_TASK_FACTORY(c) \
 public: \
     static const QString taskName; \
-class Factory : public DnaAssemblyToRefTaskFactory { \
-public: \
-    Factory() { } \
-    DnaAssemblyToReferenceTask* createTaskInstance(const DnaAssemblyToRefTaskSettings& s, bool justBuildIndex = false) { return new c(s, justBuildIndex); } \
-};
-} // U2
+    class Factory : public DnaAssemblyToRefTaskFactory { \
+    public: \
+        Factory() { \
+        } \
+        DnaAssemblyToReferenceTask *createTaskInstance(const DnaAssemblyToRefTaskSettings &s, bool justBuildIndex = false) { \
+            return new c(s, justBuildIndex); \
+        } \
+    };
+}    // namespace U2
 
-
-#endif // _U2_DNA_ASSEMBLEY_TASK_H_
+#endif    // _U2_DNA_ASSEMBLEY_TASK_H_

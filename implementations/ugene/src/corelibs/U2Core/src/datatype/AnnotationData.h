@@ -22,14 +22,14 @@
 #ifndef _U2_ANNOTATION_DATA_H_
 #define _U2_ANNOTATION_DATA_H_
 
+#include <QDataStream>
+#include <QSharedData>
+#include <QStringList>
+#include <QVector>
+
 #include <U2Core/U2FeatureType.h>
 #include <U2Core/U2Location.h>
 #include <U2Core/U2Qualifier.h>
-
-#include <QDataStream>
-#include <QSharedData>
-#include <QVector>
-#include <QStringList>
 
 namespace U2 {
 
@@ -37,11 +37,11 @@ class U2CORE_EXPORT AnnotationData : public QSharedData {
 public:
     AnnotationData();
 
-    AnnotationData & operator =(const AnnotationData &a);
+    AnnotationData &operator=(const AnnotationData &a);
 
-    bool operator ==(const AnnotationData &other) const;
-    bool operator !=(const AnnotationData &other) const;
-    bool operator <(const AnnotationData &other) const;
+    bool operator==(const AnnotationData &other) const;
+    bool operator!=(const AnnotationData &other) const;
+    bool operator<(const AnnotationData &other) const;
 
     void findQualifiers(const QString &name, QVector<U2Qualifier> &res) const;
     QString findFirstQualifierValue(const QString &name) const;
@@ -57,25 +57,25 @@ public:
     U2LocationOperator getLocationOperator() const;
     void setLocationOperator(U2LocationOperator o);
 
-    const QVector<U2Region> & getRegions() const;
+    const QVector<U2Region> &getRegions() const;
 
-    QString                 name;
-    U2Location              location;
-    QVector<U2Qualifier>    qualifiers;
-    bool                    caseAnnotation;
-    U2FeatureType           type;
+    QString name;
+    U2Location location;
+    QVector<U2Qualifier> qualifiers;
+    bool caseAnnotation;
+    U2FeatureType type;
 };
 
 typedef QSharedDataPointer<AnnotationData> SharedAnnotationData;
 
-U2CORE_EXPORT QDataStream & operator>>(QDataStream &dataStream, TriState &state);
-U2CORE_EXPORT QDataStream & operator<<(QDataStream &dataStream, const TriState &state);
-U2CORE_EXPORT QDataStream & operator>>(QDataStream &dataStream, U2Qualifier &q);
-U2CORE_EXPORT QDataStream & operator<<(QDataStream &dataStream, const U2Qualifier &q);
-U2CORE_EXPORT QDataStream & operator>>(QDataStream &dataStream, AnnotationData &data);
-U2CORE_EXPORT QDataStream & operator<<(QDataStream &dataStream, const AnnotationData &data);
+U2CORE_EXPORT QDataStream &operator>>(QDataStream &dataStream, TriState &state);
+U2CORE_EXPORT QDataStream &operator<<(QDataStream &dataStream, const TriState &state);
+U2CORE_EXPORT QDataStream &operator>>(QDataStream &dataStream, U2Qualifier &q);
+U2CORE_EXPORT QDataStream &operator<<(QDataStream &dataStream, const U2Qualifier &q);
+U2CORE_EXPORT QDataStream &operator>>(QDataStream &dataStream, AnnotationData &data);
+U2CORE_EXPORT QDataStream &operator<<(QDataStream &dataStream, const AnnotationData &data);
 
-} // namespace U2
+}    // namespace U2
 
 Q_DECLARE_METATYPE(U2::AnnotationData)
 Q_DECLARE_METATYPE(U2::SharedAnnotationData)

@@ -30,9 +30,8 @@ class ApiTestsPlugin : public Plugin {
     Q_OBJECT
 public:
     ApiTestsPlugin();
-
 };
 
-} // namespace U2
+}    // namespace U2
 
 #endif

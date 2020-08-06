@@ -19,28 +19,26 @@
  * MA 02110-1301, USA.
  */
 
+#include "ProjectFilteringController.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/Counter.h>
 #include <U2Core/L10n.h>
 #include <U2Core/ProjectFilterTaskRegistry.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "ProjectFilteringController.h"
-
 namespace U2 {
 
 const int ProjectFilteringController::FILTER_START_INTERVAL = 2000;
 
 ProjectFilteringController::ProjectFilteringController(QObject *p)
-    : QObject(p)
-{
+    : QObject(p) {
     filterStarter.setSingleShot(true);
     connect(&filterStarter, SIGNAL(timeout()), SLOT(sl_startFiltering()));
 }
 
 void ProjectFilteringController::startFiltering(const ProjectTreeControllerModeSettings &settings,
-    const QList<QPointer<Document> > &docs)
-{
+                                                const QList<QPointer<Document>> &docs) {
     stopFiltering();
     emit si_filteringStarted();
 
@@ -65,7 +63,7 @@ void ProjectFilteringController::sl_startFiltering() {
     }
 
     ProjectFilterTaskRegistry *registry = AppContext::getProjectFilterTaskRegistry();
-    foreach(AbstractProjectFilterTask *task, registry->createFilterTasks(lastSettings, lastDocs)) {
+    foreach (AbstractProjectFilterTask *task, registry->createFilterTasks(lastSettings, lastDocs)) {
         addNewActiveTask(task);
     }
     emit si_filteringStarted();
@@ -108,4 +106,4 @@ void ProjectFilteringController::connectNewTask(AbstractProjectFilterTask *task)
     connect(task, SIGNAL(si_stateChanged()), SLOT(sl_filteringFinished()));
 }
 
-} // namespace U2
+}    // namespace U2

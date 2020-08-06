@@ -24,9 +24,9 @@
 
 #include <QObject>
 
-#include <U2Core/global.h>
-#include <U2Core/Version.h>
 #include <U2Core/GUrl.h>
+#include <U2Core/Version.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -46,20 +46,24 @@ enum PlatformArch {
 };
 
 enum PluginModeFlag {
-    PluginMode_Malformed    = 1,
-    PluginMode_Console      = 1 << 1,
-    PluginMode_UI           = 1 << 2
+    PluginMode_Malformed = 1,
+    PluginMode_Console = 1 << 1,
+    PluginMode_UI = 1 << 2
 };
 
 typedef QFlags<PluginModeFlag> PluginMode;
 
 class PlatformInfo {
 public:
-    PlatformInfo() : name(PlatformName_Unknown), arch(PlatformArch_Unknown) {}
+    PlatformInfo()
+        : name(PlatformName_Unknown), arch(PlatformArch_Unknown) {
+    }
 
     PlatformName name;
     PlatformArch arch;
-    bool operator == (const PlatformInfo& p) const  {return name == p.name && arch == p.arch;}
+    bool operator==(const PlatformInfo &p) const {
+        return name == p.name && arch == p.arch;
+    }
 };
 
 class DependsInfo {
@@ -72,41 +76,39 @@ class PluginDesc {
 public:
     PluginDesc();
 
-    QString             id;
-    QString             name;
-    Version             pluginVersion;
-    Version             ugeneVersion;
-    Version             qtVersion;
-    QString             pluginVendor;
-    GUrl                descriptorUrl;
-    GUrl                libraryUrl;
-    GUrl                licenseUrl;
-    PlatformInfo        platform;
-    PluginMode          mode;
-    QList<DependsInfo>  dependsList;
+    QString id;
+    QString name;
+    Version pluginVersion;
+    Version ugeneVersion;
+    Version qtVersion;
+    QString pluginVendor;
+    GUrl descriptorUrl;
+    GUrl libraryUrl;
+    GUrl licenseUrl;
+    PlatformInfo platform;
+    PluginMode mode;
+    QList<DependsInfo> dependsList;
 
     bool isValid() const {
         return !id.isEmpty() && !pluginVersion.text.isEmpty() && !ugeneVersion.text.isEmpty() && !libraryUrl.isEmpty();
     }
 
-    bool operator == (const PluginDesc& pd) const ;
+    bool operator==(const PluginDesc &pd) const;
 };
 
-
-class U2PRIVATE_EXPORT PluginDescriptorHelper: public QObject {
+class U2PRIVATE_EXPORT PluginDescriptorHelper : public QObject {
     Q_OBJECT
 private:
-    PluginDescriptorHelper() {}
+    PluginDescriptorHelper() {
+    }
+
 public:
-    static PluginDesc readPluginDescriptor(const QString& url, QString& error);
+    static PluginDesc readPluginDescriptor(const QString &url, QString &error);
 
     //orders plugins by loading order
-    static QList<PluginDesc> orderPlugins(const QList<PluginDesc>& unordered, QString& err);
-
+    static QList<PluginDesc> orderPlugins(const QList<PluginDesc> &unordered, QString &err);
 };
 
-
-} //namespace
+}    // namespace U2
 
 #endif
-

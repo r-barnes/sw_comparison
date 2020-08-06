@@ -22,13 +22,13 @@
 #ifndef _U2_DNA_ASSEMBLEY_GUI_EXTENSION_H_
 #define _U2_DNA_ASSEMBLEY_GUI_EXTENSION_H_
 
-#include <U2Core/global.h>
-#include <U2Core/GUrl.h>
-#include <U2Core/Task.h>
-
 #include <QWidget>
 
 #include <U2Algorithm/DnaAssemblyTask.h>
+
+#include <U2Core/GUrl.h>
+#include <U2Core/Task.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -46,7 +46,7 @@ class U2VIEW_EXPORT DnaAssemblyAlgorithmMainWidget : public DnaAssemblyAlgorithm
 public:
     DnaAssemblyAlgorithmMainWidget(QWidget *parent);
 
-    virtual QMap<QString,QVariant> getDnaAssemblyCustomSettings() const = 0;
+    virtual QMap<QString, QVariant> getDnaAssemblyCustomSettings() const = 0;
 
     virtual bool isParametersOk(QString &error) const;
     virtual bool buildIndexUrl(const GUrl &url, bool prebuiltIndex, QString &error) const;
@@ -65,16 +65,16 @@ class U2VIEW_EXPORT DnaAssemblyAlgorithmBuildIndexWidget : public DnaAssemblyAlg
 public:
     DnaAssemblyAlgorithmBuildIndexWidget(QWidget *parent);
 
-    virtual QMap<QString,QVariant> getBuildIndexCustomSettings() = 0;
+    virtual QMap<QString, QVariant> getBuildIndexCustomSettings() = 0;
     virtual QString getIndexFileExtension() = 0;
-    virtual GUrl buildIndexUrl(const GUrl& url) = 0;
+    virtual GUrl buildIndexUrl(const GUrl &url) = 0;
 };
 
 class U2VIEW_EXPORT DnaAssemblyGUIExtensionsFactory {
 public:
     virtual ~DnaAssemblyGUIExtensionsFactory();
-    virtual DnaAssemblyAlgorithmMainWidget* createMainWidget(QWidget* parent) = 0;
-    virtual DnaAssemblyAlgorithmBuildIndexWidget* createBuildIndexWidget(QWidget* parent) = 0;
+    virtual DnaAssemblyAlgorithmMainWidget *createMainWidget(QWidget *parent) = 0;
+    virtual DnaAssemblyAlgorithmBuildIndexWidget *createBuildIndexWidget(QWidget *parent) = 0;
     virtual bool hasMainWidget() = 0;
     virtual bool hasBuildIndexWidget() = 0;
 };
@@ -82,10 +82,9 @@ public:
 class DnaAssemblyDialog;
 class U2VIEW_EXPORT DnaAssemblyGUIUtils : public QObject {
 public:
-    static void runAssembly2ReferenceDialog(const QStringList& shortReadUrls = QStringList(), const QString& refSeqUrl = QString());
+    static void runAssembly2ReferenceDialog(const QStringList &shortReadUrls = QStringList(), const QString &refSeqUrl = QString());
     static DnaAssemblyToRefTaskSettings getSettings(DnaAssemblyDialog *dialog);
 };
-
 
 // These classes are intended for extending standard Genome Assembly dialog GUI
 // with options specific to the assembly algorithm
@@ -93,11 +92,10 @@ public:
 class U2VIEW_EXPORT GenomeAssemblyAlgorithmMainWidget : public QWidget {
 public:
     GenomeAssemblyAlgorithmMainWidget(QWidget *parent);
-    virtual QMap<QString,QVariant> getGenomeAssemblyCustomSettings() = 0;
+    virtual QMap<QString, QVariant> getGenomeAssemblyCustomSettings() = 0;
     virtual bool isParametersOk(QString &error) = 0;
 };
 
-} // U2
+}    // namespace U2
 
-
-#endif // _U2_DNA_ASSEMBLEY_GUI_EXTENSION_H_
+#endif    // _U2_DNA_ASSEMBLEY_GUI_EXTENSION_H_

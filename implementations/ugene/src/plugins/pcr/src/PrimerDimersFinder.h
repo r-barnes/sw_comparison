@@ -23,21 +23,24 @@
 #define _U2_PRIMER_DIMERS_FINDER_H_
 
 #include <QObject>
+
 #include <U2Core/U2Region.h>
 
 namespace U2 {
 
 class DimerFinderResult {
 public:
-    DimerFinderResult() : deltaG(0.0), baseCounts(0), canBeFormed(false) {}
+    DimerFinderResult()
+        : deltaG(0.0), baseCounts(0), canBeFormed(false) {
+    }
 
     QString getFullReport() const;
     QString getShortReport() const;
 
     QString dimersOverlap;
-    double  deltaG;
-    int     baseCounts;
-    bool    canBeFormed;
+    double deltaG;
+    int baseCounts;
+    bool canBeFormed;
 };
 
 class BaseDimersFinder {
@@ -47,26 +50,26 @@ public:
     DimerFinderResult getResult() const;
 
 protected:
-    void fillResultsForCurrentIteration(const QByteArray& homologousBases, int overlapStartPos);
+    void fillResultsForCurrentIteration(const QByteArray &homologousBases, int overlapStartPos);
     virtual QString getDimersOverlapping(int dimerFormationPos) = 0;
 
 protected:
     static QMap<QByteArray, qreal> energyMap;
 
-    QByteArray  forwardPrimer;
-    QByteArray  reversePrimer;
-    QByteArray  reverseComplementSequence;
-    QByteArray  resHomologousRegion;
-    U2Region    overlappingRegion;
+    QByteArray forwardPrimer;
+    QByteArray reversePrimer;
+    QByteArray reverseComplementSequence;
+    QByteArray resHomologousRegion;
+    U2Region overlappingRegion;
 
-    double      energyThreshold;
-    qreal       maximumDeltaG;
-    QString     dimersOverlap;
+    double energyThreshold;
+    qreal maximumDeltaG;
+    QString dimersOverlap;
 };
 
 class SelfDimersFinder : public BaseDimersFinder {
 public:
-    SelfDimersFinder(const QByteArray &_forwardPattern, const qreal energyThreshold  = -6);
+    SelfDimersFinder(const QByteArray &_forwardPattern, const qreal energyThreshold = -6);
 
 private:
     QString getDimersOverlapping(int dimerFormationPos);
@@ -74,12 +77,12 @@ private:
 
 class HeteroDimersFinder : public BaseDimersFinder {
 public:
-    HeteroDimersFinder(const QByteArray &_forwardPattern, const QByteArray &reversePattern, const qreal energyThreshold  = -6);
+    HeteroDimersFinder(const QByteArray &_forwardPattern, const QByteArray &reversePattern, const qreal energyThreshold = -6);
 
 private:
     QString getDimersOverlapping(int dimerFormationPos);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_PRIMER_STATISTICS_H_
+#endif    // _U2_PRIMER_STATISTICS_H_

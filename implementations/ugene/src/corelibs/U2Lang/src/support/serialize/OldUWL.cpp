@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "OldUWL.h"
+
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Lang/BaseTypes.h>
@@ -26,7 +28,6 @@
 
 #include "Constants.h"
 #include "HRSchemaSerializer.h"
-#include "OldUWL.h"
 #include "Utils.h"
 
 namespace U2 {
@@ -41,43 +42,43 @@ const QString OldConstants::MARKER_START("@");
 /* OldUWL */
 /************************************************************************/
 namespace {
-    const QString MARKER_TYPE("marker-type");
-    const QString MARKER_NAME("marker-name");
-    const QString MARKERS("markers");
+const QString MARKER_TYPE("marker-type");
+const QString MARKER_NAME("marker-name");
+const QString MARKERS("markers");
 
-    void parseOldMarker(Actor *proc, ParsedPairs &pairs) {
-        MarkerAttribute *markerAttr = dynamic_cast<MarkerAttribute*>(proc->getParameter(Constants::MARKER));
-        if (NULL == markerAttr) {
-            throw ReadFailed(QObject::tr("%1 actor has not markers attribute").arg(proc->getId()));
-        }
-
-        Marker *marker = HRSchemaSerializer::parseMarker(pairs, MARKER_TYPE, MARKER_NAME);
-        SAFE_POINT(NULL != marker, "NULL marker", );
-        if (markerAttr->contains(marker->getName())) {
-            throw ReadFailed(QObject::tr("Redefinition of %1 marker at %2 actor").arg(marker->getName()).arg(proc->getId()));
-        }
-
-        markerAttr->getMarkers() << marker;
-
-        assert(1 == proc->getOutputPorts().size());
-        Port *outPort = proc->getOutputPorts().at(0);
-        assert(outPort->getOutputType()->isMap());
-        QMap<Descriptor, DataTypePtr> outTypeMap = outPort->getOutputType()->getDatatypesMap();
-        Descriptor newSlot = MarkerSlots::getSlotByMarkerType(marker->getType(), marker->getName());
-        outTypeMap[newSlot] = BaseTypes::STRING_TYPE();
-        DataTypePtr newType(new MapDataType(dynamic_cast<Descriptor&>(*(outPort->getType())), outTypeMap));
-        outPort->setNewType(newType);
+void parseOldMarker(Actor *proc, ParsedPairs &pairs) {
+    MarkerAttribute *markerAttr = dynamic_cast<MarkerAttribute *>(proc->getParameter(Constants::MARKER));
+    if (NULL == markerAttr) {
+        throw ReadFailed(QObject::tr("%1 actor has not markers attribute").arg(proc->getId()));
     }
 
-    bool isOldMarkerActor(Actor *actor) {
-        const QMap<QString, Attribute*> attrs = actor->getParameters();
-        CHECK(1 == attrs.size(), false);
-        MarkerAttribute *attr = dynamic_cast<MarkerAttribute*>(*attrs.begin());
-        return (NULL != attr);
+    Marker *marker = HRSchemaSerializer::parseMarker(pairs, MARKER_TYPE, MARKER_NAME);
+    SAFE_POINT(NULL != marker, "NULL marker", );
+    if (markerAttr->contains(marker->getName())) {
+        throw ReadFailed(QObject::tr("Redefinition of %1 marker at %2 actor").arg(marker->getName()).arg(proc->getId()));
     }
+
+    markerAttr->getMarkers() << marker;
+
+    assert(1 == proc->getOutputPorts().size());
+    Port *outPort = proc->getOutputPorts().at(0);
+    assert(outPort->getOutputType()->isMap());
+    QMap<Descriptor, DataTypePtr> outTypeMap = outPort->getOutputType()->getDatatypesMap();
+    Descriptor newSlot = MarkerSlots::getSlotByMarkerType(marker->getType(), marker->getName());
+    outTypeMap[newSlot] = BaseTypes::STRING_TYPE();
+    DataTypePtr newType(new MapDataType(dynamic_cast<Descriptor &>(*(outPort->getType())), outTypeMap));
+    outPort->setNewType(newType);
 }
 
-void OldUWL::parseMarkerDefinition(Tokenizer &tokenizer, QMap<QString, Actor*> &actorMap) {
+bool isOldMarkerActor(Actor *actor) {
+    const QMap<QString, Attribute *> attrs = actor->getParameters();
+    CHECK(1 == attrs.size(), false);
+    MarkerAttribute *attr = dynamic_cast<MarkerAttribute *>(*attrs.begin());
+    return (NULL != attr);
+}
+}    // namespace
+
+void OldUWL::parseMarkerDefinition(Tokenizer &tokenizer, QMap<QString, Actor *> &actorMap) {
     QString name = tokenizer.take();
     QString actorName = HRSchemaSerializer::parseAt(name, 0);
     QString markerId = HRSchemaSerializer::parseAfter(name, 0);
@@ -101,5 +102,5 @@ void OldUWL::parseOldAttributes(Actor *proc, ParsedPairs &pairs) {
     }
 }
 
-} // WorkflowSerialize
-} // U2
+}    // namespace WorkflowSerialize
+}    // namespace U2

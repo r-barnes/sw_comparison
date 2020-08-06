@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "TextObject.h"
+
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/GHints.h>
@@ -27,18 +29,16 @@
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "TextObject.h"
-
 namespace U2 {
 
 /////// U2Text Implementation ///////////////////////////////////////////////////////////////////
 
-U2Text::U2Text() : U2RawData() {
-
+U2Text::U2Text()
+    : U2RawData() {
 }
 
-U2Text::U2Text(const U2DbiRef &dbiRef) : U2RawData(dbiRef) {
-
+U2Text::U2Text(const U2DbiRef &dbiRef)
+    : U2RawData(dbiRef) {
 }
 
 U2DataType U2Text::getType() const {
@@ -47,7 +47,7 @@ U2DataType U2Text::getType() const {
 
 /////// TextObject Implementation ///////////////////////////////////////////////////////////////////
 
-TextObject * TextObject::createInstance(const QString &text, const QString &objectName, const U2DbiRef &dbiRef, U2OpStatus &os, const QVariantMap &hintsMap) {
+TextObject *TextObject::createInstance(const QString &text, const QString &objectName, const U2DbiRef &dbiRef, U2OpStatus &os, const QVariantMap &hintsMap) {
     U2Text object(dbiRef);
     object.visualName = objectName;
 
@@ -63,8 +63,7 @@ TextObject * TextObject::createInstance(const QString &text, const QString &obje
 }
 
 TextObject::TextObject(const QString &objectName, const U2EntityRef &textRef, const QVariantMap &hintsMap)
-: GObject(GObjectTypes::TEXT, objectName, hintsMap)
-{
+    : GObject(GObjectTypes::TEXT, objectName, hintsMap) {
     entityRef = textRef;
 }
 
@@ -80,7 +79,7 @@ void TextObject::setText(const QString &newText) {
     setModified(true);
 }
 
-GObject * TextObject::clone(const U2DbiRef &dstDbiRef, U2OpStatus &os, const QVariantMap &hints) const {
+GObject *TextObject::clone(const U2DbiRef &dstDbiRef, U2OpStatus &os, const QVariantMap &hints) const {
     GHintsDefaultImpl gHints(getGHintsMap());
     gHints.setAll(hints);
     const QString &dstFolder = gHints.get(DocumentFormat::DBI_FOLDER_HINT, U2ObjectDbi::ROOT_FOLDER).toString();
@@ -100,4 +99,4 @@ void TextObject::commitTextToDB(const QString &newText) {
     RawDataUdrSchema::writeContent(newText.toUtf8(), entityRef, os);
 }
 
-}//namespace
+}    // namespace U2

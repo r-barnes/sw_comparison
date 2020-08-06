@@ -26,14 +26,13 @@
 
 namespace U2 {
 using namespace HI;
-class EscapeClicker: public Filler
-{
+class EscapeClicker : public Filler {
 public:
     EscapeClicker(HI::GUITestOpStatus &os, const QString &name = "", CustomScenario *scenario = NULL);
 
     void commonScenario();
 };
 
-}
+}    // namespace U2
 
-#endif // ESCAPECLICKER_H
+#endif    // ESCAPECLICKER_H

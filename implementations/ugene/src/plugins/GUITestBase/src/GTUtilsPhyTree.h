@@ -22,32 +22,32 @@
 #ifndef _U2_GT_UTILS_PHY_TREE_H_
 #define _U2_GT_UTILS_PHY_TREE_H_
 
+#include <U2View/GraphicsButtonItem.h>
 #include <U2View/TreeViewer.h>
 
 #include "GTGlobals.h"
 
 namespace U2 {
 
-class GraphicsButtonItem;
-
 class GTUtilsPhyTree {
 public:
-    static QList<QGraphicsItem *> getSelectedNodes(HI::GUITestOpStatus& os);
-    static QList<QGraphicsItem *> getUnselectedNodes(HI::GUITestOpStatus& os);
-    static QList<QGraphicsItem *> getNodes(HI::GUITestOpStatus& os);
+    static QList<GraphicsButtonItem *> getSelectedNodes(HI::GUITestOpStatus &os);
+    static QList<GraphicsButtonItem *> getUnselectedNodes(HI::GUITestOpStatus &os);
+    static QList<GraphicsButtonItem *> getNodes(HI::GUITestOpStatus &os);
 
-    static QList<QGraphicsSimpleTextItem*> getLabels(HI::GUITestOpStatus& os, QGraphicsView* treeView = NULL);
-    static QList<QGraphicsSimpleTextItem*> getVisiableLabels(HI::GUITestOpStatus& os, QGraphicsView* treeView = NULL);
-    static QList<QGraphicsSimpleTextItem*> getDistances(HI::GUITestOpStatus& os, QGraphicsView* treeView = NULL);
-    static QList<QGraphicsSimpleTextItem*> getVisiableDistances(HI::GUITestOpStatus& os, QGraphicsView* treeView = NULL);
-    static QStringList getLabelsText(HI::GUITestOpStatus& os);
-    static QList<double> getDistancesValues(HI::GUITestOpStatus& os);
-    static QPoint getGlobalCoord(HI::GUITestOpStatus& os, QGraphicsItem* item);
+    static QList<QGraphicsSimpleTextItem *> getLabels(HI::GUITestOpStatus &os, QGraphicsView *treeView = NULL);
+    static QList<QGraphicsSimpleTextItem *> getVisibleLabels(HI::GUITestOpStatus &os, QGraphicsView *treeView = NULL);
+    static QList<QGraphicsSimpleTextItem *> getDistances(HI::GUITestOpStatus &os, QGraphicsView *treeView = NULL);
+    static QList<QGraphicsSimpleTextItem *> getVisiableDistances(HI::GUITestOpStatus &os, QGraphicsView *treeView = NULL);
+    static QStringList getLabelsText(HI::GUITestOpStatus &os);
+    static QList<double> getDistancesValues(HI::GUITestOpStatus &os);
+    static QPoint getGlobalCoord(HI::GUITestOpStatus &os, QGraphicsItem *item);
 
     static void clickNode(HI::GUITestOpStatus &os, GraphicsButtonItem *node);
+    static void doubleClickNode(HI::GUITestOpStatus &os, GraphicsButtonItem *node);
     static qreal getNodeDistance(HI::GUITestOpStatus &os, GraphicsButtonItem *node);
 
-    static TreeViewerUI * getTreeViewerUi(HI::GUITestOpStatus &os);
+    static TreeViewerUI *getTreeViewerUi(HI::GUITestOpStatus &os);
 
     /**
      * Branches are enumerated:
@@ -75,15 +75,14 @@ public:
     static QList<GraphicsRectangularBranchItem *> getOrderedRectangularBranches(HI::GUITestOpStatus &os);
     static QList<qreal> getOrderedRectangularBranchesDistances(HI::GUITestOpStatus &os);
 
-    static GraphicsButtonItem * getRootRectangularNode(HI::GUITestOpStatus &os);
-    static GraphicsRectangularBranchItem * getRootRectangularBranch(HI::GUITestOpStatus &os);
+    static GraphicsButtonItem *getRootRectangularNode(HI::GUITestOpStatus &os);
+    static GraphicsRectangularBranchItem *getRootRectangularBranch(HI::GUITestOpStatus &os);
 
 private:
     static QList<GraphicsRectangularBranchItem *> getSubtreeOrderedRectangularBranches(HI::GUITestOpStatus &os, GraphicsRectangularBranchItem *rootBranch);
     static bool rectangularBranchLessThan(GraphicsRectangularBranchItem *first, GraphicsRectangularBranchItem *second);
-    static QList<QGraphicsItem *> getNodes(HI::GUITestOpStatus& os, int width);
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_GT_UTILS_PHY_TREE_H_
+#endif    // _U2_GT_UTILS_PHY_TREE_H_

@@ -20,15 +20,14 @@
  */
 
 #include "SnpEffDatabaseDialogFiller.h"
-
-#include "primitives/GTLineEdit.h"
-#include "primitives/GTTableView.h"
-#include "primitives/GTWidget.h"
-
 #include <drivers/GTMouseDriver.h>
 
 #include <QApplication>
 #include <QTableView>
+
+#include "primitives/GTLineEdit.h"
+#include "primitives/GTTableView.h"
+#include "primitives/GTWidget.h"
 
 //#include <U2
 
@@ -39,24 +38,23 @@ SnpEffDatabaseDialogFiller::SnpEffDatabaseDialogFiller(GUITestOpStatus &os, cons
     : Filler(os, "SnpEffDatabaseDialog"),
       dbName(dbName),
       dbShouldBeFound(dbShouldBeFound) {
-
 }
 
 #define GT_CLASS_NAME "SnpEffDatabaseDialogFiller"
 #define GT_METHOD_NAME "commonScenario"
 void SnpEffDatabaseDialogFiller::commonScenario() {
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
-    QLineEdit* lineEdit = GTWidget::findExactWidget<QLineEdit*>(os, "lineEdit", dialog);
+    QLineEdit *lineEdit = GTWidget::findExactWidget<QLineEdit *>(os, "lineEdit", dialog);
     GT_CHECK(lineEdit, "lineEdit is NULL");
     GTLineEdit::setText(os, lineEdit, dbName, false, true);
     GTGlobals::sleep();
 
-    QTableView* table = dynamic_cast<QTableView*>(GTWidget::findWidget(os, "tableView"));
+    QTableView *table = dynamic_cast<QTableView *>(GTWidget::findWidget(os, "tableView"));
     GT_CHECK(table, "tableView is NULL");
 
-    QAbstractItemModel* model = table->model();
+    QAbstractItemModel *model = table->model();
     GT_CHECK(model, "model is NULL");
 
     int rowCount = GTTableView::rowCount(os, table);
@@ -82,4 +80,4 @@ void SnpEffDatabaseDialogFiller::commonScenario() {
     }
 }
 
-} // namespace U2
+}    // namespace U2

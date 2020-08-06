@@ -43,10 +43,10 @@ private:
 
 class PrimerValidator : public QRegExpValidator {
 public:
-    PrimerValidator(QObject* parent, bool allowExtended = true);
+    PrimerValidator(QObject *parent, bool allowExtended = true);
     State validate(QString &input, int &pos) const;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_PRIMER_LINE_EDIT_H_
+#endif    // _U2_PRIMER_LINE_EDIT_H_

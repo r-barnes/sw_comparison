@@ -115,10 +115,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The &quot;&lt;i&gt;kraken-translate&lt;/i&gt;&quot; executable is used to translate the Kraken classification to make it more readable.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Build</source>
         <translation type="unfinished"></translation>
     </message>

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "AnnotationGroupUnitTests.h"
+
 #include <QBitArray>
 
 #include <U2Core/AnnotationData.h>
@@ -27,7 +29,6 @@
 #include <U2Core/U2SafePoints.h>
 
 #include "../../gobjects/FeaturesTableObjectUnitTest.h"
-#include "AnnotationGroupUnitTests.h"
 
 namespace U2 {
 
@@ -345,4 +346,4 @@ IMPLEMENT_TEST(AnnotationGroupUnitTest, getSet_Subgroups) {
     CHECK_EQUAL(1, subSubgroups3.size(), "Count of subgroups");
 }
 
-} // namespace U2
+}    // namespace U2

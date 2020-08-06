@@ -34,16 +34,16 @@ class SaveDocumentController;
 class AprImportWidget : public ImportWidget, public Ui_AprImportWidget {
     Q_OBJECT
 public:
-    AprImportWidget(const GUrl& url, const QVariantMap& settings);
+    AprImportWidget(const GUrl &url, const QVariantMap &settings);
     virtual QVariantMap getSettings() const;
 
-    void initSaveController(const QString& url, const DocumentFormatId defaultFormatId);
+    void initSaveController(const QString &url, const DocumentFormatId defaultFormatId);
 
 private:
-    DocumentFormatId getFormatId(const QVariantMap& settings);
+    DocumentFormatId getFormatId(const QVariantMap &settings);
     static QString getDefaultValues();
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_APR_IMPORT_WIDGET_H_
+#endif    // _U2_APR_IMPORT_WIDGET_H_

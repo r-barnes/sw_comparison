@@ -34,10 +34,10 @@ class LoadDocumentTask;
 class AceImporterTask : public DocumentProviderTask {
     Q_OBJECT
 public:
-    AceImporterTask(const GUrl &url, const QVariantMap& settings);
+    AceImporterTask(const GUrl &url, const QVariantMap &settings);
 
     virtual void prepare();
-    virtual QList<Task*> onSubTaskFinished(Task* subTask);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
     virtual ReportResult report();
 
 private:
@@ -45,18 +45,18 @@ private:
     void initLoadDocumentTask();
     void processCloneObjectTask(U2::CloneObjectTask *cloneTask);
 
-    ConvertAceToSqliteTask * convertTask;
-    QList<Task *>            cloneTasks;
-    LoadDocumentTask *       loadDocTask;
+    ConvertAceToSqliteTask *convertTask;
+    QList<Task *> cloneTasks;
+    LoadDocumentTask *loadDocTask;
 
-    bool                     isSqliteDbTransit;
+    bool isSqliteDbTransit;
 
-    QVariantMap              settings;
+    QVariantMap settings;
 
-    U2DbiRef                 localDbiRef;
-    U2DbiRef                 hintedDbiRef;
-    GUrl                     srcUrl;
-    qint64                   startTime;
+    U2DbiRef localDbiRef;
+    U2DbiRef hintedDbiRef;
+    GUrl srcUrl;
+    qint64 startTime;
 };
 
 ///////////////////////////////////
@@ -68,13 +68,13 @@ class U2FORMATS_EXPORT AceImporter : public DocumentImporter {
 public:
     AceImporter();
 
-    virtual FormatCheckResult checkRawData(const QByteArray& rawData, const GUrl& url);
-    virtual DocumentProviderTask* createImportTask(const FormatDetectionResult& res, bool showGui, const QVariantMap &hints);
+    virtual FormatCheckResult checkRawData(const QByteArray &rawData, const GUrl &url);
+    virtual DocumentProviderTask *createImportTask(const FormatDetectionResult &res, bool showGui, const QVariantMap &hints);
 
     static const QString ID;
     static const QString SRC_URL;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_ACE_IMPORTER_H_
+#endif    // _U2_ACE_IMPORTER_H_

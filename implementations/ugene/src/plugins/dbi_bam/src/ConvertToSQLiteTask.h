@@ -45,7 +45,7 @@ class SamReader;
 class ConvertToSQLiteTask : public Task {
     Q_OBJECT
 public:
-    ConvertToSQLiteTask(const GUrl &sourceUrl, const U2DbiRef &dstDbiRef, BAMInfo& bamInfo, bool sam);
+    ConvertToSQLiteTask(const GUrl &sourceUrl, const U2DbiRef &dstDbiRef, BAMInfo &bamInfo, bool sam);
     virtual void run();
 
     GUrl getDestinationUrl() const;
@@ -65,7 +65,7 @@ private:
     qint64 importUnsortedReads(SamReader *samReader, BamReader *bamReader, Reader *reader, QMap<int, U2::U2AssemblyReadsImportInfo> &importInfos);
     void createAssemblyObjectForUnsortedReads(int referenceId, Reader *reader, QMap<int, U2::U2AssemblyReadsImportInfo> &importInfos);
     qint64 importReadsSequentially(Iterator *iterator);
-    void flushReads(const QMap<int, QList<U2AssemblyRead> > &reads);
+    void flushReads(const QMap<int, QList<U2AssemblyRead>> &reads);
 
     void updateReferenceLengthAttribute(int length, const U2Assembly &assembly, U2AttributeDbi *attributeDbi);
     void updateReferenceMd5Attribute(const QByteArray &md5, const U2Assembly &assembly, U2AttributeDbi *attributeDbi);
@@ -92,7 +92,8 @@ private:
 
 class Iterator {
 public:
-    virtual ~Iterator() {}
+    virtual ~Iterator() {
+    }
 
     virtual bool hasNext() = 0;
 
@@ -105,7 +106,7 @@ public:
     virtual int peekReferenceId() = 0;
 };
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2
 
-#endif // _U2_BAM_CONVERT_TO_SQLITE_TASK_H_
+#endif    // _U2_BAM_CONVERT_TO_SQLITE_TASK_H_

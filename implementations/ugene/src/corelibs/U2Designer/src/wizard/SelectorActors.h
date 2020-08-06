@@ -32,20 +32,20 @@ namespace U2 {
 class U2DESIGNER_EXPORT SelectorActors {
 public:
     SelectorActors();
-    SelectorActors(ElementSelectorWidget *widget, const QList<Actor*> &allActors, U2OpStatus &os);
+    SelectorActors(ElementSelectorWidget *widget, const QList<Actor *> &allActors, U2OpStatus &os);
     virtual ~SelectorActors();
 
     /** Returns NULL if there is no actor for the @value */
-    Actor * getActor(const QString &value) const;
-    Actor * getSourceActor() const;
+    Actor *getActor(const QString &value) const;
+    Actor *getSourceActor() const;
     QList<PortMapping> getMappings(const QString &value) const;
 
 private:
     ElementSelectorWidget *widget;
-    QMap<QString, Actor*> actors; // selectorValue <-> actor
+    QMap<QString, Actor *> actors;    // selectorValue <-> actor
     Actor *srcActor;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_SELECTORACTORS_H_
+#endif    // _U2_SELECTORACTORS_H_

@@ -31,28 +31,28 @@
 namespace U2 {
 
 class U2FORMATS_EXPORT MegaFormat : public TextDocumentFormat {
-Q_OBJECT
+    Q_OBJECT
 public:
-    MegaFormat(QObject* p);
+    MegaFormat(QObject *p);
 
-    virtual void storeDocument(Document* d, IOAdapter* io, U2OpStatus& os);
-    virtual void storeEntry(IOAdapter *io, const QMap< GObjectType, QList<GObject*> > &objectsMap, U2OpStatus &ti);
+    virtual void storeDocument(Document *d, IOAdapter *io, U2OpStatus &os);
+    virtual void storeEntry(IOAdapter *io, const QMap<GObjectType, QList<GObject *>> &objectsMap, U2OpStatus &ti);
+
 protected:
-    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& = GUrl()) const;
-    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
+    virtual FormatCheckResult checkRawTextData(const QByteArray &rawData, const GUrl & = GUrl()) const;
+    virtual Document *loadTextDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os);
 
 private:
-    void load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& objects, const QVariantMap& fs, U2OpStatus& ti);
+    void load(IOAdapter *io, const U2DbiRef &dbiRef, QList<GObject *> &objects, const QVariantMap &fs, U2OpStatus &ti);
     static void skipWhites(IOAdapter *io, QByteArray &line, U2::U2OpStatus &ti);
-    static void readHeader(IOAdapter* io, QByteArray &line, U2OpStatus &ti);
-    static void readTitle(IOAdapter* io, QByteArray &line, U2OpStatus &ti);
-    static bool readName(IOAdapter* io, QByteArray &line, QByteArray &name, U2OpStatus &ti);
-    static bool readSequence(IOAdapter* io, QByteArray &line, U2OpStatus &ti,
-                             QByteArray &value, bool *lastIteration);
+    static void readHeader(IOAdapter *io, QByteArray &line, U2OpStatus &ti);
+    static void readTitle(IOAdapter *io, QByteArray &line, U2OpStatus &ti);
+    static bool readName(IOAdapter *io, QByteArray &line, QByteArray &name, U2OpStatus &ti);
+    static bool readSequence(IOAdapter *io, QByteArray &line, U2OpStatus &ti, QByteArray &value, bool *lastIteration);
 
-    static void workUpIndels(MultipleSequenceAlignment & al);
-    static bool getNextLine(IOAdapter* io, QByteArray& line, U2OpStatus &ti);
-    static bool skipComments(IOAdapter* io, QByteArray &line, U2OpStatus &ti);
+    static void workUpIndels(MultipleSequenceAlignment &al);
+    static bool getNextLine(IOAdapter *io, QByteArray &line, U2OpStatus &ti);
+    static bool skipComments(IOAdapter *io, QByteArray &line, U2OpStatus &ti);
     static bool checkName(QByteArray &name);
     static const QByteArray MEGA_HEADER;
     static const char MEGA_SEPARATOR;
@@ -62,9 +62,9 @@ private:
     static const char MEGA_INDEL;
     static const char MEGA_START_COMMENT;
     static const char MEGA_END_COMMENT;
-    static const int BLOCK_LENGTH=45;
+    static const int BLOCK_LENGTH = 45;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

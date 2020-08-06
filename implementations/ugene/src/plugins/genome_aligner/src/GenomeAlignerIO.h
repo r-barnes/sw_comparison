@@ -38,8 +38,8 @@
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
 
-#include "GenomeAlignerSearchQuery.h"
 #include "GenomeAlignerIndexPart.h"
+#include "GenomeAlignerSearchQuery.h"
 
 namespace U2 {
 
@@ -49,23 +49,31 @@ namespace U2 {
 
 class GenomeAlignerReader {
 public:
-    virtual ~GenomeAlignerReader() {}
+    virtual ~GenomeAlignerReader() {
+    }
     virtual SearchQuery *read() = 0;
     virtual bool isEnd() = 0;
     virtual int getProgress() = 0;
     //It's better to make this function pure virtual,
     //so if you need it in an inherited class, where it isn't overloaded yet,
     //you need to overload the needed func
-    virtual QString getMemberError() { assert(false); return QString(); }
+    virtual QString getMemberError() {
+        assert(false);
+        return QString();
+    }
 };
 
 class GenomeAlignerWriter {
 public:
-    virtual ~GenomeAlignerWriter() {}
+    virtual ~GenomeAlignerWriter() {
+    }
     virtual void write(SearchQuery *seq, SAType offset) = 0;
     virtual void close() = 0;
     virtual void setReferenceName(const QString &refName) = 0;
-    quint64 getWrittenReadsCount() const {return writtenReadsCount;}
+    quint64 getWrittenReadsCount() const {
+        return writtenReadsCount;
+    }
+
 protected:
     quint64 writtenReadsCount;
     QString refName;
@@ -76,20 +84,24 @@ protected:
 /************************************************************************/
 class GenomeAlignerReaderContainer {
 public:
-    GenomeAlignerReaderContainer() : reader(NULL) { }
-    GenomeAlignerReaderContainer(GenomeAlignerReader* reader) {
+    GenomeAlignerReaderContainer()
+        : reader(NULL) {
+    }
+    GenomeAlignerReaderContainer(GenomeAlignerReader *reader) {
         this->reader = reader;
     }
-    GenomeAlignerReader* reader;
+    GenomeAlignerReader *reader;
 };
 
 class GenomeAlignerWriterContainer {
 public:
-    GenomeAlignerWriterContainer() : writer(NULL) {}
-    GenomeAlignerWriterContainer(GenomeAlignerWriter* writer) {
+    GenomeAlignerWriterContainer()
+        : writer(NULL) {
+    }
+    GenomeAlignerWriterContainer(GenomeAlignerWriter *writer) {
         this->writer = writer;
     }
-    GenomeAlignerWriter* writer;
+    GenomeAlignerWriter *writer;
 };
 
 /************************************************************************/
@@ -115,6 +127,7 @@ public:
     inline void write(SearchQuery *seq, SAType offset);
     void close();
     void setReferenceName(const QString &refName);
+
 private:
     StreamShortReadsWriter seqWriter;
 };
@@ -126,13 +139,14 @@ namespace LocalWorkflow {
 
 class GenomeAlignerCommunicationChanelReader : public GenomeAlignerReader {
 public:
-    GenomeAlignerCommunicationChanelReader(CommunicationChannel* reads);
+    GenomeAlignerCommunicationChanelReader(CommunicationChannel *reads);
     ~GenomeAlignerCommunicationChanelReader();
     inline SearchQuery *read();
     inline bool isEnd();
     int getProgress();
+
 private:
-    CommunicationChannel* reads;
+    CommunicationChannel *reads;
 };
 
 class GenomeAlignerMsaWriter : public GenomeAlignerWriter {
@@ -142,11 +156,12 @@ public:
     void close();
     void setReferenceName(const QString &refName);
     MultipleSequenceAlignment &getResult();
+
 private:
     MultipleSequenceAlignment result;
 };
 
-} //LocalWorkflow
+}    // namespace LocalWorkflow
 
 /************************************************************************/
 /* DBI short reads reader and writer                                    */
@@ -157,6 +172,7 @@ public:
     inline SearchQuery *read();
     inline bool isEnd();
     int getProgress();
+
 private:
     bool end;
     U2AssemblyDbi *rDbi;
@@ -168,23 +184,23 @@ private:
     qint64 readNumber;
     qint64 maxRow;
     qint64 readsInAssembly;
-    QScopedPointer< U2DbiIterator<U2AssemblyRead> > dbiIterator;
+    QScopedPointer<U2DbiIterator<U2AssemblyRead>> dbiIterator;
 
     static const qint64 readBunchSize;
 };
 
 class GenomeAlignerDbiWriter : public GenomeAlignerWriter {
 public:
-    GenomeAlignerDbiWriter(const QString &dbiFilePath, const QString &assemblyName, int refLength,
-                           const QString& referenceObjectName = QString(),
-                           const QString& referenceUrlForCrossLink = QString());
+    GenomeAlignerDbiWriter(const QString &dbiFilePath, const QString &assemblyName, int refLength, const QString &referenceObjectName = QString(), const QString &referenceUrlForCrossLink = QString());
     inline void write(SearchQuery *seq, SAType offset);
     void close();
-    void setReferenceName(const QString &) {}
+    void setReferenceName(const QString &) {
+    }
+
 private:
     U2OpStatusImpl status;
     QSharedPointer<DbiConnection> dbiHandle;
-    U2Dbi* sqliteDbi;
+    U2Dbi *sqliteDbi;
     AssemblyImporter importer;
     U2AssemblyDbi *wDbi;
     U2Assembly assembly;
@@ -194,9 +210,9 @@ private:
     static const qint64 readBunchSize;
 };
 
-bool checkAndLogError(const U2OpStatusImpl & status);
+bool checkAndLogError(const U2OpStatusImpl &status);
 
-} //U2
+}    // namespace U2
 Q_DECLARE_METATYPE(U2::GenomeAlignerReaderContainer);
 Q_DECLARE_METATYPE(U2::GenomeAlignerWriterContainer);
-#endif //_GENOME_ALIGNER_IO_H_
+#endif    //_GENOME_ALIGNER_IO_H_

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportTasks.h"
+
 #include <QFileInfo>
 
 #include <U2Core/AddDocumentTask.h>
@@ -46,20 +48,17 @@
 
 #include <U2Formats/SCFFormat.h>
 
-#include "ExportTasks.h"
-
 namespace U2 {
 
 //////////////////////////////////////////////////////////////////////////
 // DNAExportAlignmentTask
-SaveAlignmentTask::SaveAlignmentTask(const MultipleSequenceAlignment& _ma, const QString& _fileName, DocumentFormatId _f, const QVariantMap& _hints)
-: Task("", TaskFlag_None),
-  ma(_ma->getCopy()),
-  fileName(_fileName),
-  hints(_hints),
-  format(_f)
-{
-    GCOUNTER( cvar, tvar, "ExportAlignmentTask" );
+SaveAlignmentTask::SaveAlignmentTask(const MultipleSequenceAlignment &_ma, const QString &_fileName, DocumentFormatId _f, const QVariantMap &_hints)
+    : Task("", TaskFlag_None),
+      ma(_ma->getCopy()),
+      fileName(_fileName),
+      hints(_hints),
+      format(_f) {
+    GCOUNTER(cvar, tvar, "ExportAlignmentTask");
     setTaskName(tr("Export alignment to '%1'").arg(QFileInfo(fileName).fileName()));
     setVerboseLogMode(true);
 
@@ -69,16 +68,16 @@ SaveAlignmentTask::SaveAlignmentTask(const MultipleSequenceAlignment& _ma, const
 }
 
 void SaveAlignmentTask::run() {
-    DocumentFormatRegistry* r = AppContext::getDocumentFormatRegistry();
-    DocumentFormat* f = r->getFormatById(format);
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(fileName));
+    DocumentFormatRegistry *r = AppContext::getDocumentFormatRegistry();
+    DocumentFormat *f = r->getFormatById(format);
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(fileName));
     doc.reset(f->createNewLoadedDocument(iof, fileName, stateInfo));
 
-    MultipleSequenceAlignmentObject* obj = MultipleSequenceAlignmentImporter::createAlignment(doc->getDbiRef(), ma, stateInfo);
+    MultipleSequenceAlignmentObject *obj = MultipleSequenceAlignmentImporter::createAlignment(doc->getDbiRef(), ma, stateInfo);
     CHECK_OP(stateInfo, );
 
-    GHints* docHints = doc->getGHints();
-    foreach(const QString& key, hints.keys()){
+    GHints *docHints = doc->getGHints();
+    foreach (const QString &key, hints.keys()) {
         docHints->set(key, hints[key]);
     }
 
@@ -86,39 +85,38 @@ void SaveAlignmentTask::run() {
     f->storeDocument(doc.data(), stateInfo);
 }
 
-Document * SaveAlignmentTask::getDocument() const {
+Document *SaveAlignmentTask::getDocument() const {
     return doc.data();
 }
-const QString & SaveAlignmentTask::getUrl() const {
+const QString &SaveAlignmentTask::getUrl() const {
     return fileName;
 }
 
-const MultipleSequenceAlignment & SaveAlignmentTask::getMAlignment() const {
+const MultipleSequenceAlignment &SaveAlignmentTask::getMAlignment() const {
     return ma;
 }
 
 //////////////////////////////////////////////////////////////////////////
 // export alignment  2 sequence format
 
-SaveMSA2SequencesTask::SaveMSA2SequencesTask(const MultipleSequenceAlignment& _ma, const QString& _url, bool _trimAli, DocumentFormatId _format)
-: Task(tr("Export alignment to sequence: %1").arg(_url), TaskFlag_None),
-ma(_ma->getCopy()), url(_url), trimAli(_trimAli), format(_format)
-{
-    GCOUNTER( cvar, tvar, "ExportMSA2SequencesTask" );
+SaveMSA2SequencesTask::SaveMSA2SequencesTask(const MultipleSequenceAlignment &_ma, const QString &_url, bool _trimAli, DocumentFormatId _format)
+    : Task(tr("Export alignment to sequence: %1").arg(_url), TaskFlag_None),
+      ma(_ma->getCopy()), url(_url), trimAli(_trimAli), format(_format) {
+    GCOUNTER(cvar, tvar, "ExportMSA2SequencesTask");
     setVerboseLogMode(true);
     stateInfo.setProgress(0);
 }
 
 void SaveMSA2SequencesTask::run() {
-    DocumentFormatRegistry* r = AppContext::getDocumentFormatRegistry();
-    DocumentFormat* f = r->getFormatById(format);
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
+    DocumentFormatRegistry *r = AppContext::getDocumentFormatRegistry();
+    DocumentFormat *f = r->getFormatById(format);
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
     doc.reset(f->createNewLoadedDocument(iof, url, stateInfo));
     CHECK_OP(stateInfo, );
 
     QList<DNASequence> lst = MSAUtils::ma2seq(ma, trimAli);
     QSet<QString> usedNames;
-    foreach(const DNASequence& s, lst) {
+    foreach (const DNASequence &s, lst) {
         QString name = s.getName();
         if (usedNames.contains(name)) {
             name = TextUtils::variate(name, " ", usedNames, false, 1);
@@ -131,14 +129,13 @@ void SaveMSA2SequencesTask::run() {
     f->storeDocument(doc.data(), stateInfo);
 }
 
-SaveSequenceTask::SaveSequenceTask(const QPointer<U2SequenceObject> &sequence, const QString &url, const DocumentFormatId &formatId):
-    Task(tr("Save sequence"), TaskFlags_NR_FOSE_COSC),
-    sequence(sequence),
-    url(url),
-    formatId(formatId),
-    locker(NULL),
-    cloneTask(NULL)
-{
+SaveSequenceTask::SaveSequenceTask(const QPointer<U2SequenceObject> &sequence, const QString &url, const DocumentFormatId &formatId)
+    : Task(tr("Save sequence"), TaskFlags_NR_FOSE_COSC),
+      sequence(sequence),
+      url(url),
+      formatId(formatId),
+      locker(NULL),
+      cloneTask(NULL) {
     SAFE_POINT_EXT(NULL != sequence, setError("Sequence is NULL"), );
     SAFE_POINT_EXT(!url.isEmpty(), setError("URL is empty"), );
 }
@@ -178,4 +175,4 @@ QList<Task *> SaveSequenceTask::onSubTaskFinished(Task *subTask) {
     return result;
 }
 
-}   // namespace U2
+}    // namespace U2

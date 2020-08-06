@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "LastReadyScheduler.h"
+
 #include <U2Core/TaskSignalMapper.h>
 #include <U2Core/Timer.h>
 #include <U2Core/U2SafePoints.h>
@@ -27,16 +29,12 @@
 #include <U2Lang/WorkflowDebugStatus.h>
 #include <U2Lang/WorkflowMonitor.h>
 
-#include "LastReadyScheduler.h"
-
 namespace U2 {
 
 namespace LocalWorkflow {
 
 LastReadyScheduler::LastReadyScheduler(Schema *sh)
-    : Scheduler(sh), lastWorker(NULL), canLastTaskBeCanceled(false), requestedActorForNextTick(), timeUpdater(NULL)
-{
-
+    : Scheduler(sh), lastWorker(NULL), canLastTaskBeCanceled(false), requestedActorForNextTick(), timeUpdater(NULL) {
 }
 
 LastReadyScheduler::~LastReadyScheduler() {
@@ -44,7 +42,7 @@ LastReadyScheduler::~LastReadyScheduler() {
 }
 
 void LastReadyScheduler::init() {
-    foreach(Actor* a, schema->getProcesses()) {
+    foreach (Actor *a, schema->getProcesses()) {
         BaseWorker *w = a->castPeer<BaseWorker>();
         foreach (IntegralBus *bus, w->getPorts().values()) {
             bus->setWorkflowContext(context);
@@ -57,7 +55,7 @@ void LastReadyScheduler::init() {
 }
 
 bool LastReadyScheduler::isReady() const {
-    foreach(Actor* a, schema->getProcesses()) {
+    foreach (Actor *a, schema->getProcesses()) {
         if (a->castPeer<BaseWorker>()->isReady()) {
             return true;
         }
@@ -97,20 +95,19 @@ inline void LastReadyScheduler::measuredTick() {
     }
 }
 
-Task * LastReadyScheduler::tick() {
+Task *LastReadyScheduler::tick() {
     for (int vertexLabel = 0; vertexLabel < topologicSortedGraph.size(); vertexLabel++) {
         foreach (Actor *a, topologicSortedGraph.value(vertexLabel)) {
             if (a->castPeer<BaseWorker>()->isReady()) {
-                if(requestedActorForNextTick.isEmpty() || a->getId() == requestedActorForNextTick) {
+                if (requestedActorForNextTick.isEmpty() || a->getId() == requestedActorForNextTick) {
                     lastWorker = a->castPeer<BaseWorker>();
                     measuredTick();
                     debugInfo->checkActorForBreakpoint(a);
-                    if(!requestedActorForNextTick.isEmpty()) {
+                    if (!requestedActorForNextTick.isEmpty()) {
                         requestedActorForNextTick = ActorId();
                     }
                     return lastTask;
                 }
-
             }
         }
     }
@@ -118,7 +115,7 @@ Task * LastReadyScheduler::tick() {
     return NULL;
 }
 
-Task * LastReadyScheduler::replayLastWorkerTick() {
+Task *LastReadyScheduler::replayLastWorkerTick() {
     lastWorker->saveCurrentChannelsStateAndRestorePrevious();
     Task *result = lastWorker->tick();
     lastWorker->restoreActualChannelsState();
@@ -126,7 +123,7 @@ Task * LastReadyScheduler::replayLastWorkerTick() {
 }
 
 bool LastReadyScheduler::isDone() const {
-    foreach(Actor* a, schema->getProcesses()) {
+    foreach (Actor *a, schema->getProcesses()) {
         if (!a->castPeer<BaseWorker>()->isDone()) {
             return false;
         }
@@ -135,15 +132,15 @@ bool LastReadyScheduler::isDone() const {
 }
 
 void LastReadyScheduler::cleanup() {
-    foreach(Actor* a, schema->getProcesses()) {
+    foreach (Actor *a, schema->getProcesses()) {
         a->castPeer<BaseWorker>()->cleanup();
     }
 }
 
-WorkerState LastReadyScheduler::getWorkerState(const Actor* a) {
-    BaseWorker* w = a->castPeer<BaseWorker>();
+WorkerState LastReadyScheduler::getWorkerState(const Actor *a) {
+    BaseWorker *w = a->castPeer<BaseWorker>();
     if (lastWorker == w) {
-        Task* t = lastTask;
+        Task *t = lastTask;
         if (w->isDone() && t && t->isFinished()) {
             return WorkerDone;
         }
@@ -158,9 +155,9 @@ WorkerState LastReadyScheduler::getWorkerState(const Actor* a) {
 }
 
 WorkerState LastReadyScheduler::getWorkerState(const ActorId &id) {
-    Actor* a = schema->actorById(id);
+    Actor *a = schema->actorById(id);
     if (NULL == a) {
-        QList<Actor*> actors = schema->actorsByOwnerId(id);
+        QList<Actor *> actors = schema->actorsByOwnerId(id);
         assert(actors.size() > 0);
 
         bool someWaiting = false;
@@ -169,19 +166,19 @@ WorkerState LastReadyScheduler::getWorkerState(const ActorId &id) {
         foreach (Actor *a, actors) {
             WorkerState state = getWorkerState(a);
             switch (state) {
-                case WorkerRunning:
-                    return WorkerRunning;
-                case WorkerWaiting:
-                    someWaiting = true;
-                    break;
-                case WorkerDone:
-                    someDone = true;
-                    break;
-                case WorkerReady:
-                    someReady = true;
-                    break;
-                default:
-                    break;
+            case WorkerRunning:
+                return WorkerRunning;
+            case WorkerWaiting:
+                someWaiting = true;
+                break;
+            case WorkerDone:
+                someDone = true;
+                break;
+            case WorkerReady:
+                someReady = true;
+                break;
+            default:
+                break;
             }
         }
         if (someWaiting) {
@@ -199,10 +196,10 @@ WorkerState LastReadyScheduler::getWorkerState(const ActorId &id) {
 }
 
 bool LastReadyScheduler::cancelCurrentTaskIfAllowed() {
-    if(NULL == lastTask) {
+    if (NULL == lastTask) {
         return false;
     }
-    if(!lastTask->isFinished() && canLastTaskBeCanceled) {
+    if (!lastTask->isFinished() && canLastTaskBeCanceled) {
         lastTask->cancel();
         return true;
     }
@@ -213,6 +210,6 @@ void LastReadyScheduler::makeOneTick(const ActorId &actor) {
     requestedActorForNextTick = actor;
 }
 
-} // LocalWorkflow
+}    // namespace LocalWorkflow
 
-} // U2
+}    // namespace U2

@@ -22,9 +22,10 @@
 #ifndef _GTUTILS_PCR_H_
 #define _GTUTILS_PCR_H_
 
+#include <GTGlobals.h>
+
 #include <U2Core/U2OpStatus.h>
 #include <U2Core/U2Type.h>
-#include <GTGlobals.h>
 
 class QTableView;
 
@@ -37,19 +38,19 @@ public:
     static void setMismatches(HI::GUITestOpStatus &os, U2Strand::Direction direction, int mismatches);
     static void setPerfectMatch(HI::GUITestOpStatus &os, int number);
     static void setMaxProductSize(HI::GUITestOpStatus &os, int number);
-    static QWidget * browseButton(HI::GUITestOpStatus &os, U2Strand::Direction direction);
+    static QWidget *browseButton(HI::GUITestOpStatus &os, U2Strand::Direction direction);
     static int productsCount(HI::GUITestOpStatus &os);
     static QString getResultRegion(HI::GUITestOpStatus &os, int number);
     static QPoint getResultPoint(HI::GUITestOpStatus &os, int number);
     static QPoint getDetailsPoint(HI::GUITestOpStatus &os);
     static QString getPrimerInfo(HI::GUITestOpStatus &os, U2Strand::Direction direction);
-    static QWidget * primerBox(HI::GUITestOpStatus &os, U2Strand::Direction direction);
+    static QWidget *primerBox(HI::GUITestOpStatus &os, U2Strand::Direction direction);
     static void clearPcrDir(HI::GUITestOpStatus &os);
 
 private:
-    static QTableView * table(HI::GUITestOpStatus &os);
+    static QTableView *table(HI::GUITestOpStatus &os);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _GTUTILS_PCR_H_
+#endif    // _GTUTILS_PCR_H_

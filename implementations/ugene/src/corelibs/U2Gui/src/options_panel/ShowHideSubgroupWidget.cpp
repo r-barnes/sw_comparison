@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ShowHideSubgroupWidget.h"
+
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QMovie>
@@ -27,19 +29,14 @@
 
 #include <U2Core/U2SafePoints.h>
 
-#include "ShowHideSubgroupWidget.h"
-
 namespace U2 {
 
 ShowHideSubgroupWidget::ShowHideSubgroupWidget(QWidget *parent)
-: QWidget(parent), arrowHeaderWidget(NULL), innerWidget(NULL)
-{
-
+    : QWidget(parent), arrowHeaderWidget(NULL), innerWidget(NULL) {
 }
 
-ShowHideSubgroupWidget::ShowHideSubgroupWidget(const QString &_id, const QString &caption, QWidget* _innerWidget, bool isOpened)
-    : subgroupId(_id), innerWidget(_innerWidget)
-{
+ShowHideSubgroupWidget::ShowHideSubgroupWidget(const QString &_id, const QString &caption, QWidget *_innerWidget, bool isOpened)
+    : subgroupId(_id), innerWidget(_innerWidget) {
     init(subgroupId, caption, innerWidget, isOpened);
 }
 
@@ -47,7 +44,7 @@ void ShowHideSubgroupWidget::init(const QString &subgroupId, const QString &capt
     this->subgroupId = subgroupId;
     this->innerWidget = innerWidget;
 
-    QVBoxLayout* mainLayout = new QVBoxLayout();
+    QVBoxLayout *mainLayout = new QVBoxLayout();
     mainLayout->setContentsMargins(0, 0, 0, 10);
     mainLayout->setSpacing(0);
     mainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
@@ -63,7 +60,6 @@ void ShowHideSubgroupWidget::init(const QString &subgroupId, const QString &capt
     mainLayout->addWidget(innerWidget);
 
     setObjectName(subgroupId);
-
 }
 
 void ShowHideSubgroupWidget::updateSubgroupState(bool isSubgroupOpened) {
@@ -100,9 +96,8 @@ void ShowHideSubgroupWidget::setPermanentlyOpen(bool isOpened) {
 }
 
 ArrowHeaderWidget::ArrowHeaderWidget(const QString &caption, bool _isOpened)
-    : isOpened(_isOpened)
-{
-    QHBoxLayout* arrowHeaderLayout = new QHBoxLayout();
+    : isOpened(_isOpened) {
+    QHBoxLayout *arrowHeaderLayout = new QHBoxLayout();
     arrowHeaderLayout->setContentsMargins(0, 0, 0, 0);
     arrowHeaderLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
 
@@ -116,14 +111,14 @@ ArrowHeaderWidget::ArrowHeaderWidget(const QString &caption, bool _isOpened)
 
     arrow->setMaximumSize(10, 10);
 
-    QLabel* captionLabel = new QLabel(caption);
+    QLabel *captionLabel = new QLabel(caption);
     captionLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
     progressMovieLabel = new QLabel();
     progressMovie = new QMovie(":/core/images/progress.gif", QByteArray(), progressMovieLabel);
     progressMovieLabel->setMovie(progressMovie);
 
-    if (progressMovie->isValid()){
+    if (progressMovie->isValid()) {
         progressMovie->start();
         progressMovie->setPaused(true);
     }
@@ -143,7 +138,7 @@ ArrowHeaderWidget::~ArrowHeaderWidget() {
 }
 
 void ArrowHeaderWidget::showProgressWithTimeout() {
-    QTimer* timeoutToStartProgress = new QTimer(this);
+    QTimer *timeoutToStartProgress = new QTimer(this);
     connect(timeoutToStartProgress, SIGNAL(timeout()), SLOT(sl_showProgress()));
     timeoutToStartProgress->start(TIMEOUT);
     canStartProgress = true;
@@ -175,9 +170,8 @@ void ArrowHeaderWidget::setOpened(bool _isOpened) {
     }
 }
 
-
 void ArrowHeaderWidget::mousePressEvent(QMouseEvent * /* event */) {
     setOpened(!isOpened);
 }
 
-} // namespace U2
+}    // namespace U2

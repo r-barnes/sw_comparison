@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "AssemblyConsensusArea.h"
+
 #include <QFileInfo>
 #include <QMouseEvent>
 #include <QPainter>
@@ -29,13 +31,11 @@
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/GUrlUtils.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/U2AssemblyUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include <U2Core/QObjectScopedPointer.h>
-
 #include "AssemblyBrowser.h"
-#include "AssemblyConsensusArea.h"
 #include "AssemblyConsensusTask.h"
 #include "ExportConsensusDialog.h"
 #include "ExportConsensusTask.h"
@@ -44,17 +44,16 @@
 
 namespace U2 {
 
-AssemblyConsensusArea::AssemblyConsensusArea(AssemblyBrowserUi * ui)
-    : AssemblySequenceArea(ui, AssemblyConsensusAlgorithm::EMPTY_CHAR), consensusAlgorithmMenu(NULL), consensusAlgorithm(NULL), canceled(false)
-{
+AssemblyConsensusArea::AssemblyConsensusArea(AssemblyBrowserUi *ui)
+    : AssemblySequenceArea(ui, AssemblyConsensusAlgorithm::EMPTY_CHAR), consensusAlgorithmMenu(NULL), consensusAlgorithm(NULL), canceled(false) {
     setToolTip(tr("Consensus sequence"));
     setObjectName("Consensus area");
     connect(&consensusTaskRunner, SIGNAL(si_finished()), SLOT(sl_consensusReady()));
 
-    AssemblyConsensusAlgorithmRegistry * registry = AppContext::getAssemblyConsensusAlgorithmRegistry();
+    AssemblyConsensusAlgorithmRegistry *registry = AppContext::getAssemblyConsensusAlgorithmRegistry();
     QString defaultId = BuiltInAssemblyConsensusAlgorithms::DEFAULT_ALGO;
-    AssemblyConsensusAlgorithmFactory * f = registry->getAlgorithmFactory(defaultId);
-    SAFE_POINT(f != NULL, QString("consensus algorithm factory %1 not found").arg(defaultId),);
+    AssemblyConsensusAlgorithmFactory *f = registry->getAlgorithmFactory(defaultId);
+    SAFE_POINT(f != NULL, QString("consensus algorithm factory %1 not found").arg(defaultId), );
     consensusAlgorithm = QSharedPointer<AssemblyConsensusAlgorithm>(f->createAlgorithm());
 
     setDiffCellRenderer();
@@ -71,14 +70,13 @@ void AssemblyConsensusArea::createContextMenu() {
     exportCoverage->setObjectName("Export coverage");
     connect(exportCoverage, SIGNAL(triggered()), browser, SLOT(sl_exportCoverage()));
 
-    QAction * exportAction = contextMenu->addAction(tr("Export consensus..."));
+    QAction *exportAction = contextMenu->addAction(tr("Export consensus..."));
     connect(exportAction, SIGNAL(triggered()), SLOT(sl_exportConsensus()));
 
     exportConsensusVariationsAction = contextMenu->addAction(tr("Export consensus variations..."));
-    connect(exportConsensusVariationsAction , SIGNAL(triggered()), SLOT(sl_exportConsensusVariations()));
+    connect(exportConsensusVariationsAction, SIGNAL(triggered()), SLOT(sl_exportConsensusVariations()));
 
     exportConsensusVariationsAction->setDisabled(true);
-
 
     diffAction = contextMenu->addAction(tr("Show difference from reference"));
     diffAction->setCheckable(true);
@@ -101,7 +99,7 @@ static ConsensusInfo getPart(ConsensusInfo cache, U2Region region) {
     result.region = region;
     result.algorithmId = cache.algorithmId;
     result.consensus = QByteArray(region.length, AssemblyConsensusAlgorithm::EMPTY_CHAR);
-    if(!cache.region.isEmpty() && cache.region.intersects(region)) {
+    if (!cache.region.isEmpty() && cache.region.intersects(region)) {
         U2Region intersection = cache.region.intersect(region);
         SAFE_POINT(!intersection.isEmpty(), "consensus cache: intersection cannot be empty, possible race condition?", result);
 
@@ -113,11 +111,11 @@ static ConsensusInfo getPart(ConsensusInfo cache, U2Region region) {
 }
 
 void AssemblyConsensusArea::launchConsensusCalculation() {
-    if(areCellsVisible()) {
+    if (areCellsVisible()) {
         U2Region visibleRegion = getVisibleRegion();
 
         previousRegion = visibleRegion;
-        if(cache.region.contains(visibleRegion) && cache.algorithmId == consensusAlgorithm->getId()) {
+        if (cache.region.contains(visibleRegion) && cache.algorithmId == consensusAlgorithm->getId()) {
             lastResult = getPart(cache, visibleRegion);
             consensusTaskRunner.cancel();
         } else {
@@ -133,7 +131,7 @@ void AssemblyConsensusArea::launchConsensusCalculation() {
 }
 
 void AssemblyConsensusArea::sl_offsetsChanged() {
-    if(areCellsVisible() && getVisibleRegion() != previousRegion) {
+    if (areCellsVisible() && getVisibleRegion() != previousRegion) {
         launchConsensusCalculation();
     }
 }
@@ -143,10 +141,10 @@ void AssemblyConsensusArea::sl_zoomPerformed() {
 }
 
 void AssemblyConsensusArea::drawSequence(QPainter &p) {
-    if(areCellsVisible()) {
+    if (areCellsVisible()) {
         U2Region visibleRegion = getVisibleRegion();
-        if(! consensusTaskRunner.isIdle() || canceled) {
-            if(!cache.region.isEmpty() && cache.region.intersects(visibleRegion)) {
+        if (!consensusTaskRunner.isIdle() || canceled) {
+            if (!cache.region.isEmpty() && cache.region.intersects(visibleRegion)) {
                 // Draw a known part while others are still being calculated
                 // To do it, temporarily substitute lastResult with values from cache, then return it back
                 ConsensusInfo storedLastResult = lastResult;
@@ -157,9 +155,9 @@ void AssemblyConsensusArea::drawSequence(QPainter &p) {
             }
             QString message = consensusTaskRunner.isIdle() ? tr("Consensus calculation canceled") : tr("Calculating consensus...");
             p.drawText(rect(), Qt::AlignCenter, message);
-        } else if(lastResult.region == visibleRegion && lastResult.algorithmId == consensusAlgorithm->getId()) {
+        } else if (lastResult.region == visibleRegion && lastResult.algorithmId == consensusAlgorithm->getId()) {
             AssemblySequenceArea::drawSequence(p);
-        } else if(cache.region.contains(visibleRegion) && cache.algorithmId == consensusAlgorithm->getId()) {
+        } else if (cache.region.contains(visibleRegion) && cache.algorithmId == consensusAlgorithm->getId()) {
             lastResult = getPart(cache, visibleRegion);
             AssemblySequenceArea::drawSequence(p);
         } else {
@@ -168,40 +166,40 @@ void AssemblyConsensusArea::drawSequence(QPainter &p) {
     }
 }
 
-QMenu * AssemblyConsensusArea::getConsensusAlgorithmMenu() {
-    if(consensusAlgorithmMenu == NULL) {
+QMenu *AssemblyConsensusArea::getConsensusAlgorithmMenu() {
+    if (consensusAlgorithmMenu == NULL) {
         consensusAlgorithmMenu = new QMenu(tr("Consensus algorithm"));
 
-        AssemblyConsensusAlgorithmRegistry * registry = AppContext::getAssemblyConsensusAlgorithmRegistry();
-        QList<AssemblyConsensusAlgorithmFactory*> factories = registry->getAlgorithmFactories();
+        AssemblyConsensusAlgorithmRegistry *registry = AppContext::getAssemblyConsensusAlgorithmRegistry();
+        QList<AssemblyConsensusAlgorithmFactory *> factories = registry->getAlgorithmFactories();
 
-        foreach(AssemblyConsensusAlgorithmFactory *f, factories) {
-            QAction * action = consensusAlgorithmMenu->addAction(f->getName());
+        foreach (AssemblyConsensusAlgorithmFactory *f, factories) {
+            QAction *action = consensusAlgorithmMenu->addAction(f->getName());
             action->setCheckable(true);
             action->setChecked(f == consensusAlgorithm->getFactory());
             action->setData(f->getId());
-            connect(consensusAlgorithmMenu, SIGNAL(triggered(QAction*)), SLOT(sl_consensusAlgorithmChanged(QAction*)));
+            connect(consensusAlgorithmMenu, SIGNAL(triggered(QAction *)), SLOT(sl_consensusAlgorithmChanged(QAction *)));
             algorithmActions << action;
         }
     }
     return consensusAlgorithmMenu;
 }
 
-QList<QAction*> AssemblyConsensusArea::getAlgorithmActions() {
+QList<QAction *> AssemblyConsensusArea::getAlgorithmActions() {
     // ensure that menu is created
     getConsensusAlgorithmMenu();
     return algorithmActions;
 }
 
-void AssemblyConsensusArea::sl_consensusAlgorithmChanged(QAction * action) {
+void AssemblyConsensusArea::sl_consensusAlgorithmChanged(QAction *action) {
     QString id = action->data().toString();
-    AssemblyConsensusAlgorithmRegistry * registry = AppContext::getAssemblyConsensusAlgorithmRegistry();
-    AssemblyConsensusAlgorithmFactory * f = registry->getAlgorithmFactory(id);
-    SAFE_POINT(f != NULL, QString("cannot change consensus algorithm, invalid id %1").arg(id),);
+    AssemblyConsensusAlgorithmRegistry *registry = AppContext::getAssemblyConsensusAlgorithmRegistry();
+    AssemblyConsensusAlgorithmFactory *f = registry->getAlgorithmFactory(id);
+    SAFE_POINT(f != NULL, QString("cannot change consensus algorithm, invalid id %1").arg(id), );
 
     consensusAlgorithm = QSharedPointer<AssemblyConsensusAlgorithm>(f->createAlgorithm());
 
-    foreach(QAction* a, consensusAlgorithmMenu->actions()) {
+    foreach (QAction *a, consensusAlgorithmMenu->actions()) {
         a->setChecked(a == action);
     }
 
@@ -209,7 +207,7 @@ void AssemblyConsensusArea::sl_consensusAlgorithmChanged(QAction * action) {
 }
 
 void AssemblyConsensusArea::sl_drawDifferenceChanged(bool drawDifference) {
-    if(drawDifference) {
+    if (drawDifference) {
         setDiffCellRenderer();
     } else {
         setNormalCellRenderer();
@@ -218,15 +216,15 @@ void AssemblyConsensusArea::sl_drawDifferenceChanged(bool drawDifference) {
 }
 
 void AssemblyConsensusArea::mousePressEvent(QMouseEvent *e) {
-    if(e->button() == Qt::RightButton) {
+    if (e->button() == Qt::RightButton) {
         updateActions();
         contextMenu->exec(QCursor::pos());
     }
 }
 
 void AssemblyConsensusArea::sl_consensusReady() {
-    if(consensusTaskRunner.isIdle()) {
-        if(consensusTaskRunner.isSuccessful()) {
+    if (consensusTaskRunner.isIdle()) {
+        if (consensusTaskRunner.isSuccessful()) {
             cache = lastResult = consensusTaskRunner.getResult();
             canceled = false;
         } else {
@@ -237,8 +235,8 @@ void AssemblyConsensusArea::sl_consensusReady() {
 }
 
 void AssemblyConsensusArea::sl_exportConsensus() {
-    const DocumentFormat * defaultFormat = BaseDocumentFormats::get(BaseDocumentFormats::FASTA);
-    SAFE_POINT(defaultFormat != NULL, "Internal: couldn't find default document format for consensus",);
+    const DocumentFormat *defaultFormat = BaseDocumentFormats::get(BaseDocumentFormats::FASTA);
+    SAFE_POINT(defaultFormat != NULL, "Internal: couldn't find default document format for consensus", );
 
     ExportConsensusTaskSettings settings;
     settings.region = getModel()->getGlobalRegion();
@@ -262,9 +260,9 @@ void AssemblyConsensusArea::sl_exportConsensus() {
         AppContext::getTaskScheduler()->registerTopLevelTask(new ExportConsensusTask(settings));
     }
 }
-void AssemblyConsensusArea::sl_exportConsensusVariations(){
-    const DocumentFormat * defaultFormat = BaseDocumentFormats::get(BaseDocumentFormats::SNP);
-    SAFE_POINT(defaultFormat != NULL, "Internal: couldn't find default document format for consensus variations",);
+void AssemblyConsensusArea::sl_exportConsensusVariations() {
+    const DocumentFormat *defaultFormat = BaseDocumentFormats::get(BaseDocumentFormats::SNP);
+    SAFE_POINT(defaultFormat != NULL, "Internal: couldn't find default document format for consensus variations", );
 
     ExportConsensusVariationsTaskSettings settings;
     settings.region = getModel()->getGlobalRegion();
@@ -284,20 +282,18 @@ void AssemblyConsensusArea::sl_exportConsensusVariations(){
     const int dialogResult = dlg->exec();
     CHECK(!dlg.isNull(), );
 
-    if(QDialog::Accepted == dialogResult) {
+    if (QDialog::Accepted == dialogResult) {
         settings = dlg->getSettings();
         AppContext::getTaskScheduler()->registerTopLevelTask(new ExportConsensusVariationsTask(settings));
     }
 }
 
-void AssemblyConsensusArea::updateActions(){
-    if (!getModel()->hasReference()){
+void AssemblyConsensusArea::updateActions() {
+    if (!getModel()->hasReference()) {
         exportConsensusVariationsAction->setDisabled(true);
-    }else{
+    } else {
         exportConsensusVariationsAction->setDisabled(false);
     }
-
 }
 
-
-} //ns
+}    // namespace U2

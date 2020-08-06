@@ -22,9 +22,10 @@
 #ifndef _U2_PROJECTUPDATER_H_
 #define _U2_PROJECTUPDATER_H_
 
-#include <QThread>
 #include <QMutex>
+#include <QThread>
 
+#include <U2Core/U2OpStatus.h>
 #include <U2Core/U2Type.h>
 
 namespace U2 {
@@ -59,6 +60,6 @@ private:
     QHash<U2DbiId, bool> valid;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_PROJECTUPDATER_H_
+#endif    // _U2_PROJECTUPDATER_H_

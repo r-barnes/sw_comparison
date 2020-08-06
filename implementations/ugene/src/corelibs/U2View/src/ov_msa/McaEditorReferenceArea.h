@@ -35,7 +35,7 @@ class McaEditorWgt;
 class U2VIEW_EXPORT McaEditorReferenceArea : public PanView {
     Q_OBJECT
 public:
-    McaEditorReferenceArea(McaEditorWgt* ui, SequenceObjectContext* ctx);
+    McaEditorReferenceArea(McaEditorWgt *ui, SequenceObjectContext *ctx);
 
 signals:
     void si_selectionChanged();
@@ -45,32 +45,33 @@ public slots:
 
 private slots:
     void sl_visibleRangeChanged();
-    void sl_selectionChanged(const MaEditorSelection& current, const MaEditorSelection& prev);
+    void sl_selectionChanged(const MaEditorSelection &current, const MaEditorSelection &prev);
     void sl_onSelectionChanged(LRegionsSelection *selection, const QVector<U2Region> &addedRegions, const QVector<U2Region> &removedRegions);
     void sl_clearSelection();
     void sl_fontChanged(const QFont &newFont);
 
 private:
-    void setReferenceSelection(QMouseEvent* e);
-    void mousePressEvent(QMouseEvent* e);
-    void mouseMoveEvent(QMouseEvent* e);
-    void mouseReleaseEvent(QMouseEvent* e);
+    void setReferenceSelection(QMouseEvent *e);
+    void mousePressEvent(QMouseEvent *e);
+    void mouseMoveEvent(QMouseEvent *e);
+    void mouseReleaseEvent(QMouseEvent *e);
     void keyPressEvent(QKeyEvent *event);
     void updateScrollBar();
 
-    McaEditor* editor;
-    McaEditorWgt* ui;
+    McaEditor *editor;
+    McaEditorWgt *ui;
     McaReferenceAreaRenderer *renderer;
     qint64 firstPressedSelectionPosition;
 };
 
 class McaEditorReferenceRenderArea : public PanViewRenderArea {
 public:
-    McaEditorReferenceRenderArea(McaEditorWgt* _ui, PanView *d, PanViewRenderer *renderer);
+    McaEditorReferenceRenderArea(McaEditorWgt *_ui, PanView *d, PanViewRenderer *renderer);
 
     virtual qint64 coordToPos(int x) const;
+
 private:
-    McaEditorWgt* ui;
+    McaEditorWgt *ui;
 };
 
 class McaEditorReferenceRenderAreaFactory : public PanViewRenderAreaFactory {
@@ -84,6 +85,6 @@ private:
     MaEditor *maEditor;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_MCA_EDITOR_REFERENCE_VIEW_H_
+#endif    // _U2_MCA_EDITOR_REFERENCE_VIEW_H_

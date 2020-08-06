@@ -33,6 +33,7 @@ public:
     static void setReadOnly(GUITestOpStatus &os, const QString& path, bool recursive = false);
 
     static bool equals(GUITestOpStatus &os, const QString&, const QString&);
+    static bool equals(GUITestOpStatus &os, const QString &);
 
     static qint64 getSize(GUITestOpStatus &os, const QString&);
 

@@ -22,8 +22,8 @@
 #ifndef _U2_SLIDING_WINDOW_STEP_H_
 #define _U2_SLIDING_WINDOW_STEP_H_
 
-#include "ui_SlidingWindowSettingsWidget.h"
 #include "trimmomatic/TrimmomaticStep.h"
+#include "ui_SlidingWindowSettingsWidget.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -33,7 +33,7 @@ class SlidingWindowStep : public TrimmomaticStep {
 public:
     SlidingWindowStep();
 
-    TrimmomaticStepSettingsWidget* createWidget() const;
+    TrimmomaticStepSettingsWidget *createWidget() const;
 
 private:
     QString serializeState(const QVariantMap &widgetState) const;
@@ -64,7 +64,7 @@ public:
     SlidingWindowStep *createStep() const;
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_SLIDING_WINDOW_STEP_H_
+#endif    // _U2_SLIDING_WINDOW_STEP_H_

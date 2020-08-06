@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "UndoRedoFramework.h"
+
 #include <U2Core/MultipleSequenceAlignmentObject.h>
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2ObjectDbi.h>
@@ -27,18 +29,16 @@
 
 #include <U2Gui/GUIUtils.h>
 
-#include "UndoRedoFramework.h"
 #include "ov_msa/MaCollapseModel.h"
 
 namespace U2 {
 
 MsaUndoRedoFramework::MsaUndoRedoFramework(QObject *p, MultipleAlignmentObject *_maObj)
-: QObject(p),
-  maObj(_maObj),
-  stateComplete(true),
-  undoStepsAvailable(0),
-  redoStepsAvailable(0)
-{
+    : QObject(p),
+      maObj(_maObj),
+      stateComplete(true),
+      undoStepsAvailable(0),
+      redoStepsAvailable(0) {
     SAFE_POINT(maObj != NULL, "NULL MSA Object!", );
 
     undoAction = new QAction(this);
@@ -55,8 +55,7 @@ MsaUndoRedoFramework::MsaUndoRedoFramework(QObject *p, MultipleAlignmentObject *
 
     checkUndoRedoEnabled();
 
-    connect(maObj, SIGNAL(si_alignmentChanged(const MultipleAlignment&, const MaModificationInfo&)),
-                   SLOT(sl_updateUndoRedoState()));
+    connect(maObj, SIGNAL(si_alignmentChanged(const MultipleAlignment &, const MaModificationInfo &)), SLOT(sl_updateUndoRedoState()));
     connect(maObj, SIGNAL(si_completeStateChanged(bool)), SLOT(sl_completeStateChanged(bool)));
     connect(maObj, SIGNAL(si_lockedStateChanged()), SLOT(sl_updateUndoRedoState()));
     connect(undoAction, SIGNAL(triggered()), this, SLOT(sl_undo()));
@@ -84,7 +83,7 @@ void MsaUndoRedoFramework::checkUndoRedoEnabled() {
     DbiConnection con(maObj->getEntityRef().dbiRef, os);
     SAFE_POINT_OP(os, );
 
-    U2ObjectDbi* objDbi = con.dbi->getObjectDbi();
+    U2ObjectDbi *objDbi = con.dbi->getObjectDbi();
     SAFE_POINT(NULL != objDbi, "NULL Object Dbi!", );
 
     bool enableUndo = objDbi->canUndo(maObj->getEntityRef().entityId, os);
@@ -100,7 +99,7 @@ void MsaUndoRedoFramework::sl_undo() {
     SAFE_POINT(maObj != NULL, "NULL MSA Object!", );
 
     U2OpStatus2Log os;
-    U2EntityRef msaRef =  maObj->getEntityRef();
+    U2EntityRef msaRef = maObj->getEntityRef();
 
     assert(stateComplete);
     assert(!maObj->isStateLocked());
@@ -108,7 +107,7 @@ void MsaUndoRedoFramework::sl_undo() {
     DbiConnection con(msaRef.dbiRef, os);
     SAFE_POINT_OP(os, );
 
-    U2ObjectDbi* objDbi = con.dbi->getObjectDbi();
+    U2ObjectDbi *objDbi = con.dbi->getObjectDbi();
     SAFE_POINT(NULL != objDbi, "NULL Object Dbi!", );
 
     objDbi->undo(msaRef.entityId, os);
@@ -123,7 +122,7 @@ void MsaUndoRedoFramework::sl_redo() {
     SAFE_POINT(maObj != NULL, "NULL MSA Object!", );
 
     U2OpStatus2Log os;
-    U2EntityRef msaRef =  maObj->getEntityRef();
+    U2EntityRef msaRef = maObj->getEntityRef();
 
     assert(stateComplete);
     assert(!maObj->isStateLocked());
@@ -131,7 +130,7 @@ void MsaUndoRedoFramework::sl_redo() {
     DbiConnection con(msaRef.dbiRef, os);
     SAFE_POINT_OP(os, );
 
-    U2ObjectDbi* objDbi = con.dbi->getObjectDbi();
+    U2ObjectDbi *objDbi = con.dbi->getObjectDbi();
     SAFE_POINT(NULL != objDbi, "NULL Object Dbi!", );
 
     objDbi->redo(msaRef.entityId, os);
@@ -142,5 +141,4 @@ void MsaUndoRedoFramework::sl_redo() {
     maObj->updateCachedMultipleAlignment(modInfo);
 }
 
-
-} // namespace
+}    // namespace U2

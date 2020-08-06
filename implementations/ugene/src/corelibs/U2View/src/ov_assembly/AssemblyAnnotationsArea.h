@@ -37,12 +37,12 @@ public:
     virtual ~AssemblyAnnotationsArea();
 
 signals:
-    void si_mouseMovedToPos(const QPoint&);
+    void si_mouseMovedToPos(const QPoint &);
 
 private:
     AssemblyVariantRowManager *variantRowManager;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _ASSEMBLY_ANNOTATIONS_AREA_
+#endif    // _ASSEMBLY_ANNOTATIONS_AREA_

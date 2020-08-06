@@ -20,20 +20,21 @@
  */
 
 #include "TreeViewerState.h"
+
+#include <U2Core/DNASequenceSelection.h>
+#include <U2Core/DocumentModel.h>
+#include <U2Core/PhyTreeObject.h>
+
 #include "TreeViewer.h"
 #include "TreeViewerFactory.h"
 
-#include <U2Core/DocumentModel.h>
-#include <U2Core/PhyTreeObject.h>
-#include <U2Core/DNASequenceSelection.h>
-
 namespace U2 {
 
-#define VIEW_ID     QString("view_id")
-#define PHY_OBJ     QString("phy_obj_ref")
-#define V_ZOOM      QString("vertical_zoom")
-#define H_ZOOM      QString("horizontal_zoom")
-#define TRANSFORM   QString("transform")
+#define VIEW_ID QString("view_id")
+#define PHY_OBJ QString("phy_obj_ref")
+#define V_ZOOM QString("vertical_zoom")
+#define H_ZOOM QString("horizontal_zoom")
+#define TRANSFORM QString("transform")
 
 bool TreeViewerState::isValid() const {
     return stateData.value(VIEW_ID) == TreeViewerFactory::ID;
@@ -43,45 +44,37 @@ GObjectReference TreeViewerState::getPhyObject() const {
     return stateData.contains(PHY_OBJ) ? stateData[PHY_OBJ].value<GObjectReference>() : GObjectReference();
 }
 
-void TreeViewerState::setPhyObject(const GObjectReference& ref) {
+void TreeViewerState::setPhyObject(const GObjectReference &ref) {
     stateData[PHY_OBJ] = QVariant::fromValue<GObjectReference>(ref);
 }
 
-
 qreal TreeViewerState::getVerticalZoom() const {
-
     QVariant v = stateData.value(V_ZOOM);
     if (v.isValid()) {
         return v.value<qreal>();
-    }
-    else {
+    } else {
         return 1.0f;
     }
 }
 
 qreal TreeViewerState::getHorizontalZoom() const {
-
     QVariant v = stateData.value(H_ZOOM);
     if (v.isValid()) {
         return v.value<qreal>();
-    }
-    else {
+    } else {
         return 1.0f;
     }
 }
 
 void TreeViewerState::setVerticalZoom(qreal s) {
-
     stateData[V_ZOOM] = s;
 }
 
 void TreeViewerState::setHorizontalZoom(qreal s) {
-
     stateData[H_ZOOM] = s;
 }
 
 QTransform TreeViewerState::getTransform() const {
-
     QVariant v = stateData.value(TRANSFORM);
     if (v.type() == QVariant::Transform) {
         return v.value<QTransform>();
@@ -90,18 +83,16 @@ QTransform TreeViewerState::getTransform() const {
     return t;
 }
 
-void TreeViewerState::setTransform(const QTransform& m) {
-
+void TreeViewerState::setTransform(const QTransform &m) {
     stateData[TRANSFORM] = m;
 }
 
-
-QVariantMap TreeViewerState::saveState(TreeViewer* v) {
+QVariantMap TreeViewerState::saveState(TreeViewer *v) {
     TreeViewerState ss;
 
     ss.stateData[VIEW_ID] = TreeViewerFactory::ID;
 
-    PhyTreeObject* phyObj = v->getPhyObject();
+    PhyTreeObject *phyObj = v->getPhyObject();
     if (phyObj) {
         ss.setPhyObject(GObjectReference(phyObj));
     }
@@ -115,4 +106,4 @@ QVariantMap TreeViewerState::saveState(TreeViewer* v) {
     return ss.stateData;
 }
 
-} // namespace
+}    // namespace U2

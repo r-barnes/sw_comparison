@@ -27,24 +27,23 @@
 
 namespace U2 {
 
-const QString  CufflinksSupport::ET_CUFFCOMPARE = "Cuffcompare";
-const QString  CufflinksSupport::ET_CUFFCOMPARE_ID = "USUPP_CUFFCOMPARE";
-const QString  CufflinksSupport::ET_CUFFDIFF = "Cuffdiff";
-const QString  CufflinksSupport::ET_CUFFDIFF_ID = "USUPP_CUFFDIFF";
-const QString  CufflinksSupport::ET_CUFFLINKS = "Cufflinks";
-const QString  CufflinksSupport::ET_CUFFLINKS_ID = "USUPP_CUFFLINKS";
-const QString  CufflinksSupport::ET_CUFFMERGE = "Cuffmerge";
-const QString  CufflinksSupport::ET_CUFFMERGE_ID = "USUPP_CUFFMERGE";
-const QString  CufflinksSupport::ET_GFFREAD = "Gffread";
-const QString  CufflinksSupport::ET_GFFREAD_ID = "USUPP_GFFREAD";
+const QString CufflinksSupport::ET_CUFFCOMPARE = "Cuffcompare";
+const QString CufflinksSupport::ET_CUFFCOMPARE_ID = "USUPP_CUFFCOMPARE";
+const QString CufflinksSupport::ET_CUFFDIFF = "Cuffdiff";
+const QString CufflinksSupport::ET_CUFFDIFF_ID = "USUPP_CUFFDIFF";
+const QString CufflinksSupport::ET_CUFFLINKS = "Cufflinks";
+const QString CufflinksSupport::ET_CUFFLINKS_ID = "USUPP_CUFFLINKS";
+const QString CufflinksSupport::ET_CUFFMERGE = "Cuffmerge";
+const QString CufflinksSupport::ET_CUFFMERGE_ID = "USUPP_CUFFMERGE";
+const QString CufflinksSupport::ET_GFFREAD = "Gffread";
+const QString CufflinksSupport::ET_GFFREAD_ID = "USUPP_GFFREAD";
 
-const QString  CufflinksSupport::CUFFLINKS_TMP_DIR = "cufflinks";
-const QString  CufflinksSupport::CUFFDIFF_TMP_DIR = "cuffdiff";
-const QString  CufflinksSupport::CUFFMERGE_TMP_DIR = "cuffmerge";
+const QString CufflinksSupport::CUFFLINKS_TMP_DIR = "cufflinks";
+const QString CufflinksSupport::CUFFDIFF_TMP_DIR = "cuffdiff";
+const QString CufflinksSupport::CUFFMERGE_TMP_DIR = "cuffmerge";
 
-CufflinksSupport::CufflinksSupport(const QString& id,  const QString& name, const QString& path)
-    : ExternalTool(id, name, path)
-{
+CufflinksSupport::CufflinksSupport(const QString &id, const QString &name, const QString &path)
+    : ExternalTool(id, name, path) {
     if (AppContext::getMainWindow()) {
         icon = QIcon(":external_tool_support/images/cmdline.png");
         grayIcon = QIcon(":external_tool_support/images/cmdline_gray.png");
@@ -52,22 +51,22 @@ CufflinksSupport::CufflinksSupport(const QString& id,  const QString& name, cons
     }
 
     toolKitName = "Cufflinks";
-    versionRegExp=QRegExp("v(\\d+\\.\\d+\\.\\d+)");
+    versionRegExp = QRegExp("v(\\d+\\.\\d+\\.\\d+)");
 
     // Cuffcompare
     if (name == ET_CUFFCOMPARE) {
 #ifdef Q_OS_WIN
         executableFileName = "cuffcompare.exe";
 #else
-#if defined(Q_OS_UNIX)
+#    if defined(Q_OS_UNIX)
         executableFileName = "cuffcompare";
-#endif
+#    endif
 #endif
 
         validMessage = "cuffcompare";
         description = CufflinksSupport::tr("<i>Cuffcompare</i> helps"
-            " comparing assembled transcripts to a reference annotation,"
-            " and also tracking transcripts across multiple experiments.");
+                                           " comparing assembled transcripts to a reference annotation,"
+                                           " and also tracking transcripts across multiple experiments.");
     }
 
     // Cuffdiff
@@ -75,14 +74,14 @@ CufflinksSupport::CufflinksSupport(const QString& id,  const QString& name, cons
 #ifdef Q_OS_WIN
         executableFileName = "cuffdiff.exe";
 #else
-#if defined(Q_OS_UNIX)
+#    if defined(Q_OS_UNIX)
         executableFileName = "cuffdiff";
-#endif
+#    endif
 #endif
 
         validMessage = "cuffdiff";
         description = CufflinksSupport::tr("<i>Cuffdiff</i> &nbsp;tests for"
-            " differential expression and regulation in RNA-Seq samples.");
+                                           " differential expression and regulation in RNA-Seq samples.");
     }
 
     // Cufflinks
@@ -90,31 +89,29 @@ CufflinksSupport::CufflinksSupport(const QString& id,  const QString& name, cons
 #ifdef Q_OS_WIN
         executableFileName = "cufflinks.exe";
 #else
-#if defined(Q_OS_UNIX)
+#    if defined(Q_OS_UNIX)
         executableFileName = "cufflinks";
-#endif
+#    endif
 #endif
 
         validMessage = "cufflinks";
         description = CufflinksSupport::tr("<i>Cufflinks</i> assembles transcripts"
-            " and estimates their abundances.");
+                                           " and estimates their abundances.");
     }
-
 
     // Cuffmerge
     else if (name == ET_CUFFMERGE) {
 #ifdef Q_OS_WIN
         executableFileName = "cuffmerge.py";
 #else
-#if defined(Q_OS_UNIX)
+#    if defined(Q_OS_UNIX)
         executableFileName = "cuffmerge";
-#endif
+#    endif
 #endif
 
         validMessage = "cuffmerge";
         description = CufflinksSupport::tr("<i>Cuffmerge</i> merges together several assemblies.");
     }
-
 
     // Gffread
     else if (name == ET_GFFREAD) {
@@ -131,4 +128,4 @@ CufflinksSupport::CufflinksSupport(const QString& id,  const QString& name, cons
     muted = true;
 }
 
-} // namespace
+}    // namespace U2

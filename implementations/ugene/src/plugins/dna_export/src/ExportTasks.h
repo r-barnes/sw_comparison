@@ -36,62 +36,60 @@ class MultipleSequenceAlignmentObject;
 
 /** A task to adds exported document to project and open view*/
 //TODO: make this task a general purpose routine
-class AddExportedDocumentAndOpenViewTask: public Task {
+class AddExportedDocumentAndOpenViewTask : public Task {
     Q_OBJECT
 public:
-    AddExportedDocumentAndOpenViewTask(DocumentProviderTask* t);
-    QList<Task*> onSubTaskFinished( Task* subTask );
+    AddExportedDocumentAndOpenViewTask(DocumentProviderTask *t);
+    QList<Task *> onSubTaskFinished(Task *subTask);
+
 private:
-    DocumentProviderTask* exportTask;
-    LoadDocumentTask* loadTask;
+    DocumentProviderTask *exportTask;
+    LoadDocumentTask *loadTask;
 };
 
-
 /** A task to save alignment to CLUSTAL */
-class ExportAlignmentTask : public DocumentProviderTask  {
+class ExportAlignmentTask : public DocumentProviderTask {
     Q_OBJECT
 public:
-    ExportAlignmentTask(const MultipleSequenceAlignment& ma, const QString& fileName, DocumentFormatId f);
+    ExportAlignmentTask(const MultipleSequenceAlignment &ma, const QString &fileName, DocumentFormatId f);
 
     void run();
 
 private:
-    MultipleSequenceAlignment              ma;
-    QString                 fileName;
-    DocumentFormatId        format;
+    MultipleSequenceAlignment ma;
+    QString fileName;
+    DocumentFormatId format;
 };
-
 
 /** A task to export alignment to FASTA */
 class ExportMSA2SequencesTask : public DocumentProviderTask {
     Q_OBJECT
 public:
-    ExportMSA2SequencesTask(const MultipleSequenceAlignment& ma, const QString& url, bool trimAli, DocumentFormatId format);
+    ExportMSA2SequencesTask(const MultipleSequenceAlignment &ma, const QString &url, bool trimAli, DocumentFormatId format);
 
     void run();
 
 private:
-    MultipleSequenceAlignment              ma;
-    QString                 url;
-    bool                    trimAli;
-    QString                 format;
+    MultipleSequenceAlignment ma;
+    QString url;
+    bool trimAli;
+    QString format;
 };
 
 class ExportMSA2MSATask : public DocumentProviderTask {
     Q_OBJECT
 public:
-    ExportMSA2MSATask(const MultipleSequenceAlignment& ma, int offset, int len, const QString& url,
-        const QList<DNATranslation*>& aminoTranslations, DocumentFormatId format);
+    ExportMSA2MSATask(const MultipleSequenceAlignment &ma, int offset, int len, const QString &url, const QList<DNATranslation *> &aminoTranslations, DocumentFormatId format);
 
     void run();
 
 private:
-    MultipleSequenceAlignment              ma;
-    int                     offset;
-    int                     len;
-    QString                 url;
-    QString                 format;
-    QList<DNATranslation*>  aminoTranslations; // amino translation for a sequences in alignment. If not NULL -> sequence is translated
+    MultipleSequenceAlignment ma;
+    int offset;
+    int len;
+    QString url;
+    QString format;
+    QList<DNATranslation *> aminoTranslations;    // amino translation for a sequences in alignment. If not NULL -> sequence is translated
 };
 
 class DNAChromatogramObject;
@@ -99,26 +97,28 @@ class DNAChromatogramObject;
 /** A task to export chromatogram to SCF */
 
 struct ExportChromatogramTaskSettings {
-    ExportChromatogramTaskSettings() : reverse(false), complement(false), loadDocument(false) {}
+    ExportChromatogramTaskSettings()
+        : reverse(false), complement(false), loadDocument(false) {
+    }
     QString url;
     bool reverse;
     bool complement;
     bool loadDocument;
 };
 
-
 class ExportDNAChromatogramTask : public DocumentProviderTask {
     Q_OBJECT
 public:
-    ExportDNAChromatogramTask(DNAChromatogramObject* chromaObj, const ExportChromatogramTaskSettings& url);
+    ExportDNAChromatogramTask(DNAChromatogramObject *chromaObj, const ExportChromatogramTaskSettings &url);
     void prepare();
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
+
 private:
-    DNAChromatogramObject*  cObj;
+    DNAChromatogramObject *cObj;
     ExportChromatogramTaskSettings settings;
-    LoadDocumentTask* loadTask;
+    LoadDocumentTask *loadTask;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

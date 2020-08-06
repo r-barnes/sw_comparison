@@ -19,12 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "GroupWorker.h"
+
 #include <U2Core/AnnotationData.h>
 #include <U2Core/MultipleSequenceAlignment.h>
+#include <U2Core/QVariantUtils.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/U2SequenceUtils.h>
-#include <U2Core/QVariantUtils.h>
 
 #include <U2Designer/DelegateEditors.h>
 #include <U2Designer/GrouperEditor.h>
@@ -35,8 +37,6 @@
 #include <U2Lang/CoreLibConstants.h>
 #include <U2Lang/GrouperSlotAttribute.h>
 #include <U2Lang/WorkflowEnv.h>
-
-#include "GroupWorker.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -51,9 +51,7 @@ static const QString OPER_ATTR_ID("group-op");
 /* GroupWorker */
 /************************************************************************/
 GroupWorker::GroupWorker(Actor *p)
-: BaseWorker(p, false), inChannel(NULL), outChannel(NULL), produceOneGroup(false)
-{
-
+    : BaseWorker(p, false), inChannel(NULL), outChannel(NULL), produceOneGroup(false) {
 }
 
 void GroupWorker::init() {
@@ -61,7 +59,7 @@ void GroupWorker::init() {
     outChannel = ports.value(OUTPUT_PORT);
     mtype = outChannel->getBusType();
 
-    GrouperOutSlotAttribute *slotsAttr = dynamic_cast<GrouperOutSlotAttribute*>(actor->getParameter(CoreLibConstants::GROUPER_OUT_SLOTS_ATTR));
+    GrouperOutSlotAttribute *slotsAttr = dynamic_cast<GrouperOutSlotAttribute *>(actor->getParameter(CoreLibConstants::GROUPER_OUT_SLOTS_ATTR));
     outSlots = slotsAttr->getOutSlots();
     groupSlot = actor->getParameter(CoreLibConstants::GROUPER_SLOT_ATTR)->getAttributePureValue().toString();
     produceOneGroup = groupSlot.isEmpty();
@@ -71,9 +69,7 @@ void GroupWorker::init() {
     }
     groupOp = actor->getParameter(OPER_ATTR_ID)->getAttributePureValue().toString();
 
-    if (groupOp != GroupOperations::BY_VALUE().getId()
-        && groupOp != GroupOperations::BY_NAME().getId()
-        && groupOp != GroupOperations::BY_ID().getId()) {
+    if (groupOp != GroupOperations::BY_VALUE().getId() && groupOp != GroupOperations::BY_NAME().getId() && groupOp != GroupOperations::BY_ID().getId()) {
         groupOp = GroupOperations::BY_ID().getId();
     }
 }
@@ -123,11 +119,10 @@ Task *GroupWorker::tick() {
         }
         groupedData[foundId] = perfs;
         groupSize[foundId] = groupSize[foundId] + 1;
-
     }
     if (inChannel->isEnded()) {
         foreach (int id, groupedData.keys()) {
-            QMap<QString, ActionPerformer*> perfs = groupedData[id];
+            QMap<QString, ActionPerformer *> perfs = groupedData[id];
 
             QVariantMap data;
             data[GROUP_SIZE_SLOT_ID] = QByteArray::number(groupSize[id]);
@@ -142,7 +137,7 @@ Task *GroupWorker::tick() {
                 data[slotId] = slotData;
             }
 
-            MessageMetadata metadata(QString("Group %1").arg(id+1));
+            MessageMetadata metadata(QString("Group %1").arg(id + 1));
             context->getMetadataStorage().put(metadata);
             if (!produceOneGroup) {
                 QVariantMap context;
@@ -175,7 +170,7 @@ void GroupWorker::cleanup() {
 const QString GroupWorkerFactory::ACTOR_ID = CoreLibConstants::GROUPER_ID;
 
 void GroupWorkerFactory::init() {
-    QList<PortDescriptor*> portDescs;
+    QList<PortDescriptor *> portDescs;
     {
         QMap<Descriptor, DataTypePtr> emptyTypeMap;
         DataTypePtr emptyTypeSet(new MapDataType(Descriptor(DataType::EMPTY_TYPESET_ID), emptyTypeMap));
@@ -183,8 +178,7 @@ void GroupWorkerFactory::init() {
         Descriptor inputDesc1(INPUT_PORT, GroupWorker::tr("Input data flow"), GroupWorker::tr("Input data flow"));
         portDescs << new PortDescriptor(inputDesc1, emptyTypeSet, true);
 
-        Descriptor groupSizeDesc(GROUP_SIZE_SLOT_ID, GroupWorker::tr("Group size"),
-            GroupWorker::tr("Size of the created group."));
+        Descriptor groupSizeDesc(GROUP_SIZE_SLOT_ID, GroupWorker::tr("Group size"), GroupWorker::tr("Size of the created group."));
         QMap<Descriptor, DataTypePtr> outTypeMap;
         outTypeMap[groupSizeDesc] = BaseTypes::STRING_TYPE();
         DataTypePtr outTypeSet(new MapDataType("Grouped data", outTypeMap));
@@ -193,7 +187,7 @@ void GroupWorkerFactory::init() {
         portDescs << new PortDescriptor(outputDesc, outTypeSet, false, true);
     }
 
-    QList<Attribute*> attrs;
+    QList<Attribute *> attrs;
     {
         Descriptor slotsDesc(CoreLibConstants::GROUPER_OUT_SLOTS_ATTR, GroupWorker::tr("Out slots"), GroupWorker::tr("Out slots"));
         Attribute *slotsAttr = new GrouperOutSlotAttribute(slotsDesc, BaseTypes::STRING_TYPE(), false);
@@ -210,8 +204,8 @@ void GroupWorkerFactory::init() {
     }
 
     Descriptor protoDesc(GroupWorkerFactory::ACTOR_ID,
-        GroupWorker::tr("Grouper"),
-        GroupWorker::tr("Groups data supplied to the specified slot by the specified property (for example, by value). Additionally, it is possible to merge data from another slots associated with the specified one."));
+                         GroupWorker::tr("Grouper"),
+                         GroupWorker::tr("Groups data supplied to the specified slot by the specified property (for example, by value). Additionally, it is possible to merge data from another slots associated with the specified one."));
 
     ActorPrototype *proto = new IntegralBusActorPrototype(protoDesc, portDescs, attrs);
 
@@ -237,7 +231,7 @@ QString GroupPrompter::composeRichDoc() {
     Port *input = target->getInputPorts().first();
     if (input->getLinks().size() > 0) {
         Port *src = input->getLinks().keys().first();
-        IntegralBusPort *bus = dynamic_cast<IntegralBusPort*>(src);
+        IntegralBusPort *bus = dynamic_cast<IntegralBusPort *>(src);
         assert(NULL != bus);
         DataTypePtr type = bus->getType();
         QMap<Descriptor, DataTypePtr> busMap = type->getDatatypesMap();
@@ -274,5 +268,5 @@ QString GroupPrompter::composeRichDoc() {
     }
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "MultipleDocumentsReadingModeSelectorController.h"
+
 #include <QDir>
 
 #include <U2Core/AppContext.h>
@@ -34,52 +36,50 @@
 #include <U2Gui/HelpButton.h>
 #include <U2Gui/SaveDocumentController.h>
 
-#include "MultipleDocumentsReadingModeSelectorController.h"
-
-namespace U2{
+namespace U2 {
 
 struct GUrlLess {
     bool operator()(GUrl a, GUrl b) const {
         return a.getURLString() < b.getURLString();
     }
-}; 
+};
 
-bool MultipleDocumentsReadingModeSelectorController::adjustReadingMode(QVariantMap& props, QList<GUrl>& urls, const QMap<QString, qint64>& headerSequenceLengths){	
+bool MultipleDocumentsReadingModeSelectorController::adjustReadingMode(QVariantMap &props, QList<GUrl> &urls, const QMap<QString, qint64> &headerSequenceLengths) {
     qSort(urls.begin(), urls.end(), GUrlLess());
 
     MultipleDocumentsReadingModeDialog d(urls, QApplication::activeWindow());
-    return d.setupGUI(urls, props, headerSequenceLengths);    
+    return d.setupGUI(urls, props, headerSequenceLengths);
 }
 
-bool MultipleDocumentsReadingModeSelectorController::mergeDocumentOption(const FormatDetectionResult& formatResult, QMap<QString, qint64>* headerSequenceLengths){
+bool MultipleDocumentsReadingModeSelectorController::mergeDocumentOption(const FormatDetectionResult &formatResult, QMap<QString, qint64> *headerSequenceLengths) {
     QVariantMap docHints = formatResult.rawDataCheckResult.properties;
-    if(formatResult.format == NULL){
+    if (formatResult.format == NULL) {
         return false;
     }
-    if(formatResult.format->getFormatId() == BaseDocumentFormats::PLAIN_GENBANK){
-        if(docHints.value(RawDataCheckResult_Sequence) == false){
+    if (formatResult.format->getFormatId() == BaseDocumentFormats::PLAIN_GENBANK) {
+        if (docHints.value(RawDataCheckResult_Sequence) == false) {
             static const int MAX_LINE = 8192;
             char buff[MAX_LINE + 1] = {0};
 
-            QScopedPointer<LocalFileAdapterFactory> factory( new LocalFileAdapterFactory());
+            QScopedPointer<LocalFileAdapterFactory> factory(new LocalFileAdapterFactory());
             QScopedPointer<IOAdapter> io(factory->createIOAdapter());
-            if(!io->open(formatResult.url, IOAdapterMode_Read)){
+            if (!io->open(formatResult.url, IOAdapterMode_Read)) {
                 return false;
             }
             bool terminatorFound = false;
             io->readLine(buff, MAX_LINE, &terminatorFound);
-            if(!terminatorFound){
+            if (!terminatorFound) {
                 return false;
             }
             QString line = QString(QByteArray(buff));
             QStringList words = line.split(QRegExp("\\s"), QString::SkipEmptyParts);
-            if(words.size() < 3){ // origin len not defined
+            if (words.size() < 3) {    // origin len not defined
                 return false;
             }
             bool isLenDefined = false;
-            qint64 seqLen = words[2].toLongLong(&isLenDefined); 
-            
-            if(!isLenDefined || seqLen <= 0){
+            qint64 seqLen = words[2].toLongLong(&isLenDefined);
+
+            if (!isLenDefined || seqLen <= 0) {
                 return false;
             }
             (*headerSequenceLengths)[formatResult.url.getURLString()] = seqLen;
@@ -89,12 +89,10 @@ bool MultipleDocumentsReadingModeSelectorController::mergeDocumentOption(const F
     return docHints.value(RawDataCheckResult_Sequence).toBool();
 }
 
-
-MultipleDocumentsReadingModeDialog::MultipleDocumentsReadingModeDialog(const QList<GUrl>& _urls,QWidget* parent)
+MultipleDocumentsReadingModeDialog::MultipleDocumentsReadingModeDialog(const QList<GUrl> &_urls, QWidget *parent)
     : QDialog(parent),
       saveController(NULL),
       urls(_urls) {
-
 }
 
 QString MultipleDocumentsReadingModeDialog::setupNewUrl() {
@@ -116,10 +114,10 @@ QString MultipleDocumentsReadingModeDialog::setupNewUrl() {
     return urlStr + "/merged_document." + extension4MergedDocument;
 }
 
-bool MultipleDocumentsReadingModeDialog::setupGUI(QList<GUrl>& _urls, QVariantMap& props, const QMap<QString, qint64>& headerSequenceLengths){
+bool MultipleDocumentsReadingModeDialog::setupGUI(QList<GUrl> &_urls, QVariantMap &props, const QMap<QString, qint64> &headerSequenceLengths) {
     setModal(true);
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742382");
+    new HelpButton(this, buttonBox, "46499803");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -135,63 +133,61 @@ bool MultipleDocumentsReadingModeDialog::setupGUI(QList<GUrl>& _urls, QVariantMa
     upperButton->setIcon(QIcon(":ugene/images/up.png"));
     bottomButton->setIcon(QIcon(":ugene/images/down.png"));
 
-    for(int i = 0; i<urls.size(); ++i){
-        listDocuments->addItem(new QListWidgetItem(QString("%1. ").arg(i + 1) + urls.at(i).fileName(), listDocuments));           
+    for (int i = 0; i < urls.size(); ++i) {
+        listDocuments->addItem(new QListWidgetItem(QString("%1. ").arg(i + 1) + urls.at(i).fileName(), listDocuments));
     }
 
     int rc = exec();
-    
+
     if (rc == QDialog::Rejected) {
         return false;
     }
 
-    if(separateMode->isChecked() || saveController->getSaveFileName().isEmpty()){
+    if (separateMode->isChecked() || saveController->getSaveFileName().isEmpty()) {
         return true;
     }
 
     deleteAllNumPrefix();
     _urls.clear();
 
-    for(int i = 0; i < listDocuments->count(); ++i){
+    for (int i = 0; i < listDocuments->count(); ++i) {
         _urls << findUrlByFileName(listDocuments->item(i)->text());
     }
 
     listDocuments->clear();
 
-    if(mergeMode->isChecked()){
+    if (mergeMode->isChecked()) {
         props[DocumentReadingMode_SequenceMergeGapSize] = fileGap->value();
         props[ProjectLoaderHint_MultipleFilesMode_RealDocumentFormat] = BaseDocumentFormats::PLAIN_GENBANK;
 
-        foreach(const GUrl& url, _urls){
+        foreach (const GUrl &url, _urls) {
             props[RawDataCheckResult_HeaderSequenceLength + url.getURLString()] = headerSequenceLengths.value(url.getURLString(), -1);
         }
-    }
-    else if(join2alignmentMode->isChecked()){
+    } else if (join2alignmentMode->isChecked()) {
         props[ProjectLoaderHint_MultipleFilesMode_RealDocumentFormat] = BaseDocumentFormats::CLUSTAL_ALN;
         props[DocumentReadingMode_SequenceAsAlignmentHint] = true;
     }
     props[ProjectLoaderHint_MultipleFilesMode_URLDocument] = saveController->getSaveFileName();
     props[ProjectLoaderHint_MultipleFilesMode_SaveDocumentFlag] = saveBox->isChecked();
     props[ProjectLoaderHint_MultipleFilesMode_Flag] = true;
-    
 
     QStringList urlsStr;
-    foreach(GUrl url, _urls){
+    foreach (GUrl url, _urls) {
         urlsStr << url.getURLString();
     }
 
-    props[ProjectLoaderHint_MultipleFilesMode_URLsDocumentConsistOf] =  urlsStr;
+    props[ProjectLoaderHint_MultipleFilesMode_URLsDocumentConsistOf] = urlsStr;
 
     _urls.clear();
     _urls << GUrl(saveController->getSaveFileName());
-    
+
     return true;
 }
 
-QString MultipleDocumentsReadingModeDialog::findUrlByFileName(const QString& fileName){
-    foreach(GUrl url, urls){
+QString MultipleDocumentsReadingModeDialog::findUrlByFileName(const QString &fileName) {
+    foreach (GUrl url, urls) {
         QString _fileName = url.fileName();
-        if(_fileName == fileName){
+        if (_fileName == fileName) {
             return url.getURLString();
         }
     }
@@ -256,11 +252,15 @@ void MultipleDocumentsReadingModeDialog::initMsaSaveController() {
     saveController = new SaveDocumentController(config, formats, this);
 }
 
-void MultipleDocumentsReadingModeDialog::sl_onMoveUp(){
-    QListWidgetItem * item = listDocuments->currentItem();
-    if(item == NULL){return;}
+void MultipleDocumentsReadingModeDialog::sl_onMoveUp() {
+    QListWidgetItem *item = listDocuments->currentItem();
+    if (item == NULL) {
+        return;
+    }
     int row = listDocuments->row(item);
-    if(row == 0){return;}
+    if (row == 0) {
+        return;
+    }
 
     QListWidgetItem *newCurrent = new QListWidgetItem(item->text());
     listDocuments->insertItem(row - 1, newCurrent);
@@ -271,37 +271,41 @@ void MultipleDocumentsReadingModeDialog::sl_onMoveUp(){
     listDocuments->setCurrentItem(newCurrent);
 }
 
-void MultipleDocumentsReadingModeDialog::sl_onMoveDown(){
-    QListWidgetItem * item = listDocuments->currentItem();
-    if(item == NULL){return;}
+void MultipleDocumentsReadingModeDialog::sl_onMoveDown() {
+    QListWidgetItem *item = listDocuments->currentItem();
+    if (item == NULL) {
+        return;
+    }
     int row = listDocuments->row(item);
-    if(row == listDocuments->count() - 1){return;}
+    if (row == listDocuments->count() - 1) {
+        return;
+    }
 
     QListWidgetItem *newCurrent = new QListWidgetItem(item->text());
     listDocuments->insertItem(row + 2, newCurrent);
     listDocuments->removeItemWidget(item);
     delete item;
-    
+
     changeNumPrefix();
     listDocuments->setCurrentItem(newCurrent);
 }
 
-void MultipleDocumentsReadingModeDialog::changeNumPrefix(){
-    for(int i = 0; i < listDocuments->count(); ++i){
-        listDocuments->item(i)->setText(QString("%1. ").arg(i+1) + deleteNumPrefix(listDocuments->item(i)->text()));
+void MultipleDocumentsReadingModeDialog::changeNumPrefix() {
+    for (int i = 0; i < listDocuments->count(); ++i) {
+        listDocuments->item(i)->setText(QString("%1. ").arg(i + 1) + deleteNumPrefix(listDocuments->item(i)->text()));
     }
 }
 
-QString MultipleDocumentsReadingModeDialog::deleteNumPrefix(QString prefixString){
-    QString toDelete = prefixString.split(" ")[0]; // number with space
+QString MultipleDocumentsReadingModeDialog::deleteNumPrefix(QString prefixString) {
+    QString toDelete = prefixString.split(" ")[0];    // number with space
     prefixString.remove(0, toDelete.size() + 1);
     return prefixString;
 }
 
-void MultipleDocumentsReadingModeDialog::deleteAllNumPrefix(){
-    for(int i = 0; i < listDocuments->count(); ++i){
+void MultipleDocumentsReadingModeDialog::deleteAllNumPrefix() {
+    for (int i = 0; i < listDocuments->count(); ++i) {
         listDocuments->item(i)->setText(deleteNumPrefix(listDocuments->item(i)->text()));
     }
 }
 
-}
+}    // namespace U2

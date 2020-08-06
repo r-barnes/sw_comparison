@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DNAExportPluginTests.h"
+
 #include <QTemporaryFile>
 
 #include <U2Core/AppContext.h>
@@ -32,7 +34,6 @@
 #include <U2Core/LoadDocumentTask.h>
 #include <U2Core/MultipleSequenceAlignmentObject.h>
 
-#include "DNAExportPluginTests.h"
 #include "ImportQualityScoresTask.h"
 
 namespace U2 {
@@ -44,7 +45,7 @@ namespace U2 {
 #define EXTRACT_ROWS_ATTR "rows"
 #define TRANS_TABLE_ATTR "trans-table"
 
-void GTest_ImportPhredQualityScoresTask::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_ImportPhredQualityScoresTask::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     QString buf = el.attribute(SEQLIST_ATTR);
@@ -65,20 +66,18 @@ void GTest_ImportPhredQualityScoresTask::init(XMLTestFormat *tf, const QDomEleme
     }
 
     fileName = env->getVar("COMMON_DATA_DIR") + "/" + fileName;
-
 }
 
 void GTest_ImportPhredQualityScoresTask::prepare() {
-
-    foreach(const QString& seqName, seqNameList) {
+    foreach (const QString &seqName, seqNameList) {
         GObject *obj = getContext<GObject>(this, seqName);
-        if(obj==NULL){
+        if (obj == NULL) {
             stateInfo.setError(QString("wrong sequence name: %1").arg(seqName));
             return;
         }
 
-        U2SequenceObject * mySequence = qobject_cast<U2SequenceObject*>(obj);
-        if(mySequence == NULL){
+        U2SequenceObject *mySequence = qobject_cast<U2SequenceObject *>(obj);
+        if (mySequence == NULL) {
             stateInfo.setError(QString("Can't cast to sequence from: %1").arg(obj->getGObjectName()));
             return;
         }
@@ -91,13 +90,12 @@ void GTest_ImportPhredQualityScoresTask::prepare() {
     cfg.fileName = fileName;
     cfg.type = DNAQualityType_Sanger;
 
-    Task* importTask = new ImportPhredQualityScoresTask(seqList, cfg);
+    Task *importTask = new ImportPhredQualityScoresTask(seqList, cfg);
 
     addSubTask(importTask);
-
 }
 
-void GTest_ExportNucleicToAminoAlignmentTask::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_ExportNucleicToAminoAlignmentTask::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     QString buf;
@@ -165,21 +163,21 @@ void GTest_ExportNucleicToAminoAlignmentTask::prepare() {
     if (hasError()) {
         return;
     }
-    Document* doc = getContext<Document>(this, inputFile);
+    Document *doc = getContext<Document>(this, inputFile);
     if (doc == NULL) {
         stateInfo.setError(GTest::tr(" context not found %1").arg(inputFile));
         return;
     }
 
-    QList<GObject*> list = doc->findGObjectByType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT);
+    QList<GObject *> list = doc->findGObjectByType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT);
     if (list.size() == 0) {
         stateInfo.setError(GTest::tr(" container of object with type \"%1\" is empty").arg(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT));
         return;
     }
-    MultipleSequenceAlignmentObject* alObj = qobject_cast<MultipleSequenceAlignmentObject*>(list.first());
+    MultipleSequenceAlignmentObject *alObj = qobject_cast<MultipleSequenceAlignmentObject *>(list.first());
     srcAl = alObj->getMsaCopy();
 
-    QList<DNATranslation*> trans;
+    QList<DNATranslation *> trans;
     QString trid = DNATranslationID(0);
     trid.replace("0", QString("%1").arg(transTable));
     trans << AppContext::getDNATranslationRegistry()->lookupTranslation(trid);
@@ -193,31 +191,31 @@ void GTest_ExportNucleicToAminoAlignmentTask::prepare() {
     addSubTask(exportTask);
 }
 
-QList<Task*> GTest_ExportNucleicToAminoAlignmentTask::onSubTaskFinished(Task* subTask) {
+QList<Task *> GTest_ExportNucleicToAminoAlignmentTask::onSubTaskFinished(Task *subTask) {
     Q_UNUSED(subTask);
-    QList<Task*> res;
+    QList<Task *> res;
     if (hasError() || subTask->hasError() || isCanceled()) {
         return res;
     }
 
     if (subTask == exportTask) {
-        IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(outputFileName));
+        IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(outputFileName));
         resultLoadTask = new LoadDocumentTask(BaseDocumentFormats::CLUSTAL_ALN, outputFileName, iof);
         res << resultLoadTask;
     } else if (subTask == resultLoadTask) {
-        Document* resdoc = resultLoadTask->getDocument();
+        Document *resdoc = resultLoadTask->getDocument();
 
         if (resdoc == NULL) {
             stateInfo.setError(GTest::tr("context  not found %1").arg(outputFileName));
             return res;
         }
 
-        QList<GObject*> reslist = resdoc->findGObjectByType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT);
+        QList<GObject *> reslist = resdoc->findGObjectByType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT);
         if (reslist.size() == 0) {
             stateInfo.setError(GTest::tr("container  of object with type \"%1\" is empty").arg(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT));
             return res;
         }
-        MultipleSequenceAlignmentObject * resAlign = qobject_cast<MultipleSequenceAlignmentObject*>(reslist.first());
+        MultipleSequenceAlignmentObject *resAlign = qobject_cast<MultipleSequenceAlignmentObject *>(reslist.first());
         resAl = resAlign->getMsaCopy();
     }
     return res;
@@ -229,18 +227,18 @@ Task::ReportResult GTest_ExportNucleicToAminoAlignmentTask::report() {
         return ReportResult_Finished;
     }
 
-    Document* expdoc = getContext<Document>(this, expectedOutputFile);
+    Document *expdoc = getContext<Document>(this, expectedOutputFile);
     if (expdoc == NULL) {
         stateInfo.setError(GTest::tr("context not  found %1").arg(expectedOutputFile));
         return ReportResult_Finished;
     }
 
-    QList<GObject*> explist = expdoc->findGObjectByType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT);
+    QList<GObject *> explist = expdoc->findGObjectByType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT);
     if (explist.size() == 0) {
         stateInfo.setError(GTest::tr("container of  object with type \"%1\" is empty").arg(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT));
         return ReportResult_Finished;
     }
-    MultipleSequenceAlignmentObject * expAlign = qobject_cast<MultipleSequenceAlignmentObject*>(explist.first());
+    MultipleSequenceAlignmentObject *expAlign = qobject_cast<MultipleSequenceAlignmentObject *>(explist.first());
     const MultipleSequenceAlignment expAl = expAlign->getMultipleAlignment();
 
     if (resAl->getLength() != expAl->getLength()) {
@@ -258,12 +256,12 @@ Task::ReportResult GTest_ExportNucleicToAminoAlignmentTask::report() {
 
     for (int i = 0; i < resAl->getNumRows(); i++) {
         if (resNames[i] != expNames[i]) {
-            stateInfo.setError(GTest::tr("Invalid name for row %1: %2, expected %3").arg(i+1).arg(resNames[i]).arg(expNames[i]));
+            stateInfo.setError(GTest::tr("Invalid name for row %1: %2, expected %3").arg(i + 1).arg(resNames[i]).arg(expNames[i]));
             return ReportResult_Finished;
         }
         for (int j = 0; j < resAl->getLength(); j++) {
             if (resAl->charAt(i, j) != expAl->charAt(i, j)) {
-                stateInfo.setError(GTest::tr("Invalid char at row %1 column %2: %3, expected %4").arg(i+1).arg(j+1).arg(resAl->charAt(i, j)).arg(expAl->charAt(i, j)));
+                stateInfo.setError(GTest::tr("Invalid char at row %1 column %2: %3, expected %4").arg(i + 1).arg(j + 1).arg(resAl->charAt(i, j)).arg(expAl->charAt(i, j)));
                 return ReportResult_Finished;
             }
         }
@@ -272,14 +270,11 @@ Task::ReportResult GTest_ExportNucleicToAminoAlignmentTask::report() {
     return ReportResult_Finished;
 }
 
-
-QList<XMLTestFactory*> DNAExportPluginTests::createTestFactories()
-{
-    QList<XMLTestFactory*> factories;
+QList<XMLTestFactory *> DNAExportPluginTests::createTestFactories() {
+    QList<XMLTestFactory *> factories;
     factories.append(GTest_ImportPhredQualityScoresTask::createFactory());
     factories.append(GTest_ExportNucleicToAminoAlignmentTask::createFactory());
     return factories;
 }
 
-
-} //namespace
+}    // namespace U2

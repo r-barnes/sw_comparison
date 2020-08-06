@@ -23,6 +23,7 @@
 #define _U2_SPIDEY_SUPPORT_H_
 
 #include <U2Core/ExternalToolRegistry.h>
+
 #include "utils/ExternalToolSupportAction.h"
 
 namespace U2 {
@@ -30,32 +31,33 @@ namespace U2 {
 class SpideySupport : public ExternalTool {
     Q_OBJECT
 public:
-    SpideySupport(const QString& id, const QString& name, const QString& path = "");
-    GObjectViewWindowContext* getViewContext(){ return viewCtx; }
+    SpideySupport(const QString &id, const QString &name, const QString &path = "");
+    GObjectViewWindowContext *getViewContext() {
+        return viewCtx;
+    }
 
     static const QString ET_SPIDEY;
     static const QString ET_SPIDEY_ID;
     static const QString SPIDEY_TMP_DIR;
 private slots:
     void sl_validationStatusChanged(bool newStatus);
+
 private:
-    GObjectViewWindowContext* viewCtx;
+    GObjectViewWindowContext *viewCtx;
 };
 
-
-class SpideySupportContext: public GObjectViewWindowContext {
+class SpideySupportContext : public GObjectViewWindowContext {
     Q_OBJECT
 public:
-    SpideySupportContext(QObject* p);
+    SpideySupportContext(QObject *p);
 
 protected slots:
     void sl_align_with_Spidey();
 
 protected:
-    virtual void initViewContext(GObjectView* view);
-    virtual void buildMenu(GObjectView* view, QMenu* m);
+    virtual void initViewContext(GObjectView *view);
+    virtual void buildMenu(GObjectView *view, QMenu *m);
 };
 
-
-}//namespace
-#endif // _U2_SPIDEY_SUPPORT_H_
+}    // namespace U2
+#endif    // _U2_SPIDEY_SUPPORT_H_

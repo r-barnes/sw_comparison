@@ -22,15 +22,14 @@
 #ifndef _U2_DNA_ASSEMBLEY_DIALOG_H_
 #define _U2_DNA_ASSEMBLEY_DIALOG_H_
 
+#include <ui_AssemblyToRefDialog.h>
+
 #include <QStringList>
 #include <QVariant>
-
-#include <ui_AssemblyToRefDialog.h>
 
 #include <U2Algorithm/DnaAssemblyMultiTask.h>
 
 #include <U2Core/GUrl.h>
-
 
 namespace U2 {
 
@@ -39,29 +38,26 @@ class DnaAssemblyAlgorithmMainWidget;
 class SaveDocumentController;
 
 class ShortReadsTableItem : public QTreeWidgetItem {
-
-    QComboBox* mateTypeBox;
+    QComboBox *mateTypeBox;
 
 private:
     void updateState();
 
 public:
-    ShortReadsTableItem(QTreeWidget* widget, const QString& url);
+    ShortReadsTableItem(QTreeWidget *widget, const QString &url);
     GUrl getUrl() const;
     ShortReadSet::LibraryType getType() const;
     ShortReadSet::MateOrder getOrder() const;
-    void setLibraryType(const QString& libraryType);
+    void setLibraryType(const QString &libraryType);
 
-
-    static void addItemToTable(ShortReadsTableItem* item, QTreeWidget* treeWidget);
+    static void addItemToTable(ShortReadsTableItem *item, QTreeWidget *treeWidget);
 };
-
 
 class DnaAssemblyDialog : public QDialog, private Ui_AssemblyToRefDialog {
     Q_OBJECT
 
 public:
-    DnaAssemblyDialog(QWidget* p = NULL, const QStringList& shortReadsUrls = QStringList(), const QString& refSeqUrl = QString());
+    DnaAssemblyDialog(QWidget *p = NULL, const QStringList &shortReadsUrls = QStringList(), const QString &refSeqUrl = QString());
     const GUrl getRefSeqUrl();
     const QList<ShortReadSet> getShortReadSets();
     const QString getAlgorithmName();
@@ -69,7 +65,7 @@ public:
     bool isPaired() const;
     bool isSamOutput() const;
     bool isPrebuiltIndex() const;
-    QMap<QString,QVariant> getCustomSettings();
+    QMap<QString, QVariant> getCustomSettings();
 
 protected:
     bool eventFilter(QObject *, QEvent *);
@@ -90,17 +86,17 @@ private:
     void initSaveController();
     void buildResultUrl(const QString &refUrl);
 
-    const DnaAssemblyAlgRegistry*   assemblyRegistry;
-    DnaAssemblyAlgorithmMainWidget* customGUI;
-    SaveDocumentController *        saveController;
+    const DnaAssemblyAlgRegistry *assemblyRegistry;
+    DnaAssemblyAlgorithmMainWidget *customGUI;
+    SaveDocumentController *saveController;
 
-    static QString                  lastRefSeqUrl;
-    static QStringList              lastShortReadsUrls;
-    static QString                  methodName;
-    static bool                     prebuiltIndex;
-    static bool                     samOutput;
+    static QString lastRefSeqUrl;
+    static QStringList lastShortReadsUrls;
+    static QString methodName;
+    static bool prebuiltIndex;
+    static bool samOutput;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif //  _U2_DNA_ASSEMBLEY_DIALOG_H_
+#endif    //  _U2_DNA_ASSEMBLEY_DIALOG_H_

@@ -19,8 +19,10 @@
  * MA 02110-1301, USA.
  */
 
-#include <QDomDocument>
+#include "CustomToolConfigParser.h"
+
 #include <QDir>
+#include <QDomDocument>
 #include <QFile>
 #include <QFileInfo>
 #include <QRegularExpression>
@@ -28,8 +30,6 @@
 #include <U2Core/CustomExternalTool.h>
 #include <U2Core/U2OpStatus.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "CustomToolConfigParser.h"
 
 namespace U2 {
 
@@ -48,10 +48,10 @@ const QString CustomToolConfigParser::DEPENDENCIES = "dependencies";
 const QString CustomToolConfigParser::BINARY_NAME = "executableName";
 
 namespace {
-bool compareCaseInsensetive(const QString& first, const QString& second) {
+bool compareCaseInsensetive(const QString &first, const QString &second) {
     return QString::compare(first, second, Qt::CaseInsensitive) == 0;
 }
-}
+}    // namespace
 
 CustomExternalTool *CustomToolConfigParser::parse(U2OpStatus &os, const QString &url) {
     QFile file(url);
@@ -183,4 +183,4 @@ QDomElement CustomToolConfigParser::addChildElement(QDomDocument &doc, const QSt
     return element;
 }
 
-}   // namespace U2
+}    // namespace U2

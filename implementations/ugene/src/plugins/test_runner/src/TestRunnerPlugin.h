@@ -22,11 +22,13 @@
 #ifndef _U2_TEST_RUNNER_PLUGIN_H_
 #define _U2_TEST_RUNNER_PLUGIN_H_
 
-#include <U2Core/PluginModel.h>
-#include <U2Core/AppContext.h>
-#include <U2Core/ServiceModel.h>
-#include <U2Test/TestRunnerTask.h>
 #include <QAction>
+
+#include <U2Core/AppContext.h>
+#include <U2Core/PluginModel.h>
+#include <U2Core/ServiceModel.h>
+
+#include <U2Test/TestRunnerTask.h>
 
 namespace U2 {
 
@@ -51,18 +53,22 @@ public:
     TestRunnerService();
     ~TestRunnerService();
 
-    const QList<GTestSuite*> getTestSuites() const {return suites;}
-    void addTestSuite(GTestSuite*);
-    void removeTestSuite(GTestSuite*);
-    GTestSuite* findTestSuiteByURL(const QString& url);
+    const QList<GTestSuite *> getTestSuites() const {
+        return suites;
+    }
+    void addTestSuite(GTestSuite *);
+    void removeTestSuite(GTestSuite *);
+    GTestSuite *findTestSuiteByURL(const QString &url);
 
-    GTestEnvironment* getEnv() { return env;}
-    void setVar(const QString& varName, const QString& val);
+    GTestEnvironment *getEnv() {
+        return env;
+    }
+    void setVar(const QString &varName, const QString &val);
     void setEnvironment();
 
 signals:
-    void si_testSuiteAdded(GTestSuite* ts);
-    void si_testSuiteRemoved(GTestSuite* ts);
+    void si_testSuiteAdded(GTestSuite *ts);
+    void si_testSuiteRemoved(GTestSuite *ts);
 
 protected:
     virtual void serviceStateChangedCallback(ServiceState oldState, bool enabledStateChanged);
@@ -81,18 +87,17 @@ private:
 
     void readEnvForKeys(QStringList keys);
     void saveEnv();
-    void updateDefaultEnvValues(GTestSuite* ts);
+    void updateDefaultEnvValues(GTestSuite *ts);
 
-
-    TestViewController*         view;
-    QAction*                    windowAction;
-    QList<GTestSuite*>          suites;
-    GTestEnvironment*           env;
+    TestViewController *view;
+    QAction *windowAction;
+    QList<GTestSuite *> suites;
+    GTestEnvironment *env;
 };
 /*class TestRunnerScriptModule : public GScriptModule
 {
     virtual void setup(QScriptEngine *engine) const;
 };*/
-} //namespace
+}    // namespace U2
 
 #endif

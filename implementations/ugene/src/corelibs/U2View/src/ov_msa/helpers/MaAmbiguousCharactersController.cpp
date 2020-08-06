@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "MaAmbiguousCharactersController.h"
+
 #include <QBitArray>
 
 #include <U2Core/AppContext.h>
@@ -29,10 +31,9 @@
 #include <U2Gui/GUIUtils.h>
 #include <U2Gui/Notification.h>
 
-#include "MaAmbiguousCharactersController.h"
 #include "ScrollController.h"
-#include "ov_msa/MaEditor.h"
 #include "ov_msa/MaCollapseModel.h"
+#include "ov_msa/MaEditor.h"
 #include "ov_msa/view_rendering/MaEditorSequenceArea.h"
 #include "ov_msa/view_rendering/MaEditorWgt.h"
 
@@ -45,8 +46,7 @@ MaAmbiguousCharactersController::MaAmbiguousCharactersController(MaEditorWgt *ma
       maEditor(NULL != maEditorWgt ? maEditorWgt->getEditor() : NULL),
       maEditorWgt(maEditorWgt),
       nextAction(NULL),
-      previousAction(NULL)
-{
+      previousAction(NULL) {
     SAFE_POINT(NULL != maEditorWgt, "maEditorWgt is NULL", );
     SAFE_POINT(NULL != maEditor, "maEditor is NULL", );
 
@@ -89,14 +89,13 @@ void MaAmbiguousCharactersController::sl_resetCachedIterator() {
 }
 
 void MaAmbiguousCharactersController::scrollToNextAmbiguous(NavigationDirection direction) const {
-    const QPoint nextAmbiguous = findNextAmbiguous(direction);
-    if (INVALID_POINT != nextAmbiguous) {
+    QPoint nextAmbiguous = findNextAmbiguous(direction);
+    if (nextAmbiguous != INVALID_POINT) {
         maEditorWgt->getScrollController()->centerPoint(nextAmbiguous, maEditorWgt->getSequenceArea()->size());
         maEditorWgt->getSequenceArea()->setSelection(MaEditorSelection(nextAmbiguous, 1, 1));
     } else {
         // no mismatches - show notification
         const NotificationStack *notificationStack = AppContext::getMainWindow()->getNotificationStack();
-        CHECK(notificationStack != NULL, );
         notificationStack->addNotification(tr("There are no ambiguous characters in the alignment."), Info_Not);
     }
 }
@@ -122,7 +121,7 @@ QBitArray getAmbiguousCharacters() {
     return ambiguousCharacters;
 }
 
-}
+}    // namespace
 
 QPoint MaAmbiguousCharactersController::findNextAmbiguous(NavigationDirection direction) const {
     static const QBitArray ambiguousCharacters = getAmbiguousCharacters();
@@ -153,4 +152,4 @@ void MaAmbiguousCharactersController::prepareIterator(NavigationDirection direct
     cachedIterator->setDirection(direction);
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -22,21 +22,28 @@
 #ifndef _U2_ANNOTATION_TABLE_OBJECT_TESTS_H_
 #define _U2_ANNOTATION_TABLE_OBJECT_TESTS_H_
 
-#include <U2Test/XMLTestUtils.h>
-#include <U2Core/GObject.h>
 #include <QDomElement>
-#include <U2Core/U2Region.h>
+
 #include <U2Core/AnnotationTableObject.h>
+#include <U2Core/GObject.h>
+#include <U2Core/U2Region.h>
+
+#include <U2Test/XMLTestUtils.h>
 
 namespace U2 {
 
 class Document;
 
-class GTestAnnotationDataItem: public QObject {
+class GTestAnnotationDataItem : public QObject {
     Q_OBJECT
 public:
-    GTestAnnotationDataItem(const SharedAnnotationData& ad, QObject* p) : QObject(p), aData(ad){}
-    const SharedAnnotationData& getAnnotation() const {return aData;}
+    GTestAnnotationDataItem(const SharedAnnotationData &ad, QObject *p)
+        : QObject(p), aData(ad) {
+    }
+    const SharedAnnotationData &getAnnotation() const {
+        return aData;
+    }
+
 private:
     SharedAnnotationData aData;
 };
@@ -48,8 +55,8 @@ class GTest_CheckNumAnnotations : public XmlTest {
     ReportResult report();
 
 private:
-    QString        objContextName;
-    int            num;
+    QString objContextName;
+    int num;
 };
 
 class GTest_FindAnnotationByNum : public XmlTest {
@@ -58,14 +65,16 @@ class GTest_FindAnnotationByNum : public XmlTest {
 
     ReportResult report();
 
-    Annotation * getAnnotation() const {return result;}
+    Annotation *getAnnotation() const {
+        return result;
+    }
 
     void cleanup();
 
 private:
-    QString     objContextName;
-    QString     annotationContextName;
-    int         number;
+    QString objContextName;
+    QString annotationContextName;
+    int number;
     Annotation *result;
 };
 
@@ -75,15 +84,17 @@ class GTest_FindAnnotationByName : public XmlTest {
 
     ReportResult report();
 
-    Annotation * getAnnotation() const {return result;}
+    Annotation *getAnnotation() const {
+        return result;
+    }
 
     void cleanup();
 
 private:
-    QString     objContextName;
-    QString     annotationContextName;
-    QString     aName;
-    int         number;
+    QString objContextName;
+    QString annotationContextName;
+    QString aName;
+    int number;
     Annotation *result;
 };
 
@@ -93,16 +104,18 @@ class GTest_FindAnnotationByLocation : public XmlTest {
 
     ReportResult report();
 
-    Annotation * getAnnotation() const {return result;}
+    Annotation *getAnnotation() const {
+        return result;
+    }
 
     void cleanup();
 
 private:
-    QString     objContextName;
-    QString     annotationContextName;
-    QString     annotationName;
-    U2Region    location;
-    U2Strand    strand;
+    QString objContextName;
+    QString annotationContextName;
+    QString annotationName;
+    U2Region location;
+    U2Strand strand;
     Annotation *result;
 };
 
@@ -113,34 +126,33 @@ class GTest_CheckAnnotationLocation : public XmlTest {
     ReportResult report();
 
 private:
-    QString             annCtxName;
-    QVector<U2Region>   location;
-    U2Strand            strand;
+    QString annCtxName;
+    QVector<U2Region> location;
+    U2Strand strand;
 };
 
 class GTest_CheckAnnotationName : public XmlTest {
     Q_OBJECT
-        SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CheckAnnotationName, "check-annotation-name")
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CheckAnnotationName, "check-annotation-name")
 
     ReportResult report();
 
 private:
-    QString         annCtxName;
-    QString         aName;
+    QString annCtxName;
+    QString aName;
 };
 
 class GTest_CheckAnnotationSequence : public XmlTest {
     Q_OBJECT
-        SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CheckAnnotationSequence, "check-annotation-sequence")
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CheckAnnotationSequence, "check-annotation-sequence")
 
     ReportResult report();
 
 private:
-    QString         seqPart;
-    QString         seqCtxName;
-    QString         aCtxName;
+    QString seqPart;
+    QString seqCtxName;
+    QString aCtxName;
 };
-
 
 class GTest_CheckAnnotationQualifier : public XmlTest {
     Q_OBJECT
@@ -149,11 +161,10 @@ class GTest_CheckAnnotationQualifier : public XmlTest {
     ReportResult report();
 
 private:
-    QString        annCtxName;
-    QString        qName;
-    QString        qValue;
+    QString annCtxName;
+    QString qName;
+    QString qValue;
 };
-
 
 class GTest_CheckAnnotationQualifierIsAbsent : public XmlTest {
     Q_OBJECT
@@ -162,10 +173,9 @@ class GTest_CheckAnnotationQualifierIsAbsent : public XmlTest {
     ReportResult report();
 
 private:
-    QString        annCtxName;
-    QString        qName;
+    QString annCtxName;
+    QString qName;
 };
-
 
 class GTest_CheckAnnotationsNumInTwoObjects : public XmlTest {
     Q_OBJECT
@@ -222,13 +232,13 @@ class GTest_CreateTmpAnnotationObject : public XmlTest {
     ReportResult report();
     void cleanup();
     QString objContextName;
-    AnnotationTableObject* aobj;
+    AnnotationTableObject *aobj;
 };
 
 class AnnotationTableObjectTest {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-}//namespace
+}    // namespace U2
 #endif

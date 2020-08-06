@@ -24,8 +24,9 @@
 
 #include <QList>
 
-#include <U2Test/XMLTestUtils.h>
 #include <U2Core/GUrl.h>
+
+#include <U2Test/XMLTestUtils.h>
 
 namespace U2 {
 
@@ -40,11 +41,12 @@ public:
     void prepare();
     Task::ReportResult report();
     void cleanup();
+
 private:
-    DnaAssemblyMultiTask* assemblyMultiTask;
-    LoadDocumentTask* loadResultTask;
+    DnaAssemblyMultiTask *assemblyMultiTask;
+    LoadDocumentTask *loadResultTask;
     QList<GUrl> shortReadUrls;
-    QMap<QString,QString> customOptions;
+    QMap<QString, QString> customOptions;
     QString objName;
     QString algName;
     QString refSeqUrl;
@@ -63,11 +65,10 @@ class GTest_AssemblycompareTwoSAMbyLength : public XmlTest {
     bool isBam;
 };
 
-
 class DnaAssemblyTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-} //namespace
+}    // namespace U2
 #endif

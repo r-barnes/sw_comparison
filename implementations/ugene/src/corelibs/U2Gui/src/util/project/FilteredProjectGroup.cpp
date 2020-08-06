@@ -19,14 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "FilteredProjectGroup.h"
+
 #include <U2Core/Folder.h>
 #include <U2Core/L10n.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2SafePoints.h>
 
 #include "ProjectFilterNames.h"
-
-#include "FilteredProjectGroup.h"
 
 namespace U2 {
 
@@ -41,17 +41,16 @@ const QList<GObject *> emptyObjList;
 //////////////////////////////////////////////////////////////////////////
 
 WrappedObject::WrappedObject(GObject *obj, FilteredProjectGroup *parentGroup)
-    : obj(obj), parentGroup(parentGroup)
-{
+    : obj(obj), parentGroup(parentGroup) {
     SAFE_POINT(NULL != obj, L10N::nullPointerError("object"), );
     SAFE_POINT(NULL != parentGroup, L10N::nullPointerError("project filter group"), );
 }
 
-GObject * WrappedObject::getObject() const {
+GObject *WrappedObject::getObject() const {
     return obj;
 }
 
-FilteredProjectGroup * WrappedObject::getParentGroup() const {
+FilteredProjectGroup *WrappedObject::getParentGroup() const {
     return parentGroup;
 }
 
@@ -64,8 +63,7 @@ bool WrappedObject::objectLessThan(const WrappedObject *first, const WrappedObje
 //////////////////////////////////////////////////////////////////////////
 
 FilteredProjectGroup::FilteredProjectGroup(const QString &name)
-    : name(!name.isEmpty() ? name : tr("Unnamed group"))
-{
+    : name(!name.isEmpty() ? name : tr("Unnamed group")) {
     SAFE_POINT(!name.isEmpty(), "Project filter group has empty name", );
 }
 
@@ -73,7 +71,7 @@ FilteredProjectGroup::~FilteredProjectGroup() {
     qDeleteAll(filteredObjs);
 }
 
-const QString & FilteredProjectGroup::getGroupName() const {
+const QString &FilteredProjectGroup::getGroupName() const {
     return name;
 }
 
@@ -91,7 +89,7 @@ void FilteredProjectGroup::removeAt(int objNumber) {
 
 bool FilteredProjectGroup::contains(GObject *obj) const {
     SAFE_POINT(NULL != obj, L10N::nullPointerError("object"), false);
-    
+
     foreach (WrappedObject *wrappedObj, filteredObjs) {
         if (wrappedObj->getObject() == obj) {
             return true;
@@ -109,12 +107,11 @@ int FilteredProjectGroup::getNewObjectNumber(GObject *obj) const {
 
     WrappedObject testObject(obj, const_cast<FilteredProjectGroup *>(this));
     const QList<WrappedObject *>::const_iterator begin = filteredObjs.constBegin();
-    const QList<WrappedObject *>::const_iterator insertPos = std::upper_bound(begin, filteredObjs.constEnd(),
-        &testObject, WrappedObject::objectLessThan);
+    const QList<WrappedObject *>::const_iterator insertPos = std::upper_bound(begin, filteredObjs.constEnd(), &testObject, WrappedObject::objectLessThan);
     return insertPos - begin;
 }
 
-WrappedObject * FilteredProjectGroup::getWrappedObject(GObject *obj) const {
+WrappedObject *FilteredProjectGroup::getWrappedObject(GObject *obj) const {
     SAFE_POINT(NULL != obj, L10N::nullPointerError("object"), NULL);
 
     foreach (WrappedObject *wrappedObj, filteredObjs) {
@@ -125,7 +122,7 @@ WrappedObject * FilteredProjectGroup::getWrappedObject(GObject *obj) const {
     return NULL;
 }
 
-WrappedObject * FilteredProjectGroup::getWrappedObject(int position) const {
+WrappedObject *FilteredProjectGroup::getWrappedObject(int position) const {
     SAFE_POINT(0 <= position && position < filteredObjs.size(), "Object index is out of range", NULL);
     return filteredObjs[position];
 }
@@ -147,4 +144,4 @@ bool FilteredProjectGroup::groupLessThan(FilteredProjectGroup *first, FilteredPr
     }
 }
 
-} // namespace U2
+}    // namespace U2

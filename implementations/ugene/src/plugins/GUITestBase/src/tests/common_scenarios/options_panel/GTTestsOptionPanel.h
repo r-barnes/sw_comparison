@@ -23,13 +23,14 @@ k
 #ifndef _U2_GT_TESTS_OPTION_PANEL_H_
 #define _U2_GT_TESTS_OPTION_PANEL_H_
 
+#include <drivers/GTKeyboardDriver.h>
+#include <primitives/GTWidget.h>
+
 #include <QApplication>
 
 #include <U2Test/UGUITestBase.h>
 
 #include "utils/GTUtilsDialog.h"
-#include <drivers/GTKeyboardDriver.h>
-#include <primitives/GTWidget.h>
 
 namespace U2 {
 
@@ -51,8 +52,8 @@ GUI_TEST_CLASS_DECLARATION(test_0004)
 
 GUI_TEST_CLASS_DECLARATION(test_0005)
 
-GUI_TEST_CLASS_DECLARATION(test_0006) //outdated
-GUI_TEST_CLASS_DECLARATION(test_0006_1) //outdated
+GUI_TEST_CLASS_DECLARATION(test_0006)    //outdated
+GUI_TEST_CLASS_DECLARATION(test_0006_1)    //outdated
 
 GUI_TEST_CLASS_DECLARATION(test_0007)
 GUI_TEST_CLASS_DECLARATION(test_0008)
@@ -71,8 +72,8 @@ GUI_TEST_CLASS_DECLARATION(test_0019)
 GUI_TEST_CLASS_DECLARATION(test_0020)
 
 #undef GUI_TEST_SUITE
-} // namespace U2
+}    // namespace GUITest_common_scenarios_options_panel
 
-} //namespace
+}    // namespace U2
 
-#endif // _U2_GT_TESTS_OPTION_PANEL_H_
+#endif    // _U2_GT_TESTS_OPTION_PANEL_H_

@@ -19,10 +19,10 @@
  * MA 02110-1301, USA.
  */
 
+#include <limits.h>
+
 #include <U2Lang/BaseAttributes.h>
 #include <U2Lang/Dataset.h>
-
-#include <limits.h>
 
 #include "DatasetsCountValidator.h"
 
@@ -35,40 +35,40 @@ static const QString MAX("max");
 static const QString ATTR("attribute");
 
 namespace {
-    int minimum(const QMap<QString, QString> &options) {
-        if (options.contains(MIN)) {
-            bool ok = true;
-            int val = options[MIN].toInt(&ok);
-            if (ok && val >= 0) {
-                return val;
-            }
+int minimum(const QMap<QString, QString> &options) {
+    if (options.contains(MIN)) {
+        bool ok = true;
+        int val = options[MIN].toInt(&ok);
+        if (ok && val >= 0) {
+            return val;
         }
-        return 0;
     }
-    int maximum(const QMap<QString, QString> &options) {
-        if (options.contains(MAX)) {
-            bool ok = true;
-            int val = options[MAX].toInt(&ok);
-            if (ok && val >= 0) {
-                return val;
-            }
-        }
-        return INT_MAX;
-    }
-    QString attributeId(const QMap<QString, QString> &options) {
-        if (options.contains(ATTR)) {
-            return options[ATTR];
-        }
-        return BaseAttributes::URL_IN_ATTRIBUTE().getId();
-    }
+    return 0;
 }
+int maximum(const QMap<QString, QString> &options) {
+    if (options.contains(MAX)) {
+        bool ok = true;
+        int val = options[MAX].toInt(&ok);
+        if (ok && val >= 0) {
+            return val;
+        }
+    }
+    return INT_MAX;
+}
+QString attributeId(const QMap<QString, QString> &options) {
+    if (options.contains(ATTR)) {
+        return options[ATTR];
+    }
+    return BaseAttributes::URL_IN_ATTRIBUTE().getId();
+}
+}    // namespace
 
 bool DatasetsCountValidator::validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &options) const {
     int min = minimum(options);
     int max = maximum(options);
     QString attrId = attributeId(options);
 
-    QList<Dataset> sets = getValue< QList<Dataset> >(actor, attrId);
+    QList<Dataset> sets = getValue<QList<Dataset>>(actor, attrId);
     bool result = true;
     if (sets.size() < min) {
         notificationList << WorkflowNotification(QObject::tr("The minimum datasets count is %1. The current count is %2").arg(min).arg(sets.size()));
@@ -81,5 +81,5 @@ bool DatasetsCountValidator::validate(const Actor *actor, NotificationsList &not
     return result;
 }
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

@@ -33,14 +33,14 @@ namespace U2 {
 class ScriptEditorWidget;
 
 enum HitCondition {
-    CONDITION_IS_TRUE, CONDITION_HAS_CHANGED
+    CONDITION_IS_TRUE,
+    CONDITION_HAS_CHANGED
 };
 
 class U2GUI_EXPORT BreakpointConditionEditDialog : public QDialog {
     Q_OBJECT
 public:
-    BreakpointConditionEditDialog(QWidget *parent, const QString &variablesText, bool conditionEnabled = true,
-        const QString &conditionText = QString(), HitCondition initCondition = CONDITION_IS_TRUE);
+    BreakpointConditionEditDialog(QWidget *parent, const QString &variablesText, bool conditionEnabled = true, const QString &conditionText = QString(), HitCondition initCondition = CONDITION_IS_TRUE);
     ~BreakpointConditionEditDialog();
 
 signals:
@@ -58,6 +58,6 @@ private:
     Ui_BreakpointConditionEditDialog *ui;
 };
 
-} //namespace U2
+}    //namespace U2
 
-#endif // _U2_BREAKPOINT_CONDITION_EDIT_DIALOG_H_
+#endif    // _U2_BREAKPOINT_CONDITION_EDIT_DIALOG_H_

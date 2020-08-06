@@ -30,26 +30,40 @@ using namespace HI;
 class ImportAnnotationsToCsvFiller : public Filler {
 public:
     struct RoleParameter {
-        virtual ~RoleParameter() {}
-        virtual void ke(){}
+        virtual ~RoleParameter() {
+        }
+        virtual void ke() {
+        }
     };
 
-    enum fileFormat {BED, EMBL, FPKM, GFF, GTF, Genbank, Swiss_Prot};
+    enum fileFormat { BED,
+                      EMBL,
+                      FPKM,
+                      GFF,
+                      GTF,
+                      Genbank,
+                      Swiss_Prot };
     struct RoleColumnParameter {
-        RoleColumnParameter(int _column, RoleParameter* _p) : column(_column), parameter(_p){}
+        RoleColumnParameter(int _column, RoleParameter *_p)
+            : column(_column), parameter(_p) {
+        }
         int column;
-        RoleParameter* parameter;
+        RoleParameter *parameter;
     };
     typedef QList<RoleColumnParameter> RoleParameters;
 
     struct StartParameter : public RoleParameter {
-        StartParameter(bool _addOffset, int _numberOfBp=0) : addOffset(_addOffset), numberOfBp(_numberOfBp){}
+        StartParameter(bool _addOffset, int _numberOfBp = 0)
+            : addOffset(_addOffset), numberOfBp(_numberOfBp) {
+        }
         bool addOffset;
         int numberOfBp;
     };
 
     struct EndParameter : public RoleParameter {
-        EndParameter(bool _endPos) : endPos(_endPos){}
+        EndParameter(bool _endPos)
+            : endPos(_endPos) {
+        }
         bool endPos;
     };
 
@@ -57,7 +71,9 @@ public:
     };
 
     struct StrandMarkParameter : public RoleParameter {
-        StrandMarkParameter(bool _markValue, QString _markValueName) : markValue(_markValue), markValueName(_markValueName){}
+        StrandMarkParameter(bool _markValue, QString _markValueName)
+            : markValue(_markValue), markValueName(_markValueName) {
+        }
         bool markValue;
         QString markValueName;
     };
@@ -69,7 +85,9 @@ public:
     };
 
     struct QualifierParameter : public RoleParameter {
-        QualifierParameter(const QString& _name) : name(_name){}
+        QualifierParameter(const QString &_name)
+            : name(_name) {
+        }
         QString name;
     };
 
@@ -85,9 +103,9 @@ public:
                                  bool _interpretMultipleAsSingle,
                                  bool _removeQuotesButton,
                                  const QString &_defaultAnnotationName,
-                                 const RoleParameters& roleParameters = RoleParameters(),
+                                 const RoleParameters &roleParameters = RoleParameters(),
                                  GTGlobals::UseMethod method = GTGlobals::UseMouse);
-    ImportAnnotationsToCsvFiller(HI::GUITestOpStatus &_os, CustomScenario* c);
+    ImportAnnotationsToCsvFiller(HI::GUITestOpStatus &_os, CustomScenario *c);
 
     virtual void commonScenario();
 
@@ -110,16 +128,19 @@ private:
 
 class RoleFiller : public Filler {
 public:
-    RoleFiller(HI::GUITestOpStatus &os, ImportAnnotationsToCsvFiller::RoleParameter* _parameter)
-        : Filler(os, "CSVColumnConfigurationDialog"), parameter(_parameter) {}
-    RoleFiller(HI::GUITestOpStatus &os, CustomScenario* c):
-        Filler(os, "CSVColumnConfigurationDialog", c), parameter(NULL) {}
+    RoleFiller(HI::GUITestOpStatus &os, ImportAnnotationsToCsvFiller::RoleParameter *_parameter)
+        : Filler(os, "CSVColumnConfigurationDialog"), parameter(_parameter) {
+    }
+    RoleFiller(HI::GUITestOpStatus &os, CustomScenario *c)
+        : Filler(os, "CSVColumnConfigurationDialog", c), parameter(NULL) {
+    }
 
     virtual void commonScenario();
+
 private:
     ImportAnnotationsToCsvFiller::RoleParameter *parameter;
 };
 
-}   // namesapce U2
+}    // namespace U2
 
-#endif // _U2_GT_RUNNABLES_IMPORT_ANNOTATIONS_TO_CSV_DIALOG_FILLER_H_
+#endif    // _U2_GT_RUNNABLES_IMPORT_ANNOTATIONS_TO_CSV_DIALOG_FILLER_H_

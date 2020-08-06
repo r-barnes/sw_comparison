@@ -32,7 +32,7 @@ namespace U2 {
 class RSupport : public RunnerTool {
     Q_OBJECT
 public:
-    RSupport(const QString& id, const QString& name, const QString& path = "");
+    RSupport(const QString &id, const QString &name, const QString &path = "");
 
     static const QString ET_R;
     static const QString ET_R_ID;
@@ -41,7 +41,8 @@ public:
 class RModuleSupport : public ExternalToolModule {
     Q_OBJECT
 public:
-    RModuleSupport(const QString& id, const QString& name);
+    RModuleSupport(const QString &id, const QString &name);
+
 protected:
     QString getScript() const;
 };
@@ -49,7 +50,7 @@ protected:
 class RModuleGostatsSupport : public RModuleSupport {
     Q_OBJECT
 public:
-    RModuleGostatsSupport(const QString& id, const QString& name);
+    RModuleGostatsSupport(const QString &id, const QString &name);
 
     static const QString ET_R_GOSTATS;
     static const QString ET_R_GOSTATS_ID;
@@ -58,7 +59,7 @@ public:
 class RModuleGodbSupport : public RModuleSupport {
     Q_OBJECT
 public:
-    RModuleGodbSupport(const QString& id, const QString& name);
+    RModuleGodbSupport(const QString &id, const QString &name);
 
     static const QString ET_R_GO_DB;
     static const QString ET_R_GO_DB_ID;
@@ -67,7 +68,7 @@ public:
 class RModuleHgu133adbSupport : public RModuleSupport {
     Q_OBJECT
 public:
-    RModuleHgu133adbSupport(const QString& id, const QString& name);
+    RModuleHgu133adbSupport(const QString &id, const QString &name);
 
     static const QString ET_R_HGU133A_DB;
     static const QString ET_R_HGU133A_DB_ID;
@@ -76,7 +77,7 @@ public:
 class RModuleHgu133bdbSupport : public RModuleSupport {
     Q_OBJECT
 public:
-    RModuleHgu133bdbSupport(const QString& id, const QString& name);
+    RModuleHgu133bdbSupport(const QString &id, const QString &name);
 
     static const QString ET_R_HGU133B_DB;
     static const QString ET_R_HGU133B_DB_ID;
@@ -85,7 +86,7 @@ public:
 class RModuleHgu133plus2dbSupport : public RModuleSupport {
     Q_OBJECT
 public:
-    RModuleHgu133plus2dbSupport(const QString& id, const QString& name);
+    RModuleHgu133plus2dbSupport(const QString &id, const QString &name);
 
     static const QString ET_R_HGU1333PLUS2_DB;
     static const QString ET_R_HGU1333PLUS2_DB_ID;
@@ -94,7 +95,7 @@ public:
 class RModuleHgu95av2dbSupport : public RModuleSupport {
     Q_OBJECT
 public:
-    RModuleHgu95av2dbSupport(const QString& id, const QString& name);
+    RModuleHgu95av2dbSupport(const QString &id, const QString &name);
 
     static const QString ET_R_HGU95AV2_DB;
     static const QString ET_R_HGU95AV2_DB_ID;
@@ -103,7 +104,7 @@ public:
 class RModuleMouse430a2dbSupport : public RModuleSupport {
     Q_OBJECT
 public:
-    RModuleMouse430a2dbSupport(const QString& id, const QString& name);
+    RModuleMouse430a2dbSupport(const QString &id, const QString &name);
 
     static const QString ET_R_MOUSE430A2_DB;
     static const QString ET_R_MOUSE430A2_DB_ID;
@@ -112,7 +113,7 @@ public:
 class RModuleCelegansdbSupport : public RModuleSupport {
     Q_OBJECT
 public:
-    RModuleCelegansdbSupport(const QString& id, const QString& name);
+    RModuleCelegansdbSupport(const QString &id, const QString &name);
 
     static const QString ET_R_CELEGANS_DB;
     static const QString ET_R_CELEGANS_DB_ID;
@@ -121,7 +122,7 @@ public:
 class RModuleDrosophila2dbSupport : public RModuleSupport {
     Q_OBJECT
 public:
-    RModuleDrosophila2dbSupport(const QString& id, const QString& name);
+    RModuleDrosophila2dbSupport(const QString &id, const QString &name);
 
     static const QString ET_R_DROSOPHILA2_DB;
     static const QString ET_R_DROSOPHILA2_DB_ID;
@@ -130,7 +131,7 @@ public:
 class RModuleOrghsegdbSupport : public RModuleSupport {
     Q_OBJECT
 public:
-    RModuleOrghsegdbSupport(const QString& id, const QString& name);
+    RModuleOrghsegdbSupport(const QString &id, const QString &name);
 
     static const QString ET_R_ORG_HS_EG_DB;
     static const QString ET_R_ORG_HS_EG_DB_ID;
@@ -139,7 +140,7 @@ public:
 class RModuleOrgmmegdbSupport : public RModuleSupport {
     Q_OBJECT
 public:
-    RModuleOrgmmegdbSupport(const QString& id, const QString& name);
+    RModuleOrgmmegdbSupport(const QString &id, const QString &name);
 
     static const QString ET_R_ORG_MM_EG_DB;
     static const QString ET_R_ORG_MM_EG_DB_ID;
@@ -148,7 +149,7 @@ public:
 class RModuleOrgceegdbSupport : public RModuleSupport {
     Q_OBJECT
 public:
-    RModuleOrgceegdbSupport(const QString& id, const QString& name);
+    RModuleOrgceegdbSupport(const QString &id, const QString &name);
 
     static const QString ET_R_ORG_CE_EG_DB;
     static const QString ET_R_ORG_CE_EG_DB_ID;
@@ -157,7 +158,7 @@ public:
 class RModuleOrgdmegdbSupport : public RModuleSupport {
     Q_OBJECT
 public:
-    RModuleOrgdmegdbSupport(const QString& id, const QString& name);
+    RModuleOrgdmegdbSupport(const QString &id, const QString &name);
 
     static const QString ET_R_ORG_DM_EG_DB;
     static const QString ET_R_ORG_DM_EG_DB_ID;
@@ -166,12 +167,12 @@ public:
 class RModuleSeqlogoSupport : public RModuleSupport {
     Q_OBJECT
 public:
-    RModuleSeqlogoSupport(const QString& id, const QString& name);
+    RModuleSeqlogoSupport(const QString &id, const QString &name);
 
     static const QString ET_R_SEQLOGO;
     static const QString ET_R_SEQLOGO_ID;
 };
 
-}   // namespace
+}    // namespace U2
 
-#endif // _U2_R_SUPPORT_H_
+#endif    // _U2_R_SUPPORT_H_

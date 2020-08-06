@@ -22,17 +22,18 @@
 #ifndef _U2_TEST_VIEW_REPORTER_H_
 #define _U2_TEST_VIEW_REPORTER_H_
 
+#include <QString>
 
 class QTreeWidget;
 
 namespace U2 {
 
-class TestViewReporter  {
+class TestViewReporter {
 public:
     static QString generateHtmlReport(QTreeWidget *tree, int runTime);
     static void saveReportToFileAndOpenBrowser(QTreeWidget *tree, int runTime);
-    static void saveReport(const QString& url,const QString& data);
+    static void saveReport(const QString &url, const QString &data);
 };
 
-}
+}    // namespace U2
 #endif

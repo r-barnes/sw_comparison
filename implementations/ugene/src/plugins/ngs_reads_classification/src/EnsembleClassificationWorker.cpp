@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "EnsembleClassificationWorker.h"
+
 #include <QFileInfo>
 
 #include <U2Core/AppContext.h>
@@ -52,7 +54,6 @@
 #include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/WorkflowMonitor.h>
 
-#include "EnsembleClassificationWorker.h"
 #include "../ngs_reads_classification/src/NgsReadsClassificationUtils.h"
 
 namespace U2 {
@@ -80,7 +81,7 @@ static const QString DEFAULT_OUT_FILE_EXTENSION("csv");
 static const QString DEFAULT_OUT_FILE_NAME(DEFAULT_OUT_FILE_BASE_NAME + "." + DEFAULT_OUT_FILE_EXTENSION);
 
 QString EnsembleClassificationPrompter::composeRichDoc() {
-    const QString outFile = getHyperlink(OUT_FILE, getURL(OUT_FILE, (bool*)0, "", DEFAULT_OUT_FILE_NAME));
+    const QString outFile = getHyperlink(OUT_FILE, getURL(OUT_FILE, (bool *)0, "", DEFAULT_OUT_FILE_NAME));
     return tr("Ensemble classification data from other elements into %1").arg(outFile);
 }
 
@@ -88,26 +89,19 @@ QString EnsembleClassificationPrompter::composeRichDoc() {
 /* EnsembleClassificationWorkerFactory */
 /************************************************************************/
 void EnsembleClassificationWorkerFactory::init() {
+    Descriptor desc(ACTOR_ID, EnsembleClassificationWorker::tr("Ensemble Classification Data"), EnsembleClassificationWorker::tr("The element ensembles data, produced by classification tools "
+                                                                                                                                 "(Kraken, CLARK, DIAMOND), into a single file in CSV format. "
+                                                                                                                                 "This file can be used as input for the WEVOTE classifier."));
 
-    Descriptor desc(ACTOR_ID, EnsembleClassificationWorker::tr("Ensemble Classification Data"),
-        EnsembleClassificationWorker::tr("The element ensembles data, produced by classification tools "
-                                         "(Kraken, CLARK, DIAMOND), into a single file in CSV format. "
-                                         "This file can be used as input for the WEVOTE classifier.") );
-
-    QList<PortDescriptor*> p;
+    QList<PortDescriptor *> p;
     {
-        Descriptor inputPortDescriptor1(INPUT_PORT1, EnsembleClassificationWorker::tr("Input taxonomy data 1"),
-                       EnsembleClassificationWorker::tr("An input slot for taxonomy classification data."));
+        Descriptor inputPortDescriptor1(INPUT_PORT1, EnsembleClassificationWorker::tr("Input taxonomy data 1"), EnsembleClassificationWorker::tr("An input slot for taxonomy classification data."));
 
-        Descriptor inputPortDescriptor2(INPUT_PORT2, EnsembleClassificationWorker::tr("Input taxonomy data 2"),
-                       EnsembleClassificationWorker::tr("An input slot for taxonomy classification data."));
+        Descriptor inputPortDescriptor2(INPUT_PORT2, EnsembleClassificationWorker::tr("Input taxonomy data 2"), EnsembleClassificationWorker::tr("An input slot for taxonomy classification data."));
 
-        Descriptor inputPortDescriptor3(INPUT_PORT3, EnsembleClassificationWorker::tr("Input taxonomy data 3"),
-                       EnsembleClassificationWorker::tr("An input slot for taxonomy classification data."));
+        Descriptor inputPortDescriptor3(INPUT_PORT3, EnsembleClassificationWorker::tr("Input taxonomy data 3"), EnsembleClassificationWorker::tr("An input slot for taxonomy classification data."));
 
-        Descriptor outD(OUTPUT_PORT, EnsembleClassificationWorker::tr("Ensembled classification"),
-                        EnsembleClassificationWorker::tr("URL to the CSV file with ensembled classification data."));
-
+        Descriptor outD(OUTPUT_PORT, EnsembleClassificationWorker::tr("Ensembled classification"), EnsembleClassificationWorker::tr("URL to the CSV file with ensembled classification data."));
 
         Descriptor inSlot1(INPUT_SLOT1, EnsembleClassificationWorker::tr("Input tax data 1"), EnsembleClassificationWorker::tr("Input tax data 1."));
         Descriptor inSlot2(INPUT_SLOT2, EnsembleClassificationWorker::tr("Input tax data 2"), EnsembleClassificationWorker::tr("Input tax data 2."));
@@ -133,18 +127,15 @@ void EnsembleClassificationWorkerFactory::init() {
         p << new PortDescriptor(outD, DataTypePtr(new MapDataType("filter.output-url", outM)), false, true);
     }
 
-    QList<Attribute*> a;
+    QList<Attribute *> a;
     {
-        Descriptor numberOfToolsDescriptor(NUMBER_OF_TOOLS, EnsembleClassificationWorker::tr("Number of tools"),
-                                           EnsembleClassificationWorker::tr("Specify the number of classification tools. The corresponding data should be provided using the input ports."));
+        Descriptor numberOfToolsDescriptor(NUMBER_OF_TOOLS, EnsembleClassificationWorker::tr("Number of tools"), EnsembleClassificationWorker::tr("Specify the number of classification tools. The corresponding data should be provided using the input ports."));
 
-        Descriptor outFileDesc(OUT_FILE, EnsembleClassificationWorker::tr("Output file"),
-            EnsembleClassificationWorker::tr("Specify the output file. The classification data are stored in CSV format with the following columns:"
-                                             "<ol><li> a sequence name"
-                                             "<li>taxID from the first tool"
-                                             "<li>taxID from the second tool"
-                                             "<li>optionally, taxID from the third tool</ol>"
-                                           ));
+        Descriptor outFileDesc(OUT_FILE, EnsembleClassificationWorker::tr("Output file"), EnsembleClassificationWorker::tr("Specify the output file. The classification data are stored in CSV format with the following columns:"
+                                                                                                                           "<ol><li> a sequence name"
+                                                                                                                           "<li>taxID from the first tool"
+                                                                                                                           "<li>taxID from the second tool"
+                                                                                                                           "<li>optionally, taxID from the third tool</ol>"));
 
         Attribute *numberOfTools = new Attribute(numberOfToolsDescriptor, BaseTypes::NUM_TYPE(), Attribute::None, 2);
         Attribute *outFileAttribute = new Attribute(outFileDesc, BaseTypes::STRING_TYPE(), Attribute::Required | Attribute::NeedValidateEncoding | Attribute::CanBeEmpty);
@@ -154,7 +145,7 @@ void EnsembleClassificationWorkerFactory::init() {
         numberOfTools->addPortRelation(new PortRelationDescriptor(INPUT_PORT3, QVariantList() << 3));
     }
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
         QVariantMap numberOfToolsMap;
         numberOfToolsMap["2"] = 2;
@@ -169,7 +160,7 @@ void EnsembleClassificationWorkerFactory::init() {
         delegates[OUT_FILE] = new URLDelegate(tags, "classification/ensemble", options);
     }
 
-    ActorPrototype* proto = new IntegralBusActorPrototype(desc, p, a);
+    ActorPrototype *proto = new IntegralBusActorPrototype(desc, p, a);
     proto->setEditor(new DelegateEditor(delegates));
     proto->setPrompter(new EnsembleClassificationPrompter());
 
@@ -184,7 +175,6 @@ void EnsembleClassificationWorkerFactory::cleanup() {
     delete localDomain->unregisterEntry(ACTOR_ID);
 }
 
-
 /************************************************************************/
 /* EnsembleClassificationWorker */
 /************************************************************************/
@@ -194,9 +184,7 @@ EnsembleClassificationWorker::EnsembleClassificationWorker(Actor *a)
       input2(NULL),
       input3(NULL),
       output(NULL),
-      tripleInput(false)
-{
-
+      tripleInput(false) {
 }
 
 bool EnsembleClassificationWorker::isReady() const {
@@ -262,9 +250,9 @@ QVariantMap uniteUniquely(const QVariantMap &first, const QVariantMap &second) {
     return result;
 }
 
-}
+}    // namespace
 
-Task * EnsembleClassificationWorker::tick() {
+Task *EnsembleClassificationWorker::tick() {
     if (isReadyToRun()) {
         QList<TaxonomyClassificationResult> taxData;
 
@@ -290,7 +278,6 @@ Task * EnsembleClassificationWorker::tick() {
             sourceFileUrl3 = metadata3.getFileUrl();
         }
 
-
         QVariantMap unitedContext;
         unitedContext = uniteUniquely(unitedContext, input1->getLastMessageContext());
         unitedContext = uniteUniquely(unitedContext, input2->getLastMessageContext());
@@ -300,7 +287,7 @@ Task * EnsembleClassificationWorker::tick() {
 
         int metadataId = MessageMetadata::INVALID_ID;
         if (sourceFileUrl1 == sourceFileUrl2 &&
-                (!tripleInput || (tripleInput && sourceFileUrl1 == sourceFileUrl3))) {
+            (!tripleInput || (tripleInput && sourceFileUrl1 == sourceFileUrl3))) {
             sourceFileUrl = sourceFileUrl1;
             metadataId = metadata1.getId();
         }
@@ -320,7 +307,7 @@ Task * EnsembleClassificationWorker::tick() {
             }
         }
 
-        Task* t = new EnsembleClassificationTask(taxData, tripleInput, outputFile, context->workingDir());
+        Task *t = new EnsembleClassificationTask(taxData, tripleInput, outputFile, context->workingDir());
         connect(new TaskSignalMapper(t), SIGNAL(si_taskFinished(Task *)), SLOT(sl_taskFinished(Task *)));
         return t;
     }
@@ -350,7 +337,7 @@ void EnsembleClassificationWorker::sl_taskFinished(Task *t) {
     QString reportUrl = task->getOutputFile();
     QVariantMap m;
     m[OUTPUT_SLOT] = reportUrl;
-    output->put(Message(output->getBusType(), m/*, metadata.getId()*/));
+    output->put(Message(output->getBusType(), m /*, metadata.getId()*/));
     monitor()->addOutputFile(reportUrl, getActor()->getId());
     if (task->foundMismatches()) {
         QString msg = tr("Different taxonomy data do not match. Some sequence names were skipped.");
@@ -423,8 +410,7 @@ void EnsembleClassificationTask::run() {
 
     QFile csvFile(outputFile);
     if (csvFile.open(QIODevice::Append)) {
-
-        foreach(QString seq, seqs) {
+        foreach (QString seq, seqs) {
             CHECK_OP(stateInfo, );
             stateInfo.setProgress(++counter * 100 / seqs.size());
 
@@ -472,13 +458,12 @@ EnsembleClassificationTask::EnsembleClassificationTask(const QList<TaxonomyClass
       tripleInput(_tripleInput),
       workingDir(_workingDir),
       outputFile(_outputFile),
-      hasMissing(false)
-{
+      hasMissing(false) {
     SAFE_POINT_EXT(taxData.size() == 2 || (taxData.size() == 3 && tripleInput), setError("Incorrect size on input data"), );
     if (!tripleInput) {
         taxData << TaxonomyClassificationResult();
     }
 }
 
-} //LocalWorkflow
-} //U2
+}    // namespace LocalWorkflow
+}    // namespace U2

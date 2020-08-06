@@ -27,30 +27,43 @@
 #include "SendReportDialog.h"
 #include "Utils.h"
 
-#if defined(Q_OS_UNIX ) && defined(Q_WS_X11)
-#include <X11/Xlib.h>
-#endif
-
 namespace {
 QString loadReport(int argc, char *argv[]) {
     if (Utils::hasReportUrl()) {
         return Utils::loadReportFromUrl(Utils::getReportUrl());
     } else if (argc > 1) {
-        return QString::fromUtf8(QByteArray::fromBase64(argv[argc-1]));
+        return QString::fromUtf8(QByteArray::fromBase64(argv[argc - 1]));
     }
 
     return "";
 }
-}
+}    // namespace
 
 int main(int argc, char *argv[]) {
     bool useGui = true;
-#if defined(Q_OS_UNIX) && defined(Q_WS_X11)
-    useGui = (XOpenDisplay(NULL) != NULL);
+#if defined(Q_OS_UNIX)
+    useGui = (getenv("DISPLAY") != 0);
+    if (!useGui && argc==1) {
+        printf("Use \"ugeneui\" to start Unipro UGENE graphical interface or \"ugenecl\" to use the command-line interface.");
+        return 1;
+    }
 #endif
 
     QApplication a(argc, argv, useGui);
     Q_UNUSED(a);
+
+    // User lauches the program manually
+    if (argc == 1) {
+        if (useGui) {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Information");
+            msgBox.setText("Use \"ugeneui\" to start Unipro UGENE graphical interface \nor \"ugenecl\" to use the command-line interface.");
+            msgBox.exec();
+        } else {
+            printf("Use \"ugeneui\" to start Unipro UGENE graphical interface or \"ugenecl\" to use the command-line interface.");
+        }
+        return 1;
+    }
 
 #ifdef Q_OS_MAC
     // A workaround to avoid using non-bundled plugins
@@ -70,7 +83,7 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-
+    // The program is lanched by UGENE
     if (useGui) {
         SendReportDialog dlg(message, dumpUrl);
         dlg.setWindowIcon(QIcon(":ugenem/images/crash_icon.png"));

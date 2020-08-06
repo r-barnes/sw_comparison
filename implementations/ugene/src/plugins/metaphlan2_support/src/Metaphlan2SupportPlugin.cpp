@@ -19,11 +19,12 @@
  * MA 02110-1301, USA.
  */
 
+#include "Metaphlan2SupportPlugin.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/U2SafePoints.h>
 
 #include "Metaphlan2Support.h"
-#include "Metaphlan2SupportPlugin.h"
 #include "Metaphlan2WorkerFactory.h"
 
 namespace U2 {
@@ -31,7 +32,7 @@ namespace U2 {
 const QString MetaphlanSupportPlugin::PLUGIN_NAME = QCoreApplication::translate("MetaphlanSupportPlugin", "MetaPhlAn2 external tool support");
 const QString MetaphlanSupportPlugin::PLUGIN_DESCRIPRION = QCoreApplication::translate("MetaphlanSupportPlugin", "MetaPhlAn2 (METAgenomic PHyLogenetic ANalysis) is a tool for profiling the composition of microbial communities (bacteria, archaea, eukaryotes, and viruses) from whole-metagenome shotgun sequencing data.");
 
-extern "C" Q_DECL_EXPORT Plugin* U2_PLUGIN_INIT_FUNC() {
+extern "C" Q_DECL_EXPORT Plugin *U2_PLUGIN_INIT_FUNC() {
     MetaphlanSupportPlugin *plugin = new MetaphlanSupportPlugin();
     return plugin;
 }
@@ -53,5 +54,4 @@ MetaphlanSupportPlugin::~MetaphlanSupportPlugin() {
     etRegistry->unregisterEntry(Metaphlan2Support::TOOL_ID);
 }
 
-
-}   // namespace U2
+}    // namespace U2

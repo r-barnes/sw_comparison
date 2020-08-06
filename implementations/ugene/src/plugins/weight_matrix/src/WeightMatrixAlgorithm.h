@@ -40,20 +40,20 @@ enum MatrixBuildType {
 
 class PMBuildSettings {
 public:
-    PMBuildSettings(): type(PM_MONONUCLEOTIDE), target(FREQUENCY_MATRIX) {
-
+    PMBuildSettings()
+        : type(PM_MONONUCLEOTIDE), target(FREQUENCY_MATRIX) {
     }
-    QString                     algo;
-    MatrixBuildType             type;
-    MatrixBuldTarget            target;
+    QString algo;
+    MatrixBuildType type;
+    MatrixBuldTarget target;
 };
 
 class WeightMatrixAlgorithm : public QObject {
     Q_OBJECT
 public:
-    static float getScore(const char* seq, int len, const PWMatrix& m, DNATranslation* complMap);
+    static float getScore(const char *seq, int len, const PWMatrix &m, DNATranslation *complMap);
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

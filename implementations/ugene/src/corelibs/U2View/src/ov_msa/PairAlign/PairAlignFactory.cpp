@@ -19,43 +19,37 @@
  * MA 02110-1301, USA.
  */
 
+#include "PairAlignFactory.h"
+
 #include <U2Core/U2SafePoints.h>
 
 #include "PairAlign.h"
-
-#include "PairAlignFactory.h"
 
 namespace U2 {
 
 const QString PairAlignFactory::GROUP_ID = "OP_PAIRALIGN";
 const QString PairAlignFactory::GROUP_ICON_STR = ":core/images/pairwise.png";
-const QString PairAlignFactory::GROUP_DOC_PAGE = "24742481";
-
+const QString PairAlignFactory::GROUP_DOC_PAGE = "46500026";
 
 PairAlignFactory::PairAlignFactory() {
     objectViewOfWidget = ObjViewType_AlignmentEditor;
 }
 
+QWidget *PairAlignFactory::createWidget(GObjectView *objView, const QVariantMap &options) {
+    SAFE_POINT(objView != nullptr,
+               QString("Internal error: unable to create widget for group '%1', object view is NULL.").arg(GROUP_ID),
+               nullptr);
 
-QWidget* PairAlignFactory::createWidget(GObjectView* objView)
-{
-    SAFE_POINT(NULL != objView,
-        QString("Internal error: unable to create widget for group '%1', object view is NULL.").arg(GROUP_ID),
-        NULL);
+    MSAEditor *msa = qobject_cast<MSAEditor *>(objView);
+    SAFE_POINT(msa != nullptr,
+               QString("Internal error: unable to cast object view to MSAEditor for group '%1'.").arg(GROUP_ID),
+               nullptr);
 
-    MSAEditor* msa = qobject_cast<MSAEditor*>(objView);
-    SAFE_POINT(NULL != msa,
-        QString("Internal error: unable to cast object view to MSAEditor for group '%1'.").arg(GROUP_ID),
-        NULL);
-
-    PairAlign* pairAlignWidget = new PairAlign(msa);
-    return pairAlignWidget;
+    return new PairAlign(msa);
 }
 
-
-OPGroupParameters PairAlignFactory::getOPGroupParameters(){
+OPGroupParameters PairAlignFactory::getOPGroupParameters() {
     return OPGroupParameters(GROUP_ID, QPixmap(GROUP_ICON_STR), QObject::tr("Pairwise Alignment"), GROUP_DOC_PAGE);
 }
 
-
-} // namespace
+}    // namespace U2

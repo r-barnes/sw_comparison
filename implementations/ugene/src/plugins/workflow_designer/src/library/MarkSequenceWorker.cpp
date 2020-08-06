@@ -19,7 +19,16 @@
  * MA 02110-1301, USA.
  */
 
+#include "MarkSequenceWorker.h"
+
 #include <QScopedPointer>
+
+#include <U2Core/AnnotationTableObject.h>
+#include <U2Core/DNASequence.h>
+#include <U2Core/FailTask.h>
+#include <U2Core/Log.h>
+#include <U2Core/QVariantUtils.h>
+#include <U2Core/U2OpStatusUtils.h>
 
 #include <U2Designer/DelegateEditors.h>
 #include <U2Designer/MarkerEditor.h>
@@ -34,31 +43,21 @@
 #include <U2Lang/MarkerAttribute.h>
 #include <U2Lang/WorkflowEnv.h>
 
-#include <U2Core/AnnotationTableObject.h>
-#include <U2Core/DNASequence.h>
-#include <U2Core/FailTask.h>
-#include <U2Core/Log.h>
-#include <U2Core/QVariantUtils.h>
-#include <U2Core/U2OpStatusUtils.h>
-
-#include "MarkSequenceWorker.h"
-
 namespace U2 {
 namespace LocalWorkflow {
 
 const QString MarkSequenceWorkerFactory::ACTOR_ID("mark-sequence");
 namespace {
-    const QString SEQ_TYPESET_ID("seq.content");
-    const QString MARKED_SEQ_TYPESET_ID("marker.seq.content");
-    const QString MARKER_ATTR_ID("marker");
-}
+const QString SEQ_TYPESET_ID("seq.content");
+const QString MARKED_SEQ_TYPESET_ID("marker.seq.content");
+const QString MARKER_ATTR_ID("marker");
+}    // namespace
 
 /*******************************
  * MarkSequenceWorker
  *******************************/
 MarkSequenceWorker::MarkSequenceWorker(Actor *p)
-: BaseWorker(p), inChannel(NULL), outChannel(NULL)
-{
+    : BaseWorker(p), inChannel(NULL), outChannel(NULL) {
 }
 
 void MarkSequenceWorker::init() {
@@ -85,14 +84,14 @@ Task *MarkSequenceWorker::tick() {
         CHECK_OP(os, new FailTask(os.getError()));
 
         const QList<SharedAnnotationData> inputAnns = StorageUtils::getAnnotationTable(context->getDataStorage(),
-            data[BaseSlots::ANNOTATION_TABLE_SLOT().getId()]);
+                                                                                       data[BaseSlots::ANNOTATION_TABLE_SLOT().getId()]);
 
         QVariantList anns;
         foreach (const SharedAnnotationData &ad, inputAnns) {
             anns << QVariant::fromValue(ad);
         }
 
-        MarkerAttribute *attr = dynamic_cast<MarkerAttribute*>(actor->getParameter(MARKER_ATTR_ID));
+        MarkerAttribute *attr = dynamic_cast<MarkerAttribute *>(actor->getParameter(MARKER_ATTR_ID));
         QVariantMap m;
         foreach (Marker *marker, attr->getMarkers()) {
             QString res;
@@ -119,8 +118,8 @@ Task *MarkSequenceWorker::tick() {
  * MarkSequenceWorkerFactory
  *******************************/
 void MarkSequenceWorkerFactory::init() {
-    QList<PortDescriptor*> portDescs;
-    QList<Attribute*> attrs;
+    QList<PortDescriptor *> portDescs;
+    QList<Attribute *> attrs;
 
     // input port
     QMap<Descriptor, DataTypePtr> inTypeMap;
@@ -140,11 +139,10 @@ void MarkSequenceWorkerFactory::init() {
     Descriptor outPd(MarkerPorts::OUT_MARKER_SEQ_PORT(), MarkSequenceWorker::tr("Marked sequence"), MarkSequenceWorker::tr("Marked sequence"));
     portDescs << new PortDescriptor(outPd, outTypeSet, false, true);
 
-
     Descriptor protoDesc(MarkSequenceWorkerFactory::ACTOR_ID,
-        MarkSequenceWorker::tr("Sequence Marker"),
-        MarkSequenceWorker::tr("Adds one or several marks to the input sequence depending on the sequence properties. "
-                               "Use this element, for example, in conjunction with the Filter element."));
+                         MarkSequenceWorker::tr("Sequence Marker"),
+                         MarkSequenceWorker::tr("Adds one or several marks to the input sequence depending on the sequence properties. "
+                                                "Use this element, for example, in conjunction with the Filter element."));
     Descriptor markerDesc(MARKER_ATTR_ID, MarkSequenceWorker::tr("Markers"), MarkSequenceWorker::tr("Markers."));
     attrs << new MarkerAttribute(markerDesc, BaseTypes::STRING_TYPE(), false);
 
@@ -158,7 +156,7 @@ void MarkSequenceWorkerFactory::init() {
     WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID)->registerEntry(new MarkSequenceWorkerFactory());
 }
 
-Worker *MarkSequenceWorkerFactory::createWorker(Actor* a) {
+Worker *MarkSequenceWorkerFactory::createWorker(Actor *a) {
     return new MarkSequenceWorker(a);
 }
 
@@ -169,6 +167,5 @@ QString MarkSequencePrompter::composeRichDoc() {
     return tr("Adds one or several marks to the input sequence.");
 }
 
-
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

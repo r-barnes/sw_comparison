@@ -20,26 +20,28 @@
  */
 
 #include "SpadesPortRelationDescriptor.h"
+
 #include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
-SpadesPortRelationDescriptor::SpadesPortRelationDescriptor(const QString& portId,
-                                                           const QVariantList& valuesWithEnabledPort)
-    : PortRelationDescriptor(portId, valuesWithEnabledPort) {}
+SpadesPortRelationDescriptor::SpadesPortRelationDescriptor(const QString &portId,
+                                                           const QVariantList &valuesWithEnabledPort)
+    : PortRelationDescriptor(portId, valuesWithEnabledPort) {
+}
 
-bool SpadesPortRelationDescriptor::isPortEnabled(const QVariant& attrValue) const {
+bool SpadesPortRelationDescriptor::isPortEnabled(const QVariant &attrValue) const {
     QMap<QString, QVariant> attrValueMap = attrValue.toMap();
     bool isEnabled = false;
-    foreach (const QString& key, attrValueMap.keys()) {
-       isEnabled = PortRelationDescriptor::isPortEnabled(key);
-       CHECK_BREAK(!isEnabled);
+    foreach (const QString &key, attrValueMap.keys()) {
+        isEnabled = PortRelationDescriptor::isPortEnabled(key);
+        CHECK_BREAK(!isEnabled);
     }
     return isEnabled;
 }
 
-SpadesPortRelationDescriptor* SpadesPortRelationDescriptor::clone() const {
+SpadesPortRelationDescriptor *SpadesPortRelationDescriptor::clone() const {
     return new SpadesPortRelationDescriptor(*this);
 }
 
-}
+}    // namespace U2

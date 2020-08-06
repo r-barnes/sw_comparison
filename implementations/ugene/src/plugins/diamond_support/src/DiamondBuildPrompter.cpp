@@ -20,15 +20,14 @@
  */
 
 #include "DiamondBuildPrompter.h"
+
 #include "DiamondBuildWorkerFactory.h"
 
 namespace U2 {
 namespace LocalWorkflow {
 
 DiamondBuildPrompter::DiamondBuildPrompter(Actor *actor)
-    : PrompterBase<DiamondBuildPrompter>(actor)
-{
-
+    : PrompterBase<DiamondBuildPrompter>(actor) {
 }
 
 QString DiamondBuildPrompter::composeRichDoc() {
@@ -36,5 +35,5 @@ QString DiamondBuildPrompter::composeRichDoc() {
     return tr("Use custom data to build %1 DIAMOND database.").arg(databaseUrl);
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

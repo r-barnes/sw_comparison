@@ -21,8 +21,8 @@
 
 #include "MSAConsensusAlgorithmClustal.h"
 
-#include <U2Core/MultipleSequenceAlignment.h>
 #include <U2Core/DNAAlphabet.h>
+#include <U2Core/MultipleSequenceAlignment.h>
 
 namespace U2 {
 
@@ -34,25 +34,24 @@ QString MSAConsensusAlgorithmFactoryClustal::getName() const {
     return tr("ClustalW");
 }
 
-
-MSAConsensusAlgorithm* MSAConsensusAlgorithmFactoryClustal::createAlgorithm(const MultipleAlignment&, bool ignoreTrailingLeadingGaps, QObject* p) {
+MSAConsensusAlgorithm *MSAConsensusAlgorithmFactoryClustal::createAlgorithm(const MultipleAlignment &, bool ignoreTrailingLeadingGaps, QObject *p) {
     return new MSAConsensusAlgorithmClustal(this, ignoreTrailingLeadingGaps, p);
 }
 
 //////////////////////////////////////////////////////////////////////////
 //Algorithm
 
-char MSAConsensusAlgorithmClustal::getConsensusChar(const MultipleAlignment& ma, int pos, QVector<int> seqIdx) const {
+char MSAConsensusAlgorithmClustal::getConsensusChar(const MultipleAlignment &ma, int pos, QVector<int> seqIdx) const {
     CHECK(filterIdx(seqIdx, ma, pos), INVALID_CONS_CHAR);
 
     if (!ma->getAlphabet()->isAmino()) {
         // for nucleic alphabet work as strict algorithm but use ' ' as default
-        char  defChar = ' ';
-        char pc = ( seqIdx.isEmpty() ? ma->getRows().first() : ma->getRows()[ seqIdx[0] ] )->charAt(pos);
+        char defChar = ' ';
+        char pc = (seqIdx.isEmpty() ? ma->getRows().first() : ma->getRows()[seqIdx[0]])->charAt(pos);
         if (pc == U2Msa::GAP_CHAR) {
             pc = defChar;
         }
-        int nSeq =( seqIdx.isEmpty() ? ma->getNumRows() : seqIdx.size());
+        int nSeq = (seqIdx.isEmpty() ? ma->getNumRows() : seqIdx.size());
         for (int s = 1; s < nSeq; s++) {
             char c = ma->getRow(seqIdx.isEmpty() ? s : seqIdx[s])->charAt(pos);
             if (c != pc) {
@@ -71,12 +70,12 @@ char MSAConsensusAlgorithmClustal::getConsensusChar(const MultipleAlignment& ma,
         CSA, ATV, SAG, STNK, STPA, SGND, SNDEQK, NDEQHK, NEQHRK, FVLIM, HFY
         */
         static QByteArray strongGroups[] = {"STA", "NEQK", "NHQK", "NDEQ", "QHRK", "MILV", "MILF", "HY", "FYW"};
-        static QByteArray weakGroups[]   = {"CSA", "ATV", "SAG", "STNK", "STPA", "SGND", "SNDEQK", "NDEQHK", "NEQHRK", "FVLIM", "HFY"};
+        static QByteArray weakGroups[] = {"CSA", "ATV", "SAG", "STNK", "STPA", "SGND", "SNDEQK", "NDEQHK", "NEQHRK", "FVLIM", "HFY"};
         static int maxStrongGroupLen = 4;
         static int maxWeakGroupLen = 6;
 
-        QByteArray currentGroup; //TODO: optimize 'currentGroup' related code!
-        int nSeq =( seqIdx.isEmpty() ? ma->getNumRows() : seqIdx.size());
+        QByteArray currentGroup;    //TODO: optimize 'currentGroup' related code!
+        int nSeq = (seqIdx.isEmpty() ? ma->getNumRows() : seqIdx.size());
         for (int s = 0; s < nSeq; s++) {
             char c = ma->getRow(seqIdx.isEmpty() ? s : seqIdx[s])->charAt(pos);
             if (!currentGroup.contains(c)) {
@@ -86,16 +85,16 @@ char MSAConsensusAlgorithmClustal::getConsensusChar(const MultipleAlignment& ma,
         char consChar = U2Msa::GAP_CHAR;
         if (currentGroup.size() == 1) {
             consChar = (currentGroup[0] == U2Msa::GAP_CHAR) ? ' ' : '*';
-        } else  {
+        } else {
             bool ok = false;
             int currentLen = currentGroup.length();
-            const char* currentGroupData = currentGroup.data();
+            const char *currentGroupData = currentGroup.data();
             //check strong groups
             if (currentLen <= maxStrongGroupLen) {
-                for (int sgi=0, sgn = sizeof(strongGroups) / sizeof(QByteArray); sgi < sgn && !ok; sgi++) {
+                for (int sgi = 0, sgn = sizeof(strongGroups) / sizeof(QByteArray); sgi < sgn && !ok; sgi++) {
                     bool matches = true;
-                    const QByteArray& sgroup = strongGroups[sgi];
-                    for (int j=0; j < currentLen && matches; j++) {
+                    const QByteArray &sgroup = strongGroups[sgi];
+                    for (int j = 0; j < currentLen && matches; j++) {
                         char c = currentGroupData[j];
                         matches = sgroup.contains(c);
                     }
@@ -108,10 +107,10 @@ char MSAConsensusAlgorithmClustal::getConsensusChar(const MultipleAlignment& ma,
 
             //check weak groups
             if (!ok && currentLen <= maxWeakGroupLen) {
-                for (int wgi=0, wgn = sizeof(weakGroups) / sizeof(QByteArray); wgi < wgn && !ok; wgi++) {
+                for (int wgi = 0, wgn = sizeof(weakGroups) / sizeof(QByteArray); wgi < wgn && !ok; wgi++) {
                     bool matches = true;
-                    const QByteArray& wgroup = weakGroups[wgi];
-                    for (int j=0; j < currentLen && matches; j++) {
+                    const QByteArray &wgroup = weakGroups[wgi];
+                    for (int j = 0; j < currentLen && matches; j++) {
                         char c = currentGroupData[j];
                         matches = wgroup.contains(c);
                     }
@@ -125,13 +124,13 @@ char MSAConsensusAlgorithmClustal::getConsensusChar(const MultipleAlignment& ma,
             if (!ok) {
                 consChar = ' ';
             }
-        } //amino
+        }    //amino
         return consChar;
     }
 }
 
-U2::MSAConsensusAlgorithmClustal* MSAConsensusAlgorithmClustal::clone() const {
+U2::MSAConsensusAlgorithmClustal *MSAConsensusAlgorithmClustal::clone() const {
     return new MSAConsensusAlgorithmClustal(*this);
 }
 
-} //namespace
+}    // namespace U2

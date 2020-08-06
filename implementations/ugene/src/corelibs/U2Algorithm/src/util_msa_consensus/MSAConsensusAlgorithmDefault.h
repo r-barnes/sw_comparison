@@ -22,51 +22,61 @@
 #ifndef _U2_MSA_CONSENSUS_ALGORITHM_DEFAULT_H_
 #define _U2_MSA_CONSENSUS_ALGORITHM_DEFAULT_H_
 
-#include "MSAConsensusAlgorithm.h"
 #include "BuiltInConsensusAlgorithms.h"
+#include "MSAConsensusAlgorithm.h"
 
 namespace U2 {
 
 // Default algorithm is based on JalView experience. It also makes letters with low threshold lowercase
-class U2ALGORITHM_EXPORT MSAConsensusAlgorithmFactoryDefault: public MSAConsensusAlgorithmFactory {
+class U2ALGORITHM_EXPORT MSAConsensusAlgorithmFactoryDefault : public MSAConsensusAlgorithmFactory {
     Q_OBJECT
 public:
-    MSAConsensusAlgorithmFactoryDefault(QObject* p = NULL);
+    MSAConsensusAlgorithmFactoryDefault(QObject *p = NULL);
 
-    virtual MSAConsensusAlgorithm* createAlgorithm(const MultipleAlignment& ma, bool ignoreTrailingLeadingGaps, QObject* parent);
+    virtual MSAConsensusAlgorithm *createAlgorithm(const MultipleAlignment &ma, bool ignoreTrailingLeadingGaps, QObject *parent);
 
     virtual QString getDescription() const;
 
     virtual QString getName() const;
 
-    virtual int getMinThreshold() const {return 1;}
+    virtual int getMinThreshold() const {
+        return 1;
+    }
 
-    virtual int getMaxThreshold() const {return 100;}
+    virtual int getMaxThreshold() const {
+        return 100;
+    }
 
-    virtual int getDefaultThreshold() const {return 100;}
+    virtual int getDefaultThreshold() const {
+        return 100;
+    }
 
-    virtual QString getThresholdSuffix() const {return QString("%");}
+    virtual QString getThresholdSuffix() const {
+        return QString("%");
+    }
 
-    virtual bool isSequenceLikeResult() const {return false;}
+    virtual bool isSequenceLikeResult() const {
+        return false;
+    }
 };
-
 
 class U2ALGORITHM_EXPORT MSAConsensusAlgorithmDefault : public MSAConsensusAlgorithm {
     Q_OBJECT
 public:
-    MSAConsensusAlgorithmDefault(MSAConsensusAlgorithmFactoryDefault* f, bool ignoreTrailingLeadingGaps, QObject* p = NULL)
-        : MSAConsensusAlgorithm(f, ignoreTrailingLeadingGaps, p) {}
+    MSAConsensusAlgorithmDefault(MSAConsensusAlgorithmFactoryDefault *f, bool ignoreTrailingLeadingGaps, QObject *p = NULL)
+        : MSAConsensusAlgorithm(f, ignoreTrailingLeadingGaps, p) {
+    }
 
-    virtual char getConsensusChar(const MultipleAlignment& ma, int column, QVector<int> seqIdx = QVector<int>()) const {
+    virtual char getConsensusChar(const MultipleAlignment &ma, int column, QVector<int> seqIdx = QVector<int>()) const {
         int countStub = 0;
         return getConsensusCharAndScore(ma, column, countStub, seqIdx);
     }
 
-    virtual MSAConsensusAlgorithmDefault* clone() const;
+    virtual MSAConsensusAlgorithmDefault *clone() const;
 
-    virtual char getConsensusCharAndScore(const MultipleAlignment& ma, int column, int& score, QVector<int> seqIdx = QVector<int>()) const;
+    virtual char getConsensusCharAndScore(const MultipleAlignment &ma, int column, int &score, QVector<int> seqIdx = QVector<int>()) const;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

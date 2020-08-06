@@ -20,30 +20,31 @@
  */
 
 #include "TmpDirChecker.h"
+
+#include <QDir>
+#include <QFile>
+
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/UserApplicationsSettings.h>
-#include <QFile>
-#include <QDir>
 
 namespace U2 {
 
-TmpDirChecker::TmpDirChecker(): Task("Checking access rights to the temporary folder", TaskFlag_None) // TODO: make translation
+TmpDirChecker::TmpDirChecker()
+    : Task("Checking access rights to the temporary folder", TaskFlag_None)    // TODO: make translation
 {
 }
 
-void TmpDirChecker::run()
-{
+void TmpDirChecker::run() {
     commonTempDirPath = AppContext::getAppSettings()->getUserAppsSettings()->getUserTemporaryDirPath();
     QString ugeneTempDirPath = commonTempDirPath + "/ugene_tmp";
 
     if (!checkPath(commonTempDirPath)) {
         if (!AppContext::isGUIMode()) {
             QString message = "You do not have permission to write to \"" + commonTempDirPath +
-                "\" folder. Use --tmp-dir=<path_to_file> to set new temporary folder";
+                              "\" folder. Use --tmp-dir=<path_to_file> to set new temporary folder";
             coreLog.error((message));
-        }
-        else {
+        } else {
             emit si_checkFailed(commonTempDirPath);
         }
     }
@@ -51,17 +52,15 @@ void TmpDirChecker::run()
     if (!checkPath(ugeneTempDirPath)) {
         if (!AppContext::isGUIMode()) {
             QString message = "UGENE hasn't permitions to write to its temporary folder \"" + ugeneTempDirPath +
-                "\". Use --tmp-dir=<path_to_file> to set another temporary folder";
+                              "\". Use --tmp-dir=<path_to_file> to set another temporary folder";
             coreLog.error((message));
-        }
-        else {
+        } else {
             emit si_checkFailed(ugeneTempDirPath);
         }
     }
 }
 
-Task::ReportResult TmpDirChecker::report()
-{
+Task::ReportResult TmpDirChecker::report() {
     if (hasError() && AppContext::isGUIMode()) {
         stateInfo.setError(getError());
     }
@@ -95,11 +94,10 @@ bool TmpDirChecker::checkWritePermissions(const QString &dirPath) {
     return true;
 }
 
-bool TmpDirChecker::checkPath(QString &path)
-{
+bool TmpDirChecker::checkPath(QString &path) {
     QDir dir;
     dir.mkpath(path);
     return checkWritePermissions(path);
 }
 
-}   //namespace U2
+}    //namespace U2

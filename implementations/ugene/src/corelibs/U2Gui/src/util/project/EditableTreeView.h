@@ -22,19 +22,19 @@
 #ifndef _U2_EDITABLE_TREE_VIEW_H_
 #define _U2_EDITABLE_TREE_VIEW_H_
 
-#include <U2Core/global.h>
 #include <QTreeView>
 
+#include <U2Core/global.h>
 
 namespace U2 {
 
 class U2GUI_EXPORT EditableTreeView : public QTreeView {
 public:
-    EditableTreeView(QWidget* p);
+    EditableTreeView(QWidget *p);
 
     bool isEditingActive();
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_EDITABLE_TREE_VIEW_H_
+#endif    // _U2_EDITABLE_TREE_VIEW_H_

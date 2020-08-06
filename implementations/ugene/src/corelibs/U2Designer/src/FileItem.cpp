@@ -24,8 +24,7 @@
 namespace U2 {
 
 FileItem::FileItem(const QString &url, QListWidget *parent)
-: UrlItem(url, parent)
-{
+    : UrlItem(url, parent) {
     QIcon fileIcon = QIcon(QString(":U2Designer/images/file.png"));
     this->setIcon(fileIcon);
 }
@@ -34,4 +33,4 @@ void FileItem::accept(UrlItemVisitor *visitor) {
     visitor->visit(this);
 }
 
-} // U2
+}    // namespace U2

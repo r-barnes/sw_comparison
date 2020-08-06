@@ -22,9 +22,9 @@
 #ifndef _U2_EXTRACT_ASSEMBLY_REGION_DIALOG_FILLER_H_
 #define _U2_EXTRACT_ASSEMBLY_REGION_DIALOG_FILLER_H_
 
-#include "utils/GTUtilsDialog.h"
-
 #include <U2Core/U2Region.h>
+
+#include "utils/GTUtilsDialog.h"
 
 namespace U2 {
 using namespace HI;
@@ -40,6 +40,6 @@ private:
     QString format;
 };
 
-}
+}    // namespace U2
 
-#endif //guardian
+#endif    //guardian

@@ -52,7 +52,7 @@ private:
     QStringList warnings;
 };
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2
 
-#endif // _U2_ACTORSCRIPTVALIDATOR_H_
+#endif    // _U2_ACTORSCRIPTVALIDATOR_H_

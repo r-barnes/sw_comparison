@@ -22,10 +22,10 @@
 #ifndef _U2_MA_CONSENSUS_MISMATCH_CONTROLLER_H_
 #define _U2_MA_CONSENSUS_MISMATCH_CONTROLLER_H_
 
-#include "MSAEditorConsensusCache.h"
-
 #include <QBitArray>
 #include <QObject>
+
+#include "MSAEditorConsensusCache.h"
 
 class QAction;
 
@@ -36,9 +36,9 @@ class MaEditor;
 class MaConsensusMismatchController : public QObject {
     Q_OBJECT
 public:
-    MaConsensusMismatchController(QObject* p,
-                                  const QSharedPointer<MSAEditorConsensusCache>& consCache,
-                                  MaEditor* editor);
+    MaConsensusMismatchController(QObject *p,
+                                  const QSharedPointer<MSAEditorConsensusCache> &consCache,
+                                  MaEditor *editor);
     bool isMismatch(int pos) const;
 
     QAction *getPrevMismatchAction() const;
@@ -60,12 +60,12 @@ private:
 private:
     QBitArray mismatchCache;
     QSharedPointer<MSAEditorConsensusCache> consCache;
-    MaEditor* editor;
+    MaEditor *editor;
 
-    QAction* nextMismatch;
-    QAction* prevMismatch;
+    QAction *nextMismatch;
+    QAction *prevMismatch;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_MA_CONSENSUS_MISMATCH_CONTROLLER_H_
+#endif    // _U2_MA_CONSENSUS_MISMATCH_CONTROLLER_H_

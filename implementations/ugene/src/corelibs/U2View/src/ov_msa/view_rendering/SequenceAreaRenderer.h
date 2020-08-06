@@ -22,20 +22,20 @@
 #ifndef _U2_SEQUENCE_AREA_RENDERER_H_
 #define _U2_SEQUENCE_AREA_RENDERER_H_
 
+#include <QPen>
+
 #include <U2Core/DNAChromatogram.h>
 
 #include <U2View/MSAEditorSequenceArea.h>
-
-#include <QPen>
 
 namespace U2 {
 
 class SequenceAreaRenderer : public QObject {
     Q_OBJECT
 public:
-    SequenceAreaRenderer(MaEditorWgt *ui, MaEditorSequenceArea* seqAreaWgt);
+    SequenceAreaRenderer(MaEditorWgt *ui, MaEditorSequenceArea *seqAreaWgt);
 
-    bool drawContent(QPainter &painter, const U2Region& columns, const QList<int> &maRows, int xStart, int yStart) const;
+    bool drawContent(QPainter &painter, const U2Region &columns, const QList<int> &maRows, int xStart, int yStart) const;
 
     void drawSelection(QPainter &painter) const;
     void drawFocus(QPainter &painter) const;
@@ -45,14 +45,13 @@ protected:
     virtual int drawRow(QPainter &painter, const MultipleAlignment &ma, int maRow, const U2Region &columns, int xStart, int yStart) const;
 
     MaEditorWgt *ui;
-    MaEditorSequenceArea* seqAreaWgt;
+    MaEditorSequenceArea *seqAreaWgt;
 
     bool drawLeadingAndTrailingGaps;
 
     static const int SELECTION_SATURATION_INCREASE;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_SEQUENCE_AREA_RENDERER_H_
-
+#endif    // _U2_SEQUENCE_AREA_RENDERER_H_

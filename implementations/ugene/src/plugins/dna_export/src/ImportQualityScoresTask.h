@@ -34,52 +34,53 @@ class U2SequenceObject;
 
 class ImportQualityScoresConfig {
 public:
-    ImportQualityScoresConfig() : type(DNAQualityType_Sanger), format(DNAQuality::QUAL_FORMAT), createNewDocument(false) {}
-    QString             fileName;
-    DNAQualityType      type;
-    DNAQualityFormat    format;
-    bool                createNewDocument;
-    QString             dstFileName;
-
+    ImportQualityScoresConfig()
+        : type(DNAQualityType_Sanger), format(DNAQuality::QUAL_FORMAT), createNewDocument(false) {
+    }
+    QString fileName;
+    DNAQualityType type;
+    DNAQualityFormat format;
+    bool createNewDocument;
+    QString dstFileName;
 };
 
 class ReadQualityScoresTask : public Task {
     Q_OBJECT
 public:
-    ReadQualityScoresTask(const QString& fileName, DNAQualityType t, const DNAQualityFormat& f);
+    ReadQualityScoresTask(const QString &fileName, DNAQualityType t, const DNAQualityFormat &f);
 
     void run();
 
-    const QMap<QString,DNAQuality>& getResult() const { return result; }
+    const QMap<QString, DNAQuality> &getResult() const {
+        return result;
+    }
 
 private:
-    void recordQuality( int headerCounter );
+    void recordQuality(int headerCounter);
     bool checkRawData();
-    QString                     fileName;
-    DNAQualityType              type;
-    DNAQualityFormat            format;
-    QStringList                 headers;
-    QList<int>                  values;
-    QByteArray                  encodedQuality;
-    QMap<QString, DNAQuality>   result;
+    QString fileName;
+    DNAQualityType type;
+    DNAQualityFormat format;
+    QStringList headers;
+    QList<int> values;
+    QByteArray encodedQuality;
+    QMap<QString, DNAQuality> result;
 };
-
 
 class ImportPhredQualityScoresTask : public Task {
     Q_OBJECT
 public:
-    ImportPhredQualityScoresTask(const QList<U2SequenceObject*>& sequences, ImportQualityScoresConfig& config);
+    ImportPhredQualityScoresTask(const QList<U2SequenceObject *> &sequences, ImportQualityScoresConfig &config);
 
     void prepare();
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
 private:
-    ReadQualityScoresTask* readQualitiesTask;
+    ReadQualityScoresTask *readQualitiesTask;
     ImportQualityScoresConfig config;
-    QList<U2SequenceObject*> seqList;
+    QList<U2SequenceObject *> seqList;
 };
 
+}    // namespace U2
 
-} // namespace U2
-
-#endif // _U2_IMPORT_QUALITY_SCORES_TASK_H_
+#endif    // _U2_IMPORT_QUALITY_SCORES_TASK_H_

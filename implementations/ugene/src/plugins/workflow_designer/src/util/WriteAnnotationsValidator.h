@@ -22,8 +22,9 @@
 #ifndef _U2_WRITE_ANNOTATIONS_VALIDATOR_H_
 #define _U2_WRITE_ANNOTATIONS_VALIDATOR_H_
 
-#include <U2Lang/IntegralBusModel.h>
 #include <QCoreApplication>
+
+#include <U2Lang/IntegralBusModel.h>
 
 namespace U2 {
 namespace Workflow {
@@ -34,7 +35,7 @@ public:
     virtual bool validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &options) const;
 };
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2
 
-#endif // _U2_WRITE_ANNOTATIONS_VALIDATOR_H_
+#endif    // _U2_WRITE_ANNOTATIONS_VALIDATOR_H_

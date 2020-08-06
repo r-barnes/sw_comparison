@@ -38,7 +38,7 @@ public:
     ElementSelectorController(WizardController *wc, ElementSelectorWidget *widget, int labelSize);
     virtual ~ElementSelectorController();
 
-    virtual QWidget * createGUI(U2OpStatus &os);
+    virtual QWidget *createGUI(U2OpStatus &os);
 
 private:
     ElementSelectorWidget *widget;
@@ -48,6 +48,6 @@ private slots:
     void sl_valueChanged(const QVariant &newValue);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_ELEMENTSELECTORCONTROLLER_H_
+#endif    // _U2_ELEMENTSELECTORCONTROLLER_H_

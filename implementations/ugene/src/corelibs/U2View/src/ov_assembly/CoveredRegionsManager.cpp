@@ -27,56 +27,55 @@ namespace U2 {
 
 const int CoveredRegionsManager::DESIRED_REGION_LENGTH = 100;
 
-CoveredRegionsManager::CoveredRegionsManager(const U2Region & visibleRegion_, const U2AssemblyCoverageStat & coverageInfo) :
-visibleRegion(visibleRegion_)  {
+CoveredRegionsManager::CoveredRegionsManager(const U2Region &visibleRegion_, const U2AssemblyCoverageStat &coverageInfo)
+    : visibleRegion(visibleRegion_) {
     assert(!coverageInfo.empty());
     assert(!visibleRegion.isEmpty());
 
     //convert coverage info to covered regions
     //splitting visible region to coverageInfo.size() "covered" regions
-    double step = double(visibleRegion.length)/coverageInfo.size(); //precise length of the region
+    double step = double(visibleRegion.length) / coverageInfo.size();    //precise length of the region
     // But if regions are too small, reduce their number by joining
     int regionsToJoin = 1;
     int regionsCount = coverageInfo.size();
-    if(step < DESIRED_REGION_LENGTH) {
-        regionsToJoin = qRound(DESIRED_REGION_LENGTH/step);
+    if (step < DESIRED_REGION_LENGTH) {
+        regionsToJoin = qRound(DESIRED_REGION_LENGTH / step);
         regionsCount /= regionsToJoin;
         step *= regionsToJoin;
     }
-    for(int i = 0; i < regionsCount; ++i) {
+    for (int i = 0; i < regionsCount; ++i) {
         qint32 maxCoverage = 0;
-        for(int j = 0; j < regionsToJoin; ++j) {
-            maxCoverage = qMax(maxCoverage, coverageInfo[i*regionsToJoin + j]);
+        for (int j = 0; j < regionsToJoin; ++j) {
+            maxCoverage = qMax(maxCoverage, coverageInfo[i * regionsToJoin + j]);
         }
-        U2Region region(step*i, qint64(step));
+        U2Region region(step * i, qint64(step));
         CoveredRegion coveredRegion(region, maxCoverage);
         //coreLog.trace(QString("Assembly: adding covered region %1 - %2, coverage %3").arg(region.startPos).arg(region.endPos()).arg(maxCoverage));
 
         allRegions.push_back(coveredRegion);
     }
-
 };
 
 QList<CoveredRegion> CoveredRegionsManager::getCoveredRegions(qint64 coverageLevel) const {
     QList<CoveredRegion> coveredRegions;
-    foreach(CoveredRegion cr, allRegions) {
-        if(cr.coverage >= coverageLevel) {
+    foreach (CoveredRegion cr, allRegions) {
+        if (cr.coverage >= coverageLevel) {
             coveredRegions.push_back(cr);
         }
     }
     return coveredRegions;
 }
 
-QList<CoveredRegion> CoveredRegionsManager::getTopCoveredRegions(int topMax, qint64 coverageLevel/*=0*/) const {
+QList<CoveredRegion> CoveredRegionsManager::getTopCoveredRegions(int topMax, qint64 coverageLevel /*=0*/) const {
     assert(topMax > 0);
     QMultiMap<qint64, CoveredRegion> topCovered;
 
-    for(int i = 0; i < allRegions.size(); ++i) {
-        const CoveredRegion & cr = allRegions.at(i);
-        if(cr.coverage >= coverageLevel) {
+    for (int i = 0; i < allRegions.size(); ++i) {
+        const CoveredRegion &cr = allRegions.at(i);
+        if (cr.coverage >= coverageLevel) {
             topCovered.insert(cr.coverage, cr);
         }
-        if(topCovered.size() > topMax) {
+        if (topCovered.size() > topMax) {
             topCovered.erase(topCovered.begin());
         }
     }
@@ -88,4 +87,4 @@ QList<CoveredRegion> CoveredRegionsManager::getTopCoveredRegions(int topMax, qin
     return result;
 }
 
-}
+}    // namespace U2

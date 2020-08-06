@@ -32,10 +32,10 @@ class McaEditorWgt;
 class U2VIEW_EXPORT McaEditorNameList : public MaEditorNameList {
     Q_OBJECT
 public:
-    McaEditorNameList(McaEditorWgt* ui, QScrollBar* nhBar);
+    McaEditorNameList(McaEditorWgt *ui, QScrollBar *nhBar);
 
 protected slots:
-    void sl_selectionChanged(const MaEditorSelection& current, const MaEditorSelection &oldSelection);
+    void sl_selectionChanged(const MaEditorSelection &current, const MaEditorSelection &oldSelection);
 
 private slots:
     void sl_updateActions();
@@ -44,13 +44,12 @@ signals:
     void si_selectionChanged();
 
 protected:
-    void drawCollapsibleSequenceItem(QPainter &painter, int rowIndex, const QString &name, const QRect &rect,
-                                     bool isSelected, bool isCollapsed, bool isReference) override;
+    void drawCollapsibleSequenceItem(QPainter &painter, int rowIndex, const QString &name, const QRect &rect, bool isSelected, bool isCollapsed, bool isReference) override;
 
     void setSelection(int startSeq, int count) override;
 
 private:
-    McaEditor* getEditor() const;
+    McaEditor *getEditor() const;
     bool isRowReversed(int rowIndex) const;
     void drawText(QPainter &painter, const QString &text, const QRect &rect, bool selected) override;
     void drawArrow(QPainter &painter, bool isReversed, const QRectF &arrowRect);
@@ -71,6 +70,6 @@ private:
     static const QColor ARROW_REVERSE_COLOR;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MCA_EDITOR_NAME_LIST_H_
+#endif    // _U2_MCA_EDITOR_NAME_LIST_H_

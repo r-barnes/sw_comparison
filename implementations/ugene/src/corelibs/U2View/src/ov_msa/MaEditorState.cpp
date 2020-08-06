@@ -20,21 +20,22 @@
  */
 
 #include "MaEditorState.h"
+
+#include <U2Core/DNASequenceSelection.h>
+#include <U2Core/DocumentModel.h>
+#include <U2Core/MultipleSequenceAlignmentObject.h>
+
 #include "MSAEditor.h"
 #include "MaEditorFactory.h"
 #include "helpers/ScrollController.h"
 
-#include <U2Core/DocumentModel.h>
-#include <U2Core/MultipleSequenceAlignmentObject.h>
-#include <U2Core/DNASequenceSelection.h>
-
 namespace U2 {
 
-#define VIEW_ID     QString("view_id")
-#define MA_OBJ      QString("ma_obj_ref")
-#define FONT        QString("font")
-#define FIRST_POS   QString("first_pos")
-#define FIRST_SEQ   QString("first_seq")
+#define VIEW_ID QString("view_id")
+#define MA_OBJ QString("ma_obj_ref")
+#define FONT QString("font")
+#define FIRST_POS QString("first_pos")
+#define FIRST_SEQ QString("first_seq")
 #define ZOOM_FACTOR QString("zoom_factor")
 
 bool MaEditorState::isValid() const {
@@ -45,7 +46,7 @@ GObjectReference MaEditorState::getMaObjectRef() const {
     return stateData.contains(MA_OBJ) ? stateData[MA_OBJ].value<GObjectReference>() : GObjectReference();
 }
 
-void MaEditorState::setMaObjectRef(const GObjectReference& ref) {
+void MaEditorState::setMaObjectRef(const GObjectReference &ref) {
     stateData[MA_OBJ] = QVariant::fromValue<GObjectReference>(ref);
 }
 
@@ -58,7 +59,6 @@ QFont MaEditorState::getFont() const {
 }
 
 void MaEditorState::setFont(const QFont &f) {
-
     stateData[FONT] = f;
 }
 
@@ -98,18 +98,18 @@ void MaEditorState::setZoomFactor(double zoomFactor) {
     stateData[ZOOM_FACTOR] = zoomFactor;
 }
 
-QVariantMap MaEditorState::saveState(MaEditor* v) {
+QVariantMap MaEditorState::saveState(MaEditor *v) {
     MaEditorState ss;
-    ss.stateData[VIEW_ID]= v->getFactoryId();
+    ss.stateData[VIEW_ID] = v->getFactoryId();
 
-    MultipleAlignmentObject* maObj = v->getMaObject();
+    MultipleAlignmentObject *maObj = v->getMaObject();
     if (maObj) {
         ss.setMaObjectRef(GObjectReference(maObj));
     }
 
-    MaEditorWgt* wgt = v->getUI();
+    MaEditorWgt *wgt = v->getUI();
     SAFE_POINT(wgt != NULL, "MaEditorWgt is NULL", QVariantMap());
-    ScrollController* scrollController = wgt->getScrollController();
+    ScrollController *scrollController = wgt->getScrollController();
     SAFE_POINT(scrollController != NULL, "ScrollController is NULL", QVariantMap());
 
     int firstBase = scrollController->getFirstVisibleBase();
@@ -123,4 +123,4 @@ QVariantMap MaEditorState::saveState(MaEditor* v) {
     return ss.stateData;
 }
 
-} // namespace U2
+}    // namespace U2

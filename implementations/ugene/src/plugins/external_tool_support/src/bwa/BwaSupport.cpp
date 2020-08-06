@@ -19,9 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/AppContext.h>
-
 #include "BwaSupport.h"
+
+#include <U2Core/AppContext.h>
 
 namespace U2 {
 
@@ -30,27 +30,26 @@ const QString BwaSupport::ET_BWA_ID = "USUPP_BWA";
 
 // BwaSupport
 
-BwaSupport::BwaSupport(const QString& id, const QString& name, const QString &path):
-    ExternalTool(id, name, path)
-{
+BwaSupport::BwaSupport(const QString &id, const QString &name, const QString &path)
+    : ExternalTool(id, name, path) {
     if (AppContext::getMainWindow()) {
         icon = QIcon(":external_tool_support/images/cmdline.png");
         grayIcon = QIcon(":external_tool_support/images/cmdline_gray.png");
         warnIcon = QIcon(":external_tool_support/images/cmdline_warn.png");
     }
 #ifdef Q_OS_WIN
-    executableFileName="bwa.exe";
+    executableFileName = "bwa.exe";
 #else
-    #if defined(Q_OS_UNIX)
-    executableFileName="bwa";
-    #endif
+#    if defined(Q_OS_UNIX)
+    executableFileName = "bwa";
+#    endif
 #endif
-    validMessage="Program: bwa \\(alignment via Burrows-Wheeler transformation\\)";
-    description=tr("<i>Burrows-Wheeler Aligner (BWA)</i> is an efficient program "
-                   "that aligns relatively short nucleotide sequences "
-                   "against a long reference sequence such as the human genome.");
-    versionRegExp=QRegExp("Version: (\\d+\\.\\d+\\.\\d+-r\\d+)");
-    toolKitName="BWA";
+    validMessage = "Program: bwa \\(alignment via Burrows-Wheeler transformation\\)";
+    description = tr("<i>Burrows-Wheeler Aligner (BWA)</i> is an efficient program "
+                     "that aligns relatively short nucleotide sequences "
+                     "against a long reference sequence such as the human genome.");
+    versionRegExp = QRegExp("Version: (\\d+\\.\\d+\\.\\d+-r\\d+)");
+    toolKitName = "BWA";
 }
 
-} // namespace U2
+}    // namespace U2

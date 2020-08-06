@@ -19,7 +19,7 @@
  * MA 02110-1301, USA.
  */
 
-#include "CufflinksSupport.h"
+#include "CuffmergeWorker.h"
 
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/L10n.h>
@@ -38,7 +38,7 @@
 #include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/WorkflowMonitor.h>
 
-#include "CuffmergeWorker.h"
+#include "CufflinksSupport.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -56,51 +56,50 @@ const QString CUFFCOMPARE_TOOL_PATH("cuffcompare-tool-path");
 const QString EXT_TOOL_PATH("path");
 const QString TMP_DIR_PATH("tmp-dir");
 
-void CuffmergeWorkerFactory::init()
-{
+void CuffmergeWorkerFactory::init() {
     // Description of the element
     Descriptor cuffmergeDescriptor(ACTOR_ID,
-        CuffmergeWorker::tr("Merge Assemblies with Cuffmerge"),
-        CuffmergeWorker::tr("Cuffmerge merges together several assemblies."
-        " It also handles running Cuffcompare for you, and automatically"
-        " filters a number of transfrags that are probably artifacts."
-        " If you have a reference file available, you can provide it"
-        " to Cuffmerge in order to gracefully merge input (e.g. novel) isoforms and"
-        " known isoforms and maximize overall assembly quality."));
+                                   CuffmergeWorker::tr("Merge Assemblies with Cuffmerge"),
+                                   CuffmergeWorker::tr("Cuffmerge merges together several assemblies."
+                                                       " It also handles running Cuffcompare for you, and automatically"
+                                                       " filters a number of transfrags that are probably artifacts."
+                                                       " If you have a reference file available, you can provide it"
+                                                       " to Cuffmerge in order to gracefully merge input (e.g. novel) isoforms and"
+                                                       " known isoforms and maximize overall assembly quality."));
 
-    QList<Attribute*> attributes;
-    { // Define parameters of the element
+    QList<Attribute *> attributes;
+    {    // Define parameters of the element
         Descriptor outDir(OUT_DIR,
-            CuffmergeWorker::tr("Output folder"),
-            CuffmergeWorker::tr("The base name of output folder. It could be modified with a suffix."));
+                          CuffmergeWorker::tr("Output folder"),
+                          CuffmergeWorker::tr("The base name of output folder. It could be modified with a suffix."));
 
         Descriptor refAnnotation(REF_ANNOTATION,
-            CuffmergeWorker::tr("Reference annotation"),
-            CuffmergeWorker::tr("Merge the input assemblies together with"
-            " this reference annotation."));
+                                 CuffmergeWorker::tr("Reference annotation"),
+                                 CuffmergeWorker::tr("Merge the input assemblies together with"
+                                                     " this reference annotation."));
 
         Descriptor refSeq(REF_SEQ,
-            CuffmergeWorker::tr("Reference sequence"),
-            CuffmergeWorker::tr("The genomic DNA sequences for the reference."
-            " It is used to assist in classifying transfrags and excluding"
-            " artifacts (e.g. repeats). For example, transcripts consisting"
-            " mostly of lower-case bases are classified as repeats."));
+                          CuffmergeWorker::tr("Reference sequence"),
+                          CuffmergeWorker::tr("The genomic DNA sequences for the reference."
+                                              " It is used to assist in classifying transfrags and excluding"
+                                              " artifacts (e.g. repeats). For example, transcripts consisting"
+                                              " mostly of lower-case bases are classified as repeats."));
 
         Descriptor minIso(MIN_ISOFORM_FRACTION,
-            CuffmergeWorker::tr("Minimum isoform fraction"),
-            CuffmergeWorker::tr("Discard isoforms with abundance below this."));
+                          CuffmergeWorker::tr("Minimum isoform fraction"),
+                          CuffmergeWorker::tr("Discard isoforms with abundance below this."));
 
         Descriptor cuffcompareToolPath(CUFFCOMPARE_TOOL_PATH,
-            CuffmergeWorker::tr("Cuffcompare tool path"),
-            CuffmergeWorker::tr("The path to the Cuffcompare external tool in UGENE."));
+                                       CuffmergeWorker::tr("Cuffcompare tool path"),
+                                       CuffmergeWorker::tr("The path to the Cuffcompare external tool in UGENE."));
 
         Descriptor extToolPath(EXT_TOOL_PATH,
-            CuffmergeWorker::tr("Cuffmerge tool path"),
-            CuffmergeWorker::tr("The path to the Cuffmerge external tool in UGENE."));
+                               CuffmergeWorker::tr("Cuffmerge tool path"),
+                               CuffmergeWorker::tr("The path to the Cuffmerge external tool in UGENE."));
 
         Descriptor tmpDir(TMP_DIR_PATH,
-            CuffmergeWorker::tr("Temporary folder"),
-            CuffmergeWorker::tr("The folder for temporary files."));
+                          CuffmergeWorker::tr("Temporary folder"),
+                          CuffmergeWorker::tr("The folder for temporary files."));
 
         attributes << new Attribute(outDir, BaseTypes::STRING_TYPE(), true, "");
         attributes << new Attribute(refAnnotation, BaseTypes::STRING_TYPE(), false, QVariant(""));
@@ -111,14 +110,14 @@ void CuffmergeWorkerFactory::init()
         attributes << new Attribute(tmpDir, BaseTypes::STRING_TYPE(), true, QVariant(L10N::defaultStr()));
     }
 
-    QList<PortDescriptor*> portDescriptors;
-    { // Define ports of the element
+    QList<PortDescriptor *> portDescriptors;
+    {    // Define ports of the element
         Descriptor inDesc(BasePorts::IN_ANNOTATIONS_PORT_ID(),
-            CuffmergeWorker::tr("Set of annotations"),
-            CuffmergeWorker::tr("Annotations for merging"));
+                          CuffmergeWorker::tr("Set of annotations"),
+                          CuffmergeWorker::tr("Annotations for merging"));
         Descriptor outDesc(BasePorts::OUT_ANNOTATIONS_PORT_ID(),
-            CuffmergeWorker::tr("Set of annotations"),
-            CuffmergeWorker::tr("Merged annotations"));
+                           CuffmergeWorker::tr("Set of annotations"),
+                           CuffmergeWorker::tr("Merged annotations"));
 
         QMap<Descriptor, DataTypePtr> inTypeMap;
         inTypeMap[BaseSlots::ANNOTATION_TABLE_SLOT()] = BaseTypes::ANNOTATION_TABLE_LIST_TYPE();
@@ -133,12 +132,12 @@ void CuffmergeWorkerFactory::init()
     }
 
     // Create the actor prototype
-    ActorPrototype* proto = new IntegralBusActorPrototype(cuffmergeDescriptor,
-        portDescriptors,
-        attributes);
+    ActorPrototype *proto = new IntegralBusActorPrototype(cuffmergeDescriptor,
+                                                          portDescriptors,
+                                                          attributes);
 
     // Values range of some parameters
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
         delegates[OUT_DIR] = new URLDelegate("", "", false, true /*path*/);
         delegates[REF_ANNOTATION] = new URLDelegate(DialogUtils::prepareDocumentsFileFilter(true), "", false, false, false);
@@ -156,7 +155,7 @@ void CuffmergeWorkerFactory::init()
     proto->setEditor(new DelegateEditor(delegates));
     proto->setPrompter(new CuffmergePrompter());
 
-    { // external tools
+    {    // external tools
         proto->addExternalTool(CufflinksSupport::ET_CUFFMERGE_ID, EXT_TOOL_PATH);
         proto->addExternalTool(CufflinksSupport::ET_CUFFCOMPARE_ID, CUFFCOMPARE_TOOL_PATH);
     }
@@ -165,37 +164,30 @@ void CuffmergeWorkerFactory::init()
         BaseActorCategories::CATEGORY_RNA_SEQ(),
         proto);
 
-    DomainFactory* localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
+    DomainFactory *localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
     localDomain->registerEntry(new CuffmergeWorkerFactory());
 }
-
 
 /*****************************
  * CuffmergePrompter
  *****************************/
-CuffmergePrompter::CuffmergePrompter(Actor* parent)
-    : PrompterBase<CuffmergePrompter>(parent)
-{
+CuffmergePrompter::CuffmergePrompter(Actor *parent)
+    : PrompterBase<CuffmergePrompter>(parent) {
 }
 
-
-QString CuffmergePrompter::composeRichDoc()
-{
+QString CuffmergePrompter::composeRichDoc() {
     QString result = CuffmergeWorker::tr("Merges together supplied assemblies.");
 
     return result;
 }
 
-
 /*****************************
  * CuffmergeWorker
  *****************************/
-CuffmergeWorker::CuffmergeWorker(Actor* actor)
+CuffmergeWorker::CuffmergeWorker(Actor *actor)
     : BaseWorker(actor, false /*autoTransit*/),
       input(NULL),
-      output(NULL)
-{
-
+      output(NULL) {
 }
 
 void CuffmergeWorker::init() {
@@ -206,7 +198,7 @@ void CuffmergeWorker::init() {
     output = ports[BasePorts::OUT_ANNOTATIONS_PORT_ID()];
 }
 
-Task * CuffmergeWorker::tick() {
+Task *CuffmergeWorker::tick() {
     while (input->hasMessage()) {
         takeAnnotations();
     }
@@ -245,7 +237,7 @@ void CuffmergeWorker::cleanup() {
 void CuffmergeWorker::takeAnnotations() {
     Message m = getMessageAndSetupScriptValues(input);
     QVariantMap data = m.getData().toMap();
-    SAFE_POINT(data.contains(BaseSlots::ANNOTATION_TABLE_SLOT().getId()), "No annotations in a message",);
+    SAFE_POINT(data.contains(BaseSlots::ANNOTATION_TABLE_SLOT().getId()), "No annotations in a message", );
     QVariant annsVar = data[BaseSlots::ANNOTATION_TABLE_SLOT().getId()];
     annTableHandlers << StorageUtils::getAnnotationTableHandlers(annsVar);
 }
@@ -260,14 +252,14 @@ CuffmergeSettings CuffmergeWorker::scanParameters() const {
     return result;
 }
 
-Task * CuffmergeWorker::createCuffmergeTask() {
+Task *CuffmergeWorker::createCuffmergeTask() {
     CuffmergeSettings result = scanParameters();
     result.storage = context->getDataStorage();
     result.annotationTables = annTableHandlers;
-    CuffmergeSupportTask* supportTask = new CuffmergeSupportTask(result);
+    CuffmergeSupportTask *supportTask = new CuffmergeSupportTask(result);
     supportTask->addListeners(createLogListeners());
     return supportTask;
 }
 
-} // namespace LocalWorkflow
-} // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

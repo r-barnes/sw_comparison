@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "AnnotHighlightSettings.h"
+
 #include <U2Core/AnnotationSettings.h>
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/Theme.h>
@@ -26,12 +28,9 @@
 
 #include <U2Gui/LabelClickTransmitter.h>
 
-#include "AnnotHighlightSettings.h"
-
 namespace U2 {
 
-AnnotHighlightSettingsWidget::AnnotHighlightSettingsWidget(QWidget* parent)
-{
+AnnotHighlightSettingsWidget::AnnotHighlightSettingsWidget(QWidget *parent) {
     Q_UNUSED(parent);
     setupUi(this);
 
@@ -42,12 +41,11 @@ AnnotHighlightSettingsWidget::AnnotHighlightSettingsWidget(QWidget* parent)
     connect(checkShowHideAnnots, SIGNAL(stateChanged(int)), SLOT(sl_onShowHideChanged(int)));
     connect(checkShowOnTranslation, SIGNAL(stateChanged(int)), SLOT(sl_onShowOnTranslationChanged(int)));
     connect(checkVisualQualifier, SIGNAL(stateChanged(int)), SLOT(sl_onShowQualifierChanged(int)));
-    connect(editQualifiers, SIGNAL(textChanged(const QString&)), SLOT(sl_onEditQualifiersChanged(const QString&)));
+    connect(editQualifiers, SIGNAL(textChanged(const QString &)), SLOT(sl_onEditQualifiersChanged(const QString &)));
 }
 
-void AnnotHighlightSettingsWidget::setSettings(AnnotationSettings* annotSettings, bool disableShowTranslations)
-{
-    SAFE_POINT(0 != annotSettings, "Annotation settings equals to NULL!",);
+void AnnotHighlightSettingsWidget::setSettings(AnnotationSettings *annotSettings, bool disableShowTranslations) {
+    SAFE_POINT(0 != annotSettings, "Annotation settings equals to NULL!", );
 
     currentSettings = annotSettings;
 
@@ -62,30 +60,26 @@ void AnnotHighlightSettingsWidget::setSettings(AnnotationSettings* annotSettings
     checkShowOnTranslation->setDisabled(disableShowTranslations);
 }
 
-void AnnotHighlightSettingsWidget::sl_onShowHideChanged(int checkedState)
-{
-    SAFE_POINT(0 != currentSettings, "An annotation should always be selected!",);
+void AnnotHighlightSettingsWidget::sl_onShowHideChanged(int checkedState) {
+    SAFE_POINT(0 != currentSettings, "An annotation should always be selected!", );
     currentSettings->visible = (checkedState == Qt::Checked) ? true : false;
     emit si_annotSettingsChanged(currentSettings);
 }
 
-void AnnotHighlightSettingsWidget::sl_onShowOnTranslationChanged(int checkedState)
-{
-    SAFE_POINT(0 != currentSettings, "An annotation should always be selected!",);
+void AnnotHighlightSettingsWidget::sl_onShowOnTranslationChanged(int checkedState) {
+    SAFE_POINT(0 != currentSettings, "An annotation should always be selected!", );
     currentSettings->amino = (checkedState == Qt::Checked) ? true : false;
     emit si_annotSettingsChanged(currentSettings);
 }
 
-void AnnotHighlightSettingsWidget::sl_onShowQualifierChanged(int checkedState)
-{
-    SAFE_POINT(0 != currentSettings, "An annotation should always be selected!",);
+void AnnotHighlightSettingsWidget::sl_onShowQualifierChanged(int checkedState) {
+    SAFE_POINT(0 != currentSettings, "An annotation should always be selected!", );
     currentSettings->showNameQuals = (checkedState == Qt::Checked) ? true : false;
     emit si_annotSettingsChanged(currentSettings);
 }
 
-void AnnotHighlightSettingsWidget::sl_onEditQualifiersChanged(const QString& inputNameQuals)
-{
-    SAFE_POINT(0 != currentSettings, "An annotation should always be selected!",);
+void AnnotHighlightSettingsWidget::sl_onEditQualifiersChanged(const QString &inputNameQuals) {
+    SAFE_POINT(0 != currentSettings, "An annotation should always be selected!", );
     QStringList qualifierNames = inputNameQuals.split(',', QString::SkipEmptyParts);
 
     // Validate the input
@@ -102,17 +96,12 @@ void AnnotHighlightSettingsWidget::sl_onEditQualifiersChanged(const QString& inp
     emit si_annotSettingsChanged(currentSettings);
 }
 
-
-void AnnotHighlightSettingsWidget::setIncorrectState()
-{
+void AnnotHighlightSettingsWidget::setIncorrectState() {
     editQualifiers->setStyleSheet("background-color: " + Theme::errorColorTextFieldStr() + ";");
 }
 
-
-void AnnotHighlightSettingsWidget::setCorrectState()
-{
+void AnnotHighlightSettingsWidget::setCorrectState() {
     editQualifiers->setStyleSheet("background-color: white;");
 }
 
-
-} // namespace
+}    // namespace U2

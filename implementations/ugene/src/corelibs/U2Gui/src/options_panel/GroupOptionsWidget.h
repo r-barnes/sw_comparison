@@ -34,30 +34,45 @@ namespace U2 {
 /**
  * Widget with some options shown when a group header has been pressed.
  */
-class U2GUI_EXPORT GroupOptionsWidget : public QWidget
-{
+class U2GUI_EXPORT GroupOptionsWidget : public QWidget {
     Q_OBJECT
 public:
-    GroupOptionsWidget(const QString& groupId, const QString& title, const QString& documentationPage, QWidget* widget);
+    GroupOptionsWidget(const QString &groupId, const QString &title, const QString &documentationPage, QWidget *widget, QWidget *mainWidget);
 
-    inline const QString& getGroupId() { return groupId; }
-    inline static int getMinWidgetWidth() { return MIN_WIDGET_WIDTH; }
-    inline static int getMaxWidgetWidth() { return MAX_WIDGET_WIDTH; }
-    inline const QString& getTitle() { return title; }
+    const QString &getGroupId() const {
+        return groupId;
+    }
+
+    static int getMinWidgetWidth() {
+        return MIN_WIDGET_WIDTH;
+    }
+
+    static int getMaxWidgetWidth() {
+        return MAX_WIDGET_WIDTH;
+    }
+
+    const QString &getTitle() const {
+        return title;
+    }
+
+    QWidget *getMainWidget() const {
+        return mainWidget;
+    }
 
 private:
-    QString     groupId;
-    QWidget*    widget;
-    QLabel*     titleWidget;
-    QString     title;
+    QString groupId;
+    QWidget *widget;
+    QWidget *mainWidget;
+    QLabel *titleWidget;
+    QString title;
 
-    QVBoxLayout*        mainLayout;
+    QVBoxLayout *mainLayout;
 
     static const int TITLE_HEIGHT = 30;
-    static const int MIN_WIDGET_WIDTH = 240;
+    static const int MIN_WIDGET_WIDTH = 300;
     static const int MAX_WIDGET_WIDTH = 500;
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

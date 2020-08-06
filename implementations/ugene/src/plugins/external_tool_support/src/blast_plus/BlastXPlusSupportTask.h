@@ -29,9 +29,11 @@ namespace U2 {
 class BlastXPlusSupportTask : public BlastPlusSupportCommonTask {
     Q_OBJECT
 public:
-    BlastXPlusSupportTask(const BlastTaskSettings& settings):BlastPlusSupportCommonTask(settings){}
-    virtual ExternalToolRunTask* createBlastPlusTask();
+    BlastXPlusSupportTask(const BlastTaskSettings &settings)
+        : BlastPlusSupportCommonTask(settings) {
+    }
+    virtual ExternalToolRunTask *createBlastPlusTask();
 };
 
-}//namespace
-#endif // _U2_BLASTXPLUS_SUPPORT_TASK_H
+}    // namespace U2
+#endif    // _U2_BLASTXPLUS_SUPPORT_TASK_H

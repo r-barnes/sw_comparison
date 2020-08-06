@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportReadsDialog.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 
@@ -34,13 +36,12 @@
 #include <U2Gui/LastUsedDirHelper.h>
 #include <U2Gui/SaveDocumentController.h>
 
-#include "ExportReadsDialog.h"
-
 namespace U2 {
 
-ExportReadsDialog::ExportReadsDialog(QWidget * p, const QList<DocumentFormatId> & formats) : QDialog(p) {
+ExportReadsDialog::ExportReadsDialog(QWidget *p, const QList<DocumentFormatId> &formats)
+    : QDialog(p) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742512");
+    new HelpButton(this, buttonBox, "46500188");
 
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Export"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -79,4 +80,4 @@ ExportReadsDialogModel ExportReadsDialog::getModel() const {
     return ret;
 }
 
-} // U2
+}    // namespace U2

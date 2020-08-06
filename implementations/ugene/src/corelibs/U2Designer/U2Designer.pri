@@ -4,10 +4,11 @@ MODULE_ID=U2Designer
 include( ../../ugene_lib_common.pri )
 
 QT += svg
+
 useWebKit() {
     QT += webkitwidgets
 } else {
-    QT += webengine webenginewidgets
+    QT += webenginewidgets websockets webchannel
 }
 
 DEFINES+= QT_FATAL_ASSERT BUILDING_U2DESIGNER_DLL

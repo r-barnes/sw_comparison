@@ -19,6 +19,8 @@
 * MA 02110-1301, USA.
 */
 
+#include "LoadBamInfoTask.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/IOAdapterUtils.h>
 #include <U2Core/Task.h>
@@ -28,20 +30,18 @@
 #include "BaiReader.h"
 #include "Exception.h"
 #include "Index.h"
-#include "LoadBamInfoTask.h"
 #include "Reader.h"
 #include "SamReader.h"
 
 namespace U2 {
 namespace BAM {
 
-LoadInfoTask::LoadInfoTask(const GUrl& _sourceUrl, bool _sam)
-    : Task(tr("Load BAM info"), TaskFlag_None), sourceUrl(_sourceUrl), sam(_sam)
-{
+LoadInfoTask::LoadInfoTask(const GUrl &_sourceUrl, bool _sam)
+    : Task(tr("Load BAM info"), TaskFlag_None), sourceUrl(_sourceUrl), sam(_sam) {
     setSubtaskProgressWeight(0);
 }
 
-const GUrl& LoadInfoTask::getSourceUrl() const {
+const GUrl &LoadInfoTask::getSourceUrl() const {
     return sourceUrl;
 }
 
@@ -59,7 +59,7 @@ void LoadInfoTask::run() {
         IOAdapterFactory *factory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(baiUrl));
         ioIndexAdapter.reset(factory->createIOAdapter());
 
-        if(!ioAdapter->open(sourceUrl, IOAdapterMode_Read)) {
+        if (!ioAdapter->open(sourceUrl, IOAdapterMode_Read)) {
             stateInfo.setError(LoadInfoTask::tr("Can't open file '%1'").arg(sourceUrl.getURLString()));
             return;
         }
@@ -82,20 +82,20 @@ void LoadInfoTask::run() {
         if (!sam) {
             QScopedPointer<BaiReader> baiReader(new BaiReader(*ioIndexAdapter));
             Index index;
-            if(hasIndex) {
+            if (hasIndex) {
                 index = baiReader->readIndex();
-                if(index.getReferenceIndices().count() != reader->getHeader().getReferences().size()) {
+                if (index.getReferenceIndices().count() != reader->getHeader().getReferences().size()) {
                     throw Exception("Invalid index");
                 }
                 bamInfo.setIndex(index);
             }
         }
-    } catch(const Exception &ex) {
+    } catch (const Exception &ex) {
         stateInfo.setError(tr("Loading BAM info for file '%1' failed: %2")
-                           .arg(sourceUrl.getURLString())
-                           .arg(ex.getMessage()));
+                               .arg(sourceUrl.getURLString())
+                               .arg(ex.getMessage()));
     }
 }
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2

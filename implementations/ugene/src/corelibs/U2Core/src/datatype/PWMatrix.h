@@ -40,16 +40,16 @@ public:
     UniprobeInfo();
 
     //constructor from parsed data
-    UniprobeInfo(const QMap<QString, QString>& properties);
+    UniprobeInfo(const QMap<QString, QString> &properties);
 
     //constructor from raw data
-    UniprobeInfo(const QString& data);
+    UniprobeInfo(const QString &data);
 
-    QString getProperty (const QString& name) const;
+    QString getProperty(const QString &name) const;
 
     QMap<QString, QString> getProperties() const;
 
-    bool operator == (const UniprobeInfo &i1) const {
+    bool operator==(const UniprobeInfo &i1) const {
         return i1.properties == properties;
     }
 
@@ -61,41 +61,42 @@ private:
 //Also known as PSSM - Position score-specific matrix
 class U2CORE_EXPORT PWMatrix {
     friend class WMatrixSerializer;
+
 public:
     //create empty matrix
     PWMatrix();
 
     //create matrix from pre-counted data
-    PWMatrix(const QVarLengthArray<float> &matrix, const PWMatrixType& type);
+    PWMatrix(const QVarLengthArray<float> &matrix, const PWMatrixType &type);
 
     //get internal index of position in 1-dimensional array
-    int index (int row, int column) const;
+    int index(int row, int column) const;
 
     //get length of matrix row
-    int getLength () const;
+    int getLength() const;
 
     //get type of matrix: mono- or dinucleotide
     PWMatrixType getType() const;
 
     //get value at specified position
-    float getValue (int row, int column) const;
+    float getValue(int row, int column) const;
 
     //get sum of minimum values in each column
-    float getMinSum () const;
+    float getMinSum() const;
 
     //get sum of maximum values in each column
-    float getMaxSum () const;
+    float getMaxSum() const;
 
     //set UniPROBE info for matrix
-    void setInfo (const UniprobeInfo& info);
+    void setInfo(const UniprobeInfo &info);
 
     //get specified UniPROBE property
-    QString getProperty (const QString& propertyName) const;
+    QString getProperty(const QString &propertyName) const;
 
     //get all UniPROBE properties
     QMap<QString, QString> getProperties() const;
 
-    bool operator == (const PWMatrix &m1) const {
+    bool operator==(const PWMatrix &m1) const {
         //FIXME: for some reasons QT == operator didn't work for gcc compiler
         if (m1.data.size() != data.size())
             return false;
@@ -103,11 +104,11 @@ public:
             if (m1.data.at(i) != data.at(i))
                 return false;
         }
-        return  m1.length == length &&
-                m1.type == type &&
-                m1.minSum == minSum &&
-                m1.maxSum == maxSum &&
-                m1.info == info;
+        return m1.length == length &&
+               m1.type == type &&
+               m1.minSum == minSum &&
+               m1.maxSum == maxSum &&
+               m1.info == info;
     };
 
 private:
@@ -117,9 +118,8 @@ private:
     float minSum;
     float maxSum;
     UniprobeInfo info;
-
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

@@ -19,22 +19,22 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/DocumentModel.h>
-
 #include "ProjectTreeControllerModeSettings.h"
+
+#include <U2Core/DocumentModel.h>
 
 namespace U2 {
 
-bool PTCObjectRelationFilter::filter(GObject* o) const {
+bool PTCObjectRelationFilter::filter(GObject *o) const {
     return !o->hasObjectRelation(rel);
 }
 
-bool ProjectTreeControllerModeSettings::isDocumentShown(Document* doc) const {
+bool ProjectTreeControllerModeSettings::isDocumentShown(Document *doc) const {
     if (groupMode != ProjectTreeGroupMode_ByDocument && groupMode != ProjectTreeGroupMode_Flat) {
         return false;
     }
     if (groupMode == ProjectTreeGroupMode_Flat && (doc->isLoaded() || !doc->getObjects().isEmpty())) {
-        return false; // only unloaded docs without cached object info are shown in flat mode
+        return false;    // only unloaded docs without cached object info are shown in flat mode
     }
     if (excludeDocList.contains(doc)) {
         return false;
@@ -43,16 +43,16 @@ bool ProjectTreeControllerModeSettings::isDocumentShown(Document* doc) const {
     //filter by readonly state
     //TODO: revise readonly filters;
     //if the only lock is unloaded state lock -> not show it
-    bool isReadonly = ! (doc->getStateLocks().size() == 1 && doc->getDocumentModLock(DocumentModLock_UNLOADED_STATE)!=NULL);
+    bool isReadonly = !(doc->getStateLocks().size() == 1 && doc->getDocumentModLock(DocumentModLock_UNLOADED_STATE) != NULL);
     bool res = readOnlyFilter == TriState_Unknown ? true :
-        (readOnlyFilter == TriState_Yes && !isReadonly) || (readOnlyFilter == TriState_No && isReadonly);
+                                                    (readOnlyFilter == TriState_Yes && !isReadonly) || (readOnlyFilter == TriState_No && isReadonly);
     if (!res) {
         return false;
     }
 
     //filter by object types
     const QList<GObject *> &docObjs = doc->getObjects();
-    if (!docObjs.isEmpty()) { //ok we have mapping about document objects -> apply filter to the objects
+    if (!docObjs.isEmpty()) {    //ok we have mapping about document objects -> apply filter to the objects
         bool found = false;
         foreach (GObject *o, docObjs) {
             found = isObjectShown(o);
@@ -77,33 +77,31 @@ bool ProjectTreeControllerModeSettings::isDocumentShown(Document* doc) const {
     }
 
     // check custom filter
-    if (documentFilter!= NULL && documentFilter->filter(doc)) {
+    if (documentFilter != NULL && documentFilter->filter(doc)) {
         return false;
     }
 
     return true;
 }
 
-bool ProjectTreeControllerModeSettings::isObjectShown(GObject* o) const {
+bool ProjectTreeControllerModeSettings::isObjectShown(GObject *o) const {
     //filter by type
-    GObjectType t = o->isUnloaded()
-        ? qobject_cast<UnloadedObject*>(o)->getLoadedObjectType()
-        : o->getGObjectType();
+    GObjectType t = o->isUnloaded() ? qobject_cast<UnloadedObject *>(o)->getLoadedObjectType() : o->getGObjectType();
     bool res = isTypeShown(t);
     if (!res) {
         return false;
     }
     //filter by readonly flag
-    Document* doc = o->getDocument();
+    Document *doc = o->getDocument();
     //TODO: revise readonly filters -> use isStateLocked or hasReadonlyLock ?
     res = readOnlyFilter == TriState_Unknown ? true :
-         (readOnlyFilter == TriState_Yes && !doc->isStateLocked()) || (readOnlyFilter == TriState_No && doc->isStateLocked());
+                                               (readOnlyFilter == TriState_Yes && !doc->isStateLocked()) || (readOnlyFilter == TriState_No && doc->isStateLocked());
     if (!res) {
         return false;
     }
 
     //filter by exclude list
-    foreach(const QPointer<GObject>& p, excludeObjectList) {
+    foreach (const QPointer<GObject> &p, excludeObjectList) {
         if (p.isNull()) {
             continue;
         }
@@ -115,7 +113,7 @@ bool ProjectTreeControllerModeSettings::isObjectShown(GObject* o) const {
     //filter by internal obj properties
     if (!objectConstraints.isEmpty()) {
         res = true;
-        foreach(const GObjectConstraints* c, objectConstraints) {
+        foreach (const GObjectConstraints *c, objectConstraints) {
             if (o->getGObjectType() != c->objectType) {
                 continue;
             }
@@ -156,8 +154,7 @@ bool ProjectTreeControllerModeSettings::isTypeShown(GObjectType t) const {
 }
 
 bool ProjectTreeControllerModeSettings::isObjectFilterActive() const {
-    return !tokensToShow.isEmpty() || !objectConstraints.isEmpty() || !excludeObjectList.isEmpty()
-        || !objectTypesToShow.isEmpty() || NULL != objectFilter;
+    return !tokensToShow.isEmpty() || !objectConstraints.isEmpty() || !excludeObjectList.isEmpty() || !objectTypesToShow.isEmpty() || NULL != objectFilter;
 }
 
-} // U2
+}    // namespace U2

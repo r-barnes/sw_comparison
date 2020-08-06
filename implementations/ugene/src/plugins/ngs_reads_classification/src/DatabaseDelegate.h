@@ -59,7 +59,7 @@ private:
     const QString dataPathItemId;
 };
 
-}   // namesapce LocalWorkflow
-}   // namesapce U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_DATABASE_DELEGATE_H_
+#endif    // _U2_DATABASE_DELEGATE_H_

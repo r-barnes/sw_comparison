@@ -19,18 +19,18 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
-
 #include "WorkflowEnv.h"
+
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 namespace Workflow {
 
-WorkflowEnv* WorkflowEnv::instance = NULL;
+WorkflowEnv *WorkflowEnv::instance = NULL;
 
-bool WorkflowEnv::init(WorkflowEnv* env) {
+bool WorkflowEnv::init(WorkflowEnv *env) {
     if (instance) {
-        assert(0);// Duplicate initialization;
+        assert(0);    // Duplicate initialization;
         return false;
     }
 
@@ -46,10 +46,10 @@ bool WorkflowEnv::init(WorkflowEnv* env) {
     return true;
 }
 
-WorkflowEnv* WorkflowEnv::getInstance() {
+WorkflowEnv *WorkflowEnv::getInstance() {
     SAFE_POINT(NULL != instance, "WorkflowEnv instance is NULL", NULL);
     return instance;
 }
 
-}// namespace Workflow
-}//namespace U2
+}    // namespace Workflow
+}    //namespace U2

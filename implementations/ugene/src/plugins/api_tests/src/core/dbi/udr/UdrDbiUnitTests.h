@@ -22,11 +22,11 @@
 #ifndef _U2_UDR_DBI_UNIT_TESTS_H_
 #define _U2_UDR_DBI_UNIT_TESTS_H_
 
-#include "core/dbi/DbiTest.h"
-
 #include <unittest.h>
 
 #include <U2Core/UdrSchema.h>
+
+#include "core/dbi/DbiTest.h"
 
 namespace U2 {
 
@@ -36,7 +36,7 @@ class UdrTestData {
 public:
     static void shutdown();
 
-    static UdrDbi * getUdrDbi();
+    static UdrDbi *getUdrDbi();
 
     static U2DataId id1;
     static U2DataId id2;
@@ -91,7 +91,7 @@ DECLARE_TEST(UdrDbiUnitTests, getObjectRecords_1);
 /* getObjectRecords 2 */
 DECLARE_TEST(UdrDbiUnitTests, getObjectRecords_2);
 
-} // U2
+}    // namespace U2
 
 DECLARE_METATYPE(UdrDbiUnitTests, getRecord);
 DECLARE_METATYPE(UdrDbiUnitTests, addRecord_1);
@@ -111,4 +111,4 @@ DECLARE_METATYPE(UdrDbiUnitTests, createObject_removeObject);
 DECLARE_METATYPE(UdrDbiUnitTests, getObjectRecords_1);
 DECLARE_METATYPE(UdrDbiUnitTests, getObjectRecords_2);
 
-#endif // _U2_UDR_DBI_UNIT_TESTS_H_
+#endif    // _U2_UDR_DBI_UNIT_TESTS_H_

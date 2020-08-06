@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ConstructMoleculeDialog.h"
+
 #include <QMessageBox>
 #include <QScopedPointer>
 
@@ -38,7 +40,6 @@
 #include <U2Gui/ProjectTreeItemSelectorDialog.h>
 #include <U2Gui/SaveDocumentController.h>
 
-#include "ConstructMoleculeDialog.h"
 #include "CreateFragmentDialog.h"
 #include "EditFragmentDialog.h"
 
@@ -48,51 +49,50 @@
 
 namespace U2 {
 
-ConstructMoleculeDialog::ConstructMoleculeDialog(const QList<DNAFragment>& fragmentList, QWidget* p)
+ConstructMoleculeDialog::ConstructMoleculeDialog(const QList<DNAFragment> &fragmentList, QWidget *p)
     : QDialog(p),
-    fragments(fragmentList),
-    saveController(NULL) {
+      fragments(fragmentList),
+      saveController(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742570");
+    new HelpButton(this, buttonBox, "46501110");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
     tabWidget->setCurrentIndex(0);
     QString coreLengthStr = ConstructMoleculeDialog::tr("core length");
 
-    foreach(const DNAFragment& frag, fragments) {
+    foreach (const DNAFragment &frag, fragments) {
         QString fragItem = QString("%1 (%2) %3 [%4 - %5 bp]")
-            .arg(frag.getSequenceName())
-            .arg(frag.getSequenceDocName())
-            .arg(frag.getName())
-            .arg(coreLengthStr)
-            .arg(frag.getLength());
+                               .arg(frag.getSequenceName())
+                               .arg(frag.getSequenceDocName())
+                               .arg(frag.getName())
+                               .arg(coreLengthStr)
+                               .arg(frag.getLength());
         fragmentListWidget->addItem(fragItem);
     }
 
     initSaveController();
 
     fragmentListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    molConstructWidget->setColumnWidth(1, molConstructWidget->width()*0.5);
+    molConstructWidget->setColumnWidth(1, molConstructWidget->width() * 0.5);
 
-    connect(fragmentListWidget, SIGNAL( itemDoubleClicked ( QListWidgetItem* ) ),  SLOT(sl_onTakeButtonClicked()));
+    connect(fragmentListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem *)), SLOT(sl_onTakeButtonClicked()));
     connect(takeButton, SIGNAL(clicked()), SLOT(sl_onTakeButtonClicked()));
     connect(takeAllButton, SIGNAL(clicked()), SLOT(sl_onTakeAllButtonClicked()));
     connect(fromProjectButton, SIGNAL(clicked()), SLOT(sl_onAddFromProjectButtonClicked()));
     connect(clearButton, SIGNAL(clicked()), SLOT(sl_onClearButtonClicked()));
-    connect(upButton, SIGNAL(clicked()), SLOT(sl_onUpButtonClicked()) );
+    connect(upButton, SIGNAL(clicked()), SLOT(sl_onUpButtonClicked()));
     connect(downButton, SIGNAL(clicked()), SLOT(sl_onDownButtonClicked()));
     connect(removeButton, SIGNAL(clicked()), SLOT(sl_onRemoveButtonClicked()));
     connect(makeCircularBox, SIGNAL(clicked()), SLOT(sl_makeCircularBoxClicked()));
-    connect(makeBluntBox, SIGNAL(clicked()), SLOT(sl_forceBluntBoxClicked()) );
+    connect(makeBluntBox, SIGNAL(clicked()), SLOT(sl_forceBluntBoxClicked()));
     connect(editFragmentButton, SIGNAL(clicked()), SLOT(sl_onEditFragmentButtonClicked()));
-    connect(molConstructWidget, SIGNAL(	itemClicked ( QTreeWidgetItem *, int)), SLOT(sl_onItemClicked(QTreeWidgetItem *, int)) );
+    connect(molConstructWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)), SLOT(sl_onItemClicked(QTreeWidgetItem *, int)));
 
     molConstructWidget->installEventFilter(this);
 }
 
-void ConstructMoleculeDialog::accept()
-{
+void ConstructMoleculeDialog::accept() {
     if (selected.isEmpty()) {
         QMessageBox::information(this, windowTitle(), tr("No fragments are selected!\n Please construct molecule from available fragments."));
         return;
@@ -100,15 +100,15 @@ void ConstructMoleculeDialog::accept()
 
     QList<DNAFragment> toLigate;
     qint64 resultSequenceSize = 0;
-    foreach(int idx, selected) {
-        const DNAFragment& fragment = fragments[idx];
-        foreach (const U2Region& region, fragment.getFragmentRegions()) {
+    foreach (int idx, selected) {
+        const DNAFragment &fragment = fragments[idx];
+        foreach (const U2Region &region, fragment.getFragmentRegions()) {
             resultSequenceSize += region.length;
         }
         toLigate.append(fragment);
     }
     if (AppResourcePool::is32BitBuild() && resultSequenceSize > MAX_MOLECULE_SEQUENCE_LENGTH_32_BIT_OS) {
-        QMessageBox::warning(this->window(), L10N::warningTitle(),  tr("Selected region is too large to proceed!"));
+        QMessageBox::warning(this->window(), L10N::warningTitle(), tr("Selected region is too large to proceed!"));
         return;
     }
 
@@ -120,17 +120,16 @@ void ConstructMoleculeDialog::accept()
     cfg.saveDoc = saveImmediatlyBox->isChecked();
     cfg.annotateFragments = annotateFragmentsBox->isChecked();
 
-    Task* task = new LigateFragmentsTask(toLigate, cfg);
+    Task *task = new LigateFragmentsTask(toLigate, cfg);
     AppContext::getTaskScheduler()->registerTopLevelTask(task);
 
     QDialog::accept();
 }
 
-void ConstructMoleculeDialog::sl_onTakeButtonClicked()
-{
-    QList<QListWidgetItem*> items = fragmentListWidget->selectedItems();
+void ConstructMoleculeDialog::sl_onTakeButtonClicked() {
+    QList<QListWidgetItem *> items = fragmentListWidget->selectedItems();
 
-    foreach (QListWidgetItem* item, items) {
+    foreach (QListWidgetItem *item, items) {
         int curRow = fragmentListWidget->row(item);
         if (!selected.contains(curRow)) {
             selected.append(curRow);
@@ -138,11 +137,9 @@ void ConstructMoleculeDialog::sl_onTakeButtonClicked()
     }
 
     update();
-
 }
 
-void ConstructMoleculeDialog::sl_onTakeAllButtonClicked()
-{
+void ConstructMoleculeDialog::sl_onTakeAllButtonClicked() {
     selected.clear();
     int count = fragmentListWidget->count();
 
@@ -152,15 +149,13 @@ void ConstructMoleculeDialog::sl_onTakeAllButtonClicked()
     update();
 }
 
-void ConstructMoleculeDialog::sl_onClearButtonClicked()
-{
+void ConstructMoleculeDialog::sl_onClearButtonClicked() {
     selected.clear();
     update();
 }
 
-void ConstructMoleculeDialog::sl_onUpButtonClicked()
-{
-    QTreeWidgetItem* item = molConstructWidget->currentItem();
+void ConstructMoleculeDialog::sl_onUpButtonClicked() {
+    QTreeWidgetItem *item = molConstructWidget->currentItem();
     if (item == NULL || selected.size() == 1) {
         return;
     }
@@ -173,12 +168,10 @@ void ConstructMoleculeDialog::sl_onUpButtonClicked()
     update();
 
     molConstructWidget->setCurrentItem(molConstructWidget->topLevelItem(newIndex), true);
-
 }
 
-void ConstructMoleculeDialog::sl_onDownButtonClicked()
-{
-    QTreeWidgetItem* item = molConstructWidget->currentItem();
+void ConstructMoleculeDialog::sl_onDownButtonClicked() {
+    QTreeWidgetItem *item = molConstructWidget->currentItem();
     if (item == NULL || selected.size() == 1) {
         return;
     }
@@ -191,12 +184,10 @@ void ConstructMoleculeDialog::sl_onDownButtonClicked()
     update();
 
     molConstructWidget->setCurrentItem(molConstructWidget->topLevelItem(newIndex), true);
-
 }
 
-void ConstructMoleculeDialog::sl_onRemoveButtonClicked()
-{
-    QTreeWidgetItem* item = molConstructWidget->currentItem();
+void ConstructMoleculeDialog::sl_onRemoveButtonClicked() {
+    QTreeWidgetItem *item = molConstructWidget->currentItem();
     if (item == NULL) {
         return;
     }
@@ -206,29 +197,24 @@ void ConstructMoleculeDialog::sl_onRemoveButtonClicked()
     update();
 }
 
-void ConstructMoleculeDialog::update()
-{
+void ConstructMoleculeDialog::update() {
     molConstructWidget->clear();
 
-    foreach (int index, selected ) {
-        QListWidgetItem* item = fragmentListWidget->item(index);
+    foreach (int index, selected) {
+        QListWidgetItem *item = fragmentListWidget->item(index);
         assert(item != NULL);
         if (item != NULL) {
-            QTreeWidgetItem* newItem = new QTreeWidgetItem(molConstructWidget);
-            const DNAFragment& fragment = fragments.at(index);
-            if (fragment.getLeftTerminus().type == OVERHANG_TYPE_STICKY ){
-                newItem->setText(0, QString("%1 (%2)")
-                    .arg(QString(fragment.getLeftTerminus().overhang))
-                    .arg(fragment.getLeftTerminus().isDirect ? tr("Fwd") : tr("Rev")) );
+            QTreeWidgetItem *newItem = new QTreeWidgetItem(molConstructWidget);
+            const DNAFragment &fragment = fragments.at(index);
+            if (fragment.getLeftTerminus().type == OVERHANG_TYPE_STICKY) {
+                newItem->setText(0, QString("%1 (%2)").arg(QString(fragment.getLeftTerminus().overhang)).arg(fragment.getLeftTerminus().isDirect ? tr("Fwd") : tr("Rev")));
             } else {
                 newItem->setText(0, tr("Blunt"));
             }
             newItem->setToolTip(0, tr("Left end"));
             newItem->setText(1, item->text());
-            if (fragment.getRightTerminus().type == OVERHANG_TYPE_STICKY ) {
-                newItem->setText(2, QString("%1 (%2)")
-                    .arg( QString(fragment.getRightTerminus().overhang) )
-                    .arg( fragment.getRightTerminus().isDirect ? tr("Fwd") : tr("Rev") ) );
+            if (fragment.getRightTerminus().type == OVERHANG_TYPE_STICKY) {
+                newItem->setText(2, QString("%1 (%2)").arg(QString(fragment.getRightTerminus().overhang)).arg(fragment.getRightTerminus().isDirect ? tr("Fwd") : tr("Rev")));
             } else {
                 newItem->setText(2, tr("Blunt"));
             }
@@ -244,47 +230,44 @@ void ConstructMoleculeDialog::update()
     bool checkTermsConsistency = !makeBluntBox->isChecked();
 
     if (checkTermsConsistency) {
-        QTreeWidgetItem* prevItem = NULL;
+        QTreeWidgetItem *prevItem = NULL;
         int count = molConstructWidget->topLevelItemCount();
-        for(int i = 0; i < count; ++i) {
-            QTreeWidgetItem* item = molConstructWidget->topLevelItem(i);
+        for (int i = 0; i < count; ++i) {
+            QTreeWidgetItem *item = molConstructWidget->topLevelItem(i);
             if (prevItem != NULL) {
-
                 QStringList prevItems = prevItem->text(2).split(" ");
                 QString prevOverhang = prevItems.at(0);
                 QString prevStrand = prevItems.count() > 1 ? prevItems.at(1) : QString();
                 QStringList items = item->text(0).split(" ");
                 QString overhang = items.at(0);
-                QString strand =  items.count() > 1 ? items.at(1) : QString();
+                QString strand = items.count() > 1 ? items.at(1) : QString();
 
-                QColor color = ( prevOverhang == overhang && strand != prevStrand ) ? Qt::green : Qt::red;
+                QColor color = (prevOverhang == overhang && strand != prevStrand) ? Qt::green : Qt::red;
 
                 prevItem->setTextColor(2, color);
                 item->setTextColor(0, color);
             }
             prevItem = item;
-
         }
         if (makeCircularBox->isChecked() && count > 0) {
-            QTreeWidgetItem* first = molConstructWidget->topLevelItem(0);
-            QTreeWidgetItem* last = molConstructWidget->topLevelItem(count - 1);
+            QTreeWidgetItem *first = molConstructWidget->topLevelItem(0);
+            QTreeWidgetItem *last = molConstructWidget->topLevelItem(count - 1);
 
             QStringList firstItems = first->text(0).split(" ");
             QStringList lastItems = last->text(2).split(" ");
 
-            QString  firstOverhang = firstItems.count() > 0 ? firstItems.at(0) : QString();
+            QString firstOverhang = firstItems.count() > 0 ? firstItems.at(0) : QString();
             QString lastOverhang = lastItems.count() > 0 ? lastItems.at(0) : QString();
 
             QString firstStrand = firstItems.count() > 1 ? firstItems.at(1) : QString();
             QString lastStrand = lastItems.count() > 1 ? lastItems.at(1) : QString();
 
-            QColor color = ( firstOverhang == lastOverhang && (firstStrand != lastStrand || (firstStrand.isEmpty() && lastStrand.isEmpty())) ) ? Qt::green : Qt::red;
+            QColor color = (firstOverhang == lastOverhang && (firstStrand != lastStrand || (firstStrand.isEmpty() && lastStrand.isEmpty()))) ? Qt::green : Qt::red;
 
             first->setTextColor(0, color);
             last->setTextColor(2, color);
         }
     }
-
 }
 
 void ConstructMoleculeDialog::initSaveController() {
@@ -304,25 +287,22 @@ void ConstructMoleculeDialog::initSaveController() {
     saveController = new SaveDocumentController(config, formats, this);
 }
 
-void ConstructMoleculeDialog::sl_makeCircularBoxClicked()
-{
+void ConstructMoleculeDialog::sl_makeCircularBoxClicked() {
     update();
 }
 
-void ConstructMoleculeDialog::sl_forceBluntBoxClicked()
-{
+void ConstructMoleculeDialog::sl_forceBluntBoxClicked() {
     update();
 }
 
-void ConstructMoleculeDialog::sl_onEditFragmentButtonClicked()
-{
-    QTreeWidgetItem* item = molConstructWidget->currentItem();
+void ConstructMoleculeDialog::sl_onEditFragmentButtonClicked() {
+    QTreeWidgetItem *item = molConstructWidget->currentItem();
     if (item == NULL) {
         return;
     }
 
     int idx = molConstructWidget->indexOfTopLevelItem(item);
-    DNAFragment& fragment = fragments[ selected[idx] ];
+    DNAFragment &fragment = fragments[selected[idx]];
 
     QObjectScopedPointer<EditFragmentDialog> dlg = new EditFragmentDialog(fragment, this);
     dlg->exec();
@@ -335,23 +315,20 @@ void ConstructMoleculeDialog::sl_onEditFragmentButtonClicked()
     update();
 }
 
-bool ConstructMoleculeDialog::eventFilter( QObject* obj , QEvent* event )
-{
+bool ConstructMoleculeDialog::eventFilter(QObject *obj, QEvent *event) {
     if (obj == molConstructWidget && event->type() == QEvent::FocusOut) {
         molConstructWidget->clearSelection();
     }
 
     return QDialog::eventFilter(obj, event);
-
 }
 
-void ConstructMoleculeDialog::sl_onItemClicked( QTreeWidgetItem * item, int column )
-{
+void ConstructMoleculeDialog::sl_onItemClicked(QTreeWidgetItem *item, int column) {
     if (column == 3) {
         int idx = molConstructWidget->indexOfTopLevelItem(item);
-        DNAFragment& fragment = fragments[ selected[idx] ];
+        DNAFragment &fragment = fragments[selected[idx]];
         if (item->checkState(column) == Qt::Checked) {
-           fragment.setInverted(true);
+            fragment.setInverted(true);
         } else {
             fragment.setInverted(false);
         }
@@ -359,22 +336,21 @@ void ConstructMoleculeDialog::sl_onItemClicked( QTreeWidgetItem * item, int colu
     }
 }
 
-void ConstructMoleculeDialog::sl_onAddFromProjectButtonClicked()
-{
+void ConstructMoleculeDialog::sl_onAddFromProjectButtonClicked() {
     ProjectTreeControllerModeSettings settings;
     settings.objectTypesToShow.insert(GObjectTypes::SEQUENCE);
     QScopedPointer<U2SequenceObjectConstraints> seqConstraints(new U2SequenceObjectConstraints());
     seqConstraints->alphabetType = DNAAlphabet_NUCL;
     settings.objectConstraints.insert(seqConstraints.data());
 
-    QList<GObject*> objects = ProjectTreeItemSelectorDialog::selectObjects(settings,this);
+    QList<GObject *> objects = ProjectTreeItemSelectorDialog::selectObjects(settings, this);
 
     if (!objects.isEmpty()) {
-        foreach(GObject* obj, objects) {
+        foreach (GObject *obj, objects) {
             if (obj->isUnloaded()) {
                 continue;
             }
-            U2SequenceObject* seqObj = qobject_cast<U2SequenceObject*>(obj);
+            U2SequenceObject *seqObj = qobject_cast<U2SequenceObject *>(obj);
 
             if (seqObj) {
                 QObjectScopedPointer<CreateFragmentDialog> dlg = new CreateFragmentDialog(seqObj, U2Region(0, seqObj->getSequenceLength()), this);
@@ -383,9 +359,7 @@ void ConstructMoleculeDialog::sl_onAddFromProjectButtonClicked()
 
                 if (dlg->result() == QDialog::Accepted) {
                     DNAFragment frag = dlg->getFragment();
-                        QString fragItem = QString("%1 (%2) %3").arg(frag.getSequenceName())
-                        .arg(frag.getSequenceDocName())
-                        .arg(frag.getName());
+                    QString fragItem = QString("%1 (%2) %3").arg(frag.getSequenceName()).arg(frag.getSequenceDocName()).arg(frag.getName());
                     fragments.append(frag);
                     fragmentListWidget->addItem(fragItem);
                     break;
@@ -395,5 +369,4 @@ void ConstructMoleculeDialog::sl_onAddFromProjectButtonClicked()
     }
 }
 
-
-} // U2
+}    // namespace U2

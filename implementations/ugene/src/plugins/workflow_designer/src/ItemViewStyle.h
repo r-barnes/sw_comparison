@@ -22,10 +22,10 @@
 #ifndef _U2_WORKFLOW_ITEM_STYLE_H_
 #define _U2_WORKFLOW_ITEM_STYLE_H_
 
-#include <QTextDocument>
 #include <QAction>
-#include <QGraphicsScene>
 #include <QGraphicsItem>
+#include <QGraphicsScene>
+#include <QTextDocument>
 
 class QDomElement;
 
@@ -39,28 +39,45 @@ const qreal A = 8;
 class ItemViewStyle : public QGraphicsObject {
     Q_OBJECT
 public:
-    ItemViewStyle(WorkflowProcessItem* p, const QString& id);
-    QString getId() const {return id;}
+    ItemViewStyle(WorkflowProcessItem *p, const QString &id);
+    QString getId() const {
+        return id;
+    }
 
-    virtual void refresh() {}
-    virtual bool sceneEventFilter(QGraphicsItem *, QEvent *) {return false;}
-    virtual QList<QAction*> getContextMenuActions() const {return (QList<QAction*>() << bgColorAction << fontAction);}
-    virtual void saveState(QDomElement& ) const;
-    virtual void loadState(QDomElement& );
+    virtual void refresh() {
+    }
+    virtual bool sceneEventFilter(QGraphicsItem *, QEvent *) {
+        return false;
+    }
+    virtual QList<QAction *> getContextMenuActions() const {
+        return (QList<QAction *>() << bgColorAction << fontAction);
+    }
+    virtual void saveState(QDomElement &) const;
+    virtual void loadState(QDomElement &);
     virtual QColor defaultColor() const = 0;
-    QColor getBgColor() const {return bgColor;}
-    void setBgColor(const QColor & color) {bgColor = color;}
-    QFont defaultFont() const {return defFont;}
-    void setDefaultFont(const QFont & font) { defFont = font; }
-    WorkflowProcessItem const* getOwner() const { return owner; }
+    QColor getBgColor() const {
+        return bgColor;
+    }
+    void setBgColor(const QColor &color) {
+        bgColor = color;
+    }
+    QFont defaultFont() const {
+        return defFont;
+    }
+    void setDefaultFont(const QFont &font) {
+        defFont = font;
+    }
+    WorkflowProcessItem const *getOwner() const {
+        return owner;
+    }
 
 protected:
-    WorkflowProcessItem* owner;
+    WorkflowProcessItem *owner;
     QColor bgColor;
     QFont defFont;
 
-    QAction* bgColorAction;
-    QAction* fontAction;
+    QAction *bgColorAction;
+    QAction *fontAction;
     QString id;
 
 private slots:
@@ -70,11 +87,11 @@ private slots:
 
 class SimpleProcStyle : public ItemViewStyle {
 public:
-    SimpleProcStyle(WorkflowProcessItem* pit);
+    SimpleProcStyle(WorkflowProcessItem *pit);
     QRectF boundingRect(void) const;
     QPainterPath shape() const;
     QColor defaultColor() const;
-    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 };
 
 class DescriptionItem;
@@ -82,51 +99,63 @@ class DescriptionItem;
 class ExtendedProcStyle : public ItemViewStyle {
     Q_OBJECT
 public:
-    ExtendedProcStyle(WorkflowProcessItem* pit);
-    QRectF boundingRect(void) const {return bounds;}
-    QPainterPath shape () const;
+    ExtendedProcStyle(WorkflowProcessItem *pit);
+    QRectF boundingRect(void) const {
+        return bounds;
+    }
+    QPainterPath shape() const;
     QColor defaultColor() const;
-    void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     virtual void refresh();
-    virtual bool sceneEventFilter(QGraphicsItem * watched, QEvent * event);
-    virtual QList<QAction*> getContextMenuActions() const;
-    virtual void saveState(QDomElement& ) const;
-    virtual void loadState(QDomElement& );
+    virtual bool sceneEventFilter(QGraphicsItem *watched, QEvent *event);
+    virtual QList<QAction *> getContextMenuActions() const;
+    virtual void saveState(QDomElement &) const;
+    virtual void loadState(QDomElement &);
 
-    bool isAutoResized() const {return autoResize;}
-    void setFixedBounds(const QRectF& b);
+    bool isAutoResized() const {
+        return autoResize;
+    }
+    void setFixedBounds(const QRectF &b);
 
-    bool updateCursor(const QPointF& pos);
+    bool updateCursor(const QPointF &pos);
 
 signals:
-    void linkActivated(const QString&);
+    void linkActivated(const QString &);
 
 private slots:
     void setAutoResizeEnabled(bool b);
-    void linkHovered(const QString&);
+    void linkHovered(const QString &);
 
 private:
-    QTextDocument* doc;
+    QTextDocument *doc;
     QRectF bounds;
     bool autoResize;
 
-    enum ResizeMode {NoResize = 0, RightResize = 1, LeftResize = 2, BottomResize = 4, TopResize = 8,
-        RBResize = RightResize + BottomResize, RTResize = RightResize + TopResize,
-        LBResize = LeftResize + BottomResize, LTResize = LeftResize + TopResize};
+    enum ResizeMode { NoResize = 0,
+                      RightResize = 1,
+                      LeftResize = 2,
+                      BottomResize = 4,
+                      TopResize = 8,
+                      RBResize = RightResize + BottomResize,
+                      RTResize = RightResize + TopResize,
+                      LBResize = LeftResize + BottomResize,
+                      LTResize = LeftResize + TopResize };
     int resizing;
 
-    QAction* resizeModeAction;
-    DescriptionItem* desc;
+    QAction *resizeModeAction;
+    DescriptionItem *desc;
     friend class DescriptionItem;
 };
 
 class HintItem : public QGraphicsTextItem {
 public:
-    HintItem(const QString & text, QGraphicsItem * parent);
+    HintItem(const QString &text, QGraphicsItem *parent);
+
 protected:
-    virtual QVariant itemChange ( GraphicsItemChange change, const QVariant & value );
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
 private:
     QPointF initPos;
     bool dragging;
@@ -135,8 +164,9 @@ private:
 class DescriptionItem : public QGraphicsTextItem {
     Q_OBJECT
 public:
-    DescriptionItem(ExtendedProcStyle* p);
+    DescriptionItem(ExtendedProcStyle *p);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
 protected:
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -144,6 +174,6 @@ protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

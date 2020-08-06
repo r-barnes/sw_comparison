@@ -32,23 +32,26 @@ namespace U2 {
 class U2CORE_EXPORT GCounter : public QObject {
     Q_OBJECT
 public:
-    GCounter(const QString& name, const QString& suffix, double scale = 1);
+    GCounter(const QString &name, const QString &suffix, double scale = 1);
     virtual ~GCounter();
 
-    static const QList<GCounter*>& allCounters() {return getCounters();}
+    static const QList<GCounter *> &allCounters() {
+        return getCounters();
+    }
     static GCounter *getCounter(const QString &name, const QString &suffix);
 
     QString name;
     QString suffix;
-    qint64  totalCount;
-    double  counterScale;
-    bool    destroyMe; //true if counter should be deleted by counter list
+    qint64 totalCount;
+    double counterScale;
+    bool destroyMe;    //true if counter should be deleted by counter list
 
-    double scaledTotal() const {return totalCount / counterScale;}
+    double scaledTotal() const {
+        return totalCount / counterScale;
+    }
 
 protected:
-
-    static QList<GCounter*>& getCounters();
+    static QList<GCounter *> &getCounters();
 };
 
 class GCounterList {
@@ -58,23 +61,27 @@ public:
     QList<GCounter *> list;
 };
 
-
 //Marks that counter will be reported by Shtirlitz
 //TODO: implement GPerformanceCounter for plugin_perf_monitor?
 class U2CORE_EXPORT GReportableCounter : public GCounter {
     Q_OBJECT
 public:
-    GReportableCounter(const QString& name, const QString& suffix, double scale = 1);
+    GReportableCounter(const QString &name, const QString &suffix, double scale = 1);
 };
-
 
 class U2CORE_EXPORT SimpleEventCounter {
 public:
-    SimpleEventCounter(GCounter* tc) : totalCounter(tc), eventCount(1){ assert(tc!=NULL);}
-    virtual ~SimpleEventCounter() {totalCounter->totalCount+=eventCount;}
+    SimpleEventCounter(GCounter *tc)
+        : totalCounter(tc), eventCount(1) {
+        assert(tc != NULL);
+    }
+    virtual ~SimpleEventCounter() {
+        totalCounter->totalCount += eventCount;
+    }
+
 private:
-    GCounter*   totalCounter;
-    qint64      eventCount;
+    GCounter *totalCounter;
+    qint64 eventCount;
 };
 
 #define GCOUNTER(cvar, tvar, name) \
@@ -86,14 +93,14 @@ private:
     if (NULL == cvar) { \
         cvar = new GReportableCounter(name, suffix, 1); \
         cvar->destroyMe = true; \
-            } \
+    } \
     SimpleEventCounter tvar(cvar)
 
 #define GRUNTIME_NAMED_CONDITION_COUNTER(cvar, tvar, condition, name, suffix) \
-    if(condition) {\
+    if (condition) { \
         GRUNTIME_NAMED_COUNTER(cvar, tvar, name, suffix); \
     }
 
-} //namespace
+}    // namespace U2
 
 #endif

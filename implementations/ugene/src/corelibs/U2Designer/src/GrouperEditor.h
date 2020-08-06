@@ -37,11 +37,15 @@ class U2DESIGNER_EXPORT GrouperEditor : public ActorConfigurationEditor {
     Q_OBJECT
 public:
     GrouperEditor();
-    GrouperEditor(const GrouperEditor &) : ActorConfigurationEditor(), grouperModel(NULL) {}
+    GrouperEditor(const GrouperEditor &)
+        : ActorConfigurationEditor(), grouperModel(NULL) {
+    }
     virtual ~GrouperEditor();
     virtual QWidget *getWidget();
     virtual void setConfiguration(Actor *actor);
-    virtual ConfigurationEditor *clone() {return new GrouperEditor(*this);}
+    virtual ConfigurationEditor *clone() {
+        return new GrouperEditor(*this);
+    }
 
 public slots:
     void sl_onActionEdited(const GrouperOutSlot &outSlot);
@@ -52,9 +56,9 @@ private:
     GrouperSlotsCfgModel *grouperModel;
 
     QWidget *createGUI();
-}; // GrouperEditor
+};    // GrouperEditor
 
-} // Workflow
-} //U2
+}    // namespace Workflow
+}    // namespace U2
 
-#endif // _GROUPER_EDITOR_H_
+#endif    // _GROUPER_EDITOR_H_

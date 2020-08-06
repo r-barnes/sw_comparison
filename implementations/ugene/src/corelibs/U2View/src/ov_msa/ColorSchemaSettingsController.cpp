@@ -19,6 +19,8 @@
 * MA 02110-1301, USA.
 */
 
+#include "ColorSchemaSettingsController.h"
+
 #include <QColor>
 #include <QDir>
 
@@ -35,32 +37,28 @@
 #include <U2Core/Settings.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/UserApplicationsSettings.h>
+
 #include <U2Gui/HelpButton.h>
 #include <U2Gui/U2FileDialog.h>
 
 #include "ColorSchemaDialogController.h"
-#include "ColorSchemaSettingsController.h"
 
 namespace U2 {
 
-enum DefaultStrategy{
-    DefaultStrategy_Void,
-    DefaultStrategy_UgeneColors
-};
-
-static void setSchemaColors(const ColorSchemeData& customSchema){
+static void setSchemaColors(const ColorSchemeData &customSchema) {
     QString dirPath = ColorSchemeUtils::getColorsDir();
+
     QDir dir(dirPath);
-    if(!dir.exists()){
-        dir.mkpath(dirPath);
+    if (!dir.exists()) {
+        dir.mkpath(".");
     }
 
-    IOAdapterFactory* factory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
+    IOAdapterFactory *factory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
 
     QScopedPointer<IOAdapter> io(factory->createIOAdapter());
 
-    const QMap<char, QColor> & alphColors = customSchema.alpColors;
-    const QString& file  = customSchema.name + ColorSchemeUtils::COLOR_SCHEME_NAME_FILTERS;
+    const QMap<char, QColor> &alphColors = customSchema.alpColors;
+    const QString &file = customSchema.name + ColorSchemeUtils::COLOR_SCHEME_NAME_FILTERS;
     bool defaultType = customSchema.defaultAlpType;
 
     QString keyword(customSchema.type == DNAAlphabet_AMINO ? ColorSchemeUtils::COLOR_SCHEME_AMINO_KEYWORD : (defaultType ? ColorSchemeUtils::COLOR_SCHEME_NUCL_DEFAULT_KEYWORD : ColorSchemeUtils::COLOR_SCHEME_NUCL_EXTENDED_KEYWORD));
@@ -72,7 +70,7 @@ static void setSchemaColors(const ColorSchemeData& customSchema){
     io->writeBlock(header);
     // write body
     QMapIterator<char, QColor> it(alphColors);
-    while(it.hasNext()){
+    while (it.hasNext()) {
         it.next();
         QByteArray line;
         line.append(QString("%1=%2\n").arg(it.key()).arg(it.value().name()));
@@ -80,37 +78,39 @@ static void setSchemaColors(const ColorSchemeData& customSchema){
     }
 }
 
+const QString ColorSchemaSettingsPageController::helpPageId = QString("46499708");
 
-const QString ColorSchemaSettingsPageController::helpPageId = QString("24742349");
-
-ColorSchemaSettingsPageController::ColorSchemaSettingsPageController(MsaColorSchemeRegistry* mcsr, QObject* p)
-: AppSettingsGUIPageController(tr("Alignment Color Scheme"), ColorSchemaSettingsPageId, p) {
-       connect(this, SIGNAL(si_customSettingsChanged()), mcsr, SLOT(sl_onCustomSettingsChanged()));
+ColorSchemaSettingsPageController::ColorSchemaSettingsPageController(MsaColorSchemeRegistry *mcsr, QObject *p)
+    : AppSettingsGUIPageController(tr("Alignment Color Scheme"), ColorSchemaSettingsPageId, p) {
+    connect(this, SIGNAL(si_customSettingsChanged()), mcsr, SLOT(sl_onCustomSettingsChanged()));
 }
 
-
-AppSettingsGUIPageState* ColorSchemaSettingsPageController::getSavedState() {
-    ColorSchemaSettingsPageState* state = new ColorSchemaSettingsPageState();
+AppSettingsGUIPageState *ColorSchemaSettingsPageController::getSavedState() {
+    ColorSchemaSettingsPageState *state = new ColorSchemaSettingsPageState();
     state->colorsDir = ColorSchemeUtils::getColorsDir();
     state->customSchemas = ColorSchemeUtils::getSchemas();
 
     return state;
 }
 
-void ColorSchemaSettingsPageController::saveState(AppSettingsGUIPageState* s) {
-    ColorSchemaSettingsPageState* state = qobject_cast<ColorSchemaSettingsPageState*>(s);
+void ColorSchemaSettingsPageController::saveState(AppSettingsGUIPageState *s) {
+    ColorSchemaSettingsPageState *state = qobject_cast<ColorSchemaSettingsPageState *>(s);
 
     ColorSchemeUtils::setColorsDir(state->colorsDir);
-    foreach(const ColorSchemeData& schema, state->customSchemas){
+    QDir dir(ColorSchemeUtils::getColorsDir());
+    foreach (const ColorSchemeData &schema, state->removedCustomSchemas) {
+        dir.remove(schema.name + ColorSchemeUtils::COLOR_SCHEME_NAME_FILTERS);
+    }
+    foreach (const ColorSchemeData &schema, state->customSchemas) {
         setSchemaColors(schema);
     }
     emit si_customSettingsChanged();
 }
 
-AppSettingsGUIPageWidget* ColorSchemaSettingsPageController::createWidget(AppSettingsGUIPageState* state) {
-    ColorSchemaSettingsPageWidget* r = new ColorSchemaSettingsPageWidget(this);
+AppSettingsGUIPageWidget *ColorSchemaSettingsPageController::createWidget(AppSettingsGUIPageState *state) {
+    ColorSchemaSettingsPageWidget *r = new ColorSchemaSettingsPageWidget(this);
     r->setState(state);
     return r;
 }
 
-} // namespase
+}    // namespace U2

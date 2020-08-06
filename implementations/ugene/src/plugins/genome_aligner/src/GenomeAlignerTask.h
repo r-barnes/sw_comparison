@@ -22,13 +22,15 @@
 #ifndef _U2_GENOME_ALIGNER_TASK_H_
 #define _U2_GENOME_ALIGNER_TASK_H_
 
+#include <QMutex>
 #include <QSharedPointer>
 #include <QTemporaryFile>
-#include <QMutex>
 
 #include <U2Algorithm/DnaAssemblyTask.h>
+
 #include <U2Formats/StreamSequenceReader.h>
 #include <U2Formats/StreamSequenceWriter.h>
+
 #include "GenomeAlignerFindTask.h"
 #include "GenomeAlignerIO.h"
 #include "GenomeAlignerIndexPart.h"
@@ -48,12 +50,13 @@ class DbiConnection;
 class GenomeAlignerTask : public DnaAssemblyToReferenceTask {
     Q_OBJECT
     friend class ReadShortReadsSubTask;
+
 public:
-    GenomeAlignerTask(const DnaAssemblyToRefTaskSettings& settings, bool justBuildIndex = false);
+    GenomeAlignerTask(const DnaAssemblyToRefTaskSettings &settings, bool justBuildIndex = false);
     ~GenomeAlignerTask();
     virtual void prepare();
     virtual ReportResult report();
-    virtual QList<Task*> onSubTaskFinished(Task* subTask);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
     QString getIndexPath();
     static const QString OPTION_ALIGN_REVERSED;
     static const QString OPTION_OPENCL;
@@ -77,7 +80,7 @@ private:
     GenomeAlignerFindTask *findTask;
     WriteAlignedReadsSubTask *writeTask;
     GenomeAlignerWriteTask *pWriteTask;
-    Task* unzipTask;
+    Task *unzipTask;
 
     GenomeAlignerReader *seqReader;
     GenomeAlignerWriter *seqWriter;
@@ -115,6 +118,6 @@ private:
     void createGenomeAlignerWriteTask();
 };
 
-} //namespace
+}    // namespace U2
 
-#endif // _U2_GENOME_ALIGNER_TASK_H_
+#endif    // _U2_GENOME_ALIGNER_TASK_H_

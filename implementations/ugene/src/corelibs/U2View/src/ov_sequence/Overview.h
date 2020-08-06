@@ -27,8 +27,8 @@
 #include <U2Core/Annotation.h>
 #include <U2Core/AnnotationGroup.h>
 
-#include "GSequenceLineView.h"
 #include "ADVSequenceObjectContext.h"
+#include "GSequenceLineView.h"
 
 namespace U2 {
 
@@ -39,11 +39,10 @@ class AnnotationModification;
 class AnnotationTableObject;
 class ADVSingleSequenceWidget;
 
-
 class U2VIEW_EXPORT Overview : public GSequenceLineView {
     Q_OBJECT
 public:
-    Overview(ADVSingleSequenceWidget* p, ADVSequenceObjectContext* ctx);
+    Overview(ADVSingleSequenceWidget *p, ADVSequenceObjectContext *ctx);
 
 protected slots:
     void sl_visibleRangeChanged();
@@ -59,32 +58,32 @@ protected slots:
 
 protected:
     void pack();
-    virtual bool event(QEvent* e);
+    virtual bool event(QEvent *e);
     void mousePressEvent(QMouseEvent *me);
-    void mouseMoveEvent(QMouseEvent* me);
-    void mouseDoubleClickEvent(QMouseEvent* me);
-    void mouseReleaseEvent(QMouseEvent* me);
-    void wheelEvent(QWheelEvent* we);
+    void mouseMoveEvent(QMouseEvent *me);
+    void mouseDoubleClickEvent(QMouseEvent *me);
+    void mouseReleaseEvent(QMouseEvent *me);
+    void wheelEvent(QWheelEvent *we);
 
-    QString createToolTip(QHelpEvent* he);
+    QString createToolTip(QHelpEvent *he);
     PanView *getPan() const;
     DetView *getDet() const;
 
-    bool        panSliderClicked;
-    bool        detSliderClicked;
-    bool        panSliderMovedRight;
-    bool        panSliderMovedLeft;
+    bool panSliderClicked;
+    bool detSliderClicked;
+    bool panSliderMovedRight;
+    bool panSliderMovedLeft;
 
-    qint64         offset;
+    qint64 offset;
 
 private:
     void connectAnnotationTableObject(AnnotationTableObject *object);
     void setGraphActionVisible(const bool setVisible);
 
-    PanView*        panView;
-    DetView*        detView;
-    QPoint          mousePosToSlider;
-    ADVSingleSequenceWidget* seqWidget;
+    PanView *panView;
+    DetView *detView;
+    QPoint mousePosToSlider;
+    ADVSingleSequenceWidget *seqWidget;
 
     static const QString ANNOTATION_GRAPH_STATE;
 
@@ -94,7 +93,7 @@ private:
 class OverviewRenderArea : public GSequenceLineViewRenderArea {
     Q_OBJECT
 public:
-    OverviewRenderArea(Overview* p);
+    OverviewRenderArea(Overview *p);
 
     const QRectF getPanSlider() const;
     const QRectF getDetSlider() const;
@@ -105,24 +104,24 @@ public:
     bool isGraphVisible() const;
 
 protected:
-    void drawAll(QPaintDevice* pd);
+    void drawAll(QPaintDevice *pd);
 
 private:
-    void drawRuler(QPainter& p);
-    void drawSelection(QPainter& p);
-    void drawSlider(QPainter& p, QRectF rect, QColor col);
-    void drawArrow(QPainter& p, QRectF rect, QColor col);
+    void drawRuler(QPainter &p);
+    void drawSelection(QPainter &p);
+    void drawSlider(QPainter &p, QRectF rect, QColor col);
+    void drawArrow(QPainter &p, QRectF rect, QColor col);
     void setAnnotationsOnPos();
-    void drawGraph(QPainter& p);
+    void drawGraph(QPainter &p);
     QColor getUnitColor(int count);
 
-    QRectF          panSlider;
-    QRectF          detSlider;
-    QBrush          gradientMaskBrush;
-    QVector<int>    annotationsOnPos;
-    bool            graphVisible;
+    QRectF panSlider;
+    QRectF detSlider;
+    QBrush gradientMaskBrush;
+    QVector<int> annotationsOnPos;
+    bool graphVisible;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

@@ -54,7 +54,7 @@ public:
     ~CuffmergeSupportTask();
 
     void prepare();
-    QList<Task*> onSubTaskFinished(Task *subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
     void run();
     QStringList getOutputFiles() const;
 
@@ -65,8 +65,8 @@ private:
     QString workingDir;
     QString listFilePath;
     int fileNum;
-    QList<Document*> docs;
-    QList<Task*> writeTasks;
+    QList<Document *> docs;
+    QList<Task *> writeTasks;
     ExternalToolRunTask *mergeTask;
     LoadDocumentTask *loadResultTask;
     QList<AnnotationTableObject *> result;
@@ -84,6 +84,6 @@ private:
     void writeFileList();
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_CUFFMERGESUPPORTTASK_H_
+#endif    // _U2_CUFFMERGESUPPORTTASK_H_

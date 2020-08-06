@@ -37,7 +37,10 @@ typedef PrompterBase<QDPrompter> QDPrompterBase;
 class QDPrompter : public QDPrompterBase {
     Q_OBJECT
 public:
-    QDPrompter(Actor* p = 0) : QDPrompterBase(p) {}
+    QDPrompter(Actor *p = 0)
+        : QDPrompterBase(p) {
+    }
+
 protected:
     QString composeRichDoc();
 };
@@ -45,27 +48,32 @@ protected:
 class QDWorker : public BaseWorker {
     Q_OBJECT
 public:
-    QDWorker(Actor* a);
+    QDWorker(Actor *a);
 
     virtual void init();
-    virtual Task* tick();
+    virtual Task *tick();
     virtual void cleanup();
 private slots:
-    void sl_taskFinished(Task*);
+    void sl_taskFinished(Task *);
+
 protected:
     IntegralBus *input, *output;
-    QDScheme* scheme;
+    QDScheme *scheme;
 };
 
 class QDWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
     static void init();
-    QDWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual Worker* createWorker(Actor* a) { return new QDWorker(a); }
+    QDWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual Worker *createWorker(Actor *a) {
+        return new QDWorker(a);
+    }
 };
 
-}//Workflow namespace
-}//U2 namespace
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

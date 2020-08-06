@@ -26,9 +26,7 @@ namespace U2 {
 const QStringList KrakenTranslateLogParser::wellKnownErrors = KrakenTranslateLogParser::initWellKnownErrors();
 
 KrakenTranslateLogParser::KrakenTranslateLogParser()
-    : ExternalToolLogParser()
-{
-
+    : ExternalToolLogParser() {
 }
 
 bool KrakenTranslateLogParser::isError(const QString &line) const {
@@ -51,4 +49,4 @@ QStringList KrakenTranslateLogParser::initWellKnownErrors() {
     return result;
 }
 
-}   // namespace U2
+}    // namespace U2

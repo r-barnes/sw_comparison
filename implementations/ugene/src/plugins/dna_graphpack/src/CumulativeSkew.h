@@ -22,37 +22,39 @@
 #ifndef _U2_GRAPHPACK_CUMULATIVE_SKEW_H_
 #define _U2_GRAPHPACK_CUMULATIVE_SKEW_H_
 
-#include "DNAGraphPackPlugin.h"
+#include <QAction>
+#include <QBitArray>
+#include <QList>
 
 #include <U2View/GSequenceGraphView.h>
 
-#include <QAction>
-#include <QList>
-#include <QBitArray>
+#include "DNAGraphPackPlugin.h"
 
 namespace U2 {
 
 class CumulativeSkewGraphFactory : public GSequenceGraphFactory {
     Q_OBJECT
 public:
-    enum GCumulativeSkewType { GC, AT };
-    CumulativeSkewGraphFactory(GCumulativeSkewType t, QObject* p);
-    virtual QList<QSharedPointer<GSequenceGraphData> > createGraphs(GSequenceGraphView* v);
-    virtual bool isEnabled(const U2SequenceObject* o) const;
+    enum GCumulativeSkewType { GC,
+                               AT };
+    CumulativeSkewGraphFactory(GCumulativeSkewType t, QObject *p);
+    virtual QList<QSharedPointer<GSequenceGraphData>> createGraphs(GSequenceGraphView *v);
+    virtual bool isEnabled(const U2SequenceObject *o) const;
+
 private:
     QPair<char, char> cumPair;
 };
 
 class CumulativeSkewGraphAlgorithm : public GSequenceGraphAlgorithm {
 public:
-    CumulativeSkewGraphAlgorithm(const QPair<char, char>& _p);
+    CumulativeSkewGraphAlgorithm(const QPair<char, char> &_p);
 
-    float getValue(int begin, int end, const QByteArray& seq);
-    virtual void calculate(QVector<float>& res, U2SequenceObject* o, const U2Region& r, const GSequenceGraphWindowData* d, U2OpStatus &os);
+    float getValue(int begin, int end, const QByteArray &seq);
+    virtual void calculate(QVector<float> &res, U2SequenceObject *o, const U2Region &r, const GSequenceGraphWindowData *d, U2OpStatus &os);
 
 private:
     QPair<char, char> p;
 };
 
-} // namespace
+}    // namespace U2
 #endif

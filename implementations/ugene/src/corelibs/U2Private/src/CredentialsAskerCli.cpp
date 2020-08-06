@@ -21,11 +21,11 @@
 
 #include <qglobal.h>
 #ifdef Q_OS_WIN
-#include <conio.h>
+#    include <conio.h>
 #endif
 
 #ifdef Q_OS_UNIX
-#include <termios.h>
+#    include <termios.h>
 #endif
 
 #include <iostream>
@@ -37,7 +37,7 @@
 
 #include "CredentialsAskerCli.h"
 
-#ifdef Q_OS_UNIX // source: http://stackoverflow.com/questions/7469139/what-is-equivalent-to-getch-getche-in-linux
+#ifdef Q_OS_UNIX    // source: http://stackoverflow.com/questions/7469139/what-is-equivalent-to-getch-getche-in-linux
 static struct termios oldTerm, newTerm;
 
 /* Initialize new terminal i/o settings */
@@ -134,8 +134,7 @@ static QString askPwd() {
         if (readKey != BACKSPACE_STR && readKey != RETURN_STR) {
             pwd += readKey;
             printString(ASTERISC_STR);
-        }
-        else if (readKey == BACKSPACE_STR && !pwd.isEmpty()) {
+        } else if (readKey == BACKSPACE_STR && !pwd.isEmpty()) {
             pwd.truncate(pwd.length() - 1);
             printString(BACKSPACE_PRINT_STR + " " + BACKSPACE_PRINT_STR);
         }
@@ -145,7 +144,7 @@ static QString askPwd() {
     return pwd;
 }
 
-}
+}    // namespace
 
 bool CredentialsAskerCli::askWithFixedLogin(const QString &resourceUrl) const {
     SAFE_POINT(!AppContext::isGUIMode(), "Unexpected application run mode", false);
@@ -189,4 +188,4 @@ bool CredentialsAskerCli::askWithModifiableLogin(QString &resourceUrl) const {
     return true;
 }
 
-} //namespace U2
+}    //namespace U2

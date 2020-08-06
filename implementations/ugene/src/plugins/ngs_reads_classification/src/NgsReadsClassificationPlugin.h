@@ -27,9 +27,9 @@
 namespace U2 {
 
 #ifdef BUILDING_NGS_READS_CLASSIFICATION_DLL
-#   define U2NGS_READS_CLASSIFICATION_EXPORT Q_DECL_EXPORT
+#    define U2NGS_READS_CLASSIFICATION_EXPORT Q_DECL_EXPORT
 #else
-#   define U2NGS_READS_CLASSIFICATION_EXPORT Q_DECL_IMPORT
+#    define U2NGS_READS_CLASSIFICATION_EXPORT Q_DECL_IMPORT
 #endif
 
 class U2NGS_READS_CLASSIFICATION_EXPORT NgsReadsClassificationPlugin : public Plugin {
@@ -97,6 +97,6 @@ private:
     QStringList registeredData;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_NGS_READS_CLASSIFICATION_PLUGIN_H_
+#endif    // _U2_NGS_READS_CLASSIFICATION_PLUGIN_H_

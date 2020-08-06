@@ -32,6 +32,6 @@ public:
     DbObjectItem(const QString &url, QListWidget *parent = NULL);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_DB_OBJECT_ITEM_H_
+#endif    // _U2_DB_OBJECT_ITEM_H_

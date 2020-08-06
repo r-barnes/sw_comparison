@@ -38,13 +38,13 @@ class MultipleSequenceAlignmentObject;
 class U2VIEW_EXPORT MSAEditorOffsetsViewController : public QObject {
     Q_OBJECT
 public:
-    MSAEditorOffsetsViewController(MaEditorWgt *maEditorUi, MaEditor* editor, MaEditorSequenceArea* seqArea);
+    MSAEditorOffsetsViewController(MaEditorWgt *maEditorUi, MaEditor *editor, MaEditorSequenceArea *seqArea);
 
-    MSAEditorOffsetsViewWidget* getLeftWidget() const;
-    MSAEditorOffsetsViewWidget* getRightWidget() const;
+    MSAEditorOffsetsViewWidget *getLeftWidget() const;
+    MSAEditorOffsetsViewWidget *getRightWidget() const;
 
-    QAction* getToggleColumnsViewAction() const;
-    bool eventFilter(QObject* o, QEvent* e);
+    QAction *getToggleColumnsViewAction() const;
+    bool eventFilter(QObject *o, QEvent *e);
 
 private slots:
     void sl_updateOffsets();
@@ -53,16 +53,17 @@ private slots:
 private:
     void updateOffsets();
 
-    MaEditorSequenceArea*       seqArea;
-    MaEditor*                   editor;
-    MSAEditorOffsetsViewWidget* lw;
-    MSAEditorOffsetsViewWidget* rw;
-    QAction*                    viewAction;
+    MaEditorSequenceArea *seqArea;
+    MaEditor *editor;
+    MSAEditorOffsetsViewWidget *lw;
+    MSAEditorOffsetsViewWidget *rw;
+    QAction *viewAction;
 };
 
 class MSAEditorOffsetsViewWidget : public QWidget {
     Q_OBJECT
     friend class MSAEditorOffsetsViewController;
+
 public:
     MSAEditorOffsetsViewWidget(MaEditorWgt *maEditorUi, MaEditor *editor, MaEditorSequenceArea *seqArea, bool showStartPos);
 
@@ -79,13 +80,13 @@ protected:
 private:
     int getBaseCounts(int seqNum, int aliPos, bool inclAliPos) const;
 
-    MaEditorSequenceArea *      seqArea;
-    MaEditor *                  editor;
-    bool                        showStartPos;
-    bool                        completeRedraw;
-    QPixmap                     cachedView;
+    MaEditorSequenceArea *seqArea;
+    MaEditor *editor;
+    bool showStartPos;
+    bool completeRedraw;
+    QPixmap cachedView;
 };
 
-}//namespace;
+}    // namespace U2
 
 #endif

@@ -22,14 +22,16 @@
 #ifndef _U2_WORKFLOW_LOCAL_DOMAIN_H_
 #define _U2_WORKFLOW_LOCAL_DOMAIN_H_
 
-#include <U2Core/ExternalToolRunTask.h>
-#include <U2Lang/IntegralBus.h>
-#include <U2Lang/IntegralBusModel.h>
-#include <U2Lang/WorkflowTransport.h>
-#include <U2Lang/WorkflowManager.h>
+#include <limits.h>
 
 #include <QQueue>
-#include <limits.h>
+
+#include <U2Core/ExternalToolRunTask.h>
+
+#include <U2Lang/IntegralBus.h>
+#include <U2Lang/IntegralBusModel.h>
+#include <U2Lang/WorkflowManager.h>
+#include <U2Lang/WorkflowTransport.h>
 
 namespace U2 {
 
@@ -47,7 +49,7 @@ class U2LANG_EXPORT BaseWorker : public QObject, public Worker, public Communica
 public:
     using Workflow::Worker::tick;
 
-    BaseWorker(Actor* a, bool autoTransitBus = true);
+    BaseWorker(Actor *a, bool autoTransitBus = true);
     virtual ~BaseWorker();
 
     virtual ActorId getActorId() const;
@@ -59,20 +61,26 @@ public:
     virtual bool isReady() const;
 
     // reimplemented from CommunicationSubject
-    virtual bool addCommunication(const QString& name, CommunicationChannel* _ch);
-    virtual CommunicationChannel* getCommunication(const QString& name);
+    virtual bool addCommunication(const QString &name, CommunicationChannel *_ch);
+    virtual CommunicationChannel *getCommunication(const QString &name);
     virtual QStringList getOutputFiles();
 
     // if you want your worker support scripts -> you should call this function to get Messages from channels
     // call this when channel has message
     // after calling: set all needed values for running your worker
     // called from 'tick' and then setup worker params
-    virtual Message getMessageAndSetupScriptValues( CommunicationChannel * channel );
+    virtual Message getMessageAndSetupScriptValues(CommunicationChannel *channel);
 
-    QMap<QString, IntegralBus*> &getPorts() {return ports;}
-    Actor * getActor() const {return actor;}
+    QMap<QString, IntegralBus *> &getPorts() {
+        return ports;
+    }
+    Actor *getActor() const {
+        return actor;
+    }
 
-    void deleteBackupMessagesFromPreviousTick() { messagesProcessedOnLastTick.clear(); }
+    void deleteBackupMessagesFromPreviousTick() {
+        messagesProcessedOnLastTick.clear();
+    }
     // replace current worker's messages in channels with ones from previous tick
     void saveCurrentChannelsStateAndRestorePrevious();
     // fill channels with messages which were existed before the pause
@@ -82,7 +90,8 @@ public:
     // in case of the schema's pause
     Task *tick(bool &canResultBeCanceled);
 
-    QList<ExternalToolListener*> createLogListeners(int listenersNumber = 1) const;
+    QList<ExternalToolListener *> createLogListeners(int listenersNumber = 1) const;
+
 private:
     // bind values from input ports to script vars.
     // This function is called before 'get' data from channel -> to set up parameters for scripting
@@ -94,16 +103,16 @@ private:
     // New messages are added here in getMessageAndSetupScriptValues(CommunicationChannel *) method.
     // Also during the pause state it contains backup messages
     // (which were existed at the moment before the pause) from the same ports
-    QMap<CommunicationChannel *, QQueue<Message> > messagesProcessedOnLastTick;
+    QMap<CommunicationChannel *, QQueue<Message>> messagesProcessedOnLastTick;
 
     // puts all messages from messagesProcessedOnLastTick to appropriate channel
     // which is actually key for the queue of messages
     void addMessagesFromBackupToAppropriratePort(CommunicationChannel *channel);
 
 protected:
-    Actor* actor;
+    Actor *actor;
     // integral buses of actor's ports
-    QMap<QString, IntegralBus*> ports;
+    QMap<QString, IntegralBus *> ports;
 
     // default implementation always return false
     // TODO: check all workers' task and override this method
@@ -114,9 +123,9 @@ protected:
     template<class T>
     T getValue(const QString &paramId) const;
 
-    WorkflowMonitor * monitor() const;
+    WorkflowMonitor *monitor() const;
     void reportError(const QString &message);
-}; // BaseWorker
+};    // BaseWorker
 
 /**
  * simple realization of Communnication channel
@@ -124,15 +133,16 @@ protected:
 class U2LANG_EXPORT SimpleQueue : public CommunicationChannel {
 public:
     SimpleQueue();
-    virtual ~SimpleQueue(){}
+    virtual ~SimpleQueue() {
+    }
 
     // reimplemented from CommunicationChannel
     virtual Message get();
     virtual Message look() const;
-    virtual void put(const Message& m, bool isMessageRestored = false);
+    virtual void put(const Message &m, bool isMessageRestored = false);
     virtual int hasMessage() const;
-    virtual int takenMessages()const;
-    virtual int hasRoom(const DataType* ) const;
+    virtual int takenMessages() const;
+    virtual int hasRoom(const DataType *) const;
     virtual bool isEnded() const;
     virtual void setEnded();
     // capacity is INT_MAX
@@ -149,7 +159,7 @@ protected:
     //
     int takenMsgs;
 
-}; // SimpleQueue
+};    // SimpleQueue
 
 /**
  * runtime domain for SimplestSequentialScheduler and SimpleQueue
@@ -162,14 +172,15 @@ public:
 
 public:
     LocalDomainFactory();
-    virtual ~LocalDomainFactory(){}
+    virtual ~LocalDomainFactory() {
+    }
 
-    virtual Worker* createWorker(Actor*);
-    virtual CommunicationChannel* createConnection(Link*);
-    virtual Scheduler* createScheduler(Schema*);
-    virtual void destroy(Scheduler*, Schema*);
+    virtual Worker *createWorker(Actor *);
+    virtual CommunicationChannel *createConnection(Link *);
+    virtual Scheduler *createScheduler(Schema *);
+    virtual void destroy(Scheduler *, Schema *);
 
-}; // LocalDomainFactory
+};    // LocalDomainFactory
 
 /************************************************************************/
 /* Template definitions */
@@ -189,7 +200,7 @@ inline QString BaseWorker::getValue(const QString &paramId) const {
     if (NULL == attr) {
         return "";
     }
-    QString value =  attr->getAttributeValue<QString>(context);
+    QString value = attr->getAttributeValue<QString>(context);
     bool dir = false;
     if (RFSUtils::isOutUrlAttribute(attr, actor, dir)) {
         return context->absolutePath(value);
@@ -197,8 +208,8 @@ inline QString BaseWorker::getValue(const QString &paramId) const {
     return value;
 }
 
-}//Workflow namespace
+}    // namespace LocalWorkflow
 
-}//GB2 namespace
+}    // namespace U2
 
-#endif // _U2_WORKFLOW_LOCAL_DOMAIN_H_
+#endif    // _U2_WORKFLOW_LOCAL_DOMAIN_H_

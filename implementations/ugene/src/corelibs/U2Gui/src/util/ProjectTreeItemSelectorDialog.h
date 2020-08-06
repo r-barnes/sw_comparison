@@ -42,7 +42,5 @@ public:
     static Folder selectFolder(QWidget *parent);
 };
 
-
-
-}//namespace
+}    // namespace U2
 #endif

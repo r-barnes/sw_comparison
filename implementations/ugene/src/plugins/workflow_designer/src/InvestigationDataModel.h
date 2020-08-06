@@ -49,8 +49,7 @@ public:
         const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::DisplayRole);
-    bool setHeaderData(int section, Qt::Orientation orientation, const QVariant & value,
-        int role = Qt::DisplayRole);
+    bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role = Qt::DisplayRole);
     bool insertRows(int position, int rows, const QModelIndex &index = QModelIndex());
     bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex());
     bool removeColumns(int column, int count, const QModelIndex &parent = QModelIndex());
@@ -78,6 +77,6 @@ private:
     QBitArray hiddenColumns;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_INVESTIGATION_DATA_MODEL_H_
+#endif    // _U2_INVESTIGATION_DATA_MODEL_H_

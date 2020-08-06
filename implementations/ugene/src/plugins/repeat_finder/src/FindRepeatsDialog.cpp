@@ -48,20 +48,19 @@
 
 namespace U2 {
 
-#define SETTINGS_ROOT               QString("plugin_find_repeats/")
-#define MIN_LEN_SETTINGS            QString("min_len")
-#define IDENTITY_SETTINGS           QString("identity")
-#define MIN_DIST_SETTINGS           QString("min_dist")
-#define MAX_DIST_SETTINGS           QString("max_dist")
-#define MIN_DIST_CHECK_SETTINGS     QString("min_dist_check")
-#define MAX_DIST_CHECK_SETTINGS     QString("max_dist_check")
-#define INVERT_CHECK_SETTINGS       QString("invert_check")
-#define TANDEMS_CHECK_SETTINGS      QString("exclude_tandems_check")
+#define SETTINGS_ROOT QString("plugin_find_repeats/")
+#define MIN_LEN_SETTINGS QString("min_len")
+#define IDENTITY_SETTINGS QString("identity")
+#define MIN_DIST_SETTINGS QString("min_dist")
+#define MAX_DIST_SETTINGS QString("max_dist")
+#define MIN_DIST_CHECK_SETTINGS QString("min_dist_check")
+#define MAX_DIST_CHECK_SETTINGS QString("max_dist_check")
+#define INVERT_CHECK_SETTINGS QString("invert_check")
+#define TANDEMS_CHECK_SETTINGS QString("exclude_tandems_check")
 
-FindRepeatsTaskSettings FindRepeatsDialog::defaultSettings()
-{
+FindRepeatsTaskSettings FindRepeatsDialog::defaultSettings() {
     FindRepeatsTaskSettings res;
-    Settings* s = AppContext::getSettings();
+    Settings *s = AppContext::getSettings();
     res.minLen = (s->getValue(SETTINGS_ROOT + MIN_LEN_SETTINGS, 5).toInt());
     res.setIdentity(s->getValue(SETTINGS_ROOT + IDENTITY_SETTINGS, 100).toInt());
     bool minDistCheck = (s->getValue(SETTINGS_ROOT + MIN_DIST_CHECK_SETTINGS, true).toBool());
@@ -74,12 +73,11 @@ FindRepeatsTaskSettings FindRepeatsDialog::defaultSettings()
     return res;
 }
 
-FindRepeatsDialog::FindRepeatsDialog(ADVSequenceObjectContext* _sc)
-: QDialog(_sc->getAnnotatedDNAView()->getWidget())
-{
+FindRepeatsDialog::FindRepeatsDialog(ADVSequenceObjectContext *_sc)
+    : QDialog(_sc->getAnnotatedDNAView()->getWidget()) {
     sc = _sc;
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742557");
+    new HelpButton(this, buttonBox, "46501082");
 
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Start"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -95,8 +93,8 @@ FindRepeatsDialog::FindRepeatsDialog(ADVSequenceObjectContext* _sc)
     m.sequenceLen = sc->getSequenceObject()->getSequenceLength();
     ac = new CreateAnnotationWidgetController(m, this);
 
-    QWidget* caw = ac->getWidget();
-    QVBoxLayout* l = new QVBoxLayout();
+    QWidget *caw = ac->getWidget();
+    QVBoxLayout *l = new QVBoxLayout();
     l->setMargin(0);
     l->addWidget(caw);
     annotationsWidget->setLayout(l);
@@ -111,7 +109,7 @@ FindRepeatsDialog::FindRepeatsDialog(ADVSequenceObjectContext* _sc)
 
     qint64 seqLen = sc->getSequenceLength();
 
-    Settings* s = AppContext::getSettings();
+    Settings *s = AppContext::getSettings();
     minLenBox->setValue(s->getValue(SETTINGS_ROOT + MIN_LEN_SETTINGS, qBound(5, int(seqLen / 100), 100)).toInt());
     minLenBox->setMaximum(seqLen);
     identityBox->setValue(s->getValue(SETTINGS_ROOT + IDENTITY_SETTINGS, 100).toInt());
@@ -128,9 +126,9 @@ FindRepeatsDialog::FindRepeatsDialog(ADVSequenceObjectContext* _sc)
     connect(minLenBox, SIGNAL(valueChanged(int)), SLOT(sl_repeatParamsChanged(int)));
     connect(identityBox, SIGNAL(valueChanged(int)), SLOT(sl_repeatParamsChanged(int)));
 
-    rs=new RegionSelector(this, seqLen, false, sc->getSequenceSelection());
+    rs = new RegionSelector(this, seqLen, false, sc->getSequenceSelection());
     rangeSelectorLayout->addWidget(rs);
-    connect(rs,SIGNAL(si_regionChanged(const U2Region&)),SLOT(sl_onRegionChanged(const U2Region&)));
+    connect(rs, SIGNAL(si_regionChanged(const U2Region &)), SLOT(sl_onRegionChanged(const U2Region &)));
 
     QStringList annotationNames = getAvailableAnnotationNames();
     bool haveAnnotations = !annotationNames.isEmpty();
@@ -151,14 +149,13 @@ FindRepeatsDialog::FindRepeatsDialog(ADVSequenceObjectContext* _sc)
     updateStatus();
 
     setWindowIcon(QIcon(":/ugene/images/ugene_16.png"));
-
 }
 
-void FindRepeatsDialog::prepareAMenu(QToolButton* tb, QLineEdit* le, const QStringList& names) {
+void FindRepeatsDialog::prepareAMenu(QToolButton *tb, QLineEdit *le, const QStringList &names) {
     assert(!names.isEmpty());
-    QMenu* m = new QMenu(this);
-    foreach(const QString& n, names) {
-        QAction* a = new SetAnnotationNameAction(n, this, le);
+    QMenu *m = new QMenu(this);
+    foreach (const QString &n, names) {
+        QAction *a = new SetAnnotationNameAction(n, this, le);
         connect(a, SIGNAL(triggered()), SLOT(sl_setPredefinedAnnotationName()));
         m->addAction(a);
     }
@@ -169,7 +166,7 @@ void FindRepeatsDialog::prepareAMenu(QToolButton* tb, QLineEdit* le, const QStri
 
 QStringList FindRepeatsDialog::getAvailableAnnotationNames() const {
     QStringList res;
-    const QSet<AnnotationTableObject *>& objs = sc->getAnnotationObjects();
+    const QSet<AnnotationTableObject *> &objs = sc->getAnnotationObjects();
     QSet<QString> names;
     foreach (AnnotationTableObject *o, objs) {
         foreach (Annotation *a, o->getAnnotations()) {
@@ -182,7 +179,7 @@ QStringList FindRepeatsDialog::getAvailableAnnotationNames() const {
 }
 
 void FindRepeatsDialog::sl_setPredefinedAnnotationName() {
-    SetAnnotationNameAction* a = qobject_cast<SetAnnotationNameAction*>(sender());
+    SetAnnotationNameAction *a = qobject_cast<SetAnnotationNameAction *>(sender());
     QString text = a->text();
     a->le->setText(text);
 }
@@ -201,11 +198,11 @@ void FindRepeatsDialog::sl_maxDistChanged(int i) {
     updateStatus();
 }
 
-void FindRepeatsDialog::sl_onRegionChanged(const U2Region&) {
+void FindRepeatsDialog::sl_onRegionChanged(const U2Region &) {
     updateStatus();
 }
 
-bool FindRepeatsDialog::getRegions(QCheckBox* cb, QLineEdit* le, QVector<U2Region>& res) {
+bool FindRepeatsDialog::getRegions(QCheckBox *cb, QLineEdit *le, QVector<U2Region> &res) {
     bool enabled = cb->isChecked();
     QString names = le->text();
     if (!enabled || names.isEmpty()) {
@@ -239,7 +236,7 @@ void FindRepeatsDialog::accept() {
     // find repeats algorithm operates with 32 bit values and can't process 64-bit coordinates.
     // so we reject sequences that do not fit into 32 bit length range.
     if (sequenceLen > INT_MAX) {
-        QMessageBox::warning(this, L10N::warningTitle(),  tr("Sequence size is too large!"));
+        QMessageBox::warning(this, L10N::warningTitle(), tr("Sequence size is too large!"));
         return;
     }
     int sequenceLenAsInt = int(sequenceLen);
@@ -249,14 +246,14 @@ void FindRepeatsDialog::accept() {
 
     if (AppResourcePool::is32BitBuild()) {
         if (sequenceLen > MAX_REPEAT_SEQUENCE_LENGTH_32_BIT_OS) {
-            QMessageBox::warning(this, L10N::warningTitle(),  tr("Sequence size is too large!"));
+            QMessageBox::warning(this, L10N::warningTitle(), tr("Sequence size is too large!"));
             return;
         }
     }
 
     bool isRegionOk = false;
     U2Region range = rs->getRegion(&isRegionOk);
-    if (!isRegionOk){
+    if (!isRegionOk) {
         rs->showErrorMessage();
         return;
     }
@@ -268,10 +265,7 @@ void FindRepeatsDialog::accept() {
         return;
     }
     QVector<U2Region> fitRegions, aroundRegions, filterRegions;
-    if (!getRegions(annotationFitCheck, annotationFitEdit, fitRegions)
-        || !getRegions(annotationAroundKeepCheck, annotationAroundKeepEdit, aroundRegions)
-        || !getRegions(annotationAroundFilterCheck, annotationAroundFilterEdit, filterRegions))
-    {
+    if (!getRegions(annotationFitCheck, annotationFitEdit, fitRegions) || !getRegions(annotationAroundKeepCheck, annotationAroundKeepEdit, aroundRegions) || !getRegions(annotationAroundFilterCheck, annotationAroundFilterEdit, filterRegions)) {
         return;
     }
 
@@ -280,9 +274,9 @@ void FindRepeatsDialog::accept() {
     RepeatsFilterAlgorithm locFilter = RepeatsFilterAlgorithm(filterAlgorithms->itemData(filterAlgorithms->currentIndex()).toInt());
 
     FindRepeatsTaskSettings settings;
-    const CreateAnnotationModel& cam = ac->getModel();
+    const CreateAnnotationModel &cam = ac->getModel();
     settings.minLen = minLen;
-    settings.mismatches = (100-identPerc) * minLen / 100;
+    settings.mismatches = (100 - identPerc) * minLen / 100;
     settings.inverted = inverted;
     settings.maxDist = maxDist;
     settings.minDist = minDist;
@@ -304,7 +298,7 @@ void FindRepeatsDialog::accept() {
     Q_ASSERT(seqPart.alphabet && seqPart.alphabet->isNucleic());
 
     bool objectPrepared = ac->prepareAnnotationObject();
-    if (!objectPrepared){
+    if (!objectPrepared) {
         QMessageBox::warning(this, tr("Error"), tr("Cannot create an annotation object. Please check settings"));
         return;
     }
@@ -312,17 +306,14 @@ void FindRepeatsDialog::accept() {
     settings.seqRegion = U2Region(0, seqPart.length());
     settings.reportSeqShift = settings.reportSeq2Shift = range.startPos;
 
-    if(settings.seqRegion.length >= 80000000 && identPerc < 100){
-        if(QMessageBox::warning(QApplication::activeWindow(), tr("Warning"),
-            tr("Search with given identity %1% and length more then 80m bps can take very long time. Approximate repeat searching time for 80m bp with 95% identity is 40 minutes on Intel Core 2 Quad Q9500. Do you want to continue?")
-            .arg(identPerc), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Cancel){
-                return QDialog::reject();
+    if (settings.seqRegion.length >= 80000000 && identPerc < 100) {
+        if (QMessageBox::warning(QApplication::activeWindow(), tr("Warning"), tr("Search with given identity %1% and length more then 80m bps can take very long time. Approximate repeat searching time for 80m bp with 95% identity is 40 minutes on Intel Core 2 Quad Q9500. Do you want to continue?").arg(identPerc), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Cancel) {
+            return QDialog::reject();
         }
     }
     sc->getAnnotatedDNAView()->tryAddObject(cam.getAnnotationObject());
 
-    FindRepeatsToAnnotationsTask* t = new FindRepeatsToAnnotationsTask(settings, seqPart,
-        cam.data->name, cam.groupName, cam.description, cam.annotationObjectRef);
+    FindRepeatsToAnnotationsTask *t = new FindRepeatsToAnnotationsTask(settings, seqPart, cam.data->name, cam.groupName, cam.description, cam.annotationObjectRef);
     TaskWatchdog::trackResourceExistence(sc->getSequenceObject(), t, tr("A problem occurred during finding repeats. The sequence is no more available."));
 
     AppContext::getTaskScheduler()->registerTopLevelTask(t);
@@ -332,7 +323,7 @@ void FindRepeatsDialog::accept() {
 }
 
 void FindRepeatsDialog::saveState() {
-    Settings* s = AppContext::getSettings();
+    Settings *s = AppContext::getSettings();
 
     int minLen = minLenBox->value();
     int identPerc = identityBox->value();
@@ -359,7 +350,7 @@ quint64 FindRepeatsDialog::areaSize() const {
         return 0;
     }
     int minDist = minDistCheck->isChecked() ? minDistBox->value() : 0;
-    int maxDist = maxDistCheck->isChecked() ? maxDistBox->value(): sc->getSequenceLength();
+    int maxDist = maxDistCheck->isChecked() ? maxDistBox->value() : sc->getSequenceLength();
 
     quint64 dRange = qMax(0, maxDist - minDist);
 
@@ -371,7 +362,7 @@ int FindRepeatsDialog::estimateResultsCount() const {
     assert(identityBox->value() == 100);
     int len = minLenBox->value();
 
-    quint64 nVariations  = areaSize(); //max possible results
+    quint64 nVariations = areaSize();    //max possible results
     double variationsPerLen = pow(double(4), double(len));
     quint64 res = quint64(nVariations / variationsPerLen);
     res = (res > 20) ? (res / 10) * 10 : res;
@@ -383,7 +374,7 @@ int FindRepeatsDialog::estimateResultsCount() const {
 void FindRepeatsDialog::sl_minLenHeuristics() {
     identityBox->setValue(100);
 
-    double nVariations  = areaSize();
+    double nVariations = areaSize();
     double resCount = 1000;
     double len = log(nVariations / resCount) / log(double(4));
     minLenBox->setValue((int)len);
@@ -414,5 +405,4 @@ void FindRepeatsDialog::sl_hundredPercent() {
     identityBox->setValue(100);
 }
 
-}//namespace
-
+}    // namespace U2

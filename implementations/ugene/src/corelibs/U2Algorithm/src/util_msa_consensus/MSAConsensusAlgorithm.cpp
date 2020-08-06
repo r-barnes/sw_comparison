@@ -20,31 +20,31 @@
  */
 
 #include "MSAConsensusAlgorithm.h"
-#include "MSAConsensusUtils.h"
+
+#include <QVector>
 
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/MultipleSequenceAlignment.h>
 #include <U2Core/U2OpStatusUtils.h>
 
-#include <QVector>
+#include "MSAConsensusUtils.h"
 
 namespace U2 {
 
 //////////////////////////////////////////////////////////////////////////
 // Factory
 
-MSAConsensusAlgorithmFactory::MSAConsensusAlgorithmFactory(const QString& algoId, ConsensusAlgorithmFlags _flags, QObject* p)
-: QObject(p), algorithmId(algoId), flags(_flags)
-{
+MSAConsensusAlgorithmFactory::MSAConsensusAlgorithmFactory(const QString &algoId, ConsensusAlgorithmFlags _flags, QObject *p)
+    : QObject(p), algorithmId(algoId), flags(_flags) {
 }
 
-ConsensusAlgorithmFlags MSAConsensusAlgorithmFactory::getAphabetFlags(const DNAAlphabet* al) {
+ConsensusAlgorithmFlags MSAConsensusAlgorithmFactory::getAphabetFlags(const DNAAlphabet *al) {
     if (al->getType() == DNAAlphabet_AMINO) {
         return ConsensusAlgorithmFlag_Amino;
     } else if (al->getType() == DNAAlphabet_NUCL) {
         return ConsensusAlgorithmFlag_Nucleic;
     }
-    assert(al->getType() ==  DNAAlphabet_RAW);
+    assert(al->getType() == DNAAlphabet_RAW);
     return ConsensusAlgorithmFlag_Raw;
 }
 
@@ -52,22 +52,19 @@ ConsensusAlgorithmFlags MSAConsensusAlgorithmFactory::getAphabetFlags(const DNAA
 // Algorithm
 
 char MSAConsensusAlgorithm::INVALID_CONS_CHAR = '\0';
-MSAConsensusAlgorithm::MSAConsensusAlgorithm(MSAConsensusAlgorithmFactory* _factory, bool ignoreTrailingLeadingGaps, QObject* p)
+MSAConsensusAlgorithm::MSAConsensusAlgorithm(MSAConsensusAlgorithmFactory *_factory, bool ignoreTrailingLeadingGaps, QObject *p)
     : QObject(p), factory(_factory),
       threshold(0),
       ignoreTrailingAndLeadingGaps(ignoreTrailingLeadingGaps) {
-
 }
 
 MSAConsensusAlgorithm::MSAConsensusAlgorithm(const MSAConsensusAlgorithm &algorithm)
     : QObject(algorithm.parent()), factory(algorithm.factory),
-    threshold(algorithm.threshold),
-    ignoreTrailingAndLeadingGaps(algorithm.ignoreTrailingAndLeadingGaps) {
-
+      threshold(algorithm.threshold),
+      ignoreTrailingAndLeadingGaps(algorithm.ignoreTrailingAndLeadingGaps) {
 }
 
-char MSAConsensusAlgorithm::getConsensusCharAndScore(const MultipleAlignment& ma, int column, int& score,
-                                                     QVector<int> seqIdx) const {
+char MSAConsensusAlgorithm::getConsensusCharAndScore(const MultipleAlignment &ma, int column, int &score, QVector<int> seqIdx) const {
     char consensusChar = getConsensusChar(ma, column, seqIdx);
 
     //now compute score using most freq character
@@ -88,14 +85,14 @@ void MSAConsensusAlgorithm::setThreshold(int val) {
     emit si_thresholdChanged(newThreshold);
 }
 
-bool MSAConsensusAlgorithm::filterIdx(QVector<int> &seqIdx, const MultipleAlignment& ma, const int pos) const {
+bool MSAConsensusAlgorithm::filterIdx(QVector<int> &seqIdx, const MultipleAlignment &ma, const int pos) const {
     CHECK(ignoreTrailingAndLeadingGaps, true);
 
     QVector<int> tmp;
     int nSeq = seqIdx.isEmpty() ? ma->getNumRows() : seqIdx.size();
     for (int seq = 0; seq < nSeq; seq++) {
-        int rowNum = seqIdx.isEmpty() ? seq : seqIdx[ seq ];
-        const MultipleAlignmentRow& row = ma->getRow(rowNum);
+        int rowNum = seqIdx.isEmpty() ? seq : seqIdx[seq];
+        const MultipleAlignmentRow &row = ma->getRow(rowNum);
         if (row->isTrailingOrLeadingGap(pos)) {
             continue;
         }
@@ -107,4 +104,4 @@ bool MSAConsensusAlgorithm::filterIdx(QVector<int> &seqIdx, const MultipleAlignm
     return !tmp.isEmpty();
 }
 
-} //namespace
+}    // namespace U2

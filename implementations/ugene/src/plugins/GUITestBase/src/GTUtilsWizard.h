@@ -43,7 +43,7 @@ public:
     static void setAllParameters(HI::GUITestOpStatus &os, QMap<QString, QVariant> map);
     static void setParameter(HI::GUITestOpStatus &os, QString parName, QVariant parValue);
     static QVariant getParameter(HI::GUITestOpStatus &os, QString parName);
-    static void setValue(HI::GUITestOpStatus &os, QWidget* w, QVariant value);
+    static void setValue(HI::GUITestOpStatus &os, QWidget *w, QVariant value);
     static void clickButton(HI::GUITestOpStatus &os, WizardButton button);
     static QString getPageTitle(HI::GUITestOpStatus &os);
 
@@ -52,6 +52,6 @@ private:
     static QMap<QString, WizardButton> initButtonMap();
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_GT_UTILS_WIZARD_H_
+#endif    // _U2_GT_UTILS_WIZARD_H_

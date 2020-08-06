@@ -19,19 +19,20 @@
  * MA 02110-1301, USA.
  */
 
+#include "ActorValidator.h"
+
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Lang/HRSchemaSerializer.h>
 
 #include "ActorScriptValidator.h"
-#include "ActorValidator.h"
 
 namespace U2 {
 using namespace WorkflowSerialize;
 namespace Workflow {
 
 bool ActorValidator::validate(const Configuration *cfg, NotificationsList &notificationList) const {
-    const Actor *actor = static_cast<const Actor*>(cfg);
+    const Actor *actor = static_cast<const Actor *>(cfg);
     SAFE_POINT(NULL != actor, "NULL actor", false);
     QMap<QString, QString> options;
     return validate(actor, notificationList, options);
@@ -54,10 +55,10 @@ bool ActorValidatorRegistry::addValidator(const QString &id, ActorValidator *val
     return true;
 }
 
-ActorValidator * ActorValidatorRegistry::findValidator(const QString &id) {
+ActorValidator *ActorValidatorRegistry::findValidator(const QString &id) {
     QMutexLocker lock(&mutex);
     return validators.value(id, NULL);
 }
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

@@ -20,32 +20,33 @@
  */
 
 #include "ConvertAceToSqliteDialogFiller.h"
-#include <QApplication>
-#include <QDialogButtonBox>
+#include <base_dialogs/MessageBoxFiller.h>
 #include <primitives/GTLineEdit.h>
 #include <primitives/GTWidget.h>
-#include <base_dialogs/MessageBoxFiller.h>
 
-namespace U2{
+#include <QApplication>
+#include <QDialogButtonBox>
+
+namespace U2 {
 using namespace HI;
 
 #define GT_CLASS_NAME "GTUtilsDialog::SaveProjectAsDialogFiller"
 #define GT_METHOD_NAME "commonScenario"
-void ConvertAceToSqliteDialogFiller::commonScenario(){
+void ConvertAceToSqliteDialogFiller::commonScenario() {
     QString button;
     switch (action) {
-        case NOT_SET:
-            button = "";
-            break;
-        case REPLACE:
-            button = "Replace";
-            break;
-        case APPEND:
-            button = "Append";
-            break;
-        case CANCEL:
-            button = "Cancel";
-            break;
+    case NOT_SET:
+        button = "";
+        break;
+    case REPLACE:
+        button = "Replace";
+        break;
+    case APPEND:
+        button = "Append";
+        break;
+    case CANCEL:
+        button = "Cancel";
+        break;
     }
     MessageBoxDialogFiller *mbf = new MessageBoxDialogFiller(os, button);
     if (NOT_SET == action) {
@@ -54,10 +55,10 @@ void ConvertAceToSqliteDialogFiller::commonScenario(){
     } else {
         GTUtilsDialog::waitForDialog(os, mbf);
     }
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
-    QLineEdit* leDest = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "leDest",dialog));
+    QLineEdit *leDest = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "leDest", dialog));
     GT_CHECK(leDest, "destination URL lineedit not found");
     GTLineEdit::setText(os, leDest, leDestUrl);
 
@@ -66,4 +67,4 @@ void ConvertAceToSqliteDialogFiller::commonScenario(){
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

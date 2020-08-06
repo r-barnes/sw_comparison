@@ -57,17 +57,17 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/HighFlexSettings.cpp" line="89"/>
+        <location filename="../src/HighFlexSettings.cpp" line="78"/>
         <source>Invalid high flex setting window size is stored in the application settings.</source>
         <translation>Настройки приложения содержат некорректный параметр window size.</translation>
     </message>
     <message>
-        <location filename="../src/HighFlexSettings.cpp" line="101"/>
+        <location filename="../src/HighFlexSettings.cpp" line="89"/>
         <source>Invalid high flex setting window step is stored in the application settings.</source>
         <translation>Настройки приложения содержат некорректный параметр window step.</translation>
     </message>
     <message>
-        <location filename="../src/HighFlexSettings.cpp" line="113"/>
+        <location filename="../src/HighFlexSettings.cpp" line="100"/>
         <source>Invalid high flex setting threshold is stored in the application settings.</source>
         <translation>Настройки приложения содержат некорректный параметр threshold.</translation>
     </message>
@@ -75,23 +75,23 @@
 <context>
     <name>U2::DNAFlexDialog</name>
     <message>
-        <location filename="../src/DNAFlexDialog.cpp" line="45"/>
+        <location filename="../src/DNAFlexDialog.cpp" line="47"/>
         <source>Search</source>
         <translation>Искать</translation>
     </message>
     <message>
-        <location filename="../src/DNAFlexDialog.cpp" line="46"/>
+        <location filename="../src/DNAFlexDialog.cpp" line="48"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../src/DNAFlexDialog.cpp" line="100"/>
-        <location filename="../src/DNAFlexDialog.cpp" line="105"/>
+        <location filename="../src/DNAFlexDialog.cpp" line="101"/>
+        <location filename="../src/DNAFlexDialog.cpp" line="106"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../src/DNAFlexDialog.cpp" line="105"/>
+        <location filename="../src/DNAFlexDialog.cpp" line="106"/>
         <source>Cannot create an annotation object. Please check settings</source>
         <translation>Невозможно создать аннотацию. Проверьте настройки</translation>
     </message>
@@ -99,7 +99,7 @@
 <context>
     <name>U2::DNAFlexGraphFactory</name>
     <message>
-        <location filename="../src/DNAFlexGraph.cpp" line="43"/>
+        <location filename="../src/DNAFlexGraph.cpp" line="42"/>
         <source>DNA Flexibility</source>
         <translation>ДНК гибкость</translation>
     </message>
@@ -107,27 +107,27 @@
 <context>
     <name>U2::DNAFlexPlugin</name>
     <message>
-        <location filename="../src/DNAFlexPlugin.cpp" line="49"/>
+        <location filename="../src/DNAFlexPlugin.cpp" line="48"/>
         <source>DNA Flexibility</source>
         <translation>ДНК гибкость</translation>
     </message>
     <message>
-        <location filename="../src/DNAFlexPlugin.cpp" line="50"/>
+        <location filename="../src/DNAFlexPlugin.cpp" line="49"/>
         <source>Searches a DNA sequence for regions of high DNA helix flexibility.</source>
         <translation>Позволяет искать в ДНК районы высокой флексибильности.</translation>
     </message>
     <message>
-        <location filename="../src/DNAFlexGraphAlgorithm.cpp" line="73"/>
+        <location filename="../src/DNAFlexGraphAlgorithm.cpp" line="68"/>
         <source>UGENE ran out of memory during the DNA flexibility calculating. The 32-bit UGENE version has a restriction on its memory consumption. Try using the 64-bit version instead.</source>
         <translation>UGENE ran out of memory during the DNA flexibility calculating. The 32-bit UGENE version has a restriction on its memory consumption. Try using the 64-bit version instead.</translation>
     </message>
     <message>
-        <location filename="../src/DNAFlexGraphAlgorithm.cpp" line="76"/>
+        <location filename="../src/DNAFlexGraphAlgorithm.cpp" line="71"/>
         <source>Out of memory during the DNA flexibility calculating.</source>
         <translation>Out of memory during the DNA flexibility calculating.</translation>
     </message>
     <message>
-        <location filename="../src/DNAFlexGraphAlgorithm.cpp" line="79"/>
+        <location filename="../src/DNAFlexGraphAlgorithm.cpp" line="74"/>
         <source>Internal error occurred during the DNA flexibility calculating.</source>
         <translation>Internal error occurred during the DNA flexibility calculating.</translation>
     </message>
@@ -135,7 +135,7 @@
 <context>
     <name>U2::DNAFlexTask</name>
     <message>
-        <location filename="../src/DNAFlexTask.cpp" line="44"/>
+        <location filename="../src/DNAFlexTask.cpp" line="45"/>
         <source>DNA Flexibility task</source>
         <translation>Задача анализа ДНК флексибильности</translation>
     </message>
@@ -148,12 +148,12 @@
 <context>
     <name>U2::DNAFlexViewContext</name>
     <message>
-        <location filename="../src/DNAFlexPlugin.cpp" line="90"/>
+        <location filename="../src/DNAFlexPlugin.cpp" line="79"/>
         <source>Unsupported sequence alphabet, only standard DNA alphabet is supported</source>
         <translation>Неподдерживаемый алфавит, входная последовательность должна состоять из букв A, C, G и T</translation>
     </message>
     <message>
-        <location filename="../src/DNAFlexPlugin.cpp" line="113"/>
+        <location filename="../src/DNAFlexPlugin.cpp" line="99"/>
         <source>Find high DNA flexibility regions...</source>
         <translation>Поиск участков ДНК с повышенной гибкостью...</translation>
     </message>
@@ -161,7 +161,7 @@
 <context>
     <name>U2::FindHighFlexRegions</name>
     <message>
-        <location filename="../src/FindHighFlexRegions.cpp" line="33"/>
+        <location filename="../src/FindHighFlexRegions.cpp" line="31"/>
         <source>Searching for regions of high DNA flexibility</source>
         <translation>Поиск районов высокой флексибильности</translation>
     </message>

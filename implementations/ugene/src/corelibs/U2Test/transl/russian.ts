@@ -52,33 +52,33 @@
 <context>
     <name>U2::GTestFormatRegistry</name>
     <message>
-        <location filename="../src/GTestFrameworkComponents.cpp" line="93"/>
+        <location filename="../src/GTestFrameworkComponents.cpp" line="92"/>
         <source>Sets timeout for the tests.</source>
         <translation>Sets timeout for the tests.</translation>
     </message>
     <message>
-        <location filename="../src/GTestFrameworkComponents.cpp" line="99"/>
+        <location filename="../src/GTestFrameworkComponents.cpp" line="98"/>
         <source>Sets the number of threads.</source>
         <translation>Sets the number of threads.</translation>
     </message>
     <message>
-        <location filename="../src/GTestFrameworkComponents.cpp" line="100"/>
+        <location filename="../src/GTestFrameworkComponents.cpp" line="99"/>
         <source>Sets the number of threads in the Test Runner that can run at the same time.</source>
         <comment>&lt;number_of_threads&gt;</comment>
         <translation>Sets the number of threads in the Test Runner that can run at the same time.</translation>
     </message>
     <message>
-        <location filename="../src/GTestFrameworkComponents.cpp" line="107"/>
+        <location filename="../src/GTestFrameworkComponents.cpp" line="106"/>
         <source>Sets the folder for the test report.</source>
         <translation>Sets the folder for the test report.</translation>
     </message>
     <message>
-        <location filename="../src/GTestFrameworkComponents.cpp" line="113"/>
+        <location filename="../src/GTestFrameworkComponents.cpp" line="112"/>
         <source>Loads test suites and runs them.</source>
         <translation>Loads test suites and runs them.</translation>
     </message>
     <message>
-        <location filename="../src/GTestFrameworkComponents.cpp" line="119"/>
+        <location filename="../src/GTestFrameworkComponents.cpp" line="118"/>
         <source>Output a test&apos;s messages to the TeamCity system.</source>
         <translation>Output a test&apos;s messages to the TeamCity system.</translation>
     </message>
@@ -86,12 +86,12 @@
 <context>
     <name>U2::GTestSuite</name>
     <message>
-        <location filename="../src/GTest.cpp" line="338"/>
+        <location filename="../src/GTest.cpp" line="330"/>
         <source>Can&apos;t load suite list %1</source>
         <translation>Can&apos;t load suite list %1</translation>
     </message>
     <message>
-        <location filename="../src/GTest.cpp" line="339"/>
+        <location filename="../src/GTest.cpp" line="331"/>
         <source>Can&apos;t open suite list %1</source>
         <translation>Can&apos;t open suite list %1</translation>
     </message>
@@ -99,37 +99,33 @@
 <context>
     <name>U2::GUITestLauncher</name>
     <message>
-        <location filename="../src/gui_tests/GUITestLauncher.cpp" line="139"/>
+        <location filename="../src/gui_tests/GUITestLauncher.cpp" line="149"/>
         <source>No tests to run</source>
         <translation>No tests to run</translation>
     </message>
     <message>
-        <location filename="../src/gui_tests/GUITestLauncher.cpp" line="149"/>
         <source>Invalid suite number: %1. There are %2 suites</source>
-        <translation>Invalid suite number: %1. There are %2 suites</translation>
+        <translation type="vanished">Invalid suite number: %1. There are %2 suites</translation>
     </message>
     <message>
-        <location filename="../src/gui_tests/GUITestLauncher.cpp" line="257"/>
         <source>An error occurred while starting UGENE: </source>
-        <translation>An error occurred while starting UGENE: </translation>
+        <translation type="vanished">An error occurred while starting UGENE: </translation>
     </message>
     <message>
-        <location filename="../src/gui_tests/GUITestLauncher.cpp" line="288"/>
         <source>An error occurred while finishing UGENE: </source>
-        <translation>An error occurred while finishing UGENE: </translation>
+        <translation type="vanished">An error occurred while finishing UGENE: </translation>
     </message>
     <message>
-        <location filename="../src/gui_tests/GUITestLauncher.cpp" line="290"/>
         <source>Test fails because of timeout.</source>
-        <translation>Test fails because of timeout.</translation>
+        <translation type="vanished">Test fails because of timeout.</translation>
     </message>
     <message>
-        <location filename="../src/gui_tests/GUITestLauncher.cpp" line="322"/>
+        <location filename="../src/gui_tests/GUITestLauncher.cpp" line="417"/>
         <source>Test name</source>
         <translation>Test name</translation>
     </message>
     <message>
-        <location filename="../src/gui_tests/GUITestLauncher.cpp" line="322"/>
+        <location filename="../src/gui_tests/GUITestLauncher.cpp" line="417"/>
         <source>Status</source>
         <translation>Status</translation>
     </message>
@@ -137,29 +133,25 @@
 <context>
     <name>U2::GUITestService</name>
     <message>
-        <location filename="../src/gui_tests/GUITestService.cpp" line="56"/>
+        <location filename="../src/gui_tests/GUITestService.cpp" line="54"/>
         <source>GUI test viewer</source>
         <translation>GUI test viewer</translation>
     </message>
     <message>
-        <location filename="../src/gui_tests/GUITestService.cpp" line="56"/>
+        <location filename="../src/gui_tests/GUITestService.cpp" line="54"/>
         <source>Service to support UGENE GUI testing</source>
         <translation>Service to support UGENE GUI testing</translation>
     </message>
     <message>
-        <location filename="../src/gui_tests/GUITestService.cpp" line="258"/>
+        <location filename="../src/gui_tests/GUITestService.cpp" line="252"/>
         <source>Can&apos;t connect external tool manager signal</source>
         <translation>Can&apos;t connect external tool manager signal</translation>
-    </message>
-    <message>
-        <source>GUI testing</source>
-        <translation type="vanished">GUI testing</translation>
     </message>
 </context>
 <context>
     <name>U2::LoadTestTask</name>
     <message>
-        <location filename="../src/TestRunnerTask.cpp" line="197"/>
+        <location filename="../src/TestRunnerTask.cpp" line="198"/>
         <source>TestLoader for %1</source>
         <translation>TestLoader for %1</translation>
     </message>
@@ -177,7 +169,7 @@
         <translation>Исполнение тестов</translation>
     </message>
     <message>
-        <location filename="../src/TestRunnerTask.cpp" line="107"/>
+        <location filename="../src/TestRunnerTask.cpp" line="105"/>
         <source>Test format not supported: %1</source>
         <translation>Формат теста не поддерживается: %1</translation>
     </message>

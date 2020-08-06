@@ -22,21 +22,21 @@
 #ifndef _U2_LOCAL_TOOLBAR_H_
 #define _U2_LOCAL_TOOLBAR_H_
 
-#include <U2Gui/OrderedToolbar.h>
+#include <QToolBar>
 
 #include <U2Core/global.h>
 
-#include <QToolBar>
+#include <U2Gui/OrderedToolbar.h>
 
 namespace U2 {
 
 class U2GUI_EXPORT LocalToolbar : public OrderedToolbar {
 public:
-    LocalToolbar(QWidget* p);
+    LocalToolbar(QWidget *p);
 
-    virtual void addAction(QAction* a);
+    virtual void addAction(QAction *a);
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_LOCAL_TOOLBAR_H_
+#endif    // _U2_LOCAL_TOOLBAR_H_

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ImportExternalToolDialog.h"
+
 #include <QDir>
 #include <QPushButton>
 
@@ -30,16 +32,14 @@
 #include <U2Gui/U2FileDialog.h>
 
 #include "ImportCustomToolsTask.h"
-#include "ImportExternalToolDialog.h"
 
 namespace U2 {
 
 ImportExternalToolDialog::ImportExternalToolDialog(QWidget *_parent)
-    : QDialog(_parent)
-{
+    : QDialog(_parent) {
     setupUi(this);
 
-    new HelpButton(this, buttonBox, "24742946");
+    new HelpButton(this, buttonBox, "46499714");
 
     connect(lePath, SIGNAL(textChanged(const QString &)), SLOT(sl_pathChanged()));
     connect(tbBrowse, SIGNAL(clicked()), SLOT(sl_browse()));
@@ -49,7 +49,7 @@ ImportExternalToolDialog::ImportExternalToolDialog(QWidget *_parent)
 
 void ImportExternalToolDialog::sl_browse() {
     LastUsedDirHelper lod("import external tool");
-    const QString filter = DialogUtils::prepareFileFilter("UGENE external tool config file", { "xml" }, true, {});
+    const QString filter = DialogUtils::prepareFileFilter("UGENE external tool config file", {"xml"}, true, {});
     lod.url = U2FileDialog::getOpenFileName(this, tr("Select configuration file to import"), lod.dir, filter);
     if (!lod.url.isEmpty()) {
         lePath->setText(QDir::toNativeSeparators(lod.url));
@@ -65,4 +65,4 @@ void ImportExternalToolDialog::accept() {
     QDialog::accept();
 }
 
-}   // namespace U2
+}    // namespace U2

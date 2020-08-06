@@ -22,13 +22,13 @@
 #ifndef _U2_DOWNLOAD_REMOTE_FILE_DIALOG_H_
 #define _U2_DOWNLOAD_REMOTE_FILE_DIALOG_H_
 
-#include <U2Core/global.h>
-
 #include <QDialog>
 #include <QList>
-#include <QString>
 #include <QNetworkReply>
+#include <QString>
 #include <QXmlSimpleReader>
+
+#include <U2Core/global.h>
 
 class QNetworkReply;
 class QNetworkAccessManager;
@@ -36,8 +36,7 @@ class Ui_DownloadRemoteFileDialog;
 
 namespace U2 {
 
-
-class U2GUI_EXPORT DownloadRemoteFileDialog : public QDialog{
+class U2GUI_EXPORT DownloadRemoteFileDialog : public QDialog {
     Q_OBJECT
     bool isQueryDB;
     QString resUrl;
@@ -48,11 +47,11 @@ public slots:
     void sl_onDbChanged();
     void sl_formatChanged(const QString &format);
     void sl_saveFilenameButtonClicked();
-    void sl_linkActivated(const QString& link);
+    void sl_linkActivated(const QString &link);
 
 public:
     DownloadRemoteFileDialog(QWidget *p = NULL);
-    DownloadRemoteFileDialog(const QString& ids, const QString& dbId, QWidget *p = NULL);
+    DownloadRemoteFileDialog(const QString &ids, const QString &dbId, QWidget *p = NULL);
     ~DownloadRemoteFileDialog();
     QString getDBId() const;
     QString getResourceId() const;
@@ -61,12 +60,12 @@ public:
 
 private:
     void setSaveFilename();
-    bool isNcbiDb(const QString& dbId) const;
-    void setupHintText( const QString &sampleText = QString( ) );
+    bool isNcbiDb(const QString &dbId) const;
+    void setupHintText(const QString &sampleText = QString());
 
     Ui_DownloadRemoteFileDialog *ui;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif //_U2_DOWNLOAD_REMOTE_FILE_DIALOG_H_
+#endif    //_U2_DOWNLOAD_REMOTE_FILE_DIALOG_H_

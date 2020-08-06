@@ -26,26 +26,34 @@
 
 namespace U2 {
 
-template <class T>
+template<class T>
 class GAutoDeleteList : public QObject {
 public:
-    GAutoDeleteList(QObject* p = NULL) : QObject(p){}
-    virtual ~GAutoDeleteList() {qDeleteAll(qlist);}
-    QList<T*> qlist;
+    GAutoDeleteList(QObject *p = NULL)
+        : QObject(p) {
+    }
+    virtual ~GAutoDeleteList() {
+        qDeleteAll(qlist);
+    }
+    QList<T *> qlist;
 };
 
 //todo: move to separate header
-template <class T>
+template<class T>
 class gauto_array {
 public:
-    gauto_array(T* p = NULL) : data(p){}
+    gauto_array(T *p = NULL)
+        : data(p) {
+    }
     ~gauto_array() {
         delete[] data;
     }
-    T* get() const {return data;}
-    T* data;
+    T *get() const {
+        return data;
+    }
+    T *data;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

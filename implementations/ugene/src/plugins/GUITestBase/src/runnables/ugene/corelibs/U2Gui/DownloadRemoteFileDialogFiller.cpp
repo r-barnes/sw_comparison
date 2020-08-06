@@ -19,39 +19,36 @@
  * MA 02110-1301, USA.
  */
 
-#include <QDir>
-#include <QFileInfo>
-
 #include "DownloadRemoteFileDialogFiller.h"
+#include <base_dialogs/GTFileDialog.h>
 #include <primitives/GTCheckBox.h>
 #include <primitives/GTComboBox.h>
-#include <base_dialogs/GTFileDialog.h>
 #include <primitives/GTLineEdit.h>
 #include <primitives/GTListWidget.h>
 #include <primitives/GTWidget.h>
-#include <U2Core/U2SafePoints.h>
 
 #include <QApplication>
 #include <QComboBox>
 #include <QDialogButtonBox>
+#include <QDir>
+#include <QFileInfo>
 #include <QListWidget>
 #include <QPushButton>
+
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
 #define GT_CLASS_NAME "DownloadRemoteFileDialogFiller"
-DownloadRemoteFileDialogFiller::DownloadRemoteFileDialogFiller(HI::GUITestOpStatus &os, const QList<DownloadRemoteFileDialogFiller::Action> &actions) :
-    Filler(os, "DownloadRemoteFileDialog"),
-    actions(actions),
-    dialog(NULL)
-{
+DownloadRemoteFileDialogFiller::DownloadRemoteFileDialogFiller(HI::GUITestOpStatus &os, const QList<DownloadRemoteFileDialogFiller::Action> &actions)
+    : Filler(os, "DownloadRemoteFileDialog"),
+      actions(actions),
+      dialog(NULL) {
 }
 
 DownloadRemoteFileDialogFiller::DownloadRemoteFileDialogFiller(HI::GUITestOpStatus &os, CustomScenario *c)
     : Filler(os, "DownloadRemoteFileDialog", c),
-      dialog(NULL)
-{
-
+      dialog(NULL) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
@@ -241,46 +238,44 @@ void DownloadRemoteFileDialogFiller::clickCancel() {
 #define GT_CLASS_NAME "GTUtilsDialog::RemoteDBDialogFillerDeprecated"
 #define GT_METHOD_NAME "commonScenario"
 void RemoteDBDialogFillerDeprecated::commonScenario() {
-
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
-    if (!resID.isEmpty()){
-        QLineEdit *idLineEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "idLineEdit", dialog));
+    if (!resID.isEmpty()) {
+        QLineEdit *idLineEdit = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "idLineEdit", dialog));
         GTLineEdit::setText(os, idLineEdit, resID);
     }
 
-    QLineEdit *saveFilenameLineEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "saveFilenameLineEdit", dialog));
-    if(!saveDirPath.isEmpty()){
+    QLineEdit *saveFilenameLineEdit = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "saveFilenameLineEdit", dialog));
+    if (!saveDirPath.isEmpty()) {
         GTLineEdit::setText(os, saveFilenameLineEdit, saveDirPath);
     }
 
-    QComboBox *databasesBox = qobject_cast<QComboBox*>(GTWidget::findWidget(os, "databasesBox", dialog));
+    QComboBox *databasesBox = qobject_cast<QComboBox *>(GTWidget::findWidget(os, "databasesBox", dialog));
     GTComboBox::setCurrentIndex(os, databasesBox, DBItemNum, true, useMethod);
 
     GTCheckBox::setChecked(os, GTWidget::findExactWidget<QCheckBox *>(os, "chbForceDownloadSequence", dialog), forceGetSequence);
 
-    if (outFormatVal!=-1){
-        QComboBox* formatBox = qobject_cast<QComboBox*>(GTWidget::findWidget(os, "formatBox"));
+    if (outFormatVal != -1) {
+        QComboBox *formatBox = qobject_cast<QComboBox *>(GTWidget::findWidget(os, "formatBox"));
         GTComboBox::setCurrentIndex(os, formatBox, outFormatVal, true, useMethod);
     }
-    if (!addToProject){
-        QCheckBox *addToProjectButton = dialog->findChild<QCheckBox*>(QString::fromUtf8("chbAddToProjectCheck"));
+    if (!addToProject) {
+        QCheckBox *addToProjectButton = dialog->findChild<QCheckBox *>(QString::fromUtf8("chbAddToProjectCheck"));
         GT_CHECK(addToProjectButton != NULL, "Check box not found");
         GTCheckBox::setChecked(os, addToProjectButton, false);
     }
     if (pressCancel) {
-        QDialogButtonBox* box = qobject_cast<QDialogButtonBox*>(GTWidget::findWidget(os, "buttonBox", dialog));
+        QDialogButtonBox *box = qobject_cast<QDialogButtonBox *>(GTWidget::findWidget(os, "buttonBox", dialog));
         GT_CHECK(box != NULL, "buttonBox is NULL");
-        QPushButton* button = box->button(QDialogButtonBox::Cancel);
-        GT_CHECK(button !=NULL, "cancel button is NULL");
+        QPushButton *button = box->button(QDialogButtonBox::Cancel);
+        GT_CHECK(button != NULL, "cancel button is NULL");
         GTWidget::click(os, button);
-    }
-    else {
-        QDialogButtonBox* box = qobject_cast<QDialogButtonBox*>(GTWidget::findWidget(os, "buttonBox", dialog));
+    } else {
+        QDialogButtonBox *box = qobject_cast<QDialogButtonBox *>(GTWidget::findWidget(os, "buttonBox", dialog));
         GT_CHECK(box != NULL, "buttonBox is NULL");
-        QPushButton* button = box->button(QDialogButtonBox::Ok);
-        GT_CHECK(button !=NULL, "cancel button is NULL");
+        QPushButton *button = box->button(QDialogButtonBox::Ok);
+        GT_CHECK(button != NULL, "cancel button is NULL");
         GTWidget::click(os, button);
     }
 }
@@ -288,4 +283,4 @@ void RemoteDBDialogFillerDeprecated::commonScenario() {
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

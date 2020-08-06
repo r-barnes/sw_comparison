@@ -99,6 +99,9 @@
 
 namespace U2 {
 
+//TODO: sync with SETTINGS in WorkflowSettings.cpp
+#define SETTINGS QString("workflowview/")
+
 #define LAST_DIR SETTINGS + "lastdir"
 #define SPLITTER_STATE SETTINGS + "splitter"
 #define EDITOR_STATE SETTINGS + "editor"
@@ -106,7 +109,8 @@ namespace U2 {
 #define TABS_STATE SETTINGS + "tabs"
 #define CHECK_R_PACKAGE SETTINGS + "check_r_for_cistrome"
 
-enum {ElementsTab,SamplesTab};
+enum { ElementsTab,
+       SamplesTab };
 
 #define WS 1000
 #define MAX_FILE_SIZE 1000000
@@ -118,26 +122,34 @@ static const int ABSENT_WIDGET_TAB_NUMBER = -1;
 /************************************************************************/
 class PercentValidator : public QRegExpValidator {
 public:
-    PercentValidator(QObject* parent) : QRegExpValidator(QRegExp("[1-9][0-9]*"+QObject::tr("%")), parent) {}
-    void fixup(QString& input) const {
+    PercentValidator(QObject *parent)
+        : QRegExpValidator(QRegExp("[1-9][0-9]*" + QObject::tr("%")), parent) {
+    }
+    void fixup(QString &input) const {
         if (!input.endsWith(QObject::tr("%"))) {
             input.append(QObject::tr("%"));
         }
     }
-}; // PercentValidator
+};    // PercentValidator
 
-static QComboBox * scaleCombo(WorkflowView *parent) {
+static QComboBox *scaleCombo(WorkflowView *parent) {
     QComboBox *sceneScaleCombo = new QComboBox(parent);
     sceneScaleCombo->setEditable(true);
     sceneScaleCombo->setValidator(new PercentValidator(parent));
     QStringList scales;
-    scales << "25%" << "50%" << "75%" << "100%" << "125%" << "150%" << "200%";
+    scales << "25%"
+           << "50%"
+           << "75%"
+           << "100%"
+           << "125%"
+           << "150%"
+           << "200%";
     sceneScaleCombo->addItems(scales);
     sceneScaleCombo->setCurrentIndex(3);
     QObject::connect(sceneScaleCombo, SIGNAL(currentIndexChanged(const QString &)), parent, SLOT(sl_rescaleScene(const QString &)));
     // Some visual modifications for Mac:
     sceneScaleCombo->lineEdit()->setStyleSheet("QLineEdit {margin-right: 1px;}");
-    sceneScaleCombo->setObjectName( "wdScaleCombo" );
+    sceneScaleCombo->setObjectName("wdScaleCombo");
     return sceneScaleCombo;
 }
 
@@ -147,7 +159,7 @@ static void addToggleDashboardAction(QToolBar *toolBar, QAction *action) {
     toolBar->addWidget(spacer);
 
     toolBar->addAction(action);
-    QToolButton *b = dynamic_cast<QToolButton*>(toolBar->widgetForAction(action));
+    QToolButton *b = dynamic_cast<QToolButton *>(toolBar->widgetForAction(action));
     CHECK(NULL != b, );
     b->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     b->setAutoRaise(false);
@@ -164,22 +176,21 @@ static void addToggleDashboardAction(QToolBar *toolBar, QAction *action) {
 #endif
 }
 
-static QToolButton * scriptMenu(WorkflowView *parent, const QList<QAction*> &scriptingActions) {
+static QToolButton *scriptMenu(WorkflowView *parent, const QList<QAction *> &scriptingActions) {
     QToolButton *scriptingModeButton = new QToolButton(parent);
-    QMenu *scriptingModeMenu = new QMenu( QObject::tr( "Scripting mode" ), parent );
-    foreach( QAction * a, scriptingActions ) {
-        scriptingModeMenu->addAction( a );
+    QMenu *scriptingModeMenu = new QMenu(QObject::tr("Scripting mode"), parent);
+    foreach (QAction *a, scriptingActions) {
+        scriptingModeMenu->addAction(a);
     }
-    scriptingModeButton->setDefaultAction( scriptingModeMenu->menuAction() );
-    scriptingModeButton->setPopupMode( QToolButton::InstantPopup );
+    scriptingModeButton->setDefaultAction(scriptingModeMenu->menuAction());
+    scriptingModeButton->setPopupMode(QToolButton::InstantPopup);
     return scriptingModeButton;
 }
 
 DashboardManagerHelper::DashboardManagerHelper(QAction *_dmAction, WorkflowView *_parent)
     : QObject(_parent),
       dmAction(_dmAction),
-      parent(_parent)
-{
+      parent(_parent) {
     connect(dmAction, SIGNAL(triggered()), SLOT(sl_showDashboardsManagerDialog()));
 
     DashboardInfoRegistry *dashboardInfoRegistry = AppContext::getDashboardInfoRegistry();
@@ -210,8 +221,7 @@ void DashboardManagerHelper::sl_result(int result) {
 
 void DashboardManagerHelper::sl_showDashboardsManagerDialog() {
     if (AppContext::getDashboardInfoRegistry()->isEmpty()) {
-        QMessageBox *d = new QMessageBox(QMessageBox::Information, tr("No Dashboards Found"),
-            tr("You do not have any dashboards yet. You need to run some workflow to use Dashboards Manager."), QMessageBox::NoButton, parent);
+        QMessageBox *d = new QMessageBox(QMessageBox::Information, tr("No Dashboards Found"), tr("You do not have any dashboards yet. You need to run some workflow to use Dashboards Manager."), QMessageBox::NoButton, parent);
         d->show();
         return;
     }
@@ -233,7 +243,7 @@ void DashboardManagerHelper::sl_dashboardsScanningFinished() {
 /********************************
 * WorkflowView
 ********************************/
-WorkflowView * WorkflowView::createInstance(WorkflowGObject *go) {
+WorkflowView *WorkflowView::createInstance(WorkflowGObject *go) {
     MWMDIManager *mdiManager = AppContext::getMainWindow()->getMDIManager();
     SAFE_POINT(NULL != mdiManager, "NULL MDI manager", NULL);
 
@@ -244,7 +254,7 @@ WorkflowView * WorkflowView::createInstance(WorkflowGObject *go) {
     return view;
 }
 
-WorkflowView * WorkflowView::openWD(WorkflowGObject *go) {
+WorkflowView *WorkflowView::openWD(WorkflowGObject *go) {
     if (WorkflowSettings::isOutputDirectorySet()) {
         return createInstance(go);
     }
@@ -259,10 +269,9 @@ WorkflowView * WorkflowView::openWD(WorkflowGObject *go) {
     return NULL;
 }
 
-WorkflowView::WorkflowView(WorkflowGObject* go)
-: MWMDIWindow(tr("Workflow Designer")), running(false), sceneRecreation(false), go(go), currentProto(NULL), currentActor(NULL),
-pasteCount(0), debugInfo(new WorkflowDebugStatus(this)), debugActions()
-{
+WorkflowView::WorkflowView(WorkflowGObject *go)
+    : MWMDIWindow(tr("Workflow Designer")), running(false), sceneRecreation(false), go(go), currentProto(NULL), currentActor(NULL),
+      pasteCount(0), debugInfo(new WorkflowDebugStatus(this)), debugActions(), loadWorkflowSceneTask(nullptr) {
     scriptingMode = WorkflowSettings::getScriptingMode();
     elementsMenu = NULL;
     schema = new Schema();
@@ -284,7 +293,7 @@ pasteCount(0), debugInfo(new WorkflowDebugStatus(this)), debugActions()
     createActions();
     sl_changeScriptMode();
 
-    if(go) {
+    if (go) {
         loadSceneFromObject();
     } else {
         sl_newScene();
@@ -295,7 +304,10 @@ pasteCount(0), debugInfo(new WorkflowDebugStatus(this)), debugActions()
 
 WorkflowView::~WorkflowView() {
     uiLog.trace("~WorkflowView");
-    if(AppContext::getProjectService()) {
+    if (!loadWorkflowSceneTask.isNull()) {
+        loadWorkflowSceneTask->cancel();
+    }
+    if (AppContext::getProjectService()) {
         AppContext::getProjectService()->enableSaveAction(true);
     }
     WorkflowSettings::setScriptingMode(scriptingMode);
@@ -324,7 +336,7 @@ void WorkflowView::setupScene() {
 void WorkflowView::setupPalette() {
     palette = new WorkflowPalette(WorkflowEnv::getProtoRegistry(), this);
     palette->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored));
-    connect(palette, SIGNAL(processSelected(Workflow::ActorPrototype*, bool)), SLOT(sl_selectPrototype(Workflow::ActorPrototype*, bool)));
+    connect(palette, SIGNAL(processSelected(Workflow::ActorPrototype *, bool)), SLOT(sl_selectPrototype(Workflow::ActorPrototype *, bool)));
     connect(palette, SIGNAL(si_prototypeIsAboutToBeRemoved(Workflow::ActorPrototype *)), SLOT(sl_prototypeIsAboutToBeRemoved(Workflow::ActorPrototype *)));
     connect(palette, SIGNAL(si_protoListModified()), SLOT(sl_protoListModified()));
     connect(palette, SIGNAL(si_protoChanged()), SLOT(sl_editItem()));
@@ -338,7 +350,7 @@ void WorkflowView::setupPalette() {
     tabs->insertTab(SamplesTab, new SamplesWrapper(samples, this), tr("Samples"));
     tabs->setTabPosition(QTabWidget::North);
 
-    connect(samples, SIGNAL(setupGlass(GlassPane*)), sceneView, SLOT(setGlass(GlassPane*)));
+    connect(samples, SIGNAL(setupGlass(GlassPane *)), sceneView, SLOT(setGlass(GlassPane *)));
     connect(samples, SIGNAL(sampleSelected(QString)), this, SLOT(sl_pasteSample(QString)));
     connect(tabs, SIGNAL(currentChanged(int)), samples, SLOT(cancelItem()));
     connect(tabs, SIGNAL(currentChanged(int)), palette, SLOT(resetSelection()));
@@ -347,15 +359,15 @@ void WorkflowView::setupPalette() {
 
 void WorkflowView::setupErrorList() {
     infoList = new QListWidget(this);
-    connect(infoList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), SLOT(sl_pickInfo(QListWidgetItem*)));
+    connect(infoList, SIGNAL(itemDoubleClicked(QListWidgetItem *)), SLOT(sl_pickInfo(QListWidgetItem *)));
     errorList = new QGroupBox();
     {
         errorList->setFlat(true);
         errorList->setTitle(tr("Error list"));
-        QVBoxLayout* vl = new QVBoxLayout(errorList);
+        QVBoxLayout *vl = new QVBoxLayout(errorList);
         vl->setSpacing(0);
         vl->setMargin(0);
-        vl->setContentsMargins(0,0,0,0);
+        vl->setContentsMargins(0, 0, 0, 0);
         vl->addWidget(infoList);
     }
     errorList->hide();
@@ -369,16 +381,16 @@ void WorkflowView::loadSceneFromObject() {
     LoadWorkflowTask::FileFormat format = LoadWorkflowTask::detectFormat(go->getSceneRawData());
     go->setView(this);
     QString err;
-    if(format == LoadWorkflowTask::HR) {
+    if (format == LoadWorkflowTask::HR) {
         err = HRSchemaSerializer::string2Schema(go->getSceneRawData(), schema, &meta);
-    } else if(format == LoadWorkflowTask::XML) {
+    } else if (format == LoadWorkflowTask::XML) {
         QDomDocument xml;
         QMap<ActorId, ActorId> remapping;
         xml.setContent(go->getSceneRawData().toUtf8());
         err = SchemaSerializer::xml2schema(xml.documentElement(), schema, remapping);
         SchemaSerializer::readMeta(&meta, xml.documentElement());
         scene->setModified(false);
-        if(err.isEmpty()) {
+        if (err.isEmpty()) {
             QMessageBox::warning(this, tr("Warning!"), QObject::tr("You opened obsolete workflow in XML format. It is strongly recommended"
                                                                    " to clear working space and create workflow from scratch."));
         } else {
@@ -407,7 +419,7 @@ void WorkflowView::loadSceneFromObject() {
 }
 
 void WorkflowView::loadUiSettings() {
-    Settings* settings = AppContext::getSettings();
+    Settings *settings = AppContext::getSettings();
     if (settings->contains(SPLITTER_STATE)) {
         splitter->restoreState(settings->getValue(SPLITTER_STATE).toByteArray());
     }
@@ -445,28 +457,21 @@ void WorkflowView::setupMainSplitter() {
     connect(debugInfo, SIGNAL(si_pauseStateChanged(bool)), scene, SLOT(update()));
     connect(debugInfo, SIGNAL(si_pauseStateChanged(bool)), SLOT(sl_pause(bool)));
     connect(investigationWidgets,
-        SIGNAL(si_updateCurrentInvestigation(const Workflow::Link *, int)), debugInfo,
-        SIGNAL(si_busInvestigationIsRequested(const Workflow::Link *, int)));
-    connect(investigationWidgets, SIGNAL(si_countOfMessagesRequested(const Workflow::Link *)),
-        debugInfo, SIGNAL(si_busCountOfMessagesIsRequested(const Workflow::Link *)));
+            SIGNAL(si_updateCurrentInvestigation(const Workflow::Link *, int)),
+            debugInfo,
+            SIGNAL(si_busInvestigationIsRequested(const Workflow::Link *, int)));
+    connect(investigationWidgets, SIGNAL(si_countOfMessagesRequested(const Workflow::Link *)), debugInfo, SIGNAL(si_busCountOfMessagesIsRequested(const Workflow::Link *)));
     connect(debugInfo,
-        SIGNAL(si_busInvestigationRespond(const WorkflowInvestigationData &, const Workflow::Link *)),
-        investigationWidgets,
-        SLOT(sl_currentInvestigationUpdateResponse(const WorkflowInvestigationData &, const Workflow::Link *)));
-    connect(debugInfo, SIGNAL(si_busCountOfMessagesResponse(const Workflow::Link *, int)),
-        investigationWidgets, SLOT(sl_countOfMessagesResponse(const Workflow::Link *, int)));
-    connect(investigationWidgets, SIGNAL(si_convertionMessages2DocumentsIsRequested(
-        const Workflow::Link *, const QString &, int)),
-        SLOT(sl_convertMessages2Documents(const Workflow::Link *, const QString &, int)));
-    connect(debugInfo, SIGNAL(si_breakpointAdded(const ActorId &)),
-        SLOT(sl_breakpointAdded(const ActorId &)));
+            SIGNAL(si_busInvestigationRespond(const WorkflowInvestigationData &, const Workflow::Link *)),
+            investigationWidgets,
+            SLOT(sl_currentInvestigationUpdateResponse(const WorkflowInvestigationData &, const Workflow::Link *)));
+    connect(debugInfo, SIGNAL(si_busCountOfMessagesResponse(const Workflow::Link *, int)), investigationWidgets, SLOT(sl_countOfMessagesResponse(const Workflow::Link *, int)));
+    connect(investigationWidgets, SIGNAL(si_convertionMessages2DocumentsIsRequested(const Workflow::Link *, const QString &, int)), SLOT(sl_convertMessages2Documents(const Workflow::Link *, const QString &, int)));
+    connect(debugInfo, SIGNAL(si_breakpointAdded(const ActorId &)), SLOT(sl_breakpointAdded(const ActorId &)));
     connect(debugInfo, SIGNAL(si_breakpointEnabled(const ActorId &)), SLOT(sl_breakpointEnabled(const ActorId &)));
-    connect(debugInfo, SIGNAL(si_breakpointRemoved(const ActorId &)),
-        SLOT(sl_breakpointRemoved(const ActorId &)));
-    connect(debugInfo, SIGNAL(si_breakpointDisabled(const ActorId &)),
-        SLOT(sl_breakpointDisabled(const ActorId &)));
-    connect(debugInfo, SIGNAL(si_breakpointIsReached(const U2::ActorId &)),
-        SLOT(sl_breakpointIsReached(const U2::ActorId &)));
+    connect(debugInfo, SIGNAL(si_breakpointRemoved(const ActorId &)), SLOT(sl_breakpointRemoved(const ActorId &)));
+    connect(debugInfo, SIGNAL(si_breakpointDisabled(const ActorId &)), SLOT(sl_breakpointDisabled(const ActorId &)));
+    connect(debugInfo, SIGNAL(si_breakpointIsReached(const U2::ActorId &)), SLOT(sl_breakpointIsReached(const U2::ActorId &)));
 }
 
 void WorkflowView::sl_breakpointIsReached(const U2::ActorId &actor) {
@@ -479,10 +484,10 @@ void WorkflowView::addBottomWidgetsToInfoSplitter() {
 
     infoList = new QListWidget(this);
     infoList->setObjectName("infoList");
-    connect(infoList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), SLOT(sl_pickInfo(QListWidgetItem*)));
+    connect(infoList, SIGNAL(itemDoubleClicked(QListWidgetItem *)), SLOT(sl_pickInfo(QListWidgetItem *)));
 
-    QWidget* w = new QWidget(bottomTabs);
-    QVBoxLayout* vl = new QVBoxLayout(w);
+    QWidget *w = new QWidget(bottomTabs);
+    QVBoxLayout *vl = new QVBoxLayout(w);
     vl->setSpacing(0);
     vl->setMargin(0);
     vl->setContentsMargins(0, 0, 0, 0);
@@ -491,12 +496,10 @@ void WorkflowView::addBottomWidgetsToInfoSplitter() {
     bottomTabs->addTab(w, tr("Error list"));
 
     breakpointView = new BreakpointManagerView(debugInfo, schema, scene);
-    connect(breakpointView, SIGNAL(si_highlightingRequested(const ActorId &)),
-        SLOT(sl_highlightingRequested(const ActorId &)));
-    connect(scene, SIGNAL(si_itemDeleted(const ActorId &)),
-            breakpointView, SLOT(sl_breakpointRemoved(const ActorId &)));
-    if ( WorkflowSettings::isDebuggerEnabled( ) ) {
-        bottomTabs->addTab( breakpointView, QObject::tr( "Breakpoints" ) );
+    connect(breakpointView, SIGNAL(si_highlightingRequested(const ActorId &)), SLOT(sl_highlightingRequested(const ActorId &)));
+    connect(scene, SIGNAL(si_itemDeleted(const ActorId &)), breakpointView, SLOT(sl_breakpointRemoved(const ActorId &)));
+    if (WorkflowSettings::isDebuggerEnabled()) {
+        bottomTabs->addTab(breakpointView, QObject::tr("Breakpoints"));
     }
 
     investigationWidgets = new WorkflowInvestigationWidgetsController(bottomTabs);
@@ -505,8 +508,7 @@ void WorkflowView::addBottomWidgetsToInfoSplitter() {
     bottomTabs->hide();
 }
 
-void WorkflowView::sl_rescaleScene(const QString &scale)
-{
+void WorkflowView::sl_rescaleScene(const QString &scale) {
     int percentPos = scale.indexOf(QObject::tr("%"));
     meta.scalePercent = scale.left(percentPos).toInt();
     rescale(false);
@@ -515,13 +517,13 @@ void WorkflowView::sl_rescaleScene(const QString &scale)
 static void updateComboBox(QComboBox *scaleComboBox, int scalePercent) {
     QString value = QString("%1%2").arg(scalePercent).arg(QObject::tr("%"));
     bool isOk = true;
-    for (int i=0; i<scaleComboBox->count(); i++) {
+    for (int i = 0; i < scaleComboBox->count(); i++) {
         if (scaleComboBox->itemText(i) == value) {
             scaleComboBox->setCurrentIndex(i);
             return;
-        } else{
+        } else {
             QString itemText = scaleComboBox->itemText(i).mid(0, scaleComboBox->itemText(i).size() - QObject::tr("%").size());
-            if (itemText.toInt(&isOk) > scalePercent && isOk){
+            if (itemText.toInt(&isOk) > scalePercent && isOk) {
                 scaleComboBox->insertItem(i, value);
                 scaleComboBox->setCurrentIndex(i);
                 return;
@@ -534,7 +536,7 @@ static void updateComboBox(QComboBox *scaleComboBox, int scalePercent) {
 
 void WorkflowView::rescale(bool updateGui) {
     double newScale = meta.scalePercent / 100.0;
-    QGraphicsView* elementsView = scene->views().at(0);
+    QGraphicsView *elementsView = scene->views().at(0);
     elementsView->resetMatrix();
     elementsView->scale(newScale, newScale);
     if (updateGui) {
@@ -613,7 +615,7 @@ void WorkflowView::createActions() {
     saveAsAction = new QAction(tr("&Save workflow as..."), this);
     saveAsAction->setIcon(QIcon(":workflow_designer/images/filesaveas.png"));
     connect(saveAsAction, SIGNAL(triggered()), SLOT(sl_saveSceneAs()));
-    saveAsAction->setObjectName( "Save workflow action" );
+    saveAsAction->setObjectName("Save workflow action");
 
     showWizard = new QAction(tr("Show wizard"), this);
     showWizard->setObjectName("Show wizard");
@@ -626,8 +628,7 @@ void WorkflowView::createActions() {
     toggleBreakpointManager->setObjectName("Show or hide breakpoint manager");
     connect(toggleBreakpointManager, SIGNAL(triggered()), SLOT(sl_toggleBreakpointManager()));
 
-
-    { // toggle dashboard action
+    {    // toggle dashboard action
         toggleDashboard = new QAction(this);
         toggleDashboard->setObjectName("toggleDashboard");
         connect(toggleDashboard, SIGNAL(triggered()), SLOT(sl_toggleDashboard()));
@@ -653,7 +654,7 @@ void WorkflowView::createActions() {
     dmAction->setObjectName("Dashboards manager");
     new DashboardManagerHelper(dmAction, this);
 
-    { // Delete shortcut
+    {    // Delete shortcut
         deleteShortcut = new QAction(sceneView);
         deleteShortcut->setShortcuts(QKeySequence::Delete);
         deleteShortcut->setShortcutContext(Qt::WidgetShortcut);
@@ -661,7 +662,7 @@ void WorkflowView::createActions() {
         sceneView->addAction(deleteShortcut);
     }
 
-    { // Ctrl+A shortcut
+    {    // Ctrl+A shortcut
         QAction *selectShortcut = new QAction(sceneView);
         selectShortcut->setShortcuts(QKeySequence::SelectAll);
         selectShortcut->setShortcutContext(Qt::WidgetShortcut);
@@ -712,34 +713,34 @@ void WorkflowView::createActions() {
     connect(pasteAction, SIGNAL(triggered()), SLOT(sl_pasteItems()));
     addAction(pasteAction);
 
-    { // style
-        QAction* simpleStyle = new QAction(tr("Minimal"), this);
+    {    // style
+        QAction *simpleStyle = new QAction(tr("Minimal"), this);
         simpleStyle->setObjectName("Minimal");
         simpleStyle->setData(QVariant(ItemStyles::SIMPLE));
         styleActions << simpleStyle;
         connect(simpleStyle, SIGNAL(triggered()), SLOT(sl_setStyle()));
 
-        QAction* extStyle = new QAction(tr("Extended"), this);
+        QAction *extStyle = new QAction(tr("Extended"), this);
         extStyle->setObjectName("Extended");
         extStyle->setData(QVariant(ItemStyles::EXTENDED));
         styleActions << extStyle;
         connect(extStyle, SIGNAL(triggered()), SLOT(sl_setStyle()));
     }
 
-    { // scripting mode
-        QAction * notShowScriptAction = new QAction( tr( "Hide scripting options" ), this );
+    {    // scripting mode
+        QAction *notShowScriptAction = new QAction(tr("Hide scripting options"), this);
         notShowScriptAction->setObjectName("Hide scripting options");
-        notShowScriptAction->setCheckable( true );
+        notShowScriptAction->setCheckable(true);
         scriptingActions << notShowScriptAction;
         notShowScriptAction->setChecked(!scriptingMode);
-        connect( notShowScriptAction, SIGNAL( triggered() ), SLOT( sl_changeScriptMode() ) );
+        connect(notShowScriptAction, SIGNAL(triggered()), SLOT(sl_changeScriptMode()));
 
-        QAction * showScriptAction = new QAction( tr( "Show scripting options" ), this );
+        QAction *showScriptAction = new QAction(tr("Show scripting options"), this);
         showScriptAction->setObjectName("Show scripting options");
-        showScriptAction->setCheckable( true );
+        showScriptAction->setCheckable(true);
         showScriptAction->setChecked(scriptingMode);
         scriptingActions << showScriptAction;
-        connect( showScriptAction, SIGNAL( triggered() ), SLOT( sl_changeScriptMode() ) );
+        connect(showScriptAction, SIGNAL(triggered()), SLOT(sl_changeScriptMode()));
     }
 
     unlockAction = new QAction(tr("Unlock Scene"), this);
@@ -752,10 +753,10 @@ void WorkflowView::createActions() {
     createScriptAction->setIcon(QIcon(":workflow_designer/images/script.png"));
     connect(createScriptAction, SIGNAL(triggered()), SLOT(sl_createScript()));
 
-    editScriptAction = new QAction(tr("Edit script of the element..."),this);
+    editScriptAction = new QAction(tr("Edit script of the element..."), this);
     editScriptAction->setObjectName("editScriptAction");
     editScriptAction->setIcon(QIcon(":workflow_designer/images/script_edit.png"));
-    editScriptAction->setEnabled(false); // because user need to select actor with script to enable it
+    editScriptAction->setEnabled(false);    // because user need to select actor with script to enable it
     connect(editScriptAction, SIGNAL(triggered()), SLOT(sl_editScript()));
 
     createCmdlineBasedWorkerAction = new QAction(tr("Create element with external tool..."), this);
@@ -763,10 +764,10 @@ void WorkflowView::createActions() {
     createCmdlineBasedWorkerAction->setIcon(QIcon(":workflow_designer/images/external_cmd_tool.png"));
     connect(createCmdlineBasedWorkerAction, SIGNAL(triggered()), SLOT(sl_createCmdlineBasedWorkerAction()));
 
-    editExternalToolAction = new QAction(tr("Edit configuration..."),this);
+    editExternalToolAction = new QAction(tr("Edit configuration..."), this);
     editExternalToolAction->setObjectName("editConfiguration");
     editExternalToolAction->setIcon(QIcon(":workflow_designer/images/external_cmd_tool.png"));
-    editExternalToolAction->setEnabled(false); // because user need to select actor with script to enable it
+    editExternalToolAction->setEnabled(false);    // because user need to select actor with script to enable it
     connect(editExternalToolAction, SIGNAL(triggered()), SLOT(sl_editExternalTool()));
 
     appendExternalTool = new QAction(tr("Add element with external tool..."), this);
@@ -779,22 +780,22 @@ void WorkflowView::createActions() {
     connect(findPrototypeAction, SIGNAL(triggered()), SLOT(sl_findPrototype()));
     this->addAction(findPrototypeAction);
 
-    foreach(QAction *action, debugActions) {
+    foreach (QAction *action, debugActions) {
         action->setVisible(false);
     }
 
     scaleComboBox = scaleCombo(this);
 }
 
-void WorkflowView::sl_findPrototype(){
+void WorkflowView::sl_findPrototype() {
     tabs->currentWidget()->setFocus();
     CHECK(tabs->currentWidget() == palette, );
 
     static const int MIN_SIZE_FIND = 260;
     QList<int> sizes = splitter->sizes();
     int idx = splitter->indexOf(tabs);
-    CHECK(idx >= 0 && idx < sizes.size(),);
-    if(sizes.at(idx) < MIN_SIZE_FIND / 2){
+    CHECK(idx >= 0 && idx < sizes.size(), );
+    if (sizes.at(idx) < MIN_SIZE_FIND / 2) {
         sizes[idx] = MIN_SIZE_FIND;
         splitter->setSizes(sizes);
     }
@@ -806,12 +807,12 @@ void WorkflowView::sl_createScript() {
     CHECK(!dlg.isNull(), );
 
     if (dlg->result() == QDialog::Accepted) {
-        QList<DataTypePtr > input = dlg->getInput();
-        QList<DataTypePtr > output = dlg->getOutput();
-        QList<Attribute*> attrs = dlg->getAttributes();
+        QList<DataTypePtr> input = dlg->getInput();
+        QList<DataTypePtr> output = dlg->getOutput();
+        QList<Attribute *> attrs = dlg->getAttributes();
         QString name = dlg->getName();
         QString desc = dlg->getDescription();
-        if(LocalWorkflow::ScriptWorkerFactory::init(input, output, attrs, name, desc, dlg->getActorFilePath())) {
+        if (LocalWorkflow::ScriptWorkerFactory::init(input, output, attrs, name, desc, dlg->getActorFilePath())) {
             ActorPrototype *proto = WorkflowEnv::getProtoRegistry()->getProto(LocalWorkflow::ScriptWorkerFactory::ACTOR_ID + name);
             QRectF rect = scene->sceneRect();
             addProcess(createActor(proto, QVariantMap()), rect.center());
@@ -829,35 +830,35 @@ void WorkflowView::sl_createCmdlineBasedWorkerAction() {
 }
 
 namespace {
-    QString copyIntoUgene(const QString &url, U2OpStatus &os) {
-        QDir dir(WorkflowSettings::getExternalToolDirectory());
-        if (!dir.exists()) {
-            bool created = dir.mkpath(dir.absolutePath());
-            if (!created) {
-                os.setError(QObject::tr("Can not create the folder: ") + dir.absolutePath());
-                return "";
-            }
-        }
-        QString filePath = GUrlUtils::rollFileName(dir.absolutePath() + "/" + QFileInfo(url).fileName(), "_");
-        if (QFile::exists(filePath)) {
-            os.setError(QObject::tr("The file '%1' already exists").arg(filePath));
+QString copyIntoUgene(const QString &url, U2OpStatus &os) {
+    QDir dir(WorkflowSettings::getExternalToolDirectory());
+    if (!dir.exists()) {
+        bool created = dir.mkpath(dir.absolutePath());
+        if (!created) {
+            os.setError(QObject::tr("Can not create the folder: ") + dir.absolutePath());
             return "";
         }
-        bool copied = QFile::copy(url, filePath);
-        if (!copied) {
-            os.setError(QObject::tr("Can not copy the file here: ") + filePath);
-            return "";
-        }
-        return filePath;
     }
+    QString filePath = GUrlUtils::rollFileName(dir.absolutePath() + "/" + QFileInfo(url).fileName(), "_");
+    if (QFile::exists(filePath)) {
+        os.setError(QObject::tr("The file '%1' already exists").arg(filePath));
+        return "";
+    }
+    bool copied = QFile::copy(url, filePath);
+    if (!copied) {
+        os.setError(QObject::tr("Can not copy the file here: ") + filePath);
+        return "";
+    }
+    return filePath;
 }
+}    // namespace
 
 void WorkflowView::sl_appendExternalToolWorker() {
     QString filter = DialogUtils::prepareFileFilter(WorkflowUtils::tr("UGENE workflow element"), QStringList() << "etc", true);
     QString url = U2FileDialog::getOpenFileName(this, tr("Add element"), QString(), filter);
     if (!url.isEmpty()) {
         IOAdapter *io = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(GUrl(url)))->createIOAdapter();
-        if(!io->open(url, IOAdapterMode_Read)) {
+        if (!io->open(url, IOAdapterMode_Read)) {
             coreLog.error(tr("Can't load element."));
             return;
         }
@@ -868,7 +869,7 @@ void WorkflowView::sl_appendExternalToolWorker() {
         io->close();
 
         QScopedPointer<ExternalProcessConfig> cfg(HRSchemaSerializer::string2Actor(data.data()));
-        if(cfg.data()) {
+        if (cfg.data()) {
             if (WorkflowEnv::getProtoRegistry()->getProto(cfg->id)) {
                 coreLog.error(QString("Element with ID '%1' already exists").arg(cfg->id));
             } else {
@@ -893,10 +894,10 @@ void WorkflowView::sl_appendExternalToolWorker() {
 
 void WorkflowView::sl_editScript() {
     QList<Actor *> selectedActors = scene->getSelectedActors();
-    if(selectedActors.size() == 1) {
+    if (selectedActors.size() == 1) {
         Actor *scriptActor = selectedActors.first();
         AttributeScript *script = scriptActor->getScript();
-        if(script!= NULL) {
+        if (script != NULL) {
             QObjectScopedPointer<ScriptEditorDialog> scriptDlg = new ScriptEditorDialog(this, AttributeScriptDelegate::createScriptHeader(*script), script->getScriptText());
             scriptDlg->exec();
             CHECK(!scriptDlg.isNull(), );
@@ -925,17 +926,17 @@ void WorkflowView::sl_prototypeIsAboutToBeRemoved(Workflow::ActorPrototype *prot
         currentProto = nullptr;
     }
 
-    QList<WorkflowProcessItem*> deleteList;
-    foreach(QGraphicsItem *i, scene->items()) {
-        if(i->type() == WorkflowProcessItemType) {
+    QList<WorkflowProcessItem *> deleteList;
+    foreach (QGraphicsItem *i, scene->items()) {
+        if (i->type() == WorkflowProcessItemType) {
             WorkflowProcessItem *wItem = static_cast<WorkflowProcessItem *>(i);
-            if(wItem->getProcess()->getProto()->getId() == proto->getId()) {
+            if (wItem->getProcess()->getProto()->getId() == proto->getId()) {
                 deleteList << wItem;
             }
         }
     }
 
-    foreach(WorkflowProcessItem *item, deleteList) {
+    foreach (WorkflowProcessItem *item, deleteList) {
         removeProcessItem(item);
     }
     scene->update();
@@ -1055,31 +1056,31 @@ void WorkflowView::sl_toggleLock(bool b) {
 }
 
 void WorkflowView::sl_setStyle() {
-    StyleId s = qobject_cast<QAction* >(sender())->data().value<StyleId>();
-    QList<QGraphicsItem*> lst = scene->selectedItems();
+    StyleId s = qobject_cast<QAction *>(sender())->data().value<StyleId>();
+    QList<QGraphicsItem *> lst = scene->selectedItems();
     if (lst.isEmpty()) {
         lst = scene->items();
     }
-    foreach(QGraphicsItem* it, lst) {
+    foreach (QGraphicsItem *it, lst) {
         switch (it->type()) {
-            case WorkflowProcessItemType:
-            case WorkflowPortItemType:
-            case WorkflowBusItemType:
-            (static_cast<StyledItem*>(it))->setStyle(s);
+        case WorkflowProcessItemType:
+        case WorkflowPortItemType:
+        case WorkflowBusItemType:
+            (static_cast<StyledItem *>(it))->setStyle(s);
         }
     }
     scene->update();
 }
 
 void WorkflowView::sl_changeScriptMode() {
-    QAction *a = qobject_cast<QAction*>(sender());
-    if(a != NULL) {
-        if(a == scriptingActions[0]){
+    QAction *a = qobject_cast<QAction *>(sender());
+    if (a != NULL) {
+        if (a == scriptingActions[0]) {
             scriptingMode = false;
-        } else if(a == scriptingActions[1]) {
+        } else if (a == scriptingActions[1]) {
             scriptingMode = true;
         }
-    } // else invoked from constructor
+    }    // else invoked from constructor
 
     scriptingActions[0]->setChecked(!scriptingMode);
     scriptingActions[1]->setChecked(scriptingMode);
@@ -1087,28 +1088,28 @@ void WorkflowView::sl_changeScriptMode() {
 }
 
 void WorkflowView::sl_toggleStyle() {
-    foreach(QGraphicsItem* it, scene->selectedItems()) {
-        StyleId s = (static_cast<StyledItem*>(it))->getStyle();
+    foreach (QGraphicsItem *it, scene->selectedItems()) {
+        StyleId s = (static_cast<StyledItem *>(it))->getStyle();
         if (s == ItemStyles::SIMPLE) {
             s = ItemStyles::EXTENDED;
         } else {
             s = ItemStyles::SIMPLE;
         }
-        (static_cast<StyledItem*>(it))->setStyle(s);
+        (static_cast<StyledItem *>(it))->setStyle(s);
     }
     scene->update();
 }
 
 void WorkflowView::sl_refreshActorDocs() {
-    foreach(QGraphicsItem* it, scene->items()) {
+    foreach (QGraphicsItem *it, scene->items()) {
         if (it->type() == WorkflowProcessItemType) {
-            Actor* a = qgraphicsitem_cast<WorkflowProcessItem*>(it)->getProcess();
+            Actor *a = qgraphicsitem_cast<WorkflowProcessItem *>(it)->getProcess();
             a->getDescription()->update(a->getValues());
         }
     }
 }
 
-void WorkflowView::setupMDIToolbar(QToolBar* tb) {
+void WorkflowView::setupMDIToolbar(QToolBar *tb) {
     tb->addAction(newAction);
     tb->addAction(loadAction);
     tb->addAction(saveAction);
@@ -1181,7 +1182,7 @@ void WorkflowView::setupActions() {
     scriptAction->setVisible(editMode);
 }
 
-void WorkflowView::setupViewMenu(QMenu* m) {
+void WorkflowView::setupViewMenu(QMenu *m) {
     elementsMenu = palette->createMenu(tr("Add element"));
     m->addMenu(elementsMenu);
     m->addAction(copyAction);
@@ -1214,14 +1215,14 @@ void WorkflowView::setupViewMenu(QMenu* m) {
     m->addAction(appendExternalTool);
     m->addSeparator();
 
-    QMenu* ttMenu = new QMenu(tr("Element style"));
-    foreach(QAction* a, styleActions) {
+    QMenu *ttMenu = new QMenu(tr("Element style"));
+    foreach (QAction *a, styleActions) {
         ttMenu->addAction(a);
     }
     m->addMenu(ttMenu);
 
-    QMenu* scriptMenu = new QMenu(tr("Scripting mode"));
-    foreach(QAction* a, scriptingActions) {
+    QMenu *scriptMenu = new QMenu(tr("Scripting mode"));
+    foreach (QAction *a, scriptingActions) {
         scriptMenu->addAction(a);
     }
     m->addMenu(scriptMenu);
@@ -1234,30 +1235,30 @@ void WorkflowView::setupViewMenu(QMenu* m) {
     m->addAction(dmAction);
 }
 
-void WorkflowView::setupContextMenu(QMenu* m) {
-    if(!debugInfo->isPaused()) {
+void WorkflowView::setupContextMenu(QMenu *m) {
+    if (!debugInfo->isPaused()) {
         if (!unlockAction->isChecked()) {
             return;
         }
 
-        if(!lastPaste.isEmpty()) {
+        if (!lastPaste.isEmpty()) {
             m->addAction(pasteAction);
         }
-        QList<QGraphicsItem*> sel = scene->selectedItems();
+        QList<QGraphicsItem *> sel = scene->selectedItems();
         if (!sel.isEmpty()) {
-            if(!((sel.size() == 1 && sel.first()->type() == WorkflowBusItemType) || sel.first()->type() == WorkflowPortItemType)) {
+            if (!((sel.size() == 1 && sel.first()->type() == WorkflowBusItemType) || sel.first()->type() == WorkflowPortItemType)) {
                 m->addAction(copyAction);
                 m->addAction(cutAction);
             }
-            if(!(sel.size() == 1 && sel.first()->type() == WorkflowPortItemType)) {
+            if (!(sel.size() == 1 && sel.first()->type() == WorkflowPortItemType)) {
                 m->addAction(deleteAction);
             }
             m->addSeparator();
             if (sel.size() == 1 && sel.first()->type() == WorkflowProcessItemType) {
-                WorkflowProcessItem* wit = qgraphicsitem_cast<WorkflowProcessItem*>(sel.first());
+                WorkflowProcessItem *wit = qgraphicsitem_cast<WorkflowProcessItem *>(sel.first());
                 Actor *scriptActor = wit->getProcess();
                 AttributeScript *script = scriptActor->getScript();
-                if(script) {
+                if (script) {
                     m->addAction(editScriptAction);
                 }
 
@@ -1268,15 +1269,15 @@ void WorkflowView::setupContextMenu(QMenu* m) {
 
                 m->addSeparator();
 
-                QMenu* itMenu = new QMenu(tr("Element properties"));
-                foreach(QAction* a, wit->getContextMenuActions()) {
+                QMenu *itMenu = new QMenu(tr("Element properties"));
+                foreach (QAction *a, wit->getContextMenuActions()) {
                     itMenu->addAction(a);
                 }
                 m->addMenu(itMenu);
             }
-            if(!(sel.size() == 1 && (sel.first()->type() == WorkflowBusItemType || sel.first()->type() == WorkflowPortItemType))) {
-                QMenu* ttMenu = new QMenu(tr("Element style"));
-                foreach(QAction* a, styleActions) {
+            if (!(sel.size() == 1 && (sel.first()->type() == WorkflowBusItemType || sel.first()->type() == WorkflowPortItemType))) {
+                QMenu *ttMenu = new QMenu(tr("Element style"));
+                foreach (QAction *a, styleActions) {
                     ttMenu->addAction(a);
                 }
                 m->addMenu(ttMenu);
@@ -1288,26 +1289,25 @@ void WorkflowView::setupContextMenu(QMenu* m) {
         m->addMenu(palette->createMenu(tr("Add element")));
     }
 
-    foreach(QGraphicsItem *item, scene->selectedItems()) {
-        if(WorkflowProcessItemType == item->type()) {
+    foreach (QGraphicsItem *item, scene->selectedItems()) {
+        if (WorkflowProcessItemType == item->type()) {
             m->addAction(toggleBreakpointAction);
             break;
         }
     }
 }
 
-void WorkflowView::sl_pickInfo(QListWidgetItem* info) {
+void WorkflowView::sl_pickInfo(QListWidgetItem *info) {
     ActorId id = info->data(ACTOR_ID_REF).value<ActorId>();
-    foreach(QGraphicsItem* it, scene->items()) {
-        if (it->type() == WorkflowProcessItemType)
-        {
-            WorkflowProcessItem* proc = static_cast<WorkflowProcessItem*>(it);
+    foreach (QGraphicsItem *it, scene->items()) {
+        if (it->type() == WorkflowProcessItemType) {
+            WorkflowProcessItem *proc = static_cast<WorkflowProcessItem *>(it);
             if (proc->getProcess()->getId() != id) {
                 continue;
             }
             scene->clearSelection();
             QString pid = info->data(PORT_REF).toString();
-            WorkflowPortItem* port = proc->getPort(pid);
+            WorkflowPortItem *port = proc->getPort(pid);
             if (port) {
                 port->setSelected(true);
             } else {
@@ -1319,18 +1319,18 @@ void WorkflowView::sl_pickInfo(QListWidgetItem* info) {
 }
 
 bool WorkflowView::sl_validate(bool notify) {
-    if(schema->getProcesses().isEmpty()) {
+    if (schema->getProcesses().isEmpty()) {
         QMessageBox::warning(this, tr("Empty workflow!"), tr("Nothing to run: empty workflow"));
         return false;
     }
 
     propertyEditor->commit();
     infoList->clear();
-    QList<QListWidgetItem*> lst;
+    QList<QListWidgetItem *> lst;
     bool good = WorkflowUtils::validate(*schema, lst);
 
     if (lst.count() != 0) {
-        foreach(QListWidgetItem* wi, lst) {
+        foreach (QListWidgetItem *wi, lst) {
             infoList->addItem(wi);
         }
         bottomTabs->show();
@@ -1341,12 +1341,11 @@ bool WorkflowView::sl_validate(bool notify) {
             s[s.size() - 1] = qMin(infoList->sizeHint().height(), 300);
             infoSplitter->setSizes(s);
         }
-    } else if(bottomTabs->currentWidget() == infoList->parentWidget()) {
+    } else if (bottomTabs->currentWidget() == infoList->parentWidget()) {
         bottomTabs->hide();
     }
     if (!good) {
-        QMessageBox::warning(this, tr("Workflow cannot be executed"),
-            tr("Please fix issues listed in the error list (located under workflow)."));
+        QMessageBox::warning(this, tr("Workflow cannot be executed"), tr("Please fix issues listed in the error list (located under workflow)."));
     } else {
         if (notify) {
             QString message = tr("Workflow is valid. \n");
@@ -1372,7 +1371,7 @@ void WorkflowView::sl_estimate() {
 }
 
 void WorkflowView::sl_estimationTaskFinished() {
-    SchemaEstimationTask *t = dynamic_cast<SchemaEstimationTask*>(sender());
+    SchemaEstimationTask *t = dynamic_cast<SchemaEstimationTask *>(sender());
     CHECK(NULL != t, );
     CHECK(t->isFinished(), );
     estimateAction->setEnabled(true);
@@ -1401,14 +1400,14 @@ void WorkflowView::localHostLaunch() {
     }
 
     const Schema *s = getSchema();
-    foreach(const Actor* actor, schema->getProcesses()) {
+    foreach (const Actor *actor, schema->getProcesses()) {
         if (WorkflowEnv::getExternalCfgRegistry()->getConfigById(actor->getId()) != nullptr) {
             GCOUNTER(cvar, tvar, "Element(s) with command line tool is present in the launched workflow");
             break;
         }
     }
-    debugInfo->setMessageParser( new WorkflowDebugMessageParserImpl( ) );
-    WorkflowAbstractRunner * t = new WorkflowRunTask(*s, ActorMap(), debugInfo);
+    debugInfo->setMessageParser(new WorkflowDebugMessageParserImpl());
+    WorkflowAbstractRunner *t = new WorkflowRunTask(*s, ActorMap(), debugInfo);
 
     t->setReportingEnabled(true);
     if (WorkflowSettings::monitorRun()) {
@@ -1417,9 +1416,8 @@ void WorkflowView::localHostLaunch() {
         scene->setRunner(t);
         connect(t, SIGNAL(si_ticked()), scene, SLOT(update()));
         TaskSignalMapper *signalMapper = new TaskSignalMapper(t);
-        connect(signalMapper, SIGNAL(si_taskFinished(Task*)), debugInfo,
-            SLOT(sl_executionFinished()));
-        connect(signalMapper, SIGNAL(si_taskFinished(Task*)), SLOT(sl_toggleLock()));
+        connect(signalMapper, SIGNAL(si_taskFinished(Task *)), debugInfo, SLOT(sl_executionFinished()));
+        connect(signalMapper, SIGNAL(si_taskFinished(Task *)), SLOT(sl_toggleLock()));
     }
     AppContext::getTaskScheduler()->registerTopLevelTask(t);
     foreach (WorkflowMonitor *m, t->getMonitors()) {
@@ -1430,9 +1428,9 @@ void WorkflowView::localHostLaunch() {
 }
 
 void WorkflowView::sl_launch() {
-    if(!debugInfo->isPaused()) {
+    if (!debugInfo->isPaused()) {
         localHostLaunch();
-        if(NULL != scene->getRunner()) {
+        if (NULL != scene->getRunner()) {
             stopAction->setEnabled(true);
             pauseAction->setEnabled(true);
             propertyEditor->setEnabled(false);
@@ -1459,7 +1457,7 @@ void WorkflowView::sl_pause(bool isPause) {
             }
         }
     }
-    if ( isPause && tabView->isVisible() ) {
+    if (isPause && tabView->isVisible()) {
         hideDashboards();
     }
 }
@@ -1473,15 +1471,15 @@ void WorkflowView::sl_stop() {
 }
 
 void WorkflowView::toggleDebugActionsState(bool enable) {
-    if(WorkflowSettings::isDebuggerEnabled()) {
-        foreach(QAction *action, debugActions) {
+    if (WorkflowSettings::isDebuggerEnabled()) {
+        foreach (QAction *action, debugActions) {
             action->setVisible(enable);
         }
     }
 }
 
 void WorkflowView::propagateBreakpointToSceneItem(ActorId actor) {
-    WorkflowProcessItem* processItem = findItemById(actor);
+    WorkflowProcessItem *processItem = findItemById(actor);
     Q_ASSERT(processItem->isBreakpointInserted());
     processItem->highlightItem();
 }
@@ -1502,23 +1500,21 @@ void WorkflowView::sl_breakpointDisabled(const ActorId &actor) {
     changeBreakpointState(actor, false, true);
 }
 
-void WorkflowView::changeBreakpointState(const ActorId &actor, bool isBreakpointBeingAdded,
-    bool isBreakpointStateBeingChanged)
-{
-    WorkflowProcessItem* processItem = findItemById(actor);
+void WorkflowView::changeBreakpointState(const ActorId &actor, bool isBreakpointBeingAdded, bool isBreakpointStateBeingChanged) {
+    WorkflowProcessItem *processItem = findItemById(actor);
     Q_ASSERT(NULL != processItem);
 
-    if(processItem->isBreakpointInserted()) {
-        if(!isBreakpointBeingAdded) {
-            if(!isBreakpointStateBeingChanged) {
+    if (processItem->isBreakpointInserted()) {
+        if (!isBreakpointBeingAdded) {
+            if (!isBreakpointStateBeingChanged) {
                 processItem->toggleBreakpoint();
             } else {
                 processItem->toggleBreakpointState();
             }
         }
     } else {
-        if(isBreakpointBeingAdded) {
-            if(!isBreakpointStateBeingChanged){
+        if (isBreakpointBeingAdded) {
+            if (!isBreakpointStateBeingChanged) {
                 processItem->toggleBreakpoint();
             } else {
                 Q_ASSERT(false);
@@ -1529,7 +1525,7 @@ void WorkflowView::changeBreakpointState(const ActorId &actor, bool isBreakpoint
 }
 
 void WorkflowView::sl_toggleBreakpointManager() {
-    if(!breakpointView->isVisible()) {
+    if (!breakpointView->isVisible()) {
         bottomTabs->setVisible(true);
         bottomTabs->setCurrentWidget(breakpointView);
     } else {
@@ -1550,17 +1546,17 @@ void WorkflowView::sl_processOneMessage() {
 }
 
 void WorkflowView::sl_convertMessages2Documents(const Workflow::Link *bus,
-    const QString &messageType, int messageNumber)
-{
+                                                const QString &messageType,
+                                                int messageNumber) {
     debugInfo->convertMessagesToDocuments(bus, messageType, messageNumber, meta.name);
 }
 
 WorkflowProcessItem *WorkflowView::findItemById(ActorId actor) const {
-    foreach(QGraphicsItem *item, scene->items()) {
-        if(WorkflowProcessItemType == item->type()) {
-            WorkflowProcessItem *processItem = qgraphicsitem_cast<WorkflowProcessItem*>(item);
+    foreach (QGraphicsItem *item, scene->items()) {
+        if (WorkflowProcessItemType == item->type()) {
+            WorkflowProcessItem *processItem = qgraphicsitem_cast<WorkflowProcessItem *>(item);
             Q_ASSERT(NULL != processItem);
-            if(actor == processItem->getProcess()->getId()) {
+            if (actor == processItem->getProcess()->getId()) {
                 return processItem;
             }
         }
@@ -1569,24 +1565,22 @@ WorkflowProcessItem *WorkflowView::findItemById(ActorId actor) const {
 }
 
 void WorkflowView::paintEvent(QPaintEvent *event) {
-    const bool isWorkflowRunning = ( NULL != scene->getRunner( ) );
-    const bool isDebuggerEnabled = WorkflowSettings::isDebuggerEnabled( );
-    if ( isDebuggerEnabled && ABSENT_WIDGET_TAB_NUMBER == bottomTabs->indexOf( breakpointView ) ) {
-        bottomTabs->addTab( breakpointView, QObject::tr( "Breakpoints" ) );
-    } else if ( !isDebuggerEnabled
-        && ABSENT_WIDGET_TAB_NUMBER != bottomTabs->indexOf( breakpointView ) )
-    {
+    const bool isWorkflowRunning = (NULL != scene->getRunner());
+    const bool isDebuggerEnabled = WorkflowSettings::isDebuggerEnabled();
+    if (isDebuggerEnabled && ABSENT_WIDGET_TAB_NUMBER == bottomTabs->indexOf(breakpointView)) {
+        bottomTabs->addTab(breakpointView, QObject::tr("Breakpoints"));
+    } else if (!isDebuggerEnabled && ABSENT_WIDGET_TAB_NUMBER != bottomTabs->indexOf(breakpointView)) {
         breakpointView->sl_deleteAllBreakpoints();
-        bottomTabs->removeTab( bottomTabs->indexOf( breakpointView ) );
+        bottomTabs->removeTab(bottomTabs->indexOf(breakpointView));
     }
-    foreach ( QAction *action, debugActions ) {
-        action->setVisible( WorkflowSettings::isDebuggerEnabled( ) && isWorkflowRunning );
+    foreach (QAction *action, debugActions) {
+        action->setVisible(WorkflowSettings::isDebuggerEnabled() && isWorkflowRunning);
     }
-    toggleBreakpointAction->setVisible( isDebuggerEnabled );
-    toggleBreakpointManager->setVisible( isDebuggerEnabled );
+    toggleBreakpointAction->setVisible(isDebuggerEnabled);
+    toggleBreakpointManager->setVisible(isDebuggerEnabled);
 
     if (isWorkflowRunning) {
-        if(debugInfo->isPaused()) {
+        if (debugInfo->isPaused()) {
             sl_onSelectionChanged();
         } else {
             tickReadyAction->setEnabled(false);
@@ -1595,61 +1589,61 @@ void WorkflowView::paintEvent(QPaintEvent *event) {
     MWMDIWindow::paintEvent(event);
 }
 void WorkflowView::sl_configureParameterAliases() {
-    QObjectScopedPointer<SchemaAliasesConfigurationDialogImpl> dlg = new SchemaAliasesConfigurationDialogImpl(*schema, this );
+    QObjectScopedPointer<SchemaAliasesConfigurationDialogImpl> dlg = new SchemaAliasesConfigurationDialogImpl(*schema, this);
     int ret = QDialog::Accepted;
     do {
         ret = dlg->exec();
         CHECK(!dlg.isNull(), );
-        if( ret == QDialog::Accepted ) {
-            if(!dlg->validateModel()) {
-                QMessageBox::critical( this, tr("Bad input!"), tr("Aliases for workflow parameters should be different!") );
+        if (ret == QDialog::Accepted) {
+            if (!dlg->validateModel()) {
+                QMessageBox::critical(this, tr("Bad input!"), tr("Aliases for workflow parameters should be different!"));
                 continue;
             }
             // clear aliases before inserting new
-            foreach (Actor * actor, schema->getProcesses()) {
+            foreach (Actor *actor, schema->getProcesses()) {
                 actor->getParamAliases().clear();
             }
             SchemaAliasesCfgDlgModel model = dlg->getModel();
-            foreach(const ActorId & id, model.aliases.keys()) {
-                foreach(const Descriptor & d, model.aliases.value(id).keys()) {
-                    Actor * actor = schema->actorById(id);
+            foreach (const ActorId &id, model.aliases.keys()) {
+                foreach (const Descriptor &d, model.aliases.value(id).keys()) {
+                    Actor *actor = schema->actorById(id);
                     assert(actor != NULL);
                     QString alias = model.aliases.value(id).value(d);
                     assert(!alias.isEmpty());
                     actor->getParamAliases().insert(d.getId(), alias);
                     QString help = model.help.value(id).value(d);
-                    if( !help.isEmpty() ) {
+                    if (!help.isEmpty()) {
                         actor->getAliasHelp().insert(alias, help);
                     }
                 }
             }
             break;
-        } else if( ret == QDialog::Rejected ) {
+        } else if (ret == QDialog::Rejected) {
             break;
         } else {
             assert(false);
         }
-    } while( ret == QDialog::Accepted );
+    } while (ret == QDialog::Accepted);
 }
 
 void WorkflowView::sl_createGalaxyConfig() {
     bool schemeContainsAliases = schema->hasParamAliases();
-    if( !schemeContainsAliases ) {
-        QMessageBox::critical( this, tr("Bad input!"), tr("Workflow does not contain any parameter aliases") );
+    if (!schemeContainsAliases) {
+        QMessageBox::critical(this, tr("Bad input!"), tr("Workflow does not contain any parameter aliases"));
         return;
     }
-    if( meta.url.isEmpty() ) {
+    if (meta.url.isEmpty()) {
         return;
     }
 
-    QObjectScopedPointer<GalaxyConfigConfigurationDialogImpl> dlg = new GalaxyConfigConfigurationDialogImpl( meta.url, this );
+    QObjectScopedPointer<GalaxyConfigConfigurationDialogImpl> dlg = new GalaxyConfigConfigurationDialogImpl(meta.url, this);
     dlg->exec();
     CHECK(!dlg.isNull(), );
 
-    if ( QDialog::Accepted == dlg->result() ) {
+    if (QDialog::Accepted == dlg->result()) {
         bool created = dlg->createGalaxyConfigTask();
-        if( !created ) {
-            QMessageBox::critical( this, tr("Internal error!"), tr("Can not create Galaxy config") );
+        if (!created) {
+            QMessageBox::critical(this, tr("Internal error!"), tr("Can not create Galaxy config"));
             return;
         }
     }
@@ -1686,7 +1680,7 @@ void WorkflowView::sl_configurePortAliases() {
                 foreach (Port *p, schema->actorById(actorId)->getPorts()) {
                     DataTypePtr dt = p->Port::getType();
                     QList<Descriptor> descs = dt->getAllDescriptors();
-                    if(descs.contains(slotId)) {
+                    if (descs.contains(slotId)) {
                         sourcePort = p;
                         break;
                     }
@@ -1706,7 +1700,7 @@ void WorkflowView::sl_importSchemaToElement() {
     QString error;
     if (!schema->getWizards().isEmpty()) {
         error = WorkflowView::tr("The workflow contains a wizard. Sorry, but current version of "
-            "UGENE doesn't support of wizards in the includes.");
+                                 "UGENE doesn't support of wizards in the includes.");
         QMessageBox::critical(this, tr("Error"), error);
     } else if (WorkflowUtils::validateSchemaForIncluding(*schema, error)) {
         QObjectScopedPointer<ImportSchemaDialog> d = new ImportSchemaDialog(this);
@@ -1723,8 +1717,7 @@ void WorkflowView::sl_importSchemaToElement() {
             s->setTypeName(typeName);
             QString text = HRSchemaSerializer::schema2String(*s, NULL);
 
-            QString path = WorkflowSettings::getIncludedElementsDirectory()
-                + typeName + "." + WorkflowUtils::WD_FILE_EXTENSIONS.first();
+            QString path = WorkflowSettings::getIncludedElementsDirectory() + typeName + "." + WorkflowUtils::WD_FILE_EXTENSIONS.first();
             QFile file(path);
             file.open(QIODevice::WriteOnly);
             file.write(text.toLatin1());
@@ -1739,7 +1732,7 @@ void WorkflowView::sl_importSchemaToElement() {
     }
 }
 
-void WorkflowView::sl_selectPrototype(Workflow::ActorPrototype* p, bool putToScene) {
+void WorkflowView::sl_selectPrototype(Workflow::ActorPrototype *p, bool putToScene) {
     propertyEditor->setEditable(!p);
     scene->clearSelection();
     currentProto = p;
@@ -1761,17 +1754,17 @@ void WorkflowView::sl_selectPrototype(Workflow::ActorPrototype* p, bool putToSce
 }
 
 void WorkflowView::sl_copyItems() {
-    QList<WorkflowProcessItem*> procs;
-    foreach(QGraphicsItem* item, scene->selectedItems()) {
+    QList<WorkflowProcessItem *> procs;
+    foreach (QGraphicsItem *item, scene->selectedItems()) {
         if (item->type() == WorkflowProcessItemType) {
-            procs << qgraphicsitem_cast<WorkflowProcessItem*>(item);
+            procs << qgraphicsitem_cast<WorkflowProcessItem *>(item);
         }
     }
     if (procs.isEmpty()) {
         return;
     }
 
-    QList<Actor*> actors = scene->getSelectedActors();
+    QList<Actor *> actors = scene->getSelectedActors();
     Metadata actorMeta = getMeta(procs);
     lastPaste = HRSchemaSerializer::items2String(actors, &actorMeta);
     pasteAction->setEnabled(true);
@@ -1784,7 +1777,7 @@ void WorkflowView::sl_cutItems() {
     scene->sl_deleteItem();
 }
 
-void WorkflowView::sl_pasteSample(const QString& s) {
+void WorkflowView::sl_pasteSample(const QString &s) {
     tabs->setCurrentIndex(ElementsTab);
     infoList->clear();
     if (scene->items().isEmpty()) {
@@ -1811,7 +1804,7 @@ void WorkflowView::sl_pasteSample(const QString& s) {
     }
 }
 
-static QMap<ActorId, ActorId> getUniquePastedActorIds(const QList<Actor*> &pasted, const QList<Actor*> &origin) {
+static QMap<ActorId, ActorId> getUniquePastedActorIds(const QList<Actor *> &pasted, const QList<Actor *> &origin) {
     QMap<ActorId, ActorId> result;
     QStringList uniqueIds;
     foreach (Actor *a, origin) {
@@ -1845,7 +1838,7 @@ void WorkflowView::sl_pasteItems(const QString &s, bool updateSchemaInfo) {
         lastPaste = tmp;
     }
     QByteArray lpt = lastPaste.toLatin1();
-    DocumentFormat* wf = AppContext::getDocumentFormatRegistry()->getFormatById(WorkflowDocFormat::FORMAT_ID);
+    DocumentFormat *wf = AppContext::getDocumentFormatRegistry()->getFormatById(WorkflowDocFormat::FORMAT_ID);
     if (wf->checkRawData(lpt).score != FormatDetection_Matched) {
         return;
     }
@@ -1879,7 +1872,7 @@ void WorkflowView::sl_pasteItems(const QString &s, bool updateSchemaInfo) {
     scene->connectConfigurationEditors();
 
     foreach (QGraphicsItem *it, scene->items()) {
-        WorkflowProcessItem *proc = qgraphicsitem_cast<WorkflowProcessItem*>(it);
+        WorkflowProcessItem *proc = qgraphicsitem_cast<WorkflowProcessItem *>(it);
         if (NULL != proc) {
             if (NULL != pastedS.actorById(proc->getProcess()->getId())) {
                 it->setSelected(true);
@@ -1887,8 +1880,8 @@ void WorkflowView::sl_pasteItems(const QString &s, bool updateSchemaInfo) {
         }
     }
 
-    int shift = GRID_STEP*(pasteCount);
-    foreach(QGraphicsItem * it, scene->selectedItems()) {
+    int shift = GRID_STEP * (pasteCount);
+    foreach (QGraphicsItem *it, scene->selectedItems()) {
         it->moveBy(shift, shift);
     }
 }
@@ -1910,30 +1903,29 @@ void WorkflowView::sl_showEditor() {
 }
 
 void WorkflowView::sl_editItem() {
-    QList<QGraphicsItem*> list = scene->selectedItems();
+    QList<QGraphicsItem *> list = scene->selectedItems();
     if (list.size() == 1) {
-        QGraphicsItem* it = list.at(0);
+        QGraphicsItem *it = list.at(0);
         if (it->type() == WorkflowProcessItemType) {
-            Actor *a = qgraphicsitem_cast<WorkflowProcessItem*>(it)->getProcess();
+            Actor *a = qgraphicsitem_cast<WorkflowProcessItem *>(it)->getProcess();
             propertyEditor->editActor(a);
             return;
         }
-        Port* p = NULL;
+        Port *p = NULL;
 
         if (it->type() == WorkflowBusItemType) {
             WorkflowBusItem *busItem = qgraphicsitem_cast<WorkflowBusItem *>(it);
 
-            if(debugInfo->isPaused()) {
+            if (debugInfo->isPaused()) {
                 investigationWidgets->setCurrentInvestigation(busItem->getBus());
             }
             p = busItem->getInPort()->getPort();
         } else if (it->type() == WorkflowPortItemType) {
-            p = qgraphicsitem_cast<WorkflowPortItem*>(it)->getPort();
+            p = qgraphicsitem_cast<WorkflowPortItem *>(it)->getPort();
         }
         if (p) {
-            if (qobject_cast<IntegralBusPort*>(p))
-            {
-                BusPortEditor* ed = new BusPortEditor(qobject_cast<IntegralBusPort*>(p));
+            if (qobject_cast<IntegralBusPort *>(p)) {
+                BusPortEditor *ed = new BusPortEditor(qobject_cast<IntegralBusPort *>(p));
                 ed->setParent(p);
                 p->setEditor(ed);
             }
@@ -1945,17 +1937,16 @@ void WorkflowView::sl_editItem() {
 }
 
 void WorkflowView::sl_onSelectionChanged() {
-    QList<Actor*> actorsSelected = scene->getSelectedActors();
+    QList<Actor *> actorsSelected = scene->getSelectedActors();
     const int actorsCount = actorsSelected.size();
     editScriptAction->setEnabled(actorsCount == 1 && actorsSelected.first()->getScript() != NULL);
     editExternalToolAction->setEnabled(actorsCount == 1 && actorsSelected.first()->getProto()->isExternalTool());
     toggleBreakpointAction->setEnabled(scene->items().size() != 0);
 
     WorkflowAbstractRunner *runner = scene->getRunner();
-    if(NULL != runner && !actorsSelected.isEmpty()) {
+    if (NULL != runner && !actorsSelected.isEmpty()) {
         QList<Workflow::WorkerState> workerStates = runner->getState(actorsSelected.first());
-        tickReadyAction->setEnabled(debugInfo->isPaused() && 1 == actorsCount
-            && workerStates.contains(WorkerReady));
+        tickReadyAction->setEnabled(debugInfo->isPaused() && 1 == actorsCount && workerStates.contains(WorkerReady));
     } else {
         tickReadyAction->setEnabled(false);
     }
@@ -1964,8 +1955,7 @@ void WorkflowView::sl_onSelectionChanged() {
 void WorkflowView::sl_exportScene() {
     propertyEditor->commit();
     QString fileName = GUrlUtils::fixFileName(meta.name);
-    QObjectScopedPointer<ExportImageDialog> dialog = new ExportImageDialog(sceneView->viewport(), ExportImageDialog::WD,
-                                                                           fileName, ExportImageDialog::SupportScaling,  sceneView->viewport());
+    QObjectScopedPointer<ExportImageDialog> dialog = new ExportImageDialog(sceneView->viewport(), ExportImageDialog::WD, fileName, ExportImageDialog::SupportScaling, sceneView->viewport());
     dialog->exec();
 }
 
@@ -1982,7 +1972,7 @@ void WorkflowView::sl_saveScene() {
         sl_updateTitle();
     }
     propertyEditor->commit();
-    Task* t = new SaveWorkflowSceneTask(getSchema(), getMeta());
+    Task *t = new SaveWorkflowSceneTask(getSchema(), getMeta());
     AppContext::getTaskScheduler()->registerTopLevelTask(t);
     connect(t, SIGNAL(si_stateChanged()), SLOT(sl_onSceneSaved()));
 }
@@ -1997,7 +1987,7 @@ void WorkflowView::sl_saveSceneAs() {
     }
     propertyEditor->commit();
     meta = md->meta;
-    Task* t = new SaveWorkflowSceneTask(getSchema(), getMeta());
+    Task *t = new SaveWorkflowSceneTask(getSchema(), getMeta());
     AppContext::getTaskScheduler()->registerTopLevelTask(t);
     sl_updateTitle();
     connect(t, SIGNAL(si_stateChanged()), SLOT(sl_onSceneSaved()));
@@ -2021,7 +2011,7 @@ void WorkflowView::runWizard(Wizard *w) {
         WizardController::ApplyResult res = controller.applyChanges(meta);
         if (WizardController::ACTORS_REPLACED == res) {
             recreateScene();
-            schema->setWizards(QList<Wizard*>());
+            schema->setWizards(QList<Wizard *>());
         }
         scene->sl_updateDocs();
         scene->setModified();
@@ -2035,7 +2025,7 @@ void WorkflowView::runWizard(Wizard *w) {
 }
 
 void WorkflowView::loadWizardResult(const QString &result) {
-    QString url = QDir::searchPaths( PATH_PREFIX_DATA ).first() + "/workflow_samples/" + result;
+    QString url = QDir::searchPaths(PATH_PREFIX_DATA).first() + "/workflow_samples/" + result;
     if (!QFile::exists(url)) {
         coreLog.error(tr("File is not found: %1").arg(url));
         return;
@@ -2115,10 +2105,10 @@ void WorkflowView::setDashboardActionVisible(bool visible) {
     toggleDashboard->setVisible(visible);
 }
 
-void WorkflowView::commitWarningsToMonitor(WorkflowAbstractRunner* t) {
+void WorkflowView::commitWarningsToMonitor(WorkflowAbstractRunner *t) {
     for (int i = 0; i < infoList->count(); i++) {
-        QListWidgetItem* warning = infoList->item(i);
-        foreach (WorkflowMonitor* monitor, t->getMonitors()) {
+        QListWidgetItem *warning = infoList->item(i);
+        foreach (WorkflowMonitor *monitor, t->getMonitors()) {
             monitor->addError(warning->data(TEXT_REF).toString(),
                               warning->data(ACTOR_ID_REF).toString(),
                               warning->data(TYPE_REF).toString());
@@ -2152,9 +2142,9 @@ void WorkflowView::sl_loadScene() {
 #ifdef Q_OS_MAC
     if (qgetenv(ENV_GUI_TEST).toInt() == 1 && qgetenv(ENV_USE_NATIVE_DIALOGS).toInt() == 0) {
         url = U2FileDialog::getOpenFileName(0, tr("Open workflow file"), dir, filter, 0, QFileDialog::DontUseNativeDialog);
-    }else
+    } else
 #endif
-    url = U2FileDialog::getOpenFileName(0, tr("Open workflow file"), dir, filter);
+        url = U2FileDialog::getOpenFileName(0, tr("Open workflow file"), dir, filter);
     if (!url.isEmpty()) {
         AppContext::getSettings()->setValue(LAST_DIR, QFileInfo(url).absoluteDir().absolutePath());
         sl_loadScene(url, false);
@@ -2166,18 +2156,18 @@ void WorkflowView::sl_loadScene(const QString &url, bool fromDashboard) {
     if (fromDashboard && !confirmModified()) {
         return;
     }
-    Task* t = new LoadWorkflowSceneTask(schema, &meta, scene, url, fromDashboard, fromDashboard); //FIXME unsynchronized meta usage
-    TaskSignalMapper* m = new TaskSignalMapper(t);
-    connect(m, SIGNAL(si_taskFinished(Task*)), SLOT(sl_onSceneLoaded()));
-    if(LoadWorkflowTask::detectFormat(IOAdapterUtils::readFileHeader(url)) == LoadWorkflowTask::XML) {
-        connect(m, SIGNAL(si_taskFinished(Task*)), SLOT(sl_xmlSchemaLoaded(Task*)));
+    loadWorkflowSceneTask = new LoadWorkflowSceneTask(schema, &meta, scene, url, fromDashboard, fromDashboard);    //FIXME unsynchronized meta usage
+    TaskSignalMapper *m = new TaskSignalMapper(loadWorkflowSceneTask.data());
+    connect(m, SIGNAL(si_taskFinished(Task *)), SLOT(sl_onSceneLoaded()));
+    if (LoadWorkflowTask::detectFormat(IOAdapterUtils::readFileHeader(url)) == LoadWorkflowTask::XML) {
+        connect(m, SIGNAL(si_taskFinished(Task *)), SLOT(sl_xmlSchemaLoaded(Task *)));
     }
-    AppContext::getTaskScheduler()->registerTopLevelTask(t);
+    AppContext::getTaskScheduler()->registerTopLevelTask(loadWorkflowSceneTask);
 }
 
-void WorkflowView::sl_xmlSchemaLoaded(Task* t) {
+void WorkflowView::sl_xmlSchemaLoaded(Task *t) {
     assert(t != NULL);
-    if(!t->hasError()) {
+    if (!t->hasError()) {
         QMessageBox::warning(this, tr("Warning!"), QObject::tr("You opened obsolete workflow in XML format. It is strongly recommended"
                                                                " to clear working space and create workflow from scratch."));
     } else {
@@ -2217,7 +2207,7 @@ void WorkflowView::sl_onSceneLoaded() {
 }
 
 void WorkflowView::sl_onSceneSaved() {
-    Task *t = dynamic_cast<Task*>(sender());
+    Task *t = dynamic_cast<Task *>(sender());
     CHECK(NULL != t, );
     if (t->isFinished() && !t->hasError()) {
         scene->setModified(false);
@@ -2256,12 +2246,10 @@ bool WorkflowView::confirmModified() {
     propertyEditor->commit();
     if (scene->isModified() && !scene->items().isEmpty()) {
         AppContext::getMainWindow()->getMDIManager()->activateWindow(this);
-        int ret = QMessageBox::question(this, tr("Workflow Designer"),
-            tr("The workflow has been modified.\n"
-            "Do you want to save changes?"),
-            QMessageBox::Save | QMessageBox::Discard
-            | QMessageBox::Cancel,
-            QMessageBox::Save);
+        int ret = QMessageBox::question(this, tr("Workflow Designer"), tr("The workflow has been modified.\n"
+                                                                          "Do you want to save changes?"),
+                                        QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
+                                        QMessageBox::Save);
         if (QMessageBox::Cancel == ret) {
             return false;
         } else if (QMessageBox::Discard != ret) {
@@ -2271,15 +2259,15 @@ bool WorkflowView::confirmModified() {
     return true;
 }
 
-static QString newActorLabel(ActorPrototype *proto, const QList<Actor*> &procs) {
+static QString newActorLabel(ActorPrototype *proto, const QList<Actor *> &procs) {
     QStringList allLabels;
-    foreach(Actor *actor, procs) {
+    foreach (Actor *actor, procs) {
         allLabels << actor->getLabel();
     }
     return WorkflowUtils::createUniqueString(proto->getDisplayName(), " ", allLabels);
 }
 
-Actor * WorkflowView::createActor(ActorPrototype *proto, const QVariantMap &params) const {
+Actor *WorkflowView::createActor(ActorPrototype *proto, const QVariantMap &params) const {
     assert(NULL != proto);
     QString pId = proto->getId().replace(QRegExp("\\s"), "-");
     ActorId id = Schema::uniqueActorId(pId, schema->getProcesses());
@@ -2294,8 +2282,8 @@ void WorkflowView::onModified() {
     scene->onModified();
 }
 
-WorkflowBusItem * WorkflowView::tryBind(WorkflowPortItem *from, WorkflowPortItem *to) {
-    WorkflowBusItem* dit = NULL;
+WorkflowBusItem *WorkflowView::tryBind(WorkflowPortItem *from, WorkflowPortItem *to) {
+    WorkflowBusItem *dit = NULL;
 
     if (from->getPort()->canBind(to->getPort())) {
         Port *src = from->getPort();
@@ -2320,61 +2308,57 @@ void WorkflowView::sl_updateSchema() {
     schema->update();
 }
 
-Workflow::Schema * WorkflowView::getSchema() const {
+Workflow::Schema *WorkflowView::getSchema() const {
     return schema;
 }
 
-const Workflow::Metadata & WorkflowView::getMeta() {
+const Workflow::Metadata &WorkflowView::getMeta() {
     return updateMeta();
 }
 
-const Workflow::Metadata & WorkflowView::updateMeta() {
+const Workflow::Metadata &WorkflowView::updateMeta() {
     meta.setSampleMark(false);
     meta.resetVisual();
     foreach (QGraphicsItem *it, scene->items()) {
         switch (it->type()) {
-        case WorkflowProcessItemType:
-            {
-                WorkflowProcessItem *proc = qgraphicsitem_cast<WorkflowProcessItem*>(it);
-                ActorVisualData visual(proc->getProcess()->getId());
-                visual.setPos(proc->pos());
-                ItemViewStyle *style = proc->getStyleById(proc->getStyle());
-                if (NULL != style) {
-                    visual.setStyle(style->getId());
-                    if (style->getBgColor() != style->defaultColor()) {
-                        visual.setColor(style->getBgColor());
-                    }
-                    if (style->defaultFont() != QFont()) {
-                        visual.setFont(style->defaultFont());
-                    }
-                    if (ItemStyles::EXTENDED == style->getId()) {
-                        ExtendedProcStyle *eStyle = dynamic_cast<ExtendedProcStyle*>(style);
-                        if (!eStyle->isAutoResized()) {
-                            visual.setRect(eStyle->boundingRect());
-                        }
+        case WorkflowProcessItemType: {
+            WorkflowProcessItem *proc = qgraphicsitem_cast<WorkflowProcessItem *>(it);
+            ActorVisualData visual(proc->getProcess()->getId());
+            visual.setPos(proc->pos());
+            ItemViewStyle *style = proc->getStyleById(proc->getStyle());
+            if (NULL != style) {
+                visual.setStyle(style->getId());
+                if (style->getBgColor() != style->defaultColor()) {
+                    visual.setColor(style->getBgColor());
+                }
+                if (style->defaultFont() != QFont()) {
+                    visual.setFont(style->defaultFont());
+                }
+                if (ItemStyles::EXTENDED == style->getId()) {
+                    ExtendedProcStyle *eStyle = dynamic_cast<ExtendedProcStyle *>(style);
+                    if (!eStyle->isAutoResized()) {
+                        visual.setRect(eStyle->boundingRect());
                     }
                 }
-                foreach (WorkflowPortItem *port, proc->getPortItems()) {
-                    visual.setPortAngle(port->getPort()->getId(), port->getOrientarion());
-                }
-                meta.setActorVisualData(visual);
             }
-            break;
-        case WorkflowBusItemType:
-            {
-                WorkflowBusItem *bus = qgraphicsitem_cast<WorkflowBusItem*>(it);
-                Port *src = bus->getBus()->source();
-                Port *dst = bus->getBus()->destination();
-                QPointF p = bus->getText()->pos();
-                meta.setTextPos(src->owner()->getId(), src->getId(), dst->owner()->getId(), dst->getId(), p);
+            foreach (WorkflowPortItem *port, proc->getPortItems()) {
+                visual.setPortAngle(port->getPort()->getId(), port->getOrientarion());
             }
-            break;
+            meta.setActorVisualData(visual);
+        } break;
+        case WorkflowBusItemType: {
+            WorkflowBusItem *bus = qgraphicsitem_cast<WorkflowBusItem *>(it);
+            Port *src = bus->getBus()->source();
+            Port *dst = bus->getBus()->destination();
+            QPointF p = bus->getText()->pos();
+            meta.setTextPos(src->owner()->getId(), src->getId(), dst->owner()->getId(), dst->getId(), p);
+        } break;
         }
     }
     return meta;
 }
 
-Workflow::Metadata WorkflowView::getMeta(const QList<WorkflowProcessItem*> &items) {
+Workflow::Metadata WorkflowView::getMeta(const QList<WorkflowProcessItem *> &items) {
     const Workflow::Metadata &meta = getMeta();
     Workflow::Metadata result;
     result.name = meta.name;
@@ -2405,7 +2389,7 @@ Workflow::Metadata WorkflowView::getMeta(const QList<WorkflowProcessItem*> &item
     return result;
 }
 
-RunFileSystem * WorkflowView::getRFS() {
+RunFileSystem *WorkflowView::getRFS() {
     RunFileSystem *result = new RunFileSystem(this);
     RFSUtils::initRFS(*result, schema->getProcesses(), this);
     return result;
@@ -2432,22 +2416,21 @@ bool WorkflowView::isShowSamplesHint() const {
     SAFE_POINT(NULL != schema, "NULL schema", false);
     const bool emptySchema = (0 == schema->getProcesses().size());
     return samples->isVisible() && emptySchema;
-
 }
 
 /********************************
  * WorkflowScene
  ********************************/
-static bool canDrop(const QMimeData* m, QList<ActorPrototype*>& lst) {
+static bool canDrop(const QMimeData *m, QList<ActorPrototype *> &lst) {
     if (m->hasFormat(WorkflowPalette::MIME_TYPE)) {
         QString id(m->data(WorkflowPalette::MIME_TYPE));
-        ActorPrototype* proto = WorkflowEnv::getProtoRegistry()->getProto(id);
+        ActorPrototype *proto = WorkflowEnv::getProtoRegistry()->getProto(id);
         if (proto) {
             lst << proto;
         }
     } else {
-        foreach(QList<ActorPrototype*> l, WorkflowEnv::getProtoRegistry()->getProtos().values()) {
-            foreach(ActorPrototype* proto, l) {
+        foreach (QList<ActorPrototype *> l, WorkflowEnv::getProtoRegistry()->getProtos().values()) {
+            foreach (ActorPrototype *proto, l) {
                 if (proto->isAcceptableDrop(m)) {
                     lst << proto;
                 }
@@ -2458,7 +2441,7 @@ static bool canDrop(const QMimeData* m, QList<ActorPrototype*>& lst) {
 }
 
 WorkflowScene::WorkflowScene(WorkflowView *parent)
-: QGraphicsScene(parent), controller(parent), modified(false), locked(false), runner(NULL), hint(0) {
+    : QGraphicsScene(parent), controller(parent), modified(false), locked(false), runner(NULL), hint(0) {
     openDocumentsAction = new QAction(tr("Open document(s)"), this);
     connect(openDocumentsAction, SIGNAL(triggered()), SLOT(sl_openDocuments()));
 }
@@ -2469,23 +2452,23 @@ WorkflowScene::~WorkflowScene() {
 
 void WorkflowScene::sl_deleteItem() {
     assert(!locked);
-    QList<WorkflowProcessItem*> items;
-    foreach(QGraphicsItem* it, selectedItems()) {
-        WorkflowProcessItem *proc = qgraphicsitem_cast<WorkflowProcessItem*>(it);
-        WorkflowBusItem *bus = qgraphicsitem_cast<WorkflowBusItem*>(it);
+    QList<WorkflowProcessItem *> items;
+    foreach (QGraphicsItem *it, selectedItems()) {
+        WorkflowProcessItem *proc = qgraphicsitem_cast<WorkflowProcessItem *>(it);
+        WorkflowBusItem *bus = qgraphicsitem_cast<WorkflowBusItem *>(it);
         switch (it->type()) {
-            case WorkflowProcessItemType:
-                items << proc;
-                break;
-            case WorkflowBusItemType:
-                controller->removeBusItem(bus);
-                setModified();
-                break;
+        case WorkflowProcessItemType:
+            items << proc;
+            break;
+        case WorkflowBusItemType:
+            controller->removeBusItem(bus);
+            setModified();
+            break;
         }
     }
-    foreach(WorkflowProcessItem *it, items) {
-        if ( it->getProcess() != NULL ) {
-            emit si_itemDeleted( it->getProcess()->getId() );
+    foreach (WorkflowProcessItem *it, items) {
+        if (it->getProcess() != NULL) {
+            emit si_itemDeleted(it->getProcess()->getId());
         }
         controller->removeProcessItem(it);
         setModified();
@@ -2496,17 +2479,17 @@ void WorkflowScene::sl_deleteItem() {
     update();
 }
 
-QList<Actor*> WorkflowScene::getSelectedActors() const {
-    QList<Actor*> list;
+QList<Actor *> WorkflowScene::getSelectedActors() const {
+    QList<Actor *> list;
     foreach (QGraphicsItem *item, selectedItems()) {
         if (item->type() == WorkflowProcessItemType) {
-            list << static_cast<WorkflowProcessItem*>(item)->getProcess();
+            list << static_cast<WorkflowProcessItem *>(item)->getProcess();
         }
     }
     return list;
 }
 
-void WorkflowScene::contextMenuEvent(QGraphicsSceneContextMenuEvent * e) {
+void WorkflowScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *e) {
     QGraphicsScene::contextMenuEvent(e);
     if (!e->isAccepted()) {
         QMenu menu;
@@ -2516,15 +2499,15 @@ void WorkflowScene::contextMenuEvent(QGraphicsSceneContextMenuEvent * e) {
     }
 }
 
-void WorkflowScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * mouseEvent) {
+void WorkflowScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) {
     if (!mouseEvent->isAccepted() && (mouseEvent->button() == Qt::LeftButton) && !selectedItems().isEmpty()) {
         emit processDblClicked();
     }
     QGraphicsScene::mousePressEvent(mouseEvent);
 }
 
-void WorkflowScene::dragEnterEvent(QGraphicsSceneDragDropEvent * event) {
-    QList<ActorPrototype*> lst;
+void WorkflowScene::dragEnterEvent(QGraphicsSceneDragDropEvent *event) {
+    QList<ActorPrototype *> lst;
     if (!locked && canDrop(event->mimeData(), lst)) {
         event->acceptProposedAction();
     } else {
@@ -2532,8 +2515,8 @@ void WorkflowScene::dragEnterEvent(QGraphicsSceneDragDropEvent * event) {
     }
 }
 
-void WorkflowScene::dragMoveEvent(QGraphicsSceneDragDropEvent * event) {
-    QList<ActorPrototype*> lst;
+void WorkflowScene::dragMoveEvent(QGraphicsSceneDragDropEvent *event) {
+    QList<ActorPrototype *> lst;
     if (!locked && canDrop(event->mimeData(), lst)) {
         event->acceptProposedAction();
     } else {
@@ -2541,24 +2524,22 @@ void WorkflowScene::dragMoveEvent(QGraphicsSceneDragDropEvent * event) {
     }
 }
 
-void WorkflowScene::dropEvent(QGraphicsSceneDragDropEvent * event) {
-    QList<ActorPrototype*> lst;
-    if (!locked && canDrop(event->mimeData(), lst))
-    {
+void WorkflowScene::dropEvent(QGraphicsSceneDragDropEvent *event) {
+    QList<ActorPrototype *> lst;
+    if (!locked && canDrop(event->mimeData(), lst)) {
         QList<QGraphicsItem *> targets = items(event->scenePos());
         bool done = false;
-        foreach(QGraphicsItem* it, targets) {
-            WorkflowProcessItem* target = qgraphicsitem_cast<WorkflowProcessItem*>(it);
+        foreach (QGraphicsItem *it, targets) {
+            WorkflowProcessItem *target = qgraphicsitem_cast<WorkflowProcessItem *>(it);
             if (target && lst.contains(target->getProcess()->getProto())) {
                 clearSelection();
                 QVariantMap params;
-                Actor* a = target->getProcess();
+                Actor *a = target->getProcess();
                 a->getProto()->isAcceptableDrop(event->mimeData(), &params);
                 QMapIterator<QString, QVariant> cfg(params);
-                while (cfg.hasNext())
-                {
+                while (cfg.hasNext()) {
                     cfg.next();
-                    a->setParameter(cfg.key(),cfg.value());
+                    a->setParameter(cfg.key(), cfg.value());
                 }
                 target->setSelected(true);
                 done = true;
@@ -2566,11 +2547,11 @@ void WorkflowScene::dropEvent(QGraphicsSceneDragDropEvent * event) {
             }
         }
         if (!done) {
-            ActorPrototype* proto = lst.size() > 1 ? ChooseItemDialog(controller).select(lst) : lst.first();
+            ActorPrototype *proto = lst.size() > 1 ? ChooseItemDialog(controller).select(lst) : lst.first();
             if (proto) {
-                Actor* a = controller->getActor();
+                Actor *a = controller->getActor();
                 if (a) {
-                    controller->addProcess( a, event->scenePos());
+                    controller->addProcess(a, event->scenePos());
                 }
                 event->setDropAction(Qt::CopyAction);
             }
@@ -2579,15 +2560,15 @@ void WorkflowScene::dropEvent(QGraphicsSceneDragDropEvent * event) {
     QGraphicsScene::dropEvent(event);
 }
 
-void WorkflowScene::keyPressEvent (QKeyEvent* event) {
+void WorkflowScene::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_Shift) {
         views().at(0)->setDragMode(QGraphicsView::ScrollHandDrag);
     }
     QGraphicsScene::keyPressEvent(event);
 }
 
-void WorkflowScene::keyReleaseEvent (QKeyEvent* event) {
-    QGraphicsView* v = views().at(0);
+void WorkflowScene::keyReleaseEvent(QKeyEvent *event) {
+    QGraphicsView *v = views().at(0);
     if (v->dragMode() == QGraphicsView::ScrollHandDrag) {
         v->setDragMode(QGraphicsView::RubberBandDrag);
     }
@@ -2598,7 +2579,7 @@ void WorkflowScene::clearScene() {
     sl_reset();
 }
 
-void WorkflowScene::setupLinkCtxMenu(const QString& href, Actor* actor, const QPoint& pos) {
+void WorkflowScene::setupLinkCtxMenu(const QString &href, Actor *actor, const QPoint &pos) {
     const QString attributeId = WorkflowUtils::getParamIdFromHref(href);
     bool isInput = attributeId == BaseAttributes::URL_IN_ATTRIBUTE().getId();
     bool isOutput = attributeId == BaseAttributes::URL_OUT_ATTRIBUTE().getId();
@@ -2624,13 +2605,13 @@ void WorkflowScene::setupLinkCtxMenu(const QString& href, Actor* actor, const QP
 }
 
 void WorkflowScene::sl_openDocuments() {
-    const QString& urlStr = openDocumentsAction->data().value<QString>();
-    const QStringList& _urls = WorkflowUtils::expandToUrls(urlStr);
+    const QString &urlStr = openDocumentsAction->data().value<QString>();
+    const QStringList &_urls = WorkflowUtils::expandToUrls(urlStr);
     QList<GUrl> urls;
-    foreach(const QString& url, _urls) {
+    foreach (const QString &url, _urls) {
         urls.append(url);
     }
-    Task* t = AppContext::getProjectLoader()->openWithProjectTask(urls);
+    Task *t = AppContext::getProjectLoader()->openWithProjectTask(urls);
     if (t) {
         AppContext::getTaskScheduler()->registerTopLevelTask(t);
     } else {
@@ -2659,15 +2640,15 @@ void WorkflowScene::sl_deselectAll() {
 }
 
 void WorkflowScene::sl_reset() {
-    QList<QGraphicsItem*> list;
-    QList<QGraphicsItem*> itemss = items();
+    QList<QGraphicsItem *> list;
+    QList<QGraphicsItem *> itemss = items();
     foreach (QGraphicsItem *it, itemss) {
         if (it->type() == WorkflowProcessItemType) {
             list << it;
         }
     }
     modified = false;
-    foreach(QGraphicsItem* it, list) {
+    foreach (QGraphicsItem *it, list) {
         removeItem(it);
         delete it;
     }
@@ -2682,8 +2663,7 @@ void WorkflowScene::setModified() {
     setModified(true);
 }
 
-void WorkflowScene::drawBackground(QPainter * painter, const QRectF & rect)
-{
+void WorkflowScene::drawBackground(QPainter *painter, const QRectF &rect) {
     if (WorkflowSettings::showGrid()) {
         int step = GRID_STEP;
         painter->setPen(QPen(QColor(200, 200, 255, 125)));
@@ -2692,7 +2672,7 @@ void WorkflowScene::drawBackground(QPainter * painter, const QRectF & rect)
         if (start > rect.top()) {
             start -= step;
         }
-        for (qreal y = start - step; y < rect.bottom(); ) {
+        for (qreal y = start - step; y < rect.bottom();) {
             y += step;
             painter->drawLine(rect.left(), y, rect.right(), y);
         }
@@ -2701,7 +2681,7 @@ void WorkflowScene::drawBackground(QPainter * painter, const QRectF & rect)
         if (start > rect.left()) {
             start -= step;
         }
-        for (qreal x = start - step; x < rect.right(); ) {
+        for (qreal x = start - step; x < rect.right();) {
             x += step;
             painter->drawLine(x, rect.top(), x, rect.bottom());
         }
@@ -2715,14 +2695,14 @@ void WorkflowScene::drawBackground(QPainter * painter, const QRectF & rect)
         } else {
             QTransform trans = painter->combinedTransform();
             f.setFamily("Courier New");
-            f.setPointSizeF(f.pointSizeF()* 2./trans.m11());
+            f.setPointSizeF(f.pointSizeF() * 2. / trans.m11());
             painter->setFont(f);
             QRectF res;
             painter->drawText(sceneRect(), Qt::AlignCenter, tr("Drop an element from the palette here"), &res);
             QPixmap pix(":workflow_designer/images/leftarrow.png");
             QPointF pos(res.left(), res.center().y());
             pos.rx() -= pix.width() + GRID_STEP;
-            pos.ry() -= pix.height()/2;
+            pos.ry() -= pix.height() / 2;
             painter->drawPixmap(pos, pix);
         }
     }
@@ -2744,7 +2724,7 @@ void WorkflowScene::centerView() {
     update();
 }
 
-WorkflowBusItem * WorkflowScene::addFlow(WorkflowPortItem *from, WorkflowPortItem *to, Link *link) {
+WorkflowBusItem *WorkflowScene::addFlow(WorkflowPortItem *from, WorkflowPortItem *to, Link *link) {
     WorkflowBusItem *dit = new WorkflowBusItem(from, to, link);
     from->addDataFlow(dit);
     to->addDataFlow(dit);
@@ -2756,15 +2736,15 @@ WorkflowBusItem * WorkflowScene::addFlow(WorkflowPortItem *from, WorkflowPortIte
 }
 
 void WorkflowScene::connectConfigurationEditors() {
-    foreach(QGraphicsItem *i, items()) {
-        if(i->type() == WorkflowProcessItemType) {
+    foreach (QGraphicsItem *i, items()) {
+        if (i->type() == WorkflowProcessItemType) {
             Actor *proc = static_cast<WorkflowProcessItem *>(i)->getProcess();
             ConfigurationEditor *editor = proc->getEditor();
             if (NULL != editor) {
                 connect(editor, SIGNAL(si_configurationChanged()), this, SIGNAL(configurationChanged()));
             }
-            GrouperEditor *g = dynamic_cast<GrouperEditor*>(editor);
-            MarkerEditor *m = dynamic_cast<MarkerEditor*>(editor);
+            GrouperEditor *g = dynamic_cast<GrouperEditor *>(editor);
+            MarkerEditor *m = dynamic_cast<MarkerEditor *>(editor);
             if (NULL != g || NULL != m) {
                 connect(editor, SIGNAL(si_configurationChanged()), controller, SLOT(sl_updateSchema()));
             }
@@ -2776,31 +2756,29 @@ void WorkflowScene::connectConfigurationEditors() {
 /* SceneCreator */
 /************************************************************************/
 SceneCreator::SceneCreator(Schema *_schema, const Workflow::Metadata &_meta)
-: schema(_schema), meta(_meta), scene(NULL)
-{
-
+    : schema(_schema), meta(_meta), scene(NULL) {
 }
 
 SceneCreator::~SceneCreator() {
     delete scene;
 }
 
-WorkflowScene * SceneCreator::recreateScene(WorkflowScene *_scene) {
+WorkflowScene *SceneCreator::recreateScene(WorkflowScene *_scene) {
     scene = _scene;
     scene->sl_reset();
     return createScene();
 }
 
-WorkflowScene * SceneCreator::createScene(WorkflowView *controller) {
+WorkflowScene *SceneCreator::createScene(WorkflowView *controller) {
     scene = new WorkflowScene(controller);
-    scene->setSceneRect(QRectF(-3*WS, -3*WS, 5*WS, 5*WS));
+    scene->setSceneRect(QRectF(-3 * WS, -3 * WS, 5 * WS, 5 * WS));
     scene->setItemIndexMethod(QGraphicsScene::NoIndex);
     scene->setObjectName("scene");
     return createScene();
 }
 
-WorkflowScene * SceneCreator::createScene() {
-    QMap<Port*, WorkflowPortItem*> ports;
+WorkflowScene *SceneCreator::createScene() {
+    QMap<Port *, WorkflowPortItem *> ports;
     foreach (Actor *actor, schema->getProcesses()) {
         WorkflowProcessItem *procItem = createProcess(actor);
         scene->addItem(procItem);
@@ -2818,7 +2796,7 @@ WorkflowScene * SceneCreator::createScene() {
     return result;
 }
 
-WorkflowProcessItem * SceneCreator::createProcess(Actor *actor) {
+WorkflowProcessItem *SceneCreator::createProcess(Actor *actor) {
     WorkflowProcessItem *procItem = new WorkflowProcessItem(actor);
     bool contains = false;
     ActorVisualData visual = meta.getActorVisualData(actor->getId(), contains);
@@ -2847,7 +2825,7 @@ WorkflowProcessItem * SceneCreator::createProcess(Actor *actor) {
             }
             QRectF r = visual.getRect(contains);
             if (contains) {
-                qobject_cast<ExtendedProcStyle*>(eStyle)->setFixedBounds(r);
+                qobject_cast<ExtendedProcStyle *>(eStyle)->setFixedBounds(r);
             }
         }
     }
@@ -2861,7 +2839,7 @@ WorkflowProcessItem * SceneCreator::createProcess(Actor *actor) {
     return procItem;
 }
 
-void SceneCreator::createBus(const QMap<Port*, WorkflowPortItem*> &ports, Link *link) {
+void SceneCreator::createBus(const QMap<Port *, WorkflowPortItem *> &ports, Link *link) {
     WorkflowPortItem *src = ports[link->source()];
     WorkflowPortItem *dst = ports[link->destination()];
     WorkflowBusItem *busItem = scene->addFlow(src, dst, link);
@@ -2869,11 +2847,10 @@ void SceneCreator::createBus(const QMap<Port*, WorkflowPortItem*> &ports, Link *
     ActorId dstActorId = dst->getOwner()->getProcess()->getId();
 
     bool contains = false;
-    QPointF p = meta.getTextPos(srcActorId, link->source()->getId(),
-        dstActorId, link->destination()->getId(), contains);
+    QPointF p = meta.getTextPos(srcActorId, link->source()->getId(), dstActorId, link->destination()->getId(), contains);
     if (contains) {
         busItem->getText()->setPos(p);
     }
 }
 
-}//namespace
+}    // namespace U2

@@ -43,10 +43,10 @@ public:
     virtual ~ReadDocumentTask();
 
     virtual QList<SharedDbiDataHandler> takeResult();
-    virtual const QString & getUrl() const;
-    virtual const QString & getDatasetName() const;
+    virtual const QString &getUrl() const;
+    virtual const QString &getDatasetName() const;
 
-    const QStringList & getProducedFiles() const;
+    const QStringList &getProducedFiles() const;
 
 protected:
     QList<SharedDbiDataHandler> result;
@@ -61,11 +61,12 @@ public:
     virtual ~ReadDocumentTaskFactory();
     virtual ReadDocumentTask *createTask(const QString &url, const QVariantMap &hints, WorkflowContext *ctx) = 0;
     QString getId() const;
+
 private:
     QString id;
 };
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2
 
-#endif // _U2_READ_DOCUMENT_TASK_FACTORY_
+#endif    // _U2_READ_DOCUMENT_TASK_FACTORY_

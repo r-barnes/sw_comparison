@@ -19,16 +19,15 @@
  * MA 02110-1301, USA.
  */
 
-#include <QRegularExpression>
-
 #include "ExternalToolRegistry.h"
 
+#include <QRegularExpression>
+
 #include <U2Core/AppContext.h>
+#include <U2Core/Log.h>
 #include <U2Core/Settings.h>
 #include <U2Core/Task.h>
 #include <U2Core/U2SafePoints.h>
-
-#include <U2Core/Log.h>
 
 namespace U2 {
 
@@ -47,8 +46,7 @@ ExternalTool::ExternalTool(QString _id, QString _name, QString _path)
       muted(false),
       isModuleTool(false),
       isCustomTool(false),
-    isRunnerTool(false)
-{
+      isRunnerTool(false) {
     if (NULL != AppContext::getMainWindow()) {
         icon = QIcon(":external_tool_support/images/cmdline.png");
         grayIcon = QIcon(":external_tool_support/images/cmdline_gray.png");
@@ -140,7 +138,7 @@ void ExternalTool::extractAdditionalParameters(const QString & /*output*/) {
     // do nothing
 }
 
-void ExternalTool::performAdditionalChecks(const QString& /*toolPath*/) {
+void ExternalTool::performAdditionalChecks(const QString & /*toolPath*/) {
     // do nothing
 }
 
@@ -157,11 +155,11 @@ const QStringList &ExternalTool::getDependencies() const {
     return dependencies;
 }
 
-const QString& ExternalTool::getAdditionalErrorMessage() const {
+const QString &ExternalTool::getAdditionalErrorMessage() const {
     return additionalErrorMesage;
 }
 
-void ExternalTool::setAdditionalErrorMessage(const QString& message) {
+void ExternalTool::setAdditionalErrorMessage(const QString &message) {
     additionalErrorMesage = message;
 }
 
@@ -169,7 +167,7 @@ bool ExternalTool::hasAdditionalErrorMessage() const {
     return !additionalErrorMesage.isEmpty();
 }
 
-void ExternalTool::setPath(const QString& _path) {
+void ExternalTool::setPath(const QString &_path) {
     if (path != _path) {
         path = _path;
         emit si_pathChanged();
@@ -181,7 +179,7 @@ void ExternalTool::setValid(bool _isValid) {
     emit si_toolValidationStatusChanged(isValidTool);
 }
 
-void ExternalTool::setVersion(const QString& _version) {
+void ExternalTool::setVersion(const QString &_version) {
     version = _version;
 }
 
@@ -216,16 +214,16 @@ bool ExternalTool::isRunner() const {
 
 ////////////////////////////////////////
 //ExternalToolValidationListener
-ExternalToolValidationListener::ExternalToolValidationListener(const QString& toolId) {
+ExternalToolValidationListener::ExternalToolValidationListener(const QString &toolId) {
     toolIds << toolId;
 }
 
-ExternalToolValidationListener::ExternalToolValidationListener(const QStringList& _toolIds) {
+ExternalToolValidationListener::ExternalToolValidationListener(const QStringList &_toolIds) {
     toolIds = _toolIds;
 }
 
 void ExternalToolValidationListener::sl_validationTaskStateChanged() {
-    Task* validationTask = qobject_cast<Task*>(sender());
+    Task *validationTask = qobject_cast<Task *>(sender());
     SAFE_POINT(NULL != validationTask, "Unexpected message sender", );
     if (validationTask->isFinished()) {
         emit si_validationComplete();
@@ -234,8 +232,8 @@ void ExternalToolValidationListener::sl_validationTaskStateChanged() {
 
 ////////////////////////////////////////
 //ExternalToolRegistry
-ExternalToolRegistry::ExternalToolRegistry() :
-    manager(NULL) {
+ExternalToolRegistry::ExternalToolRegistry()
+    : manager(NULL) {
 }
 
 ExternalToolRegistry::~ExternalToolRegistry() {
@@ -243,9 +241,9 @@ ExternalToolRegistry::~ExternalToolRegistry() {
     qDeleteAll(registry.values());
 }
 
-ExternalTool* ExternalToolRegistry::getByName(const QString& name) const {
-    ExternalTool* result = nullptr;
-    foreach(ExternalTool* tool, registry.values()) {
+ExternalTool *ExternalToolRegistry::getByName(const QString &name) const {
+    ExternalTool *result = nullptr;
+    foreach (ExternalTool *tool, registry.values()) {
         CHECK_CONTINUE(tool->getName() == name);
 
         result = tool;
@@ -255,28 +253,28 @@ ExternalTool* ExternalToolRegistry::getByName(const QString& name) const {
     return result;
 }
 
-ExternalTool* ExternalToolRegistry::getById(const QString& id) const {
+ExternalTool *ExternalToolRegistry::getById(const QString &id) const {
     return registry.value(id, NULL);
 }
 
-QString ExternalToolRegistry::getToolNameById(const QString& id) const {
-    ExternalTool* et = getById(id);
+QString ExternalToolRegistry::getToolNameById(const QString &id) const {
+    ExternalTool *et = getById(id);
     CHECK(nullptr != et, QString());
 
     return et->getName();
 }
 
 namespace {
-bool containsCaseInsensitive(const QList<QString>& values, const QString& value) {
+bool containsCaseInsensitive(const QList<QString> &values, const QString &value) {
     bool result = false;
-    foreach(const QString& v, values) {
+    foreach (const QString &v, values) {
         CHECK_CONTINUE(QString::compare(v, value, Qt::CaseInsensitive) == 0);
         result = true;
         break;
     };
     return result;
 }
-}
+}    // namespace
 
 bool ExternalToolRegistry::registerEntry(ExternalTool *t) {
     if (containsCaseInsensitive(registry.keys(), t->getId())) {
@@ -289,13 +287,13 @@ bool ExternalToolRegistry::registerEntry(ExternalTool *t) {
     }
 }
 
-void ExternalToolRegistry::unregisterEntry(const QString &id){
+void ExternalToolRegistry::unregisterEntry(const QString &id) {
     CHECK(registry.contains(id), );
     emit si_toolIsAboutToBeRemoved(id);
     ExternalTool *et = registry.take(id);
     if (nullptr != et) {
         int idx = registryOrder.indexOf(et);
-        if (-1 != idx){
+        if (-1 != idx) {
             registryOrder.removeAt(idx);
         }
 
@@ -303,19 +301,18 @@ void ExternalToolRegistry::unregisterEntry(const QString &id){
     }
 }
 
-QList<ExternalTool*> ExternalToolRegistry::getAllEntries() const
-{
+QList<ExternalTool *> ExternalToolRegistry::getAllEntries() const {
     return registryOrder;
 }
-QList< QList<ExternalTool*> > ExternalToolRegistry::getAllEntriesSortedByToolKits() const
-{
-    QList< QList<ExternalTool*> > res;
-    QList<ExternalTool*> list= registryOrder;
-    while(!list.isEmpty()){
-        QString name=list.first()->getToolKitName();
-        QList<ExternalTool*> toolKitList;
-        for(int i=0;i<list.length();i++){
-            if(name == list.at(i)->getToolKitName()){
+
+QList<QList<ExternalTool *>> ExternalToolRegistry::getAllEntriesSortedByToolKits() const {
+    QList<QList<ExternalTool *>> res;
+    QList<ExternalTool *> list = registryOrder;
+    while (!list.isEmpty()) {
+        QString name = list.first()->getToolKitName();
+        QList<ExternalTool *> toolKitList;
+        for (int i = 0; i < list.length(); i++) {
+            if (name == list.at(i)->getToolKitName()) {
                 toolKitList.append(list.takeAt(i));
                 i--;
             }
@@ -325,15 +322,15 @@ QList< QList<ExternalTool*> > ExternalToolRegistry::getAllEntriesSortedByToolKit
     return res;
 }
 
-void ExternalToolRegistry::setManager(ExternalToolManager* _manager) {
+void ExternalToolRegistry::setManager(ExternalToolManager *_manager) {
     manager = _manager;
 }
 
-ExternalToolManager* ExternalToolRegistry::getManager() const {
+ExternalToolManager *ExternalToolRegistry::getManager() const {
     return manager;
 }
 
-ExternalToolValidation DefaultExternalToolValidations::pythonValidation(){
+ExternalToolValidation DefaultExternalToolValidations::pythonValidation() {
     QString pythonExecutable = "python";
     QStringList pythonArgs;
     pythonArgs << "--version";
@@ -345,7 +342,7 @@ ExternalToolValidation DefaultExternalToolValidations::pythonValidation(){
     return pythonValidation;
 }
 
-ExternalToolValidation DefaultExternalToolValidations::rValidation(){
+ExternalToolValidation DefaultExternalToolValidations::rValidation() {
     QString rExecutable = "Rscript";
     QStringList rArgs;
     rArgs << "--version";
@@ -357,4 +354,4 @@ ExternalToolValidation DefaultExternalToolValidations::rValidation(){
     return rValidation;
 }
 
-}//namespace
+}    // namespace U2

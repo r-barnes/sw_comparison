@@ -19,6 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "ImportOptionsWidgetFiller.h"
+#include <primitives/GTCheckBox.h>
+#include <primitives/GTLineEdit.h>
+#include <primitives/GTRadioButton.h>
+#include <primitives/GTSpinBox.h>
+#include <primitives/GTWidget.h>
+
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QRadioButton>
@@ -32,12 +39,6 @@
 #include <U2Gui/ImportOptionsWidget.h>
 
 #include "utils/GTUtilsDialog.h"
-#include "ImportOptionsWidgetFiller.h"
-#include <primitives/GTCheckBox.h>
-#include <primitives/GTLineEdit.h>
-#include <primitives/GTRadioButton.h>
-#include <primitives/GTSpinBox.h>
-#include <primitives/GTWidget.h>
 
 namespace U2 {
 
@@ -63,16 +64,16 @@ void ImportOptionsWidgetFiller::fill(HI::GUITestOpStatus &os, ImportOptionsWidge
 #define GT_METHOD_NAME "setDestinationFolder"
 void ImportOptionsWidgetFiller::setDestinationFolder(HI::GUITestOpStatus &os, ImportOptionsWidget *optionsWidget, const QVariantMap &data) {
     CHECK(data.contains(ImportToDatabaseOptions::DESTINATION_FOLDER), );
-    QLineEdit* destFolder = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "leBaseFolder", optionsWidget));
+    QLineEdit *destFolder = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "leBaseFolder", optionsWidget));
     GT_CHECK(NULL != destFolder, "destFolder is NULL");
     GTLineEdit::setText(os, destFolder, data.value(ImportToDatabaseOptions::DESTINATION_FOLDER).toString());
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "setKeepFoldersStructure"
-void ImportOptionsWidgetFiller::setKeepFoldersStructure(HI::GUITestOpStatus& os, ImportOptionsWidget *optionsWidget, const QVariantMap &data) {
+void ImportOptionsWidgetFiller::setKeepFoldersStructure(HI::GUITestOpStatus &os, ImportOptionsWidget *optionsWidget, const QVariantMap &data) {
     CHECK(data.contains(ImportToDatabaseOptions::KEEP_FOLDERS_STRUCTURE), );
-    QCheckBox* keepStructure = qobject_cast<QCheckBox*>(GTWidget::findWidget(os, "cbKeepStructure", optionsWidget));
+    QCheckBox *keepStructure = qobject_cast<QCheckBox *>(GTWidget::findWidget(os, "cbKeepStructure", optionsWidget));
     GT_CHECK(NULL != keepStructure, "keepStructure is NULL");
     GTCheckBox::setChecked(os, keepStructure, data.value(ImportToDatabaseOptions::KEEP_FOLDERS_STRUCTURE).toBool());
 }
@@ -81,7 +82,7 @@ void ImportOptionsWidgetFiller::setKeepFoldersStructure(HI::GUITestOpStatus& os,
 #define GT_METHOD_NAME "setProcessFoldersRecusively"
 void ImportOptionsWidgetFiller::setProcessFoldersRecusively(HI::GUITestOpStatus &os, ImportOptionsWidget *optionsWidget, const QVariantMap &data) {
     CHECK(data.contains(ImportToDatabaseOptions::PROCESS_FOLDERS_RECUSIVELY), );
-    QCheckBox* processRecursively = qobject_cast<QCheckBox*>(GTWidget::findWidget(os, "cbRecursively", optionsWidget));
+    QCheckBox *processRecursively = qobject_cast<QCheckBox *>(GTWidget::findWidget(os, "cbRecursively", optionsWidget));
     GT_CHECK(NULL != processRecursively, "processRecursively is NULL");
     GTCheckBox::setChecked(os, processRecursively, data.value(ImportToDatabaseOptions::PROCESS_FOLDERS_RECUSIVELY).toBool());
 }
@@ -90,7 +91,7 @@ void ImportOptionsWidgetFiller::setProcessFoldersRecusively(HI::GUITestOpStatus 
 #define GT_METHOD_NAME "setCreateSubfolderForTopLevelFolder"
 void ImportOptionsWidgetFiller::setCreateSubfolderForTopLevelFolder(HI::GUITestOpStatus &os, ImportOptionsWidget *optionsWidget, const QVariantMap &data) {
     CHECK(data.contains(ImportToDatabaseOptions::CREATE_SUBFOLDER_FOR_TOP_LEVEL_FOLDER), );
-    QCheckBox* subfolderForEachFolder = qobject_cast<QCheckBox*>(GTWidget::findWidget(os, "cbCreateSubfoldersForTopLevelFolder", optionsWidget));
+    QCheckBox *subfolderForEachFolder = qobject_cast<QCheckBox *>(GTWidget::findWidget(os, "cbCreateSubfoldersForTopLevelFolder", optionsWidget));
     GT_CHECK(NULL != subfolderForEachFolder, "subfolderForeachFolder is NULL");
     GTCheckBox::setChecked(os, subfolderForEachFolder, data.value(ImportToDatabaseOptions::CREATE_SUBFOLDER_FOR_TOP_LEVEL_FOLDER).toBool());
 }
@@ -99,7 +100,7 @@ void ImportOptionsWidgetFiller::setCreateSubfolderForTopLevelFolder(HI::GUITestO
 #define GT_METHOD_NAME "setCreateSubfolderForEachFile"
 void ImportOptionsWidgetFiller::setCreateSubfolderForEachFile(HI::GUITestOpStatus &os, ImportOptionsWidget *optionsWidget, const QVariantMap &data) {
     CHECK(data.contains(ImportToDatabaseOptions::CREATE_SUBFOLDER_FOR_EACH_FILE), );
-    QCheckBox* subfolderForEachFile = qobject_cast<QCheckBox*>(GTWidget::findWidget(os, "cbCreateSubfoldersForFiles", optionsWidget));
+    QCheckBox *subfolderForEachFile = qobject_cast<QCheckBox *>(GTWidget::findWidget(os, "cbCreateSubfoldersForFiles", optionsWidget));
     GT_CHECK(NULL != subfolderForEachFile, "subfolderForEachFile is NULL");
     GTCheckBox::setChecked(os, subfolderForEachFile, data.value(ImportToDatabaseOptions::CREATE_SUBFOLDER_FOR_EACH_FILE).toBool());
 }
@@ -108,7 +109,7 @@ void ImportOptionsWidgetFiller::setCreateSubfolderForEachFile(HI::GUITestOpStatu
 #define GT_METHOD_NAME "setImportUnknownAsUdr"
 void ImportOptionsWidgetFiller::setImportUnknownAsUdr(HI::GUITestOpStatus &os, ImportOptionsWidget *optionsWidget, const QVariantMap &data) {
     CHECK(data.contains(ImportToDatabaseOptions::IMPORT_UNKNOWN_AS_UDR), );
-    QCheckBox* importUnknown = qobject_cast<QCheckBox*>(GTWidget::findWidget(os, "cbImportUnrecognized", optionsWidget));
+    QCheckBox *importUnknown = qobject_cast<QCheckBox *>(GTWidget::findWidget(os, "cbImportUnrecognized", optionsWidget));
     GT_CHECK(NULL != importUnknown, "importUnknown is NULL");
     GTCheckBox::setChecked(os, importUnknown, data.value(ImportToDatabaseOptions::IMPORT_UNKNOWN_AS_UDR).toBool());
 }
@@ -121,20 +122,20 @@ void ImportOptionsWidgetFiller::setMultiSequencePolicy(HI::GUITestOpStatus &os, 
     ImportToDatabaseOptions::MultiSequencePolicy policy = static_cast<ImportToDatabaseOptions::MultiSequencePolicy>(data.value(ImportToDatabaseOptions::MULTI_SEQUENCE_POLICY).toInt());
     switch (policy) {
     case ImportToDatabaseOptions::SEPARATE: {
-        QRadioButton* separate = qobject_cast<QRadioButton*>(GTWidget::findWidget(os, "rbSeparate", optionsWidget));
+        QRadioButton *separate = qobject_cast<QRadioButton *>(GTWidget::findWidget(os, "rbSeparate", optionsWidget));
         GT_CHECK(NULL != separate, "separate is NULL");
         GTRadioButton::click(os, separate);
         break;
     }
     case ImportToDatabaseOptions::MERGE: {
-        QRadioButton* merge = qobject_cast<QRadioButton*>(GTWidget::findWidget(os, "rbMerge", optionsWidget));
+        QRadioButton *merge = qobject_cast<QRadioButton *>(GTWidget::findWidget(os, "rbMerge", optionsWidget));
         GT_CHECK(NULL != merge, "merge is NULL");
         GTRadioButton::click(os, merge);
         setMergeMultiSequencePolicySeparatorSize(os, optionsWidget, data);
         break;
     }
     case ImportToDatabaseOptions::MALIGNMENT: {
-        QRadioButton* malignment = qobject_cast<QRadioButton*>(GTWidget::findWidget(os, "rbMalignment", optionsWidget));
+        QRadioButton *malignment = qobject_cast<QRadioButton *>(GTWidget::findWidget(os, "rbMalignment", optionsWidget));
         GT_CHECK(NULL != malignment, "malignment is NULL");
         GTRadioButton::click(os, malignment);
         break;
@@ -150,11 +151,11 @@ void ImportOptionsWidgetFiller::setAceFormatPolicy(HI::GUITestOpStatus &os, Impo
     const QStringList preferredFormats = data.value(ImportToDatabaseOptions::PREFERRED_FORMATS).toStringList();
 
     if (preferredFormats.contains(BaseDocumentFormats::ACE)) {
-        QRadioButton* rbAceAsMalignment = qobject_cast<QRadioButton*>(GTWidget::findWidget(os, "rbAceAsMalignment", optionsWidget));
+        QRadioButton *rbAceAsMalignment = qobject_cast<QRadioButton *>(GTWidget::findWidget(os, "rbAceAsMalignment", optionsWidget));
         GT_CHECK(NULL != rbAceAsMalignment, "rbAceAsMalignment is NULL");
         GTRadioButton::click(os, rbAceAsMalignment);
     } else if (preferredFormats.contains(AceImporter::ID)) {
-        QRadioButton* rbAceAsAssembly = qobject_cast<QRadioButton*>(GTWidget::findWidget(os, "rbAceAsAssembly", optionsWidget));
+        QRadioButton *rbAceAsAssembly = qobject_cast<QRadioButton *>(GTWidget::findWidget(os, "rbAceAsAssembly", optionsWidget));
         GT_CHECK(NULL != rbAceAsAssembly, "rbAceAsAssembly is NULL");
         GTRadioButton::click(os, rbAceAsAssembly);
     }
@@ -164,7 +165,7 @@ void ImportOptionsWidgetFiller::setAceFormatPolicy(HI::GUITestOpStatus &os, Impo
 #define GT_METHOD_NAME "setCreateSubfolderForDocument"
 void ImportOptionsWidgetFiller::setCreateSubfolderForDocument(HI::GUITestOpStatus &os, ImportOptionsWidget *optionsWidget, const QVariantMap &data) {
     CHECK(data.contains(ImportToDatabaseOptions::CREATE_SUBFOLDER_FOR_DOCUMENT), );
-    QCheckBox* subfolderForDocument = qobject_cast<QCheckBox*>(GTWidget::findWidget(os, "cbCreateSubfoldersforDocs", optionsWidget));
+    QCheckBox *subfolderForDocument = qobject_cast<QCheckBox *>(GTWidget::findWidget(os, "cbCreateSubfoldersforDocs", optionsWidget));
     GT_CHECK(NULL != subfolderForDocument, "subfolderForDocument is NULL");
     GTCheckBox::setChecked(os, subfolderForDocument, data.value(ImportToDatabaseOptions::CREATE_SUBFOLDER_FOR_DOCUMENT).toBool());
 }
@@ -173,7 +174,7 @@ void ImportOptionsWidgetFiller::setCreateSubfolderForDocument(HI::GUITestOpStatu
 #define GT_METHOD_NAME "setMergeMultiSequencePolicySeparatorSize"
 void ImportOptionsWidgetFiller::setMergeMultiSequencePolicySeparatorSize(HI::GUITestOpStatus &os, ImportOptionsWidget *optionsWidget, const QVariantMap &data) {
     CHECK(data.contains(ImportToDatabaseOptions::MERGE_MULTI_SEQUENCE_POLICY_SEPARATOR_SIZE), );
-    QSpinBox* separatorSize = qobject_cast<QSpinBox*>(GTWidget::findWidget(os, "sbMerge", optionsWidget));
+    QSpinBox *separatorSize = qobject_cast<QSpinBox *>(GTWidget::findWidget(os, "sbMerge", optionsWidget));
     GT_CHECK(NULL != separatorSize, "separatorSize is NULL");
     GTSpinBox::setValue(os, separatorSize, data.value(ImportToDatabaseOptions::MERGE_MULTI_SEQUENCE_POLICY_SEPARATOR_SIZE).toInt());
 }
@@ -181,4 +182,4 @@ void ImportOptionsWidgetFiller::setMergeMultiSequencePolicySeparatorSize(HI::GUI
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

@@ -19,16 +19,16 @@
  * MA 02110-1301, USA.
  */
 
+#include "ActorCfgFilterProxyModel.h"
+
 #include <U2Core/U2SafePoints.h>
 
-#include "ActorCfgFilterProxyModel.h"
 #include "ActorCfgModel.h"
 
 namespace U2 {
 
 ActorCfgFilterProxyModel::ActorCfgFilterProxyModel(QObject *p)
-    : QSortFilterProxyModel(p)
-{
+    : QSortFilterProxyModel(p) {
     setDynamicSortFilter(true);
 }
 
@@ -49,4 +49,4 @@ bool ActorCfgFilterProxyModel::filterAcceptsColumn(int sourceColumn, const QMode
     return srcModel->getScriptMode() || sourceColumn < 2;
 }
 
-} // namespace U2
+}    // namespace U2

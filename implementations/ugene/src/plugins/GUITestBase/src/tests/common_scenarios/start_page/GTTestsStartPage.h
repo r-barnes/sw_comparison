@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-
 #ifndef GTTESTSSTARTPAGE_H
 #define GTTESTSSTARTPAGE_H
 
@@ -38,10 +37,9 @@ GUI_TEST_CLASS_DECLARATION(test_0005)
 GUI_TEST_CLASS_DECLARATION(test_0006)
 GUI_TEST_CLASS_DECLARATION(test_0008)
 
-
 #undef GUI_TEST_SUITE
-}
+}    // namespace GUITest_common_scenarios_start_page
 
-} //namespace
+}    // namespace U2
 
-#endif // GTTESTSSTARTPAGE_H
+#endif    // GTTESTSSTARTPAGE_H

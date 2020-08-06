@@ -19,14 +19,15 @@
  * MA 02110-1301, USA.
  */
 
+#include "PwmBuildDialogFiller.h"
+#include <base_dialogs/GTFileDialog.h>
+#include <base_dialogs/MessageBoxFiller.h>
+#include <primitives/GTLineEdit.h>
+#include <primitives/GTWidget.h>
+
 #include <QApplication>
 #include <QLineEdit>
 
-#include "PwmBuildDialogFiller.h"
-#include <base_dialogs/GTFileDialog.h>
-#include <primitives/GTLineEdit.h>
-#include <primitives/GTWidget.h>
-#include <base_dialogs/MessageBoxFiller.h>
 #include <U2Core/U2SafePoints.h>
 
 namespace U2 {
@@ -36,16 +37,12 @@ namespace U2 {
 PwmBuildDialogFiller::PwmBuildDialogFiller(HI::GUITestOpStatus &os, const QList<Action> &actions)
     : Filler(os, "PWMBuildDialog"),
       dialog(NULL),
-      actions(actions)
-{
-
+      actions(actions) {
 }
 
 PwmBuildDialogFiller::PwmBuildDialogFiller(HI::GUITestOpStatus &os, CustomScenario *c)
     : Filler(os, "PWMBuildDialog", c),
-      dialog(NULL)
-{
-
+      dialog(NULL) {
 }
 
 #define GT_METHOD_NAME "run"
@@ -108,4 +105,4 @@ void PwmBuildDialogFiller::clickCancel() {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

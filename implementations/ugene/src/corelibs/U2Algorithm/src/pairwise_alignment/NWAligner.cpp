@@ -29,12 +29,10 @@
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-
 namespace U2 {
 
 NWAligner::NWAligner(const QByteArray &seq1, const QByteArray &seq2)
-: PairwiseAligner(seq1, seq2), fMatrix(NULL)
-{
+    : PairwiseAligner(seq1, seq2), fMatrix(NULL) {
     GTIMER(cvar, tvar, "NWAligner::NWAligner");
     const DNAAlphabet *alphabet = U2AlphabetUtils::findBestAlphabet(seq1 + seq2);
     if (alphabet->getId() == BaseDNAAlphabetIds::NUCL_DNA_DEFAULT()) {
@@ -90,38 +88,39 @@ MultipleSequenceAlignment NWAligner::align() {
     int i = seq1.size();
     int j = seq2.size();
 
-    while (i>0 && j>0) {
+    while (i > 0 && j > 0) {
         float score = fMatrix->getFValue(i, j);
-        float scoreDiag = fMatrix->getFValue(i-1, j-1);
-        float scoreUp = fMatrix->getFValue(i, j-1);
-        float scoreLeft = fMatrix->getFValue(i-1, j);
+        float scoreDiag = fMatrix->getFValue(i - 1, j - 1);
+        float scoreUp = fMatrix->getFValue(i, j - 1);
+        float scoreLeft = fMatrix->getFValue(i - 1, j);
         Q_UNUSED(scoreUp);
 
-        if (score == scoreDiag + sMatrix.getScore(seq1[i-1], seq2[j-1])) {
-            aligned1.prepend(seq1[i-1]);
-            aligned2.prepend(seq2[j-1]);
-            i--; j--;
+        if (score == scoreDiag + sMatrix.getScore(seq1[i - 1], seq2[j - 1])) {
+            aligned1.prepend(seq1[i - 1]);
+            aligned2.prepend(seq2[j - 1]);
+            i--;
+            j--;
         } else if (score == scoreLeft + gapPenalty) {
-            aligned1.prepend(seq1[i-1]);
+            aligned1.prepend(seq1[i - 1]);
             aligned2.prepend(U2Msa::GAP_CHAR);
             i--;
         } else {
             assert(score == scoreUp + gapPenalty);
             aligned1.prepend(U2Msa::GAP_CHAR);
-            aligned2.prepend(seq2[j-1]);
+            aligned2.prepend(seq2[j - 1]);
             j--;
         }
     }
 
-    while (i>0) {
-        aligned1.prepend(seq1[i-1]);
+    while (i > 0) {
+        aligned1.prepend(seq1[i - 1]);
         aligned2.prepend(U2Msa::GAP_CHAR);
         i--;
     }
 
-    while (j>0) {
+    while (j > 0) {
         aligned1.prepend(U2Msa::GAP_CHAR);
-        aligned2.prepend(seq2[j-1]);
+        aligned2.prepend(seq2[j - 1]);
         j--;
     }
 
@@ -136,8 +135,7 @@ MultipleSequenceAlignment NWAligner::align() {
 /* FMatrix */
 /************************************************************************/
 FMatrix::FMatrix(const SMatrix &_sMatrix, float _gapPenalty)
-: sMatrix(_sMatrix), gapPenalty(_gapPenalty), f(NULL), h(0), w(0)
-{
+    : sMatrix(_sMatrix), gapPenalty(_gapPenalty), f(NULL), h(0), w(0) {
     GTIMER(cvar, tvar, "FMatrix::FMatrix");
 }
 
@@ -150,18 +148,18 @@ void FMatrix::calculate(const QByteArray &seq1, const QByteArray &seq2) {
     GTIMER(cvar, tvar, "FMatrix::calculate");
     init(seq1, seq2);
 
-    for (int i=0; i<h; i++) {
+    for (int i = 0; i < h; i++) {
         setFValue(i, 0, gapPenalty * i);
     }
-    for (int j=0; j<w; j++) {
+    for (int j = 0; j < w; j++) {
         setFValue(0, j, gapPenalty * j);
     }
 
     for (int i = 1; i < h; i++) {
         for (int j = 1; j < w; j++) {
-            float match = getFValue(i-1, j-1) + sMatrix.getScore(seq1[i-1], seq2[j-1]);
-            float del = getFValue(i-1, j) + gapPenalty;
-            float ins = getFValue(i, j-1) + gapPenalty;
+            float match = getFValue(i - 1, j - 1) + sMatrix.getScore(seq1[i - 1], seq2[j - 1]);
+            float del = getFValue(i - 1, j) + gapPenalty;
+            float ins = getFValue(i, j - 1) + gapPenalty;
 
             float max = qMax(match, qMax(del, ins));
             setFValue(i, j, max);
@@ -182,15 +180,15 @@ void FMatrix::init(const QByteArray &seq1, const QByteArray &seq2) {
     h = seq1.size() + 1;
     w = seq2.size() + 1;
 
-    f = new float[h*w];
+    f = new float[h * w];
 }
 
 inline void FMatrix::setFValue(int i, int j, float v) {
-    f[i*w + j] = v;
+    f[i * w + j] = v;
 }
 
 inline float FMatrix::getFValue(int i, int j) {
-    return f[i*w + j];
+    return f[i * w + j];
 }
 
-} // U2
+}    // namespace U2

@@ -24,16 +24,14 @@
 
 #include <QPointer>
 
-#include <U2Core/DNASequenceObject.h>
-#include <U2Core/Task.h>
-#include <U2Core/MultipleSequenceAlignmentObject.h>
-#include <U2Core/BaseDocumentFormats.h>
-#include <U2Core/DocumentProviderTask.h>
-#include <U2Core/U2AlphabetUtils.h>
-
-#include <QPointer>
-
 #include <U2Algorithm/AlignSequencesToAlignmentTaskSettings.h>
+
+#include <U2Core/BaseDocumentFormats.h>
+#include <U2Core/DNASequenceObject.h>
+#include <U2Core/DocumentProviderTask.h>
+#include <U2Core/MultipleSequenceAlignmentObject.h>
+#include <U2Core/Task.h>
+#include <U2Core/U2AlphabetUtils.h>
 
 namespace U2 {
 
@@ -44,59 +42,60 @@ class SequenceObjectsExtractor {
 public:
     SequenceObjectsExtractor();
 
-    void setAlphabet(const DNAAlphabet* newAlphabet);
+    void setAlphabet(const DNAAlphabet *newAlphabet);
 
-    void extractSequencesFromDocuments(const QList<Document*>& documentsList);
+    void extractSequencesFromDocuments(const QList<Document *> &documentsList);
 
-    void extractSequencesFromDocument(Document* doc);
+    void extractSequencesFromDocument(Document *doc);
 
-    void extractSequencesFromObjects(const QList<GObject*>& objects);
+    void extractSequencesFromObjects(const QList<GObject *> &objects);
 
-    const QStringList& getErrorList() const;
+    const QStringList &getErrorList() const;
 
-    const DNAAlphabet* getAlphabet() const;
+    const DNAAlphabet *getAlphabet() const;
 
-    const QList<U2EntityRef>& getSequenceRefs() const;
+    const QList<U2EntityRef> &getSequenceRefs() const;
 
-    const QStringList& getSequenceNames() const;
+    const QStringList &getSequenceNames() const;
 
     qint64 getMaxSequencesLength() const;
 
-    const QList<Document*>& getUsedDocuments() const;
+    const QList<Document *> &getUsedDocuments() const;
 
-    const DNAAlphabet* resultingAlphabet() const;
+    const DNAAlphabet *resultingAlphabet() const;
 
 private:
-    void checkAlphabet(const DNAAlphabet* alphabet, const QString& objectName);
+    void checkAlphabet(const DNAAlphabet *alphabet, const QString &objectName);
 
     QList<U2EntityRef> sequenceRefs;
     QStringList errorList;
-    const DNAAlphabet* seqsAlphabet;
+    const DNAAlphabet *seqsAlphabet;
     bool extractFromMsa;
     QStringList sequenceNames;
     qint64 sequencesMaxLength;
-    QList<Document*> usedDocuments;
+    QList<Document *> usedDocuments;
 };
 
 class LoadSequencesTask : public Task {
     Q_OBJECT
 public:
-    LoadSequencesTask(const DNAAlphabet* msaAlphabet, const QStringList& filesWithSequences);
+    LoadSequencesTask(const DNAAlphabet *msaAlphabet, const QStringList &filesWithSequences);
     void prepare();
 
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
     ReportResult report();
 
-    const SequenceObjectsExtractor& getExtractor() const;
+    const SequenceObjectsExtractor &getExtractor() const;
 
 private:
-    const DNAAlphabet*          msaAlphabet;
-    QStringList                 urls;
+    const DNAAlphabet *msaAlphabet;
+    QStringList urls;
 
-    SequenceObjectsExtractor    extractor;
+    SequenceObjectsExtractor extractor;
 
     static const int maxErrorListSize;
+
 private:
     void setupError();
 };
@@ -104,19 +103,20 @@ private:
 class AlignSequencesToAlignmentTask : public Task {
     Q_OBJECT
 public:
-    AlignSequencesToAlignmentTask(MultipleSequenceAlignmentObject* obj, const SequenceObjectsExtractor& extractor, bool forceUseUgeneNativeAligner = false);
+    AlignSequencesToAlignmentTask(MultipleSequenceAlignmentObject *obj, const SequenceObjectsExtractor &extractor, bool forceUseUgeneNativeAligner = false);
     void prepare();
     ReportResult report();
+
 private:
     void fillSettingsByDefault();
 
-    QPointer<MultipleSequenceAlignmentObject>  maObj;
-    QStringList                 urls;
-    StateLock*                  stateLock;
-    StateLock*                  docStateLock;
+    QPointer<MultipleSequenceAlignmentObject> maObj;
+    QStringList urls;
+    StateLock *stateLock;
+    StateLock *docStateLock;
     qint64 sequencesMaxLength;
     AlignSequencesToAlignmentTaskSettings settings;
-    QList<Document*> usedDocuments;
+    QList<Document *> usedDocuments;
     const DNAAlphabet *initialMsaAlphabet;
     SequenceObjectsExtractor extr;
 };
@@ -124,19 +124,19 @@ private:
 class LoadSequencesAndAlignToAlignmentTask : public Task {
     Q_OBJECT
 public:
-    LoadSequencesAndAlignToAlignmentTask(MultipleSequenceAlignmentObject* obj, const QStringList& urls, bool forceUseUgeneNativeAligner = false);
+    LoadSequencesAndAlignToAlignmentTask(MultipleSequenceAlignmentObject *obj, const QStringList &urls, bool forceUseUgeneNativeAligner = false);
 
     void prepare() override;
-    QList<Task*> onSubTaskFinished(Task* subTask) override;
+    QList<Task *> onSubTaskFinished(Task *subTask) override;
     bool propagateSubtaskError() override;
 
 private:
-    QStringList                 urls;
-    QPointer<MultipleSequenceAlignmentObject>  maObj;
-    LoadSequencesTask*  loadSequencesTask;
+    QStringList urls;
+    QPointer<MultipleSequenceAlignmentObject> maObj;
+    LoadSequencesTask *loadSequencesTask;
     bool forceUseUgeneNativeAligner;
 };
 
-}// namespace
+}    // namespace U2
 
-#endif //_U2_ALIGN_SEQUENCES_TO_ALIGNMENT_TASK_H_
+#endif    //_U2_ALIGN_SEQUENCES_TO_ALIGNMENT_TASK_H_

@@ -22,10 +22,11 @@
 #ifndef _U2_BED_TOOLS_WORKERS_LIBRARY_
 #define _U2_BED_TOOLS_WORKERS_LIBRARY_
 
+#include <U2Core/GUrl.h>
+
+#include <U2Lang/BaseNGSWorker.h>
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
-#include <U2Lang/BaseNGSWorker.h>
-#include <U2Core/GUrl.h>
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -37,39 +38,48 @@ typedef PrompterBase<SlopbedPrompter> SlopbedBase;
 class SlopbedPrompter : public SlopbedBase {
     Q_OBJECT
 public:
-    SlopbedPrompter(Actor* p = 0) : SlopbedBase(p) {}
+    SlopbedPrompter(Actor *p = 0)
+        : SlopbedBase(p) {
+    }
+
 protected:
     QString composeRichDoc();
-}; //SlopbedPrompter
+};    //SlopbedPrompter
 
-class SlopbedWorker: public BaseNGSWorker {
+class SlopbedWorker : public BaseNGSWorker {
     Q_OBJECT
 public:
     SlopbedWorker(Actor *a);
+
 protected:
     QVariantMap getCustomParameters() const;
     QString getDefaultFileName() const;
     Task *getTask(const BaseNGSSetting &settings) const;
-}; //SlopbedWorker
+};    //SlopbedWorker
 
 class SlopbedWorkerFactory : public DomainFactory {
     static const QString ACTOR_ID;
+
 public:
     static void init();
-    SlopbedWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    Worker* createWorker(Actor* a) { return new SlopbedWorker(a); }
-}; //SlopbedWorkerFactory
+    SlopbedWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    Worker *createWorker(Actor *a) {
+        return new SlopbedWorker(a);
+    }
+};    //SlopbedWorkerFactory
 
-class SlopbedTask : public BaseNGSTask{
+class SlopbedTask : public BaseNGSTask {
     Q_OBJECT
 public:
-    SlopbedTask (const BaseNGSSetting &settings);
+    SlopbedTask(const BaseNGSSetting &settings);
 
 protected:
     bool filterLines;
     void prepareStep();
     void finishStep();
-    QStringList getParameters(U2OpStatus& os);
+    QStringList getParameters(U2OpStatus &os);
 };
 
 //////////////////////////////////////////////////
@@ -79,37 +89,46 @@ typedef PrompterBase<GenomecovPrompter> GenomecovBase;
 class GenomecovPrompter : public GenomecovBase {
     Q_OBJECT
 public:
-    GenomecovPrompter(Actor* p = 0) : GenomecovBase(p) {}
+    GenomecovPrompter(Actor *p = 0)
+        : GenomecovBase(p) {
+    }
+
 protected:
     QString composeRichDoc();
-}; //GenomecovPrompter
+};    //GenomecovPrompter
 
-class GenomecovWorker: public BaseNGSWorker {
+class GenomecovWorker : public BaseNGSWorker {
     Q_OBJECT
 public:
     GenomecovWorker(Actor *a);
+
 protected:
     QVariantMap getCustomParameters() const;
     QString getDefaultFileName() const;
     Task *getTask(const BaseNGSSetting &settings) const;
-}; //GenomecovWorker
+};    //GenomecovWorker
 
 class GenomecovWorkerFactory : public DomainFactory {
     static const QString ACTOR_ID;
+
 public:
     static void init();
-    GenomecovWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    Worker* createWorker(Actor* a) { return new GenomecovWorker(a); }
-}; //GenomecovWorkerFactory
+    GenomecovWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    Worker *createWorker(Actor *a) {
+        return new GenomecovWorker(a);
+    }
+};    //GenomecovWorkerFactory
 
-class GenomecovTask : public BaseNGSTask{
+class GenomecovTask : public BaseNGSTask {
     Q_OBJECT
 public:
-    GenomecovTask (const BaseNGSSetting &settings);
+    GenomecovTask(const BaseNGSSetting &settings);
 
 protected:
     void prepareStep();
-    QStringList getParameters(U2OpStatus& os);
+    QStringList getParameters(U2OpStatus &os);
 };
 
 //////////////////////////////////////////////////
@@ -119,42 +138,50 @@ class BedtoolsIntersectWorker : public BaseWorker {
 public:
     BedtoolsIntersectWorker(Actor *a);
     virtual void init();
-    virtual Task * tick();
-    virtual void cleanup() {}
+    virtual Task *tick();
+    virtual void cleanup() {
+    }
     virtual bool isReady() const;
 private slots:
     void sl_taskFinished(Task *task);
+
 private:
-    Task* createTask();
-    QList<U2EntityRef> getAnnotationsEntityRefFromMessages(const QList<Message>& mList, const QString& portId);
-    U2EntityRef getAnnotationsEntityRef(const Message& m, const QString& portId, U2OpStatus &os);
-    void storeMessages(IntegralBus* bus, QList<Message>& store);
-    IntegralBus* inputA;
-    IntegralBus* inputB;
-    IntegralBus* output;
+    Task *createTask();
+    QList<U2EntityRef> getAnnotationsEntityRefFromMessages(const QList<Message> &mList, const QString &portId);
+    U2EntityRef getAnnotationsEntityRef(const Message &m, const QString &portId, U2OpStatus &os);
+    void storeMessages(IntegralBus *bus, QList<Message> &store);
+    IntegralBus *inputA;
+    IntegralBus *inputB;
+    IntegralBus *output;
 
     QList<Message> storeA;
     QList<Message> storeB;
-}; //BedtoolsIntersectWorker
+};    //BedtoolsIntersectWorker
 
 class BedtoolsIntersectWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
     static void init();
-    BedtoolsIntersectWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual Worker* createWorker(Actor *a) { return new BedtoolsIntersectWorker(a); }
-}; //BedtoolsIntersectWorkerFactory
+    BedtoolsIntersectWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual Worker *createWorker(Actor *a) {
+        return new BedtoolsIntersectWorker(a);
+    }
+};    //BedtoolsIntersectWorkerFactory
 
 class BedtoolsIntersectPrompter : public PrompterBase<BedtoolsIntersectPrompter> {
     Q_OBJECT
 public:
-    BedtoolsIntersectPrompter(Actor* p = 0) : PrompterBase<BedtoolsIntersectPrompter>(p) {}
+    BedtoolsIntersectPrompter(Actor *p = 0)
+        : PrompterBase<BedtoolsIntersectPrompter>(p) {
+    }
+
 protected:
     QString composeRichDoc();
-}; //BedtoolsIntersectPrompter
+};    //BedtoolsIntersectPrompter
 
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-} //LocalWorkflow
-} //U2
-
-#endif //_U2_BED_TOOLS_WORKERS_LIBRARY_
+#endif    //_U2_BED_TOOLS_WORKERS_LIBRARY_

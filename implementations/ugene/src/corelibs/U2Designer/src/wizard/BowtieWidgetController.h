@@ -35,7 +35,7 @@ public:
     BowtieWidgetController(WizardController *wc, BowtieWidget *bw, int labelSize);
     ~BowtieWidgetController();
 
-    virtual QWidget * createGUI(U2OpStatus &os);
+    virtual QWidget *createGUI(U2OpStatus &os);
 
 private slots:
     void sl_browse();
@@ -51,6 +51,6 @@ private:
     DefaultPropertyController *nameCtrl;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_BOWTIEWIDGETCONTROLLER_H_
+#endif    // _U2_BOWTIEWIDGETCONTROLLER_H_

@@ -64,6 +64,6 @@ private:
     GTGlobals::UseMethod useMethod;
 };
 
-}
+}    // namespace U2
 
 #endif

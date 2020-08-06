@@ -28,27 +28,27 @@
 namespace U2 {
 namespace LocalWorkflow {
 
-class RemoteDBFetcherPrompter : public PrompterBase<RemoteDBFetcherPrompter>
-{
+class RemoteDBFetcherPrompter : public PrompterBase<RemoteDBFetcherPrompter> {
     Q_OBJECT
 
 public:
-    RemoteDBFetcherPrompter(Actor *p = 0) : PrompterBase<RemoteDBFetcherPrompter>(p) {}
+    RemoteDBFetcherPrompter(Actor *p = 0)
+        : PrompterBase<RemoteDBFetcherPrompter>(p) {
+    }
 
 protected:
     virtual QString composeRichDoc();
 };
 
-class RemoteDBFetcherWorker : public BaseWorker
-{
+class RemoteDBFetcherWorker : public BaseWorker {
     Q_OBJECT
 
 public:
-    RemoteDBFetcherWorker (Actor *a);
+    RemoteDBFetcherWorker(Actor *a);
 
     virtual void init();
     virtual bool isReady() const;
-    virtual Task* tick();
+    virtual Task *tick();
     virtual bool isDone() const;
     virtual void cleanup();
 
@@ -71,8 +71,7 @@ protected:
     QString fullPathDir;
 };
 
-class RemoteDBFetcherFactory : public DomainFactory
-{
+class RemoteDBFetcherFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
     static const QMap<QString, QString> cuteDbNames;
@@ -83,33 +82,36 @@ private:
     static QMap<QString, QString> initCuteDbNames();
 
 public:
-    RemoteDBFetcherFactory() : DomainFactory(ACTOR_ID) {}
+    RemoteDBFetcherFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
 
     static void init();
-    virtual Worker* createWorker(Actor *a) { return new RemoteDBFetcherWorker(a); }
+    virtual Worker *createWorker(Actor *a) {
+        return new RemoteDBFetcherWorker(a);
+    }
 };
 
-
-class FetchSequenceByIdFromAnnotationPrompter : public PrompterBase<FetchSequenceByIdFromAnnotationPrompter>
-{
+class FetchSequenceByIdFromAnnotationPrompter : public PrompterBase<FetchSequenceByIdFromAnnotationPrompter> {
     Q_OBJECT
 
 public:
-    FetchSequenceByIdFromAnnotationPrompter(Actor *p = 0) : PrompterBase<FetchSequenceByIdFromAnnotationPrompter>(p) {}
+    FetchSequenceByIdFromAnnotationPrompter(Actor *p = 0)
+        : PrompterBase<FetchSequenceByIdFromAnnotationPrompter>(p) {
+    }
 
 protected:
     virtual QString composeRichDoc();
 };
 
-class FetchSequenceByIdFromAnnotationWorker : public BaseWorker
-{
+class FetchSequenceByIdFromAnnotationWorker : public BaseWorker {
     Q_OBJECT
 
 public:
-    FetchSequenceByIdFromAnnotationWorker (Actor *a);
+    FetchSequenceByIdFromAnnotationWorker(Actor *a);
 
     virtual void init();
-    virtual Task* tick();
+    virtual Task *tick();
     virtual void cleanup();
 
 private slots:
@@ -122,19 +124,22 @@ protected:
     QString dbId;
 };
 
-class FetchSequenceByIdFromAnnotationFactory : public DomainFactory
-{
+class FetchSequenceByIdFromAnnotationFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
 
 public:
-    FetchSequenceByIdFromAnnotationFactory() : DomainFactory(ACTOR_ID) {}
+    FetchSequenceByIdFromAnnotationFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
 
     static void init();
-    virtual Worker* createWorker(Actor *a) { return new FetchSequenceByIdFromAnnotationWorker(a); }
+    virtual Worker *createWorker(Actor *a) {
+        return new FetchSequenceByIdFromAnnotationWorker(a);
+    }
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif  // #ifndef _U2_REMOTE_DB_FETCHER_H_
+#endif    // #ifndef _U2_REMOTE_DB_FETCHER_H_

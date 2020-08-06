@@ -20,21 +20,23 @@
  */
 
 #include "EnzymesQuery.h"
-#include "EnzymesIO.h"
-#include "FindEnzymesTask.h"
 
-#include <U2Core/TaskSignalMapper.h>
-#include <U2Core/Log.h>
-#include <U2Core/AppContext.h>
-#include <U2Core/Settings.h>
 #include <QCoreApplication>
 #include <QDir>
+#include <QInputDialog>
+
+#include <U2Core/AppContext.h>
+#include <U2Core/Log.h>
+#include <U2Core/Settings.h>
+#include <U2Core/TaskSignalMapper.h>
+
+#include <U2Gui/DialogUtils.h>
+#include <U2Gui/HelpButton.h>
 
 #include <U2Lang/BaseTypes.h>
 
-#include <QInputDialog>
-#include <U2Gui/DialogUtils.h>
-#include <U2Gui/HelpButton.h>
+#include "EnzymesIO.h"
+#include "FindEnzymesTask.h"
 
 namespace U2 {
 
@@ -47,7 +49,8 @@ static const QString CIRC_ATTR = "circular";
 static const QString MIN_ATTR = "min";
 static const QString MAX_ATTR = "max";
 
-QDEnzymesActor::QDEnzymesActor(QDActorPrototype const* proto) : QDActor(proto) {
+QDEnzymesActor::QDEnzymesActor(QDActorPrototype const *proto)
+    : QDActor(proto) {
     selectorFactory = NULL;
     cfg->setAnnotationKey("<rsite>");
     units["enzyme"] = new QDSchemeUnit(this);
@@ -57,8 +60,8 @@ QString QDEnzymesActor::getText() const {
     return tr("Find enzymes");
 }
 
-Task* QDEnzymesActor::getAlgorithmTask(const QVector<U2Region>& location) {
-    Task* t = NULL;
+Task *QDEnzymesActor::getAlgorithmTask(const QVector<U2Region> &location) {
+    Task *t = NULL;
 
     bool circular = cfg->getParameter(CIRC_ATTR)->getAttributePureValue().toBool();
 
@@ -68,19 +71,19 @@ Task* QDEnzymesActor::getAlgorithmTask(const QVector<U2Region>& location) {
     QList<SEnzymeData> enzymes;
     QString s = cfg->getParameter(ENZYMES_ATTR)->getAttributePureValue().toString();
     ids = s.split(QRegExp("\\s*,\\s*"));
-    const QList<SEnzymeData>& loadedEnzymes = EnzymesSelectorWidget::getLoadedEnzymes();
-    foreach(const SEnzymeData& d, loadedEnzymes) {
+    const QList<SEnzymeData> &loadedEnzymes = EnzymesSelectorWidget::getLoadedEnzymes();
+    foreach (const SEnzymeData &d, loadedEnzymes) {
         if (ids.contains(d->id)) {
             enzymes.append(d);
         }
     }
 
-    foreach(const U2Region& r, location) {
-        FindEnzymesTask* st = new FindEnzymesTask(scheme->getEntityRef(), r, enzymes, INT_MAX, circular);
+    foreach (const U2Region &r, location) {
+        FindEnzymesTask *st = new FindEnzymesTask(scheme->getEntityRef(), r, enzymes, INT_MAX, circular);
         t->addSubTask(st);
         enzymesTasks.append(st);
     }
-    connect(new TaskSignalMapper(t), SIGNAL(si_taskFinished(Task*)), SLOT(sl_onAlgorithmTaskFinished()));
+    connect(new TaskSignalMapper(t), SIGNAL(si_taskFinished(Task *)), SLOT(sl_onAlgorithmTaskFinished()));
     return t;
 }
 
@@ -116,9 +119,9 @@ QDEnzymesActorPrototype::QDEnzymesActorPrototype() {
     attributes << new Attribute(ed, BaseTypes::STRING_TYPE(), false);
     attributes << new Attribute(cd, BaseTypes::BOOL_TYPE(), false, false);
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
 
-    EnzymesSelectorDialogHandler* f = new EnzymesSelectorDialogHandler;
+    EnzymesSelectorDialogHandler *f = new EnzymesSelectorDialogHandler;
     delegates[ENZYMES_ATTR] = new StringSelectorDelegate("", f);
 
     editor = new DelegateEditor(delegates);
@@ -127,8 +130,8 @@ QDEnzymesActorPrototype::QDEnzymesActorPrototype() {
 /************************************************************************/
 /* EnzymesSelectorDialogHandler                                         */
 /************************************************************************/
-QString EnzymesSelectorDialogHandler::getSelectedString(QDialog* dlg) {
-    EnzymesSelectorDialog* enzDlg = qobject_cast<EnzymesSelectorDialog*>(dlg);
+QString EnzymesSelectorDialogHandler::getSelectedString(QDialog *dlg) {
+    EnzymesSelectorDialog *enzDlg = qobject_cast<EnzymesSelectorDialog *>(dlg);
     assert(enzDlg);
     return enzDlg->getSelectedString();
 }
@@ -137,30 +140,29 @@ QString EnzymesSelectorDialogHandler::getSelectedString(QDialog* dlg) {
 /* EnzymesSelectorDialog                                                */
 /************************************************************************/
 
-EnzymesSelectorDialog::EnzymesSelectorDialog(EnzymesSelectorDialogHandler* parent)
-: factory(parent) {
+EnzymesSelectorDialog::EnzymesSelectorDialog(EnzymesSelectorDialogHandler *parent)
+    : factory(parent) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742560");
+    new HelpButton(this, buttonBox, "46501094");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
-    QVBoxLayout* vl = new QVBoxLayout();
+    QVBoxLayout *vl = new QVBoxLayout();
     enzSel = new EnzymesSelectorWidget();
     vl->setMargin(0);
     vl->addWidget(enzSel);
     enzymesSelectorWidget->setLayout(vl);
     enzymesSelectorWidget->setMinimumSize(enzSel->size());
-
 }
 
 QString EnzymesSelectorDialog::getSelectedString() const {
     QString res;
-    const QList<SEnzymeData>& enzymes = enzSel->getSelectedEnzymes();
-    foreach(const SEnzymeData& enzyme, enzymes) {
-        res+=enzyme->id + ',';
+    const QList<SEnzymeData> &enzymes = enzSel->getSelectedEnzymes();
+    foreach (const SEnzymeData &enzyme, enzymes) {
+        res += enzyme->id + ',';
     }
-    res.remove(res.length()-1, 1);
+    res.remove(res.length() - 1, 1);
     return res;
 }
 
-}//namespace
+}    // namespace U2

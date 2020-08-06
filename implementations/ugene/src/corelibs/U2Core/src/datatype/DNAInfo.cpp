@@ -19,9 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-#include <QVariantMap>
-
 #include "DNAInfo.h"
+
+#include <QVariantMap>
 
 namespace U2 {
 
@@ -76,9 +76,7 @@ const QString DNAInfo::ID = "ID";
 const QString DNAInfo::GENBANK_HEADER = "GENBANK_HEADER";
 const QString DNAInfo::FASTQ_COMMENT = "FASTQ_COMMENT";
 
-
-QString DNAInfo::getPrimaryAccession( const QVariantMap& vm)
-{
+QString DNAInfo::getPrimaryAccession(const QVariantMap &vm) {
     if (vm.contains(ACCESSION)) {
         QVariant v = vm.value(ACCESSION);
         assert(v.type() == QVariant::StringList);
@@ -89,8 +87,7 @@ QString DNAInfo::getPrimaryAccession( const QVariantMap& vm)
     return QString();
 }
 
-QString DNAInfo::getContig( const QVariantMap& vm)
-{
+QString DNAInfo::getContig(const QVariantMap &vm) {
     if (vm.contains(CONTIG)) {
         QVariant v = vm.value(CONTIG);
         assert(v.type() == QVariant::StringList);
@@ -101,7 +98,7 @@ QString DNAInfo::getContig( const QVariantMap& vm)
     return QString();
 }
 
-QString DNAInfo::getName( const QVariantMap& vm) {
+QString DNAInfo::getName(const QVariantMap &vm) {
     QString name;
     if (vm.contains(LOCUS)) {
         DNALocusInfo loi = vm.value(LOCUS).value<DNALocusInfo>();
@@ -116,11 +113,11 @@ QString DNAInfo::getName( const QVariantMap& vm) {
     return name;
 }
 
-QString DNAInfo::getFastqComment(const QVariantMap & vm){
+QString DNAInfo::getFastqComment(const QVariantMap &vm) {
     QString comment;
     if (vm.contains(FASTQ_COMMENT)) {
         comment = vm.value(FASTQ_COMMENT).toString();
     }
     return comment;
 }
-}//namespace
+}    // namespace U2

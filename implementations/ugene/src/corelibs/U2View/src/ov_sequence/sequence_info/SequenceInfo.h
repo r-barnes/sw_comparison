@@ -30,8 +30,8 @@
 #include <U2Gui/U2SavableWidget.h>
 
 #include "CharOccurTask.h"
-#include "DinuclOccurTask.h"
 #include "DNAStatisticsTask.h"
+#include "DinuclOccurTask.h"
 #include "StatisticsCache.h"
 
 class QLabel;
@@ -47,10 +47,10 @@ class ShowHideSubgroupWidget;
 class U2VIEW_EXPORT SequenceInfo : public QWidget {
     Q_OBJECT
 public:
-    SequenceInfo(AnnotatedDNAView*);
+    SequenceInfo(AnnotatedDNAView *);
 
 private slots:
-    void sl_onSelectionChanged(LRegionsSelection*, const QVector<U2Region>& , const QVector<U2Region>&);
+    void sl_onSelectionChanged(LRegionsSelection *, const QVector<U2Region> &, const QVector<U2Region> &);
 
     /**
     * Focus is changed e.g. when a user selects another sequence or deletes the sequence in focus
@@ -62,7 +62,7 @@ private slots:
     void sl_onSequenceModified();
 
     /** A sequence object has been added */
-    void sl_onSequenceAdded(ADVSequenceObjectContext*);
+    void sl_onSequenceAdded(ADVSequenceObjectContext *);
 
     /** Update calculated info */
     void sl_updateCharOccurData();
@@ -79,7 +79,7 @@ private:
     void initLayout();
 
     /** Show or hide widgets depending on the alphabet of the sequence in focus */
-    void updateLayout(); // calls the following update functions
+    void updateLayout();    // calls the following update functions
     void updateCharOccurLayout();
     void updateDinuclLayout();
 
@@ -92,7 +92,7 @@ private:
     void updateDinucleotidesOccurrenceData(const DinucleotidesOccurrence &dinucleotidesOccurrence);
 
     /**  Listen when something has been changed in the AnnotatedDNAView or in the Options Panel */
-    void connectSlotsForSeqContext(ADVSequenceObjectContext*);
+    void connectSlotsForSeqContext(ADVSequenceObjectContext *);
     void connectSlots();
 
     /**
@@ -112,25 +112,26 @@ private:
 
     int getAvailableSpace(DNAAlphabetType alphabetType) const;
 
-    QString formTableRow(const QString& caption, const QString &value, int availableSpace) const;
+    QString formBoldTableRow(const QString &caption, const QString &value, int availableSpace) const;
+    QString formTableRow(const QString &caption, const QString &value, int availableSpace) const;
 
     StatisticsCache<DNAStatistics> *getCommonStatisticsCache() const;
     StatisticsCache<CharactersOccurrence> *getCharactersOccurrenceCache() const;
     StatisticsCache<DinucleotidesOccurrence> *getDinucleotidesOccurrenceCache() const;
 
-    AnnotatedDNAView* annotatedDnaView;
+    AnnotatedDNAView *annotatedDnaView;
 
-    ShowHideSubgroupWidget* statsWidget;
-    QLabel* statisticLabel;
+    ShowHideSubgroupWidget *statsWidget;
+    QLabel *statisticLabel;
     BackgroundTaskRunner<DNAStatistics> dnaStatisticsTaskRunner;
     DNAStatistics currentCommonStatistics;
 
-    ShowHideSubgroupWidget* charOccurWidget;
-    QLabel* charOccurLabel;
+    ShowHideSubgroupWidget *charOccurWidget;
+    QLabel *charOccurLabel;
     BackgroundTaskRunner<CharactersOccurrence> charOccurTaskRunner;
 
-    ShowHideSubgroupWidget* dinuclWidget;
-    QLabel* dinuclLabel;
+    ShowHideSubgroupWidget *dinuclWidget;
+    QLabel *dinuclLabel;
     BackgroundTaskRunner<DinucleotidesOccurrence> dinuclTaskRunner;
 
     QVector<U2Region> currentRegions;
@@ -140,17 +141,22 @@ private:
     static const int COMMON_STATISTICS_TABLE_CELLSPACING;
     static const QString CAPTION_SEQ_REGION_LENGTH;
 
+    static const QString CAPTION_SUFFIX_DS_DNA;
+    static const QString CAPTION_SUFFIX_SS_DNA;
+    static const QString CAPTION_SUFFIX_DS_RNA;
+    static const QString CAPTION_SUFFIX_SS_RNA;
+
     //nucl
     static const QString CAPTION_SEQ_GC_CONTENT;
-    static const QString CAPTION_SEQ_MOLAR_WEIGHT;
-    static const QString CAPTION_SEQ_MOLAR_EXT_COEF;
-    static const QString CAPTION_SEQ_MELTING_TM;
+    static const QString CAPTION_SEQ_NUCL_MOLECULAR_WEIGHT;
+    static const QString CAPTION_SEQ_EXTINCTION_COEFFICIENT;
+    static const QString CAPTION_SEQ_MELTING_TEMPERATURE;
 
     static const QString CAPTION_SEQ_NMOLE_OD;
     static const QString CAPTION_SEQ_MG_OD;
 
     //amino
-    static const QString CAPTION_SEQ_MOLECULAR_WEIGHT;
+    static const QString CAPTION_SEQ_AMINO_MOLECULAR_WEIGHT;
     static const QString CAPTION_SEQ_ISOELECTIC_POINT;
 
     static const QString CHAR_OCCUR_GROUP_ID;
@@ -158,6 +164,6 @@ private:
     static const QString STAT_GROUP_ID;
 };
 
-} // namespace U2
+}    // namespace U2
 
 #endif

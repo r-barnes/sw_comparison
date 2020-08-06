@@ -25,7 +25,6 @@
 #include <QDialog>
 
 #include "Primer.h"
-
 #include "ui_PrimerLibrarySelector.h"
 
 namespace U2 {
@@ -41,6 +40,6 @@ private slots:
     void sl_selectionChanged();
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_PRIMER_LIBRARY_SELECTOR_H_
+#endif    // _U2_PRIMER_LIBRARY_SELECTOR_H_

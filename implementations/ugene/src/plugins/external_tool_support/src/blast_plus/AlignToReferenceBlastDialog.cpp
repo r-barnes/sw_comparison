@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "AlignToReferenceBlastDialog.h"
+
 #include <QDomDocument>
 #include <QMessageBox>
 #include <QShortcut>
@@ -49,9 +51,7 @@
 #include <U2Gui/U2FileDialog.h>
 #include <U2Gui/U2WidgetStateStorage.h>
 
-#include "AlignToReferenceBlastDialog.h"
 #include "AlignToReferenceBlastWorker.h"
-
 
 #define DEFAULT_OUTPUT_FILE_NAME QString("sanger_reads_alignment.ugenedb")
 
@@ -62,9 +62,7 @@ AlignToReferenceBlastCmdlineTask::Settings::Settings()
       minLength(0),
       qualityThreshold(30),
       rowNaming(SequenceName),
-      addResultToProject(true)
-{
-
+      addResultToProject(true) {
 }
 
 QString AlignToReferenceBlastCmdlineTask::Settings::getRowNamingPolicyString() const {
@@ -98,8 +96,7 @@ AlignToReferenceBlastCmdlineTask::AlignToReferenceBlastCmdlineTask(const Setting
       settings(settings),
       cmdlineTask(NULL),
       loadRef(NULL),
-      reportFile(AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath() + "/align_to_ref_XXXXXX.txt")
-{
+      reportFile(AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath() + "/align_to_ref_XXXXXX.txt") {
     GCOUNTER(cvar, tvar, "AlignToReferenceBlastCmdlineTask");
 }
 
@@ -111,7 +108,7 @@ void AlignToReferenceBlastCmdlineTask::prepare() {
 
     GUrl referenceUrl(settings.referenceUrl);
     if (referenceUrl.isLocalFile()) {
-        CHECK_EXT(QFileInfo(referenceUrl.getURLString()).exists(), setError(tr("The '%1' reference file doesn't exist.").arg(settings.referenceUrl)),);
+        CHECK_EXT(QFileInfo(referenceUrl.getURLString()).exists(), setError(tr("The '%1' reference file doesn't exist.").arg(settings.referenceUrl)), );
     }
 
     FormatDetectionConfig config;
@@ -122,7 +119,8 @@ void AlignToReferenceBlastCmdlineTask::prepare() {
     CHECK_EXT(format->getSupportedObjectTypes().contains(GObjectTypes::SEQUENCE), setError(tr("wrong reference format")), );
 
     loadRef = new LoadDocumentTask(format->getFormatId(),
-        settings.referenceUrl, AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(settings.referenceUrl)));
+                                   settings.referenceUrl,
+                                   AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(settings.referenceUrl)));
     addSubTask(loadRef);
 }
 
@@ -134,8 +132,8 @@ static const QString ID = "id";
 static const QString CLASS_WORKER = "worker";
 static const QString CLASS_TASK = "task";
 
-QMap<QString, QMultiMap<QString, QString> > splitReports(U2OpStatus &os, const QString &reportString) {
-    QMap<QString, QMultiMap<QString, QString> > result;
+QMap<QString, QMultiMap<QString, QString>> splitReports(U2OpStatus &os, const QString &reportString) {
+    QMap<QString, QMultiMap<QString, QString>> result;
     QDomDocument document;
     document.setContent("<html><body>" + reportString + "</body></html>");
     const QDomNodeList workersList = document.firstChildElement("html").firstChildElement("body").childNodes();
@@ -158,11 +156,11 @@ QMap<QString, QMultiMap<QString, QString> > splitReports(U2OpStatus &os, const Q
     return result;
 }
 
-}
+}    // namespace
 
 QString AlignToReferenceBlastCmdlineTask::generateReport() const {
     U2OpStatusImpl os;
-    QMap<QString, QMultiMap<QString, QString> > reports = splitReports(os, reportString);
+    QMap<QString, QMultiMap<QString, QString>> reports = splitReports(os, reportString);
 
     QMultiMap<QString, QString> mapperReports = reports.value(LocalWorkflow::AlignToReferenceBlastWorkerFactory::ACTOR_ID, QMultiMap<QString, QString>());
     CHECK(mapperReports.size() > 0, "");
@@ -188,8 +186,8 @@ QString AlignToReferenceBlastCmdlineTask::generateReport() const {
     return resultReport;
 }
 
-QList<Task*> AlignToReferenceBlastCmdlineTask::onSubTaskFinished(Task *subTask) {
-    QList<Task*> result;
+QList<Task *> AlignToReferenceBlastCmdlineTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> result;
     CHECK(subTask != NULL, result);
     CHECK(!subTask->isCanceled() && !subTask->hasError(), result);
     if (loadRef == subTask) {
@@ -250,16 +248,14 @@ Task::ReportResult AlignToReferenceBlastCmdlineTask::report() {
     return ReportResult_Finished;
 }
 
-
 AlignToReferenceBlastDialog::AlignToReferenceBlastDialog(QWidget *parent)
     : QDialog(parent),
       saveController(NULL),
-      savableWidget(this)
-{
+      savableWidget(this) {
     setupUi(this);
     GCOUNTER(cvar, tvar, "'Map reads to reference' dialog opening");
 
-    new HelpButton(this, buttonBox, "24742722");
+    new HelpButton(this, buttonBox, "46500109");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Map"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -299,20 +295,18 @@ AlignToReferenceBlastCmdlineTask::Settings AlignToReferenceBlastDialog::getSetti
 
 void AlignToReferenceBlastDialog::accept() {
     if (referenceLineEdit->text().isEmpty()) {
-        QMessageBox::warning(this, tr("Error"),
-                             tr("Reference sequence is not set."));
+        QMessageBox::warning(this, tr("Error"), tr("Reference sequence is not set."));
         return;
     }
     settings.referenceUrl = referenceLineEdit->text();
 
     if (readsListWidget->count() == 0) {
-        QMessageBox::warning(this, tr("Error"),
-                             tr("No reads provided."));
+        QMessageBox::warning(this, tr("Error"), tr("No reads provided."));
         return;
     }
     QStringList readUrls;
     for (int i = 0; i < readsListWidget->count(); i++) {
-        QListWidgetItem* item = readsListWidget->item(i);
+        QListWidgetItem *item = readsListWidget->item(i);
         SAFE_POINT(item != NULL, "Item is NULL", );
         QString s = item->text();
         readUrls.append(s);
@@ -336,10 +330,10 @@ void AlignToReferenceBlastDialog::accept() {
     if (outFile.exists()) {
         QMessageBox::StandardButtons buttons = QMessageBox::Yes | QMessageBox::Cancel;
         QObjectScopedPointer<QMessageBox> messageBox = new QMessageBox(QMessageBox::Question,
-            tr("Overwrite the file?"),
-            tr("The result file already exists. Would you like to overwrite it?"),
-            buttons,
-            this);
+                                                                       tr("Overwrite the file?"),
+                                                                       tr("The result file already exists. Would you like to overwrite it?"),
+                                                                       buttons,
+                                                                       this);
         messageBox->setIcon(QMessageBox::Question);
         messageBox->exec();
         CHECK(!messageBox.isNull(), )
@@ -375,7 +369,7 @@ void AlignToReferenceBlastDialog::sl_addRead() {
         return;
     }
 
-    foreach (const QString& read, readFiles) {
+    foreach (const QString &read, readFiles) {
         if (readsListWidget->findItems(read, Qt::MatchExactly).isEmpty()) {
             readsListWidget->addItem(read);
         }
@@ -383,17 +377,17 @@ void AlignToReferenceBlastDialog::sl_addRead() {
 }
 
 void AlignToReferenceBlastDialog::sl_removeRead() {
-    QList<QListWidgetItem*> selection = readsListWidget->selectedItems();
+    QList<QListWidgetItem *> selection = readsListWidget->selectedItems();
     CHECK(!selection.isEmpty(), );
 
-    foreach (QListWidgetItem* item, selection) {
+    foreach (QListWidgetItem *item, selection) {
         readsListWidget->takeItem(readsListWidget->row(item));
     }
     qDeleteAll(selection);
 }
 
 void AlignToReferenceBlastDialog::sl_referenceChanged(const QString &newRef) {
-    if (outputLineEdit->text() != defaultOutputUrl) { // file name is set by user -> do not change
+    if (outputLineEdit->text() != defaultOutputUrl) {    // file name is set by user -> do not change
         return;
     }
     // set default file name based on reference file name
@@ -410,4 +404,4 @@ void AlignToReferenceBlastDialog::connectSlots() {
     connect(referenceLineEdit, SIGNAL(textChanged(const QString &)), SLOT(sl_referenceChanged(const QString &)));
 }
 
-} // namespace
+}    // namespace U2

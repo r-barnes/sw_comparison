@@ -24,15 +24,15 @@
 
 #include "Alignment.h"
 
-namespace U2{
-namespace BAM{
+namespace U2 {
+namespace BAM {
 
 class CigarValidator {
 public:
     CigarValidator(QList<Alignment::CigarOperation> cigar_);
 
     //fulfills the totalLength so caller can check if it conforms to read length
-    void validate(int * totalLength);
+    void validate(int *totalLength);
 
 private:
     bool static isClippingOperation(Alignment::CigarOperation::Operation op);
@@ -48,7 +48,7 @@ private:
     QList<Alignment::CigarOperation> cigar;
 };
 
-}
-}
+}    // namespace BAM
+}    // namespace U2
 
 #endif

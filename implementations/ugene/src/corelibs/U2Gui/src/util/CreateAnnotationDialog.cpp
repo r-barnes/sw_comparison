@@ -20,33 +20,33 @@
  */
 
 #include "CreateAnnotationDialog.h"
-#include "CreateAnnotationWidgetController.h"
+
+#include <QHBoxLayout>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/BaseDocumentFormats.h>
+#include <U2Core/GObjectRelationRoles.h>
 #include <U2Core/IOAdapter.h>
 #include <U2Core/ProjectModel.h>
-#include <U2Core/GObjectRelationRoles.h>
-
-#include <QPushButton>
-#include <QMessageBox>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
 
 #include <U2Gui/HelpButton.h>
+
+#include "CreateAnnotationWidgetController.h"
 #include "ui_CreateAnnotationDialog.h"
 
 namespace U2 {
 
-CreateAnnotationDialog::CreateAnnotationDialog(QWidget* p, CreateAnnotationModel& m) :
-    QDialog(p),
-    model(m),
-    ui(new Ui_CreateAnnotationDialog)
-{
+CreateAnnotationDialog::CreateAnnotationDialog(QWidget *p, CreateAnnotationModel &m)
+    : QDialog(p),
+      model(m),
+      ui(new Ui_CreateAnnotationDialog) {
     ui->setupUi(this);
     annWidgetController = new CreateAnnotationWidgetController(m, this, CreateAnnotationWidgetController::Full);
 
-    helpButton = new HelpButton(this, ui->buttonBox, "24742389");
+    helpButton = new HelpButton(this, ui->buttonBox, "46499819");
     ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Create"));
 
     ui->mainLayout->insertWidget(0, annWidgetController->getWidget());
@@ -72,7 +72,7 @@ void CreateAnnotationDialog::accept() {
         return;
     }
     bool objectPrepared = annWidgetController->prepareAnnotationObject();
-    if (!objectPrepared){
+    if (!objectPrepared) {
         QMessageBox::warning(this, tr("Error"), tr("Cannot create an annotation object. Please check settings"));
         return;
     }
@@ -80,4 +80,4 @@ void CreateAnnotationDialog::accept() {
     QDialog::accept();
 }
 
-} // namespace
+}    // namespace U2

@@ -24,8 +24,8 @@
 
 #include <U2Core/SaveDocumentTask.h>
 
-#include <U2Lang/WorkflowUtils.h>
 #include <U2Lang/LocalDomain.h>
+#include <U2Lang/WorkflowUtils.h>
 
 namespace U2 {
 
@@ -36,12 +36,14 @@ namespace LocalWorkflow {
 class WriteAnnotationsPrompter : public PrompterBase<WriteAnnotationsPrompter> {
     Q_OBJECT
 public:
-    WriteAnnotationsPrompter(Actor * p = NULL) : PrompterBase<WriteAnnotationsPrompter>(p) {}
+    WriteAnnotationsPrompter(Actor *p = NULL)
+        : PrompterBase<WriteAnnotationsPrompter>(p) {
+    }
 
 protected:
     QString composeRichDoc();
 
-}; // WriteAnnotationsPrompter
+};    // WriteAnnotationsPrompter
 
 class WriteAnnotationsWorker : public BaseWorker {
     Q_OBJECT
@@ -51,18 +53,20 @@ public:
         SharedDb
     };
 
-    WriteAnnotationsWorker(Actor * p) : BaseWorker(p), annotationsPort(NULL) {}
+    WriteAnnotationsWorker(Actor *p)
+        : BaseWorker(p), annotationsPort(NULL) {
+    }
     ~WriteAnnotationsWorker();
 
     virtual void init();
-    virtual Task * tick();
+    virtual Task *tick();
     virtual void cleanup();
 
 private slots:
     void sl_saveDocTaskFinished();
 
 private:
-    Task * takeParameters(QString &formatId, SaveDocFlags &fl, QString &resultPath, U2DbiRef &dstDbiRef, DataStorage &storage);
+    Task *takeParameters(QString &formatId, SaveDocFlags &fl, QString &resultPath, U2DbiRef &dstDbiRef, DataStorage &storage);
     void updateResultPath(int metadataId, const QString &formatId, DataStorage storage, QString &resultPath, bool byDataset = false);
     QString fetchIncomingSequenceName(const QVariantMap &incomingData);
     bool getMergeAttribute() const;
@@ -71,27 +75,29 @@ private:
 
     void mergeAnnTablesIfNecessary(QList<AnnotationTableObject *> &annTables) const;
 
-    Task * getSaveDocTask(const QString &formatId, SaveDocFlags &fl);
-    Task * getSaveObjTask(const U2DbiRef &dstDbiRef) const;
-    Task * createWriteMultitask(const QList<Task *> &taskList) const;
+    Task *getSaveDocTask(const QString &formatId, SaveDocFlags &fl);
+    Task *getSaveObjTask(const U2DbiRef &dstDbiRef) const;
+    Task *createWriteMultitask(const QList<Task *> &taskList) const;
 
-    IntegralBus * annotationsPort;
+    IntegralBus *annotationsPort;
     QList<AnnotationTableObject *> createdAnnotationObjects;
-    QMap<QString, QList<AnnotationTableObject *> > annotationsByUrl;
+    QMap<QString, QList<AnnotationTableObject *>> annotationsByUrl;
 
-}; // WriteAnnotationsWorker
+};    // WriteAnnotationsWorker
 
 class WriteAnnotationsWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
 
-    WriteAnnotationsWorkerFactory() : DomainFactory(ACTOR_ID) {}
+    WriteAnnotationsWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
     static void init();
-    virtual Worker * createWorker(Actor* a);
+    virtual Worker *createWorker(Actor *a);
 
-}; // WriteAnnotationsWorkerFactory
+};    // WriteAnnotationsWorkerFactory
 
-}
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // __WRITE_ANNOTATIONS_WORKER_H_
+#endif    // __WRITE_ANNOTATIONS_WORKER_H_

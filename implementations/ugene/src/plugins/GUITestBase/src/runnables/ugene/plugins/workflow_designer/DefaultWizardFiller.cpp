@@ -20,18 +20,17 @@
  */
 
 #include "DefaultWizardFiller.h"
+
 #include "GTUtilsWizard.h"
 
 namespace U2 {
 
-DefaultWizardFiller::DefaultWizardFiller(HI::GUITestOpStatus &os, const QString &wizardName) :
-    Filler(os, wizardName)
-{
-
+DefaultWizardFiller::DefaultWizardFiller(HI::GUITestOpStatus &os, const QString &wizardName)
+    : Filler(os, wizardName) {
 }
 
 void DefaultWizardFiller::commonScenario() {
     GTUtilsWizard::clickButton(os, GTUtilsWizard::Cancel);
 }
 
-}   // namespace U2
+}    // namespace U2

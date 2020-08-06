@@ -31,9 +31,8 @@ namespace U2 {
 template<class Serializer, class Matrix>
 class PMatrixSerializeUtils {
 public:
-    static U2EntityRef      commit(const Matrix &matrix, const QString &objectName,
-                                const U2DbiRef &dbiRef, const QString &dstFolder, U2RawData &object, U2OpStatus &os);
-    static void             retrieve(const U2EntityRef &entityRef, Matrix &matrix, U2OpStatus &os);
+    static U2EntityRef commit(const Matrix &matrix, const QString &objectName, const U2DbiRef &dbiRef, const QString &dstFolder, U2RawData &object, U2OpStatus &os);
+    static void retrieve(const U2EntityRef &entityRef, Matrix &matrix, U2OpStatus &os);
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -42,8 +41,11 @@ public:
 
 template<class Serializer, class Matrix>
 U2EntityRef PMatrixSerializeUtils<Serializer, Matrix>::commit(const Matrix &matrix,
-    const QString &objectName, const U2DbiRef &dbiRef, const QString &dstFolder, U2RawData &object, U2OpStatus &os)
-{
+                                                              const QString &objectName,
+                                                              const U2DbiRef &dbiRef,
+                                                              const QString &dstFolder,
+                                                              U2RawData &object,
+                                                              U2OpStatus &os) {
     object.visualName = objectName;
     object.serializer = Serializer::ID;
 
@@ -58,8 +60,8 @@ U2EntityRef PMatrixSerializeUtils<Serializer, Matrix>::commit(const Matrix &matr
 
 template<class Serializer, class Matrix>
 void PMatrixSerializeUtils<Serializer, Matrix>::retrieve(const U2EntityRef &entityRef,
-    Matrix &matrix, U2OpStatus &os)
-{
+                                                         Matrix &matrix,
+                                                         U2OpStatus &os) {
     const QString serializer = RawDataUdrSchema::getObject(entityRef, os).serializer;
     CHECK_OP(os, );
     SAFE_POINT(Serializer::ID == serializer, "Unknown serializer id", );
@@ -69,6 +71,6 @@ void PMatrixSerializeUtils<Serializer, Matrix>::retrieve(const U2EntityRef &enti
     matrix = Serializer::deserialize(data, os);
 }
 
-}
+}    // namespace U2
 
-#endif // _U2_PMATRIX_SERIALIZE_UTILS_H_
+#endif    // _U2_PMATRIX_SERIALIZE_UTILS_H_

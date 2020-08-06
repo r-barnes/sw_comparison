@@ -23,10 +23,9 @@
 
 namespace U2 {
 
-SqliteUpgrader::SqliteUpgrader(const Version &versionFrom, const Version &versionTo, SQLiteDbi *dbi) :
-    U2DbiUpgrader(versionFrom, versionTo),
-    dbi(dbi)
-{
+SqliteUpgrader::SqliteUpgrader(const Version &versionFrom, const Version &versionTo, SQLiteDbi *dbi)
+    : U2DbiUpgrader(versionFrom, versionTo),
+      dbi(dbi) {
 }
 
-}   // namespace U2
+}    // namespace U2

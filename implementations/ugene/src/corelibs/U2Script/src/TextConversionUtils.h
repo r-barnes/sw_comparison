@@ -30,12 +30,10 @@ namespace U2 {
 
 class TextConversionUtils {
 public:
-    static U2ErrorType          qstringToCstring( const QString &source, int maxExpectedLength,
-                                    wchar_t *destination );
-    static U2ErrorType          repeatLastConversion( int maxExpectedLength, wchar_t *destination,
-                                    int *requiredSize );
+    static U2ErrorType qstringToCstring(const QString &source, int maxExpectedLength, wchar_t *destination);
+    static U2ErrorType repeatLastConversion(int maxExpectedLength, wchar_t *destination, int *requiredSize);
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_TEXT_CONVERSION_UTILS_H_
+#endif    // _U2_TEXT_CONVERSION_UTILS_H_

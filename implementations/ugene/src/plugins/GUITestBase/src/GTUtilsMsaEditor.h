@@ -22,9 +22,9 @@
 #ifndef _U2_GT_UTILS_MSA_EDITOR_H_
 #define _U2_GT_UTILS_MSA_EDITOR_H_
 
+#include <GTGlobals.h>
 #include <QColor>
 #include <QRect>
-#include <GTGlobals.h>
 
 namespace U2 {
 
@@ -40,17 +40,26 @@ class MaSimpleOverview;
 // If you can't find an appropriate method check the GTUtilsMsaEditorSequenceArea class
 class GTUtilsMsaEditor {
 public:
+    /** Returns active MSA editor window or fails. */
+    static QWidget* getActiveMsaEditorWindow(HI::GUITestOpStatus &os);
+
+    /** Checks that the active MDI window is MSA editor window or fails. */
+    static void checkMsaEditorWindowIsActive(HI::GUITestOpStatus &os);
+
+    /** Checks that there are no MSA editor window opened (active or not active). */
+    static void checkNoMsaEditorWindowIsOpened(HI::GUITestOpStatus &os);
+
     static QColor getGraphOverviewPixelColor(HI::GUITestOpStatus &os, const QPoint &point);
     static QColor getSimpleOverviewPixelColor(HI::GUITestOpStatus &os, const QPoint &point);
 
-    static MSAEditor * getEditor(HI::GUITestOpStatus &os);
-    static MsaEditorWgt * getEditorUi(HI::GUITestOpStatus &os);
-    static MaGraphOverview * getGraphOverview(HI::GUITestOpStatus &os);
-    static MaSimpleOverview * getSimpleOverview(HI::GUITestOpStatus &os);
-    static MSAEditorTreeViewerUI * getTreeView(HI::GUITestOpStatus &os);
-    static MaEditorNameList * getNameListArea(HI::GUITestOpStatus &os);
-    static MSAEditorConsensusArea * getConsensusArea(HI::GUITestOpStatus &os);
-    static MSAEditorSequenceArea * getSequenceArea(HI::GUITestOpStatus &os);
+    static MSAEditor *getEditor(HI::GUITestOpStatus &os);
+    static MsaEditorWgt *getEditorUi(HI::GUITestOpStatus &os);
+    static MaGraphOverview *getGraphOverview(HI::GUITestOpStatus &os);
+    static MaSimpleOverview *getSimpleOverview(HI::GUITestOpStatus &os);
+    static MSAEditorTreeViewerUI *getTreeView(HI::GUITestOpStatus &os);
+    static MaEditorNameList *getNameListArea(HI::GUITestOpStatus &os);
+    static MSAEditorConsensusArea *getConsensusArea(HI::GUITestOpStatus &os);
+    static MSAEditorSequenceArea *getSequenceArea(HI::GUITestOpStatus &os);
 
     static QRect getSequenceNameRect(HI::GUITestOpStatus &os, const QString &sequenceName);
     static QRect getSequenceNameRect(HI::GUITestOpStatus &os, int rowNumber);
@@ -68,8 +77,8 @@ public:
     static void moveToColumn(HI::GUITestOpStatus &os, int column);
     static void clickColumn(HI::GUITestOpStatus &os, int column, Qt::MouseButton mouseButton = Qt::LeftButton);
 
-    static void selectRows(HI::GUITestOpStatus &os, int firstRowNumber, int lastRowNumber, GTGlobals::UseMethod method = GTGlobals::UseKey);
-    static void selectColumns(HI::GUITestOpStatus &os, int firstColumnNumber, int lastColumnNumber, GTGlobals::UseMethod method = GTGlobals::UseKey);
+    static void selectRows(HI::GUITestOpStatus &os, int firstRowNumber, int lastRowNumber, HI::GTGlobals::UseMethod method = HI::GTGlobals::UseKey);
+    static void selectColumns(HI::GUITestOpStatus &os, int firstColumnNumber, int lastColumnNumber, HI::GTGlobals::UseMethod method = HI::GTGlobals::UseKey);
 
     static void clearSelection(HI::GUITestOpStatus &os);
 
@@ -94,6 +103,6 @@ public:
     static void dragAndDropSequenceFromProject(HI::GUITestOpStatus &os, const QStringList &pathToSequence);
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_GT_UTILS_MSA_EDITOR_H_
+#endif    // _U2_GT_UTILS_MSA_EDITOR_H_

@@ -24,13 +24,13 @@
 
 #ifdef OPENCL_SUPPORT
 
-#include <QVector>
+#    include <QVector>
 
-#include <U2Algorithm/BinaryFindOpenCL.h>
+#    include <U2Algorithm/BinaryFindOpenCL.h>
 
-#include <U2Test/XMLTestUtils.h>
+#    include <U2Test/XMLTestUtils.h>
 
-namespace U2{
+namespace U2 {
 
 class GTest_BinaryFindOpenCL : public XmlTest {
     Q_OBJECT
@@ -45,16 +45,16 @@ private:
     QVector<NumberType> findNumbers;
     QVector<int> windowSizes;
     QVector<NumberType> expectedResults;
-    NumberType* results;
+    NumberType *results;
 };
 
 class BinaryFindOpenCLTests {
 public:
-    static QList< XMLTestFactory* > createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-} //namespace
+}    // namespace U2
 
 #endif /*OPENCL_SUPPORT*/
 
-#endif // __BINARY_FIND_OPENCL_TESTS_H__
+#endif    // __BINARY_FIND_OPENCL_TESTS_H__

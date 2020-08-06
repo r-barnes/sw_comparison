@@ -19,9 +19,10 @@
  * MA 02110-1301, USA.
  */
 
+#include "CropStep.h"
+
 #include <U2Core/U2SafePoints.h>
 
-#include "CropStep.h"
 #include "trimmomatic/util/LengthSettingsWidget.h"
 
 namespace U2 {
@@ -30,8 +31,7 @@ namespace LocalWorkflow {
 const QString CropStepFactory::ID = "CROP";
 
 CropStep::CropStep()
-    : TrimmomaticStep(CropStepFactory::ID)
-{
+    : TrimmomaticStep(CropStepFactory::ID) {
     name = "CROP";
     description = tr("<html><head></head><body>"
                      "<h4>CROP</h4>"
@@ -58,14 +58,12 @@ QVariantMap CropStep::parseState(const QString &command) const {
 }
 
 CropStepFactory::CropStepFactory()
-    : TrimmomaticStepFactory(ID)
-{
-
+    : TrimmomaticStepFactory(ID) {
 }
 
 CropStep *CropStepFactory::createStep() const {
     return new CropStep();
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

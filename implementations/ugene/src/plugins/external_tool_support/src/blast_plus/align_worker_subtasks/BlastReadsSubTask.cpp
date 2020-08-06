@@ -21,16 +21,14 @@
 
 #include "BlastReadsSubTask.h"
 
-#include "blast_plus/BlastNPlusSupportTask.h"
-
 #include <U2Algorithm/AlignmentAlgorithmsRegistry.h>
 #include <U2Algorithm/BuiltInDistanceAlgorithms.h>
-#include <U2Algorithm/PairwiseAlignmentTask.h>
 #include <U2Algorithm/MSADistanceAlgorithmRegistry.h>
+#include <U2Algorithm/PairwiseAlignmentTask.h>
 
 #include <U2Core/AppContext.h>
-#include <U2Core/AppSettings.h>
 #include <U2Core/AppResources.h>
+#include <U2Core/AppSettings.h>
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/DNASequenceUtils.h>
 #include <U2Core/GUrlUtils.h>
@@ -38,6 +36,7 @@
 #include <U2Core/MultipleSequenceAlignmentImporter.h>
 #include <U2Core/UserApplicationsSettings.h>
 
+#include "blast_plus/BlastNPlusSupportTask.h"
 
 namespace U2 {
 namespace Workflow {
@@ -57,25 +56,24 @@ BlastReadsSubTask::BlastReadsSubTask(const QString &dbPath,
       readsNames(readsNames),
       reference(reference),
       minIdentityPercent(minIdentityPercent),
-      storage(storage)
-{
+      storage(storage) {
     setMaxParallelSubtasks(AppContext::getAppSettings()->getAppResourcePool()->getIdealThreadCount());
 }
 
 void BlastReadsSubTask::prepare() {
     QString tempPath = AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath();
     CHECK_EXT(!GUrlUtils::containSpaces(tempPath), setError(tr("The task uses a temporary folder to process the data. The folder path is required not to have spaces. "
-        "Please set up an appropriate path for the \"Temporary files\" parameter on the \"Directories\" tab of the UGENE Application Settings.")), );
+                                                               "Please set up an appropriate path for the \"Temporary files\" parameter on the \"Directories\" tab of the UGENE Application Settings.")), );
 
     foreach (const SharedDbiDataHandler &read, reads) {
-        BlastAndSwReadTask* subTask = new BlastAndSwReadTask(dbPath, read, reference, minIdentityPercent, readsNames[read], storage);
+        BlastAndSwReadTask *subTask = new BlastAndSwReadTask(dbPath, read, reference, minIdentityPercent, readsNames[read], storage);
         addSubTask(subTask);
 
         blastSubTasks << subTask;
     }
 }
 
-const QList<BlastAndSwReadTask*>& BlastReadsSubTask::getBlastSubtasks() const {
+const QList<BlastAndSwReadTask *> &BlastReadsSubTask::getBlastSubtasks() const {
     return blastSubTasks;
 }
 
@@ -100,8 +98,7 @@ BlastAndSwReadTask::BlastAndSwReadTask(const QString &dbPath,
       blastTask(NULL),
       readName(readName),
       complement(false),
-      skipped(false)
-{
+      skipped(false) {
     blastResultDir = ExternalToolSupportUtils::createTmpDir("blast_reads", stateInfo);
 
     QScopedPointer<U2SequenceObject> refObject(StorageUtils::getSequenceObject(storage, reference));
@@ -115,8 +112,8 @@ void BlastAndSwReadTask::prepare() {
     addSubTask(blastTask);
 }
 
-QList<Task*> BlastAndSwReadTask::onSubTaskFinished(Task *subTask) {
-    QList<Task*> result;
+QList<Task *> BlastAndSwReadTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> result;
     if (subTask->hasError() && subTask == blastTask) {
         QScopedPointer<U2SequenceObject> refObject(StorageUtils::getSequenceObject(storage, reference));
         CHECK_EXT(!refObject.isNull(), setError(L10N::nullPointerError("Reference sequence")), result);
@@ -145,7 +142,7 @@ QList<Task*> BlastAndSwReadTask::onSubTaskFinished(Task *subTask) {
         settings->setCustomValue("SW_scoringMatrix", "dna");
 
         result << factory->getTaskInstance(settings.take());
-    } else if (qobject_cast<AbstractAlignmentTask*>(subTask) != NULL) {
+    } else if (qobject_cast<AbstractAlignmentTask *>(subTask) != NULL) {
         QScopedPointer<MultipleSequenceAlignmentObject> msaObject(StorageUtils::getMsaObject(storage, msa));
         CHECK_EXT(!msaObject.isNull(), setError(L10N::nullPointerError("MSA object for %1").arg(getReadName())), result);
         int rowCount = msaObject->getNumRows();
@@ -160,22 +157,24 @@ QList<Task*> BlastAndSwReadTask::onSubTaskFinished(Task *subTask) {
         }
 
         msaObject->crop(msaObject->getRow(1)->getCoreRegion());
-        MSADistanceAlgorithmFactory* factory = AppContext::getMSADistanceAlgorithmRegistry()->getAlgorithmFactory(BuiltInDistanceAlgorithms::SIMILARITY_ALGO);
+        MSADistanceAlgorithmFactory *factory = AppContext::getMSADistanceAlgorithmRegistry()->getAlgorithmFactory(BuiltInDistanceAlgorithms::SIMILARITY_ALGO);
         CHECK_EXT(NULL != factory, setError("MSADistanceAlgorithmFactory is NULL"), result);
         factory->resetFlag(DistanceAlgorithmFlag_ExcludeGaps);
 
-        MSADistanceAlgorithm* algo = factory->createAlgorithm(msaObject->getMsa());
+        MSADistanceAlgorithm *algo = factory->createAlgorithm(msaObject->getMsa());
         CHECK_EXT(NULL != algo, setError("MSADistanceAlgorithm is NULL"), result);
         result << algo;
-    } else if (qobject_cast<MSADistanceAlgorithm*>(subTask) != NULL){
-        MSADistanceAlgorithm* algo = qobject_cast<MSADistanceAlgorithm*>(subTask);
-        const MSADistanceMatrix& mtx = algo->getMatrix();
+    } else if (qobject_cast<MSADistanceAlgorithm *>(subTask) != NULL) {
+        MSADistanceAlgorithm *algo = qobject_cast<MSADistanceAlgorithm *>(subTask);
+        const MSADistanceMatrix &mtx = algo->getMatrix();
 
         readIdentity = mtx.getSimilarity(0, 1, true);
         if (readIdentity < minIdentityPercent) {
             skipped = true;
             taskLog.info(tr("%1 was skipped. Low similarity: %2. Minimum similarity was set to %3")
-                         .arg(getReadName()).arg(readIdentity).arg(minIdentityPercent));
+                             .arg(getReadName())
+                             .arg(readIdentity)
+                             .arg(minIdentityPercent));
         }
     }
     return result;
@@ -193,15 +192,15 @@ bool BlastAndSwReadTask::isComplement() const {
     return complement;
 }
 
-const SharedDbiDataHandler& BlastAndSwReadTask::getRead() const {
+const SharedDbiDataHandler &BlastAndSwReadTask::getRead() const {
     return read;
 }
 
-const U2MsaRowGapModel& BlastAndSwReadTask::getReferenceGaps() const {
+const U2MsaRowGapModel &BlastAndSwReadTask::getReferenceGaps() const {
     return referenceGaps;
 }
 
-const U2MsaRowGapModel& BlastAndSwReadTask::getReadGaps() const {
+const U2MsaRowGapModel &BlastAndSwReadTask::getReadGaps() const {
     return readGaps;
 }
 
@@ -233,8 +232,8 @@ BlastNPlusSupportTask *BlastAndSwReadTask::getBlastTask() {
 
     settings.programName = "blastn";
     settings.databaseNameAndPath = dbPath;
-    settings.megablast = true;
-    settings.wordSize = 28;
+    //settings.megablast = true;
+    settings.wordSize = 11;
     settings.xDropoffGA = 20;
     settings.xDropoffUnGA = 10;
     settings.xDropoffFGA = 100;
@@ -282,10 +281,10 @@ U2Region BlastAndSwReadTask::getReferenceRegion(const QList<SharedAnnotationData
     U2Region refRegion;
     U2Region blastReadRegion;
     int maxIdentity = 0;
-    foreach (const SharedAnnotationData& ann, blastAnnotations) {
+    foreach (const SharedAnnotationData &ann, blastAnnotations) {
         QString percentQualifier = ann->findFirstQualifierValue("identities");
         int annIdentity = percentQualifier.left(percentQualifier.indexOf('/')).toInt();
-        if (annIdentity  > maxIdentity ) {
+        if (annIdentity > maxIdentity) {
             // identity
             maxIdentity = annIdentity;
 
@@ -316,7 +315,7 @@ U2Region BlastAndSwReadTask::getReferenceRegion(const QList<SharedAnnotationData
     return refRegion;
 }
 
-void BlastAndSwReadTask::createAlignment(const U2Region& refRegion) {
+void BlastAndSwReadTask::createAlignment(const U2Region &refRegion) {
     QScopedPointer<U2SequenceObject> refObject(StorageUtils::getSequenceObject(storage, reference));
     CHECK_EXT(!refObject.isNull(), setError(L10N::nullPointerError("Reference sequence")), );
     QScopedPointer<U2SequenceObject> readObject(StorageUtils::getSequenceObject(storage, read));
@@ -354,7 +353,7 @@ void BlastAndSwReadTask::shiftGaps(U2MsaRowGapModel &gaps) const {
     }
 }
 
-AbstractAlignmentTaskFactory* BlastAndSwReadTask::getAbstractAlignmentTaskFactory(const QString &algoId, const QString &implId, U2OpStatus &os) {
+AbstractAlignmentTaskFactory *BlastAndSwReadTask::getAbstractAlignmentTaskFactory(const QString &algoId, const QString &implId, U2OpStatus &os) {
     AlignmentAlgorithm *algo = AppContext::getAlignmentAlgorithmsRegistry()->getAlgorithm(algoId);
     CHECK_EXT(NULL != algo, os.setError(BlastAndSwReadTask::tr("The %1 algorithm is not found. Add the %1 plugin.").arg(algoId)), NULL);
 
@@ -364,7 +363,7 @@ AbstractAlignmentTaskFactory* BlastAndSwReadTask::getAbstractAlignmentTaskFactor
     return algoImpl->getTaskFactory();
 }
 
-PairwiseAlignmentTaskSettings* BlastAndSwReadTask::createSettings(DbiDataStorage *storage, const SharedDbiDataHandler &msa, U2OpStatus &os) {
+PairwiseAlignmentTaskSettings *BlastAndSwReadTask::createSettings(DbiDataStorage *storage, const SharedDbiDataHandler &msa, U2OpStatus &os) {
     QScopedPointer<MultipleSequenceAlignmentObject> msaObject(StorageUtils::getMsaObject(storage, msa));
     CHECK_EXT(!msaObject.isNull(), os.setError(L10N::nullPointerError("MSA object")), NULL);
 
@@ -380,5 +379,5 @@ PairwiseAlignmentTaskSettings* BlastAndSwReadTask::createSettings(DbiDataStorage
     return settings;
 }
 
-} // namespace Workflow
-} // namespace U2
+}    // namespace Workflow
+}    // namespace U2

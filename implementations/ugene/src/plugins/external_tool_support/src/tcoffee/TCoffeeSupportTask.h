@@ -22,26 +22,27 @@
 #ifndef _U2_TCOFFEE_SUPPORT_TASK_H
 #define _U2_TCOFFEE_SUPPORT_TASK_H
 
-
-#include "utils/ExportTasks.h"
-
 #include <U2Core/ExternalToolRunTask.h>
-#include <U2Core/IOAdapter.h>
 #include <U2Core/GObjectReference.h>
+#include <U2Core/IOAdapter.h>
 #include <U2Core/MultipleSequenceAlignment.h>
 #include <U2Core/SaveDocumentTask.h>
 #include <U2Core/Task.h>
 
+#include "utils/ExportTasks.h"
+
 namespace U2 {
 
-class TCoffeeSupportTaskSettings  {
+class TCoffeeSupportTaskSettings {
 public:
-    TCoffeeSupportTaskSettings() {reset();}
+    TCoffeeSupportTaskSettings() {
+        reset();
+    }
     void reset();
 
-    float   gapOpenPenalty;
-    float   gapExtenstionPenalty;
-    int     numIterations;
+    float gapOpenPenalty;
+    float gapExtenstionPenalty;
+    int numIterations;
     QString inputFilePath;
     QString outputFilePath;
 };
@@ -52,26 +53,27 @@ class TCoffeeSupportTask : public ExternalToolSupportTask {
     Q_OBJECT
     Q_DISABLE_COPY(TCoffeeSupportTask)
 public:
-    TCoffeeSupportTask(const MultipleSequenceAlignment& _inputMsa, const GObjectReference& _objRef, const TCoffeeSupportTaskSettings& _settings);
+    TCoffeeSupportTask(const MultipleSequenceAlignment &_inputMsa, const GObjectReference &_objRef, const TCoffeeSupportTaskSettings &_settings);
     ~TCoffeeSupportTask();
 
     void prepare();
     Task::ReportResult report();
 
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
-    MultipleSequenceAlignment                  resultMA;
+    MultipleSequenceAlignment resultMA;
+
 private:
-    MultipleSequenceAlignment                  inputMsa;
-    GObjectReference            objRef;
-    QPointer<Document>          tmpDoc;
-    QString                     url;
+    MultipleSequenceAlignment inputMsa;
+    GObjectReference objRef;
+    QPointer<Document> tmpDoc;
+    QString url;
 
-    SaveMSA2SequencesTask*      saveTemporaryDocumentTask;
-    ExternalToolRunTask*        tCoffeeTask;
-    LoadDocumentTask*           loadTmpDocumentTask;
-    TCoffeeSupportTaskSettings  settings;
-    QPointer<StateLock>         lock;
+    SaveMSA2SequencesTask *saveTemporaryDocumentTask;
+    ExternalToolRunTask *tCoffeeTask;
+    LoadDocumentTask *loadTmpDocumentTask;
+    TCoffeeSupportTaskSettings settings;
+    QPointer<StateLock> lock;
 };
 
 class MultipleSequenceAlignmentObject;
@@ -80,21 +82,22 @@ class TCoffeeWithExtFileSpecifySupportTask : public Task {
     Q_OBJECT
     Q_DISABLE_COPY(TCoffeeWithExtFileSpecifySupportTask)
 public:
-    TCoffeeWithExtFileSpecifySupportTask(const TCoffeeSupportTaskSettings& settings);
+    TCoffeeWithExtFileSpecifySupportTask(const TCoffeeSupportTaskSettings &settings);
     ~TCoffeeWithExtFileSpecifySupportTask();
     void prepare();
     Task::ReportResult report();
 
-    QList<Task*> onSubTaskFinished(Task* subTask);
-private:
-    MultipleSequenceAlignmentObject*           mAObject;
-    Document*                   currentDocument;
-    bool                        cleanDoc;
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
-    SaveDocumentTask*               saveDocumentTask;
-    LoadDocumentTask*               loadDocumentTask;
-    TCoffeeSupportTask*             tCoffeeSupportTask;
-    TCoffeeSupportTaskSettings      settings;
+private:
+    MultipleSequenceAlignmentObject *mAObject;
+    Document *currentDocument;
+    bool cleanDoc;
+
+    SaveDocumentTask *saveDocumentTask;
+    LoadDocumentTask *loadDocumentTask;
+    TCoffeeSupportTask *tCoffeeSupportTask;
+    TCoffeeSupportTaskSettings settings;
 };
 
 class TCoffeeLogParser : public ExternalToolLogParser {
@@ -102,13 +105,13 @@ public:
     TCoffeeLogParser();
 
     int getProgress();
-    void parseOutput(const QString& partOfLog);
-    void parseErrOutput(const QString& partOfLog);
+    void parseOutput(const QString &partOfLog);
+    void parseErrOutput(const QString &partOfLog);
 
 private:
     QString lastErrLine;
-    int     progress;
+    int progress;
 };
 
-}//namespace
-#endif // _U2_TCOFFEE_SUPPORT_TASK_H
+}    // namespace U2
+#endif    // _U2_TCOFFEE_SUPPORT_TASK_H

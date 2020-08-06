@@ -40,7 +40,7 @@ class PrimerLibrary : public QObject {
 public:
     ~PrimerLibrary();
 
-    static PrimerLibrary * getInstance(U2OpStatus &os);
+    static PrimerLibrary *getInstance(U2OpStatus &os);
     static void release();
 
     void addPrimer(const Primer &primer, U2OpStatus &os);
@@ -60,7 +60,7 @@ signals:
 
 private:
     static void initPrimerUdr(U2OpStatus &os);
-    static void setTmAndGcOfPrimer(Primer& primer);
+    static void setTmAndGcOfPrimer(Primer &primer);
 
     PrimerLibrary(DbiConnection *connection);
 
@@ -72,6 +72,6 @@ private:
     UdrDbi *udrDbi;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_PRIMERLIBRARY_H_
+#endif    // _U2_PRIMERLIBRARY_H_

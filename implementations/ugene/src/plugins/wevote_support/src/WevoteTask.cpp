@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "WevoteTask.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DataPathRegistry.h>
 #include <U2Core/IOAdapterUtils.h>
@@ -27,7 +29,6 @@
 
 #include "PrepareWevoteTaxonomyDataTask.h"
 #include "WevoteSupport.h"
-#include "WevoteTask.h"
 
 namespace U2 {
 
@@ -35,9 +36,7 @@ WevoteTaskSettings::WevoteTaskSettings()
     : penalty(2),
       numberOfAgreedTools(0),
       scoreThreshold(0),
-      numberOfThreads(1)
-{
-
+      numberOfThreads(1) {
 }
 
 const QString WevoteTask::SUFFIX = "_WEVOTE_Details.txt";
@@ -47,8 +46,7 @@ WevoteTask::WevoteTask(const WevoteTaskSettings &_settings, WorkflowProcess &_wo
       settings(_settings),
       workflowProcess(_workflowProcess),
       prepareTaxonomyTask(NULL),
-      wevotePrefix(settings.workingDir + "/" + QFileInfo(settings.outputFileUrl).completeBaseName())
-{
+      wevotePrefix(settings.workingDir + "/" + QFileInfo(settings.outputFileUrl).completeBaseName()) {
     checkSettings();
     CHECK_OP(stateInfo, );
 }
@@ -140,4 +138,4 @@ void WevoteTask::parseClassification() {
     }
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -24,35 +24,35 @@
 #include <U2Core/AppContext.h>
 #include <U2Core/GUrl.h>
 #include <U2Core/IOAdapter.h>
-#include <U2Core/U2SafePoints.h>
-#include <U2Core/U2OpStatus.h>
 #include <U2Core/L10n.h>
+#include <U2Core/U2OpStatus.h>
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
-IOAdapterId IOAdapterUtils::url2io(const GUrl& url) {
-    if( url.isVFSFile() ) {
+IOAdapterId IOAdapterUtils::url2io(const GUrl &url) {
+    if (url.isVFSFile()) {
         return BaseIOAdapters::VFS_FILE;
     }
-    if( url.isHyperLink() ) {
-        if( url.lastFileSuffix() == "gz") {
+    if (url.isHyperLink()) {
+        if (url.lastFileSuffix() == "gz") {
             return BaseIOAdapters::GZIPPED_HTTP_FILE;
         }
         return BaseIOAdapters::HTTP_FILE;
     }
-    if( url.lastFileSuffix() == "gz") {
+    if (url.lastFileSuffix() == "gz") {
         return BaseIOAdapters::GZIPPED_LOCAL_FILE;
     }
     return BaseIOAdapters::LOCAL_FILE;
 }
 
-QByteArray IOAdapterUtils::readFileHeader(const GUrl& url, int size) {
+QByteArray IOAdapterUtils::readFileHeader(const GUrl &url, int size) {
     QByteArray data;
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
     QScopedPointer<IOAdapter> adapter(iof->createIOAdapter());
     bool res = adapter->open(url, IOAdapterMode_Read);
     if (!res) {
-        return data;//BUG:420: report error
+        return data;    //BUG:420: report error
     }
 
     data.resize(size);
@@ -60,7 +60,7 @@ QByteArray IOAdapterUtils::readFileHeader(const GUrl& url, int size) {
     int s = adapter->readBlock(data.data(), data.size());
     if (s == -1) {
         data.resize(0);
-        return data;//BUG:420: report error
+        return data;    //BUG:420: report error
     }
 
     if (s != data.size()) {
@@ -69,36 +69,36 @@ QByteArray IOAdapterUtils::readFileHeader(const GUrl& url, int size) {
     return data;
 }
 
-QByteArray IOAdapterUtils::readFileHeader( IOAdapter* io, int sz ) {
+QByteArray IOAdapterUtils::readFileHeader(IOAdapter *io, int sz) {
     QByteArray data;
-    if( NULL == io || !io->isOpen() ) {
+    if (NULL == io || !io->isOpen()) {
         return data;
     }
-    data.resize( sz );
-    int ret = io->readBlock( data.data(), sz );
-    if( -1 == ret ) {
-        data.resize( 0 );
+    data.resize(sz);
+    int ret = io->readBlock(data.data(), sz);
+    if (-1 == ret) {
+        data.resize(0);
         return data;
     }
-    if( ret != sz ) {
-        data.resize( ret );
+    if (ret != sz) {
+        data.resize(ret);
     }
-    io->skip( -ret );
+    io->skip(-ret);
     return data;
 }
 
-IOAdapter* IOAdapterUtils::open(const GUrl& url, U2OpStatus& os, IOAdapterMode mode, IOAdapterFactory* _iof) {
-    IOAdapterFactory* iof = _iof;
+IOAdapter *IOAdapterUtils::open(const GUrl &url, U2OpStatus &os, IOAdapterMode mode, IOAdapterFactory *_iof) {
+    IOAdapterFactory *iof = _iof;
 
     if (NULL == iof || (iof->getAdapterId() != BaseIOAdapters::LOCAL_FILE && iof->getAdapterId() != BaseIOAdapters::GZIPPED_LOCAL_FILE)) {
-        IOAdapterId  ioId = IOAdapterUtils::url2io(url);
+        IOAdapterId ioId = IOAdapterUtils::url2io(url);
         iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(ioId);
     }
     if (iof == NULL) {
         os.setError(L10N::tr("Failed to detect IO adapter for %1").arg(url.getURLString()));
         return NULL;
     }
-    IOAdapter* io = iof->createIOAdapter();
+    IOAdapter *io = iof->createIOAdapter();
     SAFE_POINT(io != NULL, "IO adapter is NULL!", NULL);
 
     bool ok = io->open(url, mode);
@@ -110,9 +110,8 @@ IOAdapter* IOAdapterUtils::open(const GUrl& url, U2OpStatus& os, IOAdapterMode m
     return io;
 }
 
-IOAdapterFactory* IOAdapterUtils::get(const IOAdapterId& id) {
+IOAdapterFactory *IOAdapterUtils::get(const IOAdapterId &id) {
     return AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(id);
 }
 
-
-} //namespace
+}    // namespace U2

@@ -25,30 +25,27 @@
 #include <U2Core/L10n.h>
 #include <U2Core/MultipleSequenceAlignmentObject.h>
 #include <U2Core/Task.h>
-#include <U2Core/Version.h>
 #include <U2Core/U2AlphabetUtils.h>
 #include <U2Core/U2DbiRegistry.h>
+#include <U2Core/Version.h>
 
 #include <U2Formats/BAMUtils.h>
 #include <U2Formats/DocumentFormatUtils.h>
 
-#include "Reader.h"
 #include "BAMDbiPlugin.h"
-#include "Exception.h"
 #include "BAMFormat.h"
-
+#include "Exception.h"
+#include "Reader.h"
 
 namespace U2 {
 
 BAMFormat::BAMFormat()
-: DbiDocumentFormat(
-    BAM_DBI_ID,
-    BaseDocumentFormats::BAM,
-    tr("BAM"),
-    QStringList("bam"),
-    DocumentFormatFlags(DocumentFormatFlag_NoPack) | DocumentFormatFlag_NoFullMemoryLoad
-    | DocumentFormatFlag_Hidden | DocumentFormatFlag_SupportWriting | DocumentFormatFlag_CannotBeCompressed)
-{
+    : DbiDocumentFormat(
+          BAM_DBI_ID,
+          BaseDocumentFormats::BAM,
+          tr("BAM"),
+          QStringList("bam"),
+          DocumentFormatFlags(DocumentFormatFlag_NoPack) | DocumentFormatFlag_NoFullMemoryLoad | DocumentFormatFlag_Hidden | DocumentFormatFlag_SupportWriting | DocumentFormatFlag_CannotBeCompressed) {
     // DbiDocumentFormat adds a set of object types that are supported by DBI but have no relation to BAM.
     // Reset these formats and add BAM related object types only.
     supportedObjectTypes.clear();
@@ -59,7 +56,7 @@ void BAMFormat::storeDocument(Document *d, IOAdapter *io, U2OpStatus &os) {
     CHECK_EXT(d != NULL, os.setError(L10N::badArgument("doc")), );
     CHECK_EXT(io != NULL && io->isOpen(), os.setError(L10N::badArgument("IO adapter")), );
 
-    QList<GObject*> als = d->findGObjectByType(GObjectTypes::ASSEMBLY);
+    QList<GObject *> als = d->findGObjectByType(GObjectTypes::ASSEMBLY);
     GUrl url = io->getURL();
     io->close();
 
@@ -73,9 +70,8 @@ void BAMFormat::storeDocument(Document *d, IOAdapter *io, U2OpStatus &os) {
 namespace BAM {
 
 BAMFormatUtils::BAMFormatUtils(QObject *parent)
-: QObject(parent),
-  fileExtensions(QStringList("bam"))
-{
+    : QObject(parent),
+      fileExtensions(QStringList("bam")) {
 }
 
 FormatCheckResult BAMFormatUtils::checkRawData(const QByteArray &rawData, const GUrl & /*url*/) const {
@@ -89,10 +85,10 @@ FormatCheckResult BAMFormatUtils::checkRawData(const QByteArray &rawData, const 
     stream.next_out = (Bytef *)magic.data();
     stream.avail_out = magic.size();
     FormatDetectionScore result = FormatDetection_NotMatched;
-    if(Z_OK == inflateInit2(&stream, 16 + 15)) {
-        if(Z_OK == inflate(&stream, Z_SYNC_FLUSH)) {
-            if(0 == stream.avail_out) {
-                if("BAM\001" == magic) {
+    if (Z_OK == inflateInit2(&stream, 16 + 15)) {
+        if (Z_OK == inflate(&stream, Z_SYNC_FLUSH)) {
+            if (0 == stream.avail_out) {
+                if ("BAM\001" == magic) {
                     result = FormatDetection_Matched;
                 }
             }
@@ -102,6 +98,5 @@ FormatCheckResult BAMFormatUtils::checkRawData(const QByteArray &rawData, const 
     return result;
 }
 
-
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2

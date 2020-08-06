@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "SampleActionsManager.h"
+
 #include <QApplication>
 #include <QMenu>
 #include <QMessageBox>
@@ -31,24 +33,18 @@
 
 #include <U2Gui/ToolsMenu.h>
 
-#include "SampleActionsManager.h"
-
 namespace U2 {
 
 namespace {
-    const char *ID_PROPERTY = "action_id";
+const char *ID_PROPERTY = "action_id";
 }
 
 SampleAction::SampleAction(const QString &actionName, const QString &toolsMenu, const QString &samplePath, const QString &actionText)
-: actionText(actionText), actionName(actionName), toolsMenu(toolsMenu), samplePath(samplePath)
-{
-
+    : actionText(actionText), actionName(actionName), toolsMenu(toolsMenu), samplePath(samplePath) {
 }
 
 SampleActionsManager::SampleActionsManager(QObject *parent)
-: QObject(parent)
-{
-
+    : QObject(parent) {
 }
 
 void SampleActionsManager::registerAction(const SampleAction &action) {
@@ -63,14 +59,14 @@ void SampleActionsManager::registerAction(const SampleAction &action) {
 }
 
 int SampleActionsManager::getValidClickedActionId(U2OpStatus &os) const {
-    QAction *a = qobject_cast<QAction*>(sender());
+    QAction *a = qobject_cast<QAction *>(sender());
     CHECK_EXT(NULL != a, os.setError(L10N::internalError("Unexpected method call")), -1);
 
     bool ok = false;
     int id = a->property(ID_PROPERTY).toInt(&ok);
     CHECK_EXT(ok, os.setError(L10N::internalError("Wrong action ID")), -1);
 
-    CHECK_EXT(id >=0 && id < actions.size(), os.setError(L10N::internalError("Out of range action ID")), -1);
+    CHECK_EXT(id >= 0 && id < actions.size(), os.setError(L10N::internalError("Out of range action ID")), -1);
     return id;
 }
 
@@ -83,10 +79,10 @@ SampleAction SampleActionsManager::getClickedAction(U2OpStatus &os) const {
 QStringList SampleActionsManager::getAbsentPlugins(const QStringList &requiredPlugins) const {
     QStringList result = requiredPlugins;
 #ifdef _DEBUG
-    for (int i=0; i<result.size(); i++) {
+    for (int i = 0; i < result.size(); i++) {
         result[i] += "d";
     }
-#endif // _DEBUG
+#endif    // _DEBUG
     foreach (Plugin *plugin, AppContext::getPluginSupport()->getPlugins()) {
         result.removeAll(plugin->getId());
     }
@@ -112,4 +108,4 @@ void SampleActionsManager::sl_clicked() {
     emit si_clicked(clickedAction);
 }
 
-} // U2
+}    // namespace U2

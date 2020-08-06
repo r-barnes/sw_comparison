@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DockManagerImpl.h"
+
 #include <QDockWidget>
 #include <QToolBar>
 
@@ -26,38 +28,37 @@
 #include <U2Core/Settings.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "DockManagerImpl.h"
 #include "DockWidgetPainter.h"
 #include "MainWindowImpl.h"
 #include "task_view/TaskStatusBar.h"
 
 namespace U2 {
 
-#define DOCK_SETTINGS  QString("mwdockview/")
+#define DOCK_SETTINGS QString("mwdockview/")
 
-DockWrapWidget::DockWrapWidget(QWidget* _w) : w(_w) {
-    QVBoxLayout* l = new QVBoxLayout();
+DockWrapWidget::DockWrapWidget(QWidget *_w)
+    : w(_w) {
+    QVBoxLayout *l = new QVBoxLayout();
     l->setMargin(0);
     l->setSpacing(0);
     setLayout(l);
     l->addWidget(w);
     setWindowTitle(w->windowTitle());
     setWindowIcon(w->windowIcon());
-//    setAttribute(Qt::WA_DeleteOnClose);
+    //    setAttribute(Qt::WA_DeleteOnClose);
 }
 
 DockWrapWidget::~DockWrapWidget() {
-    w = NULL; //for breakpoint
+    w = NULL;    //for breakpoint
 }
 
-MWDockManagerImpl::MWDockManagerImpl(MainWindowImpl* _mw) 
-: MWDockManager(_mw), mwImpl(_mw), mw(_mw->getQMainWindow())
-{
-	for (int i=0;i<MWDockArea_MaxDocks;i++) {
+MWDockManagerImpl::MWDockManagerImpl(MainWindowImpl *_mw)
+    : MWDockManager(_mw), mwImpl(_mw), mw(_mw->getQMainWindow()) {
+    for (int i = 0; i < MWDockArea_MaxDocks; i++) {
         activeDocks[i] = NULL;
         toggleDockState[i] = NULL;
     }
-    
+
     mw->setDockOptions(QMainWindow::AnimatedDocks);
 
     //prepare dock-toolbars
@@ -68,24 +69,24 @@ MWDockManagerImpl::MWDockManagerImpl(MainWindowImpl* _mw)
     dockLeft->hide();
     mw->addToolBar(Qt::LeftToolBarArea, dockLeft);
 
-    dockRight = new QToolBar("right_dock_bar",mw);
+    dockRight = new QToolBar("right_dock_bar", mw);
     dockRight->setObjectName("right_dock_bar");
     dockRight->setMovable(false);
     dockRight->setFloatable(false);
     dockRight->hide();
     mw->addToolBar(Qt::RightToolBarArea, dockRight);
 
-    dockBottom= new QToolBar("bottom_dock_bar", mw);
+    dockBottom = new QToolBar("bottom_dock_bar", mw);
     dockBottom->setObjectName("bottom_dock_bar");
     dockBottom->setMovable(false);
     dockBottom->setFloatable(false);
     mw->addToolBar(Qt::BottomToolBarArea, dockBottom);
 
     statusBarAction = dockBottom->addWidget(new TaskStatusBar());
-    
+
     readLastActiveDocksState();
 
-    QAction* tga = new QAction(this);
+    QAction *tga = new QAction(this);
     tga->setShortcut(QKeySequence("Alt+`"));
     tga->setShortcutContext(Qt::ApplicationShortcut);
     connect(tga, SIGNAL(triggered()), SLOT(sl_toggleDocks()));
@@ -93,59 +94,62 @@ MWDockManagerImpl::MWDockManagerImpl(MainWindowImpl* _mw)
 
     mainWindowIsHidden = false;
     mw->installEventFilter(this);
-
 }
 
 MWDockManagerImpl::~MWDockManagerImpl() {
     saveLastActiveDocksState();
-    foreach(DockData* d, docks) {
+    foreach (DockData *d, docks) {
         destroyDockData(d);
     }
 }
 
 void MWDockManagerImpl::readLastActiveDocksState() {
-    Settings* s = AppContext::getSettings();
-    for (int i=0;i<MWDockArea_MaxDocks; i++) {
-        lastActiveDocksState[i] = s->getValue(DOCK_SETTINGS + "dockTitle"+i).toString();
+    Settings *s = AppContext::getSettings();
+    for (int i = 0; i < MWDockArea_MaxDocks; i++) {
+        lastActiveDocksState[i] = s->getValue(DOCK_SETTINGS + "dockTitle" + i).toString();
     }
 }
 
 void MWDockManagerImpl::saveLastActiveDocksState() {
-    Settings* s = AppContext::getSettings();
-    for (int i=0;i<MWDockArea_MaxDocks; i++) {
-        s->setValue(DOCK_SETTINGS + "dockTitle"+i, lastActiveDocksState[i]);
+    Settings *s = AppContext::getSettings();
+    for (int i = 0; i < MWDockArea_MaxDocks; i++) {
+        s->setValue(DOCK_SETTINGS + "dockTitle" + i, lastActiveDocksState[i]);
     }
-} 
+}
 
-QToolBar* MWDockManagerImpl::getDockBar(MWDockArea a) const {
-    switch(a) {
-        case MWDockArea_Left: return dockLeft;
-        case MWDockArea_Right: return dockRight;
-        case MWDockArea_Bottom: return dockBottom;  
-        default: break;
+QToolBar *MWDockManagerImpl::getDockBar(MWDockArea a) const {
+    switch (a) {
+    case MWDockArea_Left:
+        return dockLeft;
+    case MWDockArea_Right:
+        return dockRight;
+    case MWDockArea_Bottom:
+        return dockBottom;
+    default:
+        break;
     }
     return NULL;
 }
 
-static bool ksInUse(const QKeySequence& ks, const QList<DockData*>& docks) {
-    foreach(DockData* d, docks) {
-        if (d->action!=NULL && d->action->shortcut() == ks) {
+static bool ksInUse(const QKeySequence &ks, const QList<DockData *> &docks) {
+    foreach (DockData *d, docks) {
+        if (d->action != NULL && d->action->shortcut() == ks) {
             return true;
         }
     }
     return false;
 }
 
-QAction* MWDockManagerImpl::registerDock(MWDockArea area, QWidget* w, const QKeySequence& ks) {
+QAction *MWDockManagerImpl::registerDock(MWDockArea area, QWidget *w, const QKeySequence &ks) {
     bool showDock = w->objectName() == lastActiveDocksState[area];
 
-    QToolBar* tb = getDockBar(area);
-    DockData* data = new DockData();
+    QToolBar *tb = getDockBar(area);
+    DockData *data = new DockData();
     data->area = area;
     data->label = new QLabel(tb);
     data->wrapWidget = new DockWrapWidget(w);
-    data->wrapWidget->setObjectName("wrap_widget_"+w->objectName());
-    data->label->setObjectName("doc_lable_"+w->objectName());
+    data->wrapWidget->setObjectName("wrap_widget_" + w->objectName());
+    data->label->setObjectName("doc_lable_" + w->objectName());
     data->label->installEventFilter(this);
     if (area != MWDockArea_Bottom) {
         tb->addWidget(data->label);
@@ -161,19 +165,18 @@ QAction* MWDockManagerImpl::registerDock(MWDockArea area, QWidget* w, const QKey
         data->action->setShortcutContext(Qt::ApplicationShortcut);
         connect(data->action, SIGNAL(triggered()), SLOT(sl_toggleDock()));
         data->label->addAction(data->action);
-        ttip+=" ("+ks.toString()+")";
+        ttip += " (" + ks.toString() + ")";
     }
     data->label->setToolTip(ttip);
 
     DockWidgetPainter::updateLabel(data, false);
 
     docks.append(data);
-    
-    
+
     if (tb->isHidden()) {
         tb->show();
     }
-    
+
     if (showDock) {
         openDock(data);
     } else {
@@ -182,35 +185,34 @@ QAction* MWDockManagerImpl::registerDock(MWDockArea area, QWidget* w, const QKey
     return NULL;
 }
 
-QWidget* MWDockManagerImpl::toggleDock(const QString& widgetObjName) {
-    DockData* d = findDockByName(widgetObjName);
-    if (d!=NULL) { 
+QWidget *MWDockManagerImpl::toggleDock(const QString &widgetObjName) {
+    DockData *d = findDockByName(widgetObjName);
+    if (d != NULL) {
         toggleDock(d);
         return d->wrapWidget->w;
     }
     return NULL;
-
 }
 
 void MWDockManagerImpl::sl_toggleDock() {
-    QAction* a = qobject_cast<QAction*>(sender());
-    QLabel* l = qobject_cast<QLabel*>(a->parent());
-    DockData* d = findDockByLabel(l);
+    QAction *a = qobject_cast<QAction *>(sender());
+    QLabel *l = qobject_cast<QLabel *>(a->parent());
+    DockData *d = findDockByLabel(l);
     toggleDock(d);
 }
 
 void MWDockManagerImpl::updateTB(MWDockArea a) {
     if (a == MWDockArea_Bottom) {
-        return; //bottom TB is always on;
+        return;    //bottom TB is always on;
     }
 
     int nChilds = 0;
-    foreach (DockData* d, docks) {
+    foreach (DockData *d, docks) {
         if (d->area == a) {
             nChilds++;
         }
     }
-    QToolBar* tb = getDockBar(a);
+    QToolBar *tb = getDockBar(a);
     if (nChilds == 0 && tb->isVisible()) {
         tb->hide();
     } else if (nChilds != 0 && tb->isHidden()) {
@@ -218,93 +220,91 @@ void MWDockManagerImpl::updateTB(MWDockArea a) {
     }
 }
 
-QWidget* MWDockManagerImpl::findWidget(const QString& widgetObjName) {
-    DockData* d = findDockByName(widgetObjName);
+QWidget *MWDockManagerImpl::findWidget(const QString &widgetObjName) {
+    DockData *d = findDockByName(widgetObjName);
     return d == NULL ? NULL : d->wrapWidget->w;
 }
 
-QWidget* MWDockManagerImpl::getActiveWidget(MWDockArea a) {
-    DockData* d = getActiveDock(a);
+QWidget *MWDockManagerImpl::getActiveWidget(MWDockArea a) {
+    DockData *d = getActiveDock(a);
     return d == NULL ? NULL : d->wrapWidget->w;
 }
 
-
-DockData* MWDockManagerImpl::getActiveDock(MWDockArea a) const {
-	DockData* d = activeDocks[a];
-	assert(d == NULL || d->dock!=NULL);
+DockData *MWDockManagerImpl::getActiveDock(MWDockArea a) const {
+    DockData *d = activeDocks[a];
+    assert(d == NULL || d->dock != NULL);
     assert(d == NULL || d->wrapWidget != NULL);
-	return d;
+    return d;
 }
 
-QWidget* MWDockManagerImpl::activateDock(const QString& widgetObjName) {
-    DockData* d = findDockByName(widgetObjName);
-    if (d!=NULL) {
+QWidget *MWDockManagerImpl::activateDock(const QString &widgetObjName) {
+    DockData *d = findDockByName(widgetObjName);
+    if (d != NULL) {
         openDock(d);
         return d->wrapWidget->w;
     }
     return NULL;
 }
 
-
-void MWDockManagerImpl::openDock(DockData* d) {
-	//check if already opened
-	if (getActiveDock(d->area)==d) {
-		return;
-	}
+void MWDockManagerImpl::openDock(DockData *d) {
+    //check if already opened
+    if (getActiveDock(d->area) == d) {
+        return;
+    }
     assert(d->wrapWidget->isHidden());
-	
-	//hide active dock if exists
-	DockData* activeDock = getActiveDock(d->area);
-	if (activeDock!=NULL) {
-        closeDock(activeDock);
-	}
-	assert(getActiveDock(d->area) == NULL);
 
-	//open new dock
+    //hide active dock if exists
+    DockData *activeDock = getActiveDock(d->area);
+    if (activeDock != NULL) {
+        closeDock(activeDock);
+    }
+    assert(getActiveDock(d->area) == NULL);
+
+    //open new dock
     assert(d->wrapWidget != NULL);
     DockWidgetPainter::updateLabel(d, true);
     restoreDockGeometry(d);
-	d->dock = new QDockWidget();
+    d->dock = new QDockWidget();
     d->dock->setObjectName("mw_docArea");
-	d->dock->setFeatures(QDockWidget::DockWidgetClosable);
+    d->dock->setFeatures(QDockWidget::DockWidgetClosable);
     d->dock->setWidget(d->wrapWidget);
     d->dock->setWindowTitle(d->wrapWidget->windowTitle());
     d->dock->setWindowIcon(d->wrapWidget->windowIcon());
-	activeDocks[d->area] = d;
-	connect(d->dock, SIGNAL(visibilityChanged(bool)), SLOT(sl_dockVisibilityChanged(bool)));
+    activeDocks[d->area] = d;
+    connect(d->dock, SIGNAL(visibilityChanged(bool)), SLOT(sl_dockVisibilityChanged(bool)));
 
-    Qt::DockWidgetArea mwarea = d->area == MWDockArea_Left ? Qt::LeftDockWidgetArea : 
-        d->area == MWDockArea_Right ? Qt::RightDockWidgetArea : Qt::BottomDockWidgetArea;
-    
+    Qt::DockWidgetArea mwarea = d->area == MWDockArea_Left ? Qt::LeftDockWidgetArea :
+                                                             d->area == MWDockArea_Right ? Qt::RightDockWidgetArea : Qt::BottomDockWidgetArea;
+
     d->dock->setAttribute(Qt::WA_DeleteOnClose);
 
-	mw->addDockWidget(mwarea, d->dock);
-	lastActiveDocksState[d->area] = d->wrapWidget->w->objectName();
+    mw->addDockWidget(mwarea, d->dock);
+    lastActiveDocksState[d->area] = d->wrapWidget->w->objectName();
 }
 
-void MWDockManagerImpl::closeDock(DockData* d) {
+void MWDockManagerImpl::closeDock(DockData *d) {
     activeDocks[d->area] = NULL;
-    if (d->wrapWidget!=NULL) { //widget is closed manually by user ->detach it from its parent to avoid deletion on d->dock->close();
+    if (d->wrapWidget != NULL) {    //widget is closed manually by user ->detach it from its parent to avoid deletion on d->dock->close();
         DockWidgetPainter::updateLabel(d, false);
         saveDockGeometry(d);
-        lastActiveDocksState[d->area].clear(); 
+        lastActiveDocksState[d->area].clear();
         d->wrapWidget->setParent(NULL);
         d->wrapWidget->setVisible(false);
-    } 
-    d->dock->close(); // will delete dock widget because of Qt::WA_DeleteOnClose
-	d->dock = NULL;
+    }
+    d->dock->close();    // will delete dock widget because of Qt::WA_DeleteOnClose
+    d->dock = NULL;
 }
 
-void MWDockManagerImpl::destroyDockData(DockData* d) {
-    if (d->dock!=NULL) {
+void MWDockManagerImpl::destroyDockData(DockData *d) {
+    if (d->dock != NULL) {
         saveDockGeometry(d);
     }
     delete d->label;
     d->wrapWidget->deleteLater();
     d->wrapWidget = NULL;
-    if (d->dock!=NULL) {
+    if (d->dock != NULL) {
         d->dock->close();
-    } 
+    }
     docks.removeOne(d);
     updateTB(d->area);
     delete d;
@@ -312,20 +312,20 @@ void MWDockManagerImpl::destroyDockData(DockData* d) {
 
 void MWDockManagerImpl::sl_dockVisibilityChanged(bool visible) {
     if (visible) {
-		return; 
-	}
+        return;
+    }
     if (mw->isMinimized() || mainWindowIsHidden) {
         return;
     }
-    QDockWidget* dock = qobject_cast<QDockWidget*>(sender());
-    DockData* dd = findDockByDockWidget(dock);
+    QDockWidget *dock = qobject_cast<QDockWidget *>(sender());
+    DockData *dd = findDockByDockWidget(dock);
     assert(dd != NULL);
-	closeDock(dd);
+    closeDock(dd);
 }
 
 void MWDockManagerImpl::sl_widgetDestroyed() {
-    QWidget* w = qobject_cast<QWidget*>(sender());
-    foreach(DockData* d, docks) {
+    QWidget *w = qobject_cast<QWidget *>(sender());
+    foreach (DockData *d, docks) {
         if (d->wrapWidget->w == w) {
             destroyDockData(d);
             break;
@@ -333,8 +333,8 @@ void MWDockManagerImpl::sl_widgetDestroyed() {
     }
 }
 
-DockData* MWDockManagerImpl::findDockByName(const QString& objName) const  {
-    foreach(DockData* d, docks) {
+DockData *MWDockManagerImpl::findDockByName(const QString &objName) const {
+    foreach (DockData *d, docks) {
         if (d->wrapWidget->w->objectName() == objName) {
             return d;
         }
@@ -342,8 +342,8 @@ DockData* MWDockManagerImpl::findDockByName(const QString& objName) const  {
     return NULL;
 }
 
-DockData* MWDockManagerImpl::findDockByLabel(QLabel* l) const  {
-    foreach(DockData* d, docks) {
+DockData *MWDockManagerImpl::findDockByLabel(QLabel *l) const {
+    foreach (DockData *d, docks) {
         if (d->label == l) {
             return d;
         }
@@ -351,9 +351,8 @@ DockData* MWDockManagerImpl::findDockByLabel(QLabel* l) const  {
     return NULL;
 }
 
-
-DockData* MWDockManagerImpl::findDockByDockWidget(QDockWidget* dock) const  {
-    foreach(DockData* d, docks) {
+DockData *MWDockManagerImpl::findDockByDockWidget(QDockWidget *dock) const {
+    foreach (DockData *d, docks) {
         if (d->dock == dock) {
             return d;
         }
@@ -362,9 +361,8 @@ DockData* MWDockManagerImpl::findDockByDockWidget(QDockWidget* dock) const  {
 }
 
 bool MWDockManagerImpl::eventFilter(QObject *obj, QEvent *event) {
-
     if (obj == mw) {
-        if (event->type() == QEvent::Hide ) {
+        if (event->type() == QEvent::Hide) {
             mainWindowIsHidden = true;
         } else if (event->type() == QEvent::Show) {
             mainWindowIsHidden = false;
@@ -374,11 +372,11 @@ bool MWDockManagerImpl::eventFilter(QObject *obj, QEvent *event) {
     }
 
     if (event->type() == QEvent::MouseButtonRelease) {
-        QMouseEvent* me = (QMouseEvent*)event;
+        QMouseEvent *me = (QMouseEvent *)event;
         if (me->button() == Qt::LeftButton) {
             QLabel *label = qobject_cast<QLabel *>(obj);
             SAFE_POINT(NULL != label, "Can't cast obj to QLabel *", false);
-            DockData* data = findDockByLabel(label);
+            DockData *data = findDockByLabel(label);
             assert(data);
             if (!data) {
                 return false;
@@ -390,8 +388,8 @@ bool MWDockManagerImpl::eventFilter(QObject *obj, QEvent *event) {
     return false;
 }
 
-void MWDockManagerImpl::toggleDock(DockData* d) {
-    if (d->dock!=NULL) {
+void MWDockManagerImpl::toggleDock(DockData *d) {
+    if (d->dock != NULL) {
         closeDock(d);
     } else {
         openDock(d);
@@ -402,36 +400,34 @@ void MWDockManagerImpl::dontActivateNextTime(MWDockArea a) {
     lastActiveDocksState[a] = "";
 }
 
-
-void MWDockManagerImpl::saveDockGeometry(DockData* dd) {
-	const QString& id = dd->wrapWidget->w->objectName();
-    const QSize& size = dd->wrapWidget->w->size();
-	Settings* s = AppContext::getSettings();
-	s->setValue(DOCK_SETTINGS+id+"/size", size);
+void MWDockManagerImpl::saveDockGeometry(DockData *dd) {
+    const QString &id = dd->wrapWidget->w->objectName();
+    const QSize &size = dd->wrapWidget->w->size();
+    Settings *s = AppContext::getSettings();
+    s->setValue(DOCK_SETTINGS + id + "/size", size);
 }
 
-void MWDockManagerImpl::restoreDockGeometry(DockData* dd) {
-    Settings* s = AppContext::getSettings();
-    dd->wrapWidget->hint= s->getValue(DOCK_SETTINGS+dd->wrapWidget->w->objectName()+"/size", QSize(300, 200)).toSize();
+void MWDockManagerImpl::restoreDockGeometry(DockData *dd) {
+    Settings *s = AppContext::getSettings();
+    dd->wrapWidget->hint = s->getValue(DOCK_SETTINGS + dd->wrapWidget->w->objectName() + "/size", QSize(300, 200)).toSize();
 }
 
-void MWDockManagerImpl::sl_toggleDocks()
-{
+void MWDockManagerImpl::sl_toggleDocks() {
     bool isOpen = false;
-    for(int i = 0; i < MWDockArea_MaxDocks; i++) {
+    for (int i = 0; i < MWDockArea_MaxDocks; i++) {
         if (activeDocks[i] != NULL) {
             isOpen = true;
             break;
         }
     }
     if (isOpen) {
-        for(int i = 0; i < MWDockArea_MaxDocks; i++) {
+        for (int i = 0; i < MWDockArea_MaxDocks; i++) {
             if ((toggleDockState[i] = activeDocks[i]) != NULL) {
                 closeDock(activeDocks[i]);
             }
         }
     } else {
-        for(int i = 0; i < MWDockArea_MaxDocks; i++) {
+        for (int i = 0; i < MWDockArea_MaxDocks; i++) {
             if (toggleDockState[i]) {
                 openDock(toggleDockState[i]);
             }
@@ -439,4 +435,4 @@ void MWDockManagerImpl::sl_toggleDocks()
     }
 }
 
-} //namespace
+}    // namespace U2

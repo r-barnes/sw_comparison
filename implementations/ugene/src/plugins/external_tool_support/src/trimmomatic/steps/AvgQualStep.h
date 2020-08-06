@@ -32,7 +32,7 @@ class AvgQualStep : public TrimmomaticStep {
 public:
     AvgQualStep();
 
-    TrimmomaticStepSettingsWidget* createWidget() const;
+    TrimmomaticStepSettingsWidget *createWidget() const;
 
 private:
     QString serializeState(const QVariantMap &widgetState) const;
@@ -48,7 +48,7 @@ public:
     AvgQualStep *createStep() const;
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_AVG_QUAL_STEP_H_
+#endif    // _U2_AVG_QUAL_STEP_H_

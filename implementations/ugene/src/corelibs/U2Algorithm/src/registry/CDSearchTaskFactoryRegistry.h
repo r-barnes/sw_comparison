@@ -24,21 +24,23 @@
 
 #include <U2Algorithm/CDSearchTaskFactory.h>
 
-
 namespace U2 {
 
 class U2ALGORITHM_EXPORT CDSearchFactoryRegistry : public QObject {
     Q_OBJECT
 public:
-    CDSearchFactoryRegistry() : localSearchFactory(NULL), remoteSearchFactory(NULL) {}
+    CDSearchFactoryRegistry()
+        : localSearchFactory(NULL), remoteSearchFactory(NULL) {
+    }
     ~CDSearchFactoryRegistry() {
         delete localSearchFactory;
         delete remoteSearchFactory;
     }
 
-    enum SearchType { LocalSearch, RemoteSearch };
+    enum SearchType { LocalSearch,
+                      RemoteSearch };
 
-    void registerFactory(CDSearchFactory* factory, SearchType type) {
+    void registerFactory(CDSearchFactory *factory, SearchType type) {
         if (type == LocalSearch) {
             assert(localSearchFactory == NULL);
             localSearchFactory = factory;
@@ -50,7 +52,7 @@ public:
         }
     }
 
-    CDSearchFactory* getFactory(SearchType type) const {
+    CDSearchFactory *getFactory(SearchType type) const {
         if (type == LocalSearch) {
             return localSearchFactory;
         } else if (type == RemoteSearch) {
@@ -62,10 +64,10 @@ public:
     }
 
 private:
-    CDSearchFactory* localSearchFactory;
-    CDSearchFactory* remoteSearchFactory;
+    CDSearchFactory *localSearchFactory;
+    CDSearchFactory *remoteSearchFactory;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

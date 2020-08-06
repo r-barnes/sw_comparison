@@ -22,9 +22,9 @@
 #ifndef _U2_PHY_TREE_GENERATOR_
 #define _U2_PHY_TREE_GENERATOR_
 
-#include <U2Core/Task.h>
-#include <U2Core/PhyTree.h>
 #include <U2Core/MultipleSequenceAlignment.h>
+#include <U2Core/PhyTree.h>
+#include <U2Core/Task.h>
 
 #include "CreatePhyTreeSettings.h"
 
@@ -35,12 +35,13 @@ class CreatePhyTreeDialogController;
 
 class U2ALGORITHM_EXPORT PhyTreeGenerator {
 public:
-    virtual ~PhyTreeGenerator() {}
+    virtual ~PhyTreeGenerator() {
+    }
 
-    virtual Task * createCalculatePhyTreeTask(const MultipleSequenceAlignment &ma, const CreatePhyTreeSettings &s) = 0;
-    virtual CreatePhyTreeWidget * createPhyTreeSettingsWidget(const MultipleSequenceAlignment &ma, QWidget *parent = NULL) = 0;
+    virtual Task *createCalculatePhyTreeTask(const MultipleSequenceAlignment &ma, const CreatePhyTreeSettings &s) = 0;
+    virtual CreatePhyTreeWidget *createPhyTreeSettingsWidget(const MultipleSequenceAlignment &ma, QWidget *parent = NULL) = 0;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_PHY_TREE_GENERATOR_
+#endif    // _U2_PHY_TREE_GENERATOR_

@@ -21,37 +21,34 @@
 
 #include "KarlinSignatureDifferenceGraph.h"
 
-#include <U2Core/DNAAlphabet.h>
-#include <U2Core/DNASequenceObject.h>
-#include <U2Core/TextUtils.h>
-#include "DNAGraphPackPlugin.h"
 #include <U2Core/AppContext.h>
 #include <U2Core/DNAAlphabet.h>
+#include <U2Core/DNASequenceObject.h>
 #include <U2Core/DNATranslation.h>
+#include <U2Core/TextUtils.h>
 
+#include "DNAGraphPackPlugin.h"
 
 /* TRANSLATOR U2::KarlinGraphFactory */
 
 namespace U2 {
 static QString nameByType() {
     return KarlinGraphFactory::tr("Karlin Signature Difference");
-
 }
 
-KarlinGraphFactory::KarlinGraphFactory(QObject* p)
-: GSequenceGraphFactory(nameByType(), p)
-{
+KarlinGraphFactory::KarlinGraphFactory(QObject *p)
+    : GSequenceGraphFactory(nameByType(), p) {
 }
 
 //+
-bool KarlinGraphFactory::isEnabled(const U2SequenceObject* o) const {
-    const DNAAlphabet* al = o->getAlphabet();
+bool KarlinGraphFactory::isEnabled(const U2SequenceObject *o) const {
+    const DNAAlphabet *al = o->getAlphabet();
     return al->isNucleic();
 }
 
-QList<QSharedPointer<GSequenceGraphData> > KarlinGraphFactory::createGraphs(GSequenceGraphView* v) {
+QList<QSharedPointer<GSequenceGraphData>> KarlinGraphFactory::createGraphs(GSequenceGraphView *v) {
     Q_UNUSED(v);
-    QList<QSharedPointer<GSequenceGraphData> > res;
+    QList<QSharedPointer<GSequenceGraphData>> res;
     assert(isEnabled(v->getSequenceObject()));
     QSharedPointer<GSequenceGraphData> d = QSharedPointer<GSequenceGraphData>(new GSequenceGraphData(getGraphName()));
     d->ga = new KarlinGraphAlgorithm();
@@ -62,54 +59,53 @@ QList<QSharedPointer<GSequenceGraphData> > KarlinGraphFactory::createGraphs(GSeq
 //////////////////////////////////////////////////////////////////////////
 // KarlinGraphAlgorithm
 
-static int getIndex(char nucl)
-{
+static int getIndex(char nucl) {
     switch (nucl) {
-        case 'A' : return 0;
-        case 'C' : return 1;
-        case 'T' : return 2;
-        case 'G' : return 3;
+    case 'A':
+        return 0;
+    case 'C':
+        return 1;
+    case 'T':
+        return 2;
+    case 'G':
+        return 3;
     }
     return -1;
 }
 
-#define IDX(x, y) ((x)*4+(y))
-#define IDX_NUCL(x,y) IDX(getIndex(x), getIndex(y))
+#define IDX(x, y) ((x)*4 + (y))
+#define IDX_NUCL(x, y) IDX(getIndex(x), getIndex(y))
 
 //todo:: use limits
 static const float FLOAT_MIN = 0.000000001f;
 
 KarlinGraphAlgorithm::KarlinGraphAlgorithm()
-    : global_relative_abundance_values(NULL)
-{
-
+    : global_relative_abundance_values(NULL) {
 }
 
 KarlinGraphAlgorithm::~KarlinGraphAlgorithm() {
     delete[] global_relative_abundance_values;
 }
 
-void KarlinGraphAlgorithm::calculate(QVector<float>& res, U2SequenceObject* o, const U2Region& vr,
-    const GSequenceGraphWindowData* d, U2OpStatus &os)
-{
-    assert(d!=NULL);
+void KarlinGraphAlgorithm::calculate(QVector<float> &res, U2SequenceObject *o, const U2Region &vr, const GSequenceGraphWindowData *d, U2OpStatus &os) {
+    assert(d != NULL);
     int nSteps = GSequenceGraphUtils::getNumSteps(vr, d->window, d->step);
     res.reserve(nSteps);
 
-    const DNAAlphabet* al = o->getAlphabet();
+    const DNAAlphabet *al = o->getAlphabet();
     assert(al->isNucleic());
 
-    DNATranslationRegistry* tr = AppContext::getDNATranslationRegistry();
-    DNATranslation* complT = tr->lookupComplementTranslation(al);
+    DNATranslationRegistry *tr = AppContext::getDNATranslationRegistry();
+    DNATranslation *complT = tr->lookupComplementTranslation(al);
     assert(complT != NULL);
 
-    DNATranslation* complTrans = complT;
+    DNATranslation *complTrans = complT;
     mapTrans = complTrans->getOne2OneMapper();
 
-    const QByteArray& seq = getSequenceData(o, os);
+    const QByteArray &seq = getSequenceData(o, os);
     CHECK_OP(os, );
     int seqLen = seq.size();
-    const char* seqc = seq.constData();
+    const char *seqc = seq.constData();
     if (global_relative_abundance_values == NULL) {
         global_relative_abundance_values = new float[16];
         calculateRelativeAbundance(seqc, seqLen, global_relative_abundance_values, os);
@@ -125,14 +121,14 @@ void KarlinGraphAlgorithm::calculate(QVector<float>& res, U2SequenceObject* o, c
     }
 }
 
-float KarlinGraphAlgorithm::getValue (int start, int end, const QByteArray& s, U2OpStatus &os) {
+float KarlinGraphAlgorithm::getValue(int start, int end, const QByteArray &s, U2OpStatus &os) {
     float relative_abundance_values[16];
-    calculateRelativeAbundance (s.constData()+start, end - start, relative_abundance_values, os);
+    calculateRelativeAbundance(s.constData() + start, end - start, relative_abundance_values, os);
     float signature_difference = 0;
-    for (int first_base = 0 ; first_base < 4 ; ++first_base) {
-        for (int second_base = 0 ; second_base < 4 ; ++second_base) {
+    for (int first_base = 0; first_base < 4; ++first_base) {
+        for (int second_base = 0; second_base < 4; ++second_base) {
             CHECK_OP(os, 0);
-            int idx = IDX(first_base,  second_base);
+            int idx = IDX(first_base, second_base);
             float global_value = global_relative_abundance_values[idx];
             float local_value = relative_abundance_values[idx];
             signature_difference += qAbs(global_value - local_value);
@@ -142,17 +138,34 @@ float KarlinGraphAlgorithm::getValue (int start, int end, const QByteArray& s, U
     return res;
 }
 
-void KarlinGraphAlgorithm::calculateRelativeAbundance (const char* seq, int length, float* results, U2OpStatus &os) {
+void KarlinGraphAlgorithm::calculateRelativeAbundance(const char *seq, int length, float *results, U2OpStatus &os) {
     QByteArray tmp;
     tmp.resize(length);
 
-    int base_counts[4]={0, 0, 0 ,0};
-    int dinucleotide_base_counts[16]={0, 0, 0 ,0,  0, 0, 0 ,0,  0, 0, 0 ,0,  0, 0, 0 ,0,};
+    int base_counts[4] = {0, 0, 0, 0};
+    int dinucleotide_base_counts[16] = {
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+    };
 
     int next_f_base_index = 0;
     int next_r_base_index = 0;
 
-    for (int i = 0 ; i < length - 1; ++i) {
+    for (int i = 0; i < length - 1; ++i) {
         CHECK_OP(os, );
         char this_f_base = seq[i];
         char next_f_base = seq[i + 1];
@@ -187,16 +200,13 @@ void KarlinGraphAlgorithm::calculateRelativeAbundance (const char* seq, int leng
 
     for (int first_base_index = 0; first_base_index < 4; ++first_base_index) {
         for (int second_base_index = 0; second_base_index < 4; ++second_base_index) {
-            int idx = IDX(first_base_index,second_base_index);
-            float dinucleotide_frequency =  float(dinucleotide_base_counts[idx]) / (2*(length - 1));
-            float first_base_frequency = float(base_counts[first_base_index]) / (2*length);
-            float second_base_frequency = float(base_counts[second_base_index]) / (2*length);
-            results[idx] = dinucleotide_frequency / qMax(FLOAT_MIN , first_base_frequency * second_base_frequency);
+            int idx = IDX(first_base_index, second_base_index);
+            float dinucleotide_frequency = float(dinucleotide_base_counts[idx]) / (2 * (length - 1));
+            float first_base_frequency = float(base_counts[first_base_index]) / (2 * length);
+            float second_base_frequency = float(base_counts[second_base_index]) / (2 * length);
+            results[idx] = dinucleotide_frequency / qMax(FLOAT_MIN, first_base_frequency * second_base_frequency);
         }
     }
-
 }
 
-
-} // namespace
-
+}    // namespace U2

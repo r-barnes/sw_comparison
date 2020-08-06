@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "HmmerSearchWorker.h"
+
 #include <U2Core/AnnotationData.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/DNAAlphabet.h>
@@ -46,7 +48,6 @@
 #include <U2Lang/WorkflowMonitor.h>
 
 #include "HmmerSearchTask.h"
-#include "HmmerSearchWorker.h"
 #include "HmmerSupport.h"
 
 namespace U2 {
@@ -63,8 +64,8 @@ static const QString DOM_T_ATTR("score");
 static const QString SEED_ATTR("seed");
 static const QString FILTER_BY_ATTR("filter-by");
 
-static const QString FILTER_BY_E_VALUE_STRING ("E-value");
-static const QString FILTER_BY_SCORE_STRING ("Score");
+static const QString FILTER_BY_E_VALUE_STRING("E-value");
+static const QString FILTER_BY_SCORE_STRING("Score");
 static const QString FILTER_BY_NONE_STRING("Do not filter results");
 
 static const QString FILTER_BY_E_VALUE("evalue");
@@ -74,17 +75,15 @@ static const QString FILTER_BY_NONE("none");
 const QString HmmerSearchWorkerFactory::ACTOR("hmm3-search");
 
 void HmmerSearchWorkerFactory::init() {
-    QList<PortDescriptor*> p;
-    QList<Attribute*> a;
+    QList<PortDescriptor *> p;
+    QList<Attribute *> a;
     {
         Descriptor filterByDesc(FILTER_BY_ATTR,
-            HmmerSearchWorker::tr("Filter by"),
-            HmmerSearchWorker::tr("Parameter to filter results by."));
+                                HmmerSearchWorker::tr("Filter by"),
+                                HmmerSearchWorker::tr("Parameter to filter results by."));
         Descriptor hd(HMM_URL_PORT, HmmerSearchWorker::tr("HMMER profile"), HmmerSearchWorker::tr("HMMER profile(s) URL(s) to search with."));
-        Descriptor sd(BasePorts::IN_SEQ_PORT_ID(), HmmerSearchWorker::tr("Input sequence"),
-            HmmerSearchWorker::tr("An input sequence (nucleotide or protein) to search in."));
-        Descriptor od(BasePorts::OUT_ANNOTATIONS_PORT_ID(), HmmerSearchWorker::tr("HMMER annotations"),
-            HmmerSearchWorker::tr("Annotations marking found similar sequence regions."));
+        Descriptor sd(BasePorts::IN_SEQ_PORT_ID(), HmmerSearchWorker::tr("Input sequence"), HmmerSearchWorker::tr("An input sequence (nucleotide or protein) to search in."));
+        Descriptor od(BasePorts::OUT_ANNOTATIONS_PORT_ID(), HmmerSearchWorker::tr("HMMER annotations"), HmmerSearchWorker::tr("Annotations marking found similar sequence regions."));
 
         QMap<Descriptor, DataTypePtr> hmmM;
         hmmM[BaseSlots::URL_SLOT()] = BaseTypes::STRING_TYPE();
@@ -111,14 +110,12 @@ void HmmerSearchWorkerFactory::init() {
         a << evalue;
         a << score;
 
-
         evalue->addRelation(new VisibilityRelation(FILTER_BY_ATTR, FILTER_BY_E_VALUE));
         score->addRelation(new VisibilityRelation(FILTER_BY_ATTR, FILTER_BY_SCORE));
     }
 
-    Descriptor desc(HmmerSearchWorkerFactory::ACTOR, HmmerSearchWorker::tr("HMM3 Search"),
-        HmmerSearchWorker::tr("Searches each input sequence for significantly similar sequence matches to all specified HMM profiles."
-        " In case several profiles were supplied, searches with all profiles one by one and outputs united set of annotations for each sequence."));
+    Descriptor desc(HmmerSearchWorkerFactory::ACTOR, HmmerSearchWorker::tr("HMM3 Search"), HmmerSearchWorker::tr("Searches each input sequence for significantly similar sequence matches to all specified HMM profiles."
+                                                                                                                 " In case several profiles were supplied, searches with all profiles one by one and outputs united set of annotations for each sequence."));
     ActorPrototype *proto = new IntegralBusActorPrototype(desc, p, a);
     QMap<QString, PropertyDelegate *> delegates;
 
@@ -132,7 +129,7 @@ void HmmerSearchWorkerFactory::init() {
 
     {
         QVariantMap eMap;
-        eMap["decimals"]= (2);
+        eMap["decimals"] = (2);
         eMap["minimum"] = (1e-99);
         eMap["maximum"] = (1e+99);
         eMap["singleStep"] = (0.1);
@@ -146,7 +143,7 @@ void HmmerSearchWorkerFactory::init() {
     }
     {
         QVariantMap tMap;
-        tMap["decimals"]= (2);
+        tMap["decimals"] = (2);
         tMap["minimum"] = (-1e+09);
         tMap["maximum"] = (1e+09);
         tMap["singleStep"] = (0.1);
@@ -164,12 +161,10 @@ void HmmerSearchWorkerFactory::init() {
 }
 
 HmmerSearchWorkerFactory::HmmerSearchWorkerFactory()
-    : DomainFactory(ACTOR)
-{
-
+    : DomainFactory(ACTOR) {
 }
 
-Worker * HmmerSearchWorkerFactory::createWorker(Actor *a) {
+Worker *HmmerSearchWorkerFactory::createWorker(Actor *a) {
     return new HmmerSearchWorker(a);
 }
 
@@ -177,9 +172,7 @@ Worker * HmmerSearchWorkerFactory::createWorker(Actor *a) {
  * HMM3SearchPrompter
  *******************************/
 HmmerSearchPrompter::HmmerSearchPrompter(Actor *p)
-    : PrompterBase<HmmerSearchPrompter>(p)
-{
-
+    : PrompterBase<HmmerSearchPrompter>(p) {
 }
 
 QString HmmerSearchPrompter::composeRichDoc() {
@@ -192,10 +185,10 @@ QString HmmerSearchPrompter::composeRichDoc() {
     QString resultName = getHyperlink(NAME_ATTR, getRequiredParam(NAME_ATTR));
 
     QString doc = tr("%1 search HMMER signals %2. "
-        "<br>Output the list of found regions annotated as <u>%4</u>.")
-        .arg(seqName)
-        .arg(hmmName)
-        .arg(resultName);
+                     "<br>Output the list of found regions annotated as <u>%4</u>.")
+                      .arg(seqName)
+                      .arg(hmmName)
+                      .arg(resultName);
 
     return doc;
 }
@@ -207,9 +200,7 @@ HmmerSearchWorker::HmmerSearchWorker(Actor *a)
     : BaseWorker(a, false),
       hmmPort(NULL),
       seqPort(NULL),
-      output(NULL)
-{
-
+      output(NULL) {
 }
 
 void HmmerSearchWorker::init() {
@@ -252,11 +243,11 @@ bool HmmerSearchWorker::isReady() const {
     return hmmHasMes || (hmmEnded && (seqHasMes || seqEnded));
 }
 
-Task * HmmerSearchWorker::tick() {
+Task *HmmerSearchWorker::tick() {
     while (hmmPort->hasMessage()) {
         hmms << hmmPort->get().getData().toMap().value(BaseSlots::URL_SLOT().getId()).toString();
     }
-    if (!hmmPort->isEnded()) { //  || hmms.isEmpty() || !seqPort->hasMessage()
+    if (!hmmPort->isEnded()) {    //  || hmms.isEmpty() || !seqPort->hasMessage()
         return NULL;
     }
 
@@ -294,7 +285,8 @@ Task * HmmerSearchWorker::tick() {
         }
         QString err = tr("Bad sequence supplied to input: %1").arg(seqObj->getGObjectName());
         return new FailTask(err);
-    } if (seqPort->isEnded()) {
+    }
+    if (seqPort->isEnded()) {
         setDone();
         output->setEnded();
     }
@@ -309,9 +301,9 @@ void HmmerSearchWorker::sl_taskFinished(Task *task) {
     if (NULL != output) {
         QList<SharedAnnotationData> list;
 
-        foreach(const QPointer<Task> &sub, task->getSubtasks()) {
+        foreach (const QPointer<Task> &sub, task->getSubtasks()) {
             HmmerSearchTask *searchTask = qobject_cast<HmmerSearchTask *>(sub.data());
-            if (searchTask == NULL){
+            if (searchTask == NULL) {
                 continue;
             }
             list << searchTask->getAnnotations();
@@ -326,8 +318,7 @@ void HmmerSearchWorker::sl_taskFinished(Task *task) {
 }
 
 void HmmerSearchWorker::cleanup() {
-
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

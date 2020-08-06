@@ -45,45 +45,64 @@ Warning: in the current state GUrl canonical form can contain symlinks.
 
 /** Type of the URL */
 enum GUrlType {
-    GUrl_File,      // local file or default URL type for unknown files
-    GUrl_Http,      // both http and https protocols
+    GUrl_File,    // local file or default URL type for unknown files
+    GUrl_Http,    // both http and https protocols
     GUrl_Ftp,
-    GUrl_VFSFile,   // memory block
+    GUrl_VFSFile,    // memory block
     GUrl_Network    // an abstract network url (e.g. shared database url)
 };
 
-
 class U2CORE_EXPORT GUrl {
-
 public:
     // constructs empty url. The default type -> file
-    GUrl(){type = GUrl_File;}
+    GUrl() {
+        type = GUrl_File;
+    }
 
     // constructs url specified by string. The type is parsed
-    GUrl(const QString& urlString);
+    GUrl(const QString &urlString);
 
     // constructs url specified by string. The type provided as param
-    GUrl(const QString& urlString, const GUrlType type);
+    GUrl(const QString &urlString, const GUrlType type);
 
-    GUrl(const GUrl& anotherUrl);
+    GUrl(const GUrl &anotherUrl);
 
-    bool operator ==(const GUrl& url) const;
+    bool operator==(const GUrl &url) const;
 
-    bool operator !=(const GUrl& url) const;
+    bool operator!=(const GUrl &url) const;
 
-    const QString& getURLString() const {return urlString;}
+    const QString &getURLString() const {
+        return urlString;
+    }
 
-    GUrlType getType() const {return type;}
+    // The function converts url string to multibyte form
+    // default code page is CP_THREAD_ACP
+    // must use "delete" to delete returned value
+    const char *getURLStringAnsi(int codePage = -1) const;
 
-    bool isEmpty() const {return urlString.isEmpty();}
+    GUrlType getType() const {
+        return type;
+    }
 
-    bool isLocalFile() const {return type == GUrl_File;}
+    bool isEmpty() const {
+        return urlString.isEmpty();
+    }
 
-    bool isHyperLink() const {return type == GUrl_Http;}
+    bool isLocalFile() const {
+        return type == GUrl_File;
+    }
 
-    bool isNetworkSource() const {return type == GUrl_Network;}
+    bool isHyperLink() const {
+        return type == GUrl_Http;
+    }
 
-    bool isVFSFile() const {return type == GUrl_VFSFile;}
+    bool isNetworkSource() const {
+        return type == GUrl_Network;
+    }
+
+    bool isVFSFile() const {
+        return type == GUrl_VFSFile;
+    }
 
     QString dirPath() const;
 
@@ -95,17 +114,18 @@ public:
 
     QString completeFileSuffix() const;
 
-    static GUrlType getURLType(const QString& rawUrl);
+    static GUrlType getURLType(const QString &rawUrl);
+
 private:
     static bool registerMeta;
-    QString     urlString;
-    GUrlType    type;
+    QString urlString;
+    GUrlType type;
 };
 
 QDataStream &operator<<(QDataStream &out, const GUrl &myObj);
 QDataStream &operator>>(QDataStream &in, GUrl &myObj);
 
-}//namespace
+}    // namespace U2
 
 Q_DECLARE_METATYPE(U2::GUrl);
 

@@ -28,54 +28,47 @@
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/U2SequenceDbi.h>
 
-
 namespace U2 {
-
 
 CharOccurResult::CharOccurResult(char _charInSequence, qint64 _numberOfOccurrence, double _percentageOfOccur)
     : charInSequence(_charInSequence),
       numberOfOccurr(_numberOfOccurrence),
-      percentageOfOccur(_percentageOfOccur)
-{
+      percentageOfOccur(_percentageOfOccur) {
 }
 
-
-CharOccurTask::CharOccurTask(const DNAAlphabet* _alphabet,
+CharOccurTask::CharOccurTask(const DNAAlphabet *_alphabet,
                              U2EntityRef _seqRef,
-                             const QVector<U2Region>& regions)
-    : BackgroundTask< QList<CharOccurResult> >(
-    "Calculating characters occurrence",
-    TaskFlag_None),
+                             const QVector<U2Region> &regions)
+    : BackgroundTask<QList<CharOccurResult>>(
+          "Calculating characters occurrence",
+          TaskFlag_None),
       alphabet(_alphabet),
       seqRef(_seqRef),
-      regions(regions)
-{
+      regions(regions) {
     tpm = Progress_Manual;
     stateInfo.setProgress(0);
 }
 
-
-void CharOccurTask::run()
-{
+void CharOccurTask::run() {
     // Create the connection
     U2OpStatus2Log os;
     DbiConnection dbiConnection(seqRef.dbiRef, os);
     CHECK_OP(os, );
 
-    U2SequenceDbi* sequenceDbi = dbiConnection.dbi->getSequenceDbi();
+    U2SequenceDbi *sequenceDbi = dbiConnection.dbi->getSequenceDbi();
 
     // Verify the alphabet
-    SAFE_POINT(0 != alphabet, "The alphabet is NULL!",)
+    SAFE_POINT(0 != alphabet, "The alphabet is NULL!", )
 
     QByteArray alphabetChars = alphabet->getAlphabetChars();
-    SAFE_POINT(!alphabetChars.isEmpty(), "There are no characters in the alphabet!",);
+    SAFE_POINT(!alphabetChars.isEmpty(), "There are no characters in the alphabet!", );
 
     QVector<quint64> charactersOccurrence(256, 0);
     qint64 totalLength = U2Region::sumLength(regions);
     qint64 processedLength = 0;
-    foreach(const U2Region& region, regions) {
+    foreach (const U2Region &region, regions) {
         QList<U2Region> blocks = U2Region::split(region, REGION_TO_ANALAYZE);
-        foreach(const U2Region& block, blocks) {
+        foreach (const U2Region &block, blocks) {
             // Get the selected region and verify that the data has been correctly read
             QByteArray sequence = sequenceDbi->getSequenceData(seqRef.entityId, block, os);
             if (os.hasError() || sequence.isEmpty()) {
@@ -84,7 +77,7 @@ void CharOccurTask::run()
             }
 
             // Calculating the values
-            const char* sequenceData = sequence.constData();
+            const char *sequenceData = sequence.constData();
             for (int i = 0, n = sequence.size(); i < n; i++) {
                 char c = sequenceData[i];
                 charactersOccurrence[c]++;
@@ -93,20 +86,20 @@ void CharOccurTask::run()
             // Update the task progress
             processedLength += block.length;
             stateInfo.setProgress(processedLength * 100 / totalLength);
-            CHECK_OP(stateInfo,);
+            CHECK_OP(stateInfo, );
         }
     }
 
     // Calculate the percentage and format the result
     QList<CharOccurResult> calculatedResults;
     for (int i = 0; i < charactersOccurrence.length(); i++) {
-        char c = (char) i;
+        char c = (char)i;
         qint64 numberOfOccur = charactersOccurrence[i];
         if (numberOfOccur == 0) {
             continue;
         }
         SAFE_POINT(alphabetChars.contains(c),
-                   QString("Unexpected characters has been detected in the sequence: {%1}").arg(c),);
+                   QString("Unexpected characters has been detected in the sequence: {%1}").arg(c), );
         double percentageOfOccur = numberOfOccur * 100.0 / totalLength;
         CharOccurResult calcResult(c, numberOfOccur, percentageOfOccur);
         calculatedResults.append(calcResult);
@@ -115,4 +108,4 @@ void CharOccurTask::run()
     result = calculatedResults;
 }
 
-} // namespace
+}    // namespace U2

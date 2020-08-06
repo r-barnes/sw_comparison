@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportPrimersDialog.h"
+
 #include <QMessageBox>
 
 #include <U2Core/AppContext.h>
@@ -47,7 +49,6 @@
 #include <U2Gui/SharedConnectionsDialog.h>
 #include <U2Gui/U2FileDialog.h>
 
-#include "ExportPrimersDialog.h"
 #include "ExportPrimersToDatabaseTask.h"
 #include "ExportPrimersToLocalFileTask.h"
 
@@ -56,12 +57,11 @@ namespace U2 {
 const QString ExportPrimersDialog::LOCAL_FILE = QObject::tr("Local file");
 const QString ExportPrimersDialog::SHARED_DB = QObject::tr("Shared database");
 
-ExportPrimersDialog::ExportPrimersDialog(const QList<Primer> &primers, QWidget *parent) :
-    QDialog(parent),
-    primers(primers)
-{
+ExportPrimersDialog::ExportPrimersDialog(const QList<Primer> &primers, QWidget *parent)
+    : QDialog(parent),
+      primers(primers) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742643");
+    new HelpButton(this, buttonBox, "46501130");
 
     init();
     connectSignals();
@@ -210,13 +210,13 @@ void ExportPrimersDialog::connectSignals() {
     }
 }
 
-void ExportPrimersDialog::connectProjectSignals(){
+void ExportPrimersDialog::connectProjectSignals() {
     connect(AppContext::getProject(), SIGNAL(si_documentAdded(Document *)), SLOT(sl_documentAdded(Document *)), Qt::UniqueConnection);
-    connect(AppContext::getProject(), SIGNAL(si_documentRemoved(Document*)), SLOT(sl_documentRemoved(Document *)), Qt::UniqueConnection);
+    connect(AppContext::getProject(), SIGNAL(si_documentRemoved(Document *)), SLOT(sl_documentRemoved(Document *)), Qt::UniqueConnection);
 }
 
 bool ExportPrimersDialog::isFileMode() const {
     return LOCAL_FILE == cbExport->currentText();
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -23,15 +23,13 @@
 
 #include <U2Core/U2SafePoints.h>
 
-
 namespace U2 {
 
 OPGroupParameters::OPGroupParameters(QString groupId, QPixmap headerImage, QString title, QString documentationPage)
-    :  groupId(groupId),
-       groupIcon(headerImage),
-       groupTitle(title),
-       groupDocumentationPage(documentationPage)
-{
+    : groupId(groupId),
+      groupIcon(headerImage),
+      groupTitle(title),
+      groupDocumentationPage(documentationPage) {
 }
 
 bool OPFactoryFilterVisitor::atLeastOneAlphabetPass(DNAAlphabetType factoryAlphabetType) {
@@ -44,37 +42,34 @@ bool OPFactoryFilterVisitor::atLeastOneAlphabetPass(DNAAlphabetType factoryAlpha
 
 OPWidgetFactory::OPWidgetFactory()
     : QObject(),
-      objView(NULL),
-      objectViewOfWidget(ObjViewType_SequenceView)
-{
-
+      objView(nullptr),
+      objectViewOfWidget(ObjViewType_SequenceView) {
 }
 
 OPWidgetFactory::~OPWidgetFactory() {
-
 }
 
-bool OPWidgetFactory::passFiltration( OPFactoryFilterVisitorInterface* filter ){
+bool OPWidgetFactory::passFiltration(OPFactoryFilterVisitorInterface *filter) {
     //by default checks type only
     bool res = false;
 
-    SAFE_POINT(filter != NULL, "OPWidgetFactory::passFiltration. Filter is null", res);
-
+    SAFE_POINT(filter != nullptr, "OPWidgetFactory::passFiltration. Filter is null", res);
     res = filter->typePass(getObjectViewType());
-
     return res;
 }
 
+void OPWidgetFactory::applyOptionsToWidget(QWidget *widget, const QVariantMap &options) {
+    // Do nothing by default. Override in widgets that support this feature.
+}
+
 OPCommonWidgetFactory::OPCommonWidgetFactory(QList<QString> _groupIds)
-    : groupIds(_groupIds)
-{
+    : groupIds(_groupIds) {
 }
 
 OPCommonWidgetFactory::~OPCommonWidgetFactory() {
 }
 
 OPFactoryFilterVisitorInterface::~OPFactoryFilterVisitorInterface() {
-
 }
 
-} // namespace
+}    // namespace U2

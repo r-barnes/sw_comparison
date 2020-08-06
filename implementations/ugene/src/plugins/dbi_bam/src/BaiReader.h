@@ -23,16 +23,17 @@
 #define _U2_BAM_BAI_READER_H_
 
 #include <U2Core/IOAdapter.h>
+
 #include "Index.h"
 
 namespace U2 {
 namespace BAM {
 
-class BaiReader
-{
+class BaiReader {
 public:
     BaiReader(IOAdapter &ioAdapter);
     Index readIndex();
+
 private:
     void readBytes(char *buff, qint64 size);
     QByteArray readBytes(qint64 size);
@@ -43,7 +44,7 @@ private:
     IOAdapter &ioAdapter;
 };
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2
 
-#endif // _U2_BAM_BAI_READER_H_
+#endif    // _U2_BAM_BAI_READER_H_

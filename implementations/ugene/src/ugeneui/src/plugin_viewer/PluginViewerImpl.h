@@ -21,8 +21,9 @@
 
 #ifndef _U2_PLUGIN_VEIWER_IMPL_H_
 
-#include <U2Gui/PluginViewer.h>
-#include <U2Core/Task.h>
+#    include <U2Core/Task.h>
+
+#    include <U2Gui/PluginViewer.h>
 
 namespace U2 {
 
@@ -34,18 +35,21 @@ class PluginViewerImpl : public PluginViewer {
     Q_OBJECT
 
     friend class DisablePluginViewerTask;
-	friend class EnablePluginViewerTask;
+    friend class EnablePluginViewerTask;
+
 public:
-    PluginViewerImpl() : PluginViewer(tr("PluginViewer"), tr("Basic plugins and services visualization and manipulation tool")) {viewer = NULL;}
+    PluginViewerImpl()
+        : PluginViewer(tr("PluginViewer"), tr("Basic plugins and services visualization and manipulation tool")) {
+        viewer = NULL;
+    }
 
 protected:
-	virtual Task* createServiceEnablingTask();
+    virtual Task *createServiceEnablingTask();
 
-	virtual Task* createServiceDisablingTask();
+    virtual Task *createServiceDisablingTask();
 
 private:
-    PluginViewerController* viewer;
-
+    PluginViewerController *viewer;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -54,24 +58,24 @@ class EnablePluginViewerTask : public Task {
     Q_OBJECT
 
 public:
-	EnablePluginViewerTask(PluginViewerImpl* pv);
-	virtual ReportResult report();
-private:
-	PluginViewerImpl* pv;
-};
+    EnablePluginViewerTask(PluginViewerImpl *pv);
+    virtual ReportResult report();
 
+private:
+    PluginViewerImpl *pv;
+};
 
 class DisablePluginViewerTask : public Task {
     Q_OBJECT
 
 public:
-	DisablePluginViewerTask(PluginViewerImpl* pv);
-	virtual ReportResult report();
+    DisablePluginViewerTask(PluginViewerImpl *pv);
+    virtual ReportResult report();
+
 private:
-	PluginViewerImpl* pv;
+    PluginViewerImpl *pv;
 };
 
-
-}//namespace
+}    // namespace U2
 
 #endif

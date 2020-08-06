@@ -146,11 +146,10 @@ public:
     static PFMatrix deserialize(const QByteArray &binary, U2OpStatus &os);
 };
 
-
 class DatatypeSerializers : public QObject {
     Q_OBJECT
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_DATATYPE_SERIALIZE_UTILS_H_
+#endif    // _U2_DATATYPE_SERIALIZE_UTILS_H_

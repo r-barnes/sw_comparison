@@ -24,12 +24,11 @@
 namespace U2 {
 
 CustomExternalTool::CustomExternalTool()
-    : ExternalTool(QString(), QString(), QString())
-{
+    : ExternalTool(QString(), QString(), QString()) {
     isCustomTool = true;
 }
 
-void CustomExternalTool::setId(const QString& _id) {
+void CustomExternalTool::setId(const QString &_id) {
     id = _id;
 }
 
@@ -93,4 +92,4 @@ const QString &CustomExternalTool::getConfigFilePath() const {
     return configFilePath;
 }
 
-}   // namespace U2
+}    // namespace U2

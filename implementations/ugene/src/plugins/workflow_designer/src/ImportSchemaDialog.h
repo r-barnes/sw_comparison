@@ -22,16 +22,16 @@
 #ifndef _U2_IMPORT_SCHEMA_DIALOG_H_
 #define _U2_IMPORT_SCHEMA_DIALOG_H_
 
-#include <U2Core/global.h>
-
 #include <ui_ImportSchemaDialog.h>
+
+#include <U2Core/global.h>
 
 namespace U2 {
 
-class ImportSchemaDialog : public QDialog,  public Ui_ImportSchemaDialog {
+class ImportSchemaDialog : public QDialog, public Ui_ImportSchemaDialog {
     Q_OBJECT
 public:
-    ImportSchemaDialog(QWidget* p = NULL);
+    ImportSchemaDialog(QWidget *p = NULL);
 
     QString getTypeName();
 
@@ -39,6 +39,6 @@ public slots:
     virtual void accept();
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_IMPORT_SCHEMA_DIALOG_H_
+#endif    // _U2_IMPORT_SCHEMA_DIALOG_H_

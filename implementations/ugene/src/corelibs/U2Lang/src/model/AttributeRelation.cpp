@@ -20,38 +20,32 @@
  */
 
 #include "AttributeRelation.h"
+
+#include <U2Core/AppContext.h>
+#include <U2Core/DocumentModel.h>
 #include <U2Core/FormatUtils.h>
 #include <U2Core/GUrl.h>
-#include <U2Core/DocumentModel.h>
-#include <U2Core/AppContext.h>
 
 #include <U2Lang/ConfigurationEditor.h>
 
 namespace U2 {
 
 void AttributeRelation::updateDelegateTags(const QVariant & /*influencingValue*/, DelegateTags * /*dependentTags*/) const {
-
 }
 
-VisibilityRelation::VisibilityRelation(const QString &relatedAttrId, const QVariantList &_visibilityValues,
-                                       bool invertVisibilityRules)
+VisibilityRelation::VisibilityRelation(const QString &relatedAttrId, const QVariantList &_visibilityValues, bool invertVisibilityRules)
     : AttributeRelation(relatedAttrId),
       visibilityValues(_visibilityValues),
-      invertAffectResult(invertVisibilityRules)
-{
-
+      invertAffectResult(invertVisibilityRules) {
 }
 
-VisibilityRelation::VisibilityRelation(const QString &relatedAttrId, const QVariant &visibilityValue,
-                                       bool invertVisibilityRules)
+VisibilityRelation::VisibilityRelation(const QString &relatedAttrId, const QVariant &visibilityValue, bool invertVisibilityRules)
     : AttributeRelation(relatedAttrId),
-      invertAffectResult(invertVisibilityRules)
-{
+      invertAffectResult(invertVisibilityRules) {
     visibilityValues << visibilityValue;
 }
 
-QVariant VisibilityRelation::getAffectResult(const QVariant &influencingValue, const QVariant &,
-    DelegateTags *, DelegateTags *) const {
+QVariant VisibilityRelation::getAffectResult(const QVariant &influencingValue, const QVariant &, DelegateTags *, DelegateTags *) const {
     foreach (const QVariant &v, visibilityValues) {
         if ((v == influencingValue) != invertAffectResult) {
             return true;
@@ -64,9 +58,7 @@ VisibilityRelation *VisibilityRelation::clone() const {
     return new VisibilityRelation(*this);
 }
 
-QVariant FileExtensionRelation::getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue,
-    DelegateTags * /*infTags*/, DelegateTags *depTags) const {
-
+QVariant FileExtensionRelation::getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue, DelegateTags * /*infTags*/, DelegateTags *depTags) const {
     QString newFormatId = influencingValue.toString();
     DocumentFormat *newFormat = AppContext::getDocumentFormatRegistry()->getFormatById(newFormatId);
     updateDelegateTags(influencingValue, depTags);
@@ -96,14 +88,14 @@ QVariant FileExtensionRelation::getAffectResult(const QVariant &influencingValue
 
     DocumentFormat *currentFormat = AppContext::getDocumentFormatRegistry()->selectFormatByFileExtension(lastSuffix);
     QString currentFormatId("");
-    if(currentFormat){
-       currentFormatId = currentFormat->getFormatId();
+    if (currentFormat) {
+        currentFormatId = currentFormat->getFormatId();
     }
 
     bool foundExt = false;
     if (0 == QString::compare(lastSuffix, "csv", Qt::CaseInsensitive)) {
         foundExt = true;
-    }else if (NULL == currentFormat) {
+    } else if (NULL == currentFormat) {
         foundExt = (lastSuffix == currentFormatId);
     } else {
         QStringList extensions(currentFormat->getSupportedDocumentFileExtensions());
@@ -122,7 +114,7 @@ QVariant FileExtensionRelation::getAffectResult(const QVariant &influencingValue
 
     if (foundExt) {
         int dotPos = urlStr.length() - lastSuffix.length() - 1;
-        if ((dotPos >= 0) && (QChar('.') == urlStr[dotPos])) { //yes, lastSuffix is a correct extension with .
+        if ((dotPos >= 0) && (QChar('.') == urlStr[dotPos])) {    //yes, lastSuffix is a correct extension with .
             urlStr = urlStr.left(dotPos);
         }
     }
@@ -151,8 +143,7 @@ FileExtensionRelation *FileExtensionRelation::clone() const {
     return new FileExtensionRelation(*this);
 }
 
-QVariant ValuesRelation::getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue,
-                                         DelegateTags * /*infTags*/, DelegateTags *depTags) const {
+QVariant ValuesRelation::getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue, DelegateTags * /*infTags*/, DelegateTags *depTags) const {
     updateDelegateTags(influencingValue, depTags);
     QVariantMap items = dependencies.value(influencingValue.toString()).toMap();
     if (!items.isEmpty()) {
@@ -172,4 +163,4 @@ ValuesRelation *ValuesRelation::clone() const {
     return new ValuesRelation(*this);
 }
 
-} // U2
+}    // namespace U2

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "SortBamWorker.h"
+
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentImport.h>
 #include <U2Core/DocumentModel.h>
@@ -47,27 +49,25 @@
 #include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/WorkflowMonitor.h>
 
-#include "SortBamWorker.h"
-
 namespace U2 {
 namespace LocalWorkflow {
 
 const QString SortBamWorkerFactory::ACTOR_ID("Sort-bam");
-static const QString SHORT_NAME( "mb" );
-static const QString INPUT_PORT( "in-file" );
-static const QString OUTPUT_PORT( "out-file" );
-static const QString OUT_MODE_ID( "out-mode" );
-static const QString CUSTOM_DIR_ID( "custom-dir" );
-static const QString OUT_NAME_ID( "out-name" );
-static const QString INDEX_ID( "index" );
+static const QString SHORT_NAME("mb");
+static const QString INPUT_PORT("in-file");
+static const QString OUTPUT_PORT("out-file");
+static const QString OUT_MODE_ID("out-mode");
+static const QString CUSTOM_DIR_ID("custom-dir");
+static const QString OUT_NAME_ID("out-name");
+static const QString INDEX_ID("index");
 
 /************************************************************************/
 /* SortBamPrompter */
 /************************************************************************/
 QString SortBamPrompter::composeRichDoc() {
-    IntegralBusPort* input = qobject_cast<IntegralBusPort*>(target->getPort(INPUT_PORT));
-    const Actor* producer = input->getProducer(BaseSlots::URL_SLOT().getId());
-    QString unsetStr = "<font color='red'>"+tr("unset")+"</font>";
+    IntegralBusPort *input = qobject_cast<IntegralBusPort *>(target->getPort(INPUT_PORT));
+    const Actor *producer = input->getProducer(BaseSlots::URL_SLOT().getId());
+    QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
     QString producerName = tr(" from <u>%1</u>").arg(producer ? producer->getLabel() : unsetStr);
 
     QString doc = tr("Sort BAM file %1 with SAMTools sort.").arg(producerName);
@@ -78,19 +78,16 @@ QString SortBamPrompter::composeRichDoc() {
 /* SortBamWorkerFactory */
 /************************************************************************/
 namespace {
-    static const QString DEFAULT_NAME( "Default" );
+static const QString DEFAULT_NAME("Default");
 }
 
 void SortBamWorkerFactory::init() {
-    Descriptor desc( ACTOR_ID, SortBamWorker::tr("Sort BAM Files"),
-        SortBamWorker::tr("Sort BAM Files using SAMTools Sort.") );
+    Descriptor desc(ACTOR_ID, SortBamWorker::tr("Sort BAM Files"), SortBamWorker::tr("Sort BAM Files using SAMTools Sort."));
 
-    QList<PortDescriptor*> p;
+    QList<PortDescriptor *> p;
     {
-        Descriptor inD(INPUT_PORT, SortBamWorker::tr("BAM File"),
-            SortBamWorker::tr("Set of BAM files to sort"));
-        Descriptor outD(OUTPUT_PORT, SortBamWorker::tr("Sorted BAM File"),
-            SortBamWorker::tr("Sorted BAM file"));
+        Descriptor inD(INPUT_PORT, SortBamWorker::tr("BAM File"), SortBamWorker::tr("Set of BAM files to sort"));
+        Descriptor outD(OUTPUT_PORT, SortBamWorker::tr("Sorted BAM File"), SortBamWorker::tr("Sorted BAM file"));
 
         QMap<Descriptor, DataTypePtr> inM;
         inM[BaseSlots::URL_SLOT()] = BaseTypes::STRING_TYPE();
@@ -101,31 +98,27 @@ void SortBamWorkerFactory::init() {
         p << new PortDescriptor(outD, DataTypePtr(new MapDataType(SHORT_NAME + ".output-url", outM)), false, true);
     }
 
-    QList<Attribute*> a;
+    QList<Attribute *> a;
     {
-        Descriptor outDir(OUT_MODE_ID, SortBamWorker::tr("Output folder"),
-            SortBamWorker::tr("Select an output folder. <b>Custom</b> - specify the output folder in the 'Custom folder' parameter. "
-            "<b>Workflow</b> - internal workflow folder. "
-            "<b>Input file</b> - the folder of the input file."));
+        Descriptor outDir(OUT_MODE_ID, SortBamWorker::tr("Output folder"), SortBamWorker::tr("Select an output folder. <b>Custom</b> - specify the output folder in the 'Custom folder' parameter. "
+                                                                                             "<b>Workflow</b> - internal workflow folder. "
+                                                                                             "<b>Input file</b> - the folder of the input file."));
 
-        Descriptor customDir(CUSTOM_DIR_ID, SortBamWorker::tr("Custom folder"),
-            SortBamWorker::tr("Select the custom output folder."));
+        Descriptor customDir(CUSTOM_DIR_ID, SortBamWorker::tr("Custom folder"), SortBamWorker::tr("Select the custom output folder."));
 
-        Descriptor outName(OUT_NAME_ID, SortBamWorker::tr("Output BAM name"),
-            SortBamWorker::tr("A name of an output BAM file. If default of empty value is provided the output name is the name of the first BAM file with .sorted.bam extension."));
+        Descriptor outName(OUT_NAME_ID, SortBamWorker::tr("Output BAM name"), SortBamWorker::tr("A name of an output BAM file. If default of empty value is provided the output name is the name of the first BAM file with .sorted.bam extension."));
 
-        Descriptor index(INDEX_ID, SortBamWorker::tr("Build index"),
-            SortBamWorker::tr("Build index for the sorted file with SAMTools index."));
+        Descriptor index(INDEX_ID, SortBamWorker::tr("Build index"), SortBamWorker::tr("Build index for the sorted file with SAMTools index."));
 
         a << new Attribute(outDir, BaseTypes::NUM_TYPE(), false, QVariant(FileAndDirectoryUtils::WORKFLOW_INTERNAL));
-        Attribute* customDirAttr = new Attribute(customDir, BaseTypes::STRING_TYPE(), false, QVariant(""));
+        Attribute *customDirAttr = new Attribute(customDir, BaseTypes::STRING_TYPE(), false, QVariant(""));
         customDirAttr->addRelation(new VisibilityRelation(OUT_MODE_ID, FileAndDirectoryUtils::CUSTOM));
         a << customDirAttr;
-        a << new Attribute( outName, BaseTypes::STRING_TYPE(), false, QVariant(DEFAULT_NAME));
-        a << new Attribute( index, BaseTypes::BOOL_TYPE(), false, QVariant(true));
+        a << new Attribute(outName, BaseTypes::STRING_TYPE(), false, QVariant(DEFAULT_NAME));
+        a << new Attribute(index, BaseTypes::BOOL_TYPE(), false, QVariant(true));
     }
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
         QVariantMap directoryMap;
         QString fileDir = SortBamWorker::tr("Input file");
@@ -139,7 +132,7 @@ void SortBamWorkerFactory::init() {
         delegates[CUSTOM_DIR_ID] = new URLDelegate("", "", false, true);
     }
 
-    ActorPrototype* proto = new IntegralBusActorPrototype(desc, p, a);
+    ActorPrototype *proto = new IntegralBusActorPrototype(desc, p, a);
     proto->setEditor(new DelegateEditor(delegates));
     proto->setPrompter(new SortBamPrompter());
 
@@ -152,12 +145,7 @@ void SortBamWorkerFactory::init() {
 /* SortBamWorker */
 /************************************************************************/
 SortBamWorker::SortBamWorker(Actor *a)
-:BaseWorker(a)
-,inputUrlPort(NULL)
-,outputUrlPort(NULL)
-,outUrls("")
-{
-
+    : BaseWorker(a), inputUrlPort(NULL), outputUrlPort(NULL), outUrls("") {
 }
 
 void SortBamWorker::init() {
@@ -165,18 +153,18 @@ void SortBamWorker::init() {
     outputUrlPort = ports.value(OUTPUT_PORT);
 }
 
-Task * SortBamWorker::tick() {
+Task *SortBamWorker::tick() {
     if (inputUrlPort->hasMessage()) {
         const QString url = takeUrl();
         CHECK(!url.isEmpty(), NULL);
 
         const QString detectedFormat = FileAndDirectoryUtils::detectFormat(url);
-        if(detectedFormat.isEmpty()){
+        if (detectedFormat.isEmpty()) {
             coreLog.info(tr("Unknown file format: ") + url);
             return NULL;
         }
 
-        if(detectedFormat == BaseDocumentFormats::BAM){
+        if (detectedFormat == BaseDocumentFormats::BAM) {
             const QString outputDir = FileAndDirectoryUtils::createWorkingDir(url, getValue<int>(OUT_MODE_ID), getValue<QString>(CUSTOM_DIR_ID), context->workingDir());
 
             BamSortSetting setting;
@@ -186,7 +174,7 @@ Task * SortBamWorker::tick() {
             setting.index = getValue<bool>(INDEX_ID);
 
             Task *t = new SamtoolsSortTask(setting);
-            connect(new TaskSignalMapper(t), SIGNAL(si_taskFinished(Task*)), SLOT(sl_taskFinished(Task*)));
+            connect(new TaskSignalMapper(t), SIGNAL(si_taskFinished(Task *)), SLOT(sl_taskFinished(Task *)));
             return t;
         }
     }
@@ -203,16 +191,15 @@ void SortBamWorker::cleanup() {
 }
 
 namespace {
-    QString getTargetUrl(Task *task) {
+QString getTargetUrl(Task *task) {
+    SamtoolsSortTask *sortTask = dynamic_cast<SamtoolsSortTask *>(task);
 
-        SamtoolsSortTask *sortTask = dynamic_cast<SamtoolsSortTask*>(task);
-
-        if (NULL != sortTask) {
-            return sortTask->getResult();
-        }
-        return "";
+    if (NULL != sortTask) {
+        return sortTask->getResult();
     }
+    return "";
 }
+}    // namespace
 
 void SortBamWorker::sl_taskFinished(Task *task) {
     CHECK(!task->hasError(), );
@@ -225,20 +212,19 @@ void SortBamWorker::sl_taskFinished(Task *task) {
     monitor()->addOutputFile(url, getActorId());
 }
 
-QString SortBamWorker::getTargetName (const QString &fileUrl, const QString &outDir){
+QString SortBamWorker::getTargetName(const QString &fileUrl, const QString &outDir) {
     QString name = getValue<QString>(OUT_NAME_ID);
 
-    if(name == DEFAULT_NAME || name.isEmpty()){
+    if (name == DEFAULT_NAME || name.isEmpty()) {
         name = QFileInfo(fileUrl).fileName();
         name = name + ".sorted.bam";
     }
-    if(outUrls.contains(outDir + name)){
+    if (outUrls.contains(outDir + name)) {
         name.append(QString("_%1").arg(outUrls.size()));
     }
-    outUrls.append(outDir+name);
+    outUrls.append(outDir + name);
     return name;
 }
-
 
 QString SortBamWorker::takeUrl() {
     const Message inputMessage = getMessageAndSetupScriptValues(inputUrlPort);
@@ -257,31 +243,28 @@ void SortBamWorker::sendResult(const QString &url) {
 }
 
 SamtoolsSortTask::SamtoolsSortTask(const BamSortSetting &settings)
-:Task(QString("Samtools sort for %1").arg(settings.inputUrl), TaskFlag_None)
-,settings(settings)
-{
-
+    : Task(QString("Samtools sort for %1").arg(settings.inputUrl), TaskFlag_None), settings(settings) {
 }
 
-void SamtoolsSortTask::prepare(){
-    if (settings.inputUrl.isEmpty()){
+void SamtoolsSortTask::prepare() {
+    if (settings.inputUrl.isEmpty()) {
         setError(tr("No assembly URL to filter"));
-        return ;
+        return;
     }
 
     const QDir outDir = QFileInfo(settings.outDir).absoluteDir();
     if (!outDir.exists()) {
         setError(tr("Folder does not exist: ") + outDir.absolutePath());
-        return ;
+        return;
     }
 }
 
-void SamtoolsSortTask::run(){
+void SamtoolsSortTask::run() {
     resultUrl = BAMUtils::sortBam(settings.inputUrl, settings.outDir + settings.outName, stateInfo).getURLString();
     CHECK_OP(stateInfo, );
 
     BAMUtils::createBamIndex(resultUrl, stateInfo);
 }
 
-} //LocalWorkflow
-} //U2
+}    // namespace LocalWorkflow
+}    // namespace U2

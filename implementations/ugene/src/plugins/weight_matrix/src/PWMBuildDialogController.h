@@ -49,7 +49,7 @@ class PWMBuildDialogController : public QDialog, public Ui_PWMBuildDialog {
     Q_OBJECT
 
 public:
-    PWMBuildDialogController(QWidget* w = NULL);
+    PWMBuildDialogController(QWidget *w = NULL);
     QString lastURL;
 
 public slots:
@@ -69,70 +69,72 @@ private:
     void initWeightSaveController();
     void reportError(const QString &message);
 
-    Task* task;
+    Task *task;
     SaveDocumentController *saveController;
-    AlignmentLogoRenderArea* logoArea;
-    QPushButton* okButton;
-    QPushButton* cancelButton;
-    void replaceLogo(const MultipleSequenceAlignment& ma);
+    AlignmentLogoRenderArea *logoArea;
+    QPushButton *okButton;
+    QPushButton *cancelButton;
+    void replaceLogo(const MultipleSequenceAlignment &ma);
 };
-
 
 class PFMatrixBuildTask : public Task {
     Q_OBJECT
 public:
-    PFMatrixBuildTask(const PMBuildSettings& s, const MultipleSequenceAlignment& ma);
+    PFMatrixBuildTask(const PMBuildSettings &s, const MultipleSequenceAlignment &ma);
     void run();
-    PFMatrix getResult() const {return m;}
+    PFMatrix getResult() const {
+        return m;
+    }
 
 private:
-    PMBuildSettings        settings;
-    MultipleSequenceAlignment              ma;
-    PFMatrix                m;
+    PMBuildSettings settings;
+    MultipleSequenceAlignment ma;
+    PFMatrix m;
 };
 
 class PFMatrixBuildToFileTask : public Task {
     Q_OBJECT
 public:
-    PFMatrixBuildToFileTask(const QString& inFile, const QString& outFile, const PMBuildSettings& s);
-    virtual QList<Task*> onSubTaskFinished(Task* subTask);
+    PFMatrixBuildToFileTask(const QString &inFile, const QString &outFile, const PMBuildSettings &s);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
 
 private:
-    LoadDocumentTask*       loadTask;
-    PFMatrixBuildTask*           buildTask;
-    QString                 outFile;
-    PMBuildSettings         settings;
+    LoadDocumentTask *loadTask;
+    PFMatrixBuildTask *buildTask;
+    QString outFile;
+    PMBuildSettings settings;
 };
 
 class PWMatrixBuildTask : public Task {
     Q_OBJECT
 public:
-    PWMatrixBuildTask(const PMBuildSettings& s, const MultipleSequenceAlignment& ma);
-    PWMatrixBuildTask(const PMBuildSettings& s, const PFMatrix& m);
+    PWMatrixBuildTask(const PMBuildSettings &s, const MultipleSequenceAlignment &ma);
+    PWMatrixBuildTask(const PMBuildSettings &s, const PFMatrix &m);
     void run();
-    PWMatrix getResult() const {return m;}
+    PWMatrix getResult() const {
+        return m;
+    }
 
 private:
-    PMBuildSettings         settings;
-    MultipleSequenceAlignment              ma;
-    PFMatrix                tempMatrix;
-    PWMatrix                m;
+    PMBuildSettings settings;
+    MultipleSequenceAlignment ma;
+    PFMatrix tempMatrix;
+    PWMatrix m;
 };
 
 class PWMatrixBuildToFileTask : public Task {
     Q_OBJECT
 public:
-    PWMatrixBuildToFileTask(const QString& inFile, const QString& outFile, const PMBuildSettings& s);
-    virtual QList<Task*> onSubTaskFinished(Task* subTask);
+    PWMatrixBuildToFileTask(const QString &inFile, const QString &outFile, const PMBuildSettings &s);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
 
 private:
-    LoadDocumentTask*       loadTask;
-    PWMatrixBuildTask*       buildTask;
-    QString                 outFile;
-    PMBuildSettings    settings;
+    LoadDocumentTask *loadTask;
+    PWMatrixBuildTask *buildTask;
+    QString outFile;
+    PMBuildSettings settings;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif
-

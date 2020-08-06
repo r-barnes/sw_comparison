@@ -19,28 +19,27 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-#include <QTreeWidget>
-
 #include "ConstructMoleculeDialogFiller.h"
 #include <primitives/GTTreeWidget.h>
 #include <primitives/GTWidget.h>
+
+#include <QApplication>
+#include <QTreeWidget>
+
 #include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
 #define GT_CLASS_NAME "ConstructMoleculeDialogFiller"
 
-ConstructMoleculeDialogFiller::ConstructMoleculeDialogFiller(HI::GUITestOpStatus &os, const QList<Action> &actions) :
-    Filler(os, "ConstructMoleculeDialog"),
-    dialog(NULL),
-    actions(actions)
-{
+ConstructMoleculeDialogFiller::ConstructMoleculeDialogFiller(HI::GUITestOpStatus &os, const QList<Action> &actions)
+    : Filler(os, "ConstructMoleculeDialog"),
+      dialog(NULL),
+      actions(actions) {
 }
 
 ConstructMoleculeDialogFiller::ConstructMoleculeDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario)
-: Filler(os, "ConstructMoleculeDialog", scenario), dialog(NULL)
-{
+    : Filler(os, "ConstructMoleculeDialog", scenario), dialog(NULL) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
@@ -101,4 +100,4 @@ void ConstructMoleculeDialogFiller::clickOk() {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

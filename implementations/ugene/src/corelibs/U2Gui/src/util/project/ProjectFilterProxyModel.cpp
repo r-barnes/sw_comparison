@@ -19,19 +19,18 @@
  * MA 02110-1301, USA.
  */
 
+#include "ProjectFilterProxyModel.h"
+
 #include <U2Core/L10n.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2SafePoints.h>
 
 #include "ProjectUtils.h"
 
-#include "ProjectFilterProxyModel.h"
-
 namespace U2 {
 
 ProjectFilterProxyModel::ProjectFilterProxyModel(const ProjectTreeControllerModeSettings &settings, QObject *p)
-    : QSortFilterProxyModel(p), settings(settings)
-{
+    : QSortFilterProxyModel(p), settings(settings) {
     setDynamicSortFilter(true);
     setFilterKeyColumn(0);
 }
@@ -41,7 +40,7 @@ void ProjectFilterProxyModel::updateSettings(const ProjectTreeControllerModeSett
     invalidateFilter();
 }
 
-ProjectViewModel * ProjectFilterProxyModel::sourceModel() const {
+ProjectViewModel *ProjectFilterProxyModel::sourceModel() const {
     ProjectViewModel *srcModel = qobject_cast<ProjectViewModel *>(QSortFilterProxyModel::sourceModel());
     SAFE_POINT(NULL != srcModel, L10N::nullPointerError("project view model"), NULL);
     return srcModel;
@@ -60,13 +59,13 @@ bool ProjectFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex 
     const QModelIndex index = srcModel->index(sourceRow, 0, sourceParent);
     ProjectViewModel::Type itemType = srcModel->itemType(index);
     switch (itemType) {
-    case ProjectViewModel::DOCUMENT :
+    case ProjectViewModel::DOCUMENT:
         return settings.isDocumentShown(srcModel->toDocument(index));
-    case ProjectViewModel::FOLDER :
+    case ProjectViewModel::FOLDER:
         return filterAcceptsFolder(srcModel->toFolder(index));
-    case ProjectViewModel::OBJECT :
+    case ProjectViewModel::OBJECT:
         return settings.isObjectShown(srcModel->toObject(index));
-    default :
+    default:
         FAIL("Unexpected project item type", false);
     }
 }
@@ -87,7 +86,7 @@ bool ProjectFilterProxyModel::filterAcceptsFolder(const Folder *folder) const {
 
     Document *doc = folder->getDocument();
     QList<GObject *> objs = srcModel->getFolderObjects(doc, path);
-    foreach(GObject *obj, objs) {
+    foreach (GObject *obj, objs) {
         if (settings.isObjectShown(obj)) {
             return true;
         }
@@ -102,4 +101,4 @@ bool ProjectFilterProxyModel::filterAcceptsFolder(const Folder *folder) const {
     return false;
 }
 
-} // namespace U2
+}    // namespace U2

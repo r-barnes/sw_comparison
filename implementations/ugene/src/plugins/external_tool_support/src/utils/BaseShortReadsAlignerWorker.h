@@ -22,11 +22,13 @@
 #ifndef _U2_BASE_SHORT_READS_ALIGNER_WORKER_H_
 #define _U2_BASE_SHORT_READS_ALIGNER_WORKER_H_
 
+#include <U2Algorithm/DnaAssemblyTask.h>
+
+#include <U2Core/GUrl.h>
+
 #include <U2Lang/DatasetFetcher.h>
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
-#include <U2Core/GUrl.h>
-#include <U2Algorithm/DnaAssemblyTask.h>
 
 namespace U2 {
 
@@ -41,19 +43,21 @@ const QString REFERENCE_INPUT_TYPE = "reference-input-type";
 const QString INDEX_DIR("index-dir");
 const QString INDEX_BASENAME("index-basename");
 
-class BaseShortReadsAlignerWorker: public BaseWorker {
+class BaseShortReadsAlignerWorker : public BaseWorker {
     Q_OBJECT
 public:
-    BaseShortReadsAlignerWorker(Actor *a, const QString& algName);
+    BaseShortReadsAlignerWorker(Actor *a, const QString &algName);
     void init();
-    Task * tick();
+    Task *tick();
     void cleanup();
     bool isReady() const;
 
 protected:
-    virtual QVariantMap getCustomParameters() const {return QVariantMap();}
+    virtual QVariantMap getCustomParameters() const {
+        return QVariantMap();
+    }
     DnaAssemblyToRefTaskSettings getSettings(U2OpStatus &os);
-    virtual void setGenomeIndex(DnaAssemblyToRefTaskSettings& settings) = 0;
+    virtual void setGenomeIndex(DnaAssemblyToRefTaskSettings &settings) = 0;
     virtual QString getDefaultFileName() const = 0;
     virtual QString getBaseSubdir() const = 0;
     QList<ShortReadSet> toUrls(const QList<Message> &messages, const QString &urlSlotId, ShortReadSet::LibraryType libType, ShortReadSet::MateOrder order) const;
@@ -63,7 +67,7 @@ protected:
     virtual QString getAlignerSubdir() const;
 
 protected:
-    QString      algName;
+    QString algName;
     IntegralBus *inChannel;
     IntegralBus *inPairedChannel;
     IntegralBus *output;
@@ -84,12 +88,13 @@ public:
 
 class BaseShortReadsAlignerWorkerFactory : public DomainFactory {
 protected:
-    BaseShortReadsAlignerWorkerFactory(const QString& actorId) : DomainFactory(actorId) {}
+    BaseShortReadsAlignerWorkerFactory(const QString &actorId)
+        : DomainFactory(actorId) {
+    }
 
-    static QList<PortDescriptor*> getPortDescriptors();
+    static QList<PortDescriptor *> getPortDescriptors();
 
-    static void addCommonAttributes(QList<Attribute*>& attrs, QMap<QString, PropertyDelegate*>& delegates,
-                                    const QString& descrIndexFolder, const QString& descrIndexBasename);
+    static void addCommonAttributes(QList<Attribute *> &attrs, QMap<QString, PropertyDelegate *> &delegates, const QString &descrIndexFolder, const QString &descrIndexBasename);
 
     static int getThreadsCount();
 };
@@ -97,13 +102,15 @@ protected:
 class ShortReadsAlignerPrompter : public PrompterBase<ShortReadsAlignerPrompter> {
     Q_OBJECT
 public:
-    ShortReadsAlignerPrompter(Actor *p = NULL) : PrompterBase<ShortReadsAlignerPrompter>(p) {}
+    ShortReadsAlignerPrompter(Actor *p = NULL)
+        : PrompterBase<ShortReadsAlignerPrompter>(p) {
+    }
 
 protected:
     QString composeRichDoc();
 };
 
-} //LocalWorkflowa
-} //U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif //_U2_BASE_SHORT_READS_ALIGNER_WORKER_H_
+#endif    //_U2_BASE_SHORT_READS_ALIGNER_WORKER_H_

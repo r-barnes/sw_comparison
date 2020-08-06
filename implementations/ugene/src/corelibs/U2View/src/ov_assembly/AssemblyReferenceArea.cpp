@@ -21,8 +21,9 @@
 
 #include "AssemblyReferenceArea.h"
 
-#include <QPainter>
 #include <QMouseEvent>
+#include <QPainter>
+
 #include <U2Core/Timer.h>
 #include <U2Core/U2SafePoints.h>
 
@@ -30,9 +31,8 @@
 
 namespace U2 {
 
-AssemblySequenceArea::AssemblySequenceArea(AssemblyBrowserUi * ui_, char skipChar_) :
-    QWidget(ui_), browser(ui_->getWindow()), ui(ui_), model(ui_->getModel()), cellRenderer(NULL), skipChar(skipChar_)
-{
+AssemblySequenceArea::AssemblySequenceArea(AssemblyBrowserUi *ui_, char skipChar_)
+    : QWidget(ui_), browser(ui_->getWindow()), ui(ui_), model(ui_->getModel()), cellRenderer(NULL), skipChar(skipChar_) {
     setFixedHeight(FIXED_HEIGHT);
     connectSlots();
     sl_redraw();
@@ -61,12 +61,12 @@ void AssemblySequenceArea::setDiffCellRenderer() {
 void AssemblySequenceArea::initCellRenderer(QString id) {
     AssemblyCellRendererFactoryRegistry *factories = browser->getCellRendererRegistry();
     AssemblyCellRendererFactory *f = factories->getFactoryById(id);
-    SAFE_POINT(f != NULL, QString("AssemblyCellRendererFactory with id '%1' not found!").arg(id),);
+    SAFE_POINT(f != NULL, QString("AssemblyCellRendererFactory with id '%1' not found!").arg(id), );
     cellRenderer.reset(f->create());
 }
 
 void AssemblySequenceArea::drawAll() {
-    if(canDrawSequence()) {
+    if (canDrawSequence()) {
         if (redraw) {
             cachedView = QPixmap(size() * devicePixelRatio());
             cachedView.setDevicePixelRatio(devicePixelRatio());
@@ -88,15 +88,15 @@ bool AssemblySequenceArea::areCellsVisible() const {
     return browser->areCellsVisible();
 }
 
-void AssemblySequenceArea::drawSequence(QPainter & p) {
+void AssemblySequenceArea::drawSequence(QPainter &p) {
     GTIMER(c1, t1, "AssemblySequenceArea::drawSequence");
 
-    if(areCellsVisible()) {
+    if (areCellsVisible()) {
         p.fillRect(rect(), Qt::transparent);
 
         U2OpStatusImpl status;
         QByteArray visibleSequence = getSequenceRegion(status);
-        CHECK_OP(status,);
+        CHECK_OP(status, );
 
         int letterWidth = browser->getCellWidth();
         int letterHeight = FIXED_HEIGHT;
@@ -106,9 +106,9 @@ void AssemblySequenceArea::drawSequence(QPainter & p) {
 
         bool text = browser->areLettersVisible();
         QFont f = browser->getFont();
-        if(text) {
+        if (text) {
             int pointSize = qMin(letterWidth, letterHeight) / 2;
-            if(pointSize) {
+            if (pointSize) {
                 f.setPointSize(pointSize);
             } else {
                 text = false;
@@ -116,17 +116,17 @@ void AssemblySequenceArea::drawSequence(QPainter & p) {
         }
         cellRenderer->render(QSize(letterWidth, letterHeight), devicePixelRatio(), text, f);
         QByteArray referenceFragment;
-        if(needsReference) {
+        if (needsReference) {
             referenceFragment = model->getReferenceRegionOrEmpty(getVisibleRegion());
         }
 
-        for(int i = 0; i < visibleSequence.length(); ++i, x_pix_start+=letterWidth) {
+        for (int i = 0; i < visibleSequence.length(); ++i, x_pix_start += letterWidth) {
             QRect r(x_pix_start, y_pix_start, letterWidth, letterHeight);
             char c = visibleSequence.at(i);
             // TODO: not hard-coded
-            if(c != skipChar) {
+            if (c != skipChar) {
                 QPixmap cellImage;
-                if(referenceFragment.isEmpty() || i >= referenceFragment.length()) {
+                if (referenceFragment.isEmpty() || i >= referenceFragment.length()) {
                     cellImage = cellRenderer->cellImage(c);
                 } else {
                     cellImage = cellRenderer->cellImage(U2AssemblyRead(), c, referenceFragment.at(i));
@@ -137,24 +137,24 @@ void AssemblySequenceArea::drawSequence(QPainter & p) {
     }
 }
 
-void AssemblySequenceArea::paintEvent(QPaintEvent * e) {
+void AssemblySequenceArea::paintEvent(QPaintEvent *e) {
     drawAll();
     QWidget::paintEvent(e);
 }
 
-void AssemblySequenceArea::resizeEvent(QResizeEvent * e) {
+void AssemblySequenceArea::resizeEvent(QResizeEvent *e) {
     sl_redraw();
     QWidget::resizeEvent(e);
 }
 
-void AssemblySequenceArea::mouseMoveEvent(QMouseEvent * e) {
+void AssemblySequenceArea::mouseMoveEvent(QMouseEvent *e) {
     emit si_mouseMovedToPos(e->pos());
     QWidget::mouseMoveEvent(e);
 }
 
 void AssemblySequenceArea::sl_redraw() {
-        redraw = true;
-        update();
+    redraw = true;
+    update();
 }
 
 void AssemblySequenceArea::sl_offsetsChanged() {
@@ -168,9 +168,8 @@ void AssemblySequenceArea::sl_zoomPerformed() {
 /////////////////////////////////////////////////////////////////
 // AssemblyReferenceArea
 
-AssemblyReferenceArea::AssemblyReferenceArea(AssemblyBrowserUi * ui_) :
-    AssemblySequenceArea(ui_), referenceAreaMenu(new QMenu(this)), unassociateReferenceAction(NULL)
-{
+AssemblyReferenceArea::AssemblyReferenceArea(AssemblyBrowserUi *ui_)
+    : AssemblySequenceArea(ui_), referenceAreaMenu(new QMenu(this)), unassociateReferenceAction(NULL) {
     setToolTip(tr("Reference sequence"));
     // setup menu
     referenceAreaMenu->addAction(ui_->getWindow()->getSetReferenceAction());
@@ -189,14 +188,14 @@ QByteArray AssemblyReferenceArea::getSequenceRegion(U2OpStatus &os) {
     return getModel()->getReferenceRegion(getVisibleRegion(), os);
 }
 
-void AssemblyReferenceArea::mousePressEvent(QMouseEvent* e) {
-    if(e->button() == Qt::RightButton) {
+void AssemblyReferenceArea::mousePressEvent(QMouseEvent *e) {
+    if (e->button() == Qt::RightButton) {
         referenceAreaMenu->exec(QCursor::pos());
     }
 }
 
 void AssemblyReferenceArea::drawSequence(QPainter &p) {
-    if(getModel()->isLoadingReference()) {
+    if (getModel()->isLoadingReference()) {
         p.drawText(rect(), Qt::AlignCenter, tr("Reference is loading..."));
     } else {
         AssemblySequenceArea::drawSequence(p);
@@ -207,4 +206,4 @@ void AssemblyReferenceArea::sl_onReferenceChanged() {
     unassociateReferenceAction->setEnabled(getModel()->referenceAssociated() && !getModel()->isLoadingReference());
 }
 
-} //ns
+}    // namespace U2

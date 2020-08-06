@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DifferentialFormat.h"
+
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/IOAdapter.h>
@@ -26,8 +28,6 @@
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "DifferentialFormat.h"
 
 namespace U2 {
 
@@ -39,32 +39,31 @@ static const QString CHROMOSOME("chromosome");
 static const QString UNKNOWN_CHR("unknown");
 
 DifferentialFormat::DifferentialFormat(QObject *parent)
-: TextDocumentFormat(parent, BaseDocumentFormats::DIFF, DocumentFormatFlags_W1, QStringList()<<"diff")
-{
+    : TextDocumentFormat(parent, BaseDocumentFormats::DIFF, DocumentFormatFlags_W1, QStringList() << "diff") {
     formatName = tr("Differential");
     supportedObjectTypes += GObjectTypes::ANNOTATION_TABLE;
     formatDescription = tr("Differential format is a text-based format for"
-        " representing Cuffdiff differential output files: expression,"
-        " splicing, promoters and cds.");
+                           " representing Cuffdiff differential output files: expression,"
+                           " splicing, promoters and cds.");
 }
 
 QList<ColumnDataParser::Column> DifferentialFormat::getColumns() const {
     return QList<ColumnDataParser::Column>()
-        << ColumnDataParser::Column("test_id", ColumnDataParser::STRING, "-", true /*required*/)
-        << ColumnDataParser::Column("gene_id", ColumnDataParser::STRING, "-")
-        << ColumnDataParser::Column("gene", ColumnDataParser::STRING, "-")
-        << ColumnDataParser::Column(LOCUS_COLUMN, ColumnDataParser::STRING, "-", true /*required*/)
-        << ColumnDataParser::Column("sample_1", ColumnDataParser::STRING, "-", true /*required*/)
-        << ColumnDataParser::Column("sample_2", ColumnDataParser::STRING, "-", true /*required*/)
-        << ColumnDataParser::Column("status", ColumnDataParser::STRING, "-", true /*required*/)
-        << ColumnDataParser::Column("value_1", ColumnDataParser::DOUBLE, "1")
-        << ColumnDataParser::Column("value_2", ColumnDataParser::DOUBLE, "1")
-        << ColumnDataParser::Column("log2(fold_change)", ColumnDataParser::DOUBLE, "0")
-        << ColumnDataParser::Column("sqrt(JS)", ColumnDataParser::DOUBLE, "0")
-        << ColumnDataParser::Column("test_stat", ColumnDataParser::DOUBLE, "0")
-        << ColumnDataParser::Column("p_value", ColumnDataParser::DOUBLE, "1")
-        << ColumnDataParser::Column("q_value", ColumnDataParser::DOUBLE, "1")
-        << ColumnDataParser::Column("significant", ColumnDataParser::STRING, "-", true /*required*/);
+           << ColumnDataParser::Column("test_id", ColumnDataParser::STRING, "-", true /*required*/)
+           << ColumnDataParser::Column("gene_id", ColumnDataParser::STRING, "-")
+           << ColumnDataParser::Column("gene", ColumnDataParser::STRING, "-")
+           << ColumnDataParser::Column(LOCUS_COLUMN, ColumnDataParser::STRING, "-", true /*required*/)
+           << ColumnDataParser::Column("sample_1", ColumnDataParser::STRING, "-", true /*required*/)
+           << ColumnDataParser::Column("sample_2", ColumnDataParser::STRING, "-", true /*required*/)
+           << ColumnDataParser::Column("status", ColumnDataParser::STRING, "-", true /*required*/)
+           << ColumnDataParser::Column("value_1", ColumnDataParser::DOUBLE, "1")
+           << ColumnDataParser::Column("value_2", ColumnDataParser::DOUBLE, "1")
+           << ColumnDataParser::Column("log2(fold_change)", ColumnDataParser::DOUBLE, "0")
+           << ColumnDataParser::Column("sqrt(JS)", ColumnDataParser::DOUBLE, "0")
+           << ColumnDataParser::Column("test_stat", ColumnDataParser::DOUBLE, "0")
+           << ColumnDataParser::Column("p_value", ColumnDataParser::DOUBLE, "1")
+           << ColumnDataParser::Column("q_value", ColumnDataParser::DOUBLE, "1")
+           << ColumnDataParser::Column("significant", ColumnDataParser::STRING, "-", true /*required*/);
 }
 
 QString DifferentialFormat::getAnnotationName() const {
@@ -72,7 +71,7 @@ QString DifferentialFormat::getAnnotationName() const {
 }
 
 FormatCheckResult DifferentialFormat::checkRawTextData(const QByteArray &rawData,
-    const GUrl &) const {
+                                                       const GUrl &) const {
     QStringList lines = QString(rawData).split("\n", QString::SkipEmptyParts);
     CHECK(lines.size() > 0, FormatDetection_NotMatched);
 
@@ -82,7 +81,7 @@ FormatCheckResult DifferentialFormat::checkRawTextData(const QByteArray &rawData
     CHECK_OP(os, FormatDetection_NotMatched);
     CHECK(parser.getCurrentColumns().size() > 1, FormatDetection_NotMatched);
 
-    for (QStringList::iterator i=lines.begin(); i!=lines.end();) {
+    for (QStringList::iterator i = lines.begin(); i != lines.end();) {
         // skip the last line because it can be cut
         QStringList::iterator current(i);
         ++i;
@@ -176,7 +175,7 @@ QList<SharedAnnotationData> DifferentialFormat::parseAnnotations(const ColumnDat
     return anns;
 }
 
-Document * DifferentialFormat::loadTextDocument(IOAdapter *io, const U2DbiRef &targetDb, const QVariantMap &hints, U2OpStatus &os) {
+Document *DifferentialFormat::loadTextDocument(IOAdapter *io, const U2DbiRef &targetDb, const QVariantMap &hints, U2OpStatus &os) {
     DbiOperationsBlock opBlock(targetDb, os);
     CHECK_OP(os, NULL);
     Q_UNUSED(opBlock);
@@ -208,7 +207,7 @@ void DifferentialFormat::writeHeader(IOAdapter *io, const QList<ColumnDataParser
     bool first = true;
     QString headerLine;
     foreach (const ColumnDataParser::Column c, columns) {
-        headerLine += (first ? "": SEPARATOR) + c.name;
+        headerLine += (first ? "" : SEPARATOR) + c.name;
         first = false;
     }
     headerLine += "\n";
@@ -285,19 +284,19 @@ QList<ColumnDataParser::Column> DifferentialFormat::getHeaderColumns(const QList
 }
 
 void DifferentialFormat::storeDocument(Document *d, IOAdapter *io, U2OpStatus &os) {
-    QList<GObject*> anns = d->findGObjectByType(GObjectTypes::ANNOTATION_TABLE);
+    QList<GObject *> anns = d->findGObjectByType(GObjectTypes::ANNOTATION_TABLE);
     QList<ColumnDataParser::Column> columns = getHeaderColumns(anns, os);
-    CHECK_OP(os,);
+    CHECK_OP(os, );
     writeHeader(io, columns);
     foreach (GObject *obj, anns) {
         AnnotationTableObject *annObj = dynamic_cast<AnnotationTableObject *>(obj);
-        SAFE_POINT(NULL != annObj, "NULL annotation object",);
+        SAFE_POINT(NULL != annObj, "NULL annotation object", );
         foreach (Annotation *ann, annObj->getAnnotations()) {
             bool first = true;
             QString line;
             U2OpStatus2Log logOs;
             foreach (const ColumnDataParser::Column c, columns) {
-                line += (first ? "": SEPARATOR);
+                line += (first ? "" : SEPARATOR);
                 first = false;
                 if (LOCUS_COLUMN == c.name) {
                     line += createLocus(ann->getData(), logOs);
@@ -314,4 +313,4 @@ void DifferentialFormat::storeDocument(Document *d, IOAdapter *io, U2OpStatus &o
     }
 }
 
-} // U2
+}    // namespace U2

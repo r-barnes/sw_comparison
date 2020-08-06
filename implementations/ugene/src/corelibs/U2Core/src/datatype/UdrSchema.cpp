@@ -19,13 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "UdrSchema.h"
+
 #include <QSet>
 
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/UdrSchemaRegistry.h>
-
-#include "UdrSchema.h"
 
 namespace U2 {
 
@@ -34,9 +34,7 @@ const QByteArray UdrSchema::OBJECT_FIELD_NAME("object");
 const int UdrSchema::OBJECT_FIELD_NUM = 0;
 
 UdrSchema::FieldDesc::FieldDesc(const QByteArray &name, UdrSchema::DataType dataType, UdrSchema::IndexType indexType)
-: name(name), dataType(dataType), indexType(indexType)
-{
-
+    : name(name), dataType(dataType), indexType(indexType) {
 }
 
 const QByteArray UdrSchema::FieldDesc::getName() const {
@@ -52,8 +50,7 @@ UdrSchema::IndexType UdrSchema::FieldDesc::getIndexType() const {
 }
 
 UdrSchema::UdrSchema(const UdrSchemaId &id, bool useObjectReference)
-: id(id), withObjectReference(useObjectReference)
-{
+    : id(id), withObjectReference(useObjectReference) {
     if (useObjectReference) {
         U2OpStatusImpl os;
         addField(FieldDesc(OBJECT_FIELD_NAME, ID, INDEXED), os);
@@ -92,11 +89,11 @@ void UdrSchema::addMultiIndex(const QList<int> &multiIndex, U2OpStatus &os) {
     multiIndexes << multiIndex;
 }
 
-const QList< QList<int> > & UdrSchema::getMultiIndexes() const {
+const QList<QList<int>> &UdrSchema::getMultiIndexes() const {
     return multiIndexes;
 }
 
-const UdrSchemaId & UdrSchema::getId() const {
+const UdrSchemaId &UdrSchema::getId() const {
     return id;
 }
 
@@ -113,7 +110,7 @@ QStringList UdrSchema::fieldNames(const UdrSchema *schema, U2OpStatus &os, const
     QStringList result;
     QList<int> target = nums;
     if (nums.isEmpty()) {
-        for (int i=0; i<schema->size(); i++) {
+        for (int i = 0; i < schema->size(); i++) {
             target << i;
         }
     }
@@ -127,7 +124,7 @@ QStringList UdrSchema::fieldNames(const UdrSchema *schema, U2OpStatus &os, const
 
 QList<int> UdrSchema::notBinary(const UdrSchema *schema, U2OpStatus &os) {
     QList<int> result;
-    for (int i=0; i<schema->size(); i++) {
+    for (int i = 0; i < schema->size(); i++) {
         UdrSchema::FieldDesc field = schema->getField(i, os);
         CHECK_OP(os, result);
         if (UdrSchema::BLOB != field.getDataType()) {
@@ -151,4 +148,4 @@ bool UdrSchema::hasObjectReference() const {
     return withObjectReference;
 }
 
-} // U2
+}    // namespace U2

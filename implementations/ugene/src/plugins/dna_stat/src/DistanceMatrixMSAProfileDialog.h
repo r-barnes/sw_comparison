@@ -25,12 +25,10 @@
 #include <QHash>
 #include <QSet>
 
-#include <U2Core/global.h>
-#include <U2Core/Task.h>
 #include <U2Core/MultipleSequenceAlignment.h>
+#include <U2Core/Task.h>
+#include <U2Core/global.h>
 
-#include <QHash>
-#include <QSet>
 #include "ui_DistanceMatrixMSAProfileDialog.h"
 
 class QFile;
@@ -45,7 +43,7 @@ class DistanceMatrixMSAProfileDialog : public QDialog, public Ui_DistanceMatrixM
     Q_OBJECT
 
 public:
-    DistanceMatrixMSAProfileDialog(QWidget* p, MSAEditor* ctx);
+    DistanceMatrixMSAProfileDialog(QWidget *p, MSAEditor *ctx);
 
     void accept();
 
@@ -56,7 +54,7 @@ private slots:
 private:
     void initSaveController();
 
-    MSAEditor* ctx;
+    MSAEditor *ctx;
     SaveDocumentController *saveController;
 
     static const QString HTML;
@@ -73,40 +71,40 @@ class DistanceMatrixMSAProfileTaskSettings {
 public:
     DistanceMatrixMSAProfileTaskSettings();
 
-    QString                         algoId;    // selected algorithm id
-    QString                         profileName; // usually object name
-    QString                         profileURL;  // document url
-    MultipleSequenceAlignment                      ma;
-    bool                            usePercents; //report percents but not counts
-    bool                            excludeGaps; //exclude gaps when calculate distance
-    bool                            showGroupStatistic;
-    DistanceMatrixMSAProfileOutputFormat   outFormat;
-    QString                         outURL;
-    MSAEditor*                      ctx;
+    QString algoId;    // selected algorithm id
+    QString profileName;    // usually object name
+    QString profileURL;    // document url
+    MultipleSequenceAlignment ma;
+    bool usePercents;    //report percents but not counts
+    bool excludeGaps;    //exclude gaps when calculate distance
+    bool showGroupStatistic;
+    DistanceMatrixMSAProfileOutputFormat outFormat;
+    QString outURL;
+    MSAEditor *ctx;
 };
 
 class DistanceMatrixMSAProfileTask : public Task {
     Q_OBJECT
 public:
-    DistanceMatrixMSAProfileTask(const DistanceMatrixMSAProfileTaskSettings& s);
+    DistanceMatrixMSAProfileTask(const DistanceMatrixMSAProfileTaskSettings &s);
 
     virtual void prepare();
     QString generateReport() const;
     virtual bool isReportingEnabled() const;
 
-    void createDistanceTable(MSADistanceAlgorithm* algo, const QList<MultipleSequenceAlignmentRow> &rows, QFile *f);
+    void createDistanceTable(MSADistanceAlgorithm *algo, const QList<MultipleSequenceAlignmentRow> &rows, QFile *f);
 
-    QList<Task*> createStatisticsDocument(Task* subTask);
+    QList<Task *> createStatisticsDocument(Task *subTask);
 
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
     //void run();
     ReportResult report();
 
 private:
-    DistanceMatrixMSAProfileTaskSettings   s;
-    QString                         resultText;
+    DistanceMatrixMSAProfileTaskSettings s;
+    QString resultText;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

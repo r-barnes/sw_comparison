@@ -22,13 +22,13 @@
 #ifndef _U2_GENEBYGENEREPORT_WORKER_H_
 #define _U2_GENEBYGENEREPORT_WORKER_H_
 
+#include <QList>
+#include <QMap>
+
 #include <U2Core/AnnotationData.h>
 
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
-
-#include <QMap>
-#include <QList>
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -48,32 +48,36 @@ public:
 private:
     IntegralBus *inChannel;
     QStringList outFiles;
-    QMap<QString, QPair<DNASequence, QList<SharedAnnotationData> > > geneData;
+    QMap<QString, QPair<DNASequence, QList<SharedAnnotationData>>> geneData;
 
 private slots:
     void sl_taskFinished();
-}; // GeneByGeneReportWorker
+};    // GeneByGeneReportWorker
 
 class GeneByGeneReportWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
 
-    GeneByGeneReportWorkerFactory() : DomainFactory(ACTOR_ID) {}
+    GeneByGeneReportWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
     static void init();
     virtual Worker *createWorker(Actor *a);
-}; // GeneByGeneReportWorkerFactory
+};    // GeneByGeneReportWorkerFactory
 
 class GeneByGeneReportPrompter : public PrompterBase<GeneByGeneReportPrompter> {
     Q_OBJECT
 public:
-    GeneByGeneReportPrompter(Actor *p = NULL) : PrompterBase<GeneByGeneReportPrompter>(p) {}
+    GeneByGeneReportPrompter(Actor *p = NULL)
+        : PrompterBase<GeneByGeneReportPrompter>(p) {
+    }
 
 protected:
     QString composeRichDoc();
 
-}; // GeneByGeneReportPrompter
+};    // GeneByGeneReportPrompter
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif //_U2_GENEBYGENEREPORT_WORKER_H_
+#endif    //_U2_GENEBYGENEREPORT_WORKER_H_

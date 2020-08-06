@@ -17,7 +17,12 @@ LIBS += -L../$$out_dir()
 LIBS += -lU2Core$$D -lU2Algorithm$$D -lU2Designer$$D -lU2Formats$$D -lU2Gui$$D -lU2Test$$D -lU2Lang$$D -lU2Private$$D -lbreakpad$$D -lQSpec$$D
 LIBS += $$add_sqlite_lib()
 
-if (contains(DEFINES, HI_EXCLUDED)) {
+if (!useWebKit()) {
+    DEFINES += HI_EXCLUDED
+    LIBS -= -lQSpec$$D
+}
+if (exclude_list_enabled()) {
+    DEFINES += HI_EXCLUDED
     LIBS -= -lQSpec$$D
 }
 
@@ -60,4 +65,5 @@ macx {
 unix {
     target.path = $$UGENE_INSTALL_DIR/
     INSTALLS += target
+    !macx: QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"
 }

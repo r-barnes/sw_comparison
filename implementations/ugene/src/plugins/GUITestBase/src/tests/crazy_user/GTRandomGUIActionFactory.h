@@ -32,13 +32,13 @@ int randInt(int low, int high);
 
 class GTRandomGUIActionFactory {
 public:
-    static GTAbstractGUIAction* create(QObject* obj);
+    static GTAbstractGUIAction *create(QObject *obj);
 
     static GTAbstractGUIActionMap actionMap;
 };
 
-}
+}    // namespace GUITest_crazy_user
 
-} //namespace
+}    // namespace U2
 
 #endif

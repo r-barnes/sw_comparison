@@ -24,9 +24,9 @@
 
 #include <ui_SaveGraphCutoffsDialog.h>
 
-#include <U2View/ADVGraphModel.h>
-
 #include <U2Gui/CreateAnnotationWidgetController.h>
+
+#include <U2View/ADVGraphModel.h>
 
 namespace U2 {
 
@@ -35,28 +35,29 @@ class SaveGraphCutoffsDialogController : public QDialog, Ui_SaveGraphCutoffsDial
     Q_OBJECT
 public:
     SaveGraphCutoffsDialogController(GSequenceGraphDrawer *d,
-                                     QSharedPointer<GSequenceGraphData>& gd,
+                                     QSharedPointer<GSequenceGraphData> &gd,
                                      QWidget *parent,
-                                     SequenceObjectContext* ctx);
+                                     SequenceObjectContext *ctx);
 
     virtual void accept();
+
 private:
     inline bool isAcceptableValue(float val);
     bool validate();
     void tryAddObject(AnnotationTableObject *annotationTableObject);
 
-    CreateAnnotationWidgetController*   ac;
-    SequenceObjectContext*              ctx;
-    GSequenceGraphDrawer*               d;
-    QSharedPointer<GSequenceGraphData>  gd;
-    QList<U2Region>                     resultRegions;
+    CreateAnnotationWidgetController *ac;
+    SequenceObjectContext *ctx;
+    GSequenceGraphDrawer *d;
+    QSharedPointer<GSequenceGraphData> gd;
+    QList<U2Region> resultRegions;
 };
 
-class SaveGraphCutoffsSettings{
+class SaveGraphCutoffsSettings {
 public:
     float minCutoff, maxCutoff;
     bool isBetween;
 };
 
-}
-#endif //_U2_SAVE_GRAPH_CUTOFFS_DIALOG_H_
+}    // namespace U2
+#endif    //_U2_SAVE_GRAPH_CUTOFFS_DIALOG_H_

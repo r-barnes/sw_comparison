@@ -32,9 +32,9 @@
 #include <U2Core/U2Assembly.h>
 
 #include "AssemblyCellRenderer.h"
-#include "AssemblyReadsAreaHint.h"
 #include "AssemblyModel.h"
 #include "AssemblyNavigationWidget.h"
+#include "AssemblyReadsAreaHint.h"
 
 namespace U2 {
 
@@ -42,20 +42,22 @@ class AssemblyBrowser;
 class AssemblyBrowserUi;
 class AssemblyReadsArea;
 
-class AssemblyReadsArea: public QWidget {
+class AssemblyReadsArea : public QWidget {
     Q_OBJECT
 
     // (hotkey, description) pairs
     struct HotkeyDescription {
         QString key;
         QString desc;
-        HotkeyDescription(const QString& k, const QString & d) : key(k), desc(d) {}
+        HotkeyDescription(const QString &k, const QString &d)
+            : key(k), desc(d) {
+        }
     };
     static const QList<HotkeyDescription> HOTKEY_DESCRIPTIONS;
     static QList<HotkeyDescription> initHotkeyDescriptions();
 
 public:
-    AssemblyReadsArea(AssemblyBrowserUi * ui, QScrollBar * hBar, QScrollBar * vBar);
+    AssemblyReadsArea(AssemblyBrowserUi *ui, QScrollBar *hBar, QScrollBar *vBar);
 
     bool isReadHintEnabled();
     void setReadHintEnabled(bool enabled);
@@ -63,23 +65,27 @@ public:
     bool isScrolling();
     void setScrolling(bool value);
 
-    QList<QAction*> getCellRendererActions() {return cellRendererActions; }
-    QAction * getOptimizeRenderAction() { return optimizeRenderAction; }
+    QList<QAction *> getCellRendererActions() {
+        return cellRendererActions;
+    }
+    QAction *getOptimizeRenderAction() {
+        return optimizeRenderAction;
+    }
 
     static const QString ZOOM_LINK;
 
 protected:
-    void paintEvent(QPaintEvent * e);
-    void resizeEvent(QResizeEvent * e);
-    void wheelEvent(QWheelEvent * e);
-    void mousePressEvent(QMouseEvent * e);
-    void mouseReleaseEvent(QMouseEvent * e);
-    void mouseMoveEvent(QMouseEvent * e);
-    void leaveEvent(QEvent * e);
-    void hideEvent(QHideEvent * e);
-    bool event(QEvent * e);
-    void keyPressEvent(QKeyEvent * e);
-    void mouseDoubleClickEvent(QMouseEvent * e);
+    void paintEvent(QPaintEvent *e);
+    void resizeEvent(QResizeEvent *e);
+    void wheelEvent(QWheelEvent *e);
+    void mousePressEvent(QMouseEvent *e);
+    void mouseReleaseEvent(QMouseEvent *e);
+    void mouseMoveEvent(QMouseEvent *e);
+    void leaveEvent(QEvent *e);
+    void hideEvent(QHideEvent *e);
+    bool event(QEvent *e);
+    void keyPressEvent(QKeyEvent *e);
+    void mouseDoubleClickEvent(QMouseEvent *e);
     bool eventFilter(QObject *obj, QEvent *ev);
 
 private:
@@ -91,7 +97,7 @@ private:
     void accumulateDelta(int delta);
 
     void drawAll();
-    void drawReads(QPainter & p);
+    void drawReads(QPainter &p);
 
     void drawCurrentReadHighlight(QPainter &p);
     void drawReadsShadowing(QPainter &p);
@@ -118,10 +124,10 @@ private:
     int calcFontPointSize() const;
 
     void updateMenuActions();
-    void exportReads(const QList<U2AssemblyRead> & reads);
+    void exportReads(const QList<U2AssemblyRead> &reads);
 
     void createMenu();
-    QMenu* createShadowingMenu();
+    QMenu *createShadowingMenu();
     void shadowingMenuSetBind(bool enabled);
 
 signals:
@@ -145,12 +151,16 @@ private slots:
     void sl_onShadowingJump();
     void sl_changeCellRenderer();
     void sl_onOptimizeRendering(bool enabled);
-    void sl_onScrollPressed() { setScrolling(true); }
-    void sl_onScrollReleased() { setScrolling(false); }
+    void sl_onScrollPressed() {
+        setScrolling(true);
+    }
+    void sl_onScrollReleased() {
+        setScrolling(false);
+    }
 
 private:
-    AssemblyBrowserUi * ui;
-    AssemblyBrowser * browser;
+    AssemblyBrowserUi *ui;
+    AssemblyBrowser *browser;
     QSharedPointer<AssemblyModel> model;
 
     bool redraw;
@@ -160,8 +170,8 @@ private:
 
     CoveredRegionsLabel coveredRegionsLabel;
     QLabel bdBusyLabel;
-    QScrollBar * hBar;
-    QScrollBar * vBar;
+    QScrollBar *hBar;
+    QScrollBar *vBar;
 
     // Some variables for a workaround UGENE-3183
     static const int DEFAULT_MOUSE_DELTA;
@@ -193,7 +203,9 @@ private:
     QPoint curPos;
 
     struct HintData {
-        HintData(QWidget * p) : updateHint(false), hint(p) {}
+        HintData(QWidget *p)
+            : updateHint(false), hint(p) {
+        }
         bool updateHint;
         AssemblyReadsAreaHint hint;
         U2DataId curReadId;
@@ -202,8 +214,11 @@ private:
     // needed to move by-letter when scribbling
     class ReadsMover {
     public:
-        ReadsMover() : cellWidth(0) {};
-        ReadsMover(int cellWidth_, QPoint initPos) : lastPos(initPos), cellWidth(cellWidth_ ? cellWidth_ : 1){}
+        ReadsMover()
+            : cellWidth(0) {};
+        ReadsMover(int cellWidth_, QPoint initPos)
+            : lastPos(initPos), cellWidth(cellWidth_ ? cellWidth_ : 1) {
+        }
         void handleEvent(QPoint newPos) {
             assert(cellWidth);
             QPoint diff_ = newPos - lastPos;
@@ -222,6 +237,7 @@ private:
             diff.setY(diff.y() % cellWidth);
             return result;
         }
+
     private:
         QPoint lastPos;
         QPoint diff;
@@ -231,9 +247,12 @@ private:
     bool shadowingEnabled;
     struct ShadowingData {
         ShadowingData()
-            : mode(FREE), boundPos(0) {}
+            : mode(FREE), boundPos(0) {
+        }
 
-        enum ShadowingMode {FREE, CENTERED, BIND} mode;
+        enum ShadowingMode { FREE,
+                             CENTERED,
+                             BIND } mode;
         qint64 boundPos;
     } shadowingData;
 
@@ -244,9 +263,9 @@ private:
     bool scrolling;
     bool optimizeRenderOnScroll;
 
-    QMenu * readMenu;
-    QAction * copyDataAction;
-    QAction * exportReadAction;
+    QMenu *readMenu;
+    QAction *copyDataAction;
+    QAction *exportReadAction;
 
     // shadowing actions
     QAction *disableShadowing;
@@ -255,11 +274,11 @@ private:
     QAction *shadowingBindHere;
     QAction *shadowingJump;
 
-    QList<QAction*> cellRendererActions;
-    QAction * optimizeRenderAction;
+    QList<QAction *> cellRendererActions;
+    QAction *optimizeRenderAction;
     int lockTimeout;
 };
 
-} //ns
+}    // namespace U2
 
 #endif

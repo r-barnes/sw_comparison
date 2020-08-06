@@ -48,11 +48,19 @@ int DiProperty::index(char n1, char n2) {
 }
 
 int DiProperty::index(char c) {
-    if (c == 'A') { return 0; }
-    if (c == 'C') { return 1; }
-    if (c == 'G') { return 2; }
-    if (c == 'T' || c == 'U') { return 3; }
-    return 0; //default is 'A'
+    if (c == 'A') {
+        return 0;
+    }
+    if (c == 'C') {
+        return 1;
+    }
+    if (c == 'G') {
+        return 2;
+    }
+    if (c == 'T' || c == 'U') {
+        return 3;
+    }
+    return 0;    //default is 'A'
 }
 
 char DiProperty::fromIndex(int index) {
@@ -74,7 +82,6 @@ char DiProperty::fromIndexHi(int index) {
     return fromIndex(index >> 2);
 }
 
-}//namespace
+}    // namespace U2
 
 #endif
-

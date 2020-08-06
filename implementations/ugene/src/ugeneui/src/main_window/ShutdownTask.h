@@ -32,19 +32,19 @@ class MainWindowImpl;
 class ShutdownTask : public Task {
     Q_OBJECT
 public:
-    ShutdownTask(MainWindowImpl* mw);
+    ShutdownTask(MainWindowImpl *mw);
 
     void prepare();
 
     ReportResult report();
 
 protected:
-    virtual QList<Task*> onSubTaskFinished(Task* subTask);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
 
 private:
     void cancelShutdown();
 
-    MainWindowImpl* mw;
+    MainWindowImpl *mw;
     bool docsToRemoveAreFetched;
     QList<Document *> docsToRemove;
 };
@@ -70,6 +70,6 @@ private:
     ReportResult report();
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_SHUTDOWN_TASK_H_
+#endif    // _U2_SHUTDOWN_TASK_H_

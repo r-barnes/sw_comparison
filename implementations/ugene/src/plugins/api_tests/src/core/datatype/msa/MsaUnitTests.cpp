@@ -20,7 +20,8 @@
  */
 
 #include "MsaUnitTests.h"
-#include "MsaRowUnitTests.h"
+
+#include <QSet>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/DNAAlphabet.h>
@@ -28,8 +29,7 @@
 #include <U2Core/U2Msa.h>
 #include <U2Core/U2OpStatusUtils.h>
 
-#include <QSet>
-
+#include "MsaRowUnitTests.h"
 
 namespace U2 {
 
@@ -39,10 +39,9 @@ const int MsaTestUtils::secondRowLength = 9;
 
 const QString MsaTestUtils::alignmentName = "Test alignment name";
 
-
 MultipleSequenceAlignment MsaTestUtils::initTestAlignment() {
-    DNAAlphabetRegistry* alphabetRegistry = AppContext::getDNAAlphabetRegistry();
-    const DNAAlphabet* alphabet = alphabetRegistry->findById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
+    DNAAlphabetRegistry *alphabetRegistry = AppContext::getDNAAlphabetRegistry();
+    const DNAAlphabet *alphabet = alphabetRegistry->findById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
 
     QByteArray firstSequence("---AG-T");
     QByteArray secondSequence("AG-CT-TAA");
@@ -55,7 +54,7 @@ MultipleSequenceAlignment MsaTestUtils::initTestAlignment() {
     return almnt;
 }
 
-QString MsaTestUtils::getRowData(const MultipleSequenceAlignment& almnt, int rowNum) {
+QString MsaTestUtils::getRowData(const MultipleSequenceAlignment &almnt, int rowNum) {
     if (rowNum < 0 || rowNum > almnt->getNumRows()) {
         return "";
     }
@@ -65,7 +64,7 @@ QString MsaTestUtils::getRowData(const MultipleSequenceAlignment& almnt, int row
     return MsaRowTestUtils::getRowData(row);
 }
 
-bool MsaTestUtils::testAlignmentNotChanged(const MultipleSequenceAlignment& almnt) {
+bool MsaTestUtils::testAlignmentNotChanged(const MultipleSequenceAlignment &almnt) {
     if (9 != almnt->getLength()) {
         return false;
     }
@@ -80,7 +79,6 @@ bool MsaTestUtils::testAlignmentNotChanged(const MultipleSequenceAlignment& almn
 
     return true;
 }
-
 
 /** Tests clear */
 IMPLEMENT_TEST(MsaUnitTests, clear_notEmpty) {
@@ -115,8 +113,8 @@ IMPLEMENT_TEST(MsaUnitTests, alphabet_ctor) {
 IMPLEMENT_TEST(MsaUnitTests, alphabet_setAlphabet) {
     MultipleSequenceAlignment almnt = MsaTestUtils::initTestAlignment();
 
-    DNAAlphabetRegistry* alphabetRegistry = AppContext::getDNAAlphabetRegistry();
-    const DNAAlphabet* newAlphabet = alphabetRegistry->findById(BaseDNAAlphabetIds::NUCL_DNA_EXTENDED());
+    DNAAlphabetRegistry *alphabetRegistry = AppContext::getDNAAlphabetRegistry();
+    const DNAAlphabet *newAlphabet = alphabetRegistry->findById(BaseDNAAlphabetIds::NUCL_DNA_EXTENDED());
     almnt->setAlphabet(newAlphabet);
 
     if (NULL == almnt->getAlphabet() || NULL == newAlphabet) {
@@ -151,7 +149,7 @@ IMPLEMENT_TEST(MsaUnitTests, length_isEmptyTrue) {
 
 IMPLEMENT_TEST(MsaUnitTests, length_get) {
     MultipleSequenceAlignment almnt = MsaTestUtils::initTestAlignment();
-    int expectedLength = 9; // the length of the longest row
+    int expectedLength = 9;    // the length of the longest row
     CHECK_EQUAL(expectedLength, almnt->getLength(), "alignment length");
 }
 
@@ -675,7 +673,8 @@ IMPLEMENT_TEST(MsaUnitTests, crop_validParams) {
 
     U2Region region(1, 4);
     QSet<QString> rowNames;
-    rowNames << "First" << "Second";
+    rowNames << "First"
+             << "Second";
 
     almnt->crop(region, rowNames, os);
     CHECK_NO_ERROR(os);
@@ -857,7 +856,7 @@ IMPLEMENT_TEST(MsaUnitTests, replaceChars_validParams) {
 /** Tests appendChars */
 IMPLEMENT_TEST(MsaUnitTests, appendChars_validParams) {
     MultipleSequenceAlignment almnt = MsaTestUtils::initTestAlignment();
-    const char* str = "-AC-GT-";
+    const char *str = "-AC-GT-";
     int length = 7;
     almnt->appendChars(0, str, length);
     CHECK_EQUAL("---AG-T---AC-GT-", MsaTestUtils::getRowData(almnt, 0), "first row");
@@ -915,5 +914,4 @@ IMPLEMENT_TEST(MsaUnitTests, hasEmptyGapModel_noGaps) {
     CHECK_TRUE(res, "Method hasEmptyGapModel() returned 'False' unexpectedly");
 }
 
-
-} // namespace
+}    // namespace U2

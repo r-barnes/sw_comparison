@@ -35,7 +35,6 @@ class QMenu;
 class QPainter;
 class QToolBar;
 
-
 namespace U2 {
 
 class GObjectView;
@@ -52,8 +51,9 @@ class U2VIEW_EXPORT MaEditorConsensusArea : public QWidget {
     Q_OBJECT
     Q_DISABLE_COPY(MaEditorConsensusArea)
     friend class MaConsensusAreaRenderer;
+
 public:
-    MaEditorConsensusArea(MaEditorWgt* ui);
+    MaEditorConsensusArea(MaEditorWgt *ui);
     virtual ~MaEditorConsensusArea();
 
     MaEditorWgt *getEditorWgt() const;
@@ -65,40 +65,38 @@ public:
 
     U2Region getRullerLineYRange() const;
 
-
-    void setConsensusAlgorithm(MSAConsensusAlgorithmFactory* algo);
+    void setConsensusAlgorithm(MSAConsensusAlgorithmFactory *algo);
     void setConsensusAlgorithmConsensusThreshold(int val);
 
     const MaEditorConsensusAreaSettings &getDrawSettings() const;
-    void setDrawSettings(const MaEditorConsensusAreaSettings& settings);
+    void setDrawSettings(const MaEditorConsensusAreaSettings &settings);
 
-    MSAConsensusAlgorithm* getConsensusAlgorithm() const;
+    MSAConsensusAlgorithm *getConsensusAlgorithm() const;
 
     void drawContent(QPainter &painter);
     void drawContent(QPainter &painter,
                      const QList<int> &seqIdx,
                      const U2Region &region,
-                     const MaEditorConsensusAreaSettings &consensusSettings);
-
+                     const MaEditorConsensusAreaSettings &consensusAreaSettings);
 
 protected:
-    bool event(QEvent* e);
-    void paintEvent(QPaintEvent*);
-    void resizeEvent(QResizeEvent*);
+    bool event(QEvent *e);
+    void paintEvent(QPaintEvent *);
+    void resizeEvent(QResizeEvent *);
     void mousePressEvent(QMouseEvent *e);
     void mouseMoveEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
 
 signals:
-    void si_consensusAlgorithmChanged(const QString& algoId);
+    void si_consensusAlgorithmChanged(const QString &algoId);
     void si_consensusThresholdChanged(int value);
     // SANGER_TODO: should be moved to McaEditorConsensusArea
     void si_mismatchRedrawRequired();
 
 protected slots:
-    void sl_selectionChanged(const MaEditorSelection& current, const MaEditorSelection& prev);
+    void sl_selectionChanged(const MaEditorSelection &current, const MaEditorSelection &prev);
     void sl_alignmentChanged();
-    void sl_changeConsensusAlgorithm(const QString& algoId);
+    void sl_changeConsensusAlgorithm(const QString &algoId);
     void sl_changeConsensusThreshold(int val);
     void sl_onConsensusThresholdChanged(int newValue);
     void sl_visibleAreaChanged();
@@ -114,39 +112,39 @@ protected slots:
 
 protected:
     void initCache();
-    QString createToolTip(QHelpEvent* he) const;
+    QString createToolTip(QHelpEvent *he) const;
     void restoreLastUsedConsensusThreshold();
     virtual QString getLastUsedAlgoSettingsKey() const = 0;
-    QString getThresholdSettingsKey(const QString& factoryId) const;
+    QString getThresholdSettingsKey(const QString &factoryId) const;
 
     virtual void initRenderer() = 0;
     virtual bool highlightConsensusChar(int pos);
 
     void updateSelection(int newPos);
 
-    MSAConsensusAlgorithmFactory* getConsensusAlgorithmFactory();
+    MSAConsensusAlgorithmFactory *getConsensusAlgorithmFactory();
     void updateConsensusAlgorithm();
 
-    MaEditor*           editor;
-    MaEditorWgt*        ui;
-    QFont               rulerFont;
-    int                 rulerFontHeight;
-    QAction*            copyConsensusAction;
-    QAction*            copyConsensusWithGapsAction;
-    QAction*            configureConsensusAction;
-    int                 curPos;
-    bool                scribbling;
-    bool                selecting;
+    MaEditor *editor;
+    MaEditorWgt *ui;
+    QFont rulerFont;
+    int rulerFontHeight;
+    QAction *copyConsensusAction;
+    QAction *copyConsensusWithGapsAction;
+    QAction *configureConsensusAction;
+    int curPos;
+    bool scribbling;
+    bool selecting;
 
     MaEditorConsensusAreaSettings consensusSettings;
-    MaConsensusAreaRenderer      *renderer;
+    MaConsensusAreaRenderer *renderer;
 
     QSharedPointer<MSAEditorConsensusCache> consensusCache;
 
-    bool                                    completeRedraw;
-    QPixmap*                                cachedView;
+    bool completeRedraw;
+    QPixmap *cachedView;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_MA_EDITOR_CONSENSUS_AREA_H_
+#endif    // _U2_MA_EDITOR_CONSENSUS_AREA_H_

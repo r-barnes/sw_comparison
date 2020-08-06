@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "PropertyWidget.h"
+
 #include <QKeyEvent>
 #include <QLayout>
 #include <QListView>
@@ -41,7 +43,6 @@
 #include <U2Lang/WorkflowUtils.h>
 
 #include "OutputFileDialog.h"
-#include "PropertyWidget.h"
 
 namespace U2 {
 
@@ -49,7 +50,8 @@ namespace U2 {
 /* AbstractDefaultPropertyWidget */
 /************************************************************************/
 BaseDefaultPropertyWidget::BaseDefaultPropertyWidget(int maxLength, QWidget *parent)
-    : PropertyWidget(parent) {}
+    : PropertyWidget(parent) {
+}
 
 QVariant BaseDefaultPropertyWidget::value() {
     return lineEdit->text();
@@ -74,16 +76,15 @@ void BaseDefaultPropertyWidget::configureLineEdit(const int maxLength) {
         lineEdit->setMaxLength(maxLength);
     }
     addMainWidget(lineEdit);
-    connect(lineEdit, SIGNAL(textChanged(const QString&)), SLOT(sl_valueChanged(const QString&)));
+    connect(lineEdit, SIGNAL(textChanged(const QString &)), SLOT(sl_valueChanged(const QString &)));
 }
 
 /************************************************************************/
 /* DefaultPropertyWidget */
 /************************************************************************/
 
-DefaultPropertyWidget::DefaultPropertyWidget(int maxLength, QWidget* parent)
-    : BaseDefaultPropertyWidget(maxLength, parent)
-{
+DefaultPropertyWidget::DefaultPropertyWidget(int maxLength, QWidget *parent)
+    : BaseDefaultPropertyWidget(maxLength, parent) {
     lineEdit = new QLineEdit(this);
     configureLineEdit(maxLength);
 }
@@ -92,9 +93,8 @@ DefaultPropertyWidget::DefaultPropertyWidget(int maxLength, QWidget* parent)
 /* IgnoreUpDownPropertyWidget */
 /************************************************************************/
 
-IgnoreUpDownPropertyWidget::IgnoreUpDownPropertyWidget(int maxLength, QWidget* parent)
-    : BaseDefaultPropertyWidget(maxLength, parent)
-{
+IgnoreUpDownPropertyWidget::IgnoreUpDownPropertyWidget(int maxLength, QWidget *parent)
+    : BaseDefaultPropertyWidget(maxLength, parent) {
     lineEdit = new LineEditIgnoreUpDown(this);
     configureLineEdit(maxLength);
 }
@@ -103,10 +103,11 @@ IgnoreUpDownPropertyWidget::IgnoreUpDownPropertyWidget(int maxLength, QWidget* p
 /* LineEditIgnoreUpDown */
 /************************************************************************/
 
-LineEditIgnoreUpDown::LineEditIgnoreUpDown(QWidget* parent)
-    : QLineEdit(parent) {}
+LineEditIgnoreUpDown::LineEditIgnoreUpDown(QWidget *parent)
+    : QLineEdit(parent) {
+}
 
-void LineEditIgnoreUpDown::keyPressEvent(QKeyEvent* e) {
+void LineEditIgnoreUpDown::keyPressEvent(QKeyEvent *e) {
     if ((e->key() == Qt::Key_Up) || (e->key() == Qt::Key_Down)) {
         e->ignore();
         return;
@@ -119,8 +120,7 @@ void LineEditIgnoreUpDown::keyPressEvent(QKeyEvent* e) {
 /* SpinBoxWidget */
 /************************************************************************/
 SpinBoxWidget::SpinBoxWidget(const QVariantMap &spinProperties, QWidget *parent)
-: PropertyWidget(parent)
-{
+    : PropertyWidget(parent) {
     spinBox = new QSpinBox(this);
     WorkflowUtils::setQObjectProperties(*spinBox, spinProperties);
     addMainWidget(spinBox);
@@ -161,8 +161,7 @@ void SpinBoxWidget::sl_valueChanged(int value) {
 /* DoubleSpinBoxWidget */
 /************************************************************************/
 DoubleSpinBoxWidget::DoubleSpinBoxWidget(const QVariantMap &spinProperties, QWidget *parent)
-: PropertyWidget(parent)
-{
+    : PropertyWidget(parent) {
     spinBox = new QDoubleSpinBox(this);
     spinBox->setMinimumWidth(1);
     WorkflowUtils::setQObjectProperties(*spinBox, spinProperties);
@@ -188,18 +187,15 @@ void DoubleSpinBoxWidget::sl_valueChanged(double value) {
 /* ComboBoxWidget */
 /************************************************************************/
 ComboBoxWidget::ComboBoxWidget(const QList<ComboItem> &items, QWidget *parent)
-: PropertyWidget(parent)
-{
+    : PropertyWidget(parent) {
     comboBox = new QComboBox(this);
     addMainWidget(comboBox);
 
     foreach (const ComboItem p, items) {
         comboBox->addItem(p.first, p.second);
     }
-    connect(comboBox, SIGNAL(activated(const QString &)),
-        this, SIGNAL(valueChanged(const QString &)));
-    connect(comboBox, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(sl_valueChanged(int)));
+    connect(comboBox, SIGNAL(activated(const QString &)), this, SIGNAL(valueChanged(const QString &)));
+    connect(comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(sl_valueChanged(int)));
 }
 
 QVariant ComboBoxWidget::value() {
@@ -216,7 +212,7 @@ void ComboBoxWidget::sl_valueChanged(int) {
     emit si_valueChanged(value());
 }
 
-ComboBoxWidget * ComboBoxWidget::createBooleanWidget(QWidget *parent) {
+ComboBoxWidget *ComboBoxWidget::createBooleanWidget(QWidget *parent) {
     QList<ComboItem> values;
     values.append(qMakePair(ComboBoxWidget::tr("False"), false));
     values.append(qMakePair(ComboBoxWidget::tr("True"), true));
@@ -227,9 +223,7 @@ ComboBoxWidget * ComboBoxWidget::createBooleanWidget(QWidget *parent) {
 /* ComboBoxEditableWidget */
 /************************************************************************/
 ComboBoxEditableWidget::ComboBoxEditableWidget(const QVariantMap &items, QWidget *parent)
-: PropertyWidget(parent)
-, customIdx(-1)
-{
+    : PropertyWidget(parent), customIdx(-1) {
     comboBox = new QComboBox(this);
     comboBox->setEditable(true);
     addMainWidget(comboBox);
@@ -238,12 +232,10 @@ ComboBoxEditableWidget::ComboBoxEditableWidget(const QVariantMap &items, QWidget
         comboBox->addItem(key, items[key]);
     }
 
-    connect(comboBox, SIGNAL(editTextChanged ( const QString & )), this, SLOT(sl_edit(const QString& )));
+    connect(comboBox, SIGNAL(editTextChanged(const QString &)), this, SLOT(sl_edit(const QString &)));
 
-    connect(comboBox, SIGNAL(activated(const QString &)),
-    this, SIGNAL(valueChanged(const QString &)));
-    connect(comboBox, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(sl_valueChanged(int)));
+    connect(comboBox, SIGNAL(activated(const QString &)), this, SIGNAL(valueChanged(const QString &)));
+    connect(comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(sl_valueChanged(int)));
 }
 
 QVariant ComboBoxEditableWidget::value() {
@@ -252,22 +244,22 @@ QVariant ComboBoxEditableWidget::value() {
 
 void ComboBoxEditableWidget::setValue(const QVariant &value) {
     int idx = comboBox->findData(value);
-    if (idx == -1){
+    if (idx == -1) {
         //try by text
         idx = comboBox->findText(value.toString());
-        if (idx == -1){
-            if (customIdx == -1){
+        if (idx == -1) {
+            if (customIdx == -1) {
                 comboBox->addItem(value.toString(), value);
                 customIdx = comboBox->findData(value);
-            }else{
+            } else {
                 comboBox->setItemText(customIdx, value.toString());
                 comboBox->setItemData(customIdx, value);
             }
             comboBox->setCurrentIndex(customIdx);
-        }else{
+        } else {
             comboBox->setCurrentIndex(idx);
         }
-    }else{
+    } else {
         comboBox->setCurrentIndex(idx);
     }
     sl_valueChanged(0);
@@ -277,22 +269,18 @@ void ComboBoxEditableWidget::sl_valueChanged(int) {
     emit si_valueChanged(value());
 }
 
-void ComboBoxEditableWidget::sl_edit(const QString& val){
+void ComboBoxEditableWidget::sl_edit(const QString &val) {
     if (!val.isEmpty()) {
         setValue(val);
         comboBox->setFocus();
     }
 }
 
-
 /************************************************************************/
 /* ComboBoxWithUrlWidget */
 /************************************************************************/
 ComboBoxWithUrlWidget::ComboBoxWithUrlWidget(const QVariantMap &items, bool _isPath, QWidget *parent)
-: PropertyWidget(parent)
-, customIdx(-1)
-, isPath(_isPath)
-{
+    : PropertyWidget(parent), customIdx(-1), isPath(_isPath) {
     comboBox = new QComboBox(this);
     addMainWidget(comboBox);
 
@@ -300,7 +288,7 @@ ComboBoxWithUrlWidget::ComboBoxWithUrlWidget(const QVariantMap &items, bool _isP
         comboBox->addItem(key, items[key]);
     }
 
-    QToolButton * toolButton = new QToolButton(this);
+    QToolButton *toolButton = new QToolButton(this);
     toolButton->setObjectName("browsePathBtn");
     toolButton->setText("...");
     toolButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
@@ -316,10 +304,8 @@ ComboBoxWithUrlWidget::ComboBoxWithUrlWidget(const QVariantMap &items, bool _isP
     comboBox->setStyleSheet(style);
 #endif
 
-    connect(comboBox, SIGNAL(activated(const QString &)),
-        this, SIGNAL(valueChanged(const QString &)));
-    connect(comboBox, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(sl_valueChanged(int)));
+    connect(comboBox, SIGNAL(activated(const QString &)), this, SIGNAL(valueChanged(const QString &)));
+    connect(comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(sl_valueChanged(int)));
 }
 
 QVariant ComboBoxWithUrlWidget::value() {
@@ -328,16 +314,16 @@ QVariant ComboBoxWithUrlWidget::value() {
 
 void ComboBoxWithUrlWidget::setValue(const QVariant &value) {
     int idx = comboBox->findData(value);
-    if (idx == -1){
-        if (customIdx == -1){
+    if (idx == -1) {
+        if (customIdx == -1) {
             comboBox->addItem(value.toString(), value);
             customIdx = comboBox->findData(value);
-        }else{
+        } else {
             comboBox->setItemText(customIdx, value.toString());
             comboBox->setItemData(customIdx, value);
         }
         comboBox->setCurrentIndex(customIdx);
-    }else{
+    } else {
         idx = comboBox->findData(value);
         comboBox->setCurrentIndex(idx);
     }
@@ -348,17 +334,17 @@ void ComboBoxWithUrlWidget::sl_valueChanged(int) {
     emit si_valueChanged(value());
 }
 
-void ComboBoxWithUrlWidget::sl_browse(){
+void ComboBoxWithUrlWidget::sl_browse() {
     LastUsedDirHelper lod("UrlCombo");
     QString lastDir = lod.dir;
 
     QString name;
-    if (isPath){
+    if (isPath) {
         lod.dir = name = U2FileDialog::getExistingDirectory(NULL, tr("Select a folder"), lastDir);
         if (!name.isEmpty()) {
             setValue(name);
         }
-    }else{
+    } else {
         lod.url = name = U2FileDialog::getOpenFileName(NULL, tr("Select a file"), lastDir);
         if (!name.isEmpty()) {
             setValue(name);
@@ -372,9 +358,7 @@ void ComboBoxWithUrlWidget::sl_browse(){
 /* ComboBoxWithDbUrlWidget */
 /************************************************************************/
 ComboBoxWithDbUrlWidget::ComboBoxWithDbUrlWidget(QWidget *parent)
-    : ComboBoxWithUrlWidget(SharedDbUrlUtils::getKnownDbs(), false, parent)
-{
-
+    : ComboBoxWithUrlWidget(SharedDbUrlUtils::getKnownDbs(), false, parent) {
 }
 
 void ComboBoxWithDbUrlWidget::sl_browse() {
@@ -386,7 +370,7 @@ void ComboBoxWithDbUrlWidget::sl_browse() {
 
     if (QDialog::Accepted == dialogResult) {
         const QString dbUrlWithoutProvider = editDialog->getFullDbiUrl();
-        U2DbiRef dbiRef(MYSQL_DBI_ID, dbUrlWithoutProvider); // TODO: fix this hardcoded value when other shared DB providers appear
+        U2DbiRef dbiRef(MYSQL_DBI_ID, dbUrlWithoutProvider);    // TODO: fix this hardcoded value when other shared DB providers appear
         const QString dbUrl = SharedDbUrlUtils::createDbUrl(dbiRef);
         SharedDbUrlUtils::saveNewDbConnection(editDialog->getName(), dbUrlWithoutProvider);
         updateComboValues();
@@ -425,28 +409,23 @@ QVariantMap ComboBoxWithDbUrlWidget::getItems() const {
 /************************************************************************/
 /* ComboBoxWithChecksWidget */
 /************************************************************************/
-ComboBoxWithChecksWidget::ComboBoxWithChecksWidget(const QVariantMap& _items, QWidget *parent)
-: PropertyWidget(parent)
-, items(_items)
-{
+ComboBoxWithChecksWidget::ComboBoxWithChecksWidget(const QVariantMap &_items, QWidget *parent)
+    : PropertyWidget(parent), items(_items) {
     comboBox = new QComboBox(this);
     cm = NULL;
     addMainWidget(comboBox);
 
     setValue(value());
 
-    connect(comboBox, SIGNAL(activated(const QString &)),
-        this, SIGNAL(valueChanged(const QString &)));
-    connect(comboBox, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(sl_valueChanged(int)));
-
+    connect(comboBox, SIGNAL(activated(const QString &)), this, SIGNAL(valueChanged(const QString &)));
+    connect(comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(sl_valueChanged(int)));
 }
 
 QVariant ComboBoxWithChecksWidget::value() {
     QStringList sList;
-    const QList<QString>& keys = items.keys();
-    foreach(const QString& key, keys){
-        if(items[key].toBool()){
+    const QList<QString> &keys = items.keys();
+    foreach (const QString &key, keys) {
+        if (items[key].toBool()) {
             sList << key;
         }
     }
@@ -454,44 +433,42 @@ QVariant ComboBoxWithChecksWidget::value() {
 }
 
 void ComboBoxWithChecksWidget::setValue(const QVariant &value) {
-    disconnect(cm, SIGNAL(itemChanged( const QModelIndex &)), this,
-        SLOT(sl_itemChanged( const QModelIndex &)));
+    disconnect(cm, SIGNAL(itemChanged(const QModelIndex &)), this, SLOT(sl_itemChanged(const QModelIndex &)));
     QStringList curList = value.toString().split(",");
-    if(cm == NULL){
+    if (cm == NULL) {
         cm = new QStandardItemModel(items.size(), 1, comboBox);
-    }else{
+    } else {
         cm->clear();
         delete cm;
         cm = new QStandardItemModel(items.size(), 1, comboBox);
     }
 
-    const QList<QString>& keys = items.keys();
+    const QList<QString> &keys = items.keys();
     int i = 0;
 
-    QStandardItem* ghostItem = new QStandardItem();
+    QStandardItem *ghostItem = new QStandardItem();
     cm->setItem(i++, ghostItem);
 
-    foreach(const QString& key, keys){
+    foreach (const QString &key, keys) {
         bool checked = curList.contains(key, Qt::CaseInsensitive);
         items[key] = checked;
-        QStandardItem* item = new QStandardItem(key);
+        QStandardItem *item = new QStandardItem(key);
         item->setCheckable(true);
         item->setEditable(false);
         item->setSelectable(false);
-        item->setCheckState((checked)? Qt::Checked: Qt::Unchecked);
+        item->setCheckState((checked) ? Qt::Checked : Qt::Unchecked);
         item->setData(key);
         cm->setItem(i++, item);
     }
     comboBox->setModel(cm);
 
-    QListView* vw = new QListView(comboBox);
+    QListView *vw = new QListView(comboBox);
     vw->setModel(cm);
     vw->setRowHidden(0, true);
 
     comboBox->setView(vw);
     ghostItem->setText(ComboBoxWithChecksWidget::value().toString());
-    connect(cm, SIGNAL(itemChanged( QStandardItem * )), this,
-        SLOT(sl_itemChanged( QStandardItem * )));
+    connect(cm, SIGNAL(itemChanged(QStandardItem *)), this, SLOT(sl_itemChanged(QStandardItem *)));
 }
 
 void ComboBoxWithChecksWidget::sl_valueChanged(int) {
@@ -499,15 +476,15 @@ void ComboBoxWithChecksWidget::sl_valueChanged(int) {
     emit si_valueChanged(value());
 }
 
-void ComboBoxWithChecksWidget::sl_itemChanged( QStandardItem * item ){
-    QStandardItem* standardItem  = item;
+void ComboBoxWithChecksWidget::sl_itemChanged(QStandardItem *item) {
+    QStandardItem *standardItem = item;
     QString key = standardItem->data().toString();
 
-    if (items.contains(key)){
+    if (items.contains(key)) {
         Qt::CheckState checkState = standardItem->checkState();
-        if(checkState == Qt::Checked){
+        if (checkState == Qt::Checked) {
             items[key] = true;
-        } else if(checkState == Qt::Unchecked){
+        } else if (checkState == Qt::Unchecked) {
             items[key] = false;
         }
         sl_valueChanged(0);
@@ -520,8 +497,7 @@ void ComboBoxWithChecksWidget::sl_itemChanged( QStandardItem * item ){
 /* URLWidget */
 /************************************************************************/
 URLWidget::URLWidget(const QString &type, bool multi, bool isPath, bool saveFile, DelegateTags *tags, QWidget *parent)
-: PropertyWidget(parent, tags)
-{
+    : PropertyWidget(parent, tags) {
     setAutoFillBackground(true);
 
     urlLine = new URLLineEdit(type, multi, isPath, saveFile, this);
@@ -563,9 +539,9 @@ QVariant URLWidget::value() {
 }
 
 void URLWidget::setValue(const QVariant &value) {
-    if (value.canConvert< QList<Dataset> >()) {
+    if (value.canConvert<QList<Dataset>>()) {
         QStringList urls;
-        foreach (const Dataset &set, value.value< QList<Dataset> >()) {
+        foreach (const Dataset &set, value.value<QList<Dataset>>()) {
             foreach (URLContainer *c, set.getUrls()) {
                 urls << c->getUrl();
             }
@@ -629,7 +605,7 @@ void URLWidget::sl_finished() {
     emit finished();
 }
 
-RunFileSystem * URLWidget::getRFS() {
+RunFileSystem *URLWidget::getRFS() {
     CHECK(NULL != schemaConfig, NULL);
     return schemaConfig->getRFS();
 }
@@ -642,9 +618,7 @@ QString URLWidget::finalyze(const QString &url) {
 /* NoFileURLWidget */
 /************************************************************************/
 NoFileURLWidget::NoFileURLWidget(const QString &type, bool multi, bool isPath, bool saveFile, DelegateTags *tags, QWidget *parent)
-: URLWidget(type, multi, isPath, saveFile, tags, parent)
-{
-
+    : URLWidget(type, multi, isPath, saveFile, tags, parent) {
 }
 
 static const QString FILE_TAG("file");
@@ -665,7 +639,7 @@ QString NoFileURLWidget::finalyze(const QString &url, DelegateTags *tags) {
 }
 
 QString NoFileURLWidget::finalyze(const QString &url) {
-    return finalyze(url, const_cast<DelegateTags*>(tags()));
+    return finalyze(url, const_cast<DelegateTags *>(tags()));
 }
 
-} // U2
+}    // namespace U2

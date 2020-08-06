@@ -46,23 +46,22 @@ public:
 class U2LANG_EXPORT WorkflowScriptRegistry {
 public:
     ~WorkflowScriptRegistry();
-    void registerScriptFactory(WorkflowScriptFactory* f);
-    void unregisterScriptFactory(WorkflowScriptFactory* f);
-    const QList<WorkflowScriptFactory*> &getFactories() const;
+    void registerScriptFactory(WorkflowScriptFactory *f);
+    void unregisterScriptFactory(WorkflowScriptFactory *f);
+    const QList<WorkflowScriptFactory *> &getFactories() const;
+
 private:
-    QList<WorkflowScriptFactory*> list;
+    QList<WorkflowScriptFactory *> list;
 };
 
 class U2LANG_EXPORT WorkflowScriptLibrary {
 public:
-
-    static WorkflowScriptRegistry* getScriptRegistry();
+    static WorkflowScriptRegistry *getScriptRegistry();
 
     static void initEngine(WorkflowScriptEngine *engine);
 
     // ================== Misc =======================
     static QScriptValue print(QScriptContext *ctx, QScriptEngine *);
-
 
     // unrefactored obsolete deprecated functions
     // ================== Sequence =======================
@@ -103,12 +102,11 @@ public:
     static QScriptValue readFile(QScriptContext *ctx, QScriptEngine *engine);
     static QScriptValue readSequences(QScriptContext *ctx, QScriptEngine *engine);
 
-
     // ================== Misc =======================
     static QScriptValue debugOut(QScriptContext *ctx, QScriptEngine *);
 
-}; // WorkflowScriptLibrary
+};    // WorkflowScriptLibrary
 
-} // U2
+}    // namespace U2
 
 #endif

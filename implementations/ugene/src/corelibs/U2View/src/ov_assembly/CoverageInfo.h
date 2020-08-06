@@ -22,19 +22,20 @@
 #ifndef __COVERAGE_INFO_H__
 #define __COVERAGE_INFO_H__
 
-#include "AssemblyModel.h"
+#include <QSharedPointer>
+#include <QVector>
 
 #include <U2Core/BackgroundTaskRunner.h>
 #include <U2Core/U2Region.h>
 
-#include <QVector>
-#include <QSharedPointer>
-
+#include "AssemblyModel.h"
 
 namespace U2 {
 
 struct CoverageInfo {
-    CoverageInfo() : averageCoverage(0.), maxCoverage(0), minCoverage(0) {}
+    CoverageInfo()
+        : averageCoverage(0.), maxCoverage(0), minCoverage(0) {
+    }
     inline bool isEmpty() {
         return coverageInfo.empty();
     }
@@ -57,12 +58,13 @@ struct CalcCoverageInfoTaskSettings {
 class CalcCoverageInfoTask : public BackgroundTask<CoverageInfo> {
     Q_OBJECT
 public:
-    CalcCoverageInfoTask(const CalcCoverageInfoTaskSettings & settings);
+    CalcCoverageInfoTask(const CalcCoverageInfoTaskSettings &settings);
     virtual void run();
+
 private:
     CalcCoverageInfoTaskSettings settings;
 };
 
-}
+}    // namespace U2
 
 #endif

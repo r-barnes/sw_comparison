@@ -19,31 +19,30 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-
 #include "ExportHighlightedDialogFiller.h"
 #include <primitives/GTCheckBox.h>
 #include <primitives/GTLineEdit.h>
 #include <primitives/GTWidget.h>
 
+#include <QApplication>
+
 namespace U2 {
 
 #define GT_CLASS_NAME "ExportHighlightedDialogFiller"
-ExportHighlightedDialogFiller::ExportHighlightedDialogFiller(HI::GUITestOpStatus &os, const QString &filePath, bool inverted) :
-    Filler(os, "ExportHighlightedDialog"),
-    filePath(filePath),
-    invertedExport(inverted)
-{
+ExportHighlightedDialogFiller::ExportHighlightedDialogFiller(HI::GUITestOpStatus &os, const QString &filePath, bool inverted)
+    : Filler(os, "ExportHighlightedDialog"),
+      filePath(filePath),
+      invertedExport(inverted) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
 void ExportHighlightedDialogFiller::commonScenario() {
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(NULL != dialog, "dialog not found");
 
     GTLineEdit::setText(os, GTWidget::findExactWidget<QLineEdit *>(os, "fileNameEdit", dialog), filePath);
 
-    GTCheckBox::setChecked(os, GTWidget::findExactWidget<QCheckBox*>(os, "transposeBox", dialog), invertedExport);
+    GTCheckBox::setChecked(os, GTWidget::findExactWidget<QCheckBox *>(os, "transposeBox", dialog), invertedExport);
 
     GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
 }
@@ -51,4 +50,4 @@ void ExportHighlightedDialogFiller::commonScenario() {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

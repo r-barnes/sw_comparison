@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "InSilicoPcrProductsTable.h"
+
 #include <U2Core/DNASequenceSelection.h>
 #include <U2Core/L10n.h>
 
@@ -29,13 +31,10 @@
 #include "Primer.h"
 #include "PrimerStatistics.h"
 
-#include "InSilicoPcrProductsTable.h"
-
 namespace U2 {
 
 InSilicoPcrProductsTable::InSilicoPcrProductsTable(QWidget *parent)
-: QTableWidget(parent), sequenceContext(NULL)
-{
+    : QTableWidget(parent), sequenceContext(NULL) {
     connect(selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), SLOT(sl_selectionChanged()));
     connect(this, SIGNAL(clicked(const QModelIndex &)), SLOT(sl_selectionChanged()));
 }
@@ -52,7 +51,7 @@ void InSilicoPcrProductsTable::showProducts(const QList<InSilicoPcrProduct> &pro
     setCurrentProducts(products);
 }
 
-ADVSequenceObjectContext * InSilicoPcrProductsTable::getCurrentSequenceContext() const {
+ADVSequenceObjectContext *InSilicoPcrProductsTable::getCurrentSequenceContext() const {
     return sequenceContext;
 }
 
@@ -63,7 +62,7 @@ void InSilicoPcrProductsTable::setCurrentProducts(const QList<InSilicoPcrProduct
     const qint64 seqLength = sequenceContext->getSequenceLength();
     SAFE_POINT(seqLength > 0, "Invalid sequence length", );
     int row = 0;
-    foreach(const InSilicoPcrProduct &product, currentProducts) {
+    foreach (const InSilicoPcrProduct &product, currentProducts) {
         qint64 startPos = product.region.startPos + 1;
         qint64 endPos = product.region.endPos();
         const int ledge = product.forwardPrimerLedge.size() + product.reversePrimerLedge.size();
@@ -74,9 +73,7 @@ void InSilicoPcrProductsTable::setCurrentProducts(const QList<InSilicoPcrProduct
         QTableWidgetItem *regionItem = new QTableWidgetItem(QString("%1 - %2").arg(startPos).arg(endPos));
         setItem(row, 0, regionItem);
         setItem(row, 1, new QTableWidgetItem(QString::number(product.region.length)));
-        setItem(row, 2, new QTableWidgetItem(product.ta != Primer::INVALID_TM
-                ? PrimerStatistics::getDoubleStringValue(product.ta)
-                : tr("N/A")));
+        setItem(row, 2, new QTableWidgetItem(product.ta != Primer::INVALID_TM ? PrimerStatistics::getDoubleStringValue(product.ta) : tr("N/A")));
         row++;
     }
     if (row > 0) {
@@ -84,7 +81,7 @@ void InSilicoPcrProductsTable::setCurrentProducts(const QList<InSilicoPcrProduct
     }
 }
 
-ADVSequenceObjectContext * InSilicoPcrProductsTable::productsContext() const {
+ADVSequenceObjectContext *InSilicoPcrProductsTable::productsContext() const {
     return sequenceContext;
 }
 
@@ -101,7 +98,7 @@ QList<InSilicoPcrProduct> InSilicoPcrProductsTable::getSelectedProducts() const 
     return result;
 }
 
-const QList<InSilicoPcrProduct> & InSilicoPcrProductsTable::getAllProducts() const {
+const QList<InSilicoPcrProduct> &InSilicoPcrProductsTable::getAllProducts() const {
     return currentProducts;
 }
 
@@ -112,7 +109,7 @@ QVector<U2Region> InSilicoPcrProductsTable::getSelection() const {
     QList<InSilicoPcrProduct> products = getSelectedProducts();
     CHECK(1 == products.size(), result);
 
-    const InSilicoPcrProduct& product = products.first();
+    const InSilicoPcrProduct &product = products.first();
     U2Region region = product.region;
     region.length -= (product.forwardPrimerLedge.size() + product.reversePrimerLedge.size());
 
@@ -146,4 +143,4 @@ bool InSilicoPcrProductsTable::onSequenceChanged(ADVSequenceObjectContext *chang
     return false;
 }
 
-} // U2
+}    // namespace U2

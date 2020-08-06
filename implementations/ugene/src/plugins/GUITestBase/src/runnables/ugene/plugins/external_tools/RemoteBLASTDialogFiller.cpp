@@ -20,43 +20,39 @@
  */
 
 #include "RemoteBLASTDialogFiller.h"
-#include <primitives/GTWidget.h>
-#include <primitives/GTSpinBox.h>
-#include <primitives/GTDoubleSpinBox.h>
 #include <primitives/GTCheckBox.h>
-#include <primitives/GTLineEdit.h>
 #include <primitives/GTComboBox.h>
+#include <primitives/GTDoubleSpinBox.h>
+#include <primitives/GTLineEdit.h>
 #include <primitives/GTRadioButton.h>
+#include <primitives/GTSpinBox.h>
+#include <primitives/GTWidget.h>
+
 #include <QApplication>
-#include <QGroupBox>
 #include <QComboBox>
 #include <QDialogButtonBox>
+#include <QGroupBox>
 
 namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::RemoteBLASTDialogFiller"
 
-RemoteBLASTDialogFiller::RemoteBLASTDialogFiller(HI::GUITestOpStatus &os) :
-    Filler(os, "RemoteBLASTDialog")
-{
-
+RemoteBLASTDialogFiller::RemoteBLASTDialogFiller(HI::GUITestOpStatus &os)
+    : Filler(os, "RemoteBLASTDialog") {
 }
 
-RemoteBLASTDialogFiller::RemoteBLASTDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario) :
-    Filler(os, "RemoteBLASTDialog", scenario)
-{
-
+RemoteBLASTDialogFiller::RemoteBLASTDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario)
+    : Filler(os, "RemoteBLASTDialog", scenario) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
 void RemoteBLASTDialogFiller::commonScenario() {
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
     GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
-
 }
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

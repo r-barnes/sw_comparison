@@ -25,9 +25,9 @@ namespace U2 {
 
 static QVector<U2Region> emptyLRegions;
 
-LRegionsSelection::LRegionsSelection(GSelectionType type, QObject *p) : GSelection(type, p)
-{
-    connect(this, SIGNAL(si_selectionChanged(LRegionsSelection*,QVector<U2Region>,QVector<U2Region>)), SLOT(sl_selectionChanged()));
+LRegionsSelection::LRegionsSelection(GSelectionType type, QObject *p)
+    : GSelection(type, p) {
+    connect(this, SIGNAL(si_selectionChanged(LRegionsSelection *, QVector<U2Region>, QVector<U2Region>)), SLOT(sl_selectionChanged()));
 }
 
 void LRegionsSelection::clear() {
@@ -50,29 +50,30 @@ QVector<U2Region> LRegionsSelection::cropSelection(qint64 sequenceLength, const 
     return result;
 }
 
-void LRegionsSelection::addRegion(const U2Region& r) {
+void LRegionsSelection::addRegion(const U2Region &r) {
     assert(r.length > 0);
     if (regions.contains(r)) {
         return;
     }
     regions.append(r);
-    QVector<U2Region> tmpAdded; tmpAdded.append(r);
+    QVector<U2Region> tmpAdded;
+    tmpAdded.append(r);
     emit si_selectionChanged(this, tmpAdded, emptyLRegions);
 }
 
-void LRegionsSelection::removeRegion(const U2Region& r) {
+void LRegionsSelection::removeRegion(const U2Region &r) {
     int idx = regions.indexOf(r);
     if (idx == -1) {
         return;
     }
     regions.remove(idx);
-    QVector<U2Region> tmpRemoved; tmpRemoved.append(r);
+    QVector<U2Region> tmpRemoved;
+    tmpRemoved.append(r);
     emit si_selectionChanged(this, emptyLRegions, tmpRemoved);
 }
 
-void LRegionsSelection::setRegion(const U2Region& r) {
-    if (r.length == 0)
-    {
+void LRegionsSelection::setRegion(const U2Region &r) {
+    if (r.length == 0) {
         clear();
         return;
     }
@@ -81,10 +82,10 @@ void LRegionsSelection::setRegion(const U2Region& r) {
     setSelectedRegions(newRegions);
 }
 
-void LRegionsSelection::setSelectedRegions(const QVector<U2Region>& newSelection) {
+void LRegionsSelection::setSelectedRegions(const QVector<U2Region> &newSelection) {
     QVector<U2Region> tmpRemoved = regions;
     regions = newSelection;
     emit si_selectionChanged(this, newSelection, tmpRemoved);
 }
 
-} //namespace
+}    // namespace U2

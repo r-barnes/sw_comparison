@@ -24,18 +24,17 @@
 
 #include "utils/GTUtilsDialog.h"
 
-namespace U2{
+namespace U2 {
 using namespace HI;
 
-class ExportConsensusDialogFiller: public Filler
-{
+class ExportConsensusDialogFiller : public Filler {
 public:
-    ExportConsensusDialogFiller(HI::GUITestOpStatus &os, CustomScenario* _c):
-        Filler(os, "ExportConsensusDialog", _c){}
+    ExportConsensusDialogFiller(HI::GUITestOpStatus &os, CustomScenario *_c)
+        : Filler(os, "ExportConsensusDialog", _c) {
+    }
     void commonScenario();
-
 };
 
-}
+}    // namespace U2
 
-#endif // EXPORTCONSENSUSDIALOG_H
+#endif    // EXPORTCONSENSUSDIALOG_H

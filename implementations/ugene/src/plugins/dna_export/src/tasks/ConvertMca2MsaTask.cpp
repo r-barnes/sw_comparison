@@ -19,19 +19,18 @@
  * MA 02110-1301, USA.
  */
 
+#include "ConvertMca2MsaTask.h"
+
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/L10n.h>
 #include <U2Core/MultipleChromatogramAlignmentObject.h>
-
-#include "ConvertMca2MsaTask.h"
 
 namespace U2 {
 
 ConvertMca2MsaTask::ConvertMca2MsaTask(MultipleChromatogramAlignmentObject *mcaObject, bool includeReference)
     : Task(tr("Convert MCA to MSA task"), TaskFlag_None),
       mcaObject(mcaObject),
-      includeReference(includeReference)
-{
+      includeReference(includeReference) {
     SAFE_POINT_EXT(NULL != mcaObject, setError(L10N::nullPointerError("MCA object")), );
 }
 
@@ -63,4 +62,4 @@ Task::ReportResult ConvertMca2MsaTask::report() {
     return ReportResult_Finished;
 }
 
-}   // namespace U2
+}    // namespace U2

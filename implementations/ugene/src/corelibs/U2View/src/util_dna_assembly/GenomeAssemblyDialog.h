@@ -22,13 +22,13 @@
 #ifndef GENOMEASSEMBLYDIALOG_H
 #define GENOMEASSEMBLYDIALOG_H
 
-#include <U2Core/GUrl.h>
+#include <ui_GenomeAssemblyDialog.h>
 
-#include <QVariant>
 #include <QStringList>
+#include <QVariant>
 #include <QWidget>
 
-#include <ui_GenomeAssemblyDialog.h>
+#include <U2Core/GUrl.h>
 
 namespace U2 {
 
@@ -40,32 +40,32 @@ class AssemblyReads;
 
 class ReadPropertiesItem : public QTreeWidgetItem {
 public:
-    ReadPropertiesItem(QTreeWidget* widget);
+    ReadPropertiesItem(QTreeWidget *widget);
     QString getNumber() const;
     QString getType() const;
     QString getOrientation() const;
-    void setLibraryType( const QString& libraryType );
+    void setLibraryType(const QString &libraryType);
 
-    static void addItemToTable(ReadPropertiesItem* item, QTreeWidget* treeWidget);
+    static void addItemToTable(ReadPropertiesItem *item, QTreeWidget *treeWidget);
 
 private:
-    QComboBox* typeBox;
-    QComboBox* orientationBox;
+    QComboBox *typeBox;
+    QComboBox *orientationBox;
 };
 
 class GenomeAssemblyDialog : public QDialog, public Ui_GenomeAssemblyDialog {
     Q_OBJECT
 
 public:
-    GenomeAssemblyDialog(QWidget* p = NULL);
+    GenomeAssemblyDialog(QWidget *p = NULL);
     const QString getAlgorithmName();
     const QString getOutDir();
     QList<AssemblyReads> getReads();
-    QMap<QString,QVariant> getCustomSettings();
+    QMap<QString, QVariant> getCustomSettings();
 
     void updateProperties();
 
-    void addReads(QStringList fileNames, QTreeWidget* readsWidget);
+    void addReads(QStringList fileNames, QTreeWidget *readsWidget);
 private slots:
     void sl_onAddShortReadsButtonClicked();
     void sl_onRemoveShortReadsButtonClicked();
@@ -78,13 +78,12 @@ private:
     void addGuiExtension();
     void accept();
 
-    const GenomeAssemblyAlgRegistry*   assemblyRegistry;
-    GenomeAssemblyAlgorithmMainWidget* customGUI;
-    static QString                     methodName;
-    static QString                     library;
+    const GenomeAssemblyAlgRegistry *assemblyRegistry;
+    GenomeAssemblyAlgorithmMainWidget *customGUI;
+    static QString methodName;
+    static QString library;
 };
 
-} // namespace
+}    // namespace U2
 
-
-#endif // GENOMEASSEMBLYDIALOG_H
+#endif    // GENOMEASSEMBLYDIALOG_H

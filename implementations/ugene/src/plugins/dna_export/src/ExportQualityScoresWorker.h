@@ -23,8 +23,10 @@
 #define _EXPORT_PHRED_QUALITY_WORKER_H_
 
 #include <U2Core/DNASequence.h>
+
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
+
 #include "ExportQualityScoresTask.h"
 
 namespace U2 {
@@ -36,7 +38,10 @@ namespace LocalWorkflow {
 class ExportPhredQualityPrompter : public PrompterBase<ExportPhredQualityPrompter> {
     Q_OBJECT
 public:
-    ExportPhredQualityPrompter(Actor* p = 0) : PrompterBase<ExportPhredQualityPrompter>(p) {}
+    ExportPhredQualityPrompter(Actor *p = 0)
+        : PrompterBase<ExportPhredQualityPrompter>(p) {
+    }
+
 protected:
     QString composeRichDoc();
 };
@@ -44,29 +49,30 @@ protected:
 class ExportPhredQualityWorker : public BaseWorker {
     Q_OBJECT
 public:
-    ExportPhredQualityWorker(Actor* a);
+    ExportPhredQualityWorker(Actor *a);
 
     virtual void init();
-    virtual Task* tick();
+    virtual Task *tick();
     virtual void cleanup();
 
 protected:
     CommunicationChannel *input;
-    QString             fileName;
-    QList<U2SequenceObject*> seqObjList;
-    Task*               currentTask;
-
+    QString fileName;
+    QList<U2SequenceObject *> seqObjList;
+    Task *currentTask;
 };
 
 class ExportPhredQualityWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
     static void init();
-    ExportPhredQualityWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual Worker* createWorker(Actor* a);
+    ExportPhredQualityWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual Worker *createWorker(Actor *a);
 };
 
-} // Workflow namespace
-} // U2 namespace
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _EXPORT_PHRED_QUALITY_WORKER_H_
+#endif    // _EXPORT_PHRED_QUALITY_WORKER_H_

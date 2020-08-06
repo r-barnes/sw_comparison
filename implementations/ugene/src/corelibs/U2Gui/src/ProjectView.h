@@ -22,10 +22,10 @@
 #ifndef _U2_PROJECT_VIEW_H_
 #define _U2_PROJECT_VIEW_H_
 
-#include <U2Core/PluginModel.h>
-#include <U2Core/ServiceTypes.h>
-#include <U2Core/SelectionModel.h>
 #include <U2Core/DocumentModel.h>
+#include <U2Core/PluginModel.h>
+#include <U2Core/SelectionModel.h>
+#include <U2Core/ServiceTypes.h>
 
 class QMenu;
 class QAction;
@@ -41,20 +41,19 @@ class GUrl;
 class U2GUI_EXPORT ProjectView : public Service {
     Q_OBJECT
 public:
-    ProjectView(const QString& sname, const QString& sdesc) 
-        : Service(Service_ProjectView, sname, sdesc, QList<ServiceType>()<<Service_Project)
-    {
+    ProjectView(const QString &sname, const QString &sdesc)
+        : Service(Service_ProjectView, sname, sdesc, QList<ServiceType>() << Service_Project) {
     }
 
-    virtual const DocumentSelection* getDocumentSelection() const = 0;
+    virtual const DocumentSelection *getDocumentSelection() const = 0;
 
-    virtual const GObjectSelection* getGObjectSelection() const = 0;
+    virtual const GObjectSelection *getGObjectSelection() const = 0;
 
-    virtual void highlightItem(Document*) = 0;
+    virtual void highlightItem(Document *) = 0;
 
 signals:
-    void si_onDocTreePopupMenuRequested(QMenu& m);
+    void si_onDocTreePopupMenuRequested(QMenu &m);
 };
 
-}//namespace
+}    // namespace U2
 #endif

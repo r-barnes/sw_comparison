@@ -19,12 +19,12 @@
  * MA 02110-1301, USA.
  */
 
+#include "TextContentFilterTask.h"
+
 #include <U2Core/TextObject.h>
 #include <U2Core/U2SafePoints.h>
 
 #include "../ProjectFilterNames.h"
-
-#include "TextContentFilterTask.h"
 
 namespace U2 {
 
@@ -32,10 +32,8 @@ namespace U2 {
 /// TextContentFilterTask
 //////////////////////////////////////////////////////////////////////////
 
-TextContentFilterTask::TextContentFilterTask(const ProjectTreeControllerModeSettings &settings, const QList<QPointer<Document> > &docs)
-    : AbstractProjectFilterTask(settings, ProjectFilterNames::TEXT_CONTENT_FILTER_NAME, docs)
-{
-
+TextContentFilterTask::TextContentFilterTask(const ProjectTreeControllerModeSettings &settings, const QList<QPointer<Document>> &docs)
+    : AbstractProjectFilterTask(settings, ProjectFilterNames::TEXT_CONTENT_FILTER_NAME, docs) {
 }
 
 bool TextContentFilterTask::filterAcceptsObject(GObject *obj) {
@@ -48,10 +46,9 @@ bool TextContentFilterTask::filterAcceptsObject(GObject *obj) {
 /// TextContentFilterTaskFactory
 //////////////////////////////////////////////////////////////////////////
 
-AbstractProjectFilterTask * TextContentFilterTaskFactory::createNewTask(const ProjectTreeControllerModeSettings &settings,
-    const QList<QPointer<Document> > &docs) const
-{
+AbstractProjectFilterTask *TextContentFilterTaskFactory::createNewTask(const ProjectTreeControllerModeSettings &settings,
+                                                                       const QList<QPointer<Document>> &docs) const {
     return new TextContentFilterTask(settings, docs);
 }
 
-} // namespace U2
+}    // namespace U2

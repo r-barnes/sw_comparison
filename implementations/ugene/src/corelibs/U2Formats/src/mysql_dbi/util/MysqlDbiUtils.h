@@ -22,10 +22,10 @@
 #ifndef _U2_MYSQL_DBI_UTILS_H_
 #define _U2_MYSQL_DBI_UTILS_H_
 
-#include <U2Core/global.h>
-#include <U2Core/U2Type.h>
-
 #include <QString>
+
+#include <U2Core/U2Type.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -36,33 +36,29 @@ class U2OpStatus;
 class U2FORMATS_EXPORT MysqlDbiUtils {
 public:
     /** Creates an URL that contains authentification information */
-    static QString createAuthDbiUrl(const QString& userName, const QString& password, const QString& host,
-        int port, const QString& dbName);
+    static QString createAuthDbiUrl(const QString &userName, const QString &password, const QString &host, int port, const QString &dbName);
 
-    static QString createAuthDbiUrl(const QString& userName, const QString& password, const QString& dbUrl);
+    static QString createAuthDbiUrl(const QString &userName, const QString &password, const QString &dbUrl);
 
-    static bool parseAuthDbiUrl(const QString& url, QString& userName, QString& password, QString& host,
-        int& port, QString& dbName);
+    static bool parseAuthDbiUrl(const QString &url, QString &userName, QString &password, QString &host, int &port, QString &dbName);
 
     static U2DbiId createDbiUrl(const QString &host, int port, const QString &dbName);
 
-    static bool parseDbiUrl(const U2DbiId& dbiId, QString& host, int& port, QString& dbName);
+    static bool parseDbiUrl(const U2DbiId &dbiId, QString &host, int &port, QString &dbName);
 
-    static bool isDbInitialized(const U2DbiRef &dbiRef, U2OpStatus& os);
+    static bool isDbInitialized(const U2DbiRef &dbiRef, U2OpStatus &os);
 
     /**
      * Updates the object name and increments the version.
      * The changes are tracked if it is needed.
      * Applies all changes to @object too.
      */
-    static void renameObject(MysqlDbi* dbi, U2Object& object, const QString& newName,
-        U2OpStatus& os);
-    static void renameObject(MysqlModificationAction& updateAction, MysqlDbi* dbi,
-        U2Object& object, const QString& newName, U2OpStatus& os);
+    static void renameObject(MysqlDbi *dbi, U2Object &object, const QString &newName, U2OpStatus &os);
+    static void renameObject(MysqlModificationAction &updateAction, MysqlDbi *dbi, U2Object &object, const QString &newName, U2OpStatus &os);
 
     static void upgrade(const U2DbiRef &dbiRef, U2OpStatus &os);
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MYSQL_DBI_UTILS_H_
+#endif    // _U2_MYSQL_DBI_UTILS_H_

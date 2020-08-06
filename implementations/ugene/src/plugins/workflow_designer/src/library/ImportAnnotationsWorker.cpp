@@ -19,31 +19,35 @@
  * MA 02110-1301, USA.
  */
 
+#include "ImportAnnotationsWorker.h"
+
 #include <QScopedPointer>
 
-#include <U2Core/GObjectTypes.h>
+#include <U2Core/AnnotationTableObject.h>
 #include <U2Core/DNASequence.h>
+#include <U2Core/DocumentModel.h>
+#include <U2Core/FailTask.h>
+#include <U2Core/GObjectTypes.h>
+#include <U2Core/L10n.h>
 #include <U2Core/LoadDocumentTask.h>
 #include <U2Core/MultiTask.h>
-#include <U2Core/TaskSignalMapper.h>
-#include <U2Core/DocumentModel.h>
-#include <U2Core/AnnotationTableObject.h>
 #include <U2Core/QVariantUtils.h>
-#include <U2Core/FailTask.h>
-#include <U2Core/L10n.h>
-#include <U2Lang/BaseSlots.h>
-#include <U2Lang/BaseTypes.h>
-#include <U2Lang/BasePorts.h>
-#include <U2Lang/BaseAttributes.h>
-#include <U2Lang/BaseActorCategories.h>
-#include <U2Lang/CoreLibConstants.h>
-#include <U2Lang/WorkflowEnv.h>
-#include <U2Lang/ActorPrototypeRegistry.h>
-#include <U2Gui/DialogUtils.h>
+#include <U2Core/TaskSignalMapper.h>
+
 #include <U2Designer/DelegateEditors.h>
 
+#include <U2Gui/DialogUtils.h>
+
+#include <U2Lang/ActorPrototypeRegistry.h>
+#include <U2Lang/BaseActorCategories.h>
+#include <U2Lang/BaseAttributes.h>
+#include <U2Lang/BasePorts.h>
+#include <U2Lang/BaseSlots.h>
+#include <U2Lang/BaseTypes.h>
+#include <U2Lang/CoreLibConstants.h>
+#include <U2Lang/WorkflowEnv.h>
+
 #include "DocActors.h"
-#include "ImportAnnotationsWorker.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -62,23 +66,23 @@ void ImportAnnotationsWorker::init() {
     assert(inPort && outPort);
 }
 
-Task * ImportAnnotationsWorker::tick() {
+Task *ImportAnnotationsWorker::tick() {
     if (inPort->hasMessage()) {
         Message inputMessage = getMessageAndSetupScriptValues(inPort);
         QList<QString> urls = WorkflowUtils::expandToUrls(
             actor->getParameter(BaseAttributes::URL_IN_ATTRIBUTE().getId())->getAttributeValue<QString>(context));
 
-        QList<Task*> loadTasks;
-        foreach(const QString & url, urls) {
-            LoadDocumentTask * loadDocTask = LoadDocumentTask::getDefaultLoadDocTask(url);
-            if(loadDocTask == NULL) {
+        QList<Task *> loadTasks;
+        foreach (const QString &url, urls) {
+            LoadDocumentTask *loadDocTask = LoadDocumentTask::getDefaultLoadDocTask(url);
+            if (loadDocTask == NULL) {
                 qDeleteAll(loadTasks);
                 return new FailTask(L10N::errorOpeningFileRead(url));
             }
             loadTasks << loadDocTask;
         }
-        Task * ret = new MultiTask(tr("Load documents with annotations"), loadTasks);
-        connect(new TaskSignalMapper(ret), SIGNAL(si_taskFinished(Task*)), SLOT(sl_docsLoaded(Task*)));
+        Task *ret = new MultiTask(tr("Load documents with annotations"), loadTasks);
+        connect(new TaskSignalMapper(ret), SIGNAL(si_taskFinished(Task *)), SLOT(sl_docsLoaded(Task *)));
 
         addTaskAnnotations(inputMessage.getData(), ret);
         return ret;
@@ -93,7 +97,7 @@ void ImportAnnotationsWorker::addTaskAnnotations(const QVariant &data, Task *t) 
     QVariantMap dataMap = data.toMap();
     if (dataMap.contains(BaseSlots::ANNOTATION_TABLE_SLOT().getId())) {
         const QList<SharedAnnotationData> result = StorageUtils::getAnnotationTable(context->getDataStorage(),
-            dataMap[BaseSlots::ANNOTATION_TABLE_SLOT().getId()]);
+                                                                                    dataMap[BaseSlots::ANNOTATION_TABLE_SLOT().getId()]);
         annsMap[t] = result;
     }
 }
@@ -136,7 +140,6 @@ void ImportAnnotationsWorker::sl_docsLoaded(Task *ta) {
 }
 
 void ImportAnnotationsWorker::cleanup() {
-
 }
 
 /*********************************
@@ -144,35 +147,33 @@ void ImportAnnotationsWorker::cleanup() {
  *********************************/
 void ImportAnnotationsWorkerFactory::init() {
     // ports description
-    QList<PortDescriptor*> portDescs;
+    QList<PortDescriptor *> portDescs;
     {
         QMap<Descriptor, DataTypePtr> inM;
         inM[BaseSlots::ANNOTATION_TABLE_SLOT()] = BaseTypes::ANNOTATION_TABLE_LIST_TYPE();
         DataTypePtr inSet(new MapDataType(IMPORT_ANNOTATIONS_IN_TYPE_ID, inM));
-        Descriptor inPortDesc(BasePorts::IN_ANNOTATIONS_PORT_ID(), ImportAnnotationsWorker::tr("Input annotations"),
-            ImportAnnotationsWorker::tr("Input annotation table. Read annotations will be added to it"));
+        Descriptor inPortDesc(BasePorts::IN_ANNOTATIONS_PORT_ID(), ImportAnnotationsWorker::tr("Input annotations"), ImportAnnotationsWorker::tr("Input annotation table. Read annotations will be added to it"));
         portDescs << new PortDescriptor(inPortDesc, inSet, true);
 
         QMap<Descriptor, DataTypePtr> outM;
         outM[BaseSlots::ANNOTATION_TABLE_SLOT()] = BaseTypes::ANNOTATION_TABLE_TYPE();
         DataTypePtr outSet(new MapDataType(IMPORT_ANNOTATIONS_OUT_TYPE_ID, outM));
-        Descriptor outPortDesc(BasePorts::OUT_ANNOTATIONS_PORT_ID(), ImportAnnotationsWorker::tr("Output annotations"),
-            ImportAnnotationsWorker::tr("Output annotation table"));
+        Descriptor outPortDesc(BasePorts::OUT_ANNOTATIONS_PORT_ID(), ImportAnnotationsWorker::tr("Output annotations"), ImportAnnotationsWorker::tr("Output annotation table"));
         portDescs << new PortDescriptor(outPortDesc, outSet, false);
     }
     // attributes description
-    QList<Attribute*> attrs;
+    QList<Attribute *> attrs;
     {
         attrs << new Attribute(BaseAttributes::URL_IN_ATTRIBUTE(), BaseTypes::STRING_TYPE(), true);
     }
 
     Descriptor protoDesc(ImportAnnotationsWorkerFactory::ACTOR_ID,
-        ImportAnnotationsWorker::tr("Merge Annotations"),
-        ImportAnnotationsWorker::tr("Read input annotation table and merge it with supplied annotation tables."));
-    ActorPrototype * proto = new IntegralBusActorPrototype(protoDesc, portDescs, attrs);
+                         ImportAnnotationsWorker::tr("Merge Annotations"),
+                         ImportAnnotationsWorker::tr("Read input annotation table and merge it with supplied annotation tables."));
+    ActorPrototype *proto = new IntegralBusActorPrototype(protoDesc, portDescs, attrs);
 
     //proto delegates
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
         delegates[BaseAttributes::URL_IN_ATTRIBUTE().getId()] = new URLDelegate(
             DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::ANNOTATION_TABLE, true), QString(), true, false, false);
@@ -183,9 +184,9 @@ void ImportAnnotationsWorkerFactory::init() {
     WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID)->registerEntry(new ImportAnnotationsWorkerFactory());
 }
 
-Worker * ImportAnnotationsWorkerFactory::createWorker(Actor* a) {
+Worker *ImportAnnotationsWorkerFactory::createWorker(Actor *a) {
     return new ImportAnnotationsWorker(a);
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

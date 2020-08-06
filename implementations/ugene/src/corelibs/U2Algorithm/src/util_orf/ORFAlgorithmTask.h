@@ -22,27 +22,30 @@
 #ifndef _U2_ORF_ALG_TASK_H_
 #define _U2_ORF_ALG_TASK_H_
 
+#include <QMutex>
+
+#include <U2Core/DNASequenceObject.h>
 #include <U2Core/Task.h>
 #include <U2Core/U2Region.h>
-#include <U2Core/DNASequenceObject.h>
 
 #include "ORFFinder.h"
-
-#include <QMutex>
 
 namespace U2 {
 
 class U2ALGORITHM_EXPORT ORFFindTask : public Task, public ORFFindResultsListener {
     Q_OBJECT
 public:
-    ORFFindTask(const ORFAlgorithmSettings& s,const U2EntityRef& entityRef);
+    ORFFindTask(const ORFAlgorithmSettings &s, const U2EntityRef &entityRef);
 
     virtual void run();
-    virtual void onResult(const ORFFindResult& r, U2OpStatus& oss);
+    virtual void onResult(const ORFFindResult &r, U2OpStatus &oss);
 
     QList<ORFFindResult> popResults();
 
-    const ORFAlgorithmSettings& getSettings() const {return config;}
+    const ORFAlgorithmSettings &getSettings() const {
+        return config;
+    }
+
 private:
     ORFAlgorithmSettings config;
     U2EntityRef entityRef;
@@ -50,7 +53,6 @@ private:
     QMutex lock;
 };
 
-
-} //namespace
+}    // namespace U2
 
 #endif

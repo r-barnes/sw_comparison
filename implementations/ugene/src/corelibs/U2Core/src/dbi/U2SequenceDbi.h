@@ -22,9 +22,9 @@
 #ifndef _U2_SEQUENCE_DBI_H_
 #define _U2_SEQUENCE_DBI_H_
 
-#include <U2Core/U2Type.h>
 #include <U2Core/U2Dbi.h>
 #include <U2Core/U2Sequence.h>
+#include <U2Core/U2Type.h>
 
 namespace U2 {
 
@@ -33,21 +33,23 @@ namespace U2 {
 */
 class U2SequenceDbi : public U2ChildDbi {
 protected:
-    U2SequenceDbi(U2Dbi* rootDbi) : U2ChildDbi(rootDbi){}
+    U2SequenceDbi(U2Dbi *rootDbi)
+        : U2ChildDbi(rootDbi) {
+    }
 
 public:
     /**
         Reads sequence object from database by its id.
         If there is no sequence object with the specified id returns a default constructed value.
     */
-    virtual U2Sequence getSequenceObject(const U2DataId& sequenceId, U2OpStatus& os) = 0;
+    virtual U2Sequence getSequenceObject(const U2DataId &sequenceId, U2OpStatus &os) = 0;
 
     /**
         Reads specified sequence data region from database.
         The region must be valid region within sequence bounds.
         If there is no sequence with the specified id returns an empty QByteArray.
     */
-    virtual QByteArray getSequenceData(const U2DataId& sequenceId, const U2Region& region, U2OpStatus& os) = 0;
+    virtual QByteArray getSequenceData(const U2DataId &sequenceId, const U2Region &region, U2OpStatus &os) = 0;
 
     /**
         Adds a new (empty) sequence instance into database.
@@ -58,15 +60,14 @@ public:
 
         Requires: U2DbiFeature_WriteSequence feature support
     */
-    virtual void createSequenceObject(U2Sequence& sequence, const QString& folder, U2OpStatus& os,
-        U2DbiObjectRank rank = U2DbiObjectRank_TopLevel) = 0;
+    virtual void createSequenceObject(U2Sequence &sequence, const QString &folder, U2OpStatus &os, U2DbiObjectRank rank = U2DbiObjectRank_TopLevel) = 0;
 
     /**
         Updates sequence object fields.
 
         Requires: U2DbiFeature_WriteSequence feature support.
     */
-    virtual void updateSequenceObject(U2Sequence& sequence, U2OpStatus& os) = 0;
+    virtual void updateSequenceObject(U2Sequence &sequence, U2OpStatus &os) = 0;
 
     /**
         Updates sequence region:
@@ -86,12 +87,10 @@ public:
 
         Hint: if @emptySequence is set then the start position of the inserting data is not calculated
     */
-    virtual void updateSequenceData(const U2DataId& sequenceId, const U2Region& regionToReplace, const QByteArray& dataToInsert, const QVariantMap &hints, U2OpStatus& os) = 0;
-    virtual void updateSequenceData(const U2DataId &masterId, const U2DataId &sequenceId,
-                                    const U2Region &regionToReplace, const QByteArray &dataToInsert, const QVariantMap &hints, U2OpStatus &os) = 0;
-
+    virtual void updateSequenceData(const U2DataId &sequenceId, const U2Region &regionToReplace, const QByteArray &dataToInsert, const QVariantMap &hints, U2OpStatus &os) = 0;
+    virtual void updateSequenceData(const U2DataId &masterId, const U2DataId &sequenceId, const U2Region &regionToReplace, const QByteArray &dataToInsert, const QVariantMap &hints, U2OpStatus &os) = 0;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

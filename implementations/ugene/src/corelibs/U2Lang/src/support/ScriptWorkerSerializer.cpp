@@ -19,13 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "ScriptWorkerSerializer.h"
+
 #include <QDomElement>
 
 #include <U2Lang/BaseTypes.h>
 #include <U2Lang/IncludedProtoFactory.h>
 #include <U2Lang/WorkflowEnv.h>
-
-#include "ScriptWorkerSerializer.h"
 
 #define WORKFLOW_DOC "GB2WORKFLOW"
 #define ACTOR_ELEMENT "Actor"
@@ -46,8 +46,8 @@ namespace U2 {
 
 Workflow::ActorPrototype *ScriptWorkerSerializer::string2actor(const QString data, const QString actorName, QString &error, const QString actorFilePath) {
     QDomDocument xml;
-    xml.setContent(data,false,&error);
-    if(!error.isEmpty()) {
+    xml.setContent(data, false, &error);
+    if (!error.isEmpty()) {
         return NULL;
     }
     QDomElement doc = xml.documentElement();
@@ -56,7 +56,7 @@ Workflow::ActorPrototype *ScriptWorkerSerializer::string2actor(const QString dat
 
     QDomNodeList inputs = doc.elementsByTagName(IN_SLOT_ELEMENT);
     QList<DataTypePtr> inputTypes;
-    for(int i = 0; i < inputs.size(); i++) {
+    for (int i = 0; i < inputs.size(); i++) {
         QDomElement slot = inputs.item(i).toElement();
         QString id = slot.attribute(SLOT_ID);
         inputTypes << dtr->getById(id);
@@ -64,25 +64,24 @@ Workflow::ActorPrototype *ScriptWorkerSerializer::string2actor(const QString dat
 
     QDomNodeList outputs = doc.elementsByTagName(OUT_SLOT_ELEMENT);
     QList<DataTypePtr> outputTypes;
-    for(int i = 0; i < outputs.size(); i++) {
+    for (int i = 0; i < outputs.size(); i++) {
         QDomElement slot = outputs.item(i).toElement();
         QString id = slot.attribute(SLOT_ID);
         outputTypes << dtr->getById(id);
     }
 
     QDomNodeList attributes = doc.elementsByTagName(ATTR_ELEMENT);
-    QList<Attribute *>attrs;
-    for(int i = 0;i < attributes.size(); i++) {
+    QList<Attribute *> attrs;
+    for (int i = 0; i < attributes.size(); i++) {
         QDomElement attr = attributes.item(i).toElement();
         QString typeId = attr.attribute(TYPE_ID);
         QString name = attr.attribute(NAME_ID);
 
         DataTypePtr ptr = dtr->getById(typeId);
         Descriptor desc(name, name, ptr->getDisplayName());
-        if(ptr == BaseTypes::BOOL_TYPE()) {
+        if (ptr == BaseTypes::BOOL_TYPE()) {
             attrs << new Attribute(desc, ptr, false, QVariant(false));
-        }
-        else {
+        } else {
             attrs << new Attribute(desc, ptr);
         }
     }
@@ -109,4 +108,4 @@ Workflow::ActorPrototype *ScriptWorkerSerializer::string2actor(const QString dat
     return proto;
 }
 
-} // U2
+}    // namespace U2

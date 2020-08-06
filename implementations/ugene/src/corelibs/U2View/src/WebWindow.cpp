@@ -19,17 +19,16 @@
  * MA 02110-1301, USA.
  */
 
-#include <QVBoxLayout>
-#include <QTextBrowser>
-
 #include "WebWindow.h"
+
+#include <QTextBrowser>
+#include <QVBoxLayout>
 
 namespace U2 {
 
-WebWindow::WebWindow(const QString& title, const QString& htmlContent)
-: MWMDIWindow(title)
-{
-    QVBoxLayout* layout = new QVBoxLayout();
+WebWindow::WebWindow(const QString &title, const QString &htmlContent)
+    : MWMDIWindow(title) {
+    QVBoxLayout *layout = new QVBoxLayout();
     layout->setMargin(0);
     setLayout(layout);
 
@@ -39,4 +38,4 @@ WebWindow::WebWindow(const QString& title, const QString& htmlContent)
     layout->addWidget(textBrowser);
 }
 
-} //namespace
+}    // namespace U2

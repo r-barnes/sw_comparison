@@ -29,11 +29,11 @@ namespace U2 {
 class StringTieSupport : public ExternalTool {
     Q_OBJECT
 public:
-    StringTieSupport(const QString& id, const QString& name, const QString& path = "");
+    StringTieSupport(const QString &id, const QString &name, const QString &path = "");
 
     static const QString ET_STRINGTIE;
     static const QString ET_STRINGTIE_ID;
 };
 
-} // namespace
-#endif // _U2_STRINGTIE_SUPPORT_H_
+}    // namespace U2
+#endif    // _U2_STRINGTIE_SUPPORT_H_

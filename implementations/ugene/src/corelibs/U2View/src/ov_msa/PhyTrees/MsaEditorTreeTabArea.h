@@ -27,8 +27,7 @@
 
 #include "../MsaUpdatedWidgetInterface.h"
 
-namespace U2
-{
+namespace U2 {
 
 class MAlignmentRow;
 class MSADistanceMatrix;
@@ -37,11 +36,13 @@ class MSAEditor;
 class MsaEditorTreeTab : public QTabWidget {
     Q_OBJECT
 public:
-    MsaEditorTreeTab(MSAEditor* msa, QWidget* parent);
+    MsaEditorTreeTab(MSAEditor *msa, QWidget *parent);
 
     void addTab(QWidget *page, const QString &label);
     void deleteTree(int index);
-    QWidget* getCurrentWidget() const {return currentWidget();}
+    QWidget *getCurrentWidget() const {
+        return currentWidget();
+    }
     void addExistingTree();
 public slots:
     void sl_addTabTriggered();
@@ -54,41 +55,47 @@ private slots:
     void sl_onContextMenuRequested(const QPoint &pos);
 signals:
     void si_tabsCountChanged(int curTabsNumber);
-private:
-    void processMenuAction(QAction* triggeredAction);
 
-    MSAEditor*          msa;
-    QPushButton*        addTabButton;
-    QPoint              menuPos;
-    QAction*            closeOtherTabs;
-    QAction*            closeAllTabs;
-    QAction*            closeTab;
+private:
+    void processMenuAction(QAction *triggeredAction);
+
+    MSAEditor *msa;
+    QPushButton *addTabButton;
+    QPoint menuPos;
+    QAction *closeOtherTabs;
+    QAction *closeAllTabs;
+    QAction *closeTab;
 };
 
-class MsaEditorTreeTabArea : public QWidget{
+class MsaEditorTreeTabArea : public QWidget {
     Q_OBJECT
 public:
-    MsaEditorTreeTabArea(MSAEditor* msa, QWidget* parent);
+    MsaEditorTreeTabArea(MSAEditor *msa, QWidget *parent);
 
     void addTab(QWidget *page, const QString &label);
     void deleteTab(QWidget *page);
 
-    MsaEditorTreeTab* getCurrentTabWidget() const { return treeTabWidget; }
-    QWidget*          getCurrentWidget() const { return treeTabWidget->getCurrentWidget(); }
+    MsaEditorTreeTab *getCurrentTabWidget() const {
+        return treeTabWidget;
+    }
+    QWidget *getCurrentWidget() const {
+        return treeTabWidget->getCurrentWidget();
+    }
+
 protected:
     void paintEvent(QPaintEvent *);
-    virtual MsaEditorTreeTab* createTabWidget();
+    virtual MsaEditorTreeTab *createTabWidget();
     void initialize();
 
 signals:
     void si_tabsCountChanged(int curTabsNumber);
-private:
-    QPushButton*                        addTabButton;
-    MSAEditor*                          msa;
-    MsaEditorTreeTab*                   treeTabWidget;
-    QLayout*                            currentLayout;
-};
-} //namespace
 
+private:
+    QPushButton *addTabButton;
+    MSAEditor *msa;
+    MsaEditorTreeTab *treeTabWidget;
+    QLayout *currentLayout;
+};
+}    // namespace U2
 
 #endif

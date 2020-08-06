@@ -19,20 +19,18 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-#include <QTreeWidget>
-
 #include "DigestSequenceDialogFiller.h"
 #include <primitives/GTWidget.h>
+
+#include <QApplication>
+#include <QTreeWidget>
 
 namespace U2 {
 
 #define GT_CLASS_NAME "DigestSequenceDialogFiller"
 
 DigestSequenceDialogFiller::DigestSequenceDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario)
-    : Filler(os, "DigestSequenceDialog", scenario)
-{
-
+    : Filler(os, "DigestSequenceDialog", scenario) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
@@ -48,4 +46,4 @@ void DigestSequenceDialogFiller::commonScenario() {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

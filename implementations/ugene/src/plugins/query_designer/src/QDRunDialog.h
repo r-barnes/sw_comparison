@@ -22,8 +22,8 @@
 #ifndef _U2_QD_RUN_DIALOG_H_
 #define _U2_QD_RUN_DIALOG_H_
 
-#include <ui_RunQueryDialog.h>
 #include <ui_QDDialog.h>
+#include <ui_RunQueryDialog.h>
 
 #include <U2Core/Task.h>
 #include <U2Core/U2Region.h>
@@ -43,24 +43,27 @@ class SaveDocumentTask;
 class QDRunDialogTask : public Task {
     Q_OBJECT
 public:
-    QDRunDialogTask(QDScheme* scheme, const QString& inUri, const QString& outUri, bool addToProject);
+    QDRunDialogTask(QDScheme *scheme, const QString &inUri, const QString &outUri, bool addToProject);
+
 protected:
-    virtual QList<Task*> onSubTaskFinished(Task* subTask);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
 private slots:
     void sl_updateProgress();
+
 private:
-    QList<Task*> init();
+    QList<Task *> init();
     void setupQuery();
+
 private:
-    QDScheme*               scheme;
-    QString                 inUri;
-    QString                 output;
-    bool                    addToProject;
-    Task*                   openProjTask;
-    DocumentProviderTask*   loadTask;
-    QDScheduler*            scheduler;
-    Document*               docWithSequence;
-    AnnotationTableObject *   annObj;
+    QDScheme *scheme;
+    QString inUri;
+    QString output;
+    bool addToProject;
+    Task *openProjTask;
+    DocumentProviderTask *loadTask;
+    QDScheduler *scheduler;
+    Document *docWithSequence;
+    AnnotationTableObject *annObj;
 };
 
 class QueryViewController;
@@ -68,7 +71,7 @@ class QueryViewController;
 class QDRunDialog : public QDialog, public Ui_RunQueryDlg {
     Q_OBJECT
 public:
-    QDRunDialog(QDScheme* _scheme, QWidget* parent, const QString& defaultIn = QString(), const QString& defaultOut = QString());
+    QDRunDialog(QDScheme *_scheme, QWidget *parent, const QString &defaultIn = QString(), const QString &defaultOut = QString());
 
 private slots:
     void sl_run();
@@ -78,7 +81,7 @@ private slots:
 private:
     void initSaveController(const QString &defaultOut);
 
-    QDScheme* scheme;
+    QDScheme *scheme;
     SaveDocumentController *saveController;
 
     static const QString OUTPUT_FILE_DIR_DOMAIN;
@@ -90,21 +93,23 @@ class CreateAnnotationWidgetController;
 class QDDialog : public QDialog, public Ui_QDDialog {
     Q_OBJECT
 public:
-    QDDialog(ADVSequenceObjectContext* ctx);
+    QDDialog(ADVSequenceObjectContext *ctx);
+
 private:
     void addAnnotationsWidget();
     void connectGUI();
 private slots:
     void sl_selectScheme();
     void sl_okBtnClicked();
+
 private:
-    ADVSequenceObjectContext*           ctx;
-    CreateAnnotationWidgetController*   cawc;
-    QDScheme*                           scheme;
-    QTextDocument*                      txtDoc;
-    RegionSelector*                     rs;
+    ADVSequenceObjectContext *ctx;
+    CreateAnnotationWidgetController *cawc;
+    QDScheme *scheme;
+    QTextDocument *txtDoc;
+    RegionSelector *rs;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

@@ -23,6 +23,7 @@
 #define _U2_DNA_STAT_PLUGIN_H_
 
 #include <U2Core/PluginModel.h>
+
 #include <U2Gui/ObjectViewModel.h>
 
 namespace U2 {
@@ -33,36 +34,36 @@ public:
     DNAStatPlugin();
 
 private:
-    GObjectViewWindowContext* statViewCtx;
-    GObjectViewWindowContext* distanceViewCtx;
+    GObjectViewWindowContext *statViewCtx;
+    GObjectViewWindowContext *distanceViewCtx;
 };
 
-class DNAStatMSAEditorContext: public GObjectViewWindowContext {
+class DNAStatMSAEditorContext : public GObjectViewWindowContext {
     Q_OBJECT
 public:
-    DNAStatMSAEditorContext(QObject* p);
+    DNAStatMSAEditorContext(QObject *p);
 
 protected slots:
     void sl_showMSAProfileDialog();
-    void buildMenu(GObjectView* v, QMenu* m);
+    void buildMenu(GObjectView *v, QMenu *m);
+
 protected:
-    virtual void initViewContext(GObjectView* view);
+    virtual void initViewContext(GObjectView *view);
 };
 
-class DistanceMatrixMSAEditorContext: public GObjectViewWindowContext {
+class DistanceMatrixMSAEditorContext : public GObjectViewWindowContext {
     Q_OBJECT
 public:
-    DistanceMatrixMSAEditorContext(QObject* p);
+    DistanceMatrixMSAEditorContext(QObject *p);
 
 protected slots:
     void sl_showDistanceMatrixDialog();
-    void buildMenu(GObjectView* v, QMenu* m);
+    void buildMenu(GObjectView *v, QMenu *m);
+
 protected:
-    virtual void initViewContext(GObjectView* view);
+    virtual void initViewContext(GObjectView *view);
 };
 
-
-} //namespace
+}    // namespace U2
 
 #endif
-

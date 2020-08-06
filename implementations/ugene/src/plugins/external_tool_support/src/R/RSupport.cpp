@@ -20,18 +20,21 @@
  */
 
 #include "RSupport.h"
-#include "ExternalToolSupportSettingsController.h"
-#include "ExternalToolSupportSettings.h"
-#include "conduct_go/ConductGOSupport.h"
-#include "seqpos/SeqPosSupport.h"
+
+#include <QMainWindow>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/ScriptingToolRegistry.h>
-#include <U2Core/U2SafePoints.h>
 #include <U2Core/U2OpStatusUtils.h>
+#include <U2Core/U2SafePoints.h>
+
 #include <U2Gui/MainWindow.h>
-#include <QMainWindow>
+
+#include "ExternalToolSupportSettings.h"
+#include "ExternalToolSupportSettingsController.h"
+#include "conduct_go/ConductGOSupport.h"
+#include "seqpos/SeqPosSupport.h"
 
 namespace U2 {
 
@@ -66,9 +69,8 @@ const QString RModuleOrgdmegdbSupport::ET_R_ORG_DM_EG_DB_ID = "USUPP_ORG_DM_EG_D
 const QString RModuleSeqlogoSupport::ET_R_SEQLOGO = "seqLogo";
 const QString RModuleSeqlogoSupport::ET_R_SEQLOGO_ID = "USUPP_SEQLOGO";
 
-RSupport::RSupport(const QString& id, const QString& name, const QString& path)
-    : RunnerTool(QStringList(), id, name, path)
-{
+RSupport::RSupport(const QString &id, const QString &name, const QString &path)
+    : RunnerTool(QStringList(), id, name, path) {
     if (AppContext::getMainWindow()) {
         icon = QIcon(":external_tool_support/images/R.png");
         grayIcon = QIcon(":external_tool_support/images/R_gray.png");
@@ -78,21 +80,22 @@ RSupport::RSupport(const QString& id, const QString& name, const QString& path)
 #ifdef Q_OS_WIN
     executableFileName = "Rscript.exe";
 #else
-#if defined(Q_OS_UNIX)
+#    if defined(Q_OS_UNIX)
     executableFileName = "Rscript";
-#endif
+#    endif
 #endif
     validMessage = "R scripting front-end";
     validationArguments << "--version";
 
-    description+=tr("Rscript interpreter");
+    description += tr("Rscript interpreter");
     versionRegExp = QRegExp("(\\d+.\\d+.\\d+)");
     toolKitName = "R";
 
     muted = true;
 }
 
-RModuleSupport::RModuleSupport(const QString& id, const QString& name) : ExternalToolModule(id, name) {
+RModuleSupport::RModuleSupport(const QString &id, const QString &name)
+    : ExternalToolModule(id, name) {
     if (AppContext::getMainWindow()) {
         icon = QIcon(":external_tool_support/images/R.png");
         grayIcon = QIcon(":external_tool_support/images/R_gray.png");
@@ -102,9 +105,9 @@ RModuleSupport::RModuleSupport(const QString& id, const QString& name) : Externa
 #ifdef Q_OS_WIN
     executableFileName = "Rscript.exe";
 #else
-    #if defined(Q_OS_UNIX)
+#    if defined(Q_OS_UNIX)
     executableFileName = "Rscript";
-    #endif
+#    endif
 #endif
 
     versionRegExp = QRegExp("(\\d+.\\d+.\\d+)");
@@ -127,88 +130,102 @@ QString RModuleSupport::getScript() const {
     return QString("list <- installed.packages();list[grep('%1',rownames(list))];list['%1','Version'];");
 }
 
-RModuleGostatsSupport::RModuleGostatsSupport(const QString &id, const QString &name) : RModuleSupport(id, name) {
+RModuleGostatsSupport::RModuleGostatsSupport(const QString &id, const QString &name)
+    : RModuleSupport(id, name) {
     description += ET_R_GOSTATS + tr(": Rscript module for the %1 tool").arg(ConductGOSupport::ET_GO_ANALYSIS);
     validationArguments << getScript().arg(ET_R_GOSTATS);
     validMessage = QString("\"%1\"").arg(ET_R_GOSTATS);
 }
 
-RModuleGodbSupport::RModuleGodbSupport(const QString &id, const QString &name) : RModuleSupport(id, name) {
+RModuleGodbSupport::RModuleGodbSupport(const QString &id, const QString &name)
+    : RModuleSupport(id, name) {
     description += ET_R_GO_DB + tr(": Rscript module for the %1 tool").arg(ConductGOSupport::ET_GO_ANALYSIS);
     validationArguments << getScript().arg(ET_R_GO_DB);
     validMessage = QString("\"%1\"").arg(ET_R_GO_DB);
 }
 
-RModuleHgu133adbSupport::RModuleHgu133adbSupport(const QString &id, const QString &name) : RModuleSupport(id, name) {
+RModuleHgu133adbSupport::RModuleHgu133adbSupport(const QString &id, const QString &name)
+    : RModuleSupport(id, name) {
     description += ET_R_HGU133A_DB + tr(": Rscript module for the %1 tool").arg(ConductGOSupport::ET_GO_ANALYSIS);
     validationArguments << getScript().arg(ET_R_HGU133A_DB);
     validMessage = QString("\"%1\"").arg(ET_R_HGU133A_DB);
 }
 
-RModuleHgu133bdbSupport::RModuleHgu133bdbSupport(const QString &id, const QString &name) : RModuleSupport(id, name) {
+RModuleHgu133bdbSupport::RModuleHgu133bdbSupport(const QString &id, const QString &name)
+    : RModuleSupport(id, name) {
     description += ET_R_HGU133B_DB + tr(": Rscript module for the %1 tool").arg(ConductGOSupport::ET_GO_ANALYSIS);
     validationArguments << getScript().arg(ET_R_HGU133B_DB);
     validMessage = QString("\"%1\"").arg(ET_R_HGU133B_DB);
 }
 
-RModuleHgu133plus2dbSupport::RModuleHgu133plus2dbSupport(const QString &id, const QString &name) : RModuleSupport(id, name) {
+RModuleHgu133plus2dbSupport::RModuleHgu133plus2dbSupport(const QString &id, const QString &name)
+    : RModuleSupport(id, name) {
     description += ET_R_HGU1333PLUS2_DB + tr(": Rscript module for the %1 tool").arg(ConductGOSupport::ET_GO_ANALYSIS);
     validationArguments << getScript().arg(ET_R_HGU1333PLUS2_DB);
     validMessage = QString("\"%1\"").arg(ET_R_HGU1333PLUS2_DB);
 }
 
-RModuleHgu95av2dbSupport::RModuleHgu95av2dbSupport(const QString &id, const QString &name) : RModuleSupport(id, name) {
+RModuleHgu95av2dbSupport::RModuleHgu95av2dbSupport(const QString &id, const QString &name)
+    : RModuleSupport(id, name) {
     description += ET_R_HGU95AV2_DB + tr(": Rscript module for the %1 tool").arg(ConductGOSupport::ET_GO_ANALYSIS);
     validationArguments << getScript().arg(ET_R_HGU95AV2_DB);
     validMessage = QString("\"%1\"").arg(ET_R_HGU95AV2_DB);
 }
 
-RModuleMouse430a2dbSupport::RModuleMouse430a2dbSupport(const QString &id, const QString &name) : RModuleSupport(id, name) {
+RModuleMouse430a2dbSupport::RModuleMouse430a2dbSupport(const QString &id, const QString &name)
+    : RModuleSupport(id, name) {
     description += ET_R_MOUSE430A2_DB + tr(": Rscript module for the %1 tool").arg(ConductGOSupport::ET_GO_ANALYSIS);
     validationArguments << getScript().arg(ET_R_MOUSE430A2_DB);
     validMessage = QString("\"%1\"").arg(ET_R_MOUSE430A2_DB);
 }
 
-RModuleCelegansdbSupport::RModuleCelegansdbSupport(const QString &id, const QString &name) : RModuleSupport(id, name) {
+RModuleCelegansdbSupport::RModuleCelegansdbSupport(const QString &id, const QString &name)
+    : RModuleSupport(id, name) {
     description += ET_R_CELEGANS_DB + tr(": Rscript module for the %1 tool").arg(ConductGOSupport::ET_GO_ANALYSIS);
     validationArguments << getScript().arg(ET_R_CELEGANS_DB);
     validMessage = QString("\"%1\"").arg(ET_R_CELEGANS_DB);
 }
 
-RModuleDrosophila2dbSupport::RModuleDrosophila2dbSupport(const QString &id, const QString &name) : RModuleSupport(id, name) {
+RModuleDrosophila2dbSupport::RModuleDrosophila2dbSupport(const QString &id, const QString &name)
+    : RModuleSupport(id, name) {
     description += ET_R_DROSOPHILA2_DB + tr(": Rscript module for the %1 tool").arg(ConductGOSupport::ET_GO_ANALYSIS);
     validationArguments << getScript().arg(ET_R_DROSOPHILA2_DB);
     validMessage = QString("\"%1\"").arg(ET_R_DROSOPHILA2_DB);
 }
 
-RModuleOrghsegdbSupport::RModuleOrghsegdbSupport(const QString &id, const QString &name) : RModuleSupport(id, name) {
+RModuleOrghsegdbSupport::RModuleOrghsegdbSupport(const QString &id, const QString &name)
+    : RModuleSupport(id, name) {
     description += ET_R_ORG_HS_EG_DB + tr(": Rscript module for the %1 tool").arg(ConductGOSupport::ET_GO_ANALYSIS);
     validationArguments << getScript().arg(ET_R_ORG_HS_EG_DB);
     validMessage = QString("\"%1\"").arg(ET_R_ORG_HS_EG_DB);
 }
 
-RModuleOrgmmegdbSupport::RModuleOrgmmegdbSupport(const QString &id, const QString &name) : RModuleSupport(id, name) {
+RModuleOrgmmegdbSupport::RModuleOrgmmegdbSupport(const QString &id, const QString &name)
+    : RModuleSupport(id, name) {
     description += ET_R_ORG_MM_EG_DB + tr(": Rscript module for the %1 tool").arg(ConductGOSupport::ET_GO_ANALYSIS);
     validationArguments << getScript().arg(ET_R_ORG_MM_EG_DB);
     validMessage = QString("\"%1\"").arg(ET_R_ORG_MM_EG_DB);
 }
 
-RModuleOrgceegdbSupport::RModuleOrgceegdbSupport(const QString &id, const QString &name) : RModuleSupport(id, name) {
+RModuleOrgceegdbSupport::RModuleOrgceegdbSupport(const QString &id, const QString &name)
+    : RModuleSupport(id, name) {
     description += ET_R_ORG_CE_EG_DB + tr(": Rscript module for the %1 tool").arg(ConductGOSupport::ET_GO_ANALYSIS);
     validationArguments << getScript().arg(ET_R_ORG_CE_EG_DB);
     validMessage = QString("\"%1\"").arg(ET_R_ORG_CE_EG_DB);
 }
 
-RModuleOrgdmegdbSupport::RModuleOrgdmegdbSupport(const QString &id, const QString &name) : RModuleSupport(id, name) {
+RModuleOrgdmegdbSupport::RModuleOrgdmegdbSupport(const QString &id, const QString &name)
+    : RModuleSupport(id, name) {
     description += ET_R_ORG_DM_EG_DB + tr(": Rscript module for the %1 tool").arg(ConductGOSupport::ET_GO_ANALYSIS);
     validationArguments << getScript().arg(ET_R_ORG_DM_EG_DB);
     validMessage = QString("\"%1\"").arg(ET_R_ORG_DM_EG_DB);
 }
 
-RModuleSeqlogoSupport::RModuleSeqlogoSupport(const QString &id, const QString &name) : RModuleSupport(id, name) {
+RModuleSeqlogoSupport::RModuleSeqlogoSupport(const QString &id, const QString &name)
+    : RModuleSupport(id, name) {
     description += ET_R_SEQLOGO + tr(": Rscript module for the %1 tool").arg(SeqPosSupport::ET_SEQPOS);
     validationArguments << getScript().arg(ET_R_SEQLOGO);
     validMessage = QString("\"%1\"").arg(ET_R_SEQLOGO);
 }
 
-}   // namespace
+}    // namespace U2

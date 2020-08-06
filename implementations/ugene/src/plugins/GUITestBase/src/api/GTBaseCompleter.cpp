@@ -19,11 +19,11 @@
  * MA 02110-1301, USA.
  */
 
-#include <QTreeWidget>
-
-#include <primitives/GTTreeWidget.h>
 #include <drivers/GTMouseDriver.h>
+#include <primitives/GTTreeWidget.h>
 #include <primitives/GTWidget.h>
+
+#include <QTreeWidget>
 
 #include "GTBaseCompleter.h"
 
@@ -35,7 +35,7 @@ using namespace HI;
 void GTBaseCompleter::click(HI::GUITestOpStatus &os, QWidget *widgetCompleterFor, const QString &seqName) {
     QTreeWidget *tree = getCompleter(os, widgetCompleterFor);
     GT_CHECK(tree != nullptr, "tree widget is NULL");
-    QTreeWidgetItem* item = GTTreeWidget::findItem(os, tree, seqName);
+    QTreeWidgetItem *item = GTTreeWidget::findItem(os, tree, seqName);
     GT_CHECK(item != NULL, "item not found");
     tree->scrollToItem(item);
     GTGlobals::sleep(100);
@@ -51,8 +51,8 @@ QStringList GTBaseCompleter::getNames(HI::GUITestOpStatus &os, QWidget *widgetCo
     QTreeWidget *tree = getCompleter(os, widgetCompleterFor);
     GT_CHECK_RESULT(tree != NULL, "tree widget is NULL", QStringList());
     QStringList result;
-    QList<QTreeWidgetItem*> items = GTTreeWidget::getItems(tree->invisibleRootItem());
-    foreach(QTreeWidgetItem* item, items){
+    QList<QTreeWidgetItem *> items = GTTreeWidget::getItems(tree->invisibleRootItem());
+    foreach (QTreeWidgetItem *item, items) {
         result << item->text(0);
     }
     return result;
@@ -70,9 +70,9 @@ bool GTBaseCompleter::isEmpty(HI::GUITestOpStatus &os, QWidget *widgetCompleterF
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getCompleter"
-QTreeWidget* GTBaseCompleter::getCompleter(HI::GUITestOpStatus &os, QWidget *widgetCompleterFor) {
+QTreeWidget *GTBaseCompleter::getCompleter(HI::GUITestOpStatus &os, QWidget *widgetCompleterFor) {
     GT_CHECK_RESULT(widgetCompleterFor != NULL, "Widget associated with completer not found", NULL);
-    QTreeWidget* completer = widgetCompleterFor->findChild<QTreeWidget*>();
+    QTreeWidget *completer = widgetCompleterFor->findChild<QTreeWidget *>();
     GT_CHECK_RESULT(completer != NULL, "auto completer widget not found", NULL);
     return completer;
 }
@@ -80,5 +80,4 @@ QTreeWidget* GTBaseCompleter::getCompleter(HI::GUITestOpStatus &os, QWidget *wid
 
 #undef GT_CLASS_NAME
 
-
-}
+}    // namespace U2

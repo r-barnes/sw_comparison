@@ -23,25 +23,25 @@
 #define _U2_SCRIPT_GLOBALS_H_
 
 #if defined _WIN32 || defined __CYGWIN__
-  #ifdef BUILDING_U2SCRIPT_DLL
-    #ifdef __GNUC__
-      #define U2SCRIPT_EXPORT __attribute__ ((dllexport))
-    #else
-      #define U2SCRIPT_EXPORT __declspec(dllexport)
-    #endif
-  #else
-    #ifdef __GNUC__
-      #define U2SCRIPT_EXPORT __attribute__ ((dllimport))
-    #else
-      #define U2SCRIPT_EXPORT __declspec(dllimport)
-    #endif
-  #endif
+#    ifdef BUILDING_U2SCRIPT_DLL
+#        ifdef __GNUC__
+#            define U2SCRIPT_EXPORT __attribute__((dllexport))
+#        else
+#            define U2SCRIPT_EXPORT __declspec(dllexport)
+#        endif
+#    else
+#        ifdef __GNUC__
+#            define U2SCRIPT_EXPORT __attribute__((dllimport))
+#        else
+#            define U2SCRIPT_EXPORT __declspec(dllimport)
+#        endif
+#    endif
 #else
-  #if __GNUC__ >= 4
-    #define U2SCRIPT_EXPORT __attribute__ ((visibility ("default")))
-  #else
-    #define U2SCRIPT_EXPORT
-  #endif
+#    if __GNUC__ >= 4
+#        define U2SCRIPT_EXPORT __attribute__((visibility("default")))
+#    else
+#        define U2SCRIPT_EXPORT
+#    endif
 #endif
 
 /*
@@ -78,7 +78,7 @@ extern "C" {
  * then corresponding string is returned.
  *
  */
-U2SCRIPT_EXPORT const wchar_t *            getErrorString( U2ErrorType type );
+U2SCRIPT_EXPORT const wchar_t *getErrorString(U2ErrorType type);
 
 /*
  * This function attempts to write last produced by U2Script string value that has not
@@ -102,11 +102,12 @@ U2SCRIPT_EXPORT const wchar_t *            getErrorString( U2ErrorType type );
  * If returning value is not U2_OK the environment is not affected by the invocation.
  *
  */
-U2SCRIPT_EXPORT U2ErrorType             getLastFailedStringValue( int maxExpectedLength,
-                                            wchar_t *destination, int *requiredSize );
+U2SCRIPT_EXPORT U2ErrorType getLastFailedStringValue(int maxExpectedLength,
+                                                     wchar_t *destination,
+                                                     int *requiredSize);
 
 #ifdef __cplusplus
 };
 #endif
 
-#endif // _U2_SCRIPT_GLOBALS_H_
+#endif    // _U2_SCRIPT_GLOBALS_H_

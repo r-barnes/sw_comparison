@@ -19,14 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "DnaAssemblyTask.h"
+
 #include <QDir>
 #include <QFileInfo>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/UserApplicationsSettings.h>
-
-#include "DnaAssemblyTask.h"
 
 namespace U2 {
 
@@ -37,8 +37,7 @@ DnaAssemblyToReferenceTask::DnaAssemblyToReferenceTask(const DnaAssemblyToRefTas
     : ExternalToolSupportTask(tr("Align short reads"), flags),
       settings(settings),
       justBuildIndex(justBuildIndex),
-      hasResults(false)
-{
+      hasResults(false) {
 }
 
 void DnaAssemblyToReferenceTask::setUpIndexBuilding(const QStringList &indexSuffixes) {
@@ -80,18 +79,18 @@ QString DnaAssemblyToReferenceTask::getBaseUrl(const QString &url, const QString
     return url;
 }
 
-bool DnaAssemblyToReferenceTask::isPrebuiltIndex(const QString& baseFileName, const QStringList& indexExtensions) {
-    foreach(const QString& curIndexExtension, indexExtensions) {
+bool DnaAssemblyToReferenceTask::isPrebuiltIndex(const QString &baseFileName, const QStringList &indexExtensions) {
+    foreach (const QString &curIndexExtension, indexExtensions) {
         QString indexFilePath = baseFileName + curIndexExtension;
         QFileInfo fileInfo(indexFilePath);
-        if(!fileInfo.exists()) {
+        if (!fileInfo.exists()) {
             return false;
         }
     }
     return true;
 }
 
-QVariant DnaAssemblyToRefTaskSettings::getCustomValue( const QString& optionName, const QVariant& defaultVal ) const {
+QVariant DnaAssemblyToRefTaskSettings::getCustomValue(const QString &optionName, const QVariant &defaultVal) const {
     if (customSettings.contains(optionName)) {
         return customSettings.value(optionName);
     } else {
@@ -99,18 +98,17 @@ QVariant DnaAssemblyToRefTaskSettings::getCustomValue( const QString& optionName
     }
 }
 
-bool DnaAssemblyToRefTaskSettings::hasCustomValue(const QString & name) const {
+bool DnaAssemblyToRefTaskSettings::hasCustomValue(const QString &name) const {
     return customSettings.contains(name);
 }
 
-void DnaAssemblyToRefTaskSettings::setCustomValue( const QString& optionName, const QVariant& val ) {
-    customSettings.insert(optionName,val);
+void DnaAssemblyToRefTaskSettings::setCustomValue(const QString &optionName, const QVariant &val) {
+    customSettings.insert(optionName, val);
 }
 
-QList<GUrl> DnaAssemblyToRefTaskSettings::getShortReadUrls() const
-{
+QList<GUrl> DnaAssemblyToRefTaskSettings::getShortReadUrls() const {
     QList<GUrl> res;
-    foreach (const ShortReadSet& set, shortReadSets) {
+    foreach (const ShortReadSet &set, shortReadSets) {
         res.append(set.url);
     }
 
@@ -119,15 +117,15 @@ QList<GUrl> DnaAssemblyToRefTaskSettings::getShortReadUrls() const
 
 DnaAssemblyToRefTaskSettings::DnaAssemblyToRefTaskSettings()
     : pairedReads(false),
-    filterUnpaired(false),
-    prebuiltIndex(false),
-    openView(false),
-    samOutput(true),
-    tmpDirPath(AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath()),
-    cleanTmpDir(true) {
+      filterUnpaired(false),
+      prebuiltIndex(false),
+      openView(false),
+      samOutput(true),
+      tmpDirPath(AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath()),
+      cleanTmpDir(true) {
 }
 
-void DnaAssemblyToRefTaskSettings::setCustomSettings(const QMap<QString, QVariant>& settings) {
+void DnaAssemblyToRefTaskSettings::setCustomSettings(const QMap<QString, QVariant> &settings) {
     customSettings = settings;
 }
-} // U2
+}    // namespace U2

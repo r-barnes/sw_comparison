@@ -23,7 +23,9 @@
 #define _U2_CAP3_SUPPORT_H_
 
 #include <U2Core/ExternalToolRegistry.h>
+
 #include <U2View/MSAEditor.h>
+
 #include "utils/ExternalToolSupportAction.h"
 
 namespace U2 {
@@ -31,18 +33,20 @@ namespace U2 {
 class CAP3Support : public ExternalTool {
     Q_OBJECT
 public:
-    CAP3Support(const QString& id, const QString& name, const QString& path = "");
-    GObjectViewWindowContext* getViewContext(){ return viewCtx; }
+    CAP3Support(const QString &id, const QString &name, const QString &path = "");
+    GObjectViewWindowContext *getViewContext() {
+        return viewCtx;
+    }
 
     static const QString ET_CAP3;
     static const QString ET_CAP3_ID;
     static const QString CAP3_TMP_DIR;
 public slots:
     void sl_runWithExtFileSpecify();
+
 private:
-    GObjectViewWindowContext* viewCtx;
+    GObjectViewWindowContext *viewCtx;
 };
 
-
-}//namespace
-#endif // _U2_CAP3_SUPPORT_H_
+}    // namespace U2
+#endif    // _U2_CAP3_SUPPORT_H_

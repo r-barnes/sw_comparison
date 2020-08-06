@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "WriteAssemblyWorkers.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/DocumentUtils.h>
@@ -41,8 +43,6 @@
 
 #include "DocActors.h"
 
-#include "WriteAssemblyWorkers.h"
-
 namespace U2 {
 namespace LocalWorkflow {
 
@@ -53,9 +53,7 @@ const QString INDEX_ATTRIBUTE_ID = "build-index";
 /* BaseWriteAssemblyWorker */
 /************************************************************************/
 BaseWriteAssemblyWorker::BaseWriteAssemblyWorker(Actor *a)
-: BaseDocWriter(a)
-{
-
+    : BaseDocWriter(a) {
 }
 
 void BaseWriteAssemblyWorker::data2doc(Document *doc, const QVariantMap &data) {
@@ -93,9 +91,7 @@ QSet<GObject *> BaseWriteAssemblyWorker::getObjectsToWrite(const QVariantMap &da
 /* WriteBAMWorker */
 /************************************************************************/
 WriteBAMWorker::WriteBAMWorker(Actor *a)
-: BaseWriteAssemblyWorker(a), buildIndex(false)
-{
-
+    : BaseWriteAssemblyWorker(a), buildIndex(false) {
 }
 
 void WriteBAMWorker::takeParameters(U2OpStatus &os) {
@@ -110,7 +106,7 @@ bool WriteBAMWorker::isStreamingSupport() const {
     return false;
 }
 
-Task * WriteBAMWorker::getWriteDocTask(Document *doc, const SaveDocFlags &flags) {
+Task *WriteBAMWorker::getWriteDocTask(Document *doc, const SaveDocFlags &flags) {
     return new WriteBAMTask(doc, buildIndex, flags);
 }
 
@@ -118,9 +114,7 @@ Task * WriteBAMWorker::getWriteDocTask(Document *doc, const SaveDocFlags &flags)
 /* WriteBAMTask */
 /************************************************************************/
 WriteBAMTask::WriteBAMTask(Document *_doc, bool _buildIndex, const SaveDocFlags &_flags)
-: Task("Write BAM/SAM file", TaskFlag_None), doc(_doc), buildIndex(_buildIndex), flags(_flags)
-{
-
+    : Task("Write BAM/SAM file", TaskFlag_None), doc(_doc), buildIndex(_buildIndex), flags(_flags) {
 }
 
 void WriteBAMTask::run() {
@@ -156,19 +150,19 @@ void WriteAssemblyWorkerFactory::init() {
     DocumentFormatId format = supportedFormats.contains(BaseDocumentFormats::BAM) ? BaseDocumentFormats::BAM : supportedFormats.first();
 
     Descriptor inDesc(BasePorts::IN_ASSEMBLY_PORT_ID(),
-        WriteBAMWorker::tr("Assembly"),
-        WriteBAMWorker::tr("Assembly"));
+                      WriteBAMWorker::tr("Assembly"),
+                      WriteBAMWorker::tr("Assembly"));
     Descriptor protoDesc(WriteAssemblyWorkerFactory::ACTOR_ID,
-        WriteBAMWorker::tr("Write NGS Reads Assembly"),
-        WriteBAMWorker::tr("The element gets message(s) with assembled reads data and saves the data"
-                           " to the specified file(s) in one of the appropriate formats (SAM, BAM, or UGENEDB)."));
+                         WriteBAMWorker::tr("Write NGS Reads Assembly"),
+                         WriteBAMWorker::tr("The element gets message(s) with assembled reads data and saves the data"
+                                            " to the specified file(s) in one of the appropriate formats (SAM, BAM, or UGENEDB)."));
 
-    QList<PortDescriptor*> portDescs;
+    QList<PortDescriptor *> portDescs;
     {
         QMap<Descriptor, DataTypePtr> inTypeMap;
         Descriptor writeUrlD(BaseSlots::URL_SLOT().getId(),
-            WriteBAMWorker::tr("Location"),
-            WriteBAMWorker::tr("Location for writing data"));
+                             WriteBAMWorker::tr("Location"),
+                             WriteBAMWorker::tr("Location for writing data"));
         inTypeMap[writeUrlD] = BaseTypes::STRING_TYPE();
         inTypeMap[BaseSlots::ASSEMBLY_SLOT()] = BaseTypes::ASSEMBLY_TYPE();
         DataTypePtr writeAssemblyType(new MapDataType(BasePorts::IN_ASSEMBLY_PORT_ID(), inTypeMap));
@@ -176,7 +170,7 @@ void WriteAssemblyWorkerFactory::init() {
         portDescs << new PortDescriptor(inDesc, writeAssemblyType, true);
     }
 
-    QList<Attribute*> attrs;
+    QList<Attribute *> attrs;
     Attribute *docFormatAttr = NULL;
     {
         docFormatAttr = new Attribute(BaseAttributes::DOCUMENT_FORMAT_ATTRIBUTE(), BaseTypes::STRING_TYPE(), false, format);
@@ -184,8 +178,8 @@ void WriteAssemblyWorkerFactory::init() {
         attrs << docFormatAttr;
 
         Descriptor indexDescr(INDEX_ATTRIBUTE_ID,
-            BaseWriteAssemblyWorker::tr("Build index (BAM only)"),
-            BaseWriteAssemblyWorker::tr("Build BAM index for the target BAM file. The file .bai will be created in the same folder."));
+                              BaseWriteAssemblyWorker::tr("Build index (BAM only)"),
+                              BaseWriteAssemblyWorker::tr("Build BAM index for the target BAM file. The file .bai will be created in the same folder."));
 
         Attribute *indexAttr = new Attribute(indexDescr, BaseTypes::BOOL_TYPE(), false, true);
         indexAttr->addRelation(new VisibilityRelation(BaseAttributes::DOCUMENT_FORMAT_ATTRIBUTE().getId(), BaseDocumentFormats::BAM));
@@ -205,7 +199,7 @@ void WriteAssemblyWorkerFactory::init() {
         proto->getEditor()->addDelegate(new ComboBoxDelegate(formatsMap), BaseAttributes::DOCUMENT_FORMAT_ATTRIBUTE().getId());
     }
     proto->setPrompter(new WriteDocPrompter(WriteBAMWorker::tr("Save all assemblies from <u>%1</u> to <u>%2</u>."),
-        BaseSlots::ASSEMBLY_SLOT().getId()));
+                                            BaseSlots::ASSEMBLY_SLOT().getId()));
 
     WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_DATASINK(), proto);
     WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID)->registerEntry(new WriteAssemblyWorkerFactory());
@@ -214,13 +208,12 @@ void WriteAssemblyWorkerFactory::init() {
 Worker *WriteAssemblyWorkerFactory::createWorker(Actor *a) {
     Attribute *formatAttr = a->getParameter(BaseAttributes::DOCUMENT_FORMAT_ATTRIBUTE().getId());
     QString formatId = formatAttr->getAttributePureValue().toString();
-    if (BaseDocumentFormats::SAM == formatId
-     || BaseDocumentFormats::BAM == formatId) {
-         return new WriteBAMWorker(a);
+    if (BaseDocumentFormats::SAM == formatId || BaseDocumentFormats::BAM == formatId) {
+        return new WriteBAMWorker(a);
     } else {
         return new BaseWriteAssemblyWorker(a);
     }
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

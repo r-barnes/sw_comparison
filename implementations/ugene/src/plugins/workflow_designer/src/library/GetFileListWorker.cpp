@@ -19,7 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "GetFileListWorker.h"
+
 #include <U2Core/AppContext.h>
+
+#include <U2Designer/DelegateEditors.h>
+
+#include <U2Gui/GUIUtils.h>
 
 #include <U2Lang/ActorPrototypeRegistry.h>
 #include <U2Lang/BaseActorCategories.h>
@@ -31,10 +37,6 @@
 #include <U2Lang/URLAttribute.h>
 #include <U2Lang/WorkflowEnv.h>
 
-#include <U2Designer/DelegateEditors.h>
-#include <U2Gui/GUIUtils.h>
-
-#include "GetFileListWorker.h"
 #include "util/DatasetValidator.h"
 
 namespace U2 {
@@ -49,19 +51,17 @@ static const QString URL_ATTR("url-in");
 /* Worker */
 /************************************************************************/
 GetFileListWorker::GetFileListWorker(Actor *p)
-: BaseWorker(p), outChannel(NULL), files(NULL)
-{
-
+    : BaseWorker(p), outChannel(NULL), files(NULL) {
 }
 
 void GetFileListWorker::init() {
     outChannel = ports.value(OUT_PORT_ID);
 
-    QList<Dataset> sets = getValue< QList<Dataset> >(BaseAttributes::URL_IN_ATTRIBUTE().getId());
+    QList<Dataset> sets = getValue<QList<Dataset>>(BaseAttributes::URL_IN_ATTRIBUTE().getId());
     files = new DatasetFilesIterator(sets);
 }
 
-Task * GetFileListWorker::tick() {
+Task *GetFileListWorker::tick() {
     if (files->hasNext()) {
         QVariantMap m;
         QString url = files->getNextFile();
@@ -86,7 +86,7 @@ void GetFileListWorker::cleanup() {
 /* Factory */
 /************************************************************************/
 void GetFileListWorkerFactory::init() {
-    QList<PortDescriptor*> portDescs;
+    QList<PortDescriptor *> portDescs;
     {
         QMap<Descriptor, DataTypePtr> outTypeMap;
         outTypeMap[BaseSlots::URL_SLOT()] = BaseTypes::STRING_TYPE();
@@ -96,24 +96,24 @@ void GetFileListWorkerFactory::init() {
         portDescs << new PortDescriptor(Descriptor(OUT_PORT_ID, GetFileListWorker::tr("Output URL"), GetFileListWorker::tr("Paths read by the element.")), outTypeSet, false, true);
     }
 
-    QList<Attribute*> attrs;
+    QList<Attribute *> attrs;
     {
         Descriptor inUrl(URL_ATTR,
-            GetFileListWorker::tr("Input URL"),
-            GetFileListWorker::tr("Input URL"));
+                         GetFileListWorker::tr("Input URL"),
+                         GetFileListWorker::tr("Input URL"));
 
         attrs << new URLAttribute(BaseAttributes::URL_IN_ATTRIBUTE(), BaseTypes::URL_DATASETS_TYPE(), true);
     }
 
     Descriptor protoDesc(GetFileListWorkerFactory::ACTOR_ID,
-        GetFileListWorker::tr("Read File URL(s)"),
-        GetFileListWorker::tr("Input one or several files in any format. The element outputs the file(s) URL(s)."));
+                         GetFileListWorker::tr("Read File URL(s)"),
+                         GetFileListWorker::tr("Input one or several files in any format. The element outputs the file(s) URL(s)."));
 
     ActorPrototype *proto = new IntegralBusActorPrototype(protoDesc, portDescs, attrs);
-    proto->setEditor(new DelegateEditor(QMap<QString, PropertyDelegate*>()));
+    proto->setEditor(new DelegateEditor(QMap<QString, PropertyDelegate *>()));
     proto->setPrompter(new GetFileListPrompter());
     proto->setValidator(new DatasetValidator());
-    if(AppContext::isGUIMode()) {
+    if (AppContext::isGUIMode()) {
         proto->setIcon(QIcon(":/U2Designer/images/blue_circle.png"));
     }
 
@@ -134,5 +134,5 @@ QString GetFileListPrompter::composeRichDoc() {
         .arg(url);
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

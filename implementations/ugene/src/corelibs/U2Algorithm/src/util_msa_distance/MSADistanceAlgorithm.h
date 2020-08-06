@@ -45,18 +45,22 @@ enum DistanceAlgorithmFlag {
 
 typedef QFlags<DistanceAlgorithmFlag> DistanceAlgorithmFlags;
 #define DistanceAlgorithmFlags_AllAlphabets (DistanceAlgorithmFlags(DistanceAlgorithmFlag_Nucleic) | DistanceAlgorithmFlag_Amino | DistanceAlgorithmFlag_Raw)
-#define DistanceAlgorithmFlags_NuclAmino    (DistanceAlgorithmFlags(DistanceAlgorithmFlag_Nucleic) | DistanceAlgorithmFlag_Amino)
+#define DistanceAlgorithmFlags_NuclAmino (DistanceAlgorithmFlags(DistanceAlgorithmFlag_Nucleic) | DistanceAlgorithmFlag_Amino)
 
 class U2ALGORITHM_EXPORT MSADistanceAlgorithmFactory : public QObject {
     Q_OBJECT
 public:
-    MSADistanceAlgorithmFactory(const QString& algoId, DistanceAlgorithmFlags flags, QObject* p = NULL);
+    MSADistanceAlgorithmFactory(const QString &algoId, DistanceAlgorithmFlags flags, QObject *p = NULL);
 
-    virtual MSADistanceAlgorithm* createAlgorithm(const MultipleSequenceAlignment& ma, QObject* parent = NULL) = 0;
+    virtual MSADistanceAlgorithm *createAlgorithm(const MultipleSequenceAlignment &ma, QObject *parent = NULL) = 0;
 
-    QString getId() const {return algorithmId;}
+    QString getId() const {
+        return algorithmId;
+    }
 
-    DistanceAlgorithmFlags getFlags() const {return flags;}
+    DistanceAlgorithmFlags getFlags() const {
+        return flags;
+    }
 
     void setFlag(DistanceAlgorithmFlag flag);
     void resetFlag(DistanceAlgorithmFlag flag);
@@ -66,77 +70,97 @@ public:
     virtual QString getName() const = 0;
 
     // utility method
-    static DistanceAlgorithmFlags getAphabetFlags(const DNAAlphabet* al);
+    static DistanceAlgorithmFlags getAphabetFlags(const DNAAlphabet *al);
 
 protected:
-    QString                 algorithmId;
-    DistanceAlgorithmFlags  flags;
-
+    QString algorithmId;
+    DistanceAlgorithmFlags flags;
 };
 
-typedef QVarLengthArray<QVarLengthArray<int> > varLengthMatrix;
+typedef QVarLengthArray<QVarLengthArray<int>> varLengthMatrix;
 
 class U2ALGORITHM_EXPORT MSADistanceMatrix {
     friend class MSADistanceAlgorithm;
+
 private:
     MSADistanceMatrix();
-    MSADistanceMatrix(const MultipleSequenceAlignment& ma, bool _excludeGaps, bool _usePercents);
+    MSADistanceMatrix(const MultipleSequenceAlignment &ma, bool _excludeGaps, bool _usePercents);
 
 public:
-    bool isEmpty(){ return table.isEmpty(); }
+    bool isEmpty() {
+        return table.isEmpty();
+    }
     int getSimilarity(int row1, int row2) const;
     int getSimilarity(int row1, int row2, bool _usePercents) const;
-    void setPercentSimilarity(bool _usePercents) { usePercents = _usePercents; }
-    bool isPercentSimilarity() { return usePercents; }
+    void setPercentSimilarity(bool _usePercents) {
+        usePercents = _usePercents;
+    }
+    bool isPercentSimilarity() {
+        return usePercents;
+    }
 
 protected:
-    varLengthMatrix                             table;
-    bool                                        usePercents;
-    bool                                        excludeGaps;
-    QVector<int>                                seqsUngappedLenghts;
-    int                                         alignmentLength;
+    varLengthMatrix table;
+    bool usePercents;
+    bool excludeGaps;
+    QVector<int> seqsUngappedLenghts;
+    int alignmentLength;
 };
 
 class U2ALGORITHM_EXPORT MSADistanceAlgorithm : public Task {
     Q_OBJECT
 
 public:
-    MSADistanceAlgorithm(MSADistanceAlgorithmFactory* factory, const MultipleSequenceAlignment& ma);
+    MSADistanceAlgorithm(MSADistanceAlgorithmFactory *factory, const MultipleSequenceAlignment &ma);
 
     int getSimilarity(int row1, int row2, bool usePercents);
 
-    const MSADistanceMatrix& getMatrix() const;
+    const MSADistanceMatrix &getMatrix() const;
 
-    virtual QString getDescription() const {return factory->getDescription();}
+    virtual QString getDescription() const {
+        return factory->getDescription();
+    }
 
-    virtual QString getName() const {return factory->getName();}
+    virtual QString getName() const {
+        return factory->getName();
+    }
 
-    QString getId() const {return factory->getId();}
+    QString getId() const {
+        return factory->getId();
+    }
 
-    bool isSimilarityMeasure() const {return isSimilarity;}
+    bool isSimilarityMeasure() const {
+        return isSimilarity;
+    }
 
     void setExcludeGaps(bool _excludeGaps);
 
-    MSADistanceAlgorithmFactory* getFactory() const {return factory;}
+    MSADistanceAlgorithmFactory *getFactory() const {
+        return factory;
+    }
 
-    bool getExcludeGapsFlag() const {return excludeGaps;}
+    bool getExcludeGapsFlag() const {
+        return excludeGaps;
+    }
 
     void setDistanceValue(int row1, int row2, int distance);
 
 private:
-    MSADistanceMatrix            distanceMatrix;
-    MSADistanceAlgorithmFactory* factory;
-    MemoryLocker                 memoryLocker;
+    MSADistanceMatrix distanceMatrix;
+    MSADistanceAlgorithmFactory *factory;
+    MemoryLocker memoryLocker;
 
 protected:
     virtual void fillTable();
-    virtual int calculateSimilarity(int , int ){return 0;}
-    MultipleSequenceAlignment                   ma;
-    mutable QMutex                              lock;
-    bool                                        excludeGaps;
-    bool                                        isSimilarity;
+    virtual int calculateSimilarity(int, int) {
+        return 0;
+    }
+    MultipleSequenceAlignment ma;
+    mutable QMutex lock;
+    bool excludeGaps;
+    bool isSimilarity;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

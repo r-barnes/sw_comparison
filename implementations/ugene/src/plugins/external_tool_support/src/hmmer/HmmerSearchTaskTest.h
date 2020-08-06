@@ -70,57 +70,61 @@ public:
     void prepare();
     ReportResult report();
 
-    virtual QList< Task* > onSubTaskFinished(Task * sub);
+    virtual QList<Task *> onSubTaskFinished(Task *sub);
 
 private:
     void setAndCheckArgs();
-    static void setSearchTaskSettings(HmmerSearchSettings& set, const QDomElement& el, TaskStateInfo& si);
+    static void setSearchTaskSettings(HmmerSearchSettings &set, const QDomElement &el, TaskStateInfo &si);
 
-    HmmerSearchSettings     settings;
-    QString                 hmmFilename;
-    QString                 seqDocCtxName;
+    HmmerSearchSettings settings;
+    QString hmmFilename;
+    QString seqDocCtxName;
 
-    QString                 outputDir;
+    QString outputDir;
 
     HmmerSearchTask *searchTask;
 
-}; // GTest_GeneralUHMM3Search
+};    // GTest_GeneralUHMM3Search
 
 class UHMM3SearchSeqDomainResult {
 public:
-    UHMM3SearchSeqDomainResult() : score(0), bias(0), ival(0), cval(0), acc(0), isSignificant(false) {}
+    UHMM3SearchSeqDomainResult()
+        : score(0), bias(0), ival(0), cval(0), acc(0), isSignificant(false) {
+    }
 
-    float   score;
-    float   bias;
-    double  ival; /* independent e-value */
-    double  cval; /* conditional e-value */
+    float score;
+    float bias;
+    double ival; /* independent e-value */
+    double cval; /* conditional e-value */
 
     U2Region queryRegion; /* hmm region for hmmsearch and seq region for phmmer */
     U2Region seqRegion;
     U2Region envRegion; /* envelope of domains location */
 
-    double  acc; /* expected accuracy per residue of the alignment */
+    double acc; /* expected accuracy per residue of the alignment */
 
-    bool    isSignificant; /* domain meets inclusion tresholds */
-}; // UHMM3SearchSeqDomainResult
+    bool isSignificant; /* domain meets inclusion tresholds */
+};    // UHMM3SearchSeqDomainResult
 
 class UHMM3SearchCompleteSeqResult {
 public:
-    double  eval;
-    float   score;
-    float   bias;
-    float   expectedDomainsNum;
-    int     reportedDomainsNum;
-    bool    isReported;
+    double eval;
+    float score;
+    float bias;
+    float expectedDomainsNum;
+    int reportedDomainsNum;
+    bool isReported;
 
-    UHMM3SearchCompleteSeqResult() : eval(0), score(0), bias(0), expectedDomainsNum(0), reportedDomainsNum(0), isReported(false) {}
-}; // UHMM3SearchCompleteSeqResult
+    UHMM3SearchCompleteSeqResult()
+        : eval(0), score(0), bias(0), expectedDomainsNum(0), reportedDomainsNum(0), isReported(false) {
+    }
+};    // UHMM3SearchCompleteSeqResult
 
 class UHMM3SearchResult {
 public:
-    UHMM3SearchCompleteSeqResult           fullSeqResult;
-    QList< UHMM3SearchSeqDomainResult >    domainResList;
-}; // UHMM3SearchResult
+    UHMM3SearchCompleteSeqResult fullSeqResult;
+    QList<UHMM3SearchSeqDomainResult> domainResList;
+};    // UHMM3SearchResult
 
 class GTest_UHMM3SearchCompare : public XmlTest {
     Q_OBJECT
@@ -128,8 +132,8 @@ public:
     static const QString ACTUAL_OUT_FILE_TAG;
     static const QString TRUE_OUT_FILE_TAG; /* file with original hmmer3 output */
 
-    static UHMM3SearchResult getSearchResultFromOutput(const QString & filename);
-    static void generalCompareResults(const UHMM3SearchResult& myRes, const UHMM3SearchResult& trueRes, TaskStateInfo& ti);
+    static UHMM3SearchResult getSearchResultFromOutput(const QString &filename);
+    static void generalCompareResults(const UHMM3SearchResult &myRes, const UHMM3SearchResult &trueRes, TaskStateInfo &ti);
 
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_UHMM3SearchCompare, "hmm3-search-compare");
     ReportResult report();
@@ -138,10 +142,10 @@ private:
     void setAndCheckArgs();
 
 private:
-    QString                     actualOutFilename;
-    QString                     trueOutFilename;
-}; // GTest_GeneralUHMM3SearchCompare
+    QString actualOutFilename;
+    QString trueOutFilename;
+};    // GTest_GeneralUHMM3SearchCompare
 
-}
+}    // namespace U2
 
 #endif

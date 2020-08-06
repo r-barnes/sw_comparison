@@ -39,15 +39,15 @@ public:
     EditConnectionDialog(QWidget *parent = 0, const QString &dbiUrl = "", const QString &userName = "", const QString &connectionName = "");
     ~EditConnectionDialog();
 
-    void        setReadOnly(bool readOnly);
-    QString     getName() const;
-    QString     getUserName() const;
-    QString     getShortDbiUrl() const;
-    QString     getFullDbiUrl() const;
+    void setReadOnly(bool readOnly);
+    QString getName() const;
+    QString getUserName() const;
+    QString getShortDbiUrl() const;
+    QString getFullDbiUrl() const;
 
 public slots:
     void accept();
-    
+
 private:
     void init(const QString &dbiUrl, const QString &connectionName, const QString &userName);
     void initTabOrder();
@@ -60,6 +60,6 @@ private:
     static const QString DEFAULT_PORT;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_EDIT_CONNECTION_DIALOG_H_
+#endif    // _U2_EDIT_CONNECTION_DIALOG_H_

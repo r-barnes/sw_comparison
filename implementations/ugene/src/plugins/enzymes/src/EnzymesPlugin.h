@@ -23,6 +23,7 @@
 #define _U2_ENZYMES_PLUGIN_H_
 
 #include <U2Core/PluginModel.h>
+
 #include <U2Gui/ObjectViewModel.h>
 
 namespace U2 {
@@ -48,7 +49,7 @@ private:
     QAction *openCreateFragmentDialog;
 };
 
-class EnzymesADVContext: public GObjectViewWindowContext {
+class EnzymesADVContext : public GObjectViewWindowContext {
     Q_OBJECT
 public:
     EnzymesADVContext(QObject *p, const QList<QAction *> &cloningActions);
@@ -63,8 +64,6 @@ protected:
     QList<QAction *> cloningActions;
 };
 
-
-
-} //namespace
+}    // namespace U2
 
 #endif

@@ -22,37 +22,42 @@
 #ifndef _DOCUMENT_FORMAT_REGISTRY_IMPL_H_
 #define _DOCUMENT_FORMAT_REGISTRY_IMPL_H_
 
-#include <U2Core/DocumentModel.h>
 #include <U2Core/DocumentImport.h>
+#include <U2Core/DocumentModel.h>
 
 namespace U2 {
 
-class U2PRIVATE_EXPORT DocumentFormatRegistryImpl  : public DocumentFormatRegistry {
+class U2PRIVATE_EXPORT DocumentFormatRegistryImpl : public DocumentFormatRegistry {
     Q_OBJECT
 public:
-    DocumentFormatRegistryImpl(QObject* p = NULL) : DocumentFormatRegistry(p) {init();}
+    DocumentFormatRegistryImpl(QObject *p = NULL)
+        : DocumentFormatRegistry(p) {
+        init();
+    }
     ~DocumentFormatRegistryImpl() override;
 
-    virtual bool registerFormat(DocumentFormat* dfs) override;
+    virtual bool registerFormat(DocumentFormat *dfs) override;
 
-    virtual bool unregisterFormat(DocumentFormat* dfs) override;
+    virtual bool unregisterFormat(DocumentFormat *dfs) override;
 
     virtual QList<DocumentFormatId> getRegisteredFormats() const override;
 
-    virtual DocumentFormat* getFormatById(DocumentFormatId id) const override;
+    virtual DocumentFormat *getFormatById(DocumentFormatId id) const override;
 
-    virtual DocumentFormat* selectFormatByFileExtension(const QString& fileExt) const override;
+    virtual DocumentFormat *selectFormatByFileExtension(const QString &fileExt) const override;
 
-    virtual QList<DocumentFormatId> selectFormats(const DocumentFormatConstraints& c) const override;
+    virtual QList<DocumentFormatId> selectFormats(const DocumentFormatConstraints &c) const override;
 
-    virtual DocumentImportersRegistry* getImportSupport() override {return &importSupport;}
+    virtual DocumentImportersRegistry *getImportSupport() override {
+        return &importSupport;
+    }
 
 private:
     void init();
 
-    QList<QPointer<DocumentFormat> > formats;
-    DocumentImportersRegistry   importSupport;
+    QList<QPointer<DocumentFormat>> formats;
+    DocumentImportersRegistry importSupport;
 };
 
-}//namespace
+}    // namespace U2
 #endif

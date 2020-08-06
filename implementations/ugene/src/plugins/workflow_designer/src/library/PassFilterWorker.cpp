@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "PassFilterWorker.h"
+
 #include <U2Designer/DelegateEditors.h>
 
 #include <U2Lang/ActorPrototypeRegistry.h>
@@ -30,8 +32,6 @@
 #include <U2Lang/Marker.h>
 #include <U2Lang/WorkflowEnv.h>
 
-#include "PassFilterWorker.h"
-
 namespace U2 {
 namespace LocalWorkflow {
 
@@ -41,8 +41,7 @@ const QString PassFilterWorkerFactory::ACTOR_ID("filter-by-values");
  * FilterSequenceWorker
  *******************************/
 PassFilterWorker::PassFilterWorker(Actor *p)
-: BaseWorker(p), inChannel(NULL), outChannel(NULL)
-{
+    : BaseWorker(p), inChannel(NULL), outChannel(NULL) {
 }
 
 void PassFilterWorker::init() {
@@ -82,8 +81,8 @@ void PassFilterWorker::cleanup() {
  * FilterSequenceWorkerFactory
  *******************************/
 void PassFilterWorkerFactory::init() {
-    QList<PortDescriptor*> portDescs;
-    QList<Attribute*> attrs;
+    QList<PortDescriptor *> portDescs;
+    QList<Attribute *> attrs;
 
     QMap<Descriptor, DataTypePtr> inTypeMap;
     QMap<Descriptor, DataTypePtr> outTypeMap;
@@ -97,16 +96,16 @@ void PassFilterWorkerFactory::init() {
     portDescs << new PortDescriptor("filtered-data", outTypeSet, false);
 
     Descriptor passVals(BaseSlots::TEXT_SLOT().getId(),
-        PassFilterWorker::tr("Filter by value(s)"),
-        PassFilterWorker::tr("Comma-separated list of values used to filter the input data."));
+                        PassFilterWorker::tr("Filter by value(s)"),
+                        PassFilterWorker::tr("Comma-separated list of values used to filter the input data."));
     attrs << new Attribute(passVals, BaseTypes::STRING_TYPE(), true);
 
     Descriptor protoDesc(PassFilterWorkerFactory::ACTOR_ID,
-        PassFilterWorker::tr("Filter"),
-        PassFilterWorker::tr("Passes through only data that matches the input filter value (or values)."));
+                         PassFilterWorker::tr("Filter"),
+                         PassFilterWorker::tr("Passes through only data that matches the input filter value (or values)."));
 
     ActorPrototype *proto = new IntegralBusActorPrototype(protoDesc, portDescs, attrs);
-    proto->setEditor(new DelegateEditor(QMap<QString, PropertyDelegate*>()));
+    proto->setEditor(new DelegateEditor(QMap<QString, PropertyDelegate *>()));
     proto->setPrompter(new PassFilterPrompter());
     proto->setInfluenceOnPathFlag(true);
 
@@ -114,7 +113,7 @@ void PassFilterWorkerFactory::init() {
     WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID)->registerEntry(new PassFilterWorkerFactory());
 }
 
-Worker *PassFilterWorkerFactory::createWorker(Actor* a) {
+Worker *PassFilterWorkerFactory::createWorker(Actor *a) {
     return new PassFilterWorker(a);
 }
 
@@ -122,9 +121,9 @@ Worker *PassFilterWorkerFactory::createWorker(Actor* a) {
  * FilterSequencePrompter
  *******************************/
 QString PassFilterPrompter::composeRichDoc() {
-    IntegralBusPort* input = qobject_cast<IntegralBusPort*>(target->getPort("in-data"));
-    Actor* producer = input->getProducer(BaseSlots::TEXT_SLOT().getId());
-    QString unsetStr = "<font color='red'>"+tr("unset")+"</font>";
+    IntegralBusPort *input = qobject_cast<IntegralBusPort *>(target->getPort("in-data"));
+    Actor *producer = input->getProducer(BaseSlots::TEXT_SLOT().getId());
+    QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
     QString producerName = tr("<u>%1</u>").arg(producer ? producer->getLabel() : unsetStr);
     QString passVals = getRequiredParam(BaseSlots::TEXT_SLOT().getId());
     passVals = getHyperlink(BaseSlots::TEXT_SLOT().getId(), passVals);
@@ -133,6 +132,5 @@ QString PassFilterPrompter::composeRichDoc() {
     return res;
 }
 
-
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

@@ -21,13 +21,15 @@
 
 #include "ClarkSupport.h"
 
+#include <QMainWindow>
+
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/ScriptingToolRegistry.h>
-#include <U2Core/U2SafePoints.h>
 #include <U2Core/U2OpStatusUtils.h>
+#include <U2Core/U2SafePoints.h>
+
 #include <U2Gui/MainWindow.h>
-#include <QMainWindow>
 
 namespace U2 {
 
@@ -45,8 +47,8 @@ const QString ClarkSupport::ET_CLARK_GET_TARGETS_DEF_ID = "USUPP_CLARK_GET_TARGE
 const QString ClarkSupport::ET_CLARK_GET_FILES_TO_TAX_NODES = "getfilesToTaxNodes";
 const QString ClarkSupport::ET_CLARK_GET_FILES_TO_TAX_NODES_ID = "USUPP_CLARK_GET_FILES_TO_TAX_NODES";
 
-ClarkSupport::ClarkSupport(const QString& id, const QString& name, const QString& path) : ExternalTool(id, name, path)
-{
+ClarkSupport::ClarkSupport(const QString &id, const QString &name, const QString &path)
+    : ExternalTool(id, name, path) {
     if (AppContext::getMainWindow()) {
         icon = QIcon(":external_tool_support/images/cmdline.png");
         grayIcon = QIcon(":external_tool_support/images/cmdline_gray.png");
@@ -55,7 +57,7 @@ ClarkSupport::ClarkSupport(const QString& id, const QString& name, const QString
 #ifdef Q_OS_WIN
     executableFileName = name + ".exe";
 #else
-//    #if defined(Q_OS_UNIX)
+    //    #if defined(Q_OS_UNIX)
     executableFileName = name;
 //    #endif
 #endif
@@ -82,8 +84,7 @@ ClarkSupport::ClarkSupport(const QString& id, const QString& name, const QString
     }
 }
 
-void ClarkSupport::registerTools(ExternalToolRegistry *etRegistry)
-{
+void ClarkSupport::registerTools(ExternalToolRegistry *etRegistry) {
     etRegistry->registerEntry(new ClarkSupport(ET_CLARK_ID, ET_CLARK, ""));
     etRegistry->registerEntry(new ClarkSupport(ET_CLARK_L_ID, ET_CLARK_L, ""));
     etRegistry->registerEntry(new ClarkSupport(ET_CLARK_GET_ACCSSN_TAX_ID_ID, ET_CLARK_GET_ACCSSN_TAX_ID, ""));
@@ -91,7 +92,7 @@ void ClarkSupport::registerTools(ExternalToolRegistry *etRegistry)
     etRegistry->registerEntry(new ClarkSupport(ET_CLARK_GET_TARGETS_DEF_ID, ET_CLARK_GET_TARGETS_DEF, ""));
     etRegistry->registerEntry(new ClarkSupport(ET_CLARK_BUILD_SCRIPT_ID, ET_CLARK_BUILD_SCRIPT, ""));
     etRegistry->setToolkitDescription(CLARK_GROUP, tr("CLARK (CLAssifier based on Reduced K-mers) is a tool for supervised sequence classification "
-        "based on discriminative k-mers. UGENE provides the GUI for CLARK and CLARK-l variants of the CLARK framework "
+                                                      "based on discriminative k-mers. UGENE provides the GUI for CLARK and CLARK-l variants of the CLARK framework "
                                                       "for solving the problem of the assignment of metagenomic reads to known genomes."));
 }
 
@@ -104,5 +105,4 @@ void ClarkSupport::unregisterTools(ExternalToolRegistry *etRegistry) {
     etRegistry->unregisterEntry(ET_CLARK_BUILD_SCRIPT_ID);
 }
 
-
-}//namespace
+}    // namespace U2

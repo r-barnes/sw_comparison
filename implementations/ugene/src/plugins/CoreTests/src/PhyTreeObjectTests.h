@@ -22,9 +22,10 @@
 #ifndef _U2_PHYLTREE_OBJECT_TESTS_H_
 #define _U2_PHYLTREE_OBJECT_TESTS_H_
 
-#include <U2Test/XMLTestUtils.h>
 #include <QDomElement>
 #include <QHash>
+
+#include <U2Test/XMLTestUtils.h>
 
 namespace U2 {
 
@@ -38,7 +39,7 @@ class GTest_CalculateTreeFromAligment : public XmlTest {
     ReportResult report();
     void prepare();
 
-    PhyTreeGeneratorLauncherTask* task;
+    PhyTreeGeneratorLauncherTask *task;
     QString objContextName;
     QString treeObjContextName;
     QString algId;
@@ -53,24 +54,22 @@ class GTest_CheckPhyNodeHasSibling : public XmlTest {
     QString treeContextName;
     QString nodeName;
     QString siblingName;
-
 };
 
 class GTest_CheckPhyNodeBranchDistance : public XmlTest {
     Q_OBJECT
-        SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CheckPhyNodeBranchDistance, "check-phynode-branch-distance");
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CheckPhyNodeBranchDistance, "check-phynode-branch-distance");
 
     ReportResult report();
 
     QString treeContextName;
     QString nodeName;
     double distance;
-
 };
 
 class GTest_CompareTreesInTwoObjects : public XmlTest {
     Q_OBJECT
-        SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CompareTreesInTwoObjects, "compare-trees-in-two-objects");
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CompareTreesInTwoObjects, "compare-trees-in-two-objects");
 
     ReportResult report();
     QString docContextName;
@@ -79,11 +78,9 @@ class GTest_CompareTreesInTwoObjects : public XmlTest {
 
 class PhyTreeObjectTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
+}    // namespace U2
 
-
-}//namespace
-
-#endif //_U2_BIOSTRUCT3D_OBJECT_TESTS_H_
+#endif    //_U2_BIOSTRUCT3D_OBJECT_TESTS_H_

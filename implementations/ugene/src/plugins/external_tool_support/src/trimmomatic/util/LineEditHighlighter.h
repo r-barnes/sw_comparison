@@ -40,6 +40,6 @@ private:
     QLineEdit *lineEdit;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_LINE_EDIT_HIGHLIGHTER_H_
+#endif    // _U2_LINE_EDIT_HIGHLIGHTER_H_

@@ -20,15 +20,15 @@
  */
 
 #include "MsaRowHeightController.h"
-#include "ov_msa/MaCollapseModel.h"
+
 #include "ov_msa/MSAEditor.h"
+#include "ov_msa/MaCollapseModel.h"
 #include "ov_msa/view_rendering/MaEditorWgt.h"
 
 namespace U2 {
 
-MsaRowHeightController::MsaRowHeightController(MsaEditorWgt *msaEditortWgt) :
-    RowHeightController(msaEditortWgt)
-{
+MsaRowHeightController::MsaRowHeightController(MsaEditorWgt *msaEditortWgt)
+    : RowHeightController(msaEditortWgt) {
 }
 
 int MsaRowHeightController::getRowHeightByMaIndex(int maRowIndex) const {
@@ -36,4 +36,4 @@ int MsaRowHeightController::getRowHeightByMaIndex(int maRowIndex) const {
     return isVisible ? getSingleRowHeight() : 0;
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -34,26 +34,26 @@ public:
     Matrix44(const float *data);
     Matrix44(const Matrix44 &other);
 
-    Matrix44& operator= (const Matrix44 &other);
+    Matrix44 &operator=(const Matrix44 &other);
 
     void loadZero();
     void loadIdentity();
 
     void transpose();
 
-    float* data();
-    const float* data() const;
+    float *data();
+    const float *data() const;
 
-    float& operator[] (unsigned int i);
-    float operator[] (unsigned int i) const;
+    float &operator[](unsigned int i);
+    float operator[](unsigned int i) const;
 
     void load(const QVariantList &values);
     QVariantList store();
 
 private:
     QVector<float> m;
-};  // class Matrix44
+};    // class Matrix44
 
-}   // namespace U2
+}    // namespace U2
 
-#endif  // #ifndef _U2_MATRIX_44_H_
+#endif    // #ifndef _U2_MATRIX_44_H_

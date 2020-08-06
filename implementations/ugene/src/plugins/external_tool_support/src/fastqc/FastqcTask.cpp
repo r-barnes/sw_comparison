@@ -19,18 +19,19 @@
  * MA 02110-1301, USA.
  */
 
-#include <QDir>
-
-#include "FastqcSupport.h"
 #include "FastqcTask.h"
+
+#include <QDir>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
-#include <U2Core/UserApplicationsSettings.h>
-#include <U2Core/U2SafePoints.h>
 #include <U2Core/ExternalToolRegistry.h>
-#include <U2Core/GUrlUtils.h>
 #include <U2Core/ExternalToolRunTask.h>
+#include <U2Core/GUrlUtils.h>
+#include <U2Core/U2SafePoints.h>
+#include <U2Core/UserApplicationsSettings.h>
+
+#include "FastqcSupport.h"
 
 namespace U2 {
 
@@ -49,23 +50,21 @@ const QMap<FastQCParser::ErrorType, QString> FastQCParser::initWellKnownErrors()
 
 const QMap<FastQCParser::ErrorType, QString> FastQCParser::WELL_KNOWN_ERRORS = initWellKnownErrors();
 
-FastQCParser::FastQCParser(const QString& _inputFile)
+FastQCParser::FastQCParser(const QString &_inputFile)
     : ExternalToolLogParser(false),
       inputFile(_inputFile),
-      progress(-1)
-{
-
+      progress(-1) {
 }
 
 int FastQCParser::getProgress() {
     //parsing Approx 20% complete for filename
-    if(!lastPartOfLog.isEmpty()) {
+    if (!lastPartOfLog.isEmpty()) {
         QString lastMessage = lastPartOfLog.last();
         QRegExp rx("Approx (\\d+)% complete");
-        if(lastMessage.contains(rx)) {
+        if (lastMessage.contains(rx)) {
             SAFE_POINT(rx.indexIn(lastMessage) > -1, "bad progress index", 0);
             int step = rx.cap(1).toInt();
-            if(step > progress) {
+            if (step > progress) {
                 return progress = step;
             }
         }
@@ -74,25 +73,25 @@ int FastQCParser::getProgress() {
 }
 
 void FastQCParser::processErrLine(const QString &line) {
-    if (isCommonError(line)){
+    if (isCommonError(line)) {
         ExternalToolLogParser::setLastError(tr("FastQC: %1").arg(line));
     } else if (isMultiLineError(line)) {
         setLastError(tr("FastQC failed to process input file '%1'. Make sure each read takes exactly four lines.")
-                     .arg(inputFile));
+                         .arg(inputFile));
     }
 }
 
 void FastQCParser::setLastError(const QString &value) {
     ExternalToolLogParser::setLastError(value);
-    foreach(const QString& buf, lastPartOfLog) {
+    foreach (const QString &buf, lastPartOfLog) {
         CHECK_CONTINUE(!buf.isEmpty());
 
         ioLog.trace(buf);
     }
 }
 
-bool FastQCParser::isCommonError(const QString& err)  const {
-    foreach(const QString& commonError, WELL_KNOWN_ERRORS.values(Common)) {
+bool FastQCParser::isCommonError(const QString &err) const {
+    foreach (const QString &commonError, WELL_KNOWN_ERRORS.values(Common)) {
         CHECK_CONTINUE(err.contains(commonError, Qt::CaseInsensitive));
 
         return true;
@@ -101,7 +100,7 @@ bool FastQCParser::isCommonError(const QString& err)  const {
     return false;
 }
 
-bool FastQCParser::isMultiLineError(const QString& err) {
+bool FastQCParser::isMultiLineError(const QString &err) {
     QStringList multiLineErrors = WELL_KNOWN_ERRORS.values(Multiline);
     if (err.contains(multiLineErrors.first()) && err.contains(multiLineErrors.last())) {
         return true;
@@ -113,16 +112,13 @@ bool FastQCParser::isMultiLineError(const QString& err) {
 //////////////////////////////////////////////////////////////////////////
 //FastQCTask
 FastQCTask::FastQCTask(const FastQCSetting &settings)
-:ExternalToolSupportTask(QString("FastQC for %1").arg(settings.inputUrl), TaskFlags_FOSE_COSC | TaskFlag_MinimizeSubtaskErrorText)
-, settings(settings), temporaryDir(AppContext::getAppSettings()->getUserAppsSettings()->getUserTemporaryDirPath() + "/")
-{
-
+    : ExternalToolSupportTask(QString("FastQC for %1").arg(settings.inputUrl), TaskFlags_FOSE_COSC | TaskFlag_MinimizeSubtaskErrorText), settings(settings), temporaryDir(AppContext::getAppSettings()->getUserAppsSettings()->getUserTemporaryDirPath() + "/") {
 }
 
-void FastQCTask::prepare(){
-    if (settings.inputUrl.isEmpty()){
+void FastQCTask::prepare() {
+    if (settings.inputUrl.isEmpty()) {
         setError(tr("No input URL"));
-        return ;
+        return;
     }
 
     if (QFileInfo(settings.inputUrl).size() == 0) {
@@ -133,24 +129,24 @@ void FastQCTask::prepare(){
     const QDir outDir = QFileInfo(settings.outDir).absoluteDir();
     if (!outDir.exists()) {
         setError(tr("Folder does not exist: %1").arg(outDir.absolutePath()));
-        return ;
+        return;
     }
 
     const QStringList args = getParameters(stateInfo);
     CHECK_OP(stateInfo, );
-    ExternalToolRunTask* etTask = new ExternalToolRunTask(FastQCSupport::ET_FASTQC_ID, args, new FastQCParser(settings.inputUrl), temporaryDir.path());
+    ExternalToolRunTask *etTask = new ExternalToolRunTask(FastQCSupport::ET_FASTQC_ID, args, new FastQCParser(settings.inputUrl), temporaryDir.path());
     setListenerForTask(etTask);
     addSubTask(etTask);
 }
 
-void FastQCTask::run(){
+void FastQCTask::run() {
     CHECK_OP(stateInfo, );
 
     QString resFileUrl = getResFileUrl();
     const QFileInfo resFile(resFileUrl);
     if (!resFile.exists()) {
         setError(tr("Result file does not exist: %1. See the log for details.").arg(resFile.absoluteFilePath()));
-        return ;
+        return;
     }
     if (!settings.fileName.isEmpty()) {
         QFileInfo fi(settings.fileName);
@@ -165,39 +161,38 @@ void FastQCTask::run(){
     }
 }
 
-QString FastQCTask::getResFileUrl() const{
+QString FastQCTask::getResFileUrl() const {
     QString res;
 
     QFileInfo fi(settings.inputUrl);
     QString name = fi.fileName();
     //taken from FastQC source "OfflineRunner.java"
     //.replaceAll("\\.gz$","").replaceAll("\\.bz2$","").replaceAll("\\.txt$","").replaceAll("\\.fastq$", "").replaceAll("\\.fq$", "").replaceAll("\\.csfastq$", "").replaceAll("\\.sam$", "").replaceAll("\\.bam$", "")+"_fastqc.html");
-    name.replace(QRegExp(".gz$"),"")
-            .replace(QRegExp(".bz2$"),"")
-            .replace(QRegExp(".txt$"),"")
-            .replace(QRegExp(".fastq$"), "")
-            .replace(QRegExp(".csfastq$"), "")
-            .replace(QRegExp(".sam$"), "")
-            .replace(QRegExp(".bam$"), "");
+    name.replace(QRegExp(".gz$"), "")
+        .replace(QRegExp(".bz2$"), "")
+        .replace(QRegExp(".txt$"), "")
+        .replace(QRegExp(".fastq$"), "")
+        .replace(QRegExp(".csfastq$"), "")
+        .replace(QRegExp(".sam$"), "")
+        .replace(QRegExp(".bam$"), "");
     name += "_fastqc.html";
 
     res = temporaryDir.path() + QDir::separator() + name;
     return res;
 }
 
-QStringList FastQCTask::getParameters(U2OpStatus & /*os*/) const{
+QStringList FastQCTask::getParameters(U2OpStatus & /*os*/) const {
     QStringList res;
 
     res << QString("-o");
     res << temporaryDir.path();
 
-
-    if(!settings.conts.isEmpty()){
+    if (!settings.conts.isEmpty()) {
         res << QString("-c");
         res << settings.conts;
     }
 
-    if(!settings.adapters.isEmpty()){
+    if (!settings.adapters.isEmpty()) {
         res << QString("-a");
         res << settings.adapters;
     }
@@ -212,4 +207,4 @@ QStringList FastQCTask::getParameters(U2OpStatus & /*os*/) const{
     return res;
 }
 
-} //namespace U2
+}    //namespace U2

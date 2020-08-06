@@ -31,23 +31,21 @@
 namespace U2 {
 namespace LocalWorkflow {
 
-class TopHatPrompter : public PrompterBase<TopHatPrompter>
-{
+class TopHatPrompter : public PrompterBase<TopHatPrompter> {
     Q_OBJECT
 
 public:
-    TopHatPrompter(Actor* parent = 0);
+    TopHatPrompter(Actor *parent = 0);
 
 protected:
     QString composeRichDoc();
 };
 
-class TopHatWorker : public BaseWorker
-{
+class TopHatWorker : public BaseWorker {
     Q_OBJECT
 
 public:
-    TopHatWorker(Actor* actor);
+    TopHatWorker(Actor *actor);
 
     void init();
     Task *tick();
@@ -57,8 +55,8 @@ private slots:
     void sl_topHatTaskFinished();
 
 protected:
-    IntegralBus* input;
-    IntegralBus* output;
+    IntegralBus *input;
+    IntegralBus *output;
     TopHatInputData data;
     TopHatSettings settings;
 
@@ -74,19 +72,21 @@ private:
     void initPathes();
     void initSamples();
 
-    QList<Actor*> getProducers(const QString &slotId) const;
+    QList<Actor *> getProducers(const QString &slotId) const;
     QString getSampleName(const QString &datasetName) const;
-    Task * runTophat();
+    Task *runTophat();
 };
 
-
-class TopHatWorkerFactory : public DomainFactory
-{
+class TopHatWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
     static void init();
-    TopHatWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual Worker* createWorker(Actor* actor) { return new TopHatWorker(actor); }
+    TopHatWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual Worker *createWorker(Actor *actor) {
+        return new TopHatWorker(actor);
+    }
 
     static const QString OUT_DIR;
     static const QString SAMPLES_MAP;
@@ -139,8 +139,7 @@ class BowtieFilesRelation : public AttributeRelation {
 public:
     BowtieFilesRelation(const QString &indexNameAttrId);
 
-    QVariant getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue,
-        DelegateTags *infTags, DelegateTags *depTags) const;
+    QVariant getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue, DelegateTags *infTags, DelegateTags *depTags) const;
     RelationType getType() const;
     BowtieFilesRelation *clone() const;
 
@@ -152,13 +151,12 @@ class BowtieVersionRelation : public AttributeRelation {
 public:
     BowtieVersionRelation(const QString &bwtVersionAttrId);
 
-    QVariant getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue,
-        DelegateTags *infTags, DelegateTags *depTags) const;
+    QVariant getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue, DelegateTags *infTags, DelegateTags *depTags) const;
     RelationType getType() const;
     BowtieVersionRelation *clone() const;
 };
 
-} // namespace LocalWorkflow
-} // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

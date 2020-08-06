@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "SaveDocumentController.h"
+
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDir>
@@ -39,8 +41,6 @@
 #include <U2Gui/ProjectUtils.h>
 #include <U2Gui/U2FileDialog.h>
 
-#include "SaveDocumentController.h"
-
 namespace U2 {
 
 SaveDocumentControllerConfig::SaveDocumentControllerConfig()
@@ -52,14 +52,13 @@ SaveDocumentControllerConfig::SaveDocumentControllerConfig()
       rollSuffix("_"),
       rollFileName(true),
       rollOutProjectUrls(false) {
-
 }
 
-void SaveDocumentController::SimpleFormatsInfo::addFormat(const QString& name, const QStringList& extensions) {
+void SaveDocumentController::SimpleFormatsInfo::addFormat(const QString &name, const QStringList &extensions) {
     addFormat(name, name, extensions);
 }
 
-void SaveDocumentController::SimpleFormatsInfo::addFormat(const QString& id, const QString& name, const QStringList& _extensions) {
+void SaveDocumentController::SimpleFormatsInfo::addFormat(const QString &id, const QString &name, const QStringList &_extensions) {
     extensions.insert(id, _extensions);
     names.insert(id, name);
 }
@@ -68,12 +67,12 @@ QStringList SaveDocumentController::SimpleFormatsInfo::getNames() const {
     return names.values();
 }
 
-QString SaveDocumentController::SimpleFormatsInfo::getFormatNameById(const QString& id) const {
+QString SaveDocumentController::SimpleFormatsInfo::getFormatNameById(const QString &id) const {
     return names.value(id);
 }
 
 QString SaveDocumentController::SimpleFormatsInfo::getFormatNameByExtension(const QString &ext) const {
-    foreach (const QStringList& exts, extensions.values()) {
+    foreach (const QStringList &exts, extensions.values()) {
         if (exts.contains(ext)) {
             return names.value(extensions.key(exts));
         }
@@ -85,7 +84,7 @@ QString SaveDocumentController::SimpleFormatsInfo::getIdByName(const QString &na
     return names.key(name);
 }
 
-void SaveDocumentController::forceRoll(const QSet<QString>& excludeList) {
+void SaveDocumentController::forceRoll(const QSet<QString> &excludeList) {
     setPath(getSaveFileName(), excludeList);
 }
 
@@ -110,9 +109,9 @@ SaveDocumentController::SaveDocumentController(const SaveDocumentControllerConfi
     init();
 }
 
-SaveDocumentController::SaveDocumentController(const SaveDocumentControllerConfig& config,
-                                               const QList<DocumentFormatId>& formats,
-                                               QObject* parent)
+SaveDocumentController::SaveDocumentController(const SaveDocumentControllerConfig &config,
+                                               const QList<DocumentFormatId> &formats,
+                                               QObject *parent)
     : QObject(parent),
       conf(config),
       overwritingConfirmed(false) {
@@ -148,7 +147,7 @@ void SaveDocumentController::sl_fileNameChanged(const QString &newName) {
     GUrl url(newName);
     QString ext = GUrlUtils::getUncompressedExtension(url);
     if (!formatsInfo.getExtensionsByName(currentFormat).contains(ext) &&
-            !formatsInfo.getFormatNameByExtension(ext).isEmpty()) {
+        !formatsInfo.getFormatNameByExtension(ext).isEmpty()) {
         overwritingConfirmed = true;
         setFormat(formatsInfo.getIdByName(formatsInfo.getFormatNameByExtension(ext)));
     }
@@ -181,10 +180,10 @@ void SaveDocumentController::sl_formatChanged(const QString &newFormat) {
     currentFormat = newFormat;
 
     if (conf.compressCheckbox != NULL) {
-        DocumentFormatRegistry* fr = AppContext::getDocumentFormatRegistry();
+        DocumentFormatRegistry *fr = AppContext::getDocumentFormatRegistry();
         SAFE_POINT(fr != NULL, L10N::nullPointerError("DocumentFormatRegistry"), );
-        DocumentFormat* format = fr->getFormatById(formatsInfo.getIdByName(newFormat));
-        if (format != NULL) { // custom format names without DocumentFormat class can be added into the formats combobox (e.g. ExportCoverageDialog)
+        DocumentFormat *format = fr->getFormatById(formatsInfo.getIdByName(newFormat));
+        if (format != NULL) {    // custom format names without DocumentFormat class can be added into the formats combobox (e.g. ExportCoverageDialog)
             conf.compressCheckbox->setDisabled(format->checkFlags(DocumentFormatFlag_CannotBeCompressed));
         }
     }
@@ -223,8 +222,8 @@ void SaveDocumentController::init() {
     }
     setPath(path);
 
-    connect(conf.fileNameEdit, SIGNAL(textChanged(const QString&)), SLOT(sl_fileNameChanged(const QString&)));
-    connect(conf.fileNameEdit, SIGNAL(textEdited(const QString&)), SLOT(sl_fileNameChanged(const QString&)));
+    connect(conf.fileNameEdit, SIGNAL(textChanged(const QString &)), SLOT(sl_fileNameChanged(const QString &)));
+    connect(conf.fileNameEdit, SIGNAL(textEdited(const QString &)), SLOT(sl_fileNameChanged(const QString &)));
 
     if (NULL != conf.compressCheckbox) {
         connect(conf.compressCheckbox, SIGNAL(toggled(bool)), SLOT(sl_compressToggled(bool)));
@@ -238,14 +237,14 @@ void SaveDocumentController::init() {
 void SaveDocumentController::initSimpleFormatInfo(DocumentFormatConstraints formatConstraints) {
     formatConstraints.addFlagToExclude(DocumentFormatFlag_CannotBeCreated);
 
-    DocumentFormatRegistry* fr = AppContext::getDocumentFormatRegistry();
+    DocumentFormatRegistry *fr = AppContext::getDocumentFormatRegistry();
     QList<DocumentFormatId> selectedFormats = fr->selectFormats(formatConstraints);
     initSimpleFormatInfo(selectedFormats);
 }
 
 void SaveDocumentController::initSimpleFormatInfo(const QList<DocumentFormatId> &formats) {
-    DocumentFormatRegistry* fr = AppContext::getDocumentFormatRegistry();
-    foreach(DocumentFormatId id, formats) {
+    DocumentFormatRegistry *fr = AppContext::getDocumentFormatRegistry();
+    foreach (DocumentFormatId id, formats) {
         formatsInfo.addFormat(id,
                               fr->getFormatById(id)->getFormatName(),
                               fr->getFormatById(id)->getSupportedDocumentFileExtensions());
@@ -268,7 +267,7 @@ void SaveDocumentController::initFormatComboBox() {
     }
     conf.formatCombo->setCurrentText(currentFormat);
 
-    connect(conf.formatCombo, SIGNAL(currentIndexChanged(const QString&)), SLOT(sl_formatChanged(const QString&)), Qt::UniqueConnection);
+    connect(conf.formatCombo, SIGNAL(currentIndexChanged(const QString &)), SLOT(sl_formatChanged(const QString &)), Qt::UniqueConnection);
     sl_formatChanged(conf.formatCombo->currentText());
     conf.formatCombo->blockSignals(false);
 }
@@ -322,7 +321,7 @@ QString SaveDocumentController::prepareFileFilter() const {
     return FormatUtils::prepareFileFilter(formatsWithExtensions, false, extraExtensions);
 }
 
-void SaveDocumentController::setPath(const QString &path, const QSet<QString>& excludeList) {
+void SaveDocumentController::setPath(const QString &path, const QSet<QString> &excludeList) {
     QSet<QString> currentExcludeList = excludeList;
     if (conf.rollOutProjectUrls) {
         currentExcludeList += DocumentUtils::getNewDocFileNameExcludesHint();
@@ -344,4 +343,4 @@ void SaveDocumentController::setFormat(const QString &formatId) {
     emit si_formatChanged(formatId);
 }
 
-}
+}    // namespace U2

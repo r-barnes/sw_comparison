@@ -23,6 +23,7 @@
 #define __CUDA_GPU_REGISTRY_H__
 
 #include <QHash>
+
 #include <U2Core/global.h>
 
 namespace U2 {
@@ -36,20 +37,37 @@ typedef int CudaGpuId;
 
 class U2ALGORITHM_EXPORT CudaGpuModel {
 public:
-    CudaGpuModel( const QString & _name, const CudaGpuId & _id, quint64 _globalMemorySize, bool _enabled  = true ) :
-      name(_name), id(_id), globalMemorySizeBytes(_globalMemorySize), enabled(_enabled), acquired(false) {};
+    CudaGpuModel(const QString &_name, const CudaGpuId &_id, quint64 _globalMemorySize, bool _enabled = true)
+        : name(_name), id(_id), globalMemorySizeBytes(_globalMemorySize), enabled(_enabled), acquired(false) {};
 
-    QString getName() const {return name;}
-    CudaGpuId getId() const {return id;}
-    quint64 getGlobalMemorySizeBytes() const {return globalMemorySizeBytes;}
+    QString getName() const {
+        return name;
+    }
+    CudaGpuId getId() const {
+        return id;
+    }
+    quint64 getGlobalMemorySizeBytes() const {
+        return globalMemorySizeBytes;
+    }
 
-    bool isEnabled() const { return enabled;}
-    void setEnabled(bool b) {enabled = b;}
+    bool isEnabled() const {
+        return enabled;
+    }
+    void setEnabled(bool b) {
+        enabled = b;
+    }
 
-    bool isAcquired() const {return acquired;}
-    void setAcquired( bool a ) {acquired = a;}
+    bool isAcquired() const {
+        return acquired;
+    }
+    void setAcquired(bool a) {
+        acquired = a;
+    }
 
-    bool isReady() {return !isAcquired() && isEnabled(); }
+    bool isReady() {
+        return !isAcquired() && isEnabled();
+    }
+
 private:
     //TODO: add another cuda device properties from cudaDeviceProp
     QString name;
@@ -63,21 +81,23 @@ class U2ALGORITHM_EXPORT CudaGpuRegistry {
 public:
     ~CudaGpuRegistry();
 
-    void registerCudaGpu( CudaGpuModel * gpu );
-    CudaGpuModel * getGpuById( CudaGpuId id ) const;
-    QList<CudaGpuModel*> getRegisteredGpus() const;
+    void registerCudaGpu(CudaGpuModel *gpu);
+    CudaGpuModel *getGpuById(CudaGpuId id) const;
+    QList<CudaGpuModel *> getRegisteredGpus() const;
 
-    CudaGpuModel * getAnyEnabledGpu() const;
+    CudaGpuModel *getAnyEnabledGpu() const;
 
-    CudaGpuModel * acquireAnyReadyGpu();
+    CudaGpuModel *acquireAnyReadyGpu();
 
-    bool empty() const { return gpus.empty(); }
+    bool empty() const {
+        return gpus.empty();
+    }
 
 private:
     void saveGpusSettings() const;
-    QHash< CudaGpuId, CudaGpuModel * > gpus;
+    QHash<CudaGpuId, CudaGpuModel *> gpus;
 };
 
-} //namespace
+}    // namespace U2
 
-#endif //__CUDA_GPU_REGISTRY_H__
+#endif    //__CUDA_GPU_REGISTRY_H__

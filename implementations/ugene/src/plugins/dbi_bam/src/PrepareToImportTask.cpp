@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "PrepareToImportTask.h"
+
 #include <QFileInfo>
 
 #include <U2Core/AppContext.h>
@@ -26,20 +28,19 @@
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentImport.h>
 #include <U2Core/DocumentUtils.h>
-#include <U2Core/UserApplicationsSettings.h>
 #include <U2Core/U2SafePoints.h>
+#include <U2Core/UserApplicationsSettings.h>
 
 #include <U2Formats/BAMUtils.h>
 
-#include "PrepareToImportTask.h"
 #include "LoadBamInfoTask.h"
 
 namespace U2 {
 namespace BAM {
 
-PrepareToImportTask::PrepareToImportTask( const GUrl& url, bool sam, const QString& refUrl, const QString &workingDir ) : Task("Prepare assembly file to import", TaskFlag_None),
-                                                                        sourceURL( url ), refUrl(refUrl), workingDir(workingDir), samFormat(sam), newURL(false)
-{
+PrepareToImportTask::PrepareToImportTask(const GUrl &url, bool sam, const QString &refUrl, const QString &workingDir)
+    : Task("Prepare assembly file to import", TaskFlag_None),
+      sourceURL(url), refUrl(refUrl), workingDir(workingDir), samFormat(sam), newURL(false) {
     tpm = Progress_Manual;
 }
 
@@ -69,10 +70,10 @@ QString PrepareToImportTask::getCopyError(const QString &url1, const QString &ur
 }
 
 namespace {
-    bool equalUrls(const QString &url1, const QString &url2) {
-        return QFileInfo(url1).absoluteFilePath() == QFileInfo(url2).absoluteFilePath();
-    }
+bool equalUrls(const QString &url1, const QString &url2) {
+    return QFileInfo(url1).absoluteFilePath() == QFileInfo(url2).absoluteFilePath();
 }
+}    // namespace
 
 bool PrepareToImportTask::needToCopyBam(const QString &sortedBamUrl) const {
     const QString indexedBamUrl = getIndexedBamUrl(sortedBamUrl);
@@ -113,7 +114,7 @@ void PrepareToImportTask::run() {
         sortedBamUrl = BAMUtils::sortBam(bamUrl, getSortedBamUrl(bamUrl), stateInfo).getURLString();
         CHECK_OP(stateInfo, );
     }
-    stateInfo.setProgress( 66 );
+    stateInfo.setProgress(66);
 
     bool indexed = BAMUtils::hasValidBamIndex(sortedBamUrl);
 
@@ -159,7 +160,7 @@ static QString detectedFormatId(const FormatDetectionResult &f) {
     }
     return f.format->getFormatId();
 }
-}
+}    // namespace
 
 void PrepareToImportTask::checkReferenceFile() {
     CHECK(!refUrl.isEmpty(), );
@@ -187,7 +188,7 @@ void PrepareToImportTask::checkReferenceFile() {
     }
 }
 
-const GUrl& PrepareToImportTask::getSourceUrl() const {
+const GUrl &PrepareToImportTask::getSourceUrl() const {
     return sourceURL;
 }
 
@@ -195,5 +196,5 @@ bool PrepareToImportTask::isNewURL() {
     return newURL;
 }
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2

@@ -26,17 +26,18 @@
 
 #include <U2Lang/WorkflowContext.h>
 
+#include "WorkflowBreakpointSharedInfo.h"
+
 namespace U2 {
 
 class AttributeScript;
 class WorkflowScriptEngine;
-enum BreakpointConditionParameter;
 
 class BreakpointConditionChecker {
     Q_DISABLE_COPY(BreakpointConditionChecker)
 public:
     BreakpointConditionChecker(const QString &initConditionText,
-        Workflow::WorkflowContext *context = NULL);
+                               Workflow::WorkflowContext *context = NULL);
     ~BreakpointConditionChecker();
 
     void setContext(Workflow::WorkflowContext *context);
@@ -50,7 +51,6 @@ public:
     BreakpointConditionParameter getConditionParameter() const;
 
 private:
-
     QString conditionText;
     WorkflowScriptEngine *engine;
     bool enabled;
@@ -59,6 +59,6 @@ private:
     QMutex engineGuard;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_BREAKPOINT_CONDITION_CHECKER_H_
+#endif    // _U2_BREAKPOINT_CONDITION_CHECKER_H_

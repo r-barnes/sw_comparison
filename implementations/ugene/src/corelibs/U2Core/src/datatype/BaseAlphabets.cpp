@@ -19,18 +19,17 @@
  * MA 02110-1301, USA.
  */
 
-#include "DNAAlphabetRegistryImpl.h"
-
 #include <U2Core/TextUtils.h>
+
+#include "DNAAlphabetRegistryImpl.h"
 
 namespace U2 {
 
-
-static void fillBitArray(QBitArray& map, const char* str, Qt::CaseSensitivity caseMode) {
+static void fillBitArray(QBitArray &map, const char *str, Qt::CaseSensitivity caseMode) {
     QByteArray line(str);
-    foreach(char c, line) {
+    foreach (char c, line) {
         if (caseMode == Qt::CaseSensitive) {
-            map[(uchar)c]=true;
+            map[(uchar)c] = true;
         } else {
             char lc = TextUtils::UPPER_CASE_MAP.at((uchar)c);
             char uc = TextUtils::LOWER_CASE_MAP.at((uchar)c);
@@ -39,12 +38,12 @@ static void fillBitArray(QBitArray& map, const char* str, Qt::CaseSensitivity ca
         }
     }
 }
-#define CASE_OFFSET ('a'-'A')
-static void fill(QBitArray& map, const char *s, Qt::CaseSensitivity caseMode) {
-    for(const char* i =s; *i!=0; i++) {
+#define CASE_OFFSET ('a' - 'A')
+static void fill(QBitArray &map, const char *s, Qt::CaseSensitivity caseMode) {
+    for (const char *i = s; *i != 0; i++) {
         char c = *i;
         map[int((uchar)c)] = true;
-        if (caseMode == Qt::CaseInsensitive && c >='A' && c<='Z') {
+        if (caseMode == Qt::CaseInsensitive && c >= 'A' && c <= 'Z') {
             map[int((uchar)c) + CASE_OFFSET] = true;
         }
     }
@@ -60,7 +59,7 @@ void DNAAlphabetRegistryImpl::initBaseAlphabets() {
     //raw text
     {
         QBitArray map(256, true);
-        const DNAAlphabet* a = new DNAAlphabet(BaseDNAAlphabetIds::RAW(), tr("Raw"), DNAAlphabet_RAW, map, Qt::CaseSensitive, '\0');
+        const DNAAlphabet *a = new DNAAlphabet(BaseDNAAlphabetIds::RAW(), tr("Raw"), DNAAlphabet_RAW, map, Qt::CaseSensitive, '\0');
         registerAlphabet(a);
     }
 
@@ -68,8 +67,7 @@ void DNAAlphabetRegistryImpl::initBaseAlphabets() {
     {
         QBitArray map(256, false);
         fill(map, "ACGTN-", Qt::CaseInsensitive);
-        const DNAAlphabet* a = new DNAAlphabet(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT(), tr("Standard DNA"),
-                                        DNAAlphabet_NUCL, map, Qt::CaseInsensitive, 'N');
+        const DNAAlphabet *a = new DNAAlphabet(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT(), tr("Standard DNA"), DNAAlphabet_NUCL, map, Qt::CaseInsensitive, 'N');
         registerAlphabet(a);
     }
 
@@ -77,27 +75,23 @@ void DNAAlphabetRegistryImpl::initBaseAlphabets() {
     {
         QBitArray map(256, false);
         fill(map, "ACGUN-", Qt::CaseInsensitive);
-        const DNAAlphabet* a = new DNAAlphabet(BaseDNAAlphabetIds::NUCL_RNA_DEFAULT(), tr("Standard RNA"),
-            DNAAlphabet_NUCL, map, Qt::CaseInsensitive, 'N');
+        const DNAAlphabet *a = new DNAAlphabet(BaseDNAAlphabetIds::NUCL_RNA_DEFAULT(), tr("Standard RNA"), DNAAlphabet_NUCL, map, Qt::CaseInsensitive, 'N');
         registerAlphabet(a);
     }
-
 
     //extended NUCL DNA
     {
         QBitArray map(256, false);
-        fill(map, "ACGTMRWSYKVHDBNX-", Qt::CaseInsensitive); //X == N
-        const DNAAlphabet* a = new DNAAlphabet(BaseDNAAlphabetIds::NUCL_DNA_EXTENDED(), tr("Extended DNA"),
-                                        DNAAlphabet_NUCL, map, Qt::CaseInsensitive, 'N');
+        fill(map, "ACGTMRWSYKVHDBNX-", Qt::CaseInsensitive);    //X == N
+        const DNAAlphabet *a = new DNAAlphabet(BaseDNAAlphabetIds::NUCL_DNA_EXTENDED(), tr("Extended DNA"), DNAAlphabet_NUCL, map, Qt::CaseInsensitive, 'N');
         registerAlphabet(a);
     }
 
     //extended NUCL RNA
     {
         QBitArray map(256, false);
-        fill(map, "ACGUMRWSYKVHDBNX-", Qt::CaseInsensitive); //X == N
-        const DNAAlphabet* a = new DNAAlphabet(BaseDNAAlphabetIds::NUCL_RNA_EXTENDED(), tr("Extended RNA"),
-            DNAAlphabet_NUCL, map, Qt::CaseInsensitive, 'N');
+        fill(map, "ACGUMRWSYKVHDBNX-", Qt::CaseInsensitive);    //X == N
+        const DNAAlphabet *a = new DNAAlphabet(BaseDNAAlphabetIds::NUCL_RNA_EXTENDED(), tr("Extended RNA"), DNAAlphabet_NUCL, map, Qt::CaseInsensitive, 'N');
         registerAlphabet(a);
     }
 
@@ -111,8 +105,7 @@ void DNAAlphabetRegistryImpl::initBaseAlphabets() {
         //O = pyrrolysine, U = selenocysteine
         fillBitArray(map, "OU", Qt::CaseInsensitive);
 
-        const DNAAlphabet* a = new DNAAlphabet(BaseDNAAlphabetIds::AMINO_DEFAULT(), tr("Standard amino acid"),
-            DNAAlphabet_AMINO, map, Qt::CaseInsensitive, 'X');
+        const DNAAlphabet *a = new DNAAlphabet(BaseDNAAlphabetIds::AMINO_DEFAULT(), tr("Standard amino acid"), DNAAlphabet_AMINO, map, Qt::CaseInsensitive, 'X');
         registerAlphabet(a);
     }
 
@@ -130,13 +123,9 @@ void DNAAlphabetRegistryImpl::initBaseAlphabets() {
         //Not recognized by some algorithms, some functions are turned off.
         fillBitArray(map, "J", Qt::CaseInsensitive);
 
-        const DNAAlphabet* a = new DNAAlphabet(BaseDNAAlphabetIds::AMINO_EXTENDED(), tr("Extended amino acid"),
-            DNAAlphabet_AMINO, map, Qt::CaseInsensitive, 'X');
+        const DNAAlphabet *a = new DNAAlphabet(BaseDNAAlphabetIds::AMINO_EXTENDED(), tr("Extended amino acid"), DNAAlphabet_AMINO, map, Qt::CaseInsensitive, 'X');
         registerAlphabet(a);
     }
-
 }
 
-
-
-}//namespace
+}    // namespace U2

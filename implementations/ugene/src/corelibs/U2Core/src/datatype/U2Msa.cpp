@@ -25,16 +25,12 @@ namespace U2 {
 
 U2MsaGap::U2MsaGap()
     : offset(0),
-      gap(0)
-{
-
+      gap(0) {
 }
 
 U2MsaGap::U2MsaGap(qint64 off, qint64 gap)
     : offset(off),
-      gap(gap)
-{
-
+      gap(gap) {
 }
 
 qint64 U2MsaGap::endPos() const {
@@ -76,32 +72,25 @@ U2MsaRow::U2MsaRow()
     : rowId(INVALID_ROW_ID),
       gstart(0),
       gend(0),
-      length(0)
-{
-
+      length(0) {
 }
 
 U2MsaRow::~U2MsaRow() {
-
 }
 
 const char U2Msa::GAP_CHAR = '-';
 const char U2Msa::INVALID_CHAR = '\0';
 
 U2Msa::U2Msa()
-    : length(0)
-{
-
+    : length(0) {
 }
 
 U2Msa::U2Msa(const U2DataId &id, const QString &dbId, qint64 version)
-    : U2Object(id, dbId, version)
-{
-
+    : U2Object(id, dbId, version) {
 }
 
 U2DataType U2Msa::getType() const {
     return U2Type::Msa;
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -35,8 +35,8 @@ GUI_TEST_CLASS_DECLARATION(test_0002_1)
 GUI_TEST_CLASS_DECLARATION(test_0002_2)
 
 #undef GUI_TEST_SUITE
-}
+}    // namespace GUITest_common_scenarios_project_bookmarks
 
-} //namespace
+}    // namespace U2
 
 #endif

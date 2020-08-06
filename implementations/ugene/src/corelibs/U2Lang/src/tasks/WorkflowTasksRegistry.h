@@ -40,10 +40,10 @@ public:
     ReadDocumentTaskFactory *getReadDocumentTaskFactory(const QString &id);
 
 private:
-    QMap<QString, ReadDocumentTaskFactory*> readTasks;
+    QMap<QString, ReadDocumentTaskFactory *> readTasks;
 };
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2
 
-#endif // _U2_WORKFLOW_TASKS_REGISTRY_
+#endif    // _U2_WORKFLOW_TASKS_REGISTRY_

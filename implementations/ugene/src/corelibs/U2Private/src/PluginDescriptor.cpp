@@ -21,16 +21,15 @@
 
 #include "PluginDescriptor.h"
 
-#include <U2Core/L10n.h>
-#include <U2Core/GAutoDeleteList.h>
-
 #include <QDir>
 #include <QDomDocument>
 
+#include <U2Core/GAutoDeleteList.h>
+#include <U2Core/L10n.h>
 
 namespace U2 {
 
-static PlatformName platformFromText(const QString& text) {
+static PlatformName platformFromText(const QString &text) {
     QString trimmed = text.trimmed();
     if (trimmed == "win") {
         return PlatformName_Win;
@@ -44,7 +43,7 @@ static PlatformName platformFromText(const QString& text) {
     return PlatformName_Unknown;
 }
 
-static PlatformArch archFromText(const QString& text) {
+static PlatformArch archFromText(const QString &text) {
     QString trimmed = text.trimmed();
     if (trimmed == "32") {
         return PlatformArch_32;
@@ -55,30 +54,30 @@ static PlatformArch archFromText(const QString& text) {
     return PlatformArch_Unknown;
 }
 
-static PluginMode modeFromText(const QString& text) {
+static PluginMode modeFromText(const QString &text) {
     QString trimmed = text.trimmed().toLower();
     QStringList tokens = trimmed.split(QRegExp("[\\s,]"), QString::SkipEmptyParts);
     PluginMode result;
     if (tokens.isEmpty()) {
-        result|=PluginMode_Malformed;
+        result |= PluginMode_Malformed;
         return result;
     }
-    foreach(const QString& token, tokens) {
+    foreach (const QString &token, tokens) {
         if (token == "ui") {
-            result|=PluginMode_UI;
+            result |= PluginMode_UI;
         } else if (token == "console") {
-            result|=PluginMode_Console;
+            result |= PluginMode_Console;
         } else {
-            result|=PluginMode_Malformed;
+            result |= PluginMode_Malformed;
             return result;
         }
     }
     return result;
 }
 
-PluginDesc PluginDescriptorHelper::readPluginDescriptor(const QString& descUrl, QString& error) {
+PluginDesc PluginDescriptorHelper::readPluginDescriptor(const QString &descUrl, QString &error) {
     PluginDesc result;
-    PluginDesc failResult; //empty one, used if parsing is failed
+    PluginDesc failResult;    //empty one, used if parsing is failed
 
     QFile f(descUrl);
     if (!f.open(QIODevice::ReadOnly)) {
@@ -88,7 +87,7 @@ PluginDesc PluginDescriptorHelper::readPluginDescriptor(const QString& descUrl, 
 
     result.descriptorUrl = descUrl;
 
-    QByteArray  xmlData = f.readAll();
+    QByteArray xmlData = f.readAll();
     f.close();
 
     QDomDocument doc;
@@ -117,7 +116,7 @@ PluginDesc PluginDescriptorHelper::readPluginDescriptor(const QString& descUrl, 
         return failResult;
     }
 
-    result.ugeneVersion= Version::parseVersion(pluginElement.attribute("ugene-version"));
+    result.ugeneVersion = Version::parseVersion(pluginElement.attribute("ugene-version"));
     if (result.ugeneVersion.text.isEmpty()) {
         error = tr("Required attribute not found %1").arg("ugene-version");
         return failResult;
@@ -131,7 +130,7 @@ PluginDesc PluginDescriptorHelper::readPluginDescriptor(const QString& descUrl, 
 
     QDomElement libraryElement = pluginElement.firstChildElement("library");
     QString libraryUrlText = libraryElement.text();
-    if (!libraryUrlText.isEmpty() && QFileInfo(libraryUrlText).isRelative()) { //if path is relative, use descriptor dir as 'current folder'
+    if (!libraryUrlText.isEmpty() && QFileInfo(libraryUrlText).isRelative()) {    //if path is relative, use descriptor dir as 'current folder'
         libraryUrlText = QFileInfo(descUrl).absoluteDir().canonicalPath() + "/" + libraryUrlText;
     }
     result.libraryUrl = libraryUrlText;
@@ -139,8 +138,8 @@ PluginDesc PluginDescriptorHelper::readPluginDescriptor(const QString& descUrl, 
         error = tr("Required element not found %1").arg("library");
         return failResult;
     }
-    QString licenseUrl = QString(result.id+".license");
-    if (QFileInfo(licenseUrl).isRelative()) { //if path is relative, use descriptor dir as 'current folder'
+    QString licenseUrl = QString(result.id + ".license");
+    if (QFileInfo(licenseUrl).isRelative()) {    //if path is relative, use descriptor dir as 'current folder'
         licenseUrl = QFileInfo(descUrl).absoluteDir().canonicalPath() + "/" + licenseUrl;
     }
     result.licenseUrl = licenseUrl;
@@ -151,7 +150,7 @@ PluginDesc PluginDescriptorHelper::readPluginDescriptor(const QString& descUrl, 
         return failResult;
     }
 
-    result.pluginVendor= pluginElement.firstChildElement("plugin-vendor").text();
+    result.pluginVendor = pluginElement.firstChildElement("plugin-vendor").text();
     if (result.pluginVendor.isNull()) {
         error = tr("Required element not found %1").arg("plugin-vendor");
         return failResult;
@@ -166,13 +165,13 @@ PluginDesc PluginDescriptorHelper::readPluginDescriptor(const QString& descUrl, 
 
     QDomElement platformElement = pluginElement.firstChildElement("platform");
     QString platformNameText = platformElement.attribute("name");
-    result.platform.name= platformFromText(platformNameText);
+    result.platform.name = platformFromText(platformNameText);
     if (result.platform.name == PlatformName_Unknown) {
         error = tr("Platform arch is unknown: %1").arg(platformNameText);
         return failResult;
     }
 
-    QString platformArchText= platformElement.attribute("arch");
+    QString platformArchText = platformElement.attribute("arch");
     result.platform.arch = archFromText(platformArchText);
     if (result.platform.arch == PlatformArch_Unknown) {
         error = tr("Platform bits is unknown: %1").arg(platformArchText);
@@ -184,16 +183,16 @@ PluginDesc PluginDescriptorHelper::readPluginDescriptor(const QString& descUrl, 
     result.qtVersion.debug = result.ugeneVersion.debug = result.pluginVersion.debug = debug;
 
     QDomNodeList dependsElements = pluginElement.elementsByTagName("depends");
-    for(int i = 0; i < dependsElements.size(); i++) {
+    for (int i = 0; i < dependsElements.size(); i++) {
         QDomNode dn = dependsElements.item(i);
         if (!dn.isElement()) {
             continue;
         }
         QString dependsText = dn.toElement().text();
         QStringList dependsTokes = dependsText.split(QChar(';'), QString::SkipEmptyParts);
-        foreach (const QString& token, dependsTokes) {
+        foreach (const QString &token, dependsTokes) {
             QStringList plugAndVersion = token.split(QChar(':'), QString::KeepEmptyParts);
-            if (plugAndVersion.size()!=2) {
+            if (plugAndVersion.size() != 2) {
                 error = tr("Invalid depends token: %1").arg(token);
                 return failResult;
             }
@@ -207,22 +206,12 @@ PluginDesc PluginDescriptorHelper::readPluginDescriptor(const QString& descUrl, 
     return result;
 }
 
-
 PluginDesc::PluginDesc()
-    : mode(PluginMode_Malformed)
-{
-
+    : mode(PluginMode_Malformed) {
 }
 
-bool PluginDesc::operator == (const PluginDesc& pd) const  {
-    return id == pd.id
-        && pluginVersion == pd.pluginVersion
-        && ugeneVersion == pd.ugeneVersion
-        && qtVersion == pd.qtVersion
-        && libraryUrl == pd.libraryUrl
-        && licenseUrl == pd.licenseUrl
-        && platform == pd.platform
-        && mode == pd.mode;
+bool PluginDesc::operator==(const PluginDesc &pd) const {
+    return id == pd.id && pluginVersion == pd.pluginVersion && ugeneVersion == pd.ugeneVersion && qtVersion == pd.qtVersion && libraryUrl == pd.libraryUrl && licenseUrl == pd.licenseUrl && platform == pd.platform && mode == pd.mode;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -237,36 +226,39 @@ enum DepNodeState {
 
 class DepNode {
 public:
-    DepNode() {state = DS_Clean; root = false;}
-    QList<DepNode*>     parentNodes; //nodes this node depends on
-    QList<DepNode*>     childNodes; //nodes that depends on this node
-    PluginDesc          desc;
+    DepNode() {
+        state = DS_Clean;
+        root = false;
+    }
+    QList<DepNode *> parentNodes;    //nodes this node depends on
+    QList<DepNode *> childNodes;    //nodes that depends on this node
+    PluginDesc desc;
 
-    DepNodeState        state;
-    bool                root;
+    DepNodeState state;
+    bool root;
 };
 
-static void resetState(const QList<DepNode*>& nodes) {
-    foreach (DepNode* node, nodes) {
+static void resetState(const QList<DepNode *> &nodes) {
+    foreach (DepNode *node, nodes) {
         node->state = DS_Clean;
     }
 }
 
-static void findParentNodes(DepNode* node, const PluginDesc& desc, QString & err, QList<DepNode*>& result) {
+static void findParentNodes(DepNode *node, const PluginDesc &desc, QString &err, QList<DepNode *> &result) {
     assert(node->state == DS_Clean);
     node->state = DS_InProcess;
-    foreach (DepNode* childNode, node->childNodes) {
-        if (childNode->state == DS_Done) { //check if node is already processed
+    foreach (DepNode *childNode, node->childNodes) {
+        if (childNode->state == DS_Done) {    //check if node is already processed
             continue;
         }
-        if (childNode->state == DS_InProcess) { // circular dependency between plugins
+        if (childNode->state == DS_InProcess) {    // circular dependency between plugins
             err = PluginDescriptorHelper::tr("Plugin circular dependency detected: %1 <-> %2").arg(desc.id).arg(node->desc.id);
             return;
         }
         findParentNodes(childNode, desc, err, result);
     }
-    foreach(const DependsInfo& di, desc.dependsList) {
-        if ( di.id == node->desc.id && di.version <= node->desc.pluginVersion ) {
+    foreach (const DependsInfo &di, desc.dependsList) {
+        if (di.id == node->desc.id && di.version <= node->desc.pluginVersion) {
             result.append(node);
             break;
         }
@@ -274,10 +266,10 @@ static void findParentNodes(DepNode* node, const PluginDesc& desc, QString & err
     node->state = DS_Done;
 }
 
-static void orderPostorder(DepNode* node, QList<PluginDesc>& result) {
+static void orderPostorder(DepNode *node, QList<PluginDesc> &result) {
     assert(node->state == DS_Clean);
     node->state = DS_InProcess;
-    foreach (DepNode* childNode, node->childNodes) {
+    foreach (DepNode *childNode, node->childNodes) {
         if (childNode->state != DS_Clean) {
             continue;
         }
@@ -289,18 +281,18 @@ static void orderPostorder(DepNode* node, QList<PluginDesc>& result) {
     node->state = DS_Done;
 }
 
-static void orderTopological(DepNode* node, QList<PluginDesc>& result) {
+static void orderTopological(DepNode *node, QList<PluginDesc> &result) {
     orderPostorder(node, result);
     QList<PluginDesc> topologicalResult;
     QListIterator<PluginDesc> it(result);
     it.toBack();
-    while( it.hasPrevious()) {
+    while (it.hasPrevious()) {
         topologicalResult.append(it.previous());
     }
     result = topologicalResult;
 }
 
-QList<PluginDesc> PluginDescriptorHelper::orderPlugins(const QList<PluginDesc>& unordered, QString& err) {
+QList<PluginDesc> PluginDescriptorHelper::orderPlugins(const QList<PluginDesc> &unordered, QString &err) {
     // Sort plugin using dependency graph.
     // Root node has no dependencies. All child nodes depends on all parents.
     QList<PluginDesc> result;
@@ -309,7 +301,7 @@ QList<PluginDesc> PluginDescriptorHelper::orderPlugins(const QList<PluginDesc>& 
     }
 
     GAutoDeleteList<DepNode> allNodes;
-    DepNode* rootNode = new DepNode();
+    DepNode *rootNode = new DepNode();
     rootNode->root = true;
     allNodes.qlist.append(rootNode);
 
@@ -318,10 +310,10 @@ QList<PluginDesc> PluginDescriptorHelper::orderPlugins(const QList<PluginDesc>& 
     int iterations = 0;
     int maxIterations = queue.size();
 
-    do  {
+    do {
         maxIterations = queue.size();
         PluginDesc desc = queue.takeFirst();
-        QList<DepNode*> nodes;
+        QList<DepNode *> nodes;
         int nDeps = desc.dependsList.size();
         if (nDeps == 0) {
             nodes.append(rootNode);
@@ -333,11 +325,11 @@ QList<PluginDesc> PluginDescriptorHelper::orderPlugins(const QList<PluginDesc>& 
             return unordered;
         }
         if (nDeps == 0 || nodes.size() == nDeps) {
-            DepNode* descNode = new DepNode();
+            DepNode *descNode = new DepNode();
             descNode->desc = desc;
             allNodes.qlist.append(descNode);
             // now add this node as a child to all nodes it depends on
-            foreach(DepNode* node, nodes) {
+            foreach (DepNode *node, nodes) {
                 node->childNodes.append(descNode);
                 descNode->parentNodes.append(node);
             }
@@ -366,7 +358,7 @@ QList<PluginDesc> PluginDescriptorHelper::orderPlugins(const QList<PluginDesc>& 
 
 #ifdef _DEBUG
     assert(result.size() == unordered.size());
-    foreach (const PluginDesc& desc, unordered) {
+    foreach (const PluginDesc &desc, unordered) {
         int idx = result.indexOf(desc);
         assert(idx >= 0);
     }
@@ -375,5 +367,4 @@ QList<PluginDesc> PluginDescriptorHelper::orderPlugins(const QList<PluginDesc>& 
     return result;
 }
 
-
-} //namespace
+}    // namespace U2

@@ -24,8 +24,7 @@
 namespace U2 {
 
 DirectoryItem::DirectoryItem(const QString &url, QListWidget *parent)
-: UrlItem(url, parent)
-{
+    : UrlItem(url, parent) {
     options = new DirectoryOptions();
     connect(options, SIGNAL(si_dataChanged()), SIGNAL(si_dataChanged()));
 
@@ -34,8 +33,7 @@ DirectoryItem::DirectoryItem(const QString &url, QListWidget *parent)
 
     setToolTip(
         "<p>" + url + "</p><p>" +
-        tr("Use <i>right click</i> to set advanced options")
-        + "</p>");
+        tr("Use <i>right click</i> to set advanced options") + "</p>");
 }
 
 DirectoryItem::~DirectoryItem() {
@@ -43,7 +41,7 @@ DirectoryItem::~DirectoryItem() {
     delete options;
 }
 
-QWidget * DirectoryItem::getOptionsWidget() {
+QWidget *DirectoryItem::getOptionsWidget() {
     return options;
 }
 
@@ -79,8 +77,7 @@ bool DirectoryItem::isRecursive() const {
 /* DirectoryOptions */
 /************************************************************************/
 DirectoryOptions::DirectoryOptions(QWidget *parent)
-: QWidget(parent)
-{
+    : QWidget(parent) {
     setupUi(this);
     connect(includeMaskEdit, SIGNAL(textChanged(const QString &)), SIGNAL(si_dataChanged()));
     connect(excludeMaskEdit, SIGNAL(textChanged(const QString &)), SIGNAL(si_dataChanged()));
@@ -111,4 +108,4 @@ bool DirectoryOptions::isRecursive() const {
     return recursiveBox->isChecked();
 }
 
-} // U2
+}    // namespace U2

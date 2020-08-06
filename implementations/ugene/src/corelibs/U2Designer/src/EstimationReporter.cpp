@@ -19,10 +19,10 @@
  * MA 02110-1301, USA.
  */
 
+#include "EstimationReporter.h"
+
 #include <QApplication>
 #include <QTextStream>
-
-#include "EstimationReporter.h"
 
 namespace U2 {
 
@@ -45,7 +45,7 @@ static QString toTimeString(qint64 timeSec) {
     return result;
 }
 
-QMessageBox * EstimationReporter::createTimeMessage(const Workflow::EstimationResult &er) {
+QMessageBox *EstimationReporter::createTimeMessage(const Workflow::EstimationResult &er) {
     QMessageBox *result = new QMessageBox(
         QMessageBox::Information,
         QObject::tr("Workflow Estimation"),
@@ -54,4 +54,4 @@ QMessageBox * EstimationReporter::createTimeMessage(const Workflow::EstimationRe
     return result;
 }
 
-} // U2
+}    // namespace U2

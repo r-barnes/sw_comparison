@@ -20,67 +20,64 @@
  */
 
 #include "NetworkSettingsGUIController.h"
+
 #include <QFile>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/UserApplicationsSettings.h>
+
 #include <U2Gui/U2FileDialog.h>
 
-namespace U2
-{
+namespace U2 {
 
 NetworkSettingsPageState::NetworkSettingsPageState()
-: config(*AppContext::getAppSettings()->getNetworkConfiguration()), useDefaultWebBrowser (true)
-{
+    : config(*AppContext::getAppSettings()->getNetworkConfiguration()), useDefaultWebBrowser(true) {
 }
 
-NetworkSettingsPageController::NetworkSettingsPageController(QObject* p) 
-: AppSettingsGUIPageController(tr("Network"), APP_SETTINGS_GUI_NETWORK, p)
-{
+NetworkSettingsPageController::NetworkSettingsPageController(QObject *p)
+    : AppSettingsGUIPageController(tr("Network"), APP_SETTINGS_GUI_NETWORK, p) {
 }
 
-
-AppSettingsGUIPageState* NetworkSettingsPageController::getSavedState() {
-    NetworkSettingsPageState* state = new NetworkSettingsPageState();
+AppSettingsGUIPageState *NetworkSettingsPageController::getSavedState() {
+    NetworkSettingsPageState *state = new NetworkSettingsPageState();
     state->config = *AppContext::getAppSettings()->getNetworkConfiguration();
-    UserAppsSettings* s = AppContext::getAppSettings()->getUserAppsSettings();
+    UserAppsSettings *s = AppContext::getAppSettings()->getUserAppsSettings();
     state->webBrowserUrl = s->getWebBrowserURL();
     state->useDefaultWebBrowser = s->useDefaultWebBrowser();
     return state;
 }
 
-void NetworkSettingsPageController::saveState(AppSettingsGUIPageState* s) {
-    NetworkSettingsPageState* state = qobject_cast<NetworkSettingsPageState*>(s);
-    NetworkConfiguration* dst = AppContext::getAppSettings()->getNetworkConfiguration();
+void NetworkSettingsPageController::saveState(AppSettingsGUIPageState *s) {
+    NetworkSettingsPageState *state = qobject_cast<NetworkSettingsPageState *>(s);
+    NetworkConfiguration *dst = AppContext::getAppSettings()->getNetworkConfiguration();
     dst->copyFrom(state->config);
-    UserAppsSettings* st = AppContext::getAppSettings()->getUserAppsSettings();
+    UserAppsSettings *st = AppContext::getAppSettings()->getUserAppsSettings();
     st->setWebBrowserURL(state->webBrowserUrl);
     st->setUseDefaultWebBrowser(state->useDefaultWebBrowser);
 }
 
-AppSettingsGUIPageWidget* NetworkSettingsPageController::createWidget(AppSettingsGUIPageState* data) {
-    NetworkSettingsPageWidget* r =  new NetworkSettingsPageWidget();
+AppSettingsGUIPageWidget *NetworkSettingsPageController::createWidget(AppSettingsGUIPageState *data) {
+    NetworkSettingsPageWidget *r = new NetworkSettingsPageWidget();
     r->setState(data);
     return r;
 }
 
-const QString NetworkSettingsPageController::helpPageId = QString("24742343");
+const QString NetworkSettingsPageController::helpPageId = QString("46499698");
 
 NetworkSettingsPageWidget::NetworkSettingsPageWidget() {
-    setupUi( this );
+    setupUi(this);
 #ifndef QT_NO_OPENSSL
-	sslGroup->setEnabled(true);
+    sslGroup->setEnabled(true);
 #endif
-    connect( httpProxyCheck, SIGNAL(stateChanged(int)), SLOT(sl_HttpChecked(int)) );
-    connect( proxyExceptionsCheck, SIGNAL(stateChanged(int)), SLOT(sl_ExceptionsChecked(int)) );
-    connect( webBrowserButton, SIGNAL(clicked()), SLOT(sl_changeWebBrowserPathButtonClicked()));
+    connect(httpProxyCheck, SIGNAL(stateChanged(int)), SLOT(sl_HttpChecked(int)));
+    connect(proxyExceptionsCheck, SIGNAL(stateChanged(int)), SLOT(sl_ExceptionsChecked(int)));
+    connect(webBrowserButton, SIGNAL(clicked()), SLOT(sl_changeWebBrowserPathButtonClicked()));
 }
 
-
-void NetworkSettingsPageWidget::sl_HttpChecked( int state ) {
-    httpProxyAddrEdit->setEnabled( state == Qt::Checked );
-    httpProxyPortEdit->setEnabled( state == Qt::Checked );
+void NetworkSettingsPageWidget::sl_HttpChecked(int state) {
+    httpProxyAddrEdit->setEnabled(state == Qt::Checked);
+    httpProxyPortEdit->setEnabled(state == Qt::Checked);
     sl_ExceptionsChecked(state);
 }
 
@@ -88,38 +85,38 @@ void NetworkSettingsPageWidget::sl_ExceptionsChecked(int) {
     proxyExceptionsEdit->setEnabled(httpProxyCheck->isChecked() && proxyExceptionsCheck->isChecked());
 }
 
-void NetworkSettingsPageWidget::setState(AppSettingsGUIPageState* s) {
-    NetworkSettingsPageState* state = qobject_cast<NetworkSettingsPageState*>(s);
-    const NetworkConfiguration& set = state->config;
-    QNetworkProxy httpProxy = set.getProxy( QNetworkProxy::HttpProxy );
-    if( QNetworkProxy::DefaultProxy != httpProxy.type() ) {
-        httpProxyAddrEdit->insert( httpProxy.hostName() );
-        httpProxyPortEdit->setValue( httpProxy.port() );
-        httpProxyCheck->setCheckState( Qt::Checked );
+void NetworkSettingsPageWidget::setState(AppSettingsGUIPageState *s) {
+    NetworkSettingsPageState *state = qobject_cast<NetworkSettingsPageState *>(s);
+    const NetworkConfiguration &set = state->config;
+    QNetworkProxy httpProxy = set.getProxy(QNetworkProxy::HttpProxy);
+    if (QNetworkProxy::DefaultProxy != httpProxy.type()) {
+        httpProxyAddrEdit->insert(httpProxy.hostName());
+        httpProxyPortEdit->setValue(httpProxy.port());
+        httpProxyCheck->setCheckState(Qt::Checked);
         QString user = httpProxy.user();
         if (!user.isEmpty()) {
             httpAuthBox->setChecked(true);
             httpAuthLoginEdit->setText(user);
             httpAuthPasswordEdit->setText(httpProxy.password());
         }
-    } 
-    if( !set.isProxyUsed(QNetworkProxy::HttpProxy) ){
-        httpProxyAddrEdit->setDisabled( true );
-        httpProxyPortEdit->setDisabled( true );
-        httpProxyCheck->setCheckState( Qt::Unchecked );
+    }
+    if (!set.isProxyUsed(QNetworkProxy::HttpProxy)) {
+        httpProxyAddrEdit->setDisabled(true);
+        httpProxyPortEdit->setDisabled(true);
+        httpProxyCheck->setCheckState(Qt::Unchecked);
     }
 
-    proxyExceptionsEdit->setPlainText( set.getExceptionsList().join("\n") );
-    if( set.exceptionsEnabled() ) {
-        proxyExceptionsCheck->setCheckState( Qt::Checked );
+    proxyExceptionsEdit->setPlainText(set.getExceptionsList().join("\n"));
+    if (set.exceptionsEnabled()) {
+        proxyExceptionsCheck->setCheckState(Qt::Checked);
     } else {
-        proxyExceptionsEdit->setDisabled( true );
+        proxyExceptionsEdit->setDisabled(true);
     }
 
     sslBox->addItems(set.getSslProtocolNames());
     int index = sslBox->findText(set.getSslProtocolName());
     sslBox->setCurrentIndex(index);
-	remoteRequestBox->setValue(set.remoteRequestTimeout());
+    remoteRequestBox->setValue(set.remoteRequestTimeout());
     defaultWebBrowser->setChecked(state->useDefaultWebBrowser);
     customWebBrowser->setChecked(!state->useDefaultWebBrowser);
     webBrowserButton->setEnabled(!state->useDefaultWebBrowser);
@@ -127,20 +124,20 @@ void NetworkSettingsPageWidget::setState(AppSettingsGUIPageState* s) {
     webBrowserEdit->setText(state->webBrowserUrl);
 }
 
-AppSettingsGUIPageState* NetworkSettingsPageWidget::getState(QString& err) const {
+AppSettingsGUIPageState *NetworkSettingsPageWidget::getState(QString &err) const {
     Q_UNUSED(err);
-    NetworkSettingsPageState* state = new NetworkSettingsPageState();
-    NetworkConfiguration& set = state->config;
+    NetworkSettingsPageState *state = new NetworkSettingsPageState();
+    NetworkConfiguration &set = state->config;
 
     QString httpProxyAddress = httpProxyAddrEdit->text();
     if (!httpProxyAddress.isEmpty()) {
-        QNetworkProxy httpProxy( QNetworkProxy::HttpProxy, httpProxyAddrEdit->text());
-        
+        QNetworkProxy httpProxy(QNetworkProxy::HttpProxy, httpProxyAddrEdit->text());
+
         if (!httpProxyPortEdit->text().isEmpty()) {
             int port = httpProxyPortEdit->value();
             httpProxy.setPort(port);
         }
-        
+
         QString login = httpAuthLoginEdit->text();
         if (httpAuthBox->isChecked() && !login.isEmpty()) {
             QString password = httpAuthPasswordEdit->text();
@@ -150,13 +147,13 @@ AppSettingsGUIPageState* NetworkSettingsPageWidget::getState(QString& err) const
         set.addProxy(httpProxy);
     }
 
-    set.setExceptionsList( proxyExceptionsEdit->toPlainText().split( "\n", QString::SkipEmptyParts ) );
-    set.setProxyUsed( QNetworkProxy::HttpProxy, httpProxyCheck->isChecked() );
-    set.setExceptionsEnabled( proxyExceptionsCheck->isChecked() );
+    set.setExceptionsList(proxyExceptionsEdit->toPlainText().split("\n", QString::SkipEmptyParts));
+    set.setProxyUsed(QNetworkProxy::HttpProxy, httpProxyCheck->isChecked());
+    set.setExceptionsEnabled(proxyExceptionsCheck->isChecked());
     set.setSslProtocol(sslBox->currentText());
-	set.setRequestTimeout(remoteRequestBox->value());
-    if (defaultWebBrowser->isChecked()){
-        state->useDefaultWebBrowser=true;
+    set.setRequestTimeout(remoteRequestBox->value());
+    if (defaultWebBrowser->isChecked()) {
+        state->useDefaultWebBrowser = true;
     } else {
         QString wbUrl = webBrowserEdit->text();
         QFile wbFile(wbUrl);
@@ -167,7 +164,7 @@ AppSettingsGUIPageState* NetworkSettingsPageWidget::getState(QString& err) const
             return NULL;
         }
         state->webBrowserUrl = wbUrl;
-        state->useDefaultWebBrowser=false;
+        state->useDefaultWebBrowser = false;
     }
     return state;
 }
@@ -178,5 +175,4 @@ void NetworkSettingsPageWidget::sl_changeWebBrowserPathButtonClicked() {
     }
 }
 
-
-} //namespace
+}    // namespace U2

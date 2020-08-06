@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ComposeResultSubTask.h"
+
 #include <QThread>
 
 #include <U2Core/AnnotationTableObject.h>
@@ -36,30 +38,29 @@
 #include <U2Core/U2AttributeUtils.h>
 
 #include "BlastReadsSubTask.h"
-#include "ComposeResultSubTask.h"
 
 namespace U2 {
 namespace Workflow {
 
 namespace {
-    qint64 calcMemUsageBytes(DbiDataStorage *storage, const SharedDbiDataHandler &seqId, U2OpStatus &os) {
-        QScopedPointer<U2SequenceObject> object(StorageUtils::getSequenceObject(storage, seqId));
-        CHECK_EXT(!object.isNull(), os.setError(L10N::nullPointerError("Sequence object")), 0);
+qint64 calcMemUsageBytes(DbiDataStorage *storage, const SharedDbiDataHandler &seqId, U2OpStatus &os) {
+    QScopedPointer<U2SequenceObject> object(StorageUtils::getSequenceObject(storage, seqId));
+    CHECK_EXT(!object.isNull(), os.setError(L10N::nullPointerError("Sequence object")), 0);
 
-        return object->getSequenceLength();
-    }
-
-    int toMb(qint64 bytes) {
-        return 0.5 + (double(bytes) / (1024 * 1024));
-    }
+    return object->getSequenceLength();
 }
+
+int toMb(qint64 bytes) {
+    return 0.5 + (double(bytes) / (1024 * 1024));
+}
+}    // namespace
 
 /************************************************************************/
 /* ComposeResultSubTask */
 /************************************************************************/
 ComposeResultSubTask::ComposeResultSubTask(const SharedDbiDataHandler &reference,
                                            const QList<SharedDbiDataHandler> &reads,
-                                           const QList<BlastAndSwReadTask*> subTasks,
+                                           const QList<BlastAndSwReadTask *> subTasks,
                                            DbiDataStorage *storage)
     : Task(tr("Compose alignment"), TaskFlags_FOSE_COSC),
       reference(reference),
@@ -67,8 +68,7 @@ ComposeResultSubTask::ComposeResultSubTask(const SharedDbiDataHandler &reference
       subTasks(subTasks),
       storage(storage),
       mcaObject(NULL),
-      referenceSequenceObject(NULL)
-{
+      referenceSequenceObject(NULL) {
     tpm = Task::Progress_Manual;
 }
 
@@ -115,7 +115,7 @@ void ComposeResultSubTask::run() {
     referenceSequenceObject->moveToThread(thread());
 }
 
-const SharedDbiDataHandler& ComposeResultSubTask::getAnnotations() const {
+const SharedDbiDataHandler &ComposeResultSubTask::getAnnotations() const {
     return annotations;
 }
 
@@ -197,7 +197,7 @@ void ComposeResultSubTask::createAlignmentAndAnnotations() {
         stateInfo.setError(tr("No read satisfy minimum similarity criteria."));
         return;
     }
-    result->trim(false); // just recalculates alignment len
+    result->trim(false);    // just recalculates alignment len
 
     mcaObject = MultipleChromatogramAlignmentImporter::createAlignment(stateInfo, storage->getDbiRef(), U2ObjectDbi::ROOT_FOLDER, result);
     CHECK_OP(stateInfo, );
@@ -283,7 +283,7 @@ U2Location ComposeResultSubTask::getLocation(const U2Region &region, bool isComp
     return result;
 }
 
-BlastAndSwReadTask * ComposeResultSubTask::getBlastSwTask(int readNum) {
+BlastAndSwReadTask *ComposeResultSubTask::getBlastSwTask(int readNum) {
     CHECK_EXT(readNum < subTasks.size(), setError(L10N::internalError("Wrong reads number")), NULL);
     return subTasks[readNum];
 }
@@ -317,15 +317,15 @@ DNAChromatogram ComposeResultSubTask::getReadChromatogram(int readNum) {
 }
 
 namespace {
-    bool compare(const U2MsaGap &gap1, const U2MsaGap &gap2) {
-        return gap1.offset < gap2.offset;
-    }
+bool compare(const U2MsaGap &gap1, const U2MsaGap &gap2) {
+    return gap1.offset < gap2.offset;
 }
+}    // namespace
 
 U2MsaRowGapModel ComposeResultSubTask::getReferenceGaps() {
     U2MsaRowGapModel result;
 
-    for (int i=0; i<reads.size(); i++) {
+    for (int i = 0; i < reads.size(); i++) {
         result << getShiftedGaps(i);
         CHECK_OP(stateInfo, result);
     }
@@ -371,7 +371,7 @@ void ComposeResultSubTask::insertShiftedGapsIntoRead(MultipleChromatogramAlignme
 
     qint64 globalOffset = 0;
     foreach (const U2MsaGap &gap, gaps) {
-        if (ownGaps.contains(gap)) { // task own gaps into account but don't insert them
+        if (ownGaps.contains(gap)) {    // task own gaps into account but don't insert them
             globalOffset += gap.gap;
             ownGaps.removeOne(gap);
             continue;
@@ -382,5 +382,5 @@ void ComposeResultSubTask::insertShiftedGapsIntoRead(MultipleChromatogramAlignme
     }
 }
 
-} // namespace Workflow
-} // namespace U2
+}    // namespace Workflow
+}    // namespace U2

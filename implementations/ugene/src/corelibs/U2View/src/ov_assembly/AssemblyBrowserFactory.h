@@ -23,6 +23,7 @@
 #define __ASSEMBLY_BROWSER_FACTORY_H__
 
 #include <U2Core/GObjectReference.h>
+
 #include <U2Gui/ObjectViewModel.h>
 #include <U2Gui/ObjectViewTasks.h>
 
@@ -31,21 +32,23 @@ namespace U2 {
 class U2VIEW_EXPORT AssemblyBrowserFactory : public GObjectViewFactory {
     Q_OBJECT
 public:
-    AssemblyBrowserFactory(QObject * parent = 0);
+    AssemblyBrowserFactory(QObject *parent = 0);
 
-    virtual bool canCreateView(const MultiGSelection & multiSelection);
+    virtual bool canCreateView(const MultiGSelection &multiSelection);
 
-    virtual Task * createViewTask(const MultiGSelection & multiSelection, bool single = false);
+    virtual Task *createViewTask(const MultiGSelection &multiSelection, bool single = false);
 
-    virtual bool isStateInSelection(const MultiGSelection& multiSelection, const QVariantMap& stateData);
+    virtual bool isStateInSelection(const MultiGSelection &multiSelection, const QVariantMap &stateData);
 
-    virtual Task* createViewTask(const QString& viewName, const QVariantMap& stateData);
+    virtual Task *createViewTask(const QString &viewName, const QVariantMap &stateData);
 
-    virtual bool supportsSavedStates() const {return true;}
+    virtual bool supportsSavedStates() const {
+        return true;
+    }
 
     static const GObjectViewFactoryId ID;
 };
 
-}
+}    // namespace U2
 
 #endif

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ace/ConvertAceToSqliteTask.h"
+
 #include <QFile>
 
 #include <U2Core/AppContext.h>
@@ -39,26 +41,23 @@
 #include <U2Core/U2SequenceDbi.h>
 #include <U2Core/U2SequenceUtils.h>
 
-#include "ace/ConvertAceToSqliteTask.h"
-
 namespace U2 {
 
-ConvertAceToSqliteTask::ConvertAceToSqliteTask(const GUrl &_sourceUrl, const U2DbiRef &dstDbiRef) :
-    Task(tr("Convert ACE to UGENE database (%1)").arg(_sourceUrl.fileName()), TaskFlag_None),
-    sourceUrl(_sourceUrl),
-    dstDbiRef(dstDbiRef),
-    dbi(NULL),
-    databaseWasCreated(false),
-    countImportedAssembly(0)
-{
+ConvertAceToSqliteTask::ConvertAceToSqliteTask(const GUrl &_sourceUrl, const U2DbiRef &dstDbiRef)
+    : Task(tr("Convert ACE to UGENE database (%1)").arg(_sourceUrl.fileName()), TaskFlag_None),
+      sourceUrl(_sourceUrl),
+      dstDbiRef(dstDbiRef),
+      dbi(NULL),
+      databaseWasCreated(false),
+      countImportedAssembly(0) {
     GCOUNTER(cvar, tvar, "ConvertAceToUgenedb");
     tpm = Progress_Manual;
 }
 
 void ConvertAceToSqliteTask::run() {
     taskLog.info(tr("Converting assembly from %1 to %2 started")
-                 .arg(sourceUrl.fileName())
-                 .arg(getDestinationUrl().fileName()));
+                     .arg(sourceUrl.fileName())
+                     .arg(getDestinationUrl().fileName()));
 
     qint64 startTime = TimeCounter::getCounter();
 
@@ -82,7 +81,7 @@ void ConvertAceToSqliteTask::run() {
 
     dbi = dbiHandle.dbi;
     SAFE_POINT(dbi, tr("DBI is NULL"), );
-    U2ObjectDbi* objDbi = dbi->getObjectDbi();
+    U2ObjectDbi *objDbi = dbi->getObjectDbi();
     SAFE_POINT(objDbi, tr("Object DBI is NULL"), );
 
     stateInfo.setDescription("Importing");
@@ -101,17 +100,17 @@ void ConvertAceToSqliteTask::run() {
 
     qint64 totalTime = TimeCounter::getCounter() - startTime;
     taskLog.info(QString("Converting assembly from %1 to %2 successfully finished: imported %3 reads, total time %4 s, pack time %5 s")
-                 .arg(sourceUrl.fileName())
-                 .arg(getDestinationUrl().fileName())
-                 .arg(totalReadsImported)
-                 .arg(totalTime)
-                 .arg(packTime));
+                     .arg(sourceUrl.fileName())
+                     .arg(getDestinationUrl().fileName())
+                     .arg(totalReadsImported)
+                     .arg(totalTime)
+                     .arg(packTime));
 }
 
 Task::ReportResult ConvertAceToSqliteTask::report() {
     if (stateInfo.isCoR() &&
-            databaseWasCreated &&
-            getDestinationUrl().isLocalFile()) {
+        databaseWasCreated &&
+        getDestinationUrl().isLocalFile()) {
         QFile::remove(getDestinationUrl().getURLString());
     }
 
@@ -133,7 +132,7 @@ QMap<U2Sequence, U2Assembly> ConvertAceToSqliteTask::getImportedObjects() const 
 qint64 ConvertAceToSqliteTask::importAssemblies(IOAdapter &ioAdapter) {
     qint64 totalReadsImported = 0;
 
-    U2SequenceDbi* seqDbi = dbi->getSequenceDbi();
+    U2SequenceDbi *seqDbi = dbi->getSequenceDbi();
     SAFE_POINT(seqDbi, tr("Sequence DBI is NULL"), totalReadsImported);
 
     U2OpStatusChildImpl os(&stateInfo, U2OpStatusMapping(0, 50));
@@ -176,7 +175,7 @@ qint64 ConvertAceToSqliteTask::importAssemblies(IOAdapter &ioAdapter) {
         assembly.visualName = aceAssembly.getName();
         assembly.referenceId = reference.id;
 
-        U2AssemblyReadsImportInfo & importInfo = importInfos[countImportedAssembly];
+        U2AssemblyReadsImportInfo &importInfo = importInfos[countImportedAssembly];
         AssemblyImporter importer(stateInfo);
         importer.createAssembly(dstDbiRef, U2ObjectDbi::ROOT_FOLDER, NULL, importInfo, assembly);
         CHECK_OP(stateInfo, totalReadsImported);
@@ -210,18 +209,17 @@ qint64 ConvertAceToSqliteTask::packReads() {
         progressStep = 40;
     }
 
-
-    U2AssemblyDbi* assDbi = dbi->getAssemblyDbi();
+    U2AssemblyDbi *assDbi = dbi->getAssemblyDbi();
     SAFE_POINT(assDbi, tr("Assembly DBI is NULL"), 0);
 
     foreach (int assemblyNum, assemblies.keys()) {
-        U2AssemblyReadsImportInfo & importInfo = importInfos[assemblyNum];
+        U2AssemblyReadsImportInfo &importInfo = importInfos[assemblyNum];
         // Pack reads only if it were not packed on import
         if (!importInfo.packed) {
             taskLog.details(tr("Packing reads for assembly '%1' (%2 of %3)")
-                            .arg(assemblies[assemblyNum].visualName)
-                            .arg(assemblyNum + 1)
-                            .arg(assemblies.keys().count()));
+                                .arg(assemblies[assemblyNum].visualName)
+                                .arg(assemblyNum + 1)
+                                .arg(assemblies.keys().count()));
 
             U2AssemblyPackStat stat;
             assDbi->pack(assemblies[assemblyNum].id, stat, stateInfo);
@@ -243,7 +241,7 @@ void ConvertAceToSqliteTask::updateAttributeDbi() {
         progressStep = 10;
     }
 
-    U2AttributeDbi* attrDbi = dbi->getAttributeDbi();
+    U2AttributeDbi *attrDbi = dbi->getAttributeDbi();
     SAFE_POINT(attrDbi, tr("Attribute DBI is NULL"), );
 
     foreach (int assemblyNum, assemblies.keys()) {
@@ -259,10 +257,10 @@ void ConvertAceToSqliteTask::updateAttributeDbi() {
             CHECK_OP(stateInfo, );
         }
 
-        U2AssemblyReadsImportInfo & importInfo = importInfos[assemblyNum];
+        U2AssemblyReadsImportInfo &importInfo = importInfos[assemblyNum];
         qint64 maxProw = importInfo.packStat.maxProw;
         qint64 readsCount = importInfo.packStat.readsCount;
-        const U2AssemblyCoverageStat& coverageStat = importInfo.coverageInfo.coverage;
+        const U2AssemblyCoverageStat &coverageStat = importInfo.coverageInfo.coverage;
         if (maxProw > 0) {
             U2IntegerAttribute maxProwAttr;
             maxProwAttr.objectId = assembly.id;
@@ -298,4 +296,4 @@ void ConvertAceToSqliteTask::updateAttributeDbi() {
     }
 }
 
-}   // namespace U2
+}    // namespace U2

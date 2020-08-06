@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "NEXUSFormat.h"
+
 #include <QStack>
 
 #include <U2Core/DNAAlphabet.h>
@@ -38,14 +40,15 @@
 
 #include <U2Formats/DocumentFormatUtils.h>
 
-#include "NEXUSFormat.h"
 #include "NEXUSParser.h"
 
-namespace U2
-{
+namespace U2 {
 
-NEXUSFormat::NEXUSFormat(QObject *p) :
-        TextDocumentFormat(p, BaseDocumentFormats::NEXUS, DocumentFormatFlags(DocumentFormatFlag_SupportWriting) | DocumentFormatFlag_OnlyOneObject, QStringList()<<"nex"<<"nxs")      // disable streaming for now
+// Documentation: http://informatics.nescent.org/w/images/8/8b/NEXUS_Final.pdf
+
+NEXUSFormat::NEXUSFormat(QObject *p)
+    : TextDocumentFormat(p, BaseDocumentFormats::NEXUS, DocumentFormatFlags(DocumentFormatFlag_SupportWriting) | DocumentFormatFlag_OnlyOneObject, QStringList() << "nex"
+                                                                                                                                                                 << "nxs")    // disable streaming for now
 {
     formatName = tr("NEXUS");
     formatDescription = tr("Nexus is a multiple alignment and phylogenetic trees file format");
@@ -67,10 +70,15 @@ QString Tokenizer::get() {
 
     QChar c;
     QChar quote;
-
+    whiteSpacesAfterLastToken.clear();
     int nest = 0;
-
-    enum State {NONE, QUOTED, WORD, NUMBER, SPACE, COMMENT, SYMBOL} state = NONE;
+    enum State { NONE,
+                 QUOTED,
+                 WORD,
+                 NUMBER,
+                 SPACE,
+                 COMMENT,
+                 SYMBOL } state = NONE;
 
     while (true) {
         if (buffStream.atEnd()) {
@@ -110,7 +118,7 @@ QString Tokenizer::get() {
             buffStream >> quote;
 
             //check and put back in case of reading the next chunk here
-            if(quote != '"' && quote != '\''){
+            if (quote != '"' && quote != '\'') {
                 buffStream.seek(buffStream.pos() - 1);
             }
             buffStream >> c;
@@ -154,7 +162,7 @@ QString Tokenizer::get() {
         } else if (state == NUMBER) {
             // read whole number
             buffStream >> c;
-            while ((c.isDigit() || c == '.' || c == 'e' ||c == 'E' || c == '+' ||c == '-') && !c.isNull()) {
+            while ((c.isDigit() || c == '.' || c == 'e' || c == 'E' || c == '+' || c == '-') && !c.isNull()) {
                 token += c;
                 buffStream >> c;
             }
@@ -169,8 +177,16 @@ QString Tokenizer::get() {
             }
         } else if (state == SPACE) {
             // skip whites
-            buffStream.skipWhiteSpace();
-
+            whiteSpacesAfterLastToken.clear();
+            while (!buffStream.atEnd()) {
+                buffStream >> c;
+                if (c.isSpace()) {
+                    whiteSpacesAfterLastToken += c;
+                } else {
+                    buffStream.seek(buffStream.pos() - 1);
+                    break;
+                }
+            }
             state = NONE;
             if (token.isEmpty()) {
                 continue;
@@ -194,7 +210,6 @@ QString Tokenizer::get() {
 
                 buffStream >> c;
             }
-
             continue;
         } else if (state == SYMBOL) {
             // return single symbol
@@ -227,8 +242,7 @@ QStringList Tokenizer::getUntil(QString what, Qt::CaseSensitivity cs) {
     return words;
 }
 
-QString Tokenizer::readUntil(QRegExp rwhat)
-{
+QString Tokenizer::readUntil(QRegExp rwhat) {
     // push 'next' token back
     QString str = next + buffStream.readAll();
     QString result = "";
@@ -259,21 +273,20 @@ QString Tokenizer::readUntil(QRegExp rwhat)
 }
 
 // lower case
-const QString NEXUSParser::BEGIN           = "begin";
-const QString NEXUSParser::END             = "end";
-const QString NEXUSParser::BLK_TAXA        = "taxa";
-const QString NEXUSParser::BLK_DATA        = "data";
-const QString NEXUSParser::BLK_CHARACTERS  = "characters";
-const QString NEXUSParser::CMD_DIMENSIONS  = "dimensions";
-const QString NEXUSParser::CMD_FORMAT      = "format";
-const QString NEXUSParser::CMD_MATRIX      = "matrix";
-const QString NEXUSParser::BLK_TREES       = "trees";
-const QString NEXUSParser::CMD_TREE        = "tree";
-const QString NEXUSParser::CMD_UTREE       = "utree";
-const QString NEXUSParser::CMD_TRANSLATE   = "translate";
+const QString NEXUSParser::BEGIN = "begin";
+const QString NEXUSParser::END = "end";
+const QString NEXUSParser::BLK_TAXA = "taxa";
+const QString NEXUSParser::BLK_DATA = "data";
+const QString NEXUSParser::BLK_CHARACTERS = "characters";
+const QString NEXUSParser::CMD_DIMENSIONS = "dimensions";
+const QString NEXUSParser::CMD_FORMAT = "format";
+const QString NEXUSParser::CMD_MATRIX = "matrix";
+const QString NEXUSParser::BLK_TREES = "trees";
+const QString NEXUSParser::CMD_TREE = "tree";
+const QString NEXUSParser::CMD_UTREE = "utree";
+const QString NEXUSParser::CMD_TRANSLATE = "translate";
 
-QList<GObject*> NEXUSParser::loadObjects(const U2DbiRef &dbiRef)
-{
+QList<GObject *> NEXUSParser::loadObjects(const U2DbiRef &dbiRef) {
     while (tz.look() != "") {
         if (!readBlock(global, dbiRef)) {
             break;
@@ -285,16 +298,15 @@ QList<GObject*> NEXUSParser::loadObjects(const U2DbiRef &dbiRef)
 
 bool NEXUSParser::skipCommand() {
     tz.skipUntil(";");
-    if (tz.get() != ";"){
+    if (tz.get() != ";") {
         errors.append("\';\' expected");
         return false;
     }
     return true;
 }
 
-bool NEXUSParser::readSimpleCommand(Context &ctx)
-{
-    tz.skip();  // command name
+bool NEXUSParser::readSimpleCommand(Context &ctx) {
+    tz.skip();    // command name
     QStringList wl = tz.getUntil(";");
 
     while (!wl.isEmpty()) {
@@ -309,7 +321,7 @@ bool NEXUSParser::readSimpleCommand(Context &ctx)
         ctx.insert(name, value);
     }
 
-    if (tz.get() != ";"){
+    if (tz.get() != ";") {
         errors.append("\';\' expected");
         return false;
     }
@@ -318,14 +330,14 @@ bool NEXUSParser::readSimpleCommand(Context &ctx)
 }
 
 bool NEXUSParser::readBlock(Context &ctx, const U2DbiRef &dbiRef) {
-    if (tz.get().toLower() != BEGIN){
+    if (tz.get().toLower() != BEGIN) {
         errors.append(QString("\'%1\' expected").arg(BEGIN));
         return false;
     }
 
     QString blockName = tz.get().toLower();
 
-    if (tz.get().toLower() != ";"){
+    if (tz.get().toLower() != ";") {
         errors.append(QString("\'%1\' expected").arg(";"));
         return false;
     }
@@ -353,7 +365,7 @@ bool NEXUSParser::readBlock(Context &ctx, const U2DbiRef &dbiRef) {
         return false;
     }
 
-    if ((tz.get().toLower() != ";")){
+    if ((tz.get().toLower() != ";")) {
         errors.append(QString("\'%1\' expected").arg(";"));
         return false;
     }
@@ -361,13 +373,12 @@ bool NEXUSParser::readBlock(Context &ctx, const U2DbiRef &dbiRef) {
     return true;
 }
 
-bool NEXUSParser::skipBlockContents()
-{
+bool NEXUSParser::skipBlockContents() {
     tz.skipUntil(END);
     return true;
 }
 
-bool NEXUSParser::readTaxaContents(Context&) {
+bool NEXUSParser::readTaxaContents(Context &) {
     while (true) {
         QString cmd = tz.look().toLower();
         if (cmd == END) {
@@ -384,15 +395,18 @@ bool NEXUSParser::readTaxaContents(Context&) {
 
 bool NEXUSParser::readDataContents(Context &ctx) {
     while (true) {
-        QString cmd = tz.look().toLower(); // cmd name
+        QString cmd = tz.look().toLower();    // cmd name
         if (cmd == CMD_FORMAT || cmd == CMD_DIMENSIONS) {
             if (!readSimpleCommand(ctx)) {
                 return false;
             }
         } else if (cmd == CMD_MATRIX) {
-            tz.get(); // cmd name == CMD_MATRIX
-
-            QMap<QString, QByteArray> rows;
+            tz.get();    // cmd name == CMD_MATRIX
+            // From format spec: "Taxa in each section must occur in the same order."
+            QList<QString> names;
+            QList<QByteArray> values;
+            int sectionIndex = 0;
+            int sectionRowIndex = 0;
 
             // Read matrix
             while (true) {
@@ -402,15 +416,17 @@ bool NEXUSParser::readDataContents(Context &ctx) {
                     errors.append("Unexpected EOF");
                     return false;
                 }
-
                 if (name == ";") {
                     break;
                 }
-
                 name.replace('_', ' ');
 
                 // Read value
                 QString value = tz.readUntil(QRegExp("(;|\\n|\\r)"));
+
+                // The value is the last in the section if there is an empty new line at the end.
+                QString trailingSpaces = tz.whiteSpacesAfterLastToken;
+                bool isLastValueInTheSection = trailingSpaces.count('\r') >= 2 || trailingSpaces.count('\n') >= 2;
 
                 // Remove spaces
                 value.remove(QRegExp("\\s"));
@@ -423,19 +439,27 @@ bool NEXUSParser::readDataContents(Context &ctx) {
                 U2OpStatus2Log os;
                 QByteArray bytes = value.toLatin1();
 
-                if (rows.contains(name)) {
-                    rows[name].append(bytes);
+                if (sectionIndex == 0) {
+                    names.append(name);
+                    values.append(bytes);
                 } else {
-                    rows[name] = bytes;
+                    CHECK_EXT(sectionRowIndex < names.length(), errors.append("MATRIX sections have different count of rows!"), false);
+                    CHECK_EXT(name == names[sectionRowIndex], errors.append("MATRIX sections have different name order"), false);
+                    values[sectionRowIndex].append(value);
                 }
-
                 reportProgress();
+                if (isLastValueInTheSection) {
+                    sectionIndex++;
+                    sectionRowIndex = 0;
+                } else {
+                    sectionRowIndex++;
+                }
             }
 
             // Build MultipleSequenceAlignment object
             MultipleSequenceAlignment ma(tz.getIO()->getURL().baseFileName());
-            foreach (const QString &name, rows.keys()) {
-                ma->addRow(name, rows[name]);
+            for (int i = 0; i < names.length(); i++) {
+                ma->addRow(names[i], values[i]);
             }
 
             // Determine alphabet & replace missing chars
@@ -460,7 +484,7 @@ bool NEXUSParser::readDataContents(Context &ctx) {
                 return false;
             }
 
-            MultipleSequenceAlignmentObject* obj = MultipleSequenceAlignmentImporter::createAlignment(dbiRef, folder, ma, ti);
+            MultipleSequenceAlignmentObject *obj = MultipleSequenceAlignmentImporter::createAlignment(dbiRef, folder, ma, ti);
             CHECK_OP(ti, false);
             addObject(obj);
         } else if (cmd == END) {
@@ -475,29 +499,31 @@ bool NEXUSParser::readDataContents(Context &ctx) {
     return true;
 }
 
-bool NEXUSParser::readTreesContents(Context&, const U2DbiRef &dbiRef) {
-    QMap <QString, QString> namesTranslation;
+bool NEXUSParser::readTreesContents(Context &, const U2DbiRef &dbiRef) {
+    QMap<QString, QString> namesTranslation;
 
     while (true) {
-        QString cmd = tz.look().toLower(); // cmd name
+        QString cmd = tz.look().toLower();    // cmd name
         bool weightDefault = false, weightValue = false;
 
-        if(cmd == CMD_TRANSLATE){
-            tz.skip(); //cmd name == CMD_TRANSLATE
+        if (cmd == CMD_TRANSLATE) {
+            tz.skip();    //cmd name == CMD_TRANSLATE
 
             QString name;
             QString translation;
 
-            while(true){
-                if (tz.look() == "")
-                { errors.append("Unexpected EOF"); break; }
+            while (true) {
+                if (tz.look() == "") {
+                    errors.append("Unexpected EOF");
+                    break;
+                }
 
                 if (tz.look() == ";") {
                     tz.skip();
                     break;
                 }
 
-                if(tz.look() == ","){
+                if (tz.look() == ",") {
                     tz.skip();
                     continue;
                 }
@@ -509,8 +535,8 @@ bool NEXUSParser::readTreesContents(Context&, const U2DbiRef &dbiRef) {
 
                 //break;
             }
-        }else if (cmd == CMD_TREE || cmd == CMD_UTREE) {
-            tz.skip(); // cmd name == CMD_TREE
+        } else if (cmd == CMD_TREE || cmd == CMD_UTREE) {
+            tz.skip();    // cmd name == CMD_TREE
 
             QString treeName = "Tree";
             // "tree_name =" or "="
@@ -518,28 +544,35 @@ bool NEXUSParser::readTreesContents(Context&, const U2DbiRef &dbiRef) {
                 warnings.append("Empty tree");
                 continue;
             } else if (tz.look() == "=") {
-                tz.skip(); // "="
+                tz.skip();    // "="
             } else {
                 treeName = tz.get();
-                if (tz.get() != "="){
+                if (tz.get() != "=") {
                     errors.append(QString("\'%1\' expected").arg("="));
                     return false;
                 }
             }
 
-            QStack<PhyNode*> nodeStack;
+            QStack<PhyNode *> nodeStack;
             nodeStack.push(new PhyNode());
 
-            QStack<PhyBranch*> branchStack;
+            QStack<PhyBranch *> branchStack;
 
-            enum State {NAME, WEIGHT} state = NAME;
+            enum State { NAME,
+                         WEIGHT } state = NAME;
             QString acc, name, translation;
 
-            QSet<QString> ops = QSet<QString>()<<"("<<","<<")"<<":"<<";";
+            QSet<QString> ops = QSet<QString>() << "("
+                                                << ","
+                                                << ")"
+                                                << ":"
+                                                << ";";
             while (true) {
                 QString tok = tz.get();
-                if (tok == "")
-                    { errors.append("Unexpected EOF"); break; }
+                if (tok == "") {
+                    errors.append("Unexpected EOF");
+                    break;
+                }
 
                 if (!ops.contains(tok)) {
                     acc += tok;
@@ -557,25 +590,25 @@ bool NEXUSParser::readTreesContents(Context&, const U2DbiRef &dbiRef) {
                     nodeStack.push(top);
                     branchStack.push(br);
                 } else if (tok == "," || tok == ")") {
-                    if (nodeStack.size() < 2){
+                    if (nodeStack.size() < 2) {
                         errors.append(QString("Unexpected \'%1\'").arg(")"));
                         break;
                     }
 
-                    double weight = 1;  // default value
+                    double weight = 1;    // default value
 
                     if (state == WEIGHT) {
                         if (!acc.isEmpty()) {
                             // convert weight
                             bool ok;
                             weight = acc.toDouble(&ok);
-                            if (!ok){
+                            if (!ok) {
                                 errors.append(QString("Invalid weight value \'%1\'").arg(acc));
                                 break;
                             }
 
                             weightValue = true;
-                        } else  {
+                        } else {
                             // was ':' but was no value
                             errors.append("Weight value expected");
                             break;
@@ -585,9 +618,9 @@ bool NEXUSParser::readTreesContents(Context&, const U2DbiRef &dbiRef) {
 
                         weightDefault = true;
                         translation = namesTranslation.value(acc);
-                        if(translation.isEmpty()){
+                        if (translation.isEmpty()) {
                             name = acc;
-                        }else{
+                        } else {
                             name = translation;
                         }
                         acc.clear();
@@ -610,12 +643,14 @@ bool NEXUSParser::readTreesContents(Context&, const U2DbiRef &dbiRef) {
                     acc.clear();
                     state = NAME;
                 } else if (tok == ":") {
-                    if (state == WEIGHT)
-                        { errors.append(QString("Unexpected \'%1\'").arg(":")); break; }
+                    if (state == WEIGHT) {
+                        errors.append(QString("Unexpected \'%1\'").arg(":"));
+                        break;
+                    }
                     translation = namesTranslation.value(acc);
-                    if(translation.isEmpty()){
+                    if (translation.isEmpty()) {
                         name = acc;
-                    }else{
+                    } else {
                         name = translation;
                     }
                     acc.clear();
@@ -642,7 +677,7 @@ bool NEXUSParser::readTreesContents(Context&, const U2DbiRef &dbiRef) {
             if (hasError()) {
                 // clean up
                 PhyNode *n = nodeStack.pop();
-                delete n;  // PhyNode::~PhyNode() is recursive
+                delete n;    // PhyNode::~PhyNode() is recursive
 
                 warnings.push_back(QString("Tree '%1' ignored due following errors: %2").arg(treeName, errors.takeLast()));
                 continue;
@@ -678,10 +713,10 @@ void NEXUSParser::addObject(GObject *obj) {
     objects.append(obj);
 }
 
-QList<GObject*> NEXUSFormat::loadObjects(IOAdapter *io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus &ti) {
+QList<GObject *> NEXUSFormat::loadObjects(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &ti) {
     assert(io && "io must exist");
     DbiOperationsBlock opBlock(dbiRef, ti);
-    CHECK_OP(ti, QList<GObject*>());
+    CHECK_OP(ti, QList<GObject *>());
     Q_UNUSED(opBlock);
 
     const int HEADER_LEN = 6;
@@ -690,12 +725,12 @@ QList<GObject*> NEXUSFormat::loadObjects(IOAdapter *io, const U2DbiRef& dbiRef, 
     header.truncate(rd);
     if (header != "#NEXUS") {
         ti.setError(tr("#NEXUS header missing"));
-        return QList<GObject*>();
+        return QList<GObject *>();
     }
 
     const QString folder = fs.value(DBI_FOLDER_HINT, U2ObjectDbi::ROOT_FOLDER).toString();
     NEXUSParser parser(io, dbiRef, folder, ti);
-    QList<GObject*> objects = parser.loadObjects(dbiRef);
+    QList<GObject *> objects = parser.loadObjects(dbiRef);
 
     if (parser.hasError()) {
         QByteArray msg = "NEXUSParser: ";
@@ -706,27 +741,28 @@ QList<GObject*> NEXUSFormat::loadObjects(IOAdapter *io, const U2DbiRef& dbiRef, 
     return objects;
 }
 
-Document* NEXUSFormat::loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os){
+Document *NEXUSFormat::loadTextDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os) {
     assert(io && "IO must exist");
 
-    QList<GObject*> objects = loadObjects(io, dbiRef, fs, os);
+    QList<GObject *> objects = loadObjects(io, dbiRef, fs, os);
     CHECK_OP_EXT(os, qDeleteAll(objects), NULL);
 
     Document *d = new Document(this, io->getFactory(), io->getURL(), dbiRef, objects, fs);
     return d;
 }
 
-void writeHeader(IOAdapter *io, U2OpStatus&) {
+void writeHeader(IOAdapter *io, U2OpStatus &) {
     QByteArray line;
     QTextStream(&line) << "#NEXUS\n\n";
     io->writeBlock(line);
 }
 
-void writeMAligment(const MultipleSequenceAlignment &ma, bool simpleName, IOAdapter *io, U2OpStatus&) {
+void writeMAligment(const MultipleSequenceAlignment &ma, bool simpleName, IOAdapter *io, U2OpStatus &) {
     QByteArray line;
     QByteArray tabs, tab(4, ' ');
 
-    QTextStream(&line) << tabs << "begin data;" << "\n";
+    QTextStream(&line) << tabs << "begin data;"
+                       << "\n";
     io->writeBlock(line);
     line.clear();
 
@@ -742,22 +778,23 @@ void writeMAligment(const MultipleSequenceAlignment &ma, bool simpleName, IOAdap
 
     //datatype for MrBayes files
     QString dataType;
-    const QString& alphabetId = ma->getAlphabet()->getId();
-    if(alphabetId == BaseDNAAlphabetIds::NUCL_DNA_DEFAULT() || alphabetId == BaseDNAAlphabetIds::NUCL_DNA_EXTENDED()){
+    const QString &alphabetId = ma->getAlphabet()->getId();
+    if (alphabetId == BaseDNAAlphabetIds::NUCL_DNA_DEFAULT() || alphabetId == BaseDNAAlphabetIds::NUCL_DNA_EXTENDED()) {
         dataType = "dna";
-    }else if(alphabetId == BaseDNAAlphabetIds::NUCL_RNA_DEFAULT() || alphabetId == BaseDNAAlphabetIds::NUCL_RNA_EXTENDED()){
-       dataType = "rna";
-    }else if (alphabetId == BaseDNAAlphabetIds::AMINO_DEFAULT()){
+    } else if (alphabetId == BaseDNAAlphabetIds::NUCL_RNA_DEFAULT() || alphabetId == BaseDNAAlphabetIds::NUCL_RNA_EXTENDED()) {
+        dataType = "rna";
+    } else if (alphabetId == BaseDNAAlphabetIds::AMINO_DEFAULT()) {
         dataType = "protein";
-    }else {
+    } else {
         dataType = "standard";
     }
 
-    QTextStream(&line) << tabs << "format datatype="<<dataType<<" gap=" << U2Msa::GAP_CHAR << ";\n";
+    QTextStream(&line) << tabs << "format datatype=" << dataType << " gap=" << U2Msa::GAP_CHAR << ";\n";
     io->writeBlock(line);
     line.clear();
 
-    QTextStream(&line) << tabs << "matrix" << "\n";
+    QTextStream(&line) << tabs << "matrix"
+                       << "\n";
     io->writeBlock(line);
     line.clear();
 
@@ -773,18 +810,17 @@ void writeMAligment(const MultipleSequenceAlignment &ma, bool simpleName, IOAdap
     }
     nameMaxLen += 2;    // quotes may appear
 
-    foreach (const MultipleSequenceAlignmentRow& row, rows)
-    {
+    foreach (const MultipleSequenceAlignmentRow &row, rows) {
         QString name = row->getName();
 
-        if (name.contains(QRegExp("\\s|\\W"))){
-            if (simpleName){
-                name.replace(' ','_');
+        if (name.contains(QRegExp("\\s|\\W"))) {
+            if (simpleName) {
+                name.replace(' ', '_');
                 int idx = name.indexOf(QRegExp("\\s|\\W"));
-                if (idx != -1){
+                if (idx != -1) {
                     name = name.left(idx);
                 }
-            }else{
+            } else {
                 name = "'" + name + "'";
             }
         }
@@ -799,21 +835,23 @@ void writeMAligment(const MultipleSequenceAlignment &ma, bool simpleName, IOAdap
 
     tabs.chop(tab.size());
 
-    QTextStream(&line) << tabs << ";" << "\n";
+    QTextStream(&line) << tabs << ";"
+                       << "\n";
     io->writeBlock(line);
     line.clear();
 
     tabs.chop(tab.size());
 
-    QTextStream(&line) << tabs << "end;" << "\n";
+    QTextStream(&line) << tabs << "end;"
+                       << "\n";
     io->writeBlock(line);
     line.clear();
 }
 
-static void writeNode(const PhyNode* node, IOAdapter* io) {
+static void writeNode(const PhyNode *node, IOAdapter *io) {
     int branches = node->branchCount();
 
-    if (branches == 1 && (node->getName()=="" || node->getName()=="ROOT")) {
+    if (branches == 1 && (node->getName() == "" || node->getName() == "ROOT")) {
         assert(node != node->getSecondNodeOfBranch(0));
         writeNode(node->getSecondNodeOfBranch(0), io);
         return;
@@ -849,12 +887,12 @@ static void writeNode(const PhyNode* node, IOAdapter* io) {
 }
 
 // spike: PhyTreeData don't have own name
-void writePhyTree(const PhyTree &pt, QString name, IOAdapter *io, U2OpStatus&)
-{
+void writePhyTree(const PhyTree &pt, QString name, IOAdapter *io, U2OpStatus &) {
     QByteArray line;
     QByteArray tabs, tab(4, ' ');
 
-    QTextStream(&line) << tabs << "begin trees;" << "\n";
+    QTextStream(&line) << tabs << "begin trees;"
+                       << "\n";
     io->writeBlock(line);
     line.clear();
 
@@ -869,7 +907,8 @@ void writePhyTree(const PhyTree &pt, QString name, IOAdapter *io, U2OpStatus&)
 
     tabs.chop(tab.size());
 
-    QTextStream(&line) << tabs << "end;" << "\n";
+    QTextStream(&line) << tabs << "end;"
+                       << "\n";
     io->writeBlock(line);
     line.clear();
 }
@@ -878,14 +917,13 @@ void writePhyTree(const PhyTree &pt, IOAdapter *io, U2OpStatus &ti) {
     writePhyTree(pt, "Tree", io, ti);
 }
 
-void NEXUSFormat::storeObjects( QList<GObject*> objects, bool simpleNames, IOAdapter *io, U2OpStatus &ti )
-{
+void NEXUSFormat::storeObjects(QList<GObject *> objects, bool simpleNames, IOAdapter *io, U2OpStatus &ti) {
     SAFE_POINT(NULL != io, L10N::nullPointerError("I/O Adapter"), );
     writeHeader(io, ti);
 
     foreach (GObject *object, objects) {
-        MultipleSequenceAlignmentObject *mao = qobject_cast<MultipleSequenceAlignmentObject*> (object);
-        PhyTreeObject *pto = qobject_cast<PhyTreeObject*> (object);
+        MultipleSequenceAlignmentObject *mao = qobject_cast<MultipleSequenceAlignmentObject *>(object);
+        PhyTreeObject *pto = qobject_cast<PhyTreeObject *>(object);
         if (mao) {
             writeMAligment(mao->getMultipleAlignment(), simpleNames, io, ti);
             io->writeBlock(QByteArray("\n"));
@@ -899,13 +937,13 @@ void NEXUSFormat::storeObjects( QList<GObject*> objects, bool simpleNames, IOAda
     }
 }
 
-void NEXUSFormat::storeDocument(Document* d, IOAdapter* io, U2OpStatus& os) {
-    QList<GObject*> objects = d->getObjects();
+void NEXUSFormat::storeDocument(Document *d, IOAdapter *io, U2OpStatus &os) {
+    QList<GObject *> objects = d->getObjects();
     bool simpleNames = d->getGHintsMap().contains(DocumentWritingMode_SimpleNames);
     storeObjects(objects, simpleNames, io, os);
 }
 
-FormatCheckResult NEXUSFormat::checkRawTextData(const QByteArray &rawData, const GUrl&) const {
+FormatCheckResult NEXUSFormat::checkRawTextData(const QByteArray &rawData, const GUrl &) const {
     if (rawData.startsWith("#NEXUS")) {
         return FormatDetection_VeryHighSimilarity;
     }
@@ -913,4 +951,3 @@ FormatCheckResult NEXUSFormat::checkRawTextData(const QByteArray &rawData, const
 }
 
 }    // namespace U2
-

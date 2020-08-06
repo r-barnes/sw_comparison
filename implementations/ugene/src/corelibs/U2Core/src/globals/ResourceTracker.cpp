@@ -29,8 +29,7 @@ ResourceTracker::~ResourceTracker() {
     assert(resMap.isEmpty());
 }
 
-
-void ResourceTracker::registerResourceUser(const QString& resourceName, Task* t) {
+void ResourceTracker::registerResourceUser(const QString &resourceName, Task *t) {
     TList list = resMap.value(resourceName);
     assert(!list.contains(t));
     list.append(t);
@@ -39,9 +38,7 @@ void ResourceTracker::registerResourceUser(const QString& resourceName, Task* t)
     emit si_resourceUserRegistered(resourceName, t);
 }
 
-
-
-void ResourceTracker::unregisterResourceUser(const QString& resourceName, Task* t) {
+void ResourceTracker::unregisterResourceUser(const QString &resourceName, Task *t) {
     assert(resMap.contains(resourceName));
     TList list = resMap.value(resourceName);
     assert(list.contains(t));
@@ -55,13 +52,9 @@ void ResourceTracker::unregisterResourceUser(const QString& resourceName, Task* 
     emit si_resourceUserUnregistered(resourceName, t);
 }
 
-
-QList<Task*> ResourceTracker::getResourceUsers(const QString& resourceName) {
-    QList<Task*> res = resMap.value(resourceName);
+QList<Task *> ResourceTracker::getResourceUsers(const QString &resourceName) {
+    QList<Task *> res = resMap.value(resourceName);
     return res;
 }
 
-
-
-
-} //namespace
+}    // namespace U2

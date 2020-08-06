@@ -22,8 +22,8 @@
 #ifndef _U2_WORKFLOW_TRANSPORT_H_
 #define _U2_WORKFLOW_TRANSPORT_H_
 
-#include <QVariant>
 #include <QQueue>
+#include <QVariant>
 
 #include <U2Lang/Datatype.h>
 
@@ -52,14 +52,15 @@ private:
     QVariant data;
     // message metadata identifier
     int metadataId;
-}; // Message
+};    // Message
 
 /**
  * pure virtual controller of passing/receiving messages
  */
 class U2LANG_EXPORT CommunicationChannel {
 public:
-    virtual ~CommunicationChannel() {}
+    virtual ~CommunicationChannel() {
+    }
 
     // take message from channel
     virtual Message get() = 0;
@@ -70,13 +71,13 @@ public:
     // after calling message is in channel until get() invocation.
     // isMessageRestored should be true for messages which are queued in channel repeatedly
     // since they weren't processed
-    virtual void put(const Message& m, bool isMessageRestored = false) = 0;
+    virtual void put(const Message &m, bool isMessageRestored = false) = 0;
     // how many messages in channel
     virtual int hasMessage() const = 0;
     // how many messages taken from channel
     virtual int takenMessages() const = 0;
     //
-    virtual int hasRoom(const DataType* t = NULL) const = 0;
+    virtual int hasRoom(const DataType *t = NULL) const = 0;
     // user can set 'ended' flag to channel
     // it means that no other data will be supplied to it
     virtual bool isEnded() const = 0;
@@ -91,7 +92,7 @@ public:
     // default indices values should be used for obtaining all the messages in channel
     virtual QQueue<Message> getMessages(int startIndex = 0, int endIndex = -1) const = 0;
 
-}; // CommunicationChannel
+};    // CommunicationChannel
 
 /**
  * represents entity that communicate with others by CommunicationChannel
@@ -99,15 +100,16 @@ public:
  */
 class U2LANG_EXPORT CommunicationSubject {
 public:
-    virtual ~CommunicationSubject() {}
+    virtual ~CommunicationSubject() {
+    }
 
-    virtual bool addCommunication(const QString& portId, CommunicationChannel* ch) = 0;
-    virtual CommunicationChannel* getCommunication(const QString& portId) = 0;
+    virtual bool addCommunication(const QString &portId, CommunicationChannel *ch) = 0;
+    virtual CommunicationChannel *getCommunication(const QString &portId) = 0;
 
-}; // CommunicationSubject
+};    // CommunicationSubject
 
-}//Workflow namespace
+}    // namespace Workflow
 
-}//GB2 namespace
+}    // namespace U2
 
-#endif // _U2_WORKFLOW_TRANSPORT_H_
+#endif    // _U2_WORKFLOW_TRANSPORT_H_

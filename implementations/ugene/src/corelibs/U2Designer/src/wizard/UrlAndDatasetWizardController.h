@@ -36,7 +36,7 @@ public:
     UrlAndDatasetWizardController(WizardController *wc, UrlAndDatasetWidget *widget);
     virtual ~UrlAndDatasetWizardController();
 
-    virtual QWidget * createGUI(U2OpStatus &os);
+    virtual QWidget *createGUI(U2OpStatus &os);
 
 private slots:
     void sl_datasetsChanged();
@@ -46,6 +46,6 @@ private:
     UrlAndDatasetController *dsc;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_URL_AND_DATASET_WIZARD_CONTROLLER_H_
+#endif    // _U2_URL_AND_DATASET_WIZARD_CONTROLLER_H_

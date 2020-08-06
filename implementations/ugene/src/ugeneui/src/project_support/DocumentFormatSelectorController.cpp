@@ -19,27 +19,26 @@
  * MA 02110-1301, USA.
  */
 
+#include "DocumentFormatSelectorController.h"
+
 #include <QMessageBox>
 #include <QMouseEvent>
 #include <QPushButton>
 
 #include <U2Core/DocumentImport.h>
+#include <U2Core/DocumentModel.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/TextUtils.h>
 #include <U2Core/U2SafePoints.h>
-#include <U2Core/DocumentModel.h>
 
 #include <U2Gui/HelpButton.h>
-#include <U2Core/QObjectScopedPointer.h>
 
-#include "DocumentFormatSelectorController.h"
+namespace U2 {
 
-namespace U2{
-
-LabelClickProvider::LabelClickProvider(QLabel *label, QRadioButton *rb) :
-    QObject(label),
-    label(label),
-    rb(rb)
-{
+LabelClickProvider::LabelClickProvider(QLabel *label, QRadioButton *rb)
+    : QObject(label),
+      label(label),
+      rb(rb) {
 }
 
 bool LabelClickProvider::eventFilter(QObject *object, QEvent *event) {
@@ -56,18 +55,17 @@ bool LabelClickProvider::eventFilter(QObject *object, QEvent *event) {
     return false;
 }
 
-DocumentFormatSelectorController::DocumentFormatSelectorController(QList<FormatDetectionResult>& results, QWidget *p)
-: QDialog(p), formatDetectionResults(results)
-{
+DocumentFormatSelectorController::DocumentFormatSelectorController(QList<FormatDetectionResult> &results, QWidget *p)
+    : QDialog(p), formatDetectionResults(results) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742320");
+    new HelpButton(this, buttonBox, "46499637");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
     setObjectName("DocumentFormatSelectorDialog");
 }
 
-int DocumentFormatSelectorController::selectResult(const GUrl& url, QByteArray& rawData, QList<FormatDetectionResult>& results){
+int DocumentFormatSelectorController::selectResult(const GUrl &url, QByteArray &rawData, QList<FormatDetectionResult> &results) {
     SAFE_POINT(!results.isEmpty(), "Results list is empty!", -1);
     if (results.size() == 1) {
         return 0;
@@ -83,8 +81,8 @@ int DocumentFormatSelectorController::selectResult(const GUrl& url, QByteArray& 
 
     QVBoxLayout *vbox = new QVBoxLayout();
     QList<DocumentFormatId> detectedIds;
-    for (int i =0; i < results.size(); i++) {
-        const FormatDetectionResult& r = results[i];
+    for (int i = 0; i < results.size(); i++) {
+        const FormatDetectionResult &r = results[i];
         if (NULL != r.format) {
             detectedIds.append(r.format->getFormatId());
         }
@@ -100,18 +98,18 @@ int DocumentFormatSelectorController::selectResult(const GUrl& url, QByteArray& 
             assert(0);
             continue;
         }
-        QHBoxLayout* hbox = new QHBoxLayout();
-        QRadioButton* rb = new QRadioButton();
+        QHBoxLayout *hbox = new QHBoxLayout();
+        QRadioButton *rb = new QRadioButton();
         rb->setObjectName(objName);
         rb->setChecked(i == 0);
 
-        QLabel* label = new QLabel(text);
+        QLabel *label = new QLabel(text);
         label->setObjectName(QString("label_%1").arg(i + 1));
         label->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         label->setSizePolicy(QSizePolicy::Expanding, label->sizePolicy().verticalPolicy());
         label->installEventFilter(new LabelClickProvider(label, rb));
 
-        QToolButton* moreButton = new QToolButton();
+        QToolButton *moreButton = new QToolButton();
         moreButton->setText(tr("more.."));
         moreButton->setEnabled(!r.getFormatDescriptionText().isEmpty());
         d->moreButtons << moreButton;
@@ -127,11 +125,11 @@ int DocumentFormatSelectorController::selectResult(const GUrl& url, QByteArray& 
     //additional option: user selecting format
     {
         QString text(tr("Choose format manually"));
-        QHBoxLayout* hbox = new QHBoxLayout();
-        QRadioButton* rb = new QRadioButton();
+        QHBoxLayout *hbox = new QHBoxLayout();
+        QRadioButton *rb = new QRadioButton();
         rb->setObjectName("chooseFormatManuallyRadio");
 
-        QLabel* label = new QLabel(text);
+        QLabel *label = new QLabel(text);
         label->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         label->setSizePolicy(QSizePolicy::Expanding, label->sizePolicy().verticalPolicy());
         label->installEventFilter(new LabelClickProvider(label, rb));
@@ -151,7 +149,7 @@ int DocumentFormatSelectorController::selectResult(const GUrl& url, QByteArray& 
         }
         QStringList formatNamesSorted = formats.values();
         formatNamesSorted.sort(Qt::CaseInsensitive);
-        foreach (const QString& name, formatNamesSorted) {
+        foreach (const QString &name, formatNamesSorted) {
             d->userSelectedFormat->addItem(name, formats.key(name));
         }
 
@@ -172,7 +170,7 @@ int DocumentFormatSelectorController::selectResult(const GUrl& url, QByteArray& 
         return -1;
     }
     int idx = d->getSelectedFormatIdx();
-    if(idx == results.size()){
+    if (idx == results.size()) {
         FormatDetectionResult *r = new FormatDetectionResult();
         DocumentFormatId id = d->userSelectedFormat->itemData(d->userSelectedFormat->currentIndex()).toString();
         r->format = AppContext::getDocumentFormatRegistry()->getFormatById(id);
@@ -204,17 +202,16 @@ QString DocumentFormatSelectorController::score2Text(int score) {
 }
 
 void DocumentFormatSelectorController::sl_moreFormatInfo() {
-    QToolButton* tb = qobject_cast<QToolButton*>(sender());
+    QToolButton *tb = qobject_cast<QToolButton *>(sender());
     SAFE_POINT(tb != NULL, "Failed to derive selected format info!", );
     int idx = moreButtons.indexOf(tb);
-    const FormatDetectionResult& dr = formatDetectionResults[idx];
+    const FormatDetectionResult &dr = formatDetectionResults[idx];
     QMessageBox::information(this, tr("Format details for '%1' format").arg(dr.getFormatOrImporterName()), dr.getFormatDescriptionText());
 }
 
-
 int DocumentFormatSelectorController::getSelectedFormatIdx() const {
     int idx = 0;
-    for (int i =0; i < radioButtons.size(); i++) {
+    for (int i = 0; i < radioButtons.size(); i++) {
         if (radioButtons[i]->isChecked()) {
             idx = i;
             break;
@@ -223,4 +220,4 @@ int DocumentFormatSelectorController::getSelectedFormatIdx() const {
     return idx;
 }
 
-} //namespace
+}    // namespace U2

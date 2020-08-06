@@ -27,22 +27,18 @@ namespace U2 {
 /* MaEditorSelection */
 /************************************************************************/
 MaEditorSelection::MaEditorSelection() {
-
 }
 
 MaEditorSelection::MaEditorSelection(int left, int top, int width, int height)
     : selArea(left, top, width, height) {
-
 }
 
-MaEditorSelection::MaEditorSelection(const QPoint& topLeft, const QPoint& bottomRight)
+MaEditorSelection::MaEditorSelection(const QPoint &topLeft, const QPoint &bottomRight)
     : selArea(topLeft, bottomRight) {
-
 }
 
-MaEditorSelection::MaEditorSelection(const QPoint& topLeft, int width, int height)
-    : selArea(topLeft, QSize(width,height)) {
-
+MaEditorSelection::MaEditorSelection(const QPoint &topLeft, int width, int height)
+    : selArea(topLeft, QSize(width, height)) {
 }
 
 bool MaEditorSelection::isEmpty() const {
@@ -89,18 +85,17 @@ U2Region MaEditorSelection::getYRegion() const {
     return U2Region(selArea.y(), selArea.height());
 }
 
-bool MaEditorSelection::operator==(const MaEditorSelection& other) const {
+bool MaEditorSelection::operator==(const MaEditorSelection &other) const {
     return selArea == other.selArea;
 }
 
-MaEditorSelection MaEditorSelection::intersected(const MaEditorSelection& selection) const {
+MaEditorSelection MaEditorSelection::intersected(const MaEditorSelection &selection) const {
     QRect r = selArea.intersected(selection.selArea);
     return MaEditorSelection(r);
 }
 
-MaEditorSelection::MaEditorSelection(QRect& rect)
+MaEditorSelection::MaEditorSelection(QRect &rect)
     : selArea(rect) {
-
 }
 
-} // namespace
+}    // namespace U2

@@ -19,27 +19,27 @@
  * MA 02110-1301, USA.
  */
 
+#include "SMatrix.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/TextUtils.h>
-
-#include "SMatrix.h"
 
 namespace U2 {
 
 #define DEFAULT_FILL_VALUE -1000000.0f
 
-SMatrix::SMatrix(const QString& _name, const DNAAlphabet* _alphabet, const QList<SScore>& rawMatrix, const QString& _description)
+SMatrix::SMatrix(const QString &_name, const DNAAlphabet *_alphabet, const QList<SScore> &rawMatrix, const QString &_description)
     : name(_name), description(_description), alphabet(_alphabet) {
     validCharacters = alphabet->getAlphabetChars();
     TextUtils::charBounds(validCharacters.constData(), validCharacters.size(), minChar, maxChar);
     charsInRow = maxChar - minChar + 1;
 
-    scores.resize(charsInRow*charsInRow);
+    scores.resize(charsInRow * charsInRow);
     qFill(scores.data(), scores.data() + scores.size(), -1000000);
 
     minScore = 1000000;
     maxScore = -1000000;
-    foreach(const SScore& s, rawMatrix) {
+    foreach (const SScore &s, rawMatrix) {
         int idx = getScoreIdx(s.c1, s.c2);
         scores[idx] = s.score;
         minScore = qMin(minScore, s.score);
@@ -48,17 +48,17 @@ SMatrix::SMatrix(const QString& _name, const DNAAlphabet* _alphabet, const QList
 
     //try to fix amino alphabet for extended symbols if needed: U(Selenocysteine) & O(Pyrrolysine)
     if (alphabet->isAmino()) {
-        if (getScore('U', 'U') == DEFAULT_FILL_VALUE) { // no score for 'U' symbol, use score value for 'C' (Cysteine)
+        if (getScore('U', 'U') == DEFAULT_FILL_VALUE) {    // no score for 'U' symbol, use score value for 'C' (Cysteine)
             copyCharValues('C', 'U');
         }
-        if (getScore('O', 'O') == DEFAULT_FILL_VALUE) {// no score for 'U' symbol, use score value for 'K' (Lysine)
+        if (getScore('O', 'O') == DEFAULT_FILL_VALUE) {    // no score for 'U' symbol, use score value for 'K' (Lysine)
             copyCharValues('K', 'O');
         }
     }
 
     //now for all symbols in alphabet without score set the minimal score
-    foreach(char c1, validCharacters) {
-        foreach(char c2, validCharacters) {
+    foreach (char c1, validCharacters) {
+        foreach (char c2, validCharacters) {
             float score = getScore(c1, c2);
             if (score == DEFAULT_FILL_VALUE) {
                 setScore(c1, c2, minScore);
@@ -95,10 +95,9 @@ QVariant SMatrix::toQVariant() const {
     }
 
     return res;
-
 }
 
-SMatrix SMatrix::fromQVariant(const QVariant& v) {
+SMatrix SMatrix::fromQVariant(const QVariant &v) {
     QList<QVariant> list = v.toList();
     SMatrix m;
 
@@ -120,13 +119,11 @@ SMatrix SMatrix::fromQVariant(const QVariant& v) {
         m.scores[i] = float(list.at(n++).toDouble());
     }
 
-    if (m.name.isEmpty() || m.alphabet == NULL || m.validCharacters.isEmpty()
-        || !m.validCharacters.contains(m.minChar) || !m.validCharacters.contains(m.maxChar)
-        || m.maxChar - m.minChar + 1 != m.charsInRow) {
+    if (m.name.isEmpty() || m.alphabet == NULL || m.validCharacters.isEmpty() || !m.validCharacters.contains(m.minChar) || !m.validCharacters.contains(m.maxChar) || m.maxChar - m.minChar + 1 != m.charsInRow) {
         coreLog.error("Error during substitution matrix deserialization!");
         return SMatrix();
     }
     return m;
 }
 
-} // namespace
+}    // namespace U2

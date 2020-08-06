@@ -34,7 +34,7 @@ public:
     ImportSequenceFromRawDataTask(const U2DbiRef &dbiRef, const QString &folder, const DNASequence &sequence);
 
     QString getSequenceName() const;
-    const U2EntityRef & getEntityRef() const;
+    const U2EntityRef &getEntityRef() const;
 
 private:
     void run();
@@ -46,6 +46,6 @@ private:
     const DNASequence sequence;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_IMPORT_SEQUENCE_FROM_RAW_DATA_TASK_H_
+#endif    // _U2_IMPORT_SEQUENCE_FROM_RAW_DATA_TASK_H_

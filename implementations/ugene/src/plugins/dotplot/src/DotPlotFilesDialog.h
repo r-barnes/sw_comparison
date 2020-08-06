@@ -27,15 +27,19 @@
 namespace U2 {
 class ADVSequenceObjectContext;
 
-class DotPlotFilesDialog : public QDialog, public Ui_DotPlotFilesDialog{
+class DotPlotFilesDialog : public QDialog, public Ui_DotPlotFilesDialog {
     Q_OBJECT
 public:
     DotPlotFilesDialog(QWidget *parent);
 
     virtual void accept();
 
-    QString getFirstFileName() const {return firstFileName;}
-    QString getSecondFileName() const {return secondFileName;}
+    QString getFirstFileName() const {
+        return firstFileName;
+    }
+    QString getSecondFileName() const {
+        return secondFileName;
+    }
 
     int getFirstGap() const;
     int getSecondGap() const;
@@ -48,6 +52,7 @@ protected slots:
 
     void sl_mergeFirst();
     void sl_mergeSecond();
+
 private:
     QString firstFileName;
     QString secondFileName;
@@ -55,6 +60,6 @@ private:
     QString filter;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

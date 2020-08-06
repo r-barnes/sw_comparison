@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "GUIUtils.h"
+
 #include <QAbstractButton>
 #include <QApplication>
 #include <QDesktopServices>
@@ -39,31 +41,29 @@
 #include <U2Gui/AppSettingsGUI.h>
 #include <U2Gui/MainWindow.h>
 
-#include "GUIUtils.h"
-
 namespace U2 {
 
-QAction* GUIUtils::getCheckedAction(QList<QAction*> actions){
-        foreach(QAction* action, actions) {
-            if(action->isChecked()){
-                return action;
-            }
+QAction *GUIUtils::getCheckedAction(QList<QAction *> actions) {
+    foreach (QAction *action, actions) {
+        if (action->isChecked()) {
+            return action;
         }
-        return NULL;
+    }
+    return NULL;
 }
 
-QAction* GUIUtils::findActionByData(QList<QAction*> actions, const QString& data){
-        foreach(QAction* action, actions) {
-            if(action->data() == data){
-                return action;
-            }
+QAction *GUIUtils::findActionByData(QList<QAction *> actions, const QString &data) {
+    foreach (QAction *action, actions) {
+        if (action->data() == data) {
+            return action;
         }
-        return NULL;
+    }
+    return NULL;
 }
 
-QAction* GUIUtils::findAction(const QList<QAction*>& actions, const QString& name) {
-    foreach(QAction* a, actions) {
-        const QString& aname =  a->objectName();
+QAction *GUIUtils::findAction(const QList<QAction *> &actions, const QString &name) {
+    foreach (QAction *a, actions) {
+        const QString &aname = a->objectName();
         if (aname == name) {
             return a;
         }
@@ -71,13 +71,13 @@ QAction* GUIUtils::findAction(const QList<QAction*>& actions, const QString& nam
     return NULL;
 }
 
-QAction* GUIUtils::findActionAfter(const QList<QAction*>& actions, const QString& name) {
+QAction *GUIUtils::findActionAfter(const QList<QAction *> &actions, const QString &name) {
     bool found = false;
-    foreach(QAction* a, actions) {
+    foreach (QAction *a, actions) {
         if (found) {
             return a;
         }
-        const QString& aname =  a->objectName();
+        const QString &aname = a->objectName();
         if (aname == name) {
             found = true;
         }
@@ -88,9 +88,8 @@ QAction* GUIUtils::findActionAfter(const QList<QAction*>& actions, const QString
     return actions.first();
 }
 
-
-QMenu* GUIUtils::findSubMenu(QMenu* m, const QString& name) {
-    QAction* action = findAction(m->actions(), name);
+QMenu *GUIUtils::findSubMenu(QMenu *m, const QString &name) {
+    QAction *action = findAction(m->actions(), name);
     if (action == NULL) {
         return NULL;
     }
@@ -109,28 +108,28 @@ void GUIUtils::updateButtonToolTip(QAbstractButton *button, const QKeySequence &
     button->setToolTip(toolTip);
 }
 
-void GUIUtils::disableEmptySubmenus(QMenu* m) {
-    foreach(QAction* action, m->actions()) {
-        QMenu* am = action->menu();
-        if (am!=NULL && am->actions().isEmpty()) {
+void GUIUtils::disableEmptySubmenus(QMenu *m) {
+    foreach (QAction *action, m->actions()) {
+        QMenu *am = action->menu();
+        if (am != NULL && am->actions().isEmpty()) {
             action->setEnabled(false);
         }
     }
 }
 
-QIcon  GUIUtils::createSquareIcon(const QColor& c, int size) {
+QIcon GUIUtils::createSquareIcon(const QColor &c, int size) {
     int w = size;
     int h = size;
     QPixmap pix(w, h);
     QPainter p(&pix);
     p.setPen(Qt::black);
-    p.drawRect(0, 0, w-1, h-1);
-    p.fillRect(1, 1, w-2, h-2, c);
+    p.drawRect(0, 0, w - 1, h - 1);
+    p.fillRect(1, 1, w - 2, h - 2, c);
     p.end();
     return QIcon(pix);
 }
 
-QIcon  GUIUtils::createRoundIcon(const QColor& c, int size) {
+QIcon GUIUtils::createRoundIcon(const QColor &c, int size) {
     int w = size;
     int h = size;
 
@@ -140,30 +139,30 @@ QIcon  GUIUtils::createRoundIcon(const QColor& c, int size) {
     QPainter p(&pix);
     QPainterPath ep;
     //ep.addEllipse(1, 1, w-2, h-2);
-    ep.addEllipse(0, 0, w-1, h-1);
+    ep.addEllipse(0, 0, w - 1, h - 1);
     p.fillPath(ep, c);
     p.setPen(Qt::black);
-    p.drawEllipse(0, 0, w-1, h-1);
+    p.drawEllipse(0, 0, w - 1, h - 1);
     p.end();
     return QIcon(pix);
 }
 
-bool GUIUtils::runWebBrowser(const QString& url) {
+bool GUIUtils::runWebBrowser(const QString &url) {
     bool useDefaultWebBrowser = AppContext::getAppSettings()->getUserAppsSettings()->useDefaultWebBrowser();
     if (url.isEmpty()) {
         QMessageBox::critical(NULL, tr("Error!"), tr("Document URL is empty!"));
         return false;
     }
-    
+
     QString program = AppContext::getAppSettings()->getUserAppsSettings()->getWebBrowserURL();
     bool ok = !program.isEmpty() && QFile(program).exists();
 
-    if(useDefaultWebBrowser){
+    if (useDefaultWebBrowser) {
         bool launched = QDesktopServices::openUrl(QUrl(url));
-        if (!launched){
+        if (!launched) {
             QMessageBox::critical(NULL, tr("Error!"), tr("Unable to launch default web browser."));
             AppContext::getAppSettings()->getUserAppsSettings()->setUseDefaultWebBrowser(false);
-            AppContext::getAppSettingsGUI()->showSettingsDialog(APP_SETTINGS_USER_APPS);            
+            AppContext::getAppSettingsGUI()->showSettingsDialog(APP_SETTINGS_USER_APPS);
             program = AppContext::getAppSettings()->getUserAppsSettings()->getWebBrowserURL();
             ok = !program.isEmpty() && QFile(program).exists();
             if (!ok) {
@@ -174,16 +173,16 @@ bool GUIUtils::runWebBrowser(const QString& url) {
             arguments.append(url);
             QProcess myProcess;
             return myProcess.startDetached(program, arguments);
-        }else {
+        } else {
             return launched;
         }
-    }else{
+    } else {
         if (!ok) {
             QMessageBox::critical(NULL, tr("Error!"), tr("Please specify the browser executable"));
             AppContext::getAppSettingsGUI()->showSettingsDialog(APP_SETTINGS_USER_APPS);
             program = AppContext::getAppSettings()->getUserAppsSettings()->getWebBrowserURL();
 
-        ok = !program.isEmpty() && QFile(program).exists();
+            ok = !program.isEmpty() && QFile(program).exists();
         }
         if (!ok) {
             return false;
@@ -196,8 +195,7 @@ bool GUIUtils::runWebBrowser(const QString& url) {
     }
 }
 
-
-bool GUIUtils::isMutedLnF(QTreeWidgetItem* item) {
+bool GUIUtils::isMutedLnF(QTreeWidgetItem *item) {
     static QBrush disabledBrush;
     if (disabledBrush.style() == Qt::NoBrush) {
         disabledBrush = QApplication::palette().brush(QPalette::Disabled, QPalette::Foreground);
@@ -205,7 +203,7 @@ bool GUIUtils::isMutedLnF(QTreeWidgetItem* item) {
     return item->foreground(0) == disabledBrush;
 }
 
-void GUIUtils::setMutedLnF( QTreeWidgetItem* item, bool enableMute, bool recursive) {
+void GUIUtils::setMutedLnF(QTreeWidgetItem *item, bool enableMute, bool recursive) {
     QPalette::ColorGroup colorGroup = enableMute ? QPalette::Disabled : QPalette::Active;
     QBrush brush = QApplication::palette().brush(colorGroup, QPalette::Foreground);
     int count = item->columnCount();
@@ -215,29 +213,26 @@ void GUIUtils::setMutedLnF( QTreeWidgetItem* item, bool enableMute, bool recursi
     if (recursive) {
         int childCount = item->childCount();
         for (int i = 0; i < childCount; ++i) {
-            QTreeWidgetItem* childItem = item->child(i);
+            QTreeWidgetItem *childItem = item->child(i);
             setMutedLnF(childItem, enableMute, recursive);
         }
     }
 }
 
-const QColor GUIUtils::WARNING_COLOR = QColor(255,200,200);
-const QColor GUIUtils::OK_COLOR = QColor(255,255,255);
+const QColor GUIUtils::WARNING_COLOR = QColor(255, 200, 200);
+const QColor GUIUtils::OK_COLOR = QColor(255, 255, 255);
 
 void GUIUtils::setWidgetWarning(QWidget *widget, bool value) {
     QColor color = value ? WARNING_COLOR : OK_COLOR;
     widget->setStyleSheet("background-color: " + color.name() + ";");
 }
 
-void GUIUtils::showMessage(QWidget *widgetToPaintOn, QPainter& painter, const QString& message) {
+void GUIUtils::showMessage(QWidget *widgetToPaintOn, QPainter &painter, const QString &message) {
     painter.fillRect(widgetToPaintOn->rect(), Qt::gray);
 
     QFontMetrics metrics(painter.font(), widgetToPaintOn);
-    painter.drawText(widgetToPaintOn->rect(), Qt::AlignCenter, metrics.elidedText(
-        message,
-        Qt::ElideRight,
-        widgetToPaintOn->rect().width()));
+    painter.drawText(widgetToPaintOn->rect(), Qt::AlignCenter, metrics.elidedText(message, Qt::ElideRight, widgetToPaintOn->rect().width()));
     return;
 }
 
-} //endif
+}    // namespace U2

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportAnnotationsDialog.h"
+
 #include <QList>
 #include <QPushButton>
 
@@ -32,29 +34,26 @@
 #include <U2Gui/HelpButton.h>
 #include <U2Gui/SaveDocumentController.h>
 
-#include "ExportAnnotationsDialog.h"
 #include "ui_ExportAnnotationsDialog.h"
 
 namespace U2 {
 
-const QString ExportAnnotationsDialog::CSV_FORMAT_ID( "csv" );
+const QString ExportAnnotationsDialog::CSV_FORMAT_ID("csv");
 
-ExportAnnotationsDialog::ExportAnnotationsDialog( const QString &filename, QWidget *parent )
-    : QDialog( parent ), ui( new Ui_ExportAnnotationsDialog( ) )
-{
-    ui->setupUi( this );
+ExportAnnotationsDialog::ExportAnnotationsDialog(const QString &filename, QWidget *parent)
+    : QDialog(parent), ui(new Ui_ExportAnnotationsDialog()) {
+    ui->setupUi(this);
     lastAddToProjectState = ui->addToProjectCheck->isChecked();
-    new HelpButton(this, ui->buttonBox, "24742401");
+    new HelpButton(this, ui->buttonBox, "46499858");
     ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
     initSaveController(filename);
     sl_formatChanged(saveController->getFormatIdToSave());
     window()->resize(window()->width(), 0);
-
 }
 
-ExportAnnotationsDialog::~ExportAnnotationsDialog( ) {
+ExportAnnotationsDialog::~ExportAnnotationsDialog() {
     delete ui;
 }
 
@@ -81,7 +80,6 @@ void ExportAnnotationsDialog::initSaveController(const QString &filename) {
 
     connect(saveController, SIGNAL(si_formatChanged(const QString &)), SLOT(sl_formatChanged(const QString &)));
     connect(ui->addToProjectCheck, SIGNAL(clicked(bool)), SLOT(sl_addToProjectStateChanged(bool)));
-
 }
 
 QString ExportAnnotationsDialog::filePath() const {
@@ -108,12 +106,12 @@ void ExportAnnotationsDialog::sl_formatChanged(const QString &newFormatId) {
     ui->addToProjectCheck->setChecked(!isCsvFormat && lastAddToProjectState);
 }
 
-void ExportAnnotationsDialog::sl_addToProjectStateChanged(bool state){
+void ExportAnnotationsDialog::sl_addToProjectStateChanged(bool state) {
     lastAddToProjectState = state;
 }
 
-QString ExportAnnotationsDialog::fileFormat( ) const {
+QString ExportAnnotationsDialog::fileFormat() const {
     return saveController->getFormatIdToSave();
 }
 
-} // namespace U2
+}    // namespace U2

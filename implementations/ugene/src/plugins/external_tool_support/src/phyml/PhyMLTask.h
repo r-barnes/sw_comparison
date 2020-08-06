@@ -22,44 +22,50 @@
 #ifndef _U2_PHYML_TASK_H
 #define _U2_PHYML_TASK_H
 
-#include "PhyMLSupport.h"
-#include "utils/ExportTasks.h"
-
-#include <U2View/CreatePhyTreeDialogController.h>
 #include <U2Algorithm/PhyTreeGenerator.h>
 #include <U2Algorithm/PhyTreeGeneratorTask.h>
+
 #include <U2Core/ExternalToolRunTask.h>
 #include <U2Core/PhyTreeObject.h>
+
+#include <U2View/CreatePhyTreeDialogController.h>
+
+#include "PhyMLSupport.h"
+#include "utils/ExportTasks.h"
 
 namespace U2 {
 
 class LoadDocumentTask;
 
-class PhyMLPrepareDataForCalculation : public Task{
+class PhyMLPrepareDataForCalculation : public Task {
     Q_OBJECT
 public:
-    PhyMLPrepareDataForCalculation(const MultipleSequenceAlignment& ma, const CreatePhyTreeSettings& s, const QString& url);
+    PhyMLPrepareDataForCalculation(const MultipleSequenceAlignment &ma, const CreatePhyTreeSettings &s, const QString &url);
     void prepare();
-    QList<Task*> onSubTaskFinished(Task* subTask);
-    const QString& getInputFileUrl() {return inputFileForPhyML;}
+    QList<Task *> onSubTaskFinished(Task *subTask);
+    const QString &getInputFileUrl() {
+        return inputFileForPhyML;
+    }
+
 private:
-    const MultipleSequenceAlignment&           ma;
-    CreatePhyTreeSettings       settings;
-    QString                     tmpDirUrl;
-    SaveAlignmentTask*          saveDocumentTask;
-    QString                     inputFileForPhyML;
+    const MultipleSequenceAlignment &ma;
+    CreatePhyTreeSettings settings;
+    QString tmpDirUrl;
+    SaveAlignmentTask *saveDocumentTask;
+    QString inputFileForPhyML;
 };
 
 class PhyMLSupportTask;
 class PhyMLLogParser : public ExternalToolLogParser {
     Q_OBJECT
 public:
-    PhyMLLogParser(PhyMLSupportTask* parentTask, int sequencesNumber);
+    PhyMLLogParser(PhyMLSupportTask *parentTask, int sequencesNumber);
     int getProgress();
-    void parseOutput(const QString& partOfLog);
-    void parseErrOutput(const QString& partOfLog);
+    void parseOutput(const QString &partOfLog);
+    void parseErrOutput(const QString &partOfLog);
+
 private:
-    PhyMLSupportTask* parentTask;
+    PhyMLSupportTask *parentTask;
     QString lastLine;
     QString lastErrLine;
     bool isMCMCRunning;
@@ -68,41 +74,44 @@ private:
     int sequencesNumber;
 };
 
-class PhyMLGetCalculatedTreeTask: public Task{
+class PhyMLGetCalculatedTreeTask : public Task {
     Q_OBJECT
 public:
-    PhyMLGetCalculatedTreeTask(const QString& url);
+    PhyMLGetCalculatedTreeTask(const QString &url);
     void prepare();
-    QList<Task*> onSubTaskFinished(Task* subTask);
-    PhyTreeObject* getPhyObject(){return phyObject;}
+    QList<Task *> onSubTaskFinished(Task *subTask);
+    PhyTreeObject *getPhyObject() {
+        return phyObject;
+    }
+
 private:
-    QString                     baseFileName;
-    LoadDocumentTask*           loadTmpDocumentTask;
-    PhyTreeObject*              phyObject;
+    QString baseFileName;
+    LoadDocumentTask *loadTmpDocumentTask;
+    PhyTreeObject *phyObject;
 };
 
-class PhyMLSupportTask : public PhyTreeGeneratorTask{
+class PhyMLSupportTask : public PhyTreeGeneratorTask {
     Q_OBJECT
 public:
-    PhyMLSupportTask(const MultipleSequenceAlignment& ma, const CreatePhyTreeSettings& s);
+    PhyMLSupportTask(const MultipleSequenceAlignment &ma, const CreatePhyTreeSettings &s);
     void prepare();
     Task::ReportResult report();
-    void onExternalToolFailed(const QString& err);
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    void onExternalToolFailed(const QString &err);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
     static const QString TMP_FILE_NAME;
     static const QString RESULT_BOOTSTRAP_EXT;
     static const QString RESULT_TREE_EXT;
+
 private:
-    QString                           tmpDirUrl;
-    QString                           tmpPhylipFile;
-    PhyMLPrepareDataForCalculation*   prepareDataTask;
-    ExternalToolRunTask*              phyMlTask;
-    PhyMLGetCalculatedTreeTask*       getTreeTask;
-    int                               sequencesNumber;
+    QString tmpDirUrl;
+    QString tmpPhylipFile;
+    PhyMLPrepareDataForCalculation *prepareDataTask;
+    ExternalToolRunTask *phyMlTask;
+    PhyMLGetCalculatedTreeTask *getTreeTask;
+    int sequencesNumber;
 };
 
+}    // namespace U2
 
-}//namespace
-
-#endif // _U2_PHYML_TASK_H
+#endif    // _U2_PHYML_TASK_H

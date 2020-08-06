@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CopyDocumentTask.h"
+
 #include <QCoreApplication>
 #include <QFileInfo>
 
@@ -34,19 +36,15 @@
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "CopyDocumentTask.h"
-
 namespace U2 {
 
-CopyDocumentTask::CopyDocumentTask(Document *_srcDoc, const DocumentFormatId &_formatId,
-    const QString &_dstUrl, bool _addToProject)
+CopyDocumentTask::CopyDocumentTask(Document *_srcDoc, const DocumentFormatId &_formatId, const QString &_dstUrl, bool _addToProject)
     : Task("Copy document", TaskFlag_NoRun), srcDoc(_srcDoc), dstDoc(NULL), formatId(_formatId),
-    dstUrl(_dstUrl), addToProject(_addToProject), cloneTask(NULL), saveTask(NULL) {
-
+      dstUrl(_dstUrl), addToProject(_addToProject), cloneTask(NULL), saveTask(NULL) {
 }
 
 CopyDocumentTask::~CopyDocumentTask() {
-    if (addToProject) { // it means not "SaveDoc_DestroyAfter", so it is needed to be deleted
+    if (addToProject) {    // it means not "SaveDoc_DestroyAfter", so it is needed to be deleted
         if (hasError() || isCanceled()) {
             delete dstDoc;
         }
@@ -74,19 +72,19 @@ void CopyDocumentTask::prepare() {
     addSubTask(cloneTask);
 }
 
-QList<Task*> CopyDocumentTask::onSubTaskFinished(Task *subTask) {
-    QList<Task*> result;
+QList<Task *> CopyDocumentTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> result;
     if (hasError() || isCanceled()) {
         return result;
     }
 
     if (cloneTask == subTask) {
-        QList<GObject*> objs = cloneTask->takeResult();
-        foreach(GObject *dstObj, objs) {
+        QList<GObject *> objs = cloneTask->takeResult();
+        foreach (GObject *dstObj, objs) {
             dstObj->moveToThread(QCoreApplication::instance()->thread());
             dstDoc->addObject(dstObj);
         }
-        foreach(GObject *dstObj, objs) {
+        foreach (GObject *dstObj, objs) {
             GObjectUtils::updateRelationsURL(dstObj, srcDoc->getURL(), dstUrl);
         }
         if (addToProject) {
@@ -108,7 +106,6 @@ QList<Task*> CopyDocumentTask::onSubTaskFinished(Task *subTask) {
 }
 
 void CopyDocumentTask::sl_onCopySaved() {
-
 }
 
 CloneObjectsTask::CloneObjectsTask(Document *_srcDoc, Document *_dstDoc)
@@ -121,8 +118,8 @@ void CloneObjectsTask::run() {
     DocumentFormat *df = dstDoc->getDocumentFormat();
     CHECK_EXT(NULL != df, stateInfo.setError("NULL document format"), );
 
-    QList<GObject*> objs = srcDoc->getObjects();
-    foreach(GObject *srcObj, objs) {
+    QList<GObject *> objs = srcDoc->getObjects();
+    foreach (GObject *srcObj, objs) {
         if (df->isObjectOpSupported(dstDoc, DocumentFormat::DocObjectOp_Add, srcObj->getGObjectType())) {
             GObject *dstObj = srcObj->clone(dstDoc->getDbiRef(), stateInfo);
             CHECK_OP(stateInfo, );
@@ -136,11 +133,11 @@ void CloneObjectsTask::run() {
     }
 }
 
-QList<GObject*> CloneObjectsTask::takeResult() {
-    QList<GObject*> result = cloned;
+QList<GObject *> CloneObjectsTask::takeResult() {
+    QList<GObject *> result = cloned;
     cloned.clear();
 
     return result;
 }
 
-} // U2
+}    // namespace U2

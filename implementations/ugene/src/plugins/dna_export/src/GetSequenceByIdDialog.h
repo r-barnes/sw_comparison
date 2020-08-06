@@ -26,14 +26,18 @@
 
 namespace U2 {
 
-class GetSequenceByIdDialog: public QDialog, public Ui_getSequenceByIdDialog{
+class GetSequenceByIdDialog : public QDialog, public Ui_getSequenceByIdDialog {
     Q_OBJECT
 
 public:
     GetSequenceByIdDialog(QWidget *w = NULL);
     void accept();
-    bool isAddToProject() const {return addToProject;}
-    QString getDirectory() const {return dir;}
+    bool isAddToProject() const {
+        return addToProject;
+    }
+    QString getDirectory() const {
+        return dir;
+    }
 
 private slots:
     void sl_saveFilenameButtonClicked();
@@ -41,11 +45,8 @@ private slots:
 private:
     QString dir;
     bool addToProject;
-
 };
 
-
-}
-
+}    // namespace U2
 
 #endif

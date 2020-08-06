@@ -22,15 +22,15 @@
 #ifndef _ASSEMBLY_VARIANT_ROW_
 #define _ASSEMBLY_VARIANT_ROW_
 
+#include <QMenu>
+#include <QWidget>
+#include <qevent.h>
+
 #include <U2Core/U2Variant.h>
 
 #include "AssemblyCellRenderer.h"
 #include "AssemblyModel.h"
 #include "AssemblyVariantHint.h"
-
-#include <QWidget>
-#include <QMenu>
-#include <qevent.h>
 
 namespace U2 {
 
@@ -112,6 +112,6 @@ private slots:
     void sl_removeRow();
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _ASSEMBLY_VARIANT_ROW_
+#endif    // _ASSEMBLY_VARIANT_ROW_

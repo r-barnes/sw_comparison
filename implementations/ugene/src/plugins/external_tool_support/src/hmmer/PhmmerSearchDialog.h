@@ -22,8 +22,8 @@
 #ifndef _U2_PHMMER_SEARCH_DIALOG_H_
 #define _U2_PHMMER_SEARCH_DIALOG_H_
 
-#include <U2Core/DNASequenceObject.h>
 #include <U2Core/DNASequence.h>
+#include <U2Core/DNASequenceObject.h>
 
 #include <U2Gui/CreateAnnotationWidgetController.h>
 
@@ -44,7 +44,7 @@ class PhmmerSearchDialog : public QDialog, public Ui_PhmmerSearchDialog {
     Q_OBJECT
 public:
     PhmmerSearchDialog(U2SequenceObject *seqObj, QWidget *parent = NULL);
-    PhmmerSearchDialog(ADVSequenceObjectContext* seqCtx, QWidget *parent = NULL);
+    PhmmerSearchDialog(ADVSequenceObjectContext *seqCtx, QWidget *parent = NULL);
 
 private slots:
     void accept();
@@ -63,15 +63,15 @@ private:
 
     PhmmerSearchDialogModel model;
     CreateAnnotationWidgetController *annotationsWidgetController;
-    ADVSequenceObjectContext* seqCtx;
+    ADVSequenceObjectContext *seqCtx;
 
-    static const QString    QUERY_FILES_DIR;
-    static const QString    DOM_E_PLUS_PREFIX;
-    static const QString    DOM_E_MINUS_PREFIX;
-    static const QString    ANNOTATIONS_DEFAULT_NAME;
-    static const int        ANNOTATIONS_WIDGET_LOCATION = 1;
+    static const QString QUERY_FILES_DIR;
+    static const QString DOM_E_PLUS_PREFIX;
+    static const QString DOM_E_MINUS_PREFIX;
+    static const QString ANNOTATIONS_DEFAULT_NAME;
+    static const int ANNOTATIONS_WIDGET_LOCATION = 1;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_PHMMER_SEARCH_DIALOG_H_
+#endif    // _U2_PHMMER_SEARCH_DIALOG_H_

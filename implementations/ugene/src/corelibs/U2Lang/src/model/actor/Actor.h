@@ -46,49 +46,49 @@ public:
  * represents one of ActorPrototypes
  * Peer is needed for saving Worker that is associated with current actor (see LastReadyScheduler::tick())
  */
-class U2LANG_EXPORT Actor: public QObject, public Configuration, public Peer {
+class U2LANG_EXPORT Actor : public QObject, public Configuration, public Peer {
     Q_OBJECT
 public:
     virtual ~Actor();
 
-    ActorPrototype* getProto() const;
+    ActorPrototype *getProto() const;
 
     // this id is an actor block name at the *.uwl file
     ActorId getId() const;
     void setId(const ActorId &id);
 
     QString getLabel() const;
-    void setLabel(const QString& l);
+    void setLabel(const QString &l);
 
-    Port* getPort(const QString& id) const;
-    QList<Port*> getPorts() const;
-    QList<Port*> getInputPorts() const;
-    QList<Port*> getOutputPorts() const;
+    Port *getPort(const QString &id) const;
+    QList<Port *> getPorts() const;
+    QList<Port *> getInputPorts() const;
+    QList<Port *> getOutputPorts() const;
 
-    QList<Port*> getEnabledPorts() const;
-    QList<Port*> getEnabledInputPorts() const;
-    QList<Port*> getEnabledOutputPorts() const;
+    QList<Port *> getEnabledPorts() const;
+    QList<Port *> getEnabledInputPorts() const;
+    QList<Port *> getEnabledOutputPorts() const;
 
     // reimplemented: Configuration::setParameter
-    virtual void setParameter(const QString& name, const QVariant& val);
+    virtual void setParameter(const QString &name, const QVariant &val);
 
     // NULL if description not set by user
-    ActorDocument* getDescription() const;
-    void setDescription(ActorDocument* d);
+    ActorDocument *getDescription() const;
+    void setDescription(ActorDocument *d);
 
-    const QMap<QString, QString> & getParamAliases() const;
-    QMap<QString, QString> & getParamAliases();
+    const QMap<QString, QString> &getParamAliases() const;
+    QMap<QString, QString> &getParamAliases();
     bool hasParamAliases() const;
 
-    const QMap<QString, QString> & getAliasHelp() const;
-    QMap<QString, QString> & getAliasHelp();
+    const QMap<QString, QString> &getAliasHelp() const;
+    QMap<QString, QString> &getAliasHelp();
     bool hasAliasHelp() const;
 
     // reimplemented: Configuration::remap
-    virtual void remap(const QMap<ActorId, ActorId>&);
+    virtual void remap(const QMap<ActorId, ActorId> &);
 
     AttributeScript *getScript() const;
-    void setScript(AttributeScript* _script);
+    void setScript(AttributeScript *_script);
 
     AttributeScript *getCondition() const;
 
@@ -107,10 +107,10 @@ public:
     void updateDelegateTags();
 
     void updateItemsAvailability();
-    void updateItemsAvailability(const Attribute* influencingAttribute);
+    void updateItemsAvailability(const Attribute *influencingAttribute);
 
     void addCustomValidator(const ValidatorDesc &desc);
-    const QList<ValidatorDesc> & getCustomValidators() const;
+    const QList<ValidatorDesc> &getCustomValidators() const;
     virtual bool validate(NotificationsList &notificationList) const;
 
 signals:
@@ -120,8 +120,8 @@ signals:
 
 protected:
     friend class ActorPrototype;
-    Actor(const ActorId &actorId, ActorPrototype* proto, AttributeScript *script);
-    Actor(const Actor&);
+    Actor(const ActorId &actorId, ActorPrototype *proto, AttributeScript *script);
+    Actor(const Actor &);
 
 protected:
     ActorId id;
@@ -130,12 +130,12 @@ protected:
     // default is: 'proto->getDisplayName() actorId'
     QString label;
     // semantic template of this actor
-    ActorPrototype* proto;
+    ActorPrototype *proto;
     // ports, binded to their names
-    QMap<QString,Port*> ports;
+    QMap<QString, Port *> ports;
     // description of actor
     // has setter and getter
-    ActorDocument* doc;
+    ActorDocument *doc;
     // user can set aliases for schema parameters and use them in cmdline or in other schemas through includes
     // ( paramName, alias ) pairs
     QMap<QString, QString> paramAliases;
@@ -143,10 +143,10 @@ protected:
     QMap<QString, QString> aliasHelpDescs;
     // actor can be written on script
     // this object identifies it's text and variables
-    AttributeScript * script;
+    AttributeScript *script;
     // condition that is to be evaluated
     // before the actor's execution
-    AttributeScript * condition;
+    AttributeScript *condition;
     // an actor could be a subactor of some another
     ActorId owner;
     QList<ValidatorDesc> customValidators;
@@ -160,9 +160,9 @@ private:
     void setupVariablesForAttribute(AttributeScript *_script);
 
     void updateGrouperSlots(const QMap<ActorId, ActorId> &actorsMapping);
-}; // Actor
+};    // Actor
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2
 
-#endif // _U2_ACTOR_H_
+#endif    // _U2_ACTOR_H_

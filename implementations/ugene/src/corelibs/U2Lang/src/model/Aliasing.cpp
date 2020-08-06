@@ -25,9 +25,7 @@ namespace U2 {
 namespace Workflow {
 
 SlotAlias::SlotAlias(const Port *port, const QString &slotId, const QString &alias)
-: port(port), slotId(slotId), alias(alias)
-{
-
+    : port(port), slotId(slotId), alias(alias) {
 }
 
 const Port *SlotAlias::getSourcePort() const {
@@ -43,12 +41,10 @@ QString SlotAlias::getAlias() const {
 }
 
 PortAlias::PortAlias(const Port *sourcePort, const QString &alias, const QString &description)
-: port(sourcePort), alias(alias), description(description)
-{
-
+    : port(sourcePort), alias(alias), description(description) {
 }
 
-bool PortAlias::operator ==(const PortAlias &another) {
+bool PortAlias::operator==(const PortAlias &another) {
     return (alias == another.getAlias());
 }
 
@@ -100,5 +96,5 @@ bool PortAlias::isInput() const {
     return port->isInput();
 }
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

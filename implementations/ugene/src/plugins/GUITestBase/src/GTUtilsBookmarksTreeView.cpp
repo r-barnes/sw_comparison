@@ -19,9 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-#include <QMainWindow>
-#include <QTreeWidget>
-
 #include <drivers/GTKeyboardDriver.h>
 #include <drivers/GTMouseDriver.h>
 #include <primitives/GTLineEdit.h>
@@ -29,6 +26,9 @@
 #include <primitives/GTWidget.h>
 #include <primitives/PopupChooser.h>
 #include <utils/GTUtilsDialog.h>
+
+#include <QMainWindow>
+#include <QTreeWidget>
 
 #include <U2Core/ProjectModel.h>
 
@@ -49,36 +49,34 @@ using namespace HI;
 const QString GTUtilsBookmarksTreeView::widgetName = ACTION_BOOKMARK_TREE_VIEW;
 
 #define GT_METHOD_NAME "getTreeWidget"
-QTreeWidget* GTUtilsBookmarksTreeView::getTreeWidget(GUITestOpStatus &os) {
-
-    QTreeWidget *treeWidget = qobject_cast<QTreeWidget*>(GTWidget::findWidget(os, widgetName, NULL, false));
+QTreeWidget *GTUtilsBookmarksTreeView::getTreeWidget(GUITestOpStatus &os) {
+    QTreeWidget *treeWidget = qobject_cast<QTreeWidget *>(GTWidget::findWidget(os, widgetName, NULL, false));
 
     if (!treeWidget) {
         GTUtilsProjectTreeView::toggleView(os);
         GTGlobals::sleep(3000);
     }
 
-    treeWidget = qobject_cast<QTreeWidget*>(GTWidget::findWidget(os, widgetName));
+    treeWidget = qobject_cast<QTreeWidget *>(GTWidget::findWidget(os, widgetName));
     return treeWidget;
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "findItem"
-QTreeWidgetItem* GTUtilsBookmarksTreeView::findItem(GUITestOpStatus &os, const QString &itemName, const GTGlobals::FindOptions &options) {
-
+QTreeWidgetItem *GTUtilsBookmarksTreeView::findItem(GUITestOpStatus &os, const QString &itemName, const GTGlobals::FindOptions &options) {
     GT_CHECK_RESULT(itemName.isEmpty() == false, "Item name is empty", NULL);
 
     QTreeWidget *treeWidget = getTreeWidget(os);
     GT_CHECK_RESULT(treeWidget != NULL, "Tree widget is NULL", NULL);
 
-    for(int i =0; i< treeWidget->topLevelItemCount(); i++) {
-        OVTViewItem* vi = static_cast<OVTViewItem*>(treeWidget->topLevelItem(i));
+    for (int i = 0; i < treeWidget->topLevelItemCount(); i++) {
+        OVTViewItem *vi = static_cast<OVTViewItem *>(treeWidget->topLevelItem(i));
         if (vi->viewName == itemName) {
             return vi;
         }
-        if (vi->isRootItem()){
-            QList<QTreeWidgetItem*> treeItems = GTTreeWidget::getItems(vi);
-            foreach (QTreeWidgetItem* item, treeItems) {
+        if (vi->isRootItem()) {
+            QList<QTreeWidgetItem *> treeItems = GTTreeWidget::getItems(vi);
+            foreach (QTreeWidgetItem *item, treeItems) {
                 if (item->text(0) == itemName) {
                     return item;
                 }
@@ -92,13 +90,12 @@ QTreeWidgetItem* GTUtilsBookmarksTreeView::findItem(GUITestOpStatus &os, const Q
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getSelectedItem"
-QString GTUtilsBookmarksTreeView::getSelectedItem(GUITestOpStatus &os)
-{
+QString GTUtilsBookmarksTreeView::getSelectedItem(GUITestOpStatus &os) {
     QTreeWidget *treeWidget = getTreeWidget(os);
     GT_CHECK_RESULT(treeWidget != NULL, "Tree widget is NULL", NULL);
 
-    for(int i =0; i< treeWidget->topLevelItemCount(); i++) {
-        OVTViewItem* vi = static_cast<OVTViewItem*>(treeWidget->topLevelItem(i));
+    for (int i = 0; i < treeWidget->topLevelItemCount(); i++) {
+        OVTViewItem *vi = static_cast<OVTViewItem *>(treeWidget->topLevelItem(i));
         if (vi->isSelected()) {
             return vi->viewName;
         }
@@ -147,8 +144,7 @@ void GTUtilsBookmarksTreeView::doubleClickBookmark(GUITestOpStatus &os, const QS
 
 #define GT_METHOD_NAME "getItemCenter"
 QPoint GTUtilsBookmarksTreeView::getItemCenter(GUITestOpStatus &os, const QString &itemName) {
-
-    QTreeWidgetItem* item = findItem(os, itemName);
+    QTreeWidgetItem *item = findItem(os, itemName);
     GT_CHECK_RESULT(item != NULL, "Item " + itemName + " is NULL", QPoint());
 
     return GTTreeWidget::getItemCenter(os, item);
@@ -157,4 +153,4 @@ QPoint GTUtilsBookmarksTreeView::getItemCenter(GUITestOpStatus &os, const QStrin
 
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

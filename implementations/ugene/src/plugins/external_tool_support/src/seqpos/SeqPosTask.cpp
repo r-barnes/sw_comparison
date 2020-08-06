@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "SeqPosTask.h"
+
 #include <QDir>
 
 #include <U2Core/AnnotationTableObject.h>
@@ -39,10 +41,8 @@
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/UserApplicationsSettings.h>
 
-#include "SeqPosSupport.h"
-#include "SeqPosTask.h"
 #include "R/RSupport.h"
-
+#include "SeqPosSupport.h"
 
 namespace U2 {
 
@@ -50,15 +50,8 @@ const QString SeqPosTask::BASE_DIR_NAME("SeqPos_tmp");
 const QString SeqPosTask::BASE_SUBDIR_NAME("SeqPos");
 const QString SeqPosTask::TREAT_NAME("treatment");
 
-SeqPosTask::SeqPosTask(const SeqPosSettings& _settings, Workflow::DbiDataStorage *storage, const QList<Workflow::SharedDbiDataHandler> &_treatAnn)
-: ExternalToolSupportTask("SeqPos annotation", TaskFlag_CollectChildrenWarnings)
-, settings(_settings)
-, storage(storage)
-, treatAnn(_treatAnn)
-, treatDoc(NULL)
-, treatTask(NULL)
-, etTask(NULL)
-{
+SeqPosTask::SeqPosTask(const SeqPosSettings &_settings, Workflow::DbiDataStorage *storage, const QList<Workflow::SharedDbiDataHandler> &_treatAnn)
+    : ExternalToolSupportTask("SeqPos annotation", TaskFlag_CollectChildrenWarnings), settings(_settings), storage(storage), treatAnn(_treatAnn), treatDoc(NULL), treatTask(NULL), etTask(NULL) {
     GCOUNTER(cvar, tvar, "NGS:SeqPosTask");
     SAFE_POINT_EXT(NULL != storage, setError(L10N::nullPointerError("workflow data storage")), );
 }
@@ -68,16 +61,17 @@ SeqPosTask::~SeqPosTask() {
 }
 
 void SeqPosTask::cleanup() {
-    delete treatDoc; treatDoc = NULL;
+    delete treatDoc;
+    treatDoc = NULL;
 
     //remove tmp files
     QString tmpDirPath = AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath(BASE_DIR_NAME);
     QDir tmpDir(tmpDirPath);
-    if(tmpDir.exists()){
-        foreach(QString file, tmpDir.entryList()){
+    if (tmpDir.exists()) {
+        foreach (QString file, tmpDir.entryList()) {
             tmpDir.remove(file);
         }
-        if(!tmpDir.rmdir(tmpDir.absolutePath())){
+        if (!tmpDir.rmdir(tmpDir.absolutePath())) {
             //stateInfo.setError(tr("Subdir for temporary files exists. Can not remove this folder."));
             //return;
         }
@@ -91,7 +85,8 @@ void SeqPosTask::prepare() {
 
     settings.outDir = GUrlUtils::createDirectory(
         settings.outDir + "/" + BASE_SUBDIR_NAME,
-        "_", stateInfo);
+        "_",
+        stateInfo);
     CHECK_OP(stateInfo, );
 
     treatDoc = createDoc(treatAnn, TREAT_NAME);
@@ -102,10 +97,10 @@ void SeqPosTask::prepare() {
     addSubTask(treatTask);
 }
 
-Document* SeqPosTask::createDoc( const QList<Workflow::SharedDbiDataHandler>& annTableHandlers, const QString& name){
-    Document* doc = NULL;
+Document *SeqPosTask::createDoc(const QList<Workflow::SharedDbiDataHandler> &annTableHandlers, const QString &name) {
+    Document *doc = NULL;
 
-    QString docUrl = workingDir + "/" + name +".bed";
+    QString docUrl = workingDir + "/" + name + ".bed";
 
     DocumentFormat *bedFormat = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::BED);
     CHECK_EXT(NULL != bedFormat, stateInfo.setError("NULL bed format"), doc);
@@ -123,51 +118,49 @@ Document* SeqPosTask::createDoc( const QList<Workflow::SharedDbiDataHandler>& an
     return doc;
 }
 
-QList<Task*> SeqPosTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> result;
+QList<Task *> SeqPosTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> result;
     CHECK(!subTask->isCanceled(), result);
     CHECK(!subTask->hasError(), result);
 
     if (treatTask == subTask) {
-            QStringList args = settings.getArguments(treatDoc->getURLString());
+        QStringList args = settings.getArguments(treatDoc->getURLString());
 
-            ExternalTool* rTool = AppContext::getExternalToolRegistry()->getById(RSupport::ET_R_ID);
-            SAFE_POINT(NULL != rTool, "R script tool wasn't found in the registry", result);
-            const QString rDir = QFileInfo(rTool->getPath()).dir().absolutePath();
+        ExternalTool *rTool = AppContext::getExternalToolRegistry()->getById(RSupport::ET_R_ID);
+        SAFE_POINT(NULL != rTool, "R script tool wasn't found in the registry", result);
+        const QString rDir = QFileInfo(rTool->getPath()).dir().absolutePath();
 
-            etTask = new ExternalToolRunTask(SeqPosSupport::ET_SEQPOS_ID, args, new ExternalToolLogParser(), getSettings().outDir, QStringList() << rDir);
-            setListenerForTask(etTask);
-            result << etTask;
+        etTask = new ExternalToolRunTask(SeqPosSupport::ET_SEQPOS_ID, args, new ExternalToolLogParser(), getSettings().outDir, QStringList() << rDir);
+        setListenerForTask(etTask);
+        result << etTask;
     }
     return result;
 }
 
 void SeqPosTask::run() {
-
 }
 
-const SeqPosSettings& SeqPosTask::getSettings(){
+const SeqPosSettings &SeqPosTask::getSettings() {
     return settings;
 }
 
-QStringList SeqPosTask::getOutputFiles(){
+QStringList SeqPosTask::getOutputFiles() {
     QStringList result;
 
     QString current;
 
     current = getSettings().outDir + "/results/" + "mdseqpos_index.html";
-    if (QFile::exists(current)){
+    if (QFile::exists(current)) {
         result << current;
     }
 
-//index.html contains table.html
-//    current = getSettings().outDir + "/results/" + "table.html";
-//    if (QFile::exists(current)){
-//        result << current;
-//    }
-
+    //index.html contains table.html
+    //    current = getSettings().outDir + "/results/" + "table.html";
+    //    if (QFile::exists(current)){
+    //        result << current;
+    //    }
 
     return result;
 }
 
-} // U2
+}    // namespace U2

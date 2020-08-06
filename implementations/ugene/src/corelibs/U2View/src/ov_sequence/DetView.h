@@ -27,9 +27,9 @@
 
 #include <U2Core/U2Location.h>
 
-#include "GSequenceLineViewAnnotated.h"
 #include <U2View/SequenceObjectContext.h>
 
+#include "GSequenceLineViewAnnotated.h"
 
 class QActionGroup;
 
@@ -44,12 +44,15 @@ class DetViewSequenceEditor;
 class U2VIEW_EXPORT DetView : public GSequenceLineViewAnnotated {
     Q_OBJECT
     friend class DetViewSequenceEditor;
-public:
-    DetView(QWidget* p, SequenceObjectContext* ctx);
-    ~DetView();
-    DetViewSequenceEditor* getEditor() { return editor; }
 
-    DetViewRenderArea* getDetViewRenderArea() const;
+public:
+    DetView(QWidget *p, SequenceObjectContext *ctx);
+    ~DetView();
+    DetViewSequenceEditor *getEditor() {
+        return editor;
+    }
+
+    DetViewRenderArea *getDetViewRenderArea() const;
 
     bool hasTranslations() const;
     bool hasComplementaryStrand() const;
@@ -59,8 +62,8 @@ public:
     virtual void setStartPos(qint64 pos);
     virtual void setCenterPos(qint64 pos);
 
-    DNATranslation* getComplementTT() const;
-    DNATranslation* getAminoTT() const;
+    DNATranslation *getComplementTT() const;
+    DNATranslation *getAminoTT() const;
     int getSymbolsPerLine() const;
 
     void setWrapSequence(bool v);
@@ -77,7 +80,7 @@ public:
 
 protected slots:
     virtual void sl_sequenceChanged();
-    void sl_onDNASelectionChanged(LRegionsSelection* thiz, const QVector<U2Region>& added, const QVector<U2Region>& removed);
+    void sl_onDNASelectionChanged(LRegionsSelection *thiz, const QVector<U2Region> &added, const QVector<U2Region> &removed);
     void sl_onAminoTTChanged();
     void sl_translationRowsChanged();
     void sl_showComplementToggle(bool v);
@@ -92,12 +95,12 @@ protected slots:
 protected:
     virtual void pack();
 
-    void showEvent(QShowEvent * e);
-    void hideEvent(QHideEvent * e);
+    void showEvent(QShowEvent *e);
+    void hideEvent(QHideEvent *e);
 
-    void mouseMoveEvent(QMouseEvent* me);
-    void mouseReleaseEvent(QMouseEvent* me);
-    void wheelEvent(QWheelEvent* we);
+    void mouseMoveEvent(QMouseEvent *me);
+    void mouseReleaseEvent(QMouseEvent *me);
+    void wheelEvent(QWheelEvent *we);
     void resizeEvent(QResizeEvent *e);
     void keyPressEvent(QKeyEvent *e);
 
@@ -107,17 +110,17 @@ protected:
     void updateVerticalScrollBar();
     void updateVerticalScrollBarPosition();
 
-    QAction*        showComplementAction;
-    QAction*        showTranslationAction;
-    QAction*        wrapSequenceAction;
-    QAction*        doNotTranslateAction;
-    QAction*        translateAnnotationsOrSelectionAction;
-    QAction*        setUpFramesManuallyAction;
-    QAction*        showAllFramesAction;
+    QAction *showComplementAction;
+    QAction *showTranslationAction;
+    QAction *wrapSequenceAction;
+    QAction *doNotTranslateAction;
+    QAction *translateAnnotationsOrSelectionAction;
+    QAction *setUpFramesManuallyAction;
+    QAction *showAllFramesAction;
 
-    DetViewSequenceEditor* editor;
+    DetViewSequenceEditor *editor;
 
-    GScrollBar*     verticalScrollBar;
+    GScrollBar *verticalScrollBar;
 
     int numShiftsInOneLine;
     int currentShiftsCounter;
@@ -125,15 +128,15 @@ protected:
 private:
     void setupTranslationsMenu();
     void setupGeneticCodeMenu();
-    QPoint getRenderAreaPointAfterAutoScroll(const QPoint& pos);
-    void moveBorder(const QPoint& p);
-    void setBorderCursor(const QPoint& p);
+    QPoint getRenderAreaPointAfterAutoScroll(const QPoint &pos);
+    void moveBorder(const QPoint &p);
+    void setBorderCursor(const QPoint &p);
     void setDefaultState();
 
     void uncheckAllTranslations();
     void updateTranslationsState();
     void updateTranslationsState(const U2Strand::Direction direction);
-    void updateSelectedTranslations(const SequenceObjectContext::TranslationState& state);
+    void updateSelectedTranslations(const SequenceObjectContext::TranslationState &state);
 
     static const QString SEQUENCE_SETTINGS;
     static const QString SEQUENCE_WRAPPED;
@@ -143,19 +146,21 @@ private:
 
 class U2VIEW_EXPORT DetViewRenderArea : public GSequenceLineViewAnnotatedRenderArea {
 public:
-    DetViewRenderArea(DetView* d);
+    DetViewRenderArea(DetView *d);
     ~DetViewRenderArea();
 
-    DetViewRenderer* getRenderer() { return renderer; }
+    DetViewRenderer *getRenderer() {
+        return renderer;
+    }
 
     virtual U2Region getAnnotationYRange(Annotation *a, int region, const AnnotationSettings *as) const;
     virtual double getCurrentScale() const;
 
     void setWrapSequence(bool v);
 
-    qint64 coordToPos(const QPoint& p) const;
+    qint64 coordToPos(const QPoint &p) const;
 
-    DetView* getDetView() const;
+    DetView *getDetView() const;
 
     /**
     *Quantity of symbols in one line
@@ -182,16 +187,16 @@ public:
 
     void updateSize();
 
-    bool isOnTranslationsLine(const QPoint& p) const;
+    bool isOnTranslationsLine(const QPoint &p) const;
     bool isPosOnAnnotationYRange(const QPoint &p, Annotation *a, int region, const AnnotationSettings *as) const;
 
 protected:
-    virtual void drawAll(QPaintDevice* pd);
+    virtual void drawAll(QPaintDevice *pd);
 
 private:
-    DetViewRenderer* renderer;
+    DetViewRenderer *renderer;
 };
 
-} // namespace U2
+}    // namespace U2
 
 #endif

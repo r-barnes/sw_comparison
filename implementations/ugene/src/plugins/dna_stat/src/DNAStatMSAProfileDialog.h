@@ -25,12 +25,9 @@
 #include <QHash>
 #include <QSet>
 
-#include <U2Core/global.h>
 #include <U2Core/MultipleSequenceAlignment.h>
 #include <U2Core/Task.h>
 #include <U2Core/global.h>
-#include <U2Core/Task.h>
-#include <U2Core/MultipleSequenceAlignment.h>
 
 #include "ui_DNAStatMSAProfileDialog.h"
 
@@ -43,7 +40,7 @@ class DNAStatMSAProfileDialog : public QDialog, public Ui_DNAStatMSAProfileDialo
     Q_OBJECT
 
 public:
-    DNAStatMSAProfileDialog(QWidget* p, MSAEditor* ctx);
+    DNAStatMSAProfileDialog(QWidget *p, MSAEditor *ctx);
 
     void accept();
 
@@ -54,7 +51,7 @@ private slots:
 private:
     void initSaveController();
 
-    MSAEditor* ctx;
+    MSAEditor *ctx;
     SaveDocumentController *saveController;
 
     static const QString HTML;
@@ -77,21 +74,21 @@ public:
         countGapsInConsensusNumbering = true;
     }
 
-    QString                         profileName; // usually object name
-    QString                         profileURL;  // document url
-    MultipleSequenceAlignment       ma;
-    bool                            usePercents; //report percents but not counts
-    DNAStatMSAProfileOutputFormat   outFormat;
-    QString                         outURL;
-    bool                            reportGaps;  // report GAPS statistics
-    bool                            stripUnused; // do not include into report chars unused in alignment
-    bool                            countGapsInConsensusNumbering; //affects html output only
+    QString profileName;    // usually object name
+    QString profileURL;    // document url
+    MultipleSequenceAlignment ma;
+    bool usePercents;    //report percents but not counts
+    DNAStatMSAProfileOutputFormat outFormat;
+    QString outURL;
+    bool reportGaps;    // report GAPS statistics
+    bool stripUnused;    // do not include into report chars unused in alignment
+    bool countGapsInConsensusNumbering;    //affects html output only
 };
 
 class DNAStatMSAProfileTask : public Task {
     Q_OBJECT
 public:
-    DNAStatMSAProfileTask(const DNAStatMSAProfileTaskSettings& s);
+    DNAStatMSAProfileTask(const DNAStatMSAProfileTaskSettings &s);
 
     void run();
     QString generateReport() const;
@@ -102,23 +99,22 @@ public:
 private:
     void computeStats();
 
-    DNAStatMSAProfileTaskSettings   s;
+    DNAStatMSAProfileTaskSettings s;
 
     // fields to keep statistics
     struct ColumnStat {
-        char                consChar;
-        QVector<int>        charFreqs;
+        char consChar;
+        QVector<int> charFreqs;
     };
 
-
-    QStringList                     verticalColumnNames;
-    QVector<ColumnStat>             columns;
-    QVector<char>                   consenusChars;
-    QHash<char, int>                char2index;  //char 2 index in 'ColumnStat'
-    QSet<char>                      unusedChars;
-    QString                         resultText;
+    QStringList verticalColumnNames;
+    QVector<ColumnStat> columns;
+    QVector<char> consenusChars;
+    QHash<char, int> char2index;    //char 2 index in 'ColumnStat'
+    QSet<char> unusedChars;
+    QString resultText;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

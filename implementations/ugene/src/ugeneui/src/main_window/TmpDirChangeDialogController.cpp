@@ -19,16 +19,17 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Gui/U2FileDialog.h>
-
 #include "TmpDirChangeDialogController.h"
+
+#include <U2Gui/U2FileDialog.h>
 
 namespace U2 {
 
-TmpDirChangeDialogController::TmpDirChangeDialogController(QString path, QWidget* p) : QDialog(p), tmpDirPath(path) {
+TmpDirChangeDialogController::TmpDirChangeDialogController(QString path, QWidget *p)
+    : QDialog(p), tmpDirPath(path) {
     setupUi(this);
     QString message = "You do not have permission to write to \"" + tmpDirPath +
-                         "\" folder. Please, set the valid temp folder:";
+                      "\" folder. Please, set the valid temp folder:";
     messageText->setText(tr(message.toLatin1()));
     tmpDirPathEdit->setText(tmpDirPath);
     tmpDirChecker = new TmpDirChecker;
@@ -43,8 +44,7 @@ QString TmpDirChangeDialogController::getTmpDirPath() {
 }
 
 void TmpDirChangeDialogController::sl_changeDirButtonClicked() {
-    QString newPath = U2FileDialog::getExistingDirectory(parentWidget(), tr("Choose Folder"), tmpDirPath,
-        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    QString newPath = U2FileDialog::getExistingDirectory(parentWidget(), tr("Choose Folder"), tmpDirPath, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     if (newPath.isEmpty() == false)
         tmpDirPathEdit->setText(newPath);
 }
@@ -57,12 +57,11 @@ void TmpDirChangeDialogController::sl_okButtonClicked() {
     tmpDirPath = tmpDirPathEdit->text();
     if (!tmpDirChecker->checkPath(tmpDirPath)) {
         QString message = "You do not have permission to write to \"" + tmpDirPath +
-                             "\" folder. Please, set the valid temp folder:";
+                          "\" folder. Please, set the valid temp folder:";
         messageText->setText(tr(message.toLatin1()));
-    }
-    else {
+    } else {
         QDialog::accept();
     }
 }
 
-}// namespace
+}    // namespace U2

@@ -20,35 +20,35 @@
  */
 
 #include "SingleSequenceImageExportTask.h"
-#include "SequenceExportSettingsWidget.h"
-
-#include <U2Core/DNASequenceObject.h>
-#include <U2Core/U2SafePoints.h>
-#include <U2Core/U2Sequence.h>
-
-#include <U2View/ADVSingleSequenceWidget.h>
-
-#include <U2Gui/RegionSelector.h>
 
 #include <QDomDocument>
 #include <QPrinter>
 #include <QSvgGenerator>
 
+#include <U2Core/DNASequenceObject.h>
+#include <U2Core/U2SafePoints.h>
+#include <U2Core/U2Sequence.h>
+
+#include <U2Gui/RegionSelector.h>
+
+#include <U2View/ADVSingleSequenceWidget.h>
+
+#include "SequenceExportSettingsWidget.h"
 
 namespace U2 {
 
 SequenceImageExportTask::SequenceImageExportTask(QSharedPointer<ExportImagePainter> painter,
                                                  QSharedPointer<CustomExportSettings> customSettings,
-                                                 const ImageExportTaskSettings& settings)
+                                                 const ImageExportTaskSettings &settings)
     : ImageExportTask(settings),
       painter(painter),
       customSettings(customSettings) {
-    SAFE_POINT_EXT( !painter.isNull(), setError("ExportImagePainter is NULL"), );
-    SAFE_POINT_EXT( !customSettings.isNull(), setError("CustomExportSettings is NULL"), );
+    SAFE_POINT_EXT(!painter.isNull(), setError("ExportImagePainter is NULL"), );
+    SAFE_POINT_EXT(!customSettings.isNull(), setError("CustomExportSettings is NULL"), );
 }
 
 void SequenceImageExportToPdfTask::run() {
-    SAFE_POINT_EXT( settings.isPDFFormat(), setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("SequenceImageExportToPDFTask")), );
+    SAFE_POINT_EXT(settings.isPDFFormat(), setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("SequenceImageExportToPDFTask")), );
 
     QPainter p;
     QPrinter printer;
@@ -59,12 +59,12 @@ void SequenceImageExportToPdfTask::run() {
 
     painter->paint(p, customSettings.data());
 
-    CHECK_EXT( p.end(), setError(EXPORT_FAIL_MESSAGE.arg(settings.fileName)), );
+    CHECK_EXT(p.end(), setError(EXPORT_FAIL_MESSAGE.arg(settings.fileName)), );
 }
 
 void SequenceImageExportToSvgTask::run() {
     SAFE_POINT_EXT(settings.isSVGFormat(),
-               setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("SequenceImageExportToSVGTask")), );
+                   setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("SequenceImageExportToSVGTask")), );
 
     QPainter p;
     QSvgGenerator generator;
@@ -80,25 +80,25 @@ void SequenceImageExportToSvgTask::run() {
     //fix for UGENE-76
     QDomDocument doc("svg");
     QFile file(settings.fileName);
-    bool ok=file.open(QIODevice::ReadOnly);
-    if (!ok && !result){
-       result=false;
+    bool ok = file.open(QIODevice::ReadOnly);
+    if (!ok && !result) {
+        result = false;
     }
-    ok=doc.setContent(&file);
+    ok = doc.setContent(&file);
     if (!ok && !result) {
         file.close();
-        result=false;
+        result = false;
     }
-    if(result){
+    if (result) {
         file.close();
-        QDomNodeList radialGradients=doc.elementsByTagName("radialGradient");
+        QDomNodeList radialGradients = doc.elementsByTagName("radialGradient");
         for (int i = 0; i < static_cast<int>(radialGradients.length()); i++) {
-            if(radialGradients.at(i).isElement()){
-                QDomElement tag=radialGradients.at(i).toElement();
-                if(tag.hasAttribute("xml:id")){
-                    QString id=tag.attribute("xml:id");
+            if (radialGradients.at(i).isElement()) {
+                QDomElement tag = radialGradients.at(i).toElement();
+                if (tag.hasAttribute("xml:id")) {
+                    QString id = tag.attribute("xml:id");
                     tag.removeAttribute("xml:id");
-                    tag.setAttribute("id",id);
+                    tag.setAttribute("id", id);
                 }
             }
         }
@@ -106,11 +106,11 @@ void SequenceImageExportToSvgTask::run() {
         file.write(doc.toByteArray());
         file.close();
     }
-    CHECK_EXT( result, setError(EXPORT_FAIL_MESSAGE.arg(settings.fileName)), );
+    CHECK_EXT(result, setError(EXPORT_FAIL_MESSAGE.arg(settings.fileName)), );
 }
 
 void SequenceImageExportToBitmapTask::run() {
-    SAFE_POINT_EXT( settings.isBitmapFormat(), setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("SequenceImageExportToBitmapTask")), );
+    SAFE_POINT_EXT(settings.isBitmapFormat(), setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("SequenceImageExportToBitmapTask")), );
 
     QSize size = painter->getImageSize(customSettings.data());
     QPixmap im(size);
@@ -118,7 +118,7 @@ void SequenceImageExportToBitmapTask::run() {
     QPainter p(&im);
     painter->paint(p, customSettings.data());
 
-    CHECK_EXT( im.save(settings.fileName, qPrintable(settings.format), settings.imageQuality), setError(EXPORT_FAIL_MESSAGE.arg(settings.fileName)), );
+    CHECK_EXT(im.save(settings.fileName, qPrintable(settings.format), settings.imageQuality), setError(EXPORT_FAIL_MESSAGE.arg(settings.fileName)), );
 }
 
-} // namespace
+}    // namespace U2

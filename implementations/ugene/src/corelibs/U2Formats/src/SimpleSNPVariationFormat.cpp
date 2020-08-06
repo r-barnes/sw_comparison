@@ -24,8 +24,7 @@
 namespace U2 {
 
 SimpleSNPVariationFormat::SimpleSNPVariationFormat(QObject *p)
-: AbstractVariationFormat(p, BaseDocumentFormats::SNP, QStringList()<<"snp")
-{
+    : AbstractVariationFormat(p, BaseDocumentFormats::SNP, QStringList() << "snp") {
     formatName = QString("SimpleSNP");
 
     columnRoles.insert(0, ColumnRole_ChromosomeId);
@@ -39,7 +38,7 @@ SimpleSNPVariationFormat::SimpleSNPVariationFormat(QObject *p)
 }
 
 bool SimpleSNPVariationFormat::checkFormatByColumnCount(int columnCount) const {
-    return (columnCount == maxColumnNumber+1);
+    return (columnCount == maxColumnNumber + 1);
 }
 
-} // U2
+}    // namespace U2

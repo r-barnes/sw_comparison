@@ -34,13 +34,13 @@ public:
     bool isEmpty() const;
     void clear();
 
-    const QList<Folder> & getSelection() const;
+    const QList<Folder> &getSelection() const;
     void setSelection(const QList<Folder> &folders);
 
 private:
     QList<Folder> selection;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_FOLDER_SELECTION_H_
+#endif    // _U2_FOLDER_SELECTION_H_

@@ -26,16 +26,17 @@
 
 namespace U2 {
 
-class BaseSettingsDialog : public QDialog{
+class BaseSettingsDialog : public QDialog {
     Q_OBJECT
 public:
     BaseSettingsDialog(QWidget *parent);
 
-    const OptionsMap& getSettings() const;
+    const OptionsMap &getSettings() const;
+
 protected:
     OptionsMap changedSettings;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

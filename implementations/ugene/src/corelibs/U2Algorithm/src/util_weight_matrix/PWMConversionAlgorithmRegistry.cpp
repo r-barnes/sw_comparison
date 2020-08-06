@@ -28,7 +28,8 @@
 
 namespace U2 {
 
-PWMConversionAlgorithmRegistry::PWMConversionAlgorithmRegistry(QObject* p) : QObject(p) {
+PWMConversionAlgorithmRegistry::PWMConversionAlgorithmRegistry(QObject *p)
+    : QObject(p) {
     addAlgorithm(new PWMConversionAlgorithmFactoryBVH());
     addAlgorithm(new PWMConversionAlgorithmFactoryLOD());
     addAlgorithm(new PWMConversionAlgorithmFactoryMCH());
@@ -36,34 +37,33 @@ PWMConversionAlgorithmRegistry::PWMConversionAlgorithmRegistry(QObject* p) : QOb
 }
 
 PWMConversionAlgorithmRegistry::~PWMConversionAlgorithmRegistry() {
-    QList<PWMConversionAlgorithmFactory*> list = algorithms.values();
-    foreach(PWMConversionAlgorithmFactory* algo, list) {
+    QList<PWMConversionAlgorithmFactory *> list = algorithms.values();
+    foreach (PWMConversionAlgorithmFactory *algo, list) {
         delete algo;
     }
 }
 
-PWMConversionAlgorithmFactory* PWMConversionAlgorithmRegistry::getAlgorithmFactory(const QString& algoId) {
+PWMConversionAlgorithmFactory *PWMConversionAlgorithmRegistry::getAlgorithmFactory(const QString &algoId) {
     return algorithms.value(algoId);
 }
 
-
-void PWMConversionAlgorithmRegistry::addAlgorithm(PWMConversionAlgorithmFactory* algo) {
-    const QString& id = algo->getId();
-    PWMConversionAlgorithmFactory* oldVersion = algorithms.value(id);
-    if (oldVersion!=NULL) {
+void PWMConversionAlgorithmRegistry::addAlgorithm(PWMConversionAlgorithmFactory *algo) {
+    const QString &id = algo->getId();
+    PWMConversionAlgorithmFactory *oldVersion = algorithms.value(id);
+    if (oldVersion != NULL) {
         delete oldVersion;
         oldVersion = NULL;
     }
     algorithms[id] = algo;
 }
 
-QStringList PWMConversionAlgorithmRegistry::getAlgorithmIds() const  {
-    QList<PWMConversionAlgorithmFactory*> list = algorithms.values();
+QStringList PWMConversionAlgorithmRegistry::getAlgorithmIds() const {
+    QList<PWMConversionAlgorithmFactory *> list = algorithms.values();
     QStringList result;
-    foreach(PWMConversionAlgorithmFactory* algo, list) {
+    foreach (PWMConversionAlgorithmFactory *algo, list) {
         result.append(algo->getId());
     }
     return result;
 }
 
-}//namespace
+}    // namespace U2

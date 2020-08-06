@@ -20,38 +20,36 @@
  */
 
 #include "DeleteGapsDialogFiller.h"
-#include <primitives/GTWidget.h>
 #include <primitives/GTRadioButton.h>
 #include <primitives/GTSpinBox.h>
+#include <primitives/GTWidget.h>
 
-#include <QApplication>
-#include <QPushButton>
 #include <QAbstractButton>
-#include <QSpinBox>
+#include <QApplication>
 #include <QDialogButtonBox>
+#include <QPushButton>
+#include <QSpinBox>
 
 namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::DeleteGapsDialogFiller"
 #define GT_METHOD_NAME "commonScenario"
 void DeleteGapsDialogFiller::commonScenario() {
-
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
-    if (radioButNum==1){
-        QRadioButton* allColumnsOfGaps = dialog->findChild<QRadioButton*>("allRadioButton");
+    if (radioButNum == 1) {
+        QRadioButton *allColumnsOfGaps = dialog->findChild<QRadioButton *>("allRadioButton");
         GTRadioButton::click(os, allColumnsOfGaps);
-    }
-    else{
-        QRadioButton* withNumberOfGaps = dialog->findChild<QRadioButton*>("absoluteRadioButton");
+    } else {
+        QRadioButton *withNumberOfGaps = dialog->findChild<QRadioButton *>("absoluteRadioButton");
         GTRadioButton::click(os, withNumberOfGaps);
     }
 
-    QDialogButtonBox* box = qobject_cast<QDialogButtonBox*>(GTWidget::findWidget(os, "buttonBox", dialog));
+    QDialogButtonBox *box = qobject_cast<QDialogButtonBox *>(GTWidget::findWidget(os, "buttonBox", dialog));
     GT_CHECK(box != NULL, "buttonBox is NULL");
-    QPushButton* button = box->button(QDialogButtonBox::Ok);
-    GT_CHECK(button !=NULL, "cancel button is NULL");
+    QPushButton *button = box->button(QDialogButtonBox::Ok);
+    GT_CHECK(button != NULL, "cancel button is NULL");
     GTWidget::click(os, button);
 }
 #undef GT_METHOD_NAME
@@ -61,17 +59,17 @@ void DeleteGapsDialogFiller::commonScenario() {
 #define GT_METHOD_NAME "commonScenario"
 void RemoveGapColsDialogFiller::commonScenario() {
     GTGlobals::sleep(1000);
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
-    QRadioButton* radio = dialog->findChild<QRadioButton*>(radioMap[button]);
+    QRadioButton *radio = dialog->findChild<QRadioButton *>(radioMap[button]);
     GTRadioButton::click(os, radio);
 
-    if (button==Number){
-        QSpinBox* box = dialog->findChild<QSpinBox*>("absoluteSpinBox");
+    if (button == Number) {
+        QSpinBox *box = dialog->findChild<QSpinBox *>("absoluteSpinBox");
         GTSpinBox::setValue(os, box, spinValue);
-    }else if (button==Percent){
-        QSpinBox* box = dialog->findChild<QSpinBox*>("relativeSpinBox");
+    } else if (button == Percent) {
+        QSpinBox *box = dialog->findChild<QSpinBox *>("relativeSpinBox");
         GTSpinBox::setValue(os, box, spinValue);
     }
 
@@ -79,4 +77,4 @@ void RemoveGapColsDialogFiller::commonScenario() {
 }
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
-}
+}    // namespace U2

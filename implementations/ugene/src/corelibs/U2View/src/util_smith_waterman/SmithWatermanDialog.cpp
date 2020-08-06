@@ -33,6 +33,7 @@
 #include <U2Core/L10n.h>
 #include <U2Core/Log.h>
 #include <U2Core/ProjectModel.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/Settings.h>
 #include <U2Core/TextUtils.h>
 #include <U2Core/U2OpStatusUtils.h>
@@ -41,7 +42,6 @@
 #include <U2Gui/CreateAnnotationWidgetController.h>
 #include <U2Gui/DialogUtils.h>
 #include <U2Gui/HelpButton.h>
-#include <U2Core/QObjectScopedPointer.h>
 #include <U2Gui/U2FileDialog.h>
 
 #include <U2View/ADVSequenceObjectContext.h>
@@ -58,22 +58,21 @@ extern const char SHORTHAND_AND_LABEL_SEPARATOR;
 extern const qint32 STRING_HAS_NO_KEY_MESSAGE;
 
 const quint8 COUNT_OF_TEMPLATE_BUTTONS_IN_ROW = 2;
-const char * RUN_BUTTON_ANNOT_RESULT_LABEL = "Search";
-const char * RUN_BUTTON_MA_RESULT_LABEL = "Align";
-const char * RESULT_DIR_NOT_FOUND_MESSAGE = "Folder you have chosen for alignment files does not exist";
+const char *RUN_BUTTON_ANNOT_RESULT_LABEL = "Search";
+const char *RUN_BUTTON_MA_RESULT_LABEL = "Align";
+const char *RESULT_DIR_NOT_FOUND_MESSAGE = "Folder you have chosen for alignment files does not exist";
 const QString DEFAULT_PATTERN_SEQUENCE_NAME = "P";
 const QChar DEFAULT_SHORTHANDS_SEPARATOR = '_';
 
 namespace U2 {
 
-SmithWatermanDialog::SmithWatermanDialog(QWidget* w, ADVSequenceObjectContext* ctx, SWDialogConfig* _dialogConfig)
-    : QDialog(w), substMatrixRegistry(0), swTaskFactoryRegistry(0)
-{
+SmithWatermanDialog::SmithWatermanDialog(QWidget *w, ADVSequenceObjectContext *ctx, SWDialogConfig *_dialogConfig)
+    : QDialog(w), substMatrixRegistry(0), swTaskFactoryRegistry(0) {
     ctxSeq = ctx;
     dialogConfig = _dialogConfig;
 
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742587");
+    new HelpButton(this, buttonBox, "46501151");
     buttonBox->button(QDialogButtonBox::Yes)->setText(tr("Remote run"));
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Search"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -98,13 +97,13 @@ SmithWatermanDialog::SmithWatermanDialog(QWidget* w, ADVSequenceObjectContext* c
 
     swResultFilterRegistry = AppContext::getSWResultFilterRegistry();
     if (0 == swResultFilterRegistry) {
-        coreLog.error(tr("No filter registry found.")); //FIXME should be optional?
-        QDialog::done(-1);                    //No.
+        coreLog.error(tr("No filter registry found."));    //FIXME should be optional?
+        QDialog::done(-1);    //No.
         return;
     }
 
     tagsRegistry = AppContext::getSWMulAlignResultNamesTagsRegistry();
-    if(NULL == tagsRegistry) {
+    if (NULL == tagsRegistry) {
         coreLog.error(tr("No result names tag registry found."));
         QDialog::done(-1);
         return;
@@ -131,8 +130,7 @@ SmithWatermanDialog::SmithWatermanDialog(QWidget* w, ADVSequenceObjectContext* c
     remoteRunPushButton->setVisible(false);
 }
 
-void SmithWatermanDialog::connectGUI()
-{
+void SmithWatermanDialog::connectGUI() {
     connect(bttnViewMatrix, SIGNAL(clicked()), SLOT(sl_bttnViewMatrix()));
     connect(bttnRun, SIGNAL(clicked()), SLOT(sl_bttnRun()));
     connect(bttnCancel, SIGNAL(clicked()), SLOT(sl_cancelButton()));
@@ -146,27 +144,22 @@ void SmithWatermanDialog::connectGUI()
     connectTemplateButtonsGui();
 }
 
-void SmithWatermanDialog::connectTemplateButtonsGui()
-{
-    foreach(QPushButton * button, *templateButtons)
+void SmithWatermanDialog::connectTemplateButtonsGui() {
+    foreach (QPushButton *button, *templateButtons)
         connect(button, SIGNAL(clicked()), SLOT(sl_templateButtonPressed()));
 }
 
-SmithWatermanDialog::~SmithWatermanDialog()
-{
+SmithWatermanDialog::~SmithWatermanDialog() {
     delete templateButtons;
     delete templateButtonsApplicability;
 }
 
-bool SmithWatermanDialog::eventFilter(QObject * object, QEvent * event)
-{
-    if(object == mObjectNameTmpl || object == refSubseqNameTmpl || object == patternSubseqNameTmpl)
-    {
-        if(QEvent::FocusIn == event->type()) {
+bool SmithWatermanDialog::eventFilter(QObject *object, QEvent *event) {
+    if (object == mObjectNameTmpl || object == refSubseqNameTmpl || object == patternSubseqNameTmpl) {
+        if (QEvent::FocusIn == event->type()) {
             templateEditInFocus();
-        } else if(QEvent::FocusOut == event->type()) {
-            if(advOptions != QApplication::focusWidget()
-                || (Qt::BacktabFocusReason == dynamic_cast<QFocusEvent *>(event)->reason())) {
+        } else if (QEvent::FocusOut == event->type()) {
+            if (advOptions != QApplication::focusWidget() || (Qt::BacktabFocusReason == dynamic_cast<QFocusEvent *>(event)->reason())) {
                 templateEditLostFocus();
             } else {
                 qobject_cast<QLineEdit *>(object)->setFocus();
@@ -178,13 +171,12 @@ bool SmithWatermanDialog::eventFilter(QObject * object, QEvent * event)
     return QDialog::eventFilter(object, event);
 }
 
-void SmithWatermanDialog::changeResultSavingWidgets(const QString & currentText)
-{
-    if(SmithWatermanSettings::getResultViewNames()[SmithWatermanSettings::ANNOTATIONS] == currentText) {
+void SmithWatermanDialog::changeResultSavingWidgets(const QString &currentText) {
+    if (SmithWatermanSettings::getResultViewNames()[SmithWatermanSettings::ANNOTATIONS] == currentText) {
         annotationsWidget->show();
         alignmentParams->hide();
         bttnRun->setText(tr(RUN_BUTTON_ANNOT_RESULT_LABEL));
-    } else if(SmithWatermanSettings::getResultViewNames()[SmithWatermanSettings::MULTIPLE_ALIGNMENT] == currentText) {
+    } else if (SmithWatermanSettings::getResultViewNames()[SmithWatermanSettings::MULTIPLE_ALIGNMENT] == currentText) {
         annotationsWidget->hide();
         alignmentParams->show();
         bttnRun->setText(tr(RUN_BUTTON_MA_RESULT_LABEL));
@@ -194,21 +186,18 @@ void SmithWatermanDialog::changeResultSavingWidgets(const QString & currentText)
     annotationsWidget->layout()->update();
 }
 
-void SmithWatermanDialog::sl_resultViewChanged(const QString & text)
-{
+void SmithWatermanDialog::sl_resultViewChanged(const QString &text) {
     changeResultSavingWidgets(text);
 }
 
-void SmithWatermanDialog::sl_patternChanged()
-{
+void SmithWatermanDialog::sl_patternChanged() {
     updatePatternFieldVisualState();
 }
 
-void SmithWatermanDialog::sl_templateButtonPressed()
-{
-    const QPushButton * senderButton = qobject_cast<QPushButton *>(sender());
+void SmithWatermanDialog::sl_templateButtonPressed() {
+    const QPushButton *senderButton = qobject_cast<QPushButton *>(sender());
     const QString buttonText = senderButton->text();
-    QLineEdit * editInFocus = dynamic_cast<QLineEdit *>(QApplication::focusWidget());
+    QLineEdit *editInFocus = dynamic_cast<QLineEdit *>(QApplication::focusWidget());
 
     assert(NULL != senderButton && NULL != editInFocus);
 
@@ -216,70 +205,59 @@ void SmithWatermanDialog::sl_templateButtonPressed()
     editInFocus->setText(editInFocus->text().append(buttonTag));
 }
 
-bool SmithWatermanDialog::checkTemplateButtonName(const QString & name)
-{
-    if(OPEN_SQUARE_BRACKET != name[0])
+bool SmithWatermanDialog::checkTemplateButtonName(const QString &name) {
+    if (OPEN_SQUARE_BRACKET != name[0])
         return false;
 
     quint32 closeBracketIndex = 0;
 
-    for(qint32 i = 1; i < name.length(); ++i) {
-        if(!name[i].isLetterOrNumber() && !name[i].isSpace() && CLOSE_SQUARE_BRACKET != name[i])
+    for (qint32 i = 1; i < name.length(); ++i) {
+        if (!name[i].isLetterOrNumber() && !name[i].isSpace() && CLOSE_SQUARE_BRACKET != name[i])
             return false;
 
-        if(0 == closeBracketIndex) {
-            if(CLOSE_SQUARE_BRACKET == name[i] && SHORTHAND_AND_LABEL_SEPARATOR == name[i + 1]) {
-                if(0 != i - 1) {
+        if (0 == closeBracketIndex) {
+            if (CLOSE_SQUARE_BRACKET == name[i] && SHORTHAND_AND_LABEL_SEPARATOR == name[i + 1]) {
+                if (0 != i - 1) {
                     closeBracketIndex = i;
                     ++i;
                 } else
                     return false;
 
-            } else if(name[i].isSpace())
+            } else if (name[i].isSpace())
                 return false;
-        }
-        else if(0 != closeBracketIndex && name[i].isLetterOrNumber()
-                && SHORTHAND_AND_LABEL_SEPARATOR == name[i - 1])
+        } else if (0 != closeBracketIndex && name[i].isLetterOrNumber() && SHORTHAND_AND_LABEL_SEPARATOR == name[i - 1])
             return true;
     }
 
     return false;
 }
 
-void SmithWatermanDialog::fillTemplateNamesFieldsByDefault()
-{
-    const QStringList * defaultMobjectTags = tagsRegistry->getDefaultTagsForMobjectsNames();
-    const QString defaultMobjectTagsString = defaultMobjectTags->join(QString(CLOSE_SQUARE_BRACKET)
-                                                                      + DEFAULT_SHORTHANDS_SEPARATOR
-                                                                      + OPEN_SQUARE_BRACKET)
-                                             .append(CLOSE_SQUARE_BRACKET)
-                                             .prepend(OPEN_SQUARE_BRACKET);
+void SmithWatermanDialog::fillTemplateNamesFieldsByDefault() {
+    const QStringList *defaultMobjectTags = tagsRegistry->getDefaultTagsForMobjectsNames();
+    const QString defaultMobjectTagsString = defaultMobjectTags->join(QString(CLOSE_SQUARE_BRACKET) + DEFAULT_SHORTHANDS_SEPARATOR + OPEN_SQUARE_BRACKET)
+                                                 .append(CLOSE_SQUARE_BRACKET)
+                                                 .prepend(OPEN_SQUARE_BRACKET);
     mObjectNameTmpl->setText(defaultMobjectTagsString);
     delete defaultMobjectTags;
 
-    const QStringList * defaultRefSubseqTags = tagsRegistry->getDefaultTagsForRefSubseqNames();
-    const QString defaultRefSubseqTagsString = defaultRefSubseqTags->join(QString(CLOSE_SQUARE_BRACKET)
-                                                                          + DEFAULT_SHORTHANDS_SEPARATOR
-                                                                          + OPEN_SQUARE_BRACKET)
-                                               .append(CLOSE_SQUARE_BRACKET)
-                                               .prepend(OPEN_SQUARE_BRACKET);
+    const QStringList *defaultRefSubseqTags = tagsRegistry->getDefaultTagsForRefSubseqNames();
+    const QString defaultRefSubseqTagsString = defaultRefSubseqTags->join(QString(CLOSE_SQUARE_BRACKET) + DEFAULT_SHORTHANDS_SEPARATOR + OPEN_SQUARE_BRACKET)
+                                                   .append(CLOSE_SQUARE_BRACKET)
+                                                   .prepend(OPEN_SQUARE_BRACKET);
     refSubseqNameTmpl->setText(defaultRefSubseqTagsString);
     delete defaultRefSubseqTags;
 
-    const QStringList * defaultPtrnSubseqTags = tagsRegistry->getDefaultTagsForPtrnSubseqNames();
-    const QString defaultPtrnSubseqTagsString = defaultPtrnSubseqTags->join(QString(CLOSE_SQUARE_BRACKET)
-                                                                            + DEFAULT_SHORTHANDS_SEPARATOR
-                                                                            + OPEN_SQUARE_BRACKET)
-                                                .append(CLOSE_SQUARE_BRACKET)
-                                                .prepend(OPEN_SQUARE_BRACKET);
+    const QStringList *defaultPtrnSubseqTags = tagsRegistry->getDefaultTagsForPtrnSubseqNames();
+    const QString defaultPtrnSubseqTagsString = defaultPtrnSubseqTags->join(QString(CLOSE_SQUARE_BRACKET) + DEFAULT_SHORTHANDS_SEPARATOR + OPEN_SQUARE_BRACKET)
+                                                    .append(CLOSE_SQUARE_BRACKET)
+                                                    .prepend(OPEN_SQUARE_BRACKET);
     patternSubseqNameTmpl->setText(defaultPtrnSubseqTagsString);
     delete defaultPtrnSubseqTags;
 
     patternSequenceName->setText(DEFAULT_PATTERN_SEQUENCE_NAME + QString::number(dialogConfig->countOfLaunchesAlgorithm));
 }
 
-void SmithWatermanDialog::updatePatternFieldVisualState()
-{
+void SmithWatermanDialog::updatePatternFieldVisualState() {
     int patternLen = teditPattern->toPlainText().length();
     if (patternLen == 0)
         lblPattern->setText(tr("Enter pattern here"));
@@ -287,16 +265,15 @@ void SmithWatermanDialog::updatePatternFieldVisualState()
         lblPattern->setText(tr("Pattern length: %1").arg(patternLen));
 }
 
-void SmithWatermanDialog::fillTemplateButtonsList()
-{
+void SmithWatermanDialog::fillTemplateButtonsList() {
     templateButtons = tagsRegistry->getTagsButtons();
     templateButtonsApplicability = tagsRegistry->getBitmapOfTagsApplicability();
 
     quint8 buttonRow = 0;
     quint8 buttonColumn = 0;
 
-    for(QList<QPushButton *>::const_iterator it = templateButtons->constBegin(); it != templateButtons->constEnd(); ++it, ++buttonColumn) {
-        if(COUNT_OF_TEMPLATE_BUTTONS_IN_ROW == buttonColumn) {
+    for (QList<QPushButton *>::const_iterator it = templateButtons->constBegin(); it != templateButtons->constEnd(); ++it, ++buttonColumn) {
+        if (COUNT_OF_TEMPLATE_BUTTONS_IN_ROW == buttonColumn) {
             buttonColumn = 0;
             ++buttonRow;
         }
@@ -307,9 +284,8 @@ void SmithWatermanDialog::fillTemplateButtonsList()
     }
 }
 
-void SmithWatermanDialog::addAnnotationWidget()
-{
-    U2SequenceObject *dnaso = qobject_cast<U2SequenceObject*>(ctxSeq->getSequenceGObject());
+void SmithWatermanDialog::addAnnotationWidget() {
+    U2SequenceObject *dnaso = qobject_cast<U2SequenceObject *>(ctxSeq->getSequenceGObject());
     CreateAnnotationModel acm;
 
     acm.sequenceObjectRef = GObjectReference(dnaso);
@@ -317,24 +293,23 @@ void SmithWatermanDialog::addAnnotationWidget()
     acm.useAminoAnnotationTypes = ctxSeq->getAlphabet()->isAmino();
     acm.sequenceLen = dnaso->getSequenceLength();
     annotationController = new CreateAnnotationWidgetController(acm, this);
-    QWidget* caw = annotationController->getWidget();
-    QVBoxLayout* l = new QVBoxLayout();
+    QWidget *caw = annotationController->getWidget();
+    QVBoxLayout *l = new QVBoxLayout();
     l->setMargin(0);
     l->addWidget(caw);
 
     addPatternContentQualifier = new QCheckBox(
-        tr( "Add qualifier with corresponding pattern subsequences to result annotations" ),
-        annotationsWidget );
+        tr("Add qualifier with corresponding pattern subsequences to result annotations"),
+        annotationsWidget);
     addPatternContentQualifier->setObjectName("addPatternContentQualifierCheck");
-    l->addWidget( addPatternContentQualifier );
+    l->addWidget(addPatternContentQualifier);
 
     annotationsWidget->setLayout(l);
     annotationsWidget->setMinimumSize(caw->layout()->minimumSize());
 }
 
-void SmithWatermanDialog::setParameters()
-{
-    const DNAAlphabet* alphabet = ctxSeq->getAlphabet();
+void SmithWatermanDialog::setParameters() {
+    const DNAAlphabet *alphabet = ctxSeq->getAlphabet();
     QStringList matrixList = substMatrixRegistry->selectMatrixNamesByAlphabet(alphabet);
     if (!matrixList.isEmpty())
         bttnViewMatrix->setEnabled(true);
@@ -344,7 +319,7 @@ void SmithWatermanDialog::setParameters()
     QStringList alg_lst = swTaskFactoryRegistry->getListFactoryNames();
     comboRealization->addItems(alg_lst);
 
-    QStringList filterIds = swResultFilterRegistry->getFiltersIds(); //TODO: use localized names!
+    QStringList filterIds = swResultFilterRegistry->getFiltersIds();    //TODO: use localized names!
     comboResultFilter->addItems(filterIds);
     int defaultFilterIndex = filterIds.indexOf(swResultFilterRegistry->getDefaultFilterId());
     comboResultFilter->setCurrentIndex(defaultFilterIndex);
@@ -375,17 +350,16 @@ void SmithWatermanDialog::setParameters()
     patternSubseqNameTmpl->installEventFilter(this);
 }
 
-void SmithWatermanDialog::initResultDirPath()
-{
+void SmithWatermanDialog::initResultDirPath() {
     QString lastDir = AppContext::getSettings()->getValue(SETTINGS_LASTDIR, QString(""), true).toString();
     if (lastDir.isEmpty() || !QDir(lastDir).exists()) {
         lastDir = QDir::homePath();
-        const Project * curProject = AppContext::getProject();
+        const Project *curProject = AppContext::getProject();
         if (curProject != NULL) {
-            const QString & curProjectUrl = curProject->getProjectURL();
+            const QString &curProjectUrl = curProject->getProjectURL();
             if (!curProjectUrl.isEmpty()) {
                 QFileInfo fi(curProjectUrl);
-                const QDir & curProjectDir = fi.absoluteDir();
+                const QDir &curProjectDir = fi.absoluteDir();
                 lastDir = curProjectDir.absolutePath();
             }
         }
@@ -393,30 +367,25 @@ void SmithWatermanDialog::initResultDirPath()
     alignmentFilesPath->setText(lastDir + '/');
 }
 
-void SmithWatermanDialog::templateEditInFocus()
-{
+void SmithWatermanDialog::templateEditInFocus() {
     quint8 counter = 0;
-    foreach(QPushButton * button, *templateButtons) {
-        if((!templateButtonsApplicability->at(counter)
-            && mObjectNameTmpl == QApplication::focusWidget())
-            || mObjectNameTmpl != QApplication::focusWidget()) {
+    foreach (QPushButton *button, *templateButtons) {
+        if ((!templateButtonsApplicability->at(counter) && mObjectNameTmpl == QApplication::focusWidget()) || mObjectNameTmpl != QApplication::focusWidget()) {
             button->setEnabled(true);
         }
         ++counter;
     }
 }
 
-void SmithWatermanDialog::templateEditLostFocus()
-{
-    foreach(QPushButton * button, *templateButtons) {
-        if(button->isEnabled()) {
+void SmithWatermanDialog::templateEditLostFocus() {
+    foreach (QPushButton *button, *templateButtons) {
+        if (button->isEnabled()) {
             button->setDisabled(true);
         }
     }
 }
 
-void SmithWatermanDialog::sl_browseAlignFilesDir()
-{
+void SmithWatermanDialog::sl_browseAlignFilesDir() {
     const QString openUrl = QFileInfo(alignmentFilesPath->text()).absoluteDir().absolutePath();
     const QString name = U2FileDialog::getExistingDirectory(this, tr("Choose folder"), openUrl);
     if (!name.isEmpty()) {
@@ -425,8 +394,7 @@ void SmithWatermanDialog::sl_browseAlignFilesDir()
     }
 }
 
-void SmithWatermanDialog::sl_bttnViewMatrix()
-{
+void SmithWatermanDialog::sl_bttnViewMatrix() {
     QString strSelectedMatrix = comboMatrix->currentText();
     SMatrix mtx = substMatrixRegistry->getMatrix(strSelectedMatrix);
     if (mtx.isEmpty()) {
@@ -437,11 +405,10 @@ void SmithWatermanDialog::sl_bttnViewMatrix()
     smDialog->exec();
 }
 
-void SmithWatermanDialog::sl_translationToggled(bool checked)
-{
-    const DNAAlphabet* alphabet = 0;
+void SmithWatermanDialog::sl_translationToggled(bool checked) {
+    const DNAAlphabet *alphabet = 0;
     if (checked) {
-        DNATranslation* aminoTT = ctxSeq->getAminoTT();
+        DNATranslation *aminoTT = ctxSeq->getAminoTT();
         alphabet = aminoTT->getDstAlphabet();
     } else
         alphabet = ctxSeq->getAlphabet();
@@ -456,21 +423,18 @@ void SmithWatermanDialog::sl_translationToggled(bool checked)
     comboMatrix->addItems(matrixList);
 }
 
-QString SmithWatermanDialog::validateResultDirPath() const
-{
+QString SmithWatermanDialog::validateResultDirPath() const {
     QString error = QDir(alignmentFilesPath->text()).exists() ? QString() : tr(RESULT_DIR_NOT_FOUND_MESSAGE);
     return error;
 }
 
-void SmithWatermanDialog::sl_cancelButton()
-{
+void SmithWatermanDialog::sl_cancelButton() {
     saveDialogConfig();
 }
 
-void SmithWatermanDialog::sl_bttnRun()
-{
+void SmithWatermanDialog::sl_bttnRun() {
     QString err = annotationController->validate();
-    if(err.isEmpty())
+    if (err.isEmpty())
         err = validateResultDirPath();
 
     if (!err.isEmpty()) {
@@ -478,37 +442,32 @@ void SmithWatermanDialog::sl_bttnRun()
         return;
     }
     if (readParameters()) {
-        if(SmithWatermanSettings::ANNOTATIONS == config.resultView) {
+        if (SmithWatermanSettings::ANNOTATIONS == config.resultView) {
             bool objectPrepared = annotationController->prepareAnnotationObject();
-            if (!objectPrepared){
+            if (!objectPrepared) {
                 QMessageBox::critical(this, L10N::errorTitle(), tr("Cannot create an annotation object. Please check settings."));
                 return;
             }
 
-            const CreateAnnotationModel& m = annotationController->getModel();
+            const CreateAnnotationModel &m = annotationController->getModel();
             AnnotationTableObject *obj = m.getAnnotationObject();
             U2FeatureType annotationType = m.data->type;
             QString annotationName = m.data->name;
             QString annotationGroup = m.groupName;
             ctxSeq->getAnnotatedDNAView()->tryAddObject(obj);
 
-            config.resultCallback = new SmithWatermanReportCallbackAnnotImpl(obj, annotationType, annotationName,
-                annotationGroup, m.description, addPatternContentQualifier->isChecked());
+            config.resultCallback = new SmithWatermanReportCallbackAnnotImpl(obj, annotationType, annotationName, annotationGroup, m.description, addPatternContentQualifier->isChecked());
             config.includePatternContent = addPatternContentQualifier->isChecked();
         } else if (SmithWatermanSettings::MULTIPLE_ALIGNMENT == config.resultView) {
-            const U2SequenceObject * sequence = ctxSeq->getSequenceObject();
+            const U2SequenceObject *sequence = ctxSeq->getSequenceObject();
             U2OpStatusImpl os;
             QByteArray seqData = sequence->getWholeSequenceData(os);
             CHECK_OP_EXT(os, QMessageBox::critical(this, L10N::errorTitle(), os.getError()), );
-            config.resultCallback = new SmithWatermanReportCallbackMAImpl(alignmentFilesPath->text(), mObjectNameTmpl->text(),
-                                                                        refSubseqNameTmpl->text(), patternSubseqNameTmpl->text(),
-                                                                        seqData, config.ptrn,
-                                                                        sequence->getSequenceName(), patternSequenceName->text(),
-                                                                        sequence->getAlphabet(), config.aminoTT);
+            config.resultCallback = new SmithWatermanReportCallbackMAImpl(alignmentFilesPath->text(), mObjectNameTmpl->text(), refSubseqNameTmpl->text(), patternSubseqNameTmpl->text(), seqData, config.ptrn, sequence->getSequenceName(), patternSequenceName->text(), sequence->getAlphabet(), config.aminoTT);
         }
         config.resultListener = new SmithWatermanResultListener;
 
-        Task* task = realization->getTaskInstance(config, tr("SmithWatermanTask") );
+        Task *task = realization->getTaskInstance(config, tr("SmithWatermanTask"));
         AppContext::getTaskScheduler()->registerTopLevelTask(task);
         saveDialogConfig();
         QDialog::accept();
@@ -517,8 +476,7 @@ void SmithWatermanDialog::sl_bttnRun()
     }
 }
 
-bool SmithWatermanDialog::readParameters()
-{
+bool SmithWatermanDialog::readParameters() {
     clearAll();
 
     U2OpStatusImpl os;
@@ -526,7 +484,7 @@ bool SmithWatermanDialog::readParameters()
     CHECK_OP_EXT(os, QMessageBox::critical(this, L10N::errorTitle(), os.getError()), false);
     config.searchCircular = ctxSeq->getSequenceObject()->isCircular();
 
-    DNATranslation* aminoTT = 0;
+    DNATranslation *aminoTT = 0;
     bool isTranslation = radioTranslation->isChecked();
     if (isTranslation)
         aminoTT = ctxSeq->getAminoTT();
@@ -545,14 +503,12 @@ bool SmithWatermanDialog::readParameters()
         return false;
 
     qint32 resultView = config.getResultViewKeyForString(resultViewVariants->currentText());
-    if(STRING_HAS_NO_KEY_MESSAGE != resultView) {
+    if (STRING_HAS_NO_KEY_MESSAGE != resultView) {
         config.resultView = static_cast<SmithWatermanSettings::SWResultView>(resultView);
 
-        if(mObjectNameTmpl->text().isEmpty() || refSubseqNameTmpl->text().isEmpty()
-            || patternSubseqNameTmpl->text().isEmpty() || patternSequenceName->text().isEmpty()) {
-            QMessageBox::critical(this, windowTitle(),
-                                  tr("Names of result alignment files or names of result "
-                                  "subsequences cannot be empty."));
+        if (mObjectNameTmpl->text().isEmpty() || refSubseqNameTmpl->text().isEmpty() || patternSubseqNameTmpl->text().isEmpty() || patternSequenceName->text().isEmpty()) {
+            QMessageBox::critical(this, windowTitle(), tr("Names of result alignment files or names of result "
+                                                          "subsequences cannot be empty."));
             return false;
         }
     } else
@@ -576,10 +532,9 @@ bool SmithWatermanDialog::readParameters()
     return true;
 }
 
-bool SmithWatermanDialog::readRealization()
-{
+bool SmithWatermanDialog::readRealization() {
     QString strSelectedRealization = comboRealization->currentText();
-    SmithWatermanTaskFactory* rlz = swTaskFactoryRegistry->getFactory(strSelectedRealization);
+    SmithWatermanTaskFactory *rlz = swTaskFactoryRegistry->getFactory(strSelectedRealization);
     if (0 == rlz) {
         QMessageBox::critical(this, windowTitle(), tr("Algorithm is not found."));
         return false;
@@ -588,28 +543,24 @@ bool SmithWatermanDialog::readRealization()
     return true;
 }
 
-bool SmithWatermanDialog::readSubstMatrix()
-{
+bool SmithWatermanDialog::readSubstMatrix() {
     QString strSelectedMatrix = comboMatrix->currentText();
     SMatrix mtx = substMatrixRegistry->getMatrix(strSelectedMatrix);
     if (mtx.isEmpty()) {
-        QMessageBox::critical(this, windowTitle(),
-                              tr("Matrix %1 is not found.").arg(strSelectedMatrix));
+        QMessageBox::critical(this, windowTitle(), tr("Matrix %1 is not found.").arg(strSelectedMatrix));
         return false;
     }
     config.pSm = mtx;
     return true;
 }
 
-bool SmithWatermanDialog::readRegion()
-{
-    bool isRegionOk=false;
+bool SmithWatermanDialog::readRegion() {
+    bool isRegionOk = false;
     config.globalRegion = regionSelector->getRegion(&isRegionOk);
     return isRegionOk;
 }
 
-bool SmithWatermanDialog::readGapModel()
-{
+bool SmithWatermanDialog::readGapModel() {
     float scoreGapOpen = spinGapOpen->value();
     config.gapModel.scoreGapOpen = scoreGapOpen;
 
@@ -619,13 +570,12 @@ bool SmithWatermanDialog::readGapModel()
     return true;
 }
 
-bool SmithWatermanDialog::readResultFilter()
-{
+bool SmithWatermanDialog::readResultFilter() {
     int percentOfScore = spinScorePercent->value();
     config.percentOfScore = percentOfScore;
 
     QString strSelectedFilter = comboResultFilter->currentText();
-    SmithWatermanResultFilter* filter = swResultFilterRegistry->getFilter(strSelectedFilter);
+    SmithWatermanResultFilter *filter = swResultFilterRegistry->getFilter(strSelectedFilter);
     if (0 == filter) {
         QMessageBox::critical(this, windowTitle(), tr("Filter is not found."));
         return false;
@@ -634,9 +584,8 @@ bool SmithWatermanDialog::readResultFilter()
     return true;
 }
 
-bool SmithWatermanDialog::readPattern(DNATranslation* aminoTT)
-{
-    const DNAAlphabet* al = 0;
+bool SmithWatermanDialog::readPattern(DNATranslation *aminoTT) {
+    const DNAAlphabet *al = 0;
     if (0 == aminoTT) {
         assert(config.pSm.getAlphabet() != NULL);
         al = config.pSm.getAlphabet();
@@ -652,7 +601,7 @@ bool SmithWatermanDialog::readPattern(DNATranslation* aminoTT)
     stripFormatSymbolsFromPattern(inputPattern);
 
     if (inputPattern.isEmpty()) {
-        QMessageBox::critical(this, windowTitle(),  tr("Pattern is empty"));
+        QMessageBox::critical(this, windowTitle(), tr("Pattern is empty"));
         return false;
     }
 
@@ -664,7 +613,7 @@ bool SmithWatermanDialog::readPattern(DNATranslation* aminoTT)
         pattern = inputPattern.toLocal8Bit();
 
     if (!TextUtils::fits(al->getMap(), pattern.constData(), pattern.length())) {
-        QMessageBox::critical(this, windowTitle(),  tr("Pattern contains unknown symbol"));
+        QMessageBox::critical(this, windowTitle(), tr("Pattern contains unknown symbol"));
         return false;
     }
 
@@ -672,13 +621,12 @@ bool SmithWatermanDialog::readPattern(DNATranslation* aminoTT)
     return true;
 }
 
-void SmithWatermanDialog::stripFormatSymbolsFromPattern(QString & pattern)
-{
+void SmithWatermanDialog::stripFormatSymbolsFromPattern(QString &pattern) {
     const qint32 fastaSequenceNameStart = pattern.indexOf(QRegExp("\\s*>"));
 
-    if(0 == fastaSequenceNameStart)
+    if (0 == fastaSequenceNameStart)
         pattern = pattern.split(QRegExp("\\s+"), QString::SkipEmptyParts).last();
-    else if(-1 != fastaSequenceNameStart)
+    else if (-1 != fastaSequenceNameStart)
         return;
     else {
         pattern.replace(QRegExp("\\s+"), "");
@@ -686,8 +634,7 @@ void SmithWatermanDialog::stripFormatSymbolsFromPattern(QString & pattern)
     }
 }
 
-void SmithWatermanDialog::clearAll()
-{
+void SmithWatermanDialog::clearAll() {
     config.sqnc = QByteArray();
     config.ptrn = QByteArray();
     config.globalRegion = U2Region(0, 0);
@@ -696,7 +643,7 @@ void SmithWatermanDialog::clearAll()
     config.pSm = SMatrix();
     config.percentOfScore = 0;
     config.resultCallback = 0;
-    config.resultFilter   = 0;
+    config.resultFilter = 0;
     config.resultListener = 0;
     config.strand = StrandOption_DirectOnly;
     config.complTT = 0;
@@ -705,8 +652,7 @@ void SmithWatermanDialog::clearAll()
     realization = 0;
 }
 
-void SmithWatermanDialog::loadDialogConfig()
-{
+void SmithWatermanDialog::loadDialogConfig() {
     const SmithWatermanSearchType searchType = dialogConfig->searchType;
     switch (searchType) {
     case (SmithWatermanSearchType_inSequence):
@@ -734,22 +680,22 @@ void SmithWatermanDialog::loadDialogConfig()
         assert(0);
     }
 
-    const QByteArray& prevPattern = dialogConfig->ptrn;
+    const QByteArray &prevPattern = dialogConfig->ptrn;
     if (!prevPattern.isEmpty())
         teditPattern->setText(prevPattern);
 
-    const QString& prevAlgVersion = dialogConfig->algVersion;
+    const QString &prevAlgVersion = dialogConfig->algVersion;
     if (swTaskFactoryRegistry->hadRegistered(prevAlgVersion)) {
         int algIndex = comboRealization->findText(prevAlgVersion);
         assert(-1 != algIndex);
         comboRealization->setCurrentIndex(algIndex);
     }
 
-    const QString& prevScoringMatrix = dialogConfig->scoringMatrix;
+    const QString &prevScoringMatrix = dialogConfig->scoringMatrix;
     if (!substMatrixRegistry->getMatrix(prevScoringMatrix).isEmpty()) {
         int mtxIndex = comboMatrix->findText(prevScoringMatrix);
-         if( -1 != mtxIndex )
-             comboMatrix->setCurrentIndex(mtxIndex);
+        if (-1 != mtxIndex)
+            comboMatrix->setCurrentIndex(mtxIndex);
     }
 
     const float scoreGapOpen = dialogConfig->gm.scoreGapOpen;
@@ -758,7 +704,7 @@ void SmithWatermanDialog::loadDialogConfig()
     const float scoreGapExtd = dialogConfig->gm.scoreGapExtd;
     spinGapExtd->setValue(scoreGapExtd);
 
-    const QString& prevResultFilter = dialogConfig->resultFilter;
+    const QString &prevResultFilter = dialogConfig->resultFilter;
     if (swResultFilterRegistry->isRegistered(prevResultFilter)) {
         int filterIndex = comboResultFilter->findText(prevResultFilter);
         assert(-1 != filterIndex);
@@ -774,30 +720,29 @@ void SmithWatermanDialog::loadDialogConfig()
     resultViewVariants->setCurrentIndex(resultNameIndex);
     changeResultSavingWidgets(resultViewVariants->currentText());
 
-    if(!dialogConfig->alignFilesNamesTmpl.isEmpty())
+    if (!dialogConfig->alignFilesNamesTmpl.isEmpty())
         mObjectNameTmpl->setText(dialogConfig->alignFilesNamesTmpl);
 
-    if(!dialogConfig->refSubseqNamesTmpl.isEmpty())
+    if (!dialogConfig->refSubseqNamesTmpl.isEmpty())
         refSubseqNameTmpl->setText(dialogConfig->refSubseqNamesTmpl);
 
-    if(!dialogConfig->ptrnSubseqNamesTmpl.isEmpty())
+    if (!dialogConfig->ptrnSubseqNamesTmpl.isEmpty())
         patternSubseqNameTmpl->setText(dialogConfig->ptrnSubseqNamesTmpl);
 
-    if(!dialogConfig->patternSequenceName.isEmpty())
+    if (!dialogConfig->patternSequenceName.isEmpty())
         patternSequenceName->setText(dialogConfig->patternSequenceName);
 
-    if(mObjectNameTmpl->text().isEmpty() && refSubseqNameTmpl->text().isEmpty() && patternSubseqNameTmpl->text().isEmpty() &&
+    if (mObjectNameTmpl->text().isEmpty() && refSubseqNameTmpl->text().isEmpty() && patternSubseqNameTmpl->text().isEmpty() &&
         patternSequenceName->text().isEmpty())
         fillTemplateNamesFieldsByDefault();
 
     advOptions->setChecked(dialogConfig->enableAdvancedMASettings);
-    addPatternContentQualifier->setChecked( dialogConfig->addPatternSubsequenceAsQualifier );
+    addPatternContentQualifier->setChecked(dialogConfig->addPatternSubsequenceAsQualifier);
 
     return;
 }
 
-void SmithWatermanDialog::saveDialogConfig()
-{
+void SmithWatermanDialog::saveDialogConfig() {
     dialogConfig->ptrn = teditPattern->toPlainText().toLatin1();
 
     dialogConfig->algVersion = comboRealization->currentText();
@@ -809,54 +754,53 @@ void SmithWatermanDialog::saveDialogConfig()
     dialogConfig->resultFilter = comboResultFilter->currentText();
     dialogConfig->minScoreInPercent = spinScorePercent->value();
 
-    dialogConfig->searchType =  (radioSequence->isChecked()) ?
-                                (SmithWatermanSearchType_inSequence):
-                                (SmithWatermanSearchType_inTranslation);
+    dialogConfig->searchType = (radioSequence->isChecked()) ?
+                                   (SmithWatermanSearchType_inSequence) :
+                                   (SmithWatermanSearchType_inTranslation);
 
-    dialogConfig->strand =  (radioDirect->isChecked()) ?
-                            (StrandOption_DirectOnly):
-                            (dialogConfig->strand);
-    dialogConfig->strand =  (radioComplement->isChecked()) ?
-                            (StrandOption_ComplementOnly):
-                            (dialogConfig->strand);
-    dialogConfig->strand =  (radioBoth->isChecked()) ?
-                            (StrandOption_Both):
-                            (dialogConfig->strand);
+    dialogConfig->strand = (radioDirect->isChecked()) ?
+                               (StrandOption_DirectOnly) :
+                               (dialogConfig->strand);
+    dialogConfig->strand = (radioComplement->isChecked()) ?
+                               (StrandOption_ComplementOnly) :
+                               (dialogConfig->strand);
+    dialogConfig->strand = (radioBoth->isChecked()) ?
+                               (StrandOption_Both) :
+                               (dialogConfig->strand);
 
     const qint32 checkResultView = config.getResultViewKeyForString(resultViewVariants->currentText());
     assert(STRING_HAS_NO_KEY_MESSAGE != checkResultView);
     dialogConfig->resultView = static_cast<SmithWatermanSettings::SWResultView>(checkResultView);
 
     const QString alignFilesNames = mObjectNameTmpl->text();
-    if(!alignFilesNames.isEmpty())
+    if (!alignFilesNames.isEmpty())
         dialogConfig->alignFilesNamesTmpl = alignFilesNames;
 
     const QString refSubseqNames = refSubseqNameTmpl->text();
-    if(!refSubseqNames.isEmpty())
+    if (!refSubseqNames.isEmpty())
         dialogConfig->refSubseqNamesTmpl = refSubseqNames;
 
     const QString ptrnSubseqNames = patternSubseqNameTmpl->text();
-    if(!ptrnSubseqNames.isEmpty())
+    if (!ptrnSubseqNames.isEmpty())
         dialogConfig->ptrnSubseqNamesTmpl = ptrnSubseqNames;
 
     const QString patternName = patternSequenceName->text();
-    if(!patternName.isEmpty())
+    if (!patternName.isEmpty())
         dialogConfig->patternSequenceName = patternName;
 
     dialogConfig->enableAdvancedMASettings = advOptions->isChecked();
 
-    if(sender() == bttnRun)
+    if (sender() == bttnRun)
         dialogConfig->countOfLaunchesAlgorithm++;
 
-    dialogConfig->addPatternSubsequenceAsQualifier = addPatternContentQualifier->isChecked( );
+    dialogConfig->addPatternSubsequenceAsQualifier = addPatternContentQualifier->isChecked();
 
     return;
 }
 
-void SmithWatermanDialogController::run(QWidget* p, ADVSequenceObjectContext* ctx, SWDialogConfig* dialogConfig)
-{
+void SmithWatermanDialogController::run(QWidget *p, ADVSequenceObjectContext *ctx, SWDialogConfig *dialogConfig) {
     QObjectScopedPointer<SmithWatermanDialog> smv = new SmithWatermanDialog(p, ctx, dialogConfig);
     smv->exec();
 }
 
-} // namespace
+}    // namespace U2

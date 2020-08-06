@@ -19,11 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-#include <QMainWindow>
-#include <QSplitter>
-#include <QTreeWidget>
-
 #include <drivers/GTKeyboardDriver.h>
 #include <drivers/GTMouseDriver.h>
 #include <primitives/GTTreeWidget.h>
@@ -32,9 +27,14 @@
 #include <utils/GTThread.h>
 #include <utils/GTUtilsApp.h>
 
-#include <U2Core/global.h>
+#include <QApplication>
+#include <QMainWindow>
+#include <QSplitter>
+#include <QTreeWidget>
+
 #include <U2Core/ProjectModel.h>
 #include <U2Core/U2OpStatus.h>
+#include <U2Core/global.h>
 
 #include <U2Gui/MainWindow.h>
 
@@ -47,12 +47,12 @@ using namespace HI;
 #define GT_CLASS_NAME "GTUtilsOptionsPanel"
 
 #define GT_METHOD_NAME "runFindPatternWithHotKey"
-void GTUtilsOptionsPanel::runFindPatternWithHotKey( const QString& pattern, HI::GUITestOpStatus& os){
-    GTKeyboardDriver::keyClick( 'f', Qt::ControlModifier);
+void GTUtilsOptionsPanel::runFindPatternWithHotKey(const QString &pattern, HI::GUITestOpStatus &os) {
+    GTKeyboardDriver::keyClick('f', Qt::ControlModifier);
     GTGlobals::sleep();
 
     QWidget *w = QApplication::focusWidget();
-    GT_CHECK(w && w->objectName()=="textPattern", "Focus is not on FindPattern widget");
+    GT_CHECK(w && w->objectName() == "textPattern", "Focus is not on FindPattern widget");
 
     GTKeyboardDriver::keySequence(pattern);
     GTGlobals::sleep(1000);
@@ -76,4 +76,4 @@ void GTUtilsOptionsPanel::resizeToMaximum(GUITestOpStatus &os) {
 
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

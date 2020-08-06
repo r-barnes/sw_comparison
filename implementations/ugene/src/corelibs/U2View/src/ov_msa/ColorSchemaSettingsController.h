@@ -22,35 +22,36 @@
 #ifndef _U2_COLOR_SCHEMA_SETTINGS_CONTROLLER_H_
 #define _U2_COLOR_SCHEMA_SETTINGS_CONTROLLER_H_
 
-#include <U2Gui/AppSettingsGUI.h>
-
 #include <U2Algorithm/MsaColorScheme.h>
+
+#include <U2Gui/AppSettingsGUI.h>
 
 namespace U2 {
 
 const QString ColorSchemaSettingsPageId = "ColorSchemaSettings";
 
-
 class U2VIEW_EXPORT ColorSchemaSettingsPageController : public AppSettingsGUIPageController {
     Q_OBJECT
 public:
-    ColorSchemaSettingsPageController(MsaColorSchemeRegistry* mcsr, QObject* p = nullptr);
+    ColorSchemaSettingsPageController(MsaColorSchemeRegistry *mcsr, QObject *p = nullptr);
 
-    virtual AppSettingsGUIPageState* getSavedState();
+    virtual AppSettingsGUIPageState *getSavedState();
 
-    virtual void saveState(AppSettingsGUIPageState* s);
+    virtual void saveState(AppSettingsGUIPageState *s);
 
-    virtual AppSettingsGUIPageWidget* createWidget(AppSettingsGUIPageState* data);
+    virtual AppSettingsGUIPageWidget *createWidget(AppSettingsGUIPageState *data);
 
-    const QString& getHelpPageId() const { return helpPageId; };
+    const QString &getHelpPageId() const {
+        return helpPageId;
+    };
 
 signals:
     void si_customSettingsChanged();
+
 private:
     static const QString helpPageId;
 };
 
+}    // namespace U2
 
-} // U2
-
-#endif //_U2_COLOR_SCHEMA_SETTINGS_CONTROLLER_H_
+#endif    //_U2_COLOR_SCHEMA_SETTINGS_CONTROLLER_H_

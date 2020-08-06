@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "PhyTreeObject.h"
+
 #include <U2Core/DatatypeSerializeUtils.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/GHints.h>
@@ -30,18 +32,16 @@
 
 #include "GObjectTypes.h"
 
-#include "PhyTreeObject.h"
-
 namespace U2 {
 
 /////// U2PhyTree Implementation ///////////////////////////////////////////////////////////////////
 
-U2PhyTree::U2PhyTree() : U2RawData() {
-
+U2PhyTree::U2PhyTree()
+    : U2RawData() {
 }
 
-U2PhyTree::U2PhyTree(const U2DbiRef &dbiRef) : U2RawData(dbiRef) {
-
+U2PhyTree::U2PhyTree(const U2DbiRef &dbiRef)
+    : U2RawData(dbiRef) {
 }
 
 U2DataType U2PhyTree::getType() const {
@@ -50,7 +50,7 @@ U2DataType U2PhyTree::getType() const {
 
 /////// PhyTreeObject Implementation ///////////////////////////////////////////////////////////////////
 
-PhyTreeObject * PhyTreeObject::createInstance(const PhyTree &tree, const QString &objectName, const U2DbiRef &dbiRef, U2OpStatus &os, const QVariantMap &hintsMap) {
+PhyTreeObject *PhyTreeObject::createInstance(const PhyTree &tree, const QString &objectName, const U2DbiRef &dbiRef, U2OpStatus &os, const QVariantMap &hintsMap) {
     U2PhyTree object(dbiRef);
     object.visualName = objectName;
     object.serializer = NewickPhyTreeSerializer::ID;
@@ -94,14 +94,12 @@ void PhyTreeObject::loadDataCore(U2OpStatus &os) {
 }
 
 PhyTreeObject::PhyTreeObject(const QString &objectName, const U2EntityRef &treeRef, const QVariantMap &hintsMap)
-: GObject(GObjectTypes::PHYLOGENETIC_TREE, objectName, hintsMap)
-{
+    : GObject(GObjectTypes::PHYLOGENETIC_TREE, objectName, hintsMap) {
     entityRef = treeRef;
 }
 
 PhyTreeObject::PhyTreeObject(const PhyTree &tree, const QString &objectName, const U2EntityRef &treeRef, const QVariantMap &hintsMap)
-: GObject(GObjectTypes::PHYLOGENETIC_TREE, objectName, hintsMap), tree(tree)
-{
+    : GObject(GObjectTypes::PHYLOGENETIC_TREE, objectName, hintsMap), tree(tree) {
     entityRef = treeRef;
     dataLoaded = true;
 }
@@ -111,12 +109,12 @@ void PhyTreeObject::onTreeChanged() {
     setModified(true);
 }
 
-const PhyTree& PhyTreeObject::getTree() const {
+const PhyTree &PhyTreeObject::getTree() const {
     ensureDataLoaded();
     return tree;
 }
 
-GObject* PhyTreeObject::clone(const U2DbiRef &dstDbiRef, U2OpStatus &os, const QVariantMap &hints) const {
+GObject *PhyTreeObject::clone(const U2DbiRef &dstDbiRef, U2OpStatus &os, const QVariantMap &hints) const {
     DbiOperationsBlock opBlock(dstDbiRef, os);
     Q_UNUSED(opBlock);
     CHECK_OP(os, NULL);
@@ -126,39 +124,37 @@ GObject* PhyTreeObject::clone(const U2DbiRef &dstDbiRef, U2OpStatus &os, const Q
     GHintsDefaultImpl gHints(getGHintsMap());
     gHints.setAll(hints);
 
-    PhyTreeObject* cln = createInstance(tree, getGObjectName(), dstDbiRef, os, gHints.getMap());
+    PhyTreeObject *cln = createInstance(tree, getGObjectName(), dstDbiRef, os, gHints.getMap());
     CHECK_OP(os, NULL);
     cln->setIndexInfo(getIndexInfo());
     return cln;
 }
 
-void PhyTreeObject::setTree(const PhyTree& _tree) {
+void PhyTreeObject::setTree(const PhyTree &_tree) {
     tree = _tree;
     onTreeChanged();
     emit si_phyTreeChanged();
 }
 
-void PhyTreeObject::rerootPhyTree(PhyNode* node) {
+void PhyTreeObject::rerootPhyTree(PhyNode *node) {
     ensureDataLoaded();
     PhyTreeUtils::rerootPhyTree(tree, node);
     onTreeChanged();
     emit si_phyTreeChanged();
 }
 
-bool PhyTreeObject::treesAreAlike( const PhyTree& tree1, const PhyTree& tree2 )
-{
-
-    QList<const PhyNode*> track1 =  tree1->collectNodes();
-    QList<const PhyNode*> track2 =  tree2->collectNodes();
+bool PhyTreeObject::treesAreAlike(const PhyTree &tree1, const PhyTree &tree2) {
+    QList<const PhyNode *> track1 = tree1->collectNodes();
+    QList<const PhyNode *> track2 = tree2->collectNodes();
     if (track1.count() != track2.count()) {
         return false;
     }
 
-    foreach (const PhyNode* n1, track1) {
+    foreach (const PhyNode *n1, track1) {
         if (n1->getName().isEmpty()) {
             continue;
         }
-        foreach (const PhyNode* n2, track2) {
+        foreach (const PhyNode *n2, track2) {
             if (n2->getName() != n1->getName()) {
                 continue;
             }
@@ -166,8 +162,6 @@ bool PhyTreeObject::treesAreAlike( const PhyTree& tree1, const PhyTree& tree2 )
                 return false;
             }
         }
-
-
     }
 
     return true;
@@ -177,10 +171,10 @@ bool PhyTreeObject::haveNodeLabels() const {
     return tree->usingNodeLabels();
 }
 
-const PhyNode* PhyTreeObject::findPhyNodeByName( const QString& name ) {
+const PhyNode *PhyTreeObject::findPhyNodeByName(const QString &name) {
     ensureDataLoaded();
-    QList<const PhyNode*> nodes = tree.constData()->collectNodes();
-    foreach (const PhyNode* node, nodes) {
+    QList<const PhyNode *> nodes = tree.constData()->collectNodes();
+    foreach (const PhyNode *node, nodes) {
         if (node->getName() == name) {
             return node;
         }
@@ -188,6 +182,4 @@ const PhyNode* PhyTreeObject::findPhyNodeByName( const QString& name ) {
     return NULL;
 }
 
-}//namespace
-
-
+}    // namespace U2

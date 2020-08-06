@@ -22,42 +22,37 @@
 #ifndef _U2_CUFFLINKS_SETTINGS_H_
 #define _U2_CUFFLINKS_SETTINGS_H_
 
-#include "../RnaSeqCommon.h"
-
 #include <U2Core/AnnotationData.h>
 
 #include <U2Lang/DbiDataHandler.h>
 #include <U2Lang/DbiDataStorage.h>
 
+#include "../RnaSeqCommon.h"
 
 namespace U2 {
 
-
-class CufflinksSettings
-{
+class CufflinksSettings {
 public:
     CufflinksSettings();
 
     // Workflow element parameters
-    QString             referenceAnnotation;
-    QString             rabtAnnotation;
-    RnaSeqLibraryType   libraryType;
-    QString             maskFile;
-    bool                multiReadCorrect;
-    double              minIsoformFraction;
-    QString             fragBiasCorrect;
-    double              preMrnaFraction;
-    QString             outDir;
+    QString referenceAnnotation;
+    QString rabtAnnotation;
+    RnaSeqLibraryType libraryType;
+    QString maskFile;
+    bool multiReadCorrect;
+    double minIsoformFraction;
+    QString fragBiasCorrect;
+    double preMrnaFraction;
+    QString outDir;
 
     // Input assembly
-    Workflow::DbiDataStorage*           storage;
-    bool                                fromFile;
-    QString                             url;
-    Workflow::SharedDbiDataHandler      assemblyId;
-
+    Workflow::DbiDataStorage *storage;
+    bool fromFile;
+    QString url;
+    Workflow::SharedDbiDataHandler assemblyId;
 };
 
-
-} // namespace
+}    // namespace U2
 
 #endif

@@ -22,16 +22,21 @@
 #ifndef _U2_GUI_TEST_LAUNCHER_H_
 #define _U2_GUI_TEST_LAUNCHER_H_
 
-#include <U2Core/global.h>
-#include <U2Core/Task.h>
-#include <U2Core/MultiTask.h>
-#include <U2Gui/MainWindow.h>
-#include <QProcessEnvironment>
 #include <core/GUITest.h>
+
+#include <QProcessEnvironment>
+
+#include <U2Core/MultiTask.h>
+#include <U2Core/Task.h>
+#include <U2Core/global.h>
+
+#include <U2Gui/MainWindow.h>
 
 namespace U2 {
 
-class GUITestLauncher: public Task {
+class U2OpStatus;
+
+class GUITestLauncher : public Task {
     Q_OBJECT
 public:
     GUITestLauncher(int _suiteNumber, bool _noIgnored = false, QString _iniFileTemplate = "");
@@ -50,14 +55,22 @@ private:
     QString iniFileTemplate;
 
     static QStringList getTestProcessArguments(const QString &testName);
-    QProcessEnvironment getProcessEnvironment(QString testName);
+    /**
+     * Prepares ini file, logs dir and process environment for a single test run.
+     * Returns system environment for the test process.
+     */
+    QProcessEnvironment prepareTestRunEnvironment(const QString &testName, int testRunIteration);
     static QString testOutFile(const QString &testName);
     static QString getTestOutDir();
 
-    void firstTestRunCheck(const QString& testName);
-    QString performTest(const QString& testName);
-    static QString readTestResult(const QByteArray& output);
-    bool renameTestLog(const QString& testName);
+    void firstTestRunCheck(const QString &testName);
+
+    QString runTest(const QString &testName);
+
+    QString runTestOnce(U2OpStatus &os, const QString &testName, int iteration, bool enableVideoRecording);
+
+    static QString readTestResult(const QByteArray &output);
+    bool renameTestLog(const QString &testName);
 
     bool initGUITestBase();
     void updateProgress(int finishedCount);
@@ -66,7 +79,6 @@ private:
     QString getVideoPath(const QString &testName);
 };
 
-
-} // namespace
+}    // namespace U2
 
 #endif

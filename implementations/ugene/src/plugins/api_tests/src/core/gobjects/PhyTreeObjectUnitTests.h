@@ -22,9 +22,9 @@
 #ifndef _U2_PHY_TREE_OBJECT_UNIT_TESTS_H_
 #define _U2_PHY_TREE_OBJECT_UNIT_TESTS_H_
 
-#include "core/dbi/DbiTest.h"
-
 #include <unittest.h>
+
+#include "core/dbi/DbiTest.h"
 
 namespace U2 {
 
@@ -36,8 +36,8 @@ public:
     static void shutdown();
     static U2DbiRef getDbiRef();
     static U2EntityRef getObjRef();
-    static U2ObjectDbi * getObjDbi();
-    static UdrDbi * getUdrDbi();
+    static U2ObjectDbi *getObjDbi();
+    static UdrDbi *getUdrDbi();
 
 private:
     static TestDbiProvider dbiProvider;
@@ -69,7 +69,7 @@ DECLARE_TEST(PhyTreeObjectUnitTests, clone_NullObj);
 /* remove */
 DECLARE_TEST(PhyTreeObjectUnitTests, remove);
 
-} // U2
+}    // namespace U2
 
 DECLARE_METATYPE(PhyTreeObjectUnitTests, createInstance);
 DECLARE_METATYPE(PhyTreeObjectUnitTests, createInstance_WrongDbi);
@@ -81,4 +81,4 @@ DECLARE_METATYPE(PhyTreeObjectUnitTests, clone_NullDbi);
 DECLARE_METATYPE(PhyTreeObjectUnitTests, clone_NullObj);
 DECLARE_METATYPE(PhyTreeObjectUnitTests, remove);
 
-#endif // _U2_PHY_TREE_OBJECT_UNIT_TESTS_H_
+#endif    // _U2_PHY_TREE_OBJECT_UNIT_TESTS_H_

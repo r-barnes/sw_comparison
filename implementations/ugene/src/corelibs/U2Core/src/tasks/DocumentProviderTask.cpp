@@ -19,28 +19,27 @@
  * MA 02110-1301, USA.
  */
 
+#include "DocumentProviderTask.h"
+
 #include <QCoreApplication>
 
 #include <U2Core/DocumentModel.h>
 
-#include "DocumentProviderTask.h"
-
 namespace U2 {
 
-DocumentProviderTask::DocumentProviderTask(const QString& name, TaskFlags flags)
-: Task(name, flags), resultDocument(NULL), docOwner(true)
-{
+DocumentProviderTask::DocumentProviderTask(const QString &name, TaskFlags flags)
+    : Task(name, flags), resultDocument(NULL), docOwner(true) {
     documentDescription = tr("[unknown]");
 }
 
-void DocumentProviderTask::cleanup(){
+void DocumentProviderTask::cleanup() {
     if (docOwner) {
         delete resultDocument;
     }
     resultDocument = NULL;
 }
 
-Document* DocumentProviderTask::getDocument(bool mainThread)  {
+Document *DocumentProviderTask::getDocument(bool mainThread) {
     if (resultDocument != NULL && mainThread) {
         if (resultDocument->thread() != QCoreApplication::instance()->thread()) {
             resultDocument->moveToThread(QCoreApplication::instance()->thread());
@@ -49,10 +48,9 @@ Document* DocumentProviderTask::getDocument(bool mainThread)  {
     return resultDocument;
 }
 
-Document* DocumentProviderTask::takeDocument(bool mainThread) {
+Document *DocumentProviderTask::takeDocument(bool mainThread) {
     docOwner = false;
     return getDocument(mainThread);
 }
 
-} //namespace
-
+}    // namespace U2

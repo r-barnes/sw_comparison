@@ -33,8 +33,7 @@ namespace U2 {
 
 SearchBox::SearchBox(QWidget *p)
     : QLineEdit(p), firstShow(true), progressLabel(new QLabel(this)), progressMovie(new QMovie(":/core/images/progress.gif", QByteArray(), progressLabel)),
-    searchIconLabel(new QLabel(this)), clearButton(new QToolButton(this))
-{
+      searchIconLabel(new QLabel(this)), clearButton(new QToolButton(this)) {
     setObjectName("nameFilterEdit");
 
     progressLabel->setStyleSheet(LABEL_STYLE_SHEET);
@@ -109,9 +108,9 @@ void SearchBox::updateInternalControlsPosition() {
     const QRect widgetRect = rect();
 
     progressLabel->move(widgetRect.right() - 2 * frameWidth - progressLabelSize.width(),
-        (widgetRect.bottom() - progressLabelSize.height() + 1) / 2);
+                        (widgetRect.bottom() - progressLabelSize.height() + 1) / 2);
     clearButton->move(widgetRect.right() - (progressLabel->isVisible() ? progressLabelSize.width() + 2 * frameWidth : 0) - clearButtonSize.width(),
-        (widgetRect.bottom() - clearButtonSize.height() + 1) / 2);
+                      (widgetRect.bottom() - clearButtonSize.height() + 1) / 2);
     searchIconLabel->move(widgetRect.left() + 2 * frameWidth, (widgetRect.bottom() - iconLabelSize.height() + 1) / 2);
 }
 
@@ -120,4 +119,4 @@ void SearchBox::resizeEvent(QResizeEvent *event) {
     QLineEdit::resizeEvent(event);
 }
 
-} // namespace U2
+}    // namespace U2

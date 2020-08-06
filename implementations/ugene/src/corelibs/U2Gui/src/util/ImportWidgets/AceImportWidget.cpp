@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "AceImportWidget.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/ProjectModel.h>
@@ -27,13 +29,12 @@
 
 #include <U2Gui/SaveDocumentController.h>
 
-#include "AceImportWidget.h"
-
 namespace U2 {
 
 const QString AceImportWidget::EXTENSION = ".ugenedb";
 
-AceImportWidget::AceImportWidget(const GUrl& url) : ImportWidget() {
+AceImportWidget::AceImportWidget(const GUrl &url)
+    : ImportWidget() {
     setupUi(this);
 
     initSaveController(url);
@@ -47,7 +48,7 @@ QVariantMap AceImportWidget::getSettings() const {
     return settings;
 }
 
-void AceImportWidget::initSaveController(const GUrl& url) {
+void AceImportWidget::initSaveController(const GUrl &url) {
     SaveDocumentControllerConfig config;
 
     config.defaultFileName = url.getURLString() + EXTENSION;
@@ -62,4 +63,4 @@ void AceImportWidget::initSaveController(const GUrl& url) {
     saveController = new SaveDocumentController(config, formats, this);
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -69,6 +69,6 @@ private:
     qint64 currentLineNumber;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_PEAK2GENE_FORMAT_H_
+#endif    // _U2_PEAK2GENE_FORMAT_H_

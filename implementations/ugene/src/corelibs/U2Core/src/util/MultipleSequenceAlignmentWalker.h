@@ -40,9 +40,9 @@ public:
 private:
     const MultipleSequenceAlignment &msa;
     int currentOffset;
-    QList<RowWalker*> rowWalkerList;
+    QList<RowWalker *> rowWalkerList;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_MULTIPLE_SEQUENCE_ALIGNMENT_WALKER_H_
+#endif    // _U2_MULTIPLE_SEQUENCE_ALIGNMENT_WALKER_H_

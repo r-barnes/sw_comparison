@@ -43,7 +43,7 @@ public:
 
     virtual QHash<QString, QString> getDbiMetaInfo(U2OpStatus &);
 
-    virtual U2DataType getEntityTypeById(const U2DataId& id) const;
+    virtual U2DataType getEntityTypeById(const U2DataId &id) const;
 
     virtual U2ObjectDbi *getObjectDbi();
 
@@ -73,13 +73,15 @@ public:
 
     virtual U2Dbi *createDbi();
 
-    virtual U2DbiFactoryId getId()const;
+    virtual U2DbiFactoryId getId() const;
 
     virtual FormatCheckResult isValidDbi(const QHash<QString, QString> &properties, const QByteArray &rawData, U2OpStatus &os) const;
 
-    virtual GUrl id2Url(const U2DbiId& id) const {return GUrl(id, GUrl_File);}
+    virtual GUrl id2Url(const U2DbiId &id) const {
+        return GUrl(id, GUrl_File);
+    }
 
-    virtual bool isDbiExists(const U2DbiId& id) const;
+    virtual bool isDbiExists(const U2DbiId &id) const;
 
 public:
     static const QString ID;
@@ -99,7 +101,7 @@ public:
 
     virtual QList<U2DataId> getObjects(U2DataType type, qint64 offset, qint64 count, U2OpStatus &os);
 
-    virtual QList<U2DataId> getParents(const U2DataId& entityId, U2OpStatus &os);
+    virtual QList<U2DataId> getParents(const U2DataId &entityId, U2OpStatus &os);
 
     virtual QStringList getFolders(U2OpStatus &os);
 
@@ -107,23 +109,23 @@ public:
 
     virtual QList<U2DataId> getObjects(const QString &folder, qint64 offset, qint64 count, U2OpStatus &os);
 
-    virtual QStringList getObjectFolders(const U2DataId& objectId, U2OpStatus &os);
+    virtual QStringList getObjectFolders(const U2DataId &objectId, U2OpStatus &os);
 
-    virtual qint64 getObjectVersion(const U2DataId& objectId, U2OpStatus &os);
+    virtual qint64 getObjectVersion(const U2DataId &objectId, U2OpStatus &os);
 
     virtual qint64 getFolderLocalVersion(const QString &folder, U2OpStatus &os);
 
     virtual qint64 getFolderGlobalVersion(const QString &folder, U2OpStatus &os);
 
-    virtual U2DbiIterator<U2DataId>* getObjectsByVisualName(const QString& visualName, U2DataType type, U2OpStatus& os);
+    virtual U2DbiIterator<U2DataId> *getObjectsByVisualName(const QString &visualName, U2DataType type, U2OpStatus &os);
 
     virtual void renameObject(const U2DataId &id, const QString &newName, U2OpStatus &os);
 
     virtual void setObjectRank(const U2DataId &objectId, U2DbiObjectRank newRank, U2OpStatus &os);
 
-    virtual U2DbiObjectRank getObjectRank(const U2DataId &objectId, U2OpStatus& os);
+    virtual U2DbiObjectRank getObjectRank(const U2DataId &objectId, U2OpStatus &os);
 
-    virtual void setParent(const U2DataId& parentId, const U2DataId& childId, U2OpStatus& os);
+    virtual void setParent(const U2DataId &parentId, const U2DataId &childId, U2OpStatus &os);
 
 private:
     Dbi &dbi;
@@ -135,28 +137,27 @@ class AssemblyDbi : public U2SimpleAssemblyDbi {
 public:
     AssemblyDbi(Dbi &dbi, BamReader &reader, DbRef &dbRef, QList<qint64> maxReadLengths);
 
-    virtual U2Assembly getAssemblyObject(const U2DataId& id, U2OpStatus &os);
+    virtual U2Assembly getAssemblyObject(const U2DataId &id, U2OpStatus &os);
 
-    virtual qint64 countReads(const U2DataId& assemblyId, const U2Region &r, U2OpStatus &os);
+    virtual qint64 countReads(const U2DataId &assemblyId, const U2Region &r, U2OpStatus &os);
 
-    virtual U2DbiIterator<U2AssemblyRead>* getReads(const U2DataId& assemblyId, const U2Region& r, U2OpStatus& os, bool sortedHint = false);
+    virtual U2DbiIterator<U2AssemblyRead> *getReads(const U2DataId &assemblyId, const U2Region &r, U2OpStatus &os, bool sortedHint = false);
 
-    virtual U2DbiIterator<U2AssemblyRead>* getReadsByRow(const U2DataId& assemblyId, const U2Region& r, qint64 minRow, qint64 maxRow, U2OpStatus& os);
+    virtual U2DbiIterator<U2AssemblyRead> *getReadsByRow(const U2DataId &assemblyId, const U2Region &r, qint64 minRow, qint64 maxRow, U2OpStatus &os);
 
-    virtual U2DbiIterator<U2AssemblyRead>* getReadsByName(const U2DataId& assemblyId, const QByteArray& name, U2OpStatus& os);
+    virtual U2DbiIterator<U2AssemblyRead> *getReadsByName(const U2DataId &assemblyId, const QByteArray &name, U2OpStatus &os);
 
-    virtual qint64 getMaxPackedRow(const U2DataId& assemblyId, const U2Region &r, U2OpStatus &os);
+    virtual qint64 getMaxPackedRow(const U2DataId &assemblyId, const U2Region &r, U2OpStatus &os);
 
-    virtual qint64 getMaxEndPos(const U2DataId& assemblyId, U2OpStatus &os);
+    virtual qint64 getMaxEndPos(const U2DataId &assemblyId, U2OpStatus &os);
 
     static U2AssemblyRead alignmentToRead(const Alignment &alignment);
 
-    U2AssemblyRead getReadById(const U2DataId& rowId, U2OpStatus &os);
-
+    U2AssemblyRead getReadById(const U2DataId &rowId, U2OpStatus &os);
 
 private:
-    qint64 getMaxReadLength(const U2DataId& assemblyId, const U2Region &r);
-    U2AssemblyRead getReadById(const U2DataId& rowId, qint64 packedRow, U2OpStatus &os);
+    qint64 getMaxReadLength(const U2DataId &assemblyId, const U2Region &r);
+    U2AssemblyRead getReadById(const U2DataId &rowId, qint64 packedRow, U2OpStatus &os);
     QList<U2AssemblyRead> getReadsByIds(QList<U2DataId> rowIds, QList<qint64> packedRows, U2OpStatus &os);
 
     Dbi &dbi;
@@ -165,7 +166,7 @@ private:
     QList<qint64> maxReadLengths;
 };
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2
 
-#endif // _U2_BAM_DBI_H_
+#endif    // _U2_BAM_DBI_H_

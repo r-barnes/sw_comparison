@@ -22,22 +22,20 @@
 #ifndef _U2_EDIT_SEQUENCE_TESTS_H_
 #define _U2_EDIT_SEQUENCE_TESTS_H_
 
-#include <U2Core/global.h>
-#include <U2Core/U2Region.h>
-#include <U2Core/GObject.h>
-
-#include <U2Core/DNASequenceObject.h>
-
-#include <U2Test/XMLTestUtils.h>
-
 #include <QDomElement>
 
+#include <U2Core/DNASequenceObject.h>
+#include <U2Core/GObject.h>
 #include <U2Core/ModifySequenceObjectTask.h>
+#include <U2Core/U2Region.h>
+#include <U2Core/global.h>
+
+#include <U2Test/XMLTestUtils.h>
 
 namespace U2 {
 
 class GTest_RemovePartFromSequenceTask : public XmlTest {
-Q_OBJECT
+    Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_RemovePartFromSequenceTask, "Remove_Part_From_Sequence_Task", TaskFlags_NR_FOSCOE);
 
@@ -45,36 +43,38 @@ public:
 
     void prepare();
     Task::ReportResult report();
+
 private:
     U1AnnotationUtils::AnnotationStrategyForResize strat;
-    QString             docName;
-    QString             seqName;
-    int                 startPos;
-    int                 length;
-    QString             annotationName;
-    QString             expectedSequence;
-    QVector<U2Region>      expectedRegions;
-    U2SequenceObject*  dnaso;
+    QString docName;
+    QString seqName;
+    int startPos;
+    int length;
+    QString annotationName;
+    QString expectedSequence;
+    QVector<U2Region> expectedRegions;
+    U2SequenceObject *dnaso;
 };
 
 class GTest_AddPartToSequenceTask : public XmlTest {
-Q_OBJECT
+    Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_AddPartToSequenceTask, "Add_Part_To_Sequence_Task", TaskFlags_NR_FOSCOE);
 
     ~GTest_AddPartToSequenceTask();
     void prepare();
     Task::ReportResult report();
+
 private:
     U1AnnotationUtils::AnnotationStrategyForResize strat;
-    QString             docName;
-    QString             seqName;
-    int                 startPos;
-    QString             insertedSequence;
-    QString             annotationName;
-    QString             expectedSequence;
-    QVector<U2Region>   expectedRegions;
-    U2SequenceObject *  dnaso;
+    QString docName;
+    QString seqName;
+    int startPos;
+    QString insertedSequence;
+    QString annotationName;
+    QString expectedSequence;
+    QVector<U2Region> expectedRegions;
+    U2SequenceObject *dnaso;
 };
 
 class GTest_ReplacePartOfSequenceTask : public XmlTest {
@@ -85,24 +85,23 @@ public:
     ~GTest_ReplacePartOfSequenceTask() {};
     void prepare();
     Task::ReportResult report();
+
 private:
     U1AnnotationUtils::AnnotationStrategyForResize strat;
-    QString             docName;
-    QString             seqName;
-    int                 startPos;
-    int                 length;
-    QString             insertedSequence;
-    QString             annotationName;
-    QString             expectedSequence;
-    QVector<U2Region>   expectedRegions;
-    U2SequenceObject *  dnaso;
+    QString docName;
+    QString seqName;
+    int startPos;
+    int length;
+    QString insertedSequence;
+    QString annotationName;
+    QString expectedSequence;
+    QVector<U2Region> expectedRegions;
+    U2SequenceObject *dnaso;
 };
-
 
 class EditSequenceTests {
 public:
-    static QList< XMLTestFactory* > createTestFactories();
-
+    static QList<XMLTestFactory *> createTestFactories();
 };
-}//ns
+}    // namespace U2
 #endif

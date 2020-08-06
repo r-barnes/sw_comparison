@@ -24,7 +24,6 @@
 
 #include "ui_QueryEditorWidget.h"
 
-
 namespace U2 {
 
 class Descriptor;
@@ -38,14 +37,15 @@ class QDActorPrototype;
 
 class QueryEditor : public QWidget, public Ui_QueryEditorWidget {
     Q_OBJECT
-friend class ProcessNameValidator;
+    friend class ProcessNameValidator;
+
 public:
-    QueryEditor(QWidget* parent=0);
-    void showProto(QDActorPrototype* proto);
-    void edit(QDConstraint* constraint);
-    void edit(QDActor* a);
+    QueryEditor(QWidget *parent = 0);
+    void showProto(QDActorPrototype *proto);
+    void edit(QDConstraint *constraint);
+    void edit(QDActor *a);
     void reset();
-    void setCurrentAttribute(const QString& id);
+    void setCurrentAttribute(const QString &id);
 private slots:
     void sl_showPropDoc();
     void sl_setLabel();
@@ -53,13 +53,14 @@ private slots:
     void sl_setDirection(int);
 signals:
     void modified();
-private:
-    void setDescriptor(const Descriptor* d, const QString& hint = QString());
 
-    QueryProcCfgModel* cfgModel;
-    QDActor* current;
+private:
+    void setDescriptor(const Descriptor *d, const QString &hint = QString());
+
+    QueryProcCfgModel *cfgModel;
+    QDActor *current;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

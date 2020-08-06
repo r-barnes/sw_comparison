@@ -264,6 +264,8 @@ HEADERS +=  src/GUITestBasePlugin.h \
             src/api/GTRegionSelector.h \
             src/api/GTSequenceReadingModeDialog.h \
             src/api/GTSequenceReadingModeDialogUtils.h \
+            src/api/GTUtils.h \
+            src/base_dialogs/GTFileDialog.h \
             src/test_runner/GUITestRunner.h
 
 SOURCES +=  src/GUITestBasePlugin.cpp \
@@ -529,6 +531,8 @@ SOURCES +=  src/GUITestBasePlugin.cpp \
             src/api/GTRegionSelector.cpp \
             src/api/GTSequenceReadingModeDialog.cpp \
             src/api/GTSequenceReadingModeDialogUtils.cpp \
+            src/api/GTUtils.cpp \
+            src/base_dialogs/GTFileDialog.cpp \
             src/test_runner/GUITestRunner.cpp
 
 FORMS += \

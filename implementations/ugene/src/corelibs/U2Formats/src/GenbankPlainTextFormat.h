@@ -31,31 +31,31 @@ namespace U2 {
 class U2FORMATS_EXPORT GenbankPlainTextFormat : public EMBLGenbankAbstractDocument {
     Q_OBJECT
 public:
-    GenbankPlainTextFormat(QObject* p);
+    GenbankPlainTextFormat(QObject *p);
 
-    virtual void storeDocument(Document* doc, IOAdapter* io, U2OpStatus& os);
+    virtual void storeDocument(Document *doc, IOAdapter *io, U2OpStatus &os);
 
     virtual bool isStreamingSupport();
 
-    virtual void storeEntry(IOAdapter *io, const QMap< GObjectType, QList<GObject*> > &objectsMap, U2OpStatus &os);
+    virtual void storeEntry(IOAdapter *io, const QMap<GObjectType, QList<GObject *>> &objectsMap, U2OpStatus &os);
 
-    static bool checkCircularity(const GUrl& filePath, U2OpStatus& os);
+    static bool checkCircularity(const GUrl &filePath, U2OpStatus &os);
 
 protected:
-    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& = GUrl()) const;
+    virtual FormatCheckResult checkRawTextData(const QByteArray &rawData, const GUrl & = GUrl()) const;
 
     typedef QPair<QString, QString> StrPair;
 
-    static bool readIdLine(ParserState*);
-    bool readEntry(ParserState*, U2SequenceImporter&,int& seqSize,int& fullSeqSize,bool merge, int gapSize,U2OpStatus&);
-    void readHeaderAttributes(QVariantMap& tags, DbiConnection& con, U2SequenceObject* so);
+    static bool readIdLine(ParserState *);
+    bool readEntry(ParserState *, U2SequenceImporter &, int &seqSize, int &fullSeqSize, bool merge, int gapSize, U2OpStatus &);
+    void readHeaderAttributes(QVariantMap &tags, DbiConnection &con, U2SequenceObject *so);
 
-    void writeAnnotations(IOAdapter *io, const QList<GObject*> &aos, U2OpStatus &si);
-    QString genLocusString(const QList<GObject*> &aos, U2SequenceObject* so, const QString &locusStrFromAttr);
-    bool writeKeyword(IOAdapter* io, U2OpStatus& os, const QString& key, const QString& value, bool wrap = true /*TODO*/);
-    void writeSequence(IOAdapter* io, U2SequenceObject* ao, const QList<U2Region> &lowerCaseRegs, U2OpStatus& si);
-    void prepareMultiline(QString& line, int spacesOnLineStart, bool lineBreakOnlyOnSpace = true, bool newLineAtTheEnd = true, int maxLineLen = 79);
-    void writeQualifier(const QString& name, const QString& val, IOAdapter* io, U2OpStatus& si, const char* spaceLine);
+    void writeAnnotations(IOAdapter *io, const QList<GObject *> &aos, U2OpStatus &si);
+    QString genLocusString(const QList<GObject *> &aos, U2SequenceObject *so, const QString &locusStrFromAttr);
+    bool writeKeyword(IOAdapter *io, U2OpStatus &os, const QString &key, const QString &value, bool wrap = true /*TODO*/);
+    void writeSequence(IOAdapter *io, U2SequenceObject *ao, const QList<U2Region> &lowerCaseRegs, U2OpStatus &si);
+    void prepareMultiline(QString &line, int spacesOnLineStart, bool lineBreakOnlyOnSpace = true, bool newLineAtTheEnd = true, int maxLineLen = 79);
+    void writeQualifier(const QString &name, const QString &val, IOAdapter *io, U2OpStatus &si, const char *spaceLine);
     QString prepareQualifierSingleString(const QString &qualifierName, const QString &qualifierValue) const;
     QList<StrPair> formatKeywords(const QVariantMap &varMap, bool withLocus = false);
     virtual QList<StrPair> processCommentKeys(QMultiMap<QString, QVariant> &tags);
@@ -68,11 +68,10 @@ protected:
 
     static const int VAL_OFF = 12;
 
-    static const QMap<U2FeatureType, GBFeatureKey> additionalFeatureTypes;  // some feature types might be converted to the GBFeatureKey
+    static const QMap<U2FeatureType, GBFeatureKey> additionalFeatureTypes;    // some feature types might be converted to the GBFeatureKey
     static QMap<U2FeatureType, GBFeatureKey> initAdditionalFeatureTypes();
 };
 
-
-}//namespace
+}    // namespace U2
 
 #endif

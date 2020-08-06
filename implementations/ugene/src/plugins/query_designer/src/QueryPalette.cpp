@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "QueryPalette.h"
+
 #include <QAction>
 #include <QApplication>
 #include <QDrag>
@@ -27,9 +29,8 @@
 #include <QMouseEvent>
 
 #include <U2Core/AppContext.h>
-#include <U2Lang/QueryDesignerRegistry.h>
 
-#include "QueryPalette.h"
+#include <U2Lang/QueryDesignerRegistry.h>
 
 namespace U2 {
 
@@ -38,10 +39,11 @@ const QString QDDistanceIds::S2E(QObject::tr("Start-End"));
 const QString QDDistanceIds::E2E(QObject::tr("End-End"));
 const QString QDDistanceIds::S2S(QObject::tr("Start-Start"));
 
-class PaletteDelegate: public QItemDelegate
-{
+class PaletteDelegate : public QItemDelegate {
 public:
-    PaletteDelegate(QueryPalette *view) : QItemDelegate(view), m_view(view) {}
+    PaletteDelegate(QueryPalette *view)
+        : QItemDelegate(view), m_view(view) {
+    }
 
     virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const {
         const QAbstractItemModel *model = index.model();
@@ -63,9 +65,9 @@ public:
             m_view->style()->drawControl(QStyle::CE_PushButton, &buttonOption, painter, m_view);
 
             QStyleOptionViewItem branchOption;
-            static const int i = 9; // ### hardcoded in qcommonstyle.cpp
+            static const int i = 9;    // ### hardcoded in qcommonstyle.cpp
             QRect r = option.rect;
-            branchOption.rect = QRect(r.left() + i/2, r.top() + (r.height() - i)/2, i, i);
+            branchOption.rect = QRect(r.left() + i / 2, r.top() + (r.height() - i) / 2, i, i);
             branchOption.palette = option.palette;
             branchOption.state = QStyle::State_Children;
 
@@ -75,11 +77,9 @@ public:
             m_view->style()->drawPrimitive(QStyle::PE_IndicatorBranch, &branchOption, painter, m_view);
 
             // draw text
-            QRect textrect = QRect(r.left() + i*2, r.top(), r.width() - ((5*i)/2), r.height());
-            QString text = elidedText(option.fontMetrics, textrect.width(), Qt::ElideMiddle,
-                model->data(index, Qt::DisplayRole).toString());
-            m_view->style()->drawItemText(painter, textrect, Qt::AlignCenter,
-                option.palette, m_view->isEnabled(), text);
+            QRect textrect = QRect(r.left() + i * 2, r.top(), r.width() - ((5 * i) / 2), r.height());
+            QString text = elidedText(option.fontMetrics, textrect.width(), Qt::ElideMiddle, model->data(index, Qt::DisplayRole).toString());
+            m_view->style()->drawItemText(painter, textrect, Qt::AlignCenter, option.palette, m_view->isEnabled(), text);
 
         } else {
             QStyleOptionToolButton buttonOption;
@@ -93,7 +93,7 @@ public:
             buttonOption.subControls = QStyle::SC_ToolButton;
             buttonOption.features = QStyleOptionToolButton::None;
 
-            QAction* action = index.data(Qt::UserRole).value<QAction *>();
+            QAction *action = index.data(Qt::UserRole).value<QAction *>();
             buttonOption.text = action->text();
             buttonOption.icon = action->icon();
             if (!buttonOption.icon.isNull()) {
@@ -127,17 +127,18 @@ public:
 
         QStyleOptionViewItem option = opt;
         bool top = !model->parent(index).isValid();
-        QSize sz = QItemDelegate::sizeHint(opt, index) + QSize(top?2:20, top?2:20);
+        QSize sz = QItemDelegate::sizeHint(opt, index) + QSize(top ? 2 : 20, top ? 2 : 20);
         return sz;
     }
+
 private:
     QueryPalette *m_view;
 };
 
 const QString QueryPalette::MIME_TYPE("application/x-ugene-query-id");
 
-QueryPalette::QueryPalette(QWidget* parent/* =NULL */)
-: QTreeWidget(parent), overItem(NULL), currentAction(NULL) {
+QueryPalette::QueryPalette(QWidget *parent /* =NULL */)
+    : QTreeWidget(parent), overItem(NULL), currentAction(NULL) {
     setFocusPolicy(Qt::NoFocus);
     setSelectionMode(QAbstractItemView::NoSelection);
     setItemDelegate(new PaletteDelegate(this));
@@ -151,35 +152,34 @@ QueryPalette::QueryPalette(QWidget* parent/* =NULL */)
 }
 
 void QueryPalette::setContent() {
-    QTreeWidgetItem* algorithmCategory = new QTreeWidgetItem;
+    QTreeWidgetItem *algorithmCategory = new QTreeWidgetItem;
     algorithmCategory->setText(0, tr("Algorithms"));
     addTopLevelItem(algorithmCategory);
     algorithmCategory->setExpanded(true);
 
-
-    QDActorPrototypeRegistry* qpr = AppContext::getQDActorProtoRegistry();
-    foreach(QDActorPrototype* pf, qpr->getAllEntries()) {
-        QAction* action = createItemAction(pf);
-        QTreeWidgetItem* algMenuItem = new QTreeWidgetItem(/*algorithmCategory*/);
+    QDActorPrototypeRegistry *qpr = AppContext::getQDActorProtoRegistry();
+    foreach (QDActorPrototype *pf, qpr->getAllEntries()) {
+        QAction *action = createItemAction(pf);
+        QTreeWidgetItem *algMenuItem = new QTreeWidgetItem(/*algorithmCategory*/);
         actionMap[action] = algMenuItem;
         algMenuItem->setText(0, action->text());
         algMenuItem->setData(0, Qt::UserRole, qVariantFromValue(action));
         algorithmCategory->addChild(algMenuItem);
     }
 
-    QTreeWidgetItem* constraintCategory = new QTreeWidgetItem;
+    QTreeWidgetItem *constraintCategory = new QTreeWidgetItem;
     constraintCategory->setText(0, tr("Constraints"));
     addTopLevelItem(constraintCategory);
     constraintCategory->setExpanded(true);
 
-    QList<QAction*> constraintItemActions;
+    QList<QAction *> constraintItemActions;
     constraintItemActions << createItemAction(QDDistanceIds::E2S)
-        << createItemAction(QDDistanceIds::S2E)
-        << createItemAction(QDDistanceIds::E2E)
-        << createItemAction(QDDistanceIds::S2S);
+                          << createItemAction(QDDistanceIds::S2E)
+                          << createItemAction(QDDistanceIds::E2E)
+                          << createItemAction(QDDistanceIds::S2S);
 
-    foreach(QAction* a, constraintItemActions) {
-        QTreeWidgetItem* linkMenuItem = new QTreeWidgetItem(constraintCategory);
+    foreach (QAction *a, constraintItemActions) {
+        QTreeWidgetItem *linkMenuItem = new QTreeWidgetItem(constraintCategory);
         actionMap[a] = linkMenuItem;
         linkMenuItem->setText(0, a->text());
         linkMenuItem->setData(0, Qt::UserRole, qVariantFromValue(a));
@@ -187,13 +187,12 @@ void QueryPalette::setContent() {
     }
 }
 
-QAction* QueryPalette::createItemAction(QDActorPrototype* item) {
-    QAction* a = new QAction(item->getDisplayName(), this);
+QAction *QueryPalette::createItemAction(QDActorPrototype *item) {
+    QAction *a = new QAction(item->getDisplayName(), this);
     a->setCheckable(true);
     if (!item->getIcon().isNull()) {
         a->setIcon(item->getIcon());
-    }
-    else {
+    } else {
         QIcon icon(":query_designer/images/green_circle.png");
         a->setIcon(icon);
     }
@@ -203,8 +202,8 @@ QAction* QueryPalette::createItemAction(QDActorPrototype* item) {
     return a;
 }
 
-QAction* QueryPalette::createItemAction(const QString& constraintId) {
-    QAction* a = new QAction(constraintId, this);
+QAction *QueryPalette::createItemAction(const QString &constraintId) {
+    QAction *a = new QAction(constraintId, this);
     a->setCheckable(true);
     QIcon icon(":query_designer/images/green_circle.png");
     a->setIcon(icon);
@@ -215,15 +214,14 @@ QAction* QueryPalette::createItemAction(const QString& constraintId) {
 }
 
 void QueryPalette::sl_selectProcess(bool checked) {
-    if (currentAction && currentAction!=sender()) {
+    if (currentAction && currentAction != sender()) {
         currentAction->setChecked(false);
     }
     if (!checked) {
         update(indexFromItem(actionMap.value(currentAction)));
         currentAction = NULL;
-    }
-    else {
-        currentAction = qobject_cast<QAction*>(sender());
+    } else {
+        currentAction = qobject_cast<QAction *>(sender());
         assert(currentAction);
     }
 
@@ -236,14 +234,15 @@ void QueryPalette::sl_selectProcess(bool checked) {
 
 void QueryPalette::mousePressEvent(QMouseEvent *event) {
     if (event->buttons() & Qt::LeftButton) {
-        QTreeWidgetItem* item = itemAt(event->pos());
-        if (!item) return;
+        QTreeWidgetItem *item = itemAt(event->pos());
+        if (!item)
+            return;
         event->accept();
         if (item->parent() == 0) {
             setItemExpanded(item, !isItemExpanded(item));
             return;
         }
-        QAction* action = item->data(0, Qt::UserRole).value<QAction *>();
+        QAction *action = item->data(0, Qt::UserRole).value<QAction *>();
         if (action) {
             action->toggle();
             dragStartPosition = event->pos();
@@ -255,15 +254,15 @@ void QueryPalette::mousePressEvent(QMouseEvent *event) {
 
 void QueryPalette::mouseMoveEvent(QMouseEvent *event) {
     if (event->buttons() & Qt::LeftButton) {
-        if ((event->pos()-dragStartPosition).manhattanLength()<QApplication::startDragDistance()) {
+        if ((event->pos() - dragStartPosition).manhattanLength() < QApplication::startDragDistance()) {
             return;
         }
         QPointF pos = event->pos();
-        QTreeWidgetItem* item = itemAt(pos.toPoint());
-        if(!item) {
+        QTreeWidgetItem *item = itemAt(pos.toPoint());
+        if (!item) {
             return;
         }
-        QAction* action = item->data(0, Qt::UserRole).value<QAction *>();
+        QAction *action = item->data(0, Qt::UserRole).value<QAction *>();
         if (!action) {
             return;
         }
@@ -274,7 +273,7 @@ void QueryPalette::mouseMoveEvent(QMouseEvent *event) {
             QString str = action->data().toString();
             mimeData->setText(str);
         } else {
-            QDActorPrototype* proto = action->data().value<QDActorPrototype *>();
+            QDActorPrototype *proto = action->data().value<QDActorPrototype *>();
             mimeData->setText(proto->getId());
         }
 
@@ -283,7 +282,7 @@ void QueryPalette::mouseMoveEvent(QMouseEvent *event) {
         return;
     }
 
-    QTreeWidgetItem* prev = overItem;
+    QTreeWidgetItem *prev = overItem;
     overItem = itemAt(event->pos());
     if (prev) {
         update(indexFromItem(prev));
@@ -295,7 +294,7 @@ void QueryPalette::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void QueryPalette::leaveEvent(QEvent *) {
-    QTreeWidgetItem* prev = overItem;
+    QTreeWidgetItem *prev = overItem;
     overItem = NULL;
     if (prev) {
         QModelIndex index = indexFromItem(prev);
@@ -306,15 +305,15 @@ void QueryPalette::leaveEvent(QEvent *) {
 QVariant QueryPalette::saveState() const {
     QVariantList l;
     for (int i = 0, count = topLevelItemCount(); i < count; i++) {
-        QTreeWidgetItem* it = topLevelItem(i);
+        QTreeWidgetItem *it = topLevelItem(i);
         l.append(it->isExpanded());
     }
     return l;
 }
 
-void QueryPalette::restoreState(const QVariant& v) {
-    const QVariantList& l = v.toList();
-    for(int i=0, n=l.size(); i<n; i++) {
+void QueryPalette::restoreState(const QVariant &v) {
+    const QVariantList &l = v.toList();
+    for (int i = 0, n = l.size(); i < n; i++) {
         topLevelItem(i)->setExpanded(l.at(i).toBool());
     }
 }
@@ -326,4 +325,4 @@ void QueryPalette::resetSelection() {
     }
 }
 
-}//namespace
+}    // namespace U2

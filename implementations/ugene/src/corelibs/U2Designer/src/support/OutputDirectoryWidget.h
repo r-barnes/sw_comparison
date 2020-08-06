@@ -22,15 +22,14 @@
 #ifndef _U2_OUTPUTDIRECTORYWIDGET_H_
 #define _U2_OUTPUTDIRECTORYWIDGET_H_
 
-#include <U2Core/global.h>
-
-#include <QWidget>
 #include <QLineEdit>
+#include <QWidget>
+
+#include <U2Core/global.h>
 
 class QLabel;
 class QLineEdit;
 class QToolButton;
-
 
 namespace U2 {
 
@@ -39,7 +38,9 @@ class U2DESIGNER_EXPORT OutputDirectoryWidget : public QWidget {
 public:
     OutputDirectoryWidget(QWidget *parent, bool commitOnHide);
 
-    QString getChoosenDir(){return pathEdit->text();}
+    QString getChoosenDir() {
+        return pathEdit->text();
+    }
     void commit();
 signals:
     void si_browsed();
@@ -57,6 +58,6 @@ private:
     QToolButton *browseButton;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_OUTPUTDIRECTORYWIDGET_H_
+#endif    // _U2_OUTPUTDIRECTORYWIDGET_H_

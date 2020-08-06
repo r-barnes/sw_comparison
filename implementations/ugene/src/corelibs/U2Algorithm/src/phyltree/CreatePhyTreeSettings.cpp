@@ -21,24 +21,23 @@
 
 #include "CreatePhyTreeSettings.h"
 
-namespace U2{
+namespace U2 {
 
-CreatePhyTreeSettings::CreatePhyTreeSettings() :
-    algorithm(""),
-    matrixId(""),
-    displayWithAlignmentEditor(true),
-    syncAlignmentWithTree(true),
-    useGammaDistributionRates(false),
-    alphaFactor(0),
-    ttRatio(0),
-    bootstrap(false),
-    replicates(0),
-    seed(0),
-    fraction(0),
-    consensusID(""),
-    mb_ngen(1),
-    mrBayesSettingsScript("")
-{
+CreatePhyTreeSettings::CreatePhyTreeSettings()
+    : algorithm(""),
+      matrixId(""),
+      displayWithAlignmentEditor(true),
+      syncAlignmentWithTree(true),
+      useGammaDistributionRates(false),
+      alphaFactor(0),
+      ttRatio(0),
+      bootstrap(false),
+      replicates(0),
+      seed(0),
+      fraction(0),
+      consensusID(""),
+      mb_ngen(1),
+      mrBayesSettingsScript("") {
 }
 
-}
+}    // namespace U2

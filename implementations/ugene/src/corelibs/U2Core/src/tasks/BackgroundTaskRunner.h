@@ -24,8 +24,8 @@
 
 #include <QMap>
 
-#include <U2Core/Task.h>
 #include <U2Core/AppContext.h>
+#include <U2Core/Task.h>
 
 namespace U2 {
 
@@ -36,20 +36,23 @@ namespace U2 {
 template<class Result>
 class BackgroundTask : public Task {
 public:
-    inline Result getResult() const {return result;}
+    inline Result getResult() const {
+        return result;
+    }
+
 protected:
-    BackgroundTask(const QString& _name, TaskFlags f) : Task(_name, f){
-        setVerboseOnTaskCancel(false); // do not add messages about the task canceling into the log
+    BackgroundTask(const QString &_name, TaskFlags f)
+        : Task(_name, f) {
+        setVerboseOnTaskCancel(false);    // do not add messages about the task canceling into the log
     }
     Result result;
 };
-
 
 /**
  * Stub containing Q_OBJECT macro, signals&slots. Classes with signal/slot related
  * stuff can't be templates, so everything needed for BackgroundTaskRunner is moved here
  */
-class U2CORE_EXPORT BackgroundTaskRunner_base: public QObject {
+class U2CORE_EXPORT BackgroundTaskRunner_base : public QObject {
     Q_OBJECT
 public:
     virtual ~BackgroundTaskRunner_base();
@@ -69,14 +72,16 @@ private slots:
 template<class Result>
 class BackgroundTaskRunner : public BackgroundTaskRunner_base {
 public:
-    BackgroundTaskRunner() : task(0), success(false) {}
+    BackgroundTaskRunner()
+        : task(0), success(false) {
+    }
 
     virtual ~BackgroundTaskRunner() {
         cancel();
     }
 
-    void run(BackgroundTask<Result> * newTask)  {
-        if(task) {
+    void run(BackgroundTask<Result> *newTask) {
+        if (task) {
             task->cancel();
         }
         task = newTask;
@@ -85,14 +90,14 @@ public:
     }
 
     void cancel() {
-        if(task) {
+        if (task) {
             task->cancel();
             task = NULL;
         }
     }
 
     inline Result getResult() const {
-        if(task) {
+        if (task) {
             return Result();
         }
         return result;
@@ -115,23 +120,23 @@ public:
 
 private:
     virtual void sl_finished() {
-        BackgroundTask<Result> * senderr = dynamic_cast<BackgroundTask<Result>*>(sender());
+        BackgroundTask<Result> *senderr = dynamic_cast<BackgroundTask<Result> *>(sender());
         assert(senderr);
-        if(task != senderr) {
+        if (task != senderr) {
             return;
         }
-        if(Task::State_Finished != senderr->getState()) {
+        if (Task::State_Finished != senderr->getState()) {
             return;
         }
         result = task->getResult();
-        success = ! task->getStateInfo().isCoR();
+        success = !task->getStateInfo().isCoR();
         lastError = task->getError();
         task = NULL;
         emitFinished();
     }
 
 private:
-    BackgroundTask<Result> * task;
+    BackgroundTask<Result> *task;
     Result result;
     bool success;
     QString lastError;
@@ -141,7 +146,6 @@ private:
     BackgroundTaskRunner operator=(const BackgroundTaskRunner &);
 };
 
-
-}
+}    // namespace U2
 
 #endif

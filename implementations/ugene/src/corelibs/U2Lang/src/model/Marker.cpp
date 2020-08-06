@@ -19,13 +19,13 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/QVariantUtils.h>
+#include "Marker.h"
+
 #include <U2Core/DNASequence.h>
+#include <U2Core/QVariantUtils.h>
 
 #include <U2Lang/MarkerUtils.h>
 #include <U2Lang/WorkflowEnv.h>
-
-#include "Marker.h"
 
 static const QString LENGTH_SLOT_ID("length-marker");
 static const QString ANN_COUNT_SLOT_ID("ann-count-marker");
@@ -58,9 +58,9 @@ MarkerDataType MarkerTypes::getDataTypeById(const QString &typeId) {
         return FLOAT;
     } else if (TEXT_MARKER_ID == typeId) {
         return STRING;
-    } else if(SEQ_NAME_MARKER_ID == typeId){
+    } else if (SEQ_NAME_MARKER_ID == typeId) {
         return STRING;
-    }else{
+    } else {
         assert(0);
         return MarkerDataType();
     }
@@ -106,9 +106,9 @@ const Descriptor MarkerSlots::getSlotByMarkerType(const QString &markerId, const
         return Descriptor(slotName, slotName, tr("Qualifier float value marker."));
     } else if (markerId == MarkerTypes::TEXT_MARKER_ID) {
         return Descriptor(slotName, slotName, tr("Text marker."));
-    } else if(markerId == MarkerTypes::SEQ_NAME_MARKER_ID){
+    } else if (markerId == MarkerTypes::SEQ_NAME_MARKER_ID) {
         return Descriptor(slotName, slotName, tr("Sequence name marker."));
-    }else{
+    } else {
         assert(0);
         return Descriptor();
     }
@@ -123,12 +123,9 @@ const QString MarkerPorts::OUT_MARKER_SEQ_PORT() {
 
 Marker *MarkerFactory::createInstanse(const QString &type, const QVariant &additionalParam) {
     Marker *m = NULL;
-    if (type == MarkerTypes::QUAL_INT_VALUE_MARKER_ID
-        || type == MarkerTypes::QUAL_TEXT_VALUE_MARKER_ID
-        || type == MarkerTypes::QUAL_FLOAT_VALUE_MARKER_ID) {
+    if (type == MarkerTypes::QUAL_INT_VALUE_MARKER_ID || type == MarkerTypes::QUAL_TEXT_VALUE_MARKER_ID || type == MarkerTypes::QUAL_FLOAT_VALUE_MARKER_ID) {
         m = new QualifierMarker(type, "NewQualMarker", additionalParam.toString());
-    } else if (MarkerTypes::ANNOTATION_LENGTH_MARKER_ID == type
-        || MarkerTypes::ANNOTATION_COUNT_MARKER_ID == type) {
+    } else if (MarkerTypes::ANNOTATION_LENGTH_MARKER_ID == type || MarkerTypes::ANNOTATION_COUNT_MARKER_ID == type) {
         m = new AnnotationMarker(type, "NewQualMarker", additionalParam.toString());
     } else if (MarkerTypes::TEXT_MARKER_ID == type) {
         m = new TextMarker(type, "NewTextMarker");
@@ -147,16 +144,13 @@ Marker *MarkerFactory::createInstanse(const QString &type, const QVariant &addit
 /* Marker */
 /************************************************************************/
 Marker::Marker(const QString &markerType, const QString &markerName)
-: type(markerType), name(markerName)
-{
+    : type(markerType), name(markerName) {
     dataType = MarkerTypes::getDataTypeById(markerType);
     values.insert(MarkerUtils::REST_OPERATION, tr("Rest"));
 }
 
 Marker::Marker(const Marker &m)
-: QObject(), type(m.type), name(m.name), dataType(m.dataType), values(m.values)
-{
-
+    : QObject(), type(m.type), name(m.name), dataType(m.dataType), values(m.values) {
 }
 
 void Marker::addValue(QString name, QString value) {
@@ -168,7 +162,6 @@ ParameterState Marker::hasAdditionalParameter() {
 }
 
 void Marker::setAdditionalParameter(const QVariant &) {
-
 }
 
 QVariant Marker::getAdditionalParameter() {
@@ -180,7 +173,7 @@ QString Marker::getAdditionalParameterName() {
 }
 
 QString Marker::getMarkingResult(const QVariant &object) {
-    foreach(QString val, values.keys()) {
+    foreach (QString val, values.keys()) {
         if (MarkerUtils::REST_OPERATION == val) {
             continue;
         }
@@ -192,18 +185,18 @@ QString Marker::getMarkingResult(const QVariant &object) {
 
         bool marked = false;
         switch (dataType) {
-            case INTEGER:
-                marked = getMarkerIntResult(object, expr);
-                break;
-            case FLOAT:
-                marked = getMarkerFloatResult(object, expr);
-                break;
-            case BOOLEAN:
-                // marked = getMarkerBooleanResult(object, expr);
-                break;
-            case STRING:
-                marked = getMarkerStringResult(object, expr);
-                break;
+        case INTEGER:
+            marked = getMarkerIntResult(object, expr);
+            break;
+        case FLOAT:
+            marked = getMarkerFloatResult(object, expr);
+            break;
+        case BOOLEAN:
+            // marked = getMarkerBooleanResult(object, expr);
+            break;
+        case STRING:
+            marked = getMarkerStringResult(object, expr);
+            break;
         }
         if (marked) {
             return values.value(val);
@@ -309,8 +302,8 @@ void Marker::setName(const QString &newName) {
 const QString Marker::toString() const {
     QString res;
 
-    foreach(QString key, values.keys()) {
-        res += key+" : "+values.value(key)+"; ";
+    foreach (QString key, values.keys()) {
+        res += key + " : " + values.value(key) + "; ";
     }
     return res;
 }
@@ -323,9 +316,9 @@ QString SequenceMarker::getMarkingResult(const QVariant &object) {
 
     if (MarkerTypes::SEQ_LENGTH_MARKER_ID == type) {
         return Marker::getMarkingResult(seq.length());
-    } else if(MarkerTypes::SEQ_NAME_MARKER_ID == type){
+    } else if (MarkerTypes::SEQ_NAME_MARKER_ID == type) {
         return Marker::getMarkingResult(seq.getName());
-    }else{
+    } else {
         assert(0);
         return values.value(MarkerUtils::REST_OPERATION);
     }
@@ -485,4 +478,4 @@ Marker *TextMarker::clone() {
     return new TextMarker(*this);
 }
 
-} // U2
+}    // namespace U2

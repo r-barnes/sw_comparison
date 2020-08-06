@@ -22,10 +22,11 @@
 #ifndef GTSEQUENCEREADINGMODEDIALOG_H
 #define GTSEQUENCEREADINGMODEDIALOG_H
 
-#include <U2Core/U2OpStatus.h>
 #include <QDialogButtonBox>
-
 #include <QString>
+
+#include <U2Core/U2OpStatus.h>
+
 #include "GTGlobals.h"
 
 namespace U2 {
@@ -33,7 +34,8 @@ using namespace HI;
 
 class GTSequenceReadingModeDialog {
 public:
-    enum sequenceMode {Separate, Merge};
+    enum sequenceMode { Separate,
+                        Merge };
 
     static GTGlobals::UseMethod useMethod;
     static sequenceMode mode;
@@ -44,6 +46,6 @@ public:
     static QString newDocName;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // GTSEQUENCEREADINGMODEDIALOG_H
+#endif    // GTSEQUENCEREADINGMODEDIALOG_H

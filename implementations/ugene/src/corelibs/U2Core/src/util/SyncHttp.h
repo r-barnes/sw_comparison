@@ -22,11 +22,13 @@
 #ifndef __SYNC_HTTP_H__
 #define __SYNC_HTTP_H__
 
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
-#include <QNetworkProxy>
 #include <QAuthenticator>
+#include <QBasicTimer>
 #include <QEventLoop>
+#include <QNetworkAccessManager>
+#include <QNetworkProxy>
+#include <QNetworkReply>
+#include <QTimerEvent>
 
 #include <U2Core/U2OpStatus.h>
 
@@ -35,26 +37,50 @@ namespace U2 {
 class U2CORE_EXPORT SyncHttp : public QNetworkAccessManager {
     Q_OBJECT
 public:
-    SyncHttp(U2OpStatus &os, QObject* parent = 0);
+    SyncHttp(U2OpStatus &os, QObject *parent = nullptr);
     ~SyncHttp();
-    QString syncGet(const QUrl& url);
-    QString syncPost(const QUrl & url, QIODevice * data);
-    QNetworkReply::NetworkError error() { return err; }
-    QString errorString() { return errString; }
-    protected slots:
-    virtual void finished(QNetworkReply*);
-    virtual void onProxyAuthenticationRequired(const QNetworkProxy&, QAuthenticator*);
+
+    /**
+     * WARNING:
+     * The method creates new event loop that will block the current one until request is finished.
+     * Consider a better approach before start using this method.
+     */
+    QString syncGet(const QUrl &url, int timeoutMillis);
+
+    QNetworkReply::NetworkError error() const {
+        return err;
+    }
+    QString errorString() const {
+        return errString;
+    }
+protected slots:
+    virtual void finished(QNetworkReply *);
+    virtual void onProxyAuthenticationRequired(const QNetworkProxy &, QAuthenticator *);
     void sl_taskCancellingCheck();
 
 private:
-    void    runTimer();
+    void runStateCheckTimer();
 
-    QEventLoop* loop;
+    QEventLoop *loop;
     QNetworkReply::NetworkError err;
     QString errString;
     U2OpStatus &os;
 };
 
-} // U2
+class ReplyTimeout : public QObject {
+    Q_OBJECT
+public:
+    ReplyTimeout(QNetworkReply *reply, int timeoutMillis);
+
+    static void set(QNetworkReply *reply, int timeoutMillis);
+
+protected:
+    void timerEvent(QTimerEvent *timerEvent);
+
+private:
+    QBasicTimer timer;
+};
+
+}    // namespace U2
 
 #endif

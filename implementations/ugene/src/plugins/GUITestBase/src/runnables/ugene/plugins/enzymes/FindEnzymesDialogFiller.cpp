@@ -19,33 +19,30 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-#include <QCheckBox>
-#include <QTreeWidget>
-
 #include "FindEnzymesDialogFiller.h"
-
 #include <primitives/GTCheckBox.h>
 #include <primitives/GTLineEdit.h>
 #include <primitives/GTTreeWidget.h>
 #include <primitives/GTWidget.h>
 
+#include <QApplication>
+#include <QCheckBox>
+#include <QTreeWidget>
+
 namespace U2 {
 
 #define GT_CLASS_NAME "FindEnzymesDialogFiller"
 
-FindEnzymesDialogFiller::FindEnzymesDialogFiller(HI::GUITestOpStatus &os, const QStringList &enzymesToFind, CustomScenario *scenario) :
-    Filler(os, "FindEnzymesDialog", scenario),
-    enzymesToFind(enzymesToFind),
-    searchStart(-1),
-    searchEnd(-1),
-    excludeStart(-1),
-    excludeEnd(-1) {
+FindEnzymesDialogFiller::FindEnzymesDialogFiller(HI::GUITestOpStatus &os, const QStringList &enzymesToFind, CustomScenario *scenario)
+    : Filler(os, "FindEnzymesDialog", scenario),
+      enzymesToFind(enzymesToFind),
+      searchStart(-1),
+      searchEnd(-1),
+      excludeStart(-1),
+      excludeEnd(-1) {
 }
 
-FindEnzymesDialogFiller::FindEnzymesDialogFiller(GUITestOpStatus &os, const QStringList &enzymesToFind,
-                                                 qint64 searchRegionStart, qint64 searchRegionEnd, qint64 excludedRegionStart, qint64 excludedRegionEnd,
-                                                 CustomScenario *scenario)
+FindEnzymesDialogFiller::FindEnzymesDialogFiller(GUITestOpStatus &os, const QStringList &enzymesToFind, qint64 searchRegionStart, qint64 searchRegionEnd, qint64 excludedRegionStart, qint64 excludedRegionEnd, CustomScenario *scenario)
     : Filler(os, "FindEnzymesDialog", scenario),
       enzymesToFind(enzymesToFind),
       searchStart(searchRegionStart),
@@ -65,34 +62,34 @@ void FindEnzymesDialogFiller::commonScenario() {
     GTWidget::click(os, GTWidget::findWidget(os, "selectNoneButton", enzymesSelectorWidget));
 
     QTreeWidget *enzymesTree = qobject_cast<QTreeWidget *>(GTWidget::findWidget(os, "tree", enzymesSelectorWidget));
-    foreach (const QString& enzyme, enzymesToFind) {
+    foreach (const QString &enzyme, enzymesToFind) {
         QTreeWidgetItem *item = GTTreeWidget::findItem(os, enzymesTree, enzyme);
         GTTreeWidget::checkItem(os, item);
     }
 
     if (searchStart != -1 && searchEnd != -1) {
-        QWidget* regionSelector = GTWidget::findWidget(os, "region_selector_with_excluded");
+        QWidget *regionSelector = GTWidget::findWidget(os, "region_selector_with_excluded");
         GT_CHECK(regionSelector != NULL, "range_selector not found");
 
-        QLineEdit* start = GTWidget::findExactWidget<QLineEdit*>(os, "startLineEdit", regionSelector);
+        QLineEdit *start = GTWidget::findExactWidget<QLineEdit *>(os, "startLineEdit", regionSelector);
         GT_CHECK(start != NULL, "startLineEdit of 'Search In' region not found");
         GTLineEdit::setText(os, start, QString::number(searchStart));
 
-        QLineEdit* end = GTWidget::findExactWidget<QLineEdit*>(os, "endLineEdit", regionSelector);
+        QLineEdit *end = GTWidget::findExactWidget<QLineEdit *>(os, "endLineEdit", regionSelector);
         GTWidget::click(os, end);
         GT_CHECK(end != NULL, "endLineEdit of 'Search In' region not found");
         GTLineEdit::setText(os, end, QString::number(searchEnd));
     }
 
     if (excludeStart != -1 && excludeEnd != -1) {
-        QCheckBox* exclude = GTWidget::findExactWidget<QCheckBox*>(os, "excludeCheckBox");
+        QCheckBox *exclude = GTWidget::findExactWidget<QCheckBox *>(os, "excludeCheckBox");
         GTCheckBox::setChecked(os, exclude);
 
-        QLineEdit* start = GTWidget::findExactWidget<QLineEdit*>(os, "excludeStartLineEdit");
+        QLineEdit *start = GTWidget::findExactWidget<QLineEdit *>(os, "excludeStartLineEdit");
         GT_CHECK(start != NULL, "excludeStartLineEdit of 'Exclude' region not found");
         GTLineEdit::setText(os, start, QString::number(excludeStart));
 
-        QLineEdit* end = GTWidget::findExactWidget<QLineEdit*>(os, "excludeEndLinEdit");
+        QLineEdit *end = GTWidget::findExactWidget<QLineEdit *>(os, "excludeEndLinEdit");
         GTWidget::click(os, end);
         GT_CHECK(end != NULL, "excludeEndLinEdit of 'Exclude' region not found");
         GTLineEdit::setText(os, end, QString::number(excludeEnd));
@@ -104,4 +101,4 @@ void FindEnzymesDialogFiller::commonScenario() {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

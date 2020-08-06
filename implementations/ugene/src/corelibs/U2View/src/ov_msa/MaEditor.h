@@ -29,27 +29,29 @@ namespace U2 {
 #define MSAE_SETTINGS_ROOT QString("msaeditor/")
 #define MCAE_SETTINGS_ROOT QString("mcaeditor/")
 
-#define MSAE_MENU_COPY          "MSAE_MENU_COPY"
-#define MSAE_MENU_EDIT          "MSAE_MENU_EDIT"
-#define MSAE_MENU_EXPORT        "MSAE_MENU_EXPORT"
-#define MSAE_MENU_VIEW          "MSAE_MENU_VIEW"
-#define MSAE_MENU_ALIGN         "MSAE_MENU_ALIGN"
-#define MSAE_MENU_TREES         "MSAE_MENU_TREES"
-#define MSAE_MENU_STATISTICS    "MSAE_MENU_STATISTICS"
-#define MSAE_MENU_ADVANCED      "MSAE_MENU_ADVANCED"
-#define MSAE_MENU_LOAD          "MSAE_MENU_LOAD_SEQ"
+#define MSAE_MENU_APPEARANCE "MSAE_MENU_APPEARANCE"
+#define MSAE_MENU_NAVIGATION "MSAE_MENU_NAVIGATION"
+#define MSAE_MENU_COPY "MSAE_MENU_COPY"
+#define MSAE_MENU_EDIT "MSAE_MENU_EDIT"
+#define MSAE_MENU_EXPORT "MSAE_MENU_EXPORT"
+#define MSAE_MENU_SORT "MSAE_MENU_SORT"
+#define MSAE_MENU_ALIGN "MSAE_MENU_ALIGN"
+#define MSAE_MENU_TREES "MSAE_MENU_TREES"
+#define MSAE_MENU_STATISTICS "MSAE_MENU_STATISTICS"
+#define MSAE_MENU_ADVANCED "MSAE_MENU_ADVANCED"
+#define MSAE_MENU_LOAD "MSAE_MENU_LOAD_SEQ"
 
 #define MOBJECT_MIN_FONT_SIZE 8
 #define MOBJECT_MAX_FONT_SIZE 18
 #define MOBJECT_MIN_COLUMN_WIDTH 1
 
-#define MOBJECT_SETTINGS_COLOR_NUCL     "color_nucl"
-#define MOBJECT_SETTINGS_COLOR_AMINO    "color_amino"
-#define MOBJECT_SETTINGS_FONT_FAMILY    "font_family"
-#define MOBJECT_SETTINGS_FONT_SIZE      "font_size"
-#define MOBJECT_SETTINGS_FONT_ITALIC    "font_italic"
-#define MOBJECT_SETTINGS_FONT_BOLD      "font_bold"
-#define MOBJECT_SETTINGS_ZOOM_FACTOR    "zoom_factor"
+#define MOBJECT_SETTINGS_COLOR_NUCL "color_nucl"
+#define MOBJECT_SETTINGS_COLOR_AMINO "color_amino"
+#define MOBJECT_SETTINGS_FONT_FAMILY "font_family"
+#define MOBJECT_SETTINGS_FONT_SIZE "font_size"
+#define MOBJECT_SETTINGS_FONT_ITALIC "font_italic"
+#define MOBJECT_SETTINGS_FONT_BOLD "font_bold"
+#define MOBJECT_SETTINGS_ZOOM_FACTOR "zoom_factor"
 
 #define MOBJECT_DEFAULT_FONT_FAMILY "Verdana"
 #define MOBJECT_DEFAULT_FONT_SIZE 10
@@ -71,32 +73,44 @@ class U2VIEW_EXPORT MaEditor : public GObjectView {
     Q_OBJECT
     friend class OpenSavedMaEditorTask;
     friend class MaEditorState;
-public:
-    enum ResizeMode {
-        ResizeMode_FontAndContent, ResizeMode_OnlyContent
-    };
-    static const float zoomMult; // SANGER_TODO: should be dependable on the view
 
 public:
-    MaEditor(GObjectViewFactoryId factoryId, const QString& viewName, GObject* obj);
+    enum ResizeMode {
+        ResizeMode_FontAndContent,
+        ResizeMode_OnlyContent
+    };
+    static const float zoomMult;    // SANGER_TODO: should be dependable on the view
+
+public:
+    MaEditor(GObjectViewFactoryId factoryId, const QString &viewName, GObject *obj);
 
     virtual QVariantMap saveState();
 
-    virtual Task* updateViewTask(const QString& stateName, const QVariantMap& stateData);
+    virtual Task *updateViewTask(const QString &stateName, const QVariantMap &stateData);
 
     virtual QString getSettingsRoot() const = 0;
 
-    virtual MultipleAlignmentObject* getMaObject() const { return maObject; }
+    virtual MultipleAlignmentObject *getMaObject() const {
+        return maObject;
+    }
 
     QList<qint64> getMaRowIds() const;
 
-    virtual MaEditorWgt* getUI() const { return ui; }
+    virtual MaEditorWgt *getUI() const {
+        return ui;
+    }
 
-    virtual OptionsPanel* getOptionsPanel() { return optionsPanel; }
+    virtual OptionsPanel *getOptionsPanel() {
+        return optionsPanel;
+    }
 
-    const QFont& getFont() const { return font; }
+    const QFont &getFont() const {
+        return font;
+    }
 
-    ResizeMode getResizeMode() const { return resizeMode; }
+    ResizeMode getResizeMode() const {
+        return resizeMode;
+    }
 
     int getAlignmentLen() const;
 
@@ -105,7 +119,7 @@ public:
     bool isAlignmentEmpty() const;
 
     /* Returns current selection. */
-    const MaEditorSelection& getSelection() const;
+    const MaEditorSelection &getSelection() const;
 
     /*
      * Shortcut for getSelection().toRect().
@@ -114,7 +128,7 @@ public:
     QRect getSelectionRect() const;
 
     virtual int getRowContentIndent(int rowId) const;
-    int getSequenceRowHeight() const; // SANGER_TODO: order the methods
+    int getSequenceRowHeight() const;    // SANGER_TODO: order the methods
 
     int getColumnWidth() const;
 
@@ -122,7 +136,9 @@ public:
 
     void saveHighlightingSettings(const QString &highlightingFactoryId, const QVariantMap &settingsMap = QVariantMap());
 
-    qint64 getReferenceRowId() const { return snp.seqId; }
+    qint64 getReferenceRowId() const {
+        return snp.seqId;
+    }
 
     virtual QString getReferenceRowName() const = 0;
 
@@ -132,27 +148,33 @@ public:
 
     void updateReference();
 
-    void resetCollapsibleModel(); // SANGER_TODO: collapsible shouldn't be here
+    void resetCollapsibleModel();    // SANGER_TODO: collapsible shouldn't be here
 
-    void exportHighlighted(){ sl_exportHighlighted(); }
+    void exportHighlighted() {
+        sl_exportHighlighted();
+    }
 
     /** Returns current cursor position. */
-    const QPoint& getCursorPosition() const;
+    const QPoint &getCursorPosition() const;
 
     /** Sets new cursor position. Emits si_cursorPositionChanged() signal. */
-    void setCursorPosition(const QPoint& cursorPosition);
+    void setCursorPosition(const QPoint &cursorPosition);
+
+    /** Sets selection to the given view rows. */
+    virtual void selectRows(int firstViewRowIndex, int numberOfRows);
 
 signals:
-    void si_fontChanged(const QFont& f);
+    void si_fontChanged(const QFont &f);
     void si_zoomOperationPerformed(bool resizeModeChanged);
     void si_referenceSeqChanged(qint64 referenceId);
     void si_sizeChanged(int newHeight, bool isMinimumSize, bool isMaximumSize);
     void si_completeUpdate();
     void si_updateActions();
-    void si_cursorPositionChanged(const QPoint& cursorPosition);
+    void si_cursorPositionChanged(const QPoint &cursorPosition);
+    void si_clearSelection();
 
 protected slots:
-    virtual void sl_onContextMenuRequested(const QPoint & pos) = 0;
+    virtual void sl_onContextMenuRequested(const QPoint &pos) = 0;
 
     void sl_zoomIn();
     void sl_zoomOut();
@@ -171,20 +193,19 @@ private slots:
     void sl_resetColumnWidthCache();
 
 protected:
-    virtual QWidget* createWidget() = 0;
+    virtual QWidget *createWidget() = 0;
     virtual void initActions();
     virtual void initZoom();
     virtual void initFont();
     void updateResizeMode();
 
-    void addCopyMenu(QMenu* m);
-    void addEditMenu(QMenu* m);
-    virtual void addExportMenu(QMenu* m);
-    void addViewMenu(QMenu* m);
-    void addLoadMenu(QMenu* m);
-    void addAlignMenu(QMenu* m); // SANGER_TODO: should the align menu exist in MCA?
+    void addCopyMenu(QMenu *m);
+    virtual void addEditMenu(QMenu *m) = 0;
+    virtual void addExportMenu(QMenu *m);
+    void addLoadMenu(QMenu *m);
+    void addAlignMenu(QMenu *m);    // SANGER_TODO: should the align menu exist in MCA?
 
-    void setFont(const QFont& f);
+    void setFont(const QFont &f);
     void calcFontPixelToPointSizeCoef();
 
     void setFirstVisiblePosSeq(int firstPos, int firstSeq);
@@ -192,31 +213,32 @@ protected:
 
     virtual void updateActions();
 
-    MultipleAlignmentObject*    maObject;
-    MaEditorWgt*                ui;
+    MultipleAlignmentObject *maObject;
+    MaEditorWgt *ui;
 
-    QFont       font;
-    ResizeMode  resizeMode;
+    QFont font;
+    ResizeMode resizeMode;
     SNPSettings snp;
-    double      zoomFactor;
-    double      fontPixelToPointSize;
+    double zoomFactor;
+    double fontPixelToPointSize;
     mutable int cachedColumnWidth;
 
     /** Current cursor position: 'x' is offset in alignment (0...len) and 'y' is a sequence index in the aligment. */
     QPoint cursorPosition;
 
-    QAction*          saveAlignmentAction;
-    QAction*          saveAlignmentAsAction;
-    QAction*          zoomInAction;
-    QAction*          zoomOutAction;
-    QAction*          zoomToSelectionAction;
-    QAction*          showOverviewAction;
-    QAction*          changeFontAction;
-    QAction*          resetZoomAction;
-    QAction*          saveScreenshotAction;
-    QAction*          exportHighlightedAction;
+    QAction *saveAlignmentAction;
+    QAction *saveAlignmentAsAction;
+    QAction *zoomInAction;
+    QAction *zoomOutAction;
+    QAction *zoomToSelectionAction;
+    QAction *showOverviewAction;
+    QAction *changeFontAction;
+    QAction *resetZoomAction;
+    QAction *saveScreenshotAction;
+    QAction *exportHighlightedAction;
+    QAction *clearSelectionAction;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_MA_EDITOR_H_
+#endif    // _U2_MA_EDITOR_H_

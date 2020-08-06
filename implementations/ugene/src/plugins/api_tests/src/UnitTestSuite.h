@@ -36,15 +36,16 @@ public:
 
 protected:
     void tests_run();
-    void test_run(const QString& testName);
+    void test_run(const QString &testName);
 
     QMap<QString, QStringList> tests;
+
 private:
     int passed;
     int ignored;
     int failed;
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

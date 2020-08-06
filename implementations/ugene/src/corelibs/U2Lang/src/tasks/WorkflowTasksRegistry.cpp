@@ -19,15 +19,14 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
-
 #include "WorkflowTasksRegistry.h"
+
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 namespace Workflow {
 
 WorkflowTasksRegistry::WorkflowTasksRegistry() {
-
 }
 
 WorkflowTasksRegistry::~WorkflowTasksRegistry() {
@@ -41,7 +40,8 @@ WorkflowTasksRegistry::~WorkflowTasksRegistry() {
 bool WorkflowTasksRegistry::registerReadDocumentTaskFactory(ReadDocumentTaskFactory *factory) {
     SAFE_POINT(NULL != factory, "NULL ReadDocumentTaskFactory", false);
     SAFE_POINT(!readTasks.contains(factory->getId()),
-        QString("Double ReadDocumentTaskFactory registering: %1").arg(factory->getId()), false);
+               QString("Double ReadDocumentTaskFactory registering: %1").arg(factory->getId()),
+               false);
 
     readTasks[factory->getId()] = factory;
     return true;
@@ -51,6 +51,5 @@ ReadDocumentTaskFactory *WorkflowTasksRegistry::getReadDocumentTaskFactory(const
     return readTasks.value(id, NULL);
 }
 
-} // Workflow
-} // U2
-
+}    // namespace Workflow
+}    // namespace U2

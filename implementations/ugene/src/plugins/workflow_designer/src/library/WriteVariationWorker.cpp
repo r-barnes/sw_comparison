@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "WriteVariationWorker.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentModel.h>
@@ -38,8 +40,6 @@
 
 #include "library/DocActors.h"
 
-#include "WriteVariationWorker.h"
-
 namespace U2 {
 namespace LocalWorkflow {
 
@@ -48,10 +48,8 @@ const QString WriteVariationWorkerFactory::ACTOR_ID("write-variations");
 /************************************************************************/
 /* Worker */
 /************************************************************************/
-WriteVariationWorker::WriteVariationWorker(Actor *p, const DocumentFormatId& fid)
-: BaseDocWriter(p, fid)
-{
-
+WriteVariationWorker::WriteVariationWorker(Actor *p, const DocumentFormatId &fid)
+    : BaseDocWriter(p, fid) {
 }
 
 void WriteVariationWorker::data2doc(Document *doc, const QVariantMap &data) {
@@ -66,19 +64,20 @@ void WriteVariationWorker::storeEntry(IOAdapter *io, const QVariantMap &data, in
     QScopedPointer<VariantTrackObject> trackObj(NULL);
     {
         SharedDbiDataHandler objId = data.value(BaseSlots::VARIATION_TRACK_SLOT().getId())
-            .value<SharedDbiDataHandler>();
+                                         .value<SharedDbiDataHandler>();
         trackObj.reset(StorageUtils::getVariantTrackObject(context->getDataStorage(), objId));
         SAFE_POINT(!trackObj.isNull(), "Can't get track object", );
     }
 
-    QMap< GObjectType, QList<GObject*> > objectsMap;
+    QMap<GObjectType, QList<GObject *>> objectsMap;
     {
-        QList<GObject*> tracks; tracks << trackObj.data();
+        QList<GObject *> tracks;
+        tracks << trackObj.data();
         objectsMap[GObjectTypes::VARIANT_TRACK] = tracks;
     }
-    if(1 == entryNum) {
-        AbstractVariationFormat* variationFormat = qobject_cast<AbstractVariationFormat*>(format);
-        if(NULL != variationFormat) {
+    if (1 == entryNum) {
+        AbstractVariationFormat *variationFormat = qobject_cast<AbstractVariationFormat *>(format);
+        if (NULL != variationFormat) {
             variationFormat->storeHeader(trackObj.data(), io, os);
             SAFE_POINT_OP(os, );
         }
@@ -106,24 +105,24 @@ void WriteVariationWorkerFactory::init() {
     constr.addFlagToExclude(DocumentFormatFlag_CannotBeCreated);
     QList<DocumentFormatId> supportedFormats = AppContext::getDocumentFormatRegistry()->selectFormats(constr);
 
-    if(!supportedFormats.isEmpty()) {
+    if (!supportedFormats.isEmpty()) {
         DocumentFormatId format = supportedFormats.contains(BaseDocumentFormats::SNP) ? BaseDocumentFormats::SNP : supportedFormats.first();
 
         Descriptor inDesc(BasePorts::IN_VARIATION_TRACK_PORT_ID(),
-            WriteVariationWorker::tr("Variation track"),
-            WriteVariationWorker::tr("Variation track"));
+                          WriteVariationWorker::tr("Variation track"),
+                          WriteVariationWorker::tr("Variation track"));
         Descriptor protoDesc(WriteVariationWorkerFactory::ACTOR_ID,
-            WriteVariationWorker::tr("Write Variants"),
-            WriteVariationWorker::tr("The element gets message(s) with variations data and saves the data"
-                                     " to the specified file(s) in one of the appropriate formats"
-                                     " (e.g. VCF)."));
+                             WriteVariationWorker::tr("Write Variants"),
+                             WriteVariationWorker::tr("The element gets message(s) with variations data and saves the data"
+                                                      " to the specified file(s) in one of the appropriate formats"
+                                                      " (e.g. VCF)."));
 
-        QList<PortDescriptor*> portDescs;
+        QList<PortDescriptor *> portDescs;
         {
             QMap<Descriptor, DataTypePtr> inTypeMap;
             Descriptor writeUrlD(BaseSlots::URL_SLOT().getId(),
-                WriteVariationWorker::tr("Location"),
-                WriteVariationWorker::tr("Location for writing data"));
+                                 WriteVariationWorker::tr("Location"),
+                                 WriteVariationWorker::tr("Location for writing data"));
             inTypeMap[writeUrlD] = BaseTypes::STRING_TYPE();
             inTypeMap[BaseSlots::VARIATION_TRACK_SLOT()] = BaseTypes::VARIATION_TRACK_TYPE();
             DataTypePtr writeVariationsType(new MapDataType(BasePorts::IN_VARIATION_TRACK_PORT_ID(), inTypeMap));
@@ -131,7 +130,7 @@ void WriteVariationWorkerFactory::init() {
             portDescs << new PortDescriptor(inDesc, writeVariationsType, true);
         }
 
-        QList<Attribute*> attrs;
+        QList<Attribute *> attrs;
         Attribute *docFormatAttr = NULL;
         {
             Attribute *accumulateAttr = new Attribute(BaseAttributes::ACCUMULATE_OBJS_ATTRIBUTE(), BaseTypes::BOOL_TYPE(), false, true);
@@ -153,7 +152,7 @@ void WriteVariationWorkerFactory::init() {
         }
         proto->getEditor()->addDelegate(new ComboBoxDelegate(formatsMap), BaseAttributes::DOCUMENT_FORMAT_ATTRIBUTE().getId());
         proto->setPrompter(new WriteDocPrompter(WriteVariationWorker::tr("Save all variations from <u>%1</u> to <u>%2</u>."),
-            BaseSlots::VARIATION_TRACK_SLOT().getId()));
+                                                BaseSlots::VARIATION_TRACK_SLOT().getId()));
 
         WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_DATASINK(), proto);
         WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID)->registerEntry(new WriteVariationWorkerFactory());
@@ -166,5 +165,5 @@ Worker *WriteVariationWorkerFactory::createWorker(Actor *a) {
     return new WriteVariationWorker(a, fid);
 }
 
-}
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

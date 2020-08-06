@@ -29,15 +29,16 @@ namespace U2 {
 class TrimmomaticSupport : public ExternalTool {
     Q_OBJECT
 public:
-    TrimmomaticSupport(const QString& id, const QString &name, const QString& path = "");
+    TrimmomaticSupport(const QString &id, const QString &name, const QString &path = "");
     ~TrimmomaticSupport();
 
     static const QString ET_TRIMMOMATIC;
     static const QString ET_TRIMMOMATIC_ID;
+
 private:
     void initTrimmomaticSteps();
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_TRIMMOMATIC_SUPPORT_H_
+#endif    // _U2_TRIMMOMATIC_SUPPORT_H_

@@ -54,7 +54,6 @@ typedef QString U2DbiFactoryId;
 
 typedef QString U2DbiId;
 
-
 /**
     Built in types
     Note: Maximum value used for type must be <=4096
@@ -63,51 +62,56 @@ typedef QString U2DbiId;
 class U2CORE_EXPORT U2Type {
 public:
     /** Type is unknown. Default value. */
-    static const U2DataType Unknown                     = 0;
+    static const U2DataType Unknown = 0;
 
     /** Object types */
-    static const U2DataType Sequence                    = 1;
-    static const U2DataType Msa                         = 2;
-    static const U2DataType Assembly                    = 4;
-    static const U2DataType VariantTrack                = 5;
-    static const U2DataType VariantType                 = 6;
-    static const U2DataType FilterTableType             = 7;
-    static const U2DataType KnownMutationsTrackType     = 8;
-    static const U2DataType AnnotationTable             = 10;
-    static const U2DataType Mca                         = 11;
+    static const U2DataType Sequence = 1;
+    static const U2DataType Msa = 2;
+    static const U2DataType Assembly = 4;
+    static const U2DataType VariantTrack = 5;
+    static const U2DataType VariantType = 6;
+    static const U2DataType FilterTableType = 7;
+    static const U2DataType KnownMutationsTrackType = 8;
+    static const U2DataType AnnotationTable = 10;
+    static const U2DataType Mca = 11;
     /** UDR object types 101..199 */
-    static const U2DataType Text                        = 101;
-    static const U2DataType PhyTree                     = 102;
-    static const U2DataType Chromatogram                = 103;
-    static const U2DataType BioStruct3D                 = 104;
-    static const U2DataType PFMatrix                    = 105;
-    static const U2DataType PWMatrix                    = 106;
+    static const U2DataType Text = 101;
+    static const U2DataType PhyTree = 102;
+    static const U2DataType Chromatogram = 103;
+    static const U2DataType BioStruct3D = 104;
+    static const U2DataType PFMatrix = 105;
+    static const U2DataType PWMatrix = 106;
 
-    static const U2DataType CrossDatabaseReference      = 999;
+    static const U2DataType CrossDatabaseReference = 999;
 
     /** SCO (non-object, non-root) types */
-    static const U2DataType Annotation                  = 1000;
-    static const U2DataType AnnotationGroup             = 1001;
+    static const U2DataType Annotation = 1000;
+    static const U2DataType AnnotationGroup = 1001;
 
     /**  Assembly read */
-    static const U2DataType AssemblyRead                = 1100;
+    static const U2DataType AssemblyRead = 1100;
 
     /** Sequence feature */
-    static const U2DataType Feature                     = 1300;
+    static const U2DataType Feature = 1300;
 
-    static const U2DataType UdrRecord                   = 1400;
+    static const U2DataType UdrRecord = 1400;
 
     /**  Attribute types */
-    static const U2DataType AttributeInteger            = 2001;
-    static const U2DataType AttributeReal               = 2002;
-    static const U2DataType AttributeString             = 2003;
-    static const U2DataType AttributeByteArray          = 2004;
+    static const U2DataType AttributeInteger = 2001;
+    static const U2DataType AttributeReal = 2002;
+    static const U2DataType AttributeString = 2003;
+    static const U2DataType AttributeByteArray = 2004;
 
-    static bool isObjectType(U2DataType type) {return type > 0 && type <= 999;}
-    static bool isUdrObjectType(U2DataType type) {return type > 100 && type < 200;}
+    static bool isObjectType(U2DataType type) {
+        return type > 0 && type <= 999;
+    }
+    static bool isUdrObjectType(U2DataType type) {
+        return type > 100 && type < 200;
+    }
 
-    static bool isAttributeType(U2DataType type) {return type >=2000 && type < 2100;}
-
+    static bool isAttributeType(U2DataType type) {
+        return type >= 2000 && type < 2100;
+    }
 };
 
 enum U2TrackModType {
@@ -125,39 +129,39 @@ public:
 
     bool operator!=(const U2DbiRef &r2) const;
     bool operator==(const U2DbiRef &r2) const;
-    bool operator <(const U2DbiRef &r2) const;
+    bool operator<(const U2DbiRef &r2) const;
 
-    U2DbiFactoryId  dbiFactoryId;
-    U2DbiId         dbiId;
+    U2DbiFactoryId dbiFactoryId;
+    U2DbiId dbiId;
 
 private:
     static bool metaInfoRegistered;
 };
 
-QDataStream & operator <<(QDataStream &out, const U2DbiRef &dbiRef);
-QDataStream & operator >>(QDataStream &in, U2DbiRef &dbiRef);
+QDataStream &operator<<(QDataStream &out, const U2DbiRef &dbiRef);
+QDataStream &operator>>(QDataStream &in, U2DbiRef &dbiRef);
 
 /**
     Cross database data reference
 */
 class U2CORE_EXPORT U2EntityRef {
 public:
-                    U2EntityRef();
-                    U2EntityRef(const U2DbiRef &dbiRef, const U2DataId &entityId);
-    bool            isValid() const;
+    U2EntityRef();
+    U2EntityRef(const U2DbiRef &dbiRef, const U2DataId &entityId);
+    bool isValid() const;
 
-    bool            operator ==(const U2EntityRef &other) const;
-    bool            operator !=(const U2EntityRef &other) const;
-    bool            operator <(const U2EntityRef &other) const;
+    bool operator==(const U2EntityRef &other) const;
+    bool operator!=(const U2EntityRef &other) const;
+    bool operator<(const U2EntityRef &other) const;
 
     /** database  id */
-    U2DbiRef         dbiRef;
+    U2DbiRef dbiRef;
 
     /** DB local data reference */
-    U2DataId        entityId;
+    U2DataId entityId;
 
     /** Object version number this reference is valid for */
-    qint64          version;
+    qint64 version;
 };
 
 /**
@@ -165,45 +169,50 @@ public:
 */
 class U2CORE_EXPORT U2Entity {
 public:
-                    U2Entity(const U2DataId &id = U2DataId());
-                    U2Entity(const U2Entity &other);
+    U2Entity(const U2DataId &id = U2DataId());
+    U2Entity(const U2Entity &other);
 
-    virtual         ~U2Entity();
+    virtual ~U2Entity();
 
-    bool            hasValidId() const;
+    bool hasValidId() const;
 
-    U2Entity        operator =(const U2Entity &other);
+    U2Entity operator=(const U2Entity &other);
 
-    bool            operator ==(const U2Entity &other) const;
-    bool            operator !=(const U2Entity &other) const;
-    bool            operator <(const U2Entity &other) const;
+    bool operator==(const U2Entity &other) const;
+    bool operator!=(const U2Entity &other) const;
+    bool operator<(const U2Entity &other) const;
 
-    U2DataId        id;
+    U2DataId id;
 };
-
 
 /**
     Base marker class for all First-class-objects stored in the database
 */
 class U2CORE_EXPORT U2Object : public U2Entity {
 public:
-    U2Object() : version(0), trackModType(NoTrack) {}
-    U2Object(U2DataId id, const U2DbiId& _dbId, qint64 v) : U2Entity(id), dbiId(_dbId), version(v), trackModType(NoTrack) {}
+    U2Object()
+        : version(0), trackModType(NoTrack) {
+    }
+    U2Object(U2DataId id, const U2DbiId &_dbId, qint64 v)
+        : U2Entity(id), dbiId(_dbId), version(v), trackModType(NoTrack) {
+    }
 
     /** Source of the object: database id */
-    U2DbiId         dbiId;
+    U2DbiId dbiId;
 
     /** Version of the object. Same as modification count of the object */
-    qint64          version;
+    qint64 version;
 
     /** The name of the object shown to user. Any reasonably short text */
-    QString         visualName;
+    QString visualName;
 
     /** Specifies whether modifications of the object must be tracked or not */
-    U2TrackModType  trackModType;
+    U2TrackModType trackModType;
 
     /** The type of the object. Should be overridden in subclasses */
-    virtual U2DataType getType() const { return U2Type::Unknown; }
+    virtual U2DataType getType() const {
+        return U2Type::Unknown;
+    }
 };
 
 inline uint qHash(const U2Object &obj) {
@@ -216,21 +225,26 @@ inline uint qHash(const U2Object &obj) {
 */
 class U2CORE_EXPORT U2CrossDatabaseReference : public U2Object {
 public:
-    U2CrossDatabaseReference() {}
-    U2CrossDatabaseReference(U2DataId id, QString dbId, qint64 version) : U2Object(id, dbId, version) {}
-
+    U2CrossDatabaseReference() {
+    }
+    U2CrossDatabaseReference(U2DataId id, QString dbId, qint64 version)
+        : U2Object(id, dbId, version) {
+    }
 
     // remote data element id;
-    U2EntityRef   dataRef;
+    U2EntityRef dataRef;
 
-    U2DataType getType() const { return U2Type::CrossDatabaseReference; }
+    U2DataType getType() const {
+        return U2Type::CrossDatabaseReference;
+    }
 };
 
-
 /** Template class for DBI iterators */
-template<class T> class U2DbiIterator {
+template<class T>
+class U2DbiIterator {
 public:
-    virtual ~U2DbiIterator(){}
+    virtual ~U2DbiIterator() {
+    }
 
     /** returns true if there are more reads to iterate*/
     virtual bool hasNext() = 0;
@@ -249,26 +263,42 @@ public:
         Complementary = -1
     };
 
-    U2Strand() : value(Direct) { }
-    U2Strand(Direction val) : value(val) { }
+    U2Strand()
+        : value(Direct) {
+    }
+    U2Strand(Direction val)
+        : value(val) {
+    }
 
-    bool isDirect() const { return value == Direct; }
+    bool isDirect() const {
+        return value == Direct;
+    }
 
-    bool isCompementary() const { return value == Complementary; }
+    bool isCompementary() const {
+        return value == Complementary;
+    }
 
-    bool operator==(const U2Strand &s) const { return value == s.value; }
+    bool operator==(const U2Strand &s) const {
+        return value == s.value;
+    }
 
-    bool operator!=(const U2Strand &s) const { return value != s.value; }
+    bool operator!=(const U2Strand &s) const {
+        return value != s.value;
+    }
 
-    Direction getDirection() const { return static_cast<U2Strand::Direction>(value); }
+    Direction getDirection() const {
+        return static_cast<U2Strand::Direction>(value);
+    }
 
-    int getDirectionValue() const { return value; }
+    int getDirectionValue() const {
+        return value;
+    }
 
 private:
     int value;
 };
 
-} //namespace
+}    // namespace U2
 
 Q_DECLARE_METATYPE(QList<U2::U2DataId>)
 Q_DECLARE_METATYPE(U2::U2DbiRef)

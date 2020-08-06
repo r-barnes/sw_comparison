@@ -177,34 +177,31 @@ QMenu* GTMenu::showContextMenu(GUITestOpStatus &os, QWidget *ground, GTGlobals::
 
 #define GT_METHOD_NAME "getMenuItem"
 QAction* GTMenu::getMenuItem(GUITestOpStatus &os, const QMenu* menu, const QString &itemName, bool byText, Qt::MatchFlag matchFlag) {
+    GT_CHECK_RESULT(menu != nullptr, "menu is null", nullptr);
 
-    GT_CHECK_RESULT(menu != NULL, "menu not found", NULL);
+    QAction *action = nullptr;
 
-    QAction *action = NULL;
-    QList<QAction*>actions = menu->actions();
-    if(!byText){
-        foreach(QAction *act, actions) {
-            QString objName = act->objectName();
-            qDebug("GT_DEBUG_MESSAGE: Action name: '%s'", objName.toLocal8Bit().constData());
-            if (compare(objName, itemName, matchFlag)) {
-                qDebug("GT_DEBUG_MESSAGE: Found action");
-                action = act;
-                break;
-            }
+    // If menu is built dynamically not all actions may be available immidiately.
+    // In this case wait up to 2 seconds before returning nullptr.
+    for (int time = 0; time < 2000 && action == nullptr; time += GT_OP_CHECK_MILLIS) {
+        if (time > 0) {
+            qDebug("GT_DEBUG_MESSAGE: Action not found, waiting...");
         }
-    }else{
-        foreach(QAction *act, actions) {
-            QString text = act->text();
-            qDebug("GT_DEBUG_MESSAGE: Action text: '%s'",text.toLocal8Bit().constData());
-            if (compare(text, itemName, matchFlag)) {
-                qDebug("GT_DEBUG_MESSAGE: Found action");
-                action = act;
+        GTGlobals::sleep(time > 0 ? GT_OP_CHECK_MILLIS : 0);
+
+        QList<QAction *> menuActions = menu->actions();
+        foreach (QAction *menuAction, menuActions) {
+            QString value = byText ? menuAction->text() : menuAction->objectName();
+            qDebug("GT_DEBUG_MESSAGE: Action by %s: '%s'", byText ? "text" : "object name", value.toLocal8Bit().constData());
+            if (compare(value, itemName, matchFlag)) {
+                qDebug("GT_DEBUG_MESSAGE: Found action by text");
+                action = menuAction;
                 break;
             }
         }
     }
 
-    if (!action) {
+    if (action == nullptr) {
        qDebug("GT_DEBUG_MESSAGE: Not found action");
     }
     return action;
@@ -213,9 +210,8 @@ QAction* GTMenu::getMenuItem(GUITestOpStatus &os, const QMenu* menu, const QStri
 
 #define GT_METHOD_NAME "actionPos"
 QPoint GTMenu::actionPos(GUITestOpStatus &os, const QMenu* menu, QAction* action) {
-
-    GT_CHECK_RESULT(menu != NULL, "menu == NULL", QPoint());
-    GT_CHECK_RESULT(action != NULL, "action == NULL", QPoint());
+    GT_CHECK_RESULT(menu != nullptr, "menu == NULL", QPoint());
+    GT_CHECK_RESULT(action != nullptr, "action == NULL", QPoint());
 
     QPoint p = menu->actionGeometry(action).center();
     return menu->mapToGlobal(p);
@@ -224,13 +220,12 @@ QPoint GTMenu::actionPos(GUITestOpStatus &os, const QMenu* menu, QAction* action
 
 #define GT_METHOD_NAME "clickMenuItem"
 QAction* GTMenu::clickMenuItem(GUITestOpStatus &os, const QMenu *menu, const QString &itemName, GTGlobals::UseMethod m,bool byText, Qt::MatchFlag matchFlag) {
-
-    GT_CHECK_RESULT(menu != NULL, "menu not found", NULL);
-    GT_CHECK_RESULT(itemName.isEmpty() == false, "itemName is empty", NULL);
+    GT_CHECK_RESULT(menu != nullptr, "menu not found", nullptr);
+    GT_CHECK_RESULT(!itemName.isEmpty(), "itemName is empty", nullptr);
 
     QAction *action = getMenuItem(os, menu, itemName, byText, matchFlag);
-    GT_CHECK_RESULT(action != NULL, "action not found for item " + itemName, NULL);
-    GT_CHECK_RESULT(action->isEnabled() == true, "action <" + itemName + "> is not enabled", NULL);
+    GT_CHECK_RESULT(action != nullptr, "action not found for item " + itemName, nullptr);
+    GT_CHECK_RESULT(action->isEnabled(), "action <" + itemName + "> is not enabled", nullptr);
 
     QPoint currentCursorPosition = GTMouseDriver::getMousePosition();
     QPoint menuCorner = menu->mapToGlobal(QPoint(0, 0));
@@ -257,7 +252,7 @@ QAction* GTMenu::clickMenuItem(GUITestOpStatus &os, const QMenu *menu, const QSt
         GTMouseDriver::click();
 #else
         QMenu* actionMenu = action->menu();
-        bool clickingSubMenu = actionMenu ? true : false;
+        bool clickingSubMenu = actionMenu != nullptr;
         if (!clickingSubMenu) {
             GTMouseDriver::click();
         }
@@ -265,38 +260,30 @@ QAction* GTMenu::clickMenuItem(GUITestOpStatus &os, const QMenu *menu, const QSt
         break;
     }
     case GTGlobals::UseKey:
-        while(action != menu->activeAction()) {
-            GTKeyboardDriver::keyClick( Qt::Key_Down);
-            GTGlobals::sleep(200);
+        while (action != menu->activeAction()) {
+            GTKeyboardDriver::keyClick(Qt::Key_Down);
         }
-
-        GTKeyboardDriver::keyClick( Qt::Key_Enter);
-
-        GTGlobals::sleep(200);
+        GTKeyboardDriver::keyClick(Qt::Key_Enter, Qt::NoModifier, false);
         break;
     default:
         break;
     }
     GTThread::waitForMainThread();
     QMenu* activePopupMenu = qobject_cast<QMenu*>(QApplication::activePopupWidget());
-    if(activePopupMenu==NULL)
-        action=NULL;
-    return action;
+    return activePopupMenu == nullptr ? nullptr : action;
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "clickMenuItem"
 void GTMenu::clickMenuItemPrivate(GUITestOpStatus &os, const QMenu *menu, const QStringList &itemPath, GTGlobals::UseMethod useMethod, bool byText, Qt::MatchFlag matchFlag) {
-
-    GT_CHECK(menu != NULL, "menu is NULL");
+    GT_CHECK(menu != nullptr, "menu is NULL");
     GT_CHECK(!itemPath.isEmpty(), "itemPath is empty");
 
     foreach(QString itemName, itemPath) {
-        GT_CHECK(menu != NULL, "menu not found for item " + itemName);
-
+        GT_CHECK(menu != nullptr, "menu not found for item " + itemName);
         GTGlobals::sleep(500);
         QAction *action = clickMenuItem(os, menu, itemName, useMethod, byText, matchFlag);
-        menu = action ? action->menu() : NULL;
+        menu = action ? action->menu() : nullptr;
     }
 }
 #undef GT_METHOD_NAME

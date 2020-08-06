@@ -36,7 +36,8 @@ public:
     AssemblyToSequencesWorker(Actor *p);
     virtual void init();
     virtual Task *tick();
-    virtual void cleanup() {}
+    virtual void cleanup() {
+    }
 
 private slots:
     void sl_taskFinished();
@@ -45,7 +46,7 @@ private:
     AssemblyToSequencesTask *converter;
     IntegralBus *inChannel;
     IntegralBus *outChannel;
-}; // AssemblyToSequencesWorker
+};    // AssemblyToSequencesWorker
 
 class AssemblyToSequencesTask : public Task {
     Q_OBJECT
@@ -66,22 +67,26 @@ class AssemblyToSequencesWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
 
-    AssemblyToSequencesWorkerFactory() : DomainFactory(ACTOR_ID) {}
+    AssemblyToSequencesWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
     static void init();
     virtual Worker *createWorker(Actor *a);
 
-}; // AssemblyToSequencesWorkerFactory
+};    // AssemblyToSequencesWorkerFactory
 
-class AssemblyToSequencesPrompter : public PrompterBase<AssemblyToSequencesPrompter>{
+class AssemblyToSequencesPrompter : public PrompterBase<AssemblyToSequencesPrompter> {
     Q_OBJECT
 public:
-    AssemblyToSequencesPrompter(Actor *p = NULL) : PrompterBase<AssemblyToSequencesPrompter>(p) {}
+    AssemblyToSequencesPrompter(Actor *p = NULL)
+        : PrompterBase<AssemblyToSequencesPrompter>(p) {
+    }
 
 protected:
     QString composeRichDoc();
-}; // AssemblyToSequencesPrompter
+};    // AssemblyToSequencesPrompter
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _ASSEMBLY_TO_SEQUENCES_WORKER_
+#endif    // _ASSEMBLY_TO_SEQUENCES_WORKER_

@@ -45,11 +45,11 @@ enum CufflinksOutputFormat {
 class CufflinksSupportTask : public ExternalToolSupportTask {
     Q_OBJECT
 public:
-    CufflinksSupportTask(const CufflinksSettings& settings);
+    CufflinksSupportTask(const CufflinksSettings &settings);
     ~CufflinksSupportTask();
 
     void prepare();
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
     ReportResult report();
 
     QList<AnnotationTableObject *> getIsoformAnnotationTables() const;
@@ -59,29 +59,26 @@ private:
     static DocumentFormatId getFormatId(CufflinksOutputFormat format);
     void initLoadIsoformAnnotationsTask(const QString &fileName, CufflinksOutputFormat format);
 
-    CufflinksSettings                   settings;
+    CufflinksSettings settings;
 
-    QPointer<Document>                  tmpDoc;
-    QString                             workingDirectory;
-    QString                             url;
+    QPointer<Document> tmpDoc;
+    QString workingDirectory;
+    QString url;
 
-    ConvertAssemblyToSamTask *          convertAssToSamTask;
-    ExternalToolRunTask *               cufflinksExtToolTask;
-    LoadDocumentTask *                  loadIsoformAnnotationsTask;
+    ConvertAssemblyToSamTask *convertAssToSamTask;
+    ExternalToolRunTask *cufflinksExtToolTask;
+    LoadDocumentTask *loadIsoformAnnotationsTask;
 
-    QList<AnnotationTableObject *>      isoformLevelAnnotationTables;
-    QStringList                         outputFiles;
+    QList<AnnotationTableObject *> isoformLevelAnnotationTables;
+    QStringList outputFiles;
 
     static const QString outSubDirBaseName;
 
 private:
     QString initTmpDir();
-    ExternalToolRunTask * runCufflinks();
+    ExternalToolRunTask *runCufflinks();
 };
 
+}    // namespace U2
 
-
-}   // namespace U2
-
-
-#endif // _U2_CUFFLINKS_SUPPORT_TASK_H_
+#endif    // _U2_CUFFLINKS_SUPPORT_TASK_H_

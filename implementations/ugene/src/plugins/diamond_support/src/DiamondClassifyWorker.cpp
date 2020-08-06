@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DiamondClassifyWorker.h"
+
 #include <QFileInfo>
 
 #include <U2Core/FailTask.h>
@@ -30,10 +32,9 @@
 #include <U2Lang/BaseSlots.h>
 #include <U2Lang/WorkflowMonitor.h>
 
-#include "DiamondClassifyWorker.h"
+#include "../ngs_reads_classification/src/NgsReadsClassificationUtils.h"
 #include "DiamondClassifyWorkerFactory.h"
 #include "DiamondSupport.h"
-#include "../ngs_reads_classification/src/NgsReadsClassificationUtils.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -43,9 +44,7 @@ const QString DiamondClassifyWorker::DIAMOND_DIR = "DIAMOND";
 DiamondClassifyWorker::DiamondClassifyWorker(Actor *actor)
     : BaseWorker(actor, false),
       input(NULL),
-      output(NULL)
-{
-
+      output(NULL) {
 }
 
 void DiamondClassifyWorker::init() {
@@ -82,7 +81,6 @@ Task *DiamondClassifyWorker::tick() {
 }
 
 void DiamondClassifyWorker::cleanup() {
-
 }
 
 void DiamondClassifyWorker::sl_taskFinished(Task *task) {
@@ -101,8 +99,7 @@ void DiamondClassifyWorker::sl_taskFinished(Task *task) {
 
     LocalWorkflow::TaxonomyClassificationResult::const_iterator it;
     int classifiedCount = NgsReadsClassificationUtils::countClassified(classificationResult);
-    context->getMonitor()->addInfo(tr("There were %1 input reads, %2 reads were classified.").arg(QString::number(classificationResult.size())).arg(QString::number(classifiedCount))
-        , getActor()->getId(), WorkflowNotification::U2_INFO);
+    context->getMonitor()->addInfo(tr("There were %1 input reads, %2 reads were classified.").arg(QString::number(classificationResult.size())).arg(QString::number(classifiedCount)), getActor()->getId(), WorkflowNotification::U2_INFO);
 }
 
 DiamondClassifyTaskSettings DiamondClassifyWorker::getSettings(U2OpStatus &os) {
@@ -113,15 +110,13 @@ DiamondClassifyTaskSettings DiamondClassifyWorker::getSettings(U2OpStatus &os) {
     settings.readsUrl = message.getData().toMap()[DiamondClassifyWorkerFactory::INPUT_SLOT].toString();
 
     QString tmpDir = FileAndDirectoryUtils::createWorkingDir(context->workingDir(), FileAndDirectoryUtils::WORKFLOW_INTERNAL, "", context->workingDir());
-    tmpDir = GUrlUtils::createDirectory(tmpDir + DIAMOND_DIR , "_", os);
+    tmpDir = GUrlUtils::createDirectory(tmpDir + DIAMOND_DIR, "_", os);
 
     settings.classificationUrl = getValue<QString>(DiamondClassifyWorkerFactory::OUTPUT_URL_ATTR_ID);
     if (settings.classificationUrl.isEmpty()) {
         const MessageMetadata metadata = context->getMetadataStorage().get(message.getMetadataId());
         QString fileUrl = metadata.getFileUrl();
-        settings.classificationUrl = tmpDir + "/" + (fileUrl.isEmpty() ? QString("DIAMOND_%1.txt").arg(NgsReadsClassificationUtils::CLASSIFICATION_SUFFIX)
-                                                    : NgsReadsClassificationUtils::getBaseFileNameWithSuffixes(fileUrl,QStringList() << "DIAMOND"
-                                                    << NgsReadsClassificationUtils::CLASSIFICATION_SUFFIX,"txt", false));
+        settings.classificationUrl = tmpDir + "/" + (fileUrl.isEmpty() ? QString("DIAMOND_%1.txt").arg(NgsReadsClassificationUtils::CLASSIFICATION_SUFFIX) : NgsReadsClassificationUtils::getBaseFileNameWithSuffixes(fileUrl, QStringList() << "DIAMOND" << NgsReadsClassificationUtils::CLASSIFICATION_SUFFIX, "txt", false));
     }
     settings.classificationUrl = GUrlUtils::rollFileName(settings.classificationUrl, "_");
 
@@ -140,5 +135,5 @@ DiamondClassifyTaskSettings DiamondClassifyWorker::getSettings(U2OpStatus &os) {
     return settings;
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

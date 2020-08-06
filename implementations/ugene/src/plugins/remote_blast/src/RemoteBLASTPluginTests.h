@@ -23,8 +23,8 @@
 #define _U2_REMOTE_QUERY_PLUGIN_TEST_H_
 
 #include <U2Test/XMLTestUtils.h>
-#include "RemoteBLASTTask.h"
 
+#include "RemoteBLASTTask.h"
 
 namespace U2 {
 
@@ -37,6 +37,7 @@ public:
     void prepare();
     void cleanup();
     Task::ReportResult report();
+
 private:
     AnnotationTableObject *ao;
     RemoteBLASTToAnnotationsTask *task;
@@ -50,6 +51,6 @@ private:
     bool simple;
 };
 
-}//ns
+}    // namespace U2
 
 #endif

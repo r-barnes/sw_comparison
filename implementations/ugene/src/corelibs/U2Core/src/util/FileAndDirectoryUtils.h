@@ -38,13 +38,12 @@ public:
         WORKFLOW_INTERNAL_CUSTOM
     };
 
-    static QString getWorkingDir(const QString& fileUrl, int dirMode, const QString& customDir, const QString& workingDir);
-    static QString createWorkingDir(const QString& fileUrl, int dirMode, const QString& customDir, const QString& workingDir);
+    static QString getWorkingDir(const QString &fileUrl, int dirMode, const QString &customDir, const QString &workingDir);
+    static QString createWorkingDir(const QString &fileUrl, int dirMode, const QString &customDir, const QString &workingDir);
     static QString detectFormat(const QString &url);
-    static bool isFileEmpty(const QString& url);
-    static void dumpStringToFile(QFile *f, QString &str); //Be aware: string will be cleared after dumping
-    static QString getAbsolutePath(const QString& filePath);
-
+    static bool isFileEmpty(const QString &url);
+    static void dumpStringToFile(QFile *f, QString &str);    //Be aware: string will be cleared after dumping
+    static QString getAbsolutePath(const QString &filePath);
 
 private:
     static QString getFormatId(const FormatDetectionResult &r);
@@ -53,6 +52,6 @@ private:
     static const QString HOME_DIR_IDENTIFIER;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_FILE_AND_DIRECTORY_UTILS_H_
+#endif    // _U2_FILE_AND_DIRECTORY_UTILS_H_

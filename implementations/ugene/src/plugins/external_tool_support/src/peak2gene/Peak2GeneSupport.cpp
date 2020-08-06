@@ -20,11 +20,12 @@
  */
 
 #include "Peak2GeneSupport.h"
-#include "python/PythonSupport.h"
-#include "utils/ExternalToolUtils.h"
 
 #include <U2Core/AppContext.h>
 #include <U2Core/Settings.h>
+
+#include "python/PythonSupport.h"
+#include "utils/ExternalToolUtils.h"
 
 namespace U2 {
 
@@ -35,9 +36,8 @@ const QString Peak2GeneSupport::REF_GENES_DATA_NAME = "Gene annotation table";
 const QString Peak2GeneSupport::TRANSLATIONS_DIR_NAME = "geneIdTranslations";
 const QString Peak2GeneSupport::ENTREZ_TRANSLATION_DATA_NAME = "Entrez ID translations";
 
-Peak2GeneSupport::Peak2GeneSupport(const QString& id, const QString &name)
-: ExternalTool(id, name, "")
-{
+Peak2GeneSupport::Peak2GeneSupport(const QString &id, const QString &name)
+    : ExternalTool(id, name, "") {
     initialize();
 }
 
@@ -59,7 +59,7 @@ void Peak2GeneSupport::initialize() {
     validMessage = "peak2gene.py v";
     validationArguments << "--version";
 
-    versionRegExp=QRegExp(executableFileName + " v(\\d+\\.\\d+)");
+    versionRegExp = QRegExp(executableFileName + " v(\\d+\\.\\d+)");
 
     ExternalToolUtils::addDefaultCistromeDirToSettings();
     ExternalToolUtils::addCistromeDataPath(REF_GENES_DATA_NAME, REFGENE_DIR_NAME);
@@ -68,4 +68,4 @@ void Peak2GeneSupport::initialize() {
     muted = true;
 }
 
-} // U2
+}    // namespace U2

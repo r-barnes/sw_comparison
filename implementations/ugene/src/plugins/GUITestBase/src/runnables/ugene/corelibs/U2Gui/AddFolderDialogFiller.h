@@ -22,8 +22,9 @@
 #ifndef _ADD_FOLDER_DIALOG_FILLER_H_
 #define _ADD_FOLDER_DIALOG_FILLER_H_
 
-#include "utils/GTUtilsDialog.h"
 #include <base_dialogs/GTFileDialog.h>
+
+#include "utils/GTUtilsDialog.h"
 
 namespace U2 {
 using namespace HI;
@@ -38,6 +39,6 @@ private:
     const GTGlobals::UseMethod acceptMethod;
 };
 
-}
+}    // namespace U2
 
-#endif // _ADD_FOLDER_DIALOG_FILLER_H_
+#endif    // _ADD_FOLDER_DIALOG_FILLER_H_

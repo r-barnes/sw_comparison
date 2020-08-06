@@ -32,17 +32,17 @@ public:
     URLAttribute(const Descriptor &d, const DataTypePtr type, bool required = false);
 
     virtual void setAttributeValue(const QVariant &newVal);
-    virtual const QVariant & getAttributePureValue() const;
-    virtual const QVariant & getDefaultPureValue() const;
+    virtual const QVariant &getAttributePureValue() const;
+    virtual const QVariant &getDefaultPureValue() const;
     virtual bool isDefaultValue() const;
     virtual bool isEmpty() const;
     virtual URLAttribute *clone();
     virtual bool validate(NotificationsList &notificationList);
 
-    virtual const QSet<GObjectType> & getCompatibleObjectTypes() const;
+    virtual const QSet<GObjectType> &getCompatibleObjectTypes() const;
     virtual void setCompatibleObjectTypes(const QSet<GObjectType> &types);
 
-    QList<Dataset> & getDatasets();
+    QList<Dataset> &getDatasets();
     void updateValue();
 
 private:
@@ -56,6 +56,6 @@ private:
     QSet<GObjectType> compatibleObjectTypes;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_URL_ATTRIBUTE_H_
+#endif    // _U2_URL_ATTRIBUTE_H_

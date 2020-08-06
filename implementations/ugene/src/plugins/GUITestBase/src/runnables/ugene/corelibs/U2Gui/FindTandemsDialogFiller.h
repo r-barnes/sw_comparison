@@ -22,17 +22,18 @@
 #ifndef _U2_GT_RUNNABLES_FIND_TANDEMS_DIALOG_FILLER_H_
 #define _U2_GT_RUNNABLES_FIND_TANDEMS_DIALOG_FILLER_H_
 
-#include "utils/GTUtilsDialog.h"
 #include "api/GTRegionSelector.h"
+#include "utils/GTUtilsDialog.h"
 
 namespace U2 {
 using namespace HI;
 
 class FindTandemsDialogFiller : public Filler {
 public:
-    enum Button {Start, Cancel};
+    enum Button { Start,
+                  Cancel };
 
-    FindTandemsDialogFiller(HI::GUITestOpStatus &_os, const QString & _resultFilesPath);
+    FindTandemsDialogFiller(HI::GUITestOpStatus &_os, const QString &_resultFilesPath);
     FindTandemsDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario);
 
     virtual void commonScenario();
@@ -42,6 +43,6 @@ private:
     QString resultAnnotationFilesPath;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_GT_RUNNABLES_FIND_TANDEMS_DIALOG_FILLER_H_
+#endif    // _U2_GT_RUNNABLES_FIND_TANDEMS_DIALOG_FILLER_H_

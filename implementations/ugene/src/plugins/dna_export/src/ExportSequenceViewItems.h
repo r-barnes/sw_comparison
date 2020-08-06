@@ -39,22 +39,23 @@ class U2OpStatus;
 class ExportSequenceViewItemsController : public GObjectViewWindowContext {
     Q_OBJECT
 public:
-    ExportSequenceViewItemsController(QObject* p);
+    ExportSequenceViewItemsController(QObject *p);
     void init();
 
-
 protected:
-    virtual void initViewContext(GObjectView* view);
-    virtual void buildMenu(GObjectView* v, QMenu* m);
+    virtual void initViewContext(GObjectView *view);
+    virtual void buildMenu(GObjectView *v, QMenu *m);
+
 private:
-    AnnotatedDNAView* av;
+    AnnotatedDNAView *av;
 };
 
 class ADVExportContext : public QObject {
     Q_OBJECT;
+
 public:
-    ADVExportContext(AnnotatedDNAView* v);
-    void buildMenu(QMenu* m);
+    ADVExportContext(AnnotatedDNAView *v);
+    void buildMenu(QMenu *m);
 
 protected slots:
     void sl_saveSelectedSequences();
@@ -68,35 +69,34 @@ protected slots:
     void sl_getSequenceByAccession();
     void sl_getSequenceById();
 
-    void sl_onSequenceContextAdded(ADVSequenceObjectContext* c);
-    void sl_onSequenceContextRemoved(ADVSequenceObjectContext* c);
+    void sl_onSequenceContextAdded(ADVSequenceObjectContext *c);
+    void sl_onSequenceContextRemoved(ADVSequenceObjectContext *c);
     void sl_exportBlastResultToAlignment();
 
     void updateActions();
 
 private:
-    void prepareMAFromBlastAnnotations(MultipleSequenceAlignment& ma, const QString& nameQualId, bool includeRef, U2OpStatus& os);
-    void prepareMAFromAnnotations(MultipleSequenceAlignment& ma, bool translate, U2OpStatus& os);
-    void prepareMAFromSequences(MultipleSequenceAlignment& ma, bool translate, U2OpStatus& os);
-    void fetchSequencesFromRemoteDB(const QString & listId);
-    void selectionToAlignment(const QString& title, bool annotations, bool translate);
+    void prepareMAFromBlastAnnotations(MultipleSequenceAlignment &ma, const QString &nameQualId, bool includeRef, U2OpStatus &os);
+    void prepareMAFromAnnotations(MultipleSequenceAlignment &ma, bool translate, U2OpStatus &os);
+    void prepareMAFromSequences(MultipleSequenceAlignment &ma, bool translate, U2OpStatus &os);
+    void fetchSequencesFromRemoteDB(const QString &listId);
+    void selectionToAlignment(const QString &title, bool annotations, bool translate);
 
-    AnnotatedDNAView*   view;
+    AnnotatedDNAView *view;
 
-    QAction*  sequence2SequenceAction;
-    QAction*  annotations2SequenceAction;
-    QAction*  annotations2CSVAction;
-    QAction*  annotationsToAlignmentAction;
-    QAction*  annotationsToAlignmentWithTranslatedAction;
-    QAction*  sequenceToAlignmentAction;
-    QAction*  sequenceToAlignmentWithTranslationAction;
-    QAction*  sequenceById;
-    QAction*  sequenceByAccession;
-    QAction*  sequenceByDBXref;
-    QAction*  blastResultToAlignmentAction;
-
+    QAction *sequence2SequenceAction;
+    QAction *annotations2SequenceAction;
+    QAction *annotations2CSVAction;
+    QAction *annotationsToAlignmentAction;
+    QAction *annotationsToAlignmentWithTranslatedAction;
+    QAction *sequenceToAlignmentAction;
+    QAction *sequenceToAlignmentWithTranslationAction;
+    QAction *sequenceById;
+    QAction *sequenceByAccession;
+    QAction *sequenceByDBXref;
+    QAction *blastResultToAlignmentAction;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

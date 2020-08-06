@@ -23,8 +23,8 @@
 #define _U2_CONVERT_ASSEMBLY_TO_SAM_TASK_H_
 
 #include <U2Core/AssemblyObject.h>
-#include <U2Core/Task.h>
 #include <U2Core/GUrl.h>
+#include <U2Core/Task.h>
 
 namespace U2 {
 
@@ -37,7 +37,7 @@ public:
     ConvertAssemblyToSamTask(const DbiConnection *handle, GUrl samFileUrl);
 
     /** Converts only one assembly object to a SAM file */
-    ConvertAssemblyToSamTask(const U2EntityRef& entityRef, GUrl samFileUrl);
+    ConvertAssemblyToSamTask(const U2EntityRef &entityRef, GUrl samFileUrl);
 
     void run();
     QString generateReport() const;
@@ -51,6 +51,6 @@ private:
     const DbiConnection *handle;
 };
 
-}// U2
+}    // namespace U2
 
-#endif //_U2_CONVERT_ASSEMBLY_TO_SAM_TASK_H_
+#endif    //_U2_CONVERT_ASSEMBLY_TO_SAM_TASK_H_

@@ -22,8 +22,8 @@
 #ifndef _U2_ANNOTATION_SETTINGS_H_
 #define _U2_ANNOTATION_SETTINGS_H_
 
-#include <QHash>
 #include <QColor>
+#include <QHash>
 
 #include <U2Core/AnnotationData.h>
 
@@ -34,30 +34,32 @@ class Settings;
 class U2CORE_EXPORT AnnotationSettings {
 public:
     AnnotationSettings();
-    AnnotationSettings(const QString& name, bool amino, const QColor& color, bool visible);
+    AnnotationSettings(const QString &name, bool amino, const QColor &color, bool visible);
 
-    bool operator==(const AnnotationSettings *as) const {return equals(as);}
+    bool operator==(const AnnotationSettings *as) const {
+        return equals(as);
+    }
     bool equals(const AnnotationSettings *as) const;
 
-    QString     name;
-    QColor      color;
-    bool        amino;
-    bool        visible;
-    bool        showNameQuals; // Specifies whether to show value of qualifier or not
-    QStringList nameQuals;     // The list of qualifiers separated by comma.
-                               // If "showNameQuals" is true, the first found value of a qualifier from the list
-                               // is shown on the annotation.
+    QString name;
+    QColor color;
+    bool amino;
+    bool visible;
+    bool showNameQuals;    // Specifies whether to show value of qualifier or not
+    QStringList nameQuals;    // The list of qualifiers separated by comma.
+        // If "showNameQuals" is true, the first found value of a qualifier from the list
+        // is shown on the annotation.
 };
 
 class U2CORE_EXPORT AnnotationSettingsRegistry : public QObject {
-Q_OBJECT
+    Q_OBJECT
 public:
     AnnotationSettingsRegistry(const QList<AnnotationSettings *> &predefined);
     ~AnnotationSettingsRegistry();
 
     QStringList getAllSettings() const;
-    AnnotationSettings * getAnnotationSettings(const QString &name);
-    AnnotationSettings * getAnnotationSettings(const SharedAnnotationData &a);
+    AnnotationSettings *getAnnotationSettings(const QString &name);
+    AnnotationSettings *getAnnotationSettings(const SharedAnnotationData &a);
 
     // persistent==true -> save settings to file, ==false -> this session only
     void changeSettings(const QList<AnnotationSettings *> &settings, bool saveAsPersistent);
@@ -73,8 +75,6 @@ private:
     QHash<QString, AnnotationSettings *> transientMap;
 };
 
-
-}//namespace
+}    // namespace U2
 
 #endif
-

@@ -37,22 +37,18 @@ class U2SequenceObject;
 class U2OpStatus;
 
 struct DNAFragmentTerm {
-    DNAFragmentTerm(const QString& eId, const QByteArray& seq, bool directStrand)
-        : enzymeId(eId.toLatin1()), overhang(seq), isDirect(directStrand)
-    {
-
+    DNAFragmentTerm(const QString &eId, const QByteArray &seq, bool directStrand)
+        : enzymeId(eId.toLatin1()), overhang(seq), isDirect(directStrand) {
     }
 
     DNAFragmentTerm()
-        : isDirect(true)
-    {
-
+        : isDirect(true) {
     }
 
     QByteArray enzymeId;
     QByteArray overhang;
     QByteArray type;
-    bool isDirect; // overhang strand
+    bool isDirect;    // overhang strand
 };
 
 class DNAFragment {
@@ -69,43 +65,51 @@ private:
     void updateTerms();
     void updateLeftTerm();
     void updateRightTerm();
-    void toRevCompl(QByteArray& buf);
-    void setTermType(const QByteArray& qName, const QByteArray& type);
-    void setOverhang(const QByteArray& qName, const QByteArray& overhang);
+    void toRevCompl(QByteArray &buf);
+    void setTermType(const QByteArray &qName, const QByteArray &type);
+    void setOverhang(const QByteArray &qName, const QByteArray &overhang);
     DNAFragmentTerm leftTerm, rightTerm;
 
 public:
-    DNAFragment() : annotatedFragment(NULL), dnaObj(NULL), reverseCompl(false) {}
-    DNAFragment(const SharedAnnotationData &fragment, U2SequenceObject* sObj, const QList<AnnotationTableObject *> relatedAnns);
-    DNAFragment(const DNAFragment& other);
-    DNAFragment& operator=(const DNAFragment& other);
-    bool isEmpty() const { return annotatedFragment.data() == NULL || dnaObj == NULL; }
+    DNAFragment()
+        : annotatedFragment(NULL), dnaObj(NULL), reverseCompl(false) {
+    }
+    DNAFragment(const SharedAnnotationData &fragment, U2SequenceObject *sObj, const QList<AnnotationTableObject *> relatedAnns);
+    DNAFragment(const DNAFragment &other);
+    DNAFragment &operator=(const DNAFragment &other);
+    bool isEmpty() const {
+        return annotatedFragment.data() == NULL || dnaObj == NULL;
+    }
     QString getName() const;
     QString getSequenceName() const;
     QString getSequenceDocName() const;
     QVector<U2Region> getFragmentRegions() const;
     QByteArray getSequence(U2OpStatus &os) const;
     int getLength() const;
-    bool isInverted() const { return reverseCompl; }
-    const DNAAlphabet* getAlphabet() const;
+    bool isInverted() const {
+        return reverseCompl;
+    }
+    const DNAAlphabet *getAlphabet() const;
     QByteArray getSourceSequence(U2OpStatus &os) const;
-    QByteArray getSourceSequenceRegion(const U2Region region, U2OpStatus& os) const;
-    const DNAFragmentTerm& getLeftTerminus() const;
-    const DNAFragmentTerm& getRightTerminus() const;
+    QByteArray getSourceSequenceRegion(const U2Region region, U2OpStatus &os) const;
+    const DNAFragmentTerm &getLeftTerminus() const;
+    const DNAFragmentTerm &getRightTerminus() const;
     void setInverted(bool inverted = true);
-    void setRightTermType(const QByteArray& termType);
-    void setLeftTermType(const QByteArray& termType);
-    void setLeftOverhang(const QByteArray& overhang);
-    void setRightOverhang(const QByteArray& overhang);
+    void setRightTermType(const QByteArray &termType);
+    void setLeftTermType(const QByteArray &termType);
+    void setLeftOverhang(const QByteArray &overhang);
+    void setRightOverhang(const QByteArray &overhang);
     void setLeftOverhangStrand(bool direct);
     void setRightOverhangStrand(bool direct);
 
-    const QList<AnnotationTableObject *> & getRelatedAnnotations() const { return relatedAnnotations; }
+    const QList<AnnotationTableObject *> &getRelatedAnnotations() const {
+        return relatedAnnotations;
+    }
 
     static QList<DNAFragment> findAvailableFragments();
-    static QList<DNAFragment> findAvailableFragments(const QList<GObject*>& aObjects, const QList<GObject*>& sObjects);
+    static QList<DNAFragment> findAvailableFragments(const QList<GObject *> &aObjects, const QList<GObject *> &sObjects);
 };
 
-} //namespace U2o
+}    // namespace U2
 
-#endif // _U2_DNA_FRAGMENT_H_
+#endif    // _U2_DNA_FRAGMENT_H_

@@ -19,12 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "KrakenClassifyValidator.h"
+
 #include <QFileInfo>
 
 #include <U2Lang/Configuration.h>
 
 #include "KrakenClassifyPrompter.h"
-#include "KrakenClassifyValidator.h"
 #include "KrakenClassifyWorkerFactory.h"
 
 namespace U2 {
@@ -60,5 +61,5 @@ bool KrakenClassifyValidator::validateDatabase(const Actor *actor, Notifications
     return true;
 }
 
-}   // namesapce Workflow
-}   // namespace U2
+}    // namespace Workflow
+}    // namespace U2

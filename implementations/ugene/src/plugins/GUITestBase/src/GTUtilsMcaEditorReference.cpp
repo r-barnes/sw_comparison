@@ -26,9 +26,9 @@
 #include <U2Core/U2SafePoints.h>
 
 #include <U2View/BaseWidthController.h>
-#include <U2View/McaEditorWgt.h>
 #include <U2View/McaEditorReferenceArea.h>
 #include <U2View/McaEditorSequenceArea.h>
+#include <U2View/McaEditorWgt.h>
 #include <U2View/ScrollController.h>
 
 #include "GTUtilsMcaEditor.h"
@@ -70,4 +70,4 @@ void GTUtilsMcaEditorReference::scrollToPosition(HI::GUITestOpStatus &os, int po
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

@@ -19,27 +19,27 @@
  * MA 02110-1301, USA.
  */
 
+#include "AnnotationSelection.h"
+
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/DNATranslation.h>
 #include <U2Core/SelectionTypes.h>
 #include <U2Core/TextUtils.h>
+#include <U2Core/U2OpStatus.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/U2SequenceDbi.h>
-#include <U2Core/U2OpStatus.h>
 #include <U2Core/U2SequenceUtils.h>
-
-#include "AnnotationSelection.h"
 
 namespace U2 {
 
 static QList<Annotation *> emptyAnnotations;
 
-
-AnnotationSelection::AnnotationSelection(QObject *p) : GSelection(GSelectionTypes::ANNOTATIONS, p) {
+AnnotationSelection::AnnotationSelection(QObject *p)
+    : GSelection(GSelectionTypes::ANNOTATIONS, p) {
     connect(this, SIGNAL(si_selectionChanged(AnnotationSelection *, const QList<Annotation *> &, const QList<Annotation *> &)), SLOT(sl_selectionChanged()));
 }
 
-const QList<Annotation*>& AnnotationSelection::getAnnotations() const {
+const QList<Annotation *> &AnnotationSelection::getAnnotations() const {
     return selection;
 }
 
@@ -51,14 +51,14 @@ void AnnotationSelection::clear() {
     if (selection.isEmpty()) {
         return;
     }
-    QList<Annotation*> tmpRemoved = selection;
+    QList<Annotation *> tmpRemoved = selection;
     selection.clear();
     emit si_selectionChanged(this, emptyAnnotations, tmpRemoved);
 }
 
 void AnnotationSelection::removeObjectAnnotations(const AnnotationTableObject *obj) {
     QList<Annotation *> removed;
-    foreach(Annotation *a, obj->getAnnotations()) {
+    foreach (Annotation *a, obj->getAnnotations()) {
         for (int i = 0; i < selection.size(); i++) {
             if (selection[i] == a) {
                 removed.append(a);
@@ -74,10 +74,10 @@ void AnnotationSelection::removeObjectAnnotations(const AnnotationTableObject *o
 
 void AnnotationSelection::add(Annotation *a) {
     if (selection.contains(a)) {
-        return; //nothing changed
+        return;    //nothing changed
     }
     selection.append(a);
-    emit si_selectionChanged(this, QList<Annotation*>() << a, emptyAnnotations);
+    emit si_selectionChanged(this, QList<Annotation *>() << a, emptyAnnotations);
 }
 
 void AnnotationSelection::remove(Annotation *a) {
@@ -90,21 +90,20 @@ void AnnotationSelection::remove(Annotation *a) {
         }
     }
     if (removed) {
-        emit si_selectionChanged(this, emptyAnnotations, QList<Annotation*>() << a);
+        emit si_selectionChanged(this, emptyAnnotations, QList<Annotation *>() << a);
     }
 }
 
-void AnnotationSelection::getAnnotationSequence(QByteArray &res, const Annotation* annotation, char gapSym, const U2EntityRef &seqRef,
-    const DNATranslation *complTT, const DNATranslation *aminoTT, U2OpStatus &os) {
+void AnnotationSelection::getAnnotationSequence(QByteArray &res, const Annotation *annotation, char gapSym, const U2EntityRef &seqRef, const DNATranslation *complTT, const DNATranslation *aminoTT, U2OpStatus &os) {
     QVector<U2Region> regions = annotation->getRegions();
     QList<QByteArray> parts = U2SequenceUtils::extractRegions(seqRef, regions, complTT, aminoTT, false, os);
     CHECK_OP(os, )
     qint64 resLen = 0;
-    foreach(const QByteArray &p, parts) {
-        resLen += p.length() + 1; // +1 is for the gap char.
+    foreach (const QByteArray &p, parts) {
+        resLen += p.length() + 1;    // +1 is for the gap char.
     }
     res.reserve(resLen);
-    foreach(const QByteArray &p, parts) {
+    foreach (const QByteArray &p, parts) {
         if (!res.isEmpty()) {
             res.append(gapSym);
         }
@@ -116,18 +115,16 @@ bool AnnotationSelection::contains(Annotation *a) const {
     return selection.contains(a);
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 // Annotation group selection
 static QList<AnnotationGroup *> emptyGroups;
 
 AnnotationGroupSelection::AnnotationGroupSelection(QObject *p)
     : GSelection(GSelectionTypes::ANNOTATION_GROUPS, p) {
-    connect(this, SIGNAL(si_selectionChanged(AnnotationGroupSelection *, const QList<AnnotationGroup *> &, const QList<AnnotationGroup *> &)),
-        SLOT(sl_selectionChanged()));
+    connect(this, SIGNAL(si_selectionChanged(AnnotationGroupSelection *, const QList<AnnotationGroup *> &, const QList<AnnotationGroup *> &)), SLOT(sl_selectionChanged()));
 }
 
-const QList<AnnotationGroup *> & AnnotationGroupSelection::getSelection() const {
+const QList<AnnotationGroup *> &AnnotationGroupSelection::getSelection() const {
     return selection;
 }
 
@@ -158,7 +155,6 @@ void AnnotationGroupSelection::addToSelection(AnnotationGroup *g) {
     emit si_selectionChanged(this, tmpAdded, emptyGroups);
 }
 
-
 void AnnotationGroupSelection::removeFromSelection(AnnotationGroup *g) {
     const bool found = selection.removeOne(g);
     if (found) {
@@ -168,4 +164,4 @@ void AnnotationGroupSelection::removeFromSelection(AnnotationGroup *g) {
     }
 }
 
-}//namespace
+}    // namespace U2

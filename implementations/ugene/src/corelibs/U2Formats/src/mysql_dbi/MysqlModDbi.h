@@ -22,9 +22,9 @@
 #ifndef _U2_MYSQL_MOD_DBI_H_
 #define _U2_MYSQL_MOD_DBI_H_
 
-#include "MysqlDbi.h"
-
 #include <U2Core/U2AbstractDbi.h>
+
+#include "MysqlDbi.h"
 
 namespace U2 {
 
@@ -63,7 +63,7 @@ public:
     virtual U2SingleModStep getModStep(const U2DataId &objectId, qint64 trackVersion, U2OpStatus &os);
 
     /** Returns single steps of the master object ID of the specified version, divided bu multi steps */
-    QList< QList<U2SingleModStep> > getModSteps(const U2DataId &masterObjId, qint64 version, U2OpStatus &os);
+    QList<QList<U2SingleModStep>> getModSteps(const U2DataId &masterObjId, qint64 version, U2OpStatus &os);
 
     /** Gets version of the user step equal or less than the specified version (the maximum of them) */
     qint64 getNearestUserModStepVersion(const U2DataId &masterObjId, qint64 version, U2OpStatus &os);
@@ -85,7 +85,7 @@ public:
      * When there are two user steps that differs by ID only, removes user step with lower ID.
      * This is required for the case "action > undo > action > undo", when the action uses "U2UseCommonUserModStep".
      */
-    void removeDuplicateUserStep(const U2DataId &masterObjId, qint64 masterObjVersion, U2OpStatus& os);
+    void removeDuplicateUserStep(const U2DataId &masterObjId, qint64 masterObjVersion, U2OpStatus &os);
 
     /** Removes all modification tracks and steps for the object */
     virtual void removeObjectMods(const U2DataId &objectId, U2OpStatus &os);
@@ -101,7 +101,7 @@ public:
      * Deletes the user modifications step if it doesn't contain any multi modification steps.
      * Do not use this method, use "U2UseCommonUserModStep" instead!
      */
-    virtual void endCommonUserModStep(const U2DataId& masterObjId, U2OpStatus &os);
+    virtual void endCommonUserModStep(const U2DataId &masterObjId, U2OpStatus &os);
 
     /**
      * Starts a common multiple modifications step.
@@ -109,17 +109,17 @@ public:
      * Creates a common user modifications step, if it doesn't exist.
      * Do not use this method, create a "U2UseCommonMultiModStep" instance instead!
      */
-    void startCommonMultiModStep(const U2DataId& userMasterObjId, U2OpStatus& os);
+    void startCommonMultiModStep(const U2DataId &userMasterObjId, U2OpStatus &os);
 
     /**
      * Ends a common multiple modifications step.
      * Do not use this method, use "U2UseCommonMultiModStep" instead!
      */
-    void endCommonMultiModStep(const U2DataId& userMasterObjId, U2OpStatus &os);
+    void endCommonMultiModStep(const U2DataId &userMasterObjId, U2OpStatus &os);
 
     /** Specifies whether a step has been started */
-    static bool isUserStepStarted(const U2DataId& userMasterObjId);
-    static bool isMultiStepStarted(const U2DataId& userMasterObjId);
+    static bool isUserStepStarted(const U2DataId &userMasterObjId);
+    static bool isMultiStepStarted(const U2DataId &userMasterObjId);
 
     /** Specifies whether there are user steps that can be undone/redone */
     bool canUndo(const U2DataId &objectId, U2OpStatus &os);
@@ -144,7 +144,7 @@ private:
      * Sets "currentMultiModStepId" to the added record ID.
      * Warning: it is assumed that a user modification step has been started!
      */
-    void createMultiModStep(const U2DataId& userMasterObjId, U2OpStatus &os);
+    void createMultiModStep(const U2DataId &userMasterObjId, U2OpStatus &os);
 
     /** Removes user steps with the specified IDs and all affected multiple and single steps */
     void removeSteps(QList<qint64> userStepIds, U2OpStatus &os);
@@ -152,6 +152,6 @@ private:
     static QMap<U2DataId, MysqlModStepsDescriptor> modStepsByObject;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif  // _U2_MYSQL_MOD_DBI_H_
+#endif    // _U2_MYSQL_MOD_DBI_H_

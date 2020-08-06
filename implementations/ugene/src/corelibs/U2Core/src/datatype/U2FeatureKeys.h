@@ -26,31 +26,31 @@
 
 namespace U2 {
 
-const QString U2FeatureGeneName =                   "Gene";
-const QString U2FeatureExonName =                   "Exon";
-const QString U2FeatureCDSName =                    "CDS";
+const QString U2FeatureGeneName = "Gene";
+const QString U2FeatureExonName = "Exon";
+const QString U2FeatureCDSName = "CDS";
 
-const QString U2FeatureSuperDupName =               "SD";
-const QString U2FeatureConservativeName =           "CR";
+const QString U2FeatureSuperDupName = "SD";
+const QString U2FeatureConservativeName = "CR";
 
-const QString U2FeatureKey_Name =                   "name";
-const QString U2FeatureKey_AltName =                "alt_name";
-const QString U2FeatureKey_Note =                   "note";
-const QString U2FeatureKey_Accession =              "accession";
-const QString U2FeatureKey_KnownType =              "known";
-const QString U2FeatureKey_Disease =                "disease";
+const QString U2FeatureKey_Name = "name";
+const QString U2FeatureKey_AltName = "alt_name";
+const QString U2FeatureKey_Note = "note";
+const QString U2FeatureKey_Accession = "accession";
+const QString U2FeatureKey_KnownType = "known";
+const QString U2FeatureKey_Disease = "disease";
 
 //Since feature keys are used to store operations and region types, the most rare symbols combination is used
 //to avoid adding qualifier with the same name
 //Also it is short to reduce required space in the db
 
-const QString U2FeatureKeyOperation =               "#~o";
-const QString U2FeatureKeyOperationOrder =          "#~oo";
-const QString U2FeatureKeyOperationJoin =           "#~oj";
-const QString U2FeatureKeyOperationBond =           "#~ob";
+const QString U2FeatureKeyOperation = "#~o";
+const QString U2FeatureKeyOperationOrder = "#~oo";
+const QString U2FeatureKeyOperationJoin = "#~oj";
+const QString U2FeatureKeyOperationBond = "#~ob";
 
-const QString U2FeatureKeyCase =                    "#~c";
+const QString U2FeatureKeyCase = "#~c";
 
-} //namespace
+}    // namespace U2
 
-#endif //_U2_FEATURE_KEYS_H_
+#endif    //_U2_FEATURE_KEYS_H_

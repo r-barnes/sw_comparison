@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "HmmerParseSearchResultsTask.h"
+
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/AppResources.h>
@@ -29,8 +31,6 @@
 #include <U2Core/U2FeatureUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "HmmerParseSearchResultsTask.h"
-
 namespace U2 {
 
 const qint64 HmmerParseSearchResultsTask::BUFF_SIZE = 4096;
@@ -38,12 +38,11 @@ const qint64 HmmerParseSearchResultsTask::BUFF_SIZE = 4096;
 HmmerParseSearchResultsTask::HmmerParseSearchResultsTask(const QString &resultUrl, const AnnotationCreationPattern &pattern)
     : Task("Parse HMMER search result", TaskFlag_None),
       resultUrl(resultUrl),
-      pattern(pattern)
-{
+      pattern(pattern) {
     SAFE_POINT_EXT(!resultUrl.isEmpty(), setError("Result file URL is empty"), );
 }
 
-const QList<SharedAnnotationData> & HmmerParseSearchResultsTask::getAnnotations() const {
+const QList<SharedAnnotationData> &HmmerParseSearchResultsTask::getAnnotations() const {
     return annotations;
 }
 
@@ -99,4 +98,4 @@ void HmmerParseSearchResultsTask::processHit(const QStringList &tokens, qint64 l
     annotations << annotation;
 }
 
-}   // namespace U2
+}    // namespace U2

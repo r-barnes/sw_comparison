@@ -21,34 +21,34 @@
 
 #ifdef OPENCL_SUPPORT
 
-#include <QDomElement>
-#include <QStringList>
+#    include "BinaryFindOpenCLTests.h"
 
-#include <U2Core/AppContext.h>
+#    include <QDomElement>
+#    include <QStringList>
 
-#include "BinaryFindOpenCLTests.h"
+#    include <U2Core/AppContext.h>
 
 namespace U2 {
 
-#define NUMBERS "numbers"
-#define FIND_NUMBERS "find_numbers"
-#define EXPECTED_RESULTS "expected_res"
+#    define NUMBERS "numbers"
+#    define FIND_NUMBERS "find_numbers"
+#    define EXPECTED_RESULTS "expected_res"
 
-QList< XMLTestFactory* > BinaryFindOpenCLTests::createTestFactories(){
-    QList< XMLTestFactory* > res;
-    res.append( GTest_BinaryFindOpenCL::createFactory() );
+QList<XMLTestFactory *> BinaryFindOpenCLTests::createTestFactories() {
+    QList<XMLTestFactory *> res;
+    res.append(GTest_BinaryFindOpenCL::createFactory());
     return res;
 }
 
-void GTest_BinaryFindOpenCL::init(XMLTestFormat *tf, const QDomElement& el){
+void GTest_BinaryFindOpenCL::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     QString buf;
 
     buf = el.attribute(NUMBERS);
-    if (!buf.isEmpty()){
+    if (!buf.isEmpty()) {
         QStringList numsStr = buf.split(",");
-        foreach(QString s, numsStr) {
+        foreach (QString s, numsStr) {
             numbers.append(s.toLongLong());
         }
     } else {
@@ -56,9 +56,9 @@ void GTest_BinaryFindOpenCL::init(XMLTestFormat *tf, const QDomElement& el){
     }
 
     buf = el.attribute(FIND_NUMBERS);
-    if (!buf.isEmpty()){
+    if (!buf.isEmpty()) {
         QStringList numsStr = buf.split(",");
-        foreach(QString s, numsStr) {
+        foreach (QString s, numsStr) {
             findNumbers.append(s.toLongLong());
         }
     } else {
@@ -66,9 +66,9 @@ void GTest_BinaryFindOpenCL::init(XMLTestFormat *tf, const QDomElement& el){
     }
 
     buf = el.attribute(EXPECTED_RESULTS);
-    if (!buf.isEmpty()){
+    if (!buf.isEmpty()) {
         QStringList numsStr = buf.split(",");
-        foreach(QString s, numsStr) {
+        foreach (QString s, numsStr) {
             expectedResults.append(s.toInt());
         }
     } else {
@@ -85,17 +85,17 @@ void GTest_BinaryFindOpenCL::prepare() {
     }
 }
 
-Task::ReportResult GTest_BinaryFindOpenCL::report(){
-//    QString buf = "";
-//    for (int i = 0; i < findNumbers.size(); i ++ ) {
-//        buf += QString::number(results[i]) + " ";
-//    }
-//    coreLog.info("!!!!!!!!!!!!! result !!!!!!!!!!!!!");
-//    coreLog.info(buf);
-    for (int i = 0; i < findNumbers.size(); i ++ ) {
-        if ( (expectedResults.at(i) == 0 && results[i] != -1) ||
-             (expectedResults.at(i) != 0 && results[i] == -1) ||
-             (results[i] != -1 && numbers[results[i]] != findNumbers.at(i))) {
+Task::ReportResult GTest_BinaryFindOpenCL::report() {
+    //    QString buf = "";
+    //    for (int i = 0; i < findNumbers.size(); i ++ ) {
+    //        buf += QString::number(results[i]) + " ";
+    //    }
+    //    coreLog.info("!!!!!!!!!!!!! result !!!!!!!!!!!!!");
+    //    coreLog.info(buf);
+    for (int i = 0; i < findNumbers.size(); i++) {
+        if ((expectedResults.at(i) == 0 && results[i] != -1) ||
+            (expectedResults.at(i) != 0 && results[i] == -1) ||
+            (results[i] != -1 && numbers[results[i]] != findNumbers.at(i))) {
             stateInfo.setError(QString("expectedIsContains: %1 value: %2 does not satisfy the resulting position: %3").arg(expectedResults.at(i)).arg(findNumbers.at(i)).arg(results[i]));
             break;
         }
@@ -104,6 +104,6 @@ Task::ReportResult GTest_BinaryFindOpenCL::report(){
     return ReportResult_Finished;
 }
 
-} //namespace
+}    // namespace U2
 
 #endif /*OPENCL_SUPPORT*/

@@ -19,8 +19,10 @@
  * MA 02110-1301, USA.
  */
 
-#include <QVBoxLayout>
+#include "AssemblyVariantRow.h"
+
 #include <QPainter>
+#include <QVBoxLayout>
 
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
@@ -28,8 +30,6 @@
 
 #include "AssemblyAnnotationsArea.h"
 #include "AssemblyBrowser.h"
-
-#include "AssemblyVariantRow.h"
 
 namespace U2 {
 
@@ -40,9 +40,8 @@ const int AssemblyVariantRow::TOP_OFFSET = 13;
 /* AssemblyVariantRow */
 /************************************************************************/
 AssemblyVariantRow::AssemblyVariantRow(QWidget *parent, VariantTrackObject *_trackObj, AssemblyBrowser *_browser)
-: QWidget(parent), trackObj(_trackObj), browser(_browser), redraw(true), contextMenu(new QMenu(this)), hint(this)
-{
-    this->setFixedHeight(FIXED_HEIGHT+TOP_OFFSET);
+    : QWidget(parent), trackObj(_trackObj), browser(_browser), redraw(true), contextMenu(new QMenu(this)), hint(this) {
+    this->setFixedHeight(FIXED_HEIGHT + TOP_OFFSET);
     this->setMouseTracking(true);
     this->setFocusPolicy(Qt::StrongFocus);
     this->setToolTip(tr("Variation track: %1").arg(trackObj->getGObjectName()));
@@ -50,11 +49,11 @@ AssemblyVariantRow::AssemblyVariantRow(QWidget *parent, VariantTrackObject *_tra
 
     AssemblyCellRendererFactoryRegistry *factories = browser->getCellRendererRegistry();
     AssemblyCellRendererFactory *f = factories->getFactoryById(AssemblyCellRendererFactory::ALL_NUCLEOTIDES);
-    SAFE_POINT(f != NULL, QString("AssemblyCellRendererFactory with id '%1' not found!").arg(AssemblyCellRendererFactory::ALL_NUCLEOTIDES),);
+    SAFE_POINT(f != NULL, QString("AssemblyCellRendererFactory with id '%1' not found!").arg(AssemblyCellRendererFactory::ALL_NUCLEOTIDES), );
     nuclRenderer.reset(f->create());
 
     f = factories->getFactoryById(AssemblyCellRendererFactory::ALL_NUCLEOTIDES);
-    SAFE_POINT(f != NULL, QString("AssemblyCellRendererFactory with id '%1' not found!").arg(AssemblyCellRendererFactory::ALL_NUCLEOTIDES),);
+    SAFE_POINT(f != NULL, QString("AssemblyCellRendererFactory with id '%1' not found!").arg(AssemblyCellRendererFactory::ALL_NUCLEOTIDES), );
     snpRenderer.reset(f->create());
 
     currentData.updateHint = false;
@@ -95,15 +94,15 @@ void AssemblyVariantRow::mouseMoveEvent(QMouseEvent *e) {
     QWidget::mouseMoveEvent(e);
 }
 
-void AssemblyVariantRow::mousePressEvent(QMouseEvent* e) {
-    if(e->button() == Qt::RightButton) {
+void AssemblyVariantRow::mousePressEvent(QMouseEvent *e) {
+    if (e->button() == Qt::RightButton) {
         contextMenu->exec(QCursor::pos());
     }
 }
 
 void AssemblyVariantRow::leaveEvent(QEvent *) {
     QPoint curInHintCoords = hint.mapFromGlobal(QCursor::pos());
-    if(!hint.rect().contains(curInHintCoords)) {
+    if (!hint.rect().contains(curInHintCoords)) {
         sl_hideHint();
     }
 }
@@ -128,12 +127,12 @@ void AssemblyVariantRow::draw() {
         if (browser->areCellsVisible()) {
             U2OpStatusImpl os;
             currentData.region = browser->getVisibleBasesRegion();
-            QScopedPointer< U2DbiIterator<U2Variant> > varIter(trackObj->getVariants(currentData.region, os));
+            QScopedPointer<U2DbiIterator<U2Variant>> varIter(trackObj->getVariants(currentData.region, os));
             SAFE_POINT_OP(os, );
 
             int snpWidth = browser->getCellWidth();
             int snpHeight = FIXED_HEIGHT;
-            int halfHeight = int(0.5 + snpHeight/2.0);
+            int halfHeight = int(0.5 + snpHeight / 2.0);
             int yStart = 0;
             this->prepareRenderers(snpWidth, snpHeight);
 
@@ -142,18 +141,18 @@ void AssemblyVariantRow::draw() {
             while (varIter->hasNext()) {
                 U2Variant variant = varIter->next();
                 currentData.variants << variant;
-                int xStart = (variant.startPos - currentData.region.startPos)*snpWidth;
+                int xStart = (variant.startPos - currentData.region.startPos) * snpWidth;
 
                 if (isSNP(variant)) {
                     QRect upRect(xStart, yStart, snpWidth, halfHeight);
                     QPixmap upCellImage = snpRenderer->cellImage(variant.refData.at(0));
                     p.drawPixmap(upRect, upCellImage);
 
-                    QRect downRect(xStart, yStart+halfHeight, snpWidth, halfHeight);
+                    QRect downRect(xStart, yStart + halfHeight, snpWidth, halfHeight);
                     QPixmap downCellImage = snpRenderer->cellImage(variant.obsData.at(0));
                     p.drawPixmap(downRect, downCellImage);
                 } else {
-                    for (int i = 0; i < variant.refData.length(); i++, xStart+=snpWidth) {
+                    for (int i = 0; i < variant.refData.length(); i++, xStart += snpWidth) {
                         QRect snpRect(xStart, yStart, snpWidth, snpHeight);
                         char c = variant.refData.at(i);
                         QPixmap cellImage = nuclRenderer->cellImage(c);
@@ -177,12 +176,12 @@ bool AssemblyVariantRow::findVariantOnPos(QList<U2Variant> &variants) {
     bool found = false;
     int startPos = currentData.region.startPos;
     foreach (const U2Variant &v, currentData.variants) {
-        int xStart = (v.startPos - startPos)*currentData.snpWidth;
+        int xStart = (v.startPos - startPos) * currentData.snpWidth;
         int xEnd = 0;
-        if (isSNP(v)) { // SNP
+        if (isSNP(v)) {    // SNP
             xEnd = xStart + currentData.snpWidth;
         } else {
-            xEnd = (v.refData.length())*currentData.snpWidth + xStart;
+            xEnd = (v.refData.length()) * currentData.snpWidth + xStart;
         }
 
         if (currentData.pos.x() >= xStart && currentData.pos.x() <= xEnd) {
@@ -199,7 +198,7 @@ void AssemblyVariantRow::sl_hideHint() {
 }
 
 void AssemblyVariantRow::updateHint() {
-    if(currentData.variants.isEmpty()) {
+    if (currentData.variants.isEmpty()) {
         sl_hideHint();
         return;
     }
@@ -207,7 +206,7 @@ void AssemblyVariantRow::updateHint() {
     // 1. find variant we stay on
     QList<U2Variant> variants;
     bool found = findVariantOnPos(variants);
-    if(!found) {
+    if (!found) {
         sl_hideHint();
         return;
     }
@@ -220,18 +219,18 @@ void AssemblyVariantRow::updateHint() {
     QRect hintRect = hint.rect();
     hintRect.moveTo(QCursor::pos() + AssemblyReadsAreaHint::OFFSET_FROM_CURSOR);
     QPoint offset(0, 0);
-    if(hintRect.right() > readsAreaRect.right()) {
+    if (hintRect.right() > readsAreaRect.right()) {
         offset -= QPoint(hintRect.right() - readsAreaRect.right(), 0);
     }
-    if(hintRect.bottom() > readsAreaRect.bottom()) {
-        offset -= QPoint(0, hintRect.bottom() - readsAreaRect.bottom()); // move hint bottom to reads area
+    if (hintRect.bottom() > readsAreaRect.bottom()) {
+        offset -= QPoint(0, hintRect.bottom() - readsAreaRect.bottom());    // move hint bottom to reads area
         offset -= QPoint(0, readsAreaRect.bottom() - QCursor::pos().y() + AssemblyReadsAreaHint::OFFSET_FROM_CURSOR.y());
     }
     QPoint newPos = QCursor::pos() + AssemblyReadsAreaHint::OFFSET_FROM_CURSOR + offset;
-    if(hint.pos() != newPos) {
+    if (hint.pos() != newPos) {
         hint.move(newPos);
     }
-    if(!hint.isVisible()) {
+    if (!hint.isVisible()) {
         hint.show();
     }
 }
@@ -239,12 +238,12 @@ void AssemblyVariantRow::updateHint() {
 void AssemblyVariantRow::prepareRenderers(int cellWidth, int cellHeight) {
     bool text = browser->areLettersVisible();
     QFont f = browser->getFont();
-    int halfHeight = int(0.5 + cellHeight/2.0);
+    int halfHeight = int(0.5 + cellHeight / 2.0);
     bool snpText = text;
     QFont snpF = f;
-    if(text) {
+    if (text) {
         int pointSize = qMin(cellWidth, cellHeight) / 2;
-        if(pointSize) {
+        if (pointSize) {
             f.setPointSize(pointSize);
         } else {
             text = false;
@@ -272,23 +271,22 @@ void AssemblyVariantRow::sl_redraw() {
 /* AssemblyVariantRowManager */
 /************************************************************************/
 AssemblyVariantRowManager::AssemblyVariantRowManager(AssemblyBrowserUi *_ui)
-: ui(_ui), browser(_ui->getWindow()), model(_ui->getModel())
-{
-    connect(model.data(), SIGNAL(si_trackAdded(VariantTrackObject*)), SLOT(sl_trackAdded(VariantTrackObject*)));
-    connect(model.data(), SIGNAL(si_trackRemoved(VariantTrackObject*)), SLOT(sl_trackRemoved(VariantTrackObject*)));
+    : ui(_ui), browser(_ui->getWindow()), model(_ui->getModel()) {
+    connect(model.data(), SIGNAL(si_trackAdded(VariantTrackObject *)), SLOT(sl_trackAdded(VariantTrackObject *)));
+    connect(model.data(), SIGNAL(si_trackRemoved(VariantTrackObject *)), SLOT(sl_trackRemoved(VariantTrackObject *)));
 }
 
 void AssemblyVariantRowManager::sl_trackRemoved(VariantTrackObject *objToRemove) {
     AssemblyAnnotationsArea *annsArea = ui->getAnnotationsArea();
 
     QLayout *layout = annsArea->layout();
-    QVBoxLayout *vertLayout = qobject_cast<QVBoxLayout*>(layout);
+    QVBoxLayout *vertLayout = qobject_cast<QVBoxLayout *>(layout);
     SAFE_POINT(NULL != vertLayout, "Internal error: layout problems", );
 
-    for (int i=0; i<vertLayout->count(); i++) {
+    for (int i = 0; i < vertLayout->count(); i++) {
         QLayoutItem *it = vertLayout->itemAt(i);
         QWidget *w = it->widget();
-        AssemblyVariantRow *row = dynamic_cast<AssemblyVariantRow*>(w);
+        AssemblyVariantRow *row = dynamic_cast<AssemblyVariantRow *>(w);
         if (NULL == row) {
             continue;
         }
@@ -305,7 +303,7 @@ void AssemblyVariantRowManager::sl_trackAdded(VariantTrackObject *newTrackObj) {
     AssemblyAnnotationsArea *annsArea = ui->getAnnotationsArea();
 
     QLayout *layout = annsArea->layout();
-    QVBoxLayout *vertLayout = qobject_cast<QVBoxLayout*>(layout);
+    QVBoxLayout *vertLayout = qobject_cast<QVBoxLayout *>(layout);
     SAFE_POINT(NULL != vertLayout, "Internal error: layout problems", );
 
     AssemblyVariantRow *row = new AssemblyVariantRow(annsArea, newTrackObj, browser);
@@ -319,10 +317,10 @@ void AssemblyVariantRowManager::sl_trackAdded(VariantTrackObject *newTrackObj) {
 
 void AssemblyVariantRowManager::sl_removeRow() {
     QObject *s = sender();
-    AssemblyVariantRow *row = dynamic_cast<AssemblyVariantRow*>(s);
+    AssemblyVariantRow *row = dynamic_cast<AssemblyVariantRow *>(s);
     SAFE_POINT(NULL != row, "Internal error: NULL row widget", );
 
     model->sl_trackObjRemoved(row->getTrackObject());
 }
 
-} // U2
+}    // namespace U2

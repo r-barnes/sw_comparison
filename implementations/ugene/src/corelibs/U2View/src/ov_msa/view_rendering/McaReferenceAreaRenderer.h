@@ -29,6 +29,7 @@ namespace U2 {
 class MaEditor;
 
 class U2VIEW_EXPORT McaReferenceAreaRenderer : public PanViewRenderer {
+    Q_OBJECT
 public:
     McaReferenceAreaRenderer(PanView *panView, SequenceObjectContext *ctx, MaEditor *maEditor);
 
@@ -43,6 +44,6 @@ private:
     MaEditor *maEditor;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MCA_REFERENCE_AREA_RENDERER_H_
+#endif    // _U2_MCA_REFERENCE_AREA_RENDERER_H_

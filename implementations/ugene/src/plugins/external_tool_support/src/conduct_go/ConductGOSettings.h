@@ -27,7 +27,6 @@
 
 namespace U2 {
 
-
 class ConductGOSettings {
 public:
     const static QString UNIVERSE_HGU133A;
@@ -44,18 +43,18 @@ public:
 
     ConductGOSettings();
 
-    QString     outDir;
-    QString     title;
-    QString     treatUrl;
-    QString     geneUniverse;
+    QString outDir;
+    QString title;
+    QString treatUrl;
+    QString geneUniverse;
 
 public:
-     QStringList getArguments() const;
+    QStringList getArguments() const;
 
 private:
     void initDefault();
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_CONDUCT_GO_SETTINGS_
+#endif    // _U2_CONDUCT_GO_SETTINGS_

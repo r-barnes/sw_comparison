@@ -19,8 +19,10 @@
  * MA 02110-1301, USA.
  */
 
-#include <QFile>
+#include "UserApplicationsSettingsGUIController.h"
+
 #include <QDialogButtonBox>
+#include <QFile>
 #include <QStyleFactory>
 
 #include <U2Core/AppContext.h>
@@ -30,33 +32,29 @@
 
 #include <U2Gui/U2FileDialog.h>
 
-#include "UserApplicationsSettingsGUIController.h"
-
-namespace U2
-{
+namespace U2 {
 #define TRANSMAP_FILE_NAME "translations.txt"
 
-UserApplicationsSettingsPageController::UserApplicationsSettingsPageController(QObject* p) 
-: AppSettingsGUIPageController(tr("General"), APP_SETTINGS_USER_APPS, p)
-{
+UserApplicationsSettingsPageController::UserApplicationsSettingsPageController(QObject *p)
+    : AppSettingsGUIPageController(tr("General"), APP_SETTINGS_USER_APPS, p) {
     translations.insert(tr("Autodetection"), "");
-    QFile file( QString(PATH_PREFIX_DATA)+ ":" + TRANSMAP_FILE_NAME );
+    QFile file(QString(PATH_PREFIX_DATA) + ":" + TRANSMAP_FILE_NAME);
 
-    if(!file.exists() || !file.open(QIODevice::ReadOnly)){
+    if (!file.exists() || !file.open(QIODevice::ReadOnly)) {
         coreLog.error(tr("File with translations is not found: %1").arg(TRANSMAP_FILE_NAME));
         translations.insert("English", "transl_en");
         return;
-    } 
+    }
     QTextStream in(&file);
     in.setCodec("UTF-8");
     in.setAutoDetectUnicode(true);
     while (!in.atEnd()) {
         QString line = in.readLine();
-        if(line.length()==0 || line.startsWith("#")) {
+        if (line.length() == 0 || line.startsWith("#")) {
             continue;
         }
         QStringList fields = line.split("|");
-        if (fields.size()!=2) {
+        if (fields.size() != 2) {
             coreLog.error(tr("Illegal entry in translations file: %1").arg(line));
             continue;
         }
@@ -65,10 +63,9 @@ UserApplicationsSettingsPageController::UserApplicationsSettingsPageController(Q
     file.close();
 }
 
-
-AppSettingsGUIPageState* UserApplicationsSettingsPageController::getSavedState() {
-    UserApplicationsSettingsPageState* state = new UserApplicationsSettingsPageState();
-    UserAppsSettings* s = AppContext::getAppSettings()->getUserAppsSettings();
+AppSettingsGUIPageState *UserApplicationsSettingsPageController::getSavedState() {
+    UserApplicationsSettingsPageState *state = new UserApplicationsSettingsPageState();
+    UserAppsSettings *s = AppContext::getAppSettings()->getUserAppsSettings();
     state->translFile = s->getTranslationFile();
     state->openLastProjectFlag = s->openLastProjectAtStartup();
     state->askToSaveProject = s->getAskToSaveProject();
@@ -80,9 +77,9 @@ AppSettingsGUIPageState* UserApplicationsSettingsPageController::getSavedState()
     return state;
 }
 
-void UserApplicationsSettingsPageController::saveState(AppSettingsGUIPageState* s) {
-    UserApplicationsSettingsPageState* state = qobject_cast<UserApplicationsSettingsPageState*>(s);
-    UserAppsSettings* st = AppContext::getAppSettings()->getUserAppsSettings();
+void UserApplicationsSettingsPageController::saveState(AppSettingsGUIPageState *s) {
+    UserApplicationsSettingsPageState *state = qobject_cast<UserApplicationsSettingsPageState *>(s);
+    UserAppsSettings *st = AppContext::getAppSettings()->getUserAppsSettings();
     st->setTranslationFile(state->translFile);
     st->setOpenLastProjectAtStartup(state->openLastProjectFlag);
     st->setAskToSaveProject(state->askToSaveProject);
@@ -92,21 +89,21 @@ void UserApplicationsSettingsPageController::saveState(AppSettingsGUIPageState* 
     st->setUpdatesEnabled(state->updatesEnabled);
 
     if (0 != state->style.compare(st->getVisualStyle(), Qt::CaseInsensitive)) {
-        QStyle* style = QStyleFactory::create(state->style);
+        QStyle *style = QStyleFactory::create(state->style);
         QApplication::setStyle(style);
         st->setVisualStyle(state->style);
     }
 }
 
-AppSettingsGUIPageWidget* UserApplicationsSettingsPageController::createWidget(AppSettingsGUIPageState* state) {
-    UserApplicationsSettingsPageWidget* r = new UserApplicationsSettingsPageWidget(this);
+AppSettingsGUIPageWidget *UserApplicationsSettingsPageController::createWidget(AppSettingsGUIPageState *state) {
+    UserApplicationsSettingsPageWidget *r = new UserApplicationsSettingsPageWidget(this);
     r->setState(state);
     return r;
 }
 
-const QString UserApplicationsSettingsPageController::helpPageId = QString("24742341");
+const QString UserApplicationsSettingsPageController::helpPageId = QString("46499693");
 
-UserApplicationsSettingsPageWidget::UserApplicationsSettingsPageWidget(UserApplicationsSettingsPageController* ctrl) {
+UserApplicationsSettingsPageWidget::UserApplicationsSettingsPageWidget(UserApplicationsSettingsPageController *ctrl) {
     setupUi(this);
     connect(langButton, SIGNAL(clicked()), SLOT(sl_transFileClicked()));
     QMapIterator<QString, QString> it(ctrl->translations);
@@ -117,8 +114,8 @@ UserApplicationsSettingsPageWidget::UserApplicationsSettingsPageWidget(UserAppli
     styleCombo->addItems(QStyleFactory::keys());
 }
 
-void UserApplicationsSettingsPageWidget::setState(AppSettingsGUIPageState* s) {
-    UserApplicationsSettingsPageState* state = qobject_cast<UserApplicationsSettingsPageState*>(s);
+void UserApplicationsSettingsPageWidget::setState(AppSettingsGUIPageState *s) {
+    UserApplicationsSettingsPageState *state = qobject_cast<UserApplicationsSettingsPageState *>(s);
     enableStatisticsEdit->setChecked(state->enableStatistics);
 
     int idx = langCombo->findData(state->translFile);
@@ -127,9 +124,9 @@ void UserApplicationsSettingsPageWidget::setState(AppSettingsGUIPageState* s) {
         langCombo->addItem(tr("Custom translation [%1]").arg(state->translFile), state->translFile);
     }
     langCombo->setCurrentIndex(idx);
-    
-    int styleIdx = styleCombo->findText(state->style, Qt::MatchFixedString); //case insensitive
-    if (styleIdx!=-1) {
+
+    int styleIdx = styleCombo->findText(state->style, Qt::MatchFixedString);    //case insensitive
+    if (styleIdx != -1) {
         styleCombo->setCurrentIndex(styleIdx);
     }
 
@@ -143,8 +140,8 @@ void UserApplicationsSettingsPageWidget::setState(AppSettingsGUIPageState* s) {
     updatesCheckBox->setChecked(state->updatesEnabled);
 }
 
-AppSettingsGUIPageState* UserApplicationsSettingsPageWidget::getState(QString& /*err*/) const {
-    UserApplicationsSettingsPageState* state = new UserApplicationsSettingsPageState();
+AppSettingsGUIPageState *UserApplicationsSettingsPageWidget::getState(QString & /*err*/) const {
+    UserApplicationsSettingsPageState *state = new UserApplicationsSettingsPageState();
     state->translFile = langCombo->itemData(langCombo->currentIndex()).toString();
     state->openLastProjectFlag = autoOpenProjectBox->isChecked();
     state->askToSaveProject = askToSaveProject->itemData(askToSaveProject->currentIndex()).toInt();
@@ -175,4 +172,4 @@ void UserApplicationsSettingsPageWidget::sl_transFileClicked() {
     }
 }
 
-} //namespace
+}    // namespace U2

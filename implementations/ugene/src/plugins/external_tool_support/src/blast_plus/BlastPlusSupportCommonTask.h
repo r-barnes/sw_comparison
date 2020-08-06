@@ -37,60 +37,59 @@ class U2PseudoCircularization;
 class BlastPlusSupportCommonTask : public ExternalToolSupportTask {
     Q_OBJECT
 public:
-    BlastPlusSupportCommonTask(const BlastTaskSettings& settings);
+    BlastPlusSupportCommonTask(const BlastTaskSettings &settings);
     void prepare();
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
     Task::ReportResult report();
     virtual QString generateReport() const;
 
     QList<SharedAnnotationData> getResultedAnnotations() const;
-    BlastTaskSettings           getSettings() const;
+    BlastTaskSettings getSettings() const;
 
-    virtual ExternalToolRunTask* createBlastPlusTask() = 0;
+    virtual ExternalToolRunTask *createBlastPlusTask() = 0;
 
     static QString toolIdByProgram(const QString &program);
 
 protected:
-    BlastTaskSettings               settings;
-    QString                         url;
+    BlastTaskSettings settings;
+    QString url;
 
 private:
-    SaveDocumentTask*               saveTemporaryDocumentTask;
-    ExternalToolRunTask*            blastPlusTask;
-    U2SequenceObject*               sequenceObject;
-    Document*                       tmpDoc;
-    QList<SharedAnnotationData>     result;
-    U2PseudoCircularization*        circularization;
+    SaveDocumentTask *saveTemporaryDocumentTask;
+    ExternalToolRunTask *blastPlusTask;
+    U2SequenceObject *sequenceObject;
+    Document *tmpDoc;
+    QList<SharedAnnotationData> result;
+    U2PseudoCircularization *circularization;
 
     void parseTabularResult();
     void parseTabularLine(const QByteArray &line);
 
     void parseXMLResult();
     void parseXMLHit(const QDomNode &xml);
-    void parseXMLHsp(const QDomNode &xml,const QString &id, const QString &def, const QString &accession);
+    void parseXMLHsp(const QDomNode &xml, const QString &id, const QString &def, const QString &accession);
     QString getAcceptableTempDir() const;
 };
 
 class BlastPlusSupportMultiTask : public Task {
     Q_OBJECT
 public:
-    BlastPlusSupportMultiTask(QList<BlastTaskSettings>& settingsList, QString& url);
+    BlastPlusSupportMultiTask(QList<BlastTaskSettings> &settingsList, QString &url);
     void prepare();
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
     Task::ReportResult report();
     QString generateReport() const;
+
 private:
-    QList<BlastTaskSettings>    settingsList;
-    Document*                   doc;
-    QString                     url;
+    QList<BlastTaskSettings> settingsList;
+    Document *doc;
+    QString url;
 };
 
 class BlastDbCmdSupportTask : public Task {
-
 };
 
-
-}//namespace
-#endif // _U2_BLASTPLUS_SUPPORT_TASK_H
+}    // namespace U2
+#endif    // _U2_BLASTPLUS_SUPPORT_TASK_H

@@ -46,32 +46,34 @@ public:
     virtual void getObject(U2Object &object, const U2DataId &id, U2OpStatus &os);
     virtual QList<U2DataId> getObjects(qint64 offset, qint64 count, U2OpStatus &os);
     virtual QList<U2DataId> getObjects(U2DataType type, qint64 offset, qint64 count, U2OpStatus &os);
-    virtual QList<U2DataId> getParents(const U2DataId& entityId, U2OpStatus &os);
+    virtual QList<U2DataId> getParents(const U2DataId &entityId, U2OpStatus &os);
     virtual QStringList getFolders(U2OpStatus &os);
     virtual qint64 countObjects(const QString &folder, U2OpStatus &os);
     virtual QList<U2DataId> getObjects(const QString &folder, qint64 offset, qint64 count, U2OpStatus &os);
-    virtual QStringList getObjectFolders(const U2DataId& objectId, U2OpStatus &os);
-    virtual qint64 getObjectVersion(const U2DataId& objectId, U2OpStatus &os);
+    virtual QStringList getObjectFolders(const U2DataId &objectId, U2OpStatus &os);
+    virtual qint64 getObjectVersion(const U2DataId &objectId, U2OpStatus &os);
     virtual qint64 getFolderLocalVersion(const QString &folder, U2OpStatus &os);
     virtual qint64 getFolderGlobalVersion(const QString &folder, U2OpStatus &os);
-    virtual U2DbiIterator<U2DataId>* getObjectsByVisualName(const QString& visualName, U2DataType type, U2OpStatus& os);
+    virtual U2DbiIterator<U2DataId> *getObjectsByVisualName(const QString &visualName, U2DataType type, U2OpStatus &os);
     virtual void renameObject(const U2DataId &id, const QString &newName, U2OpStatus &os);
     virtual void setObjectRank(const U2DataId &objectId, U2DbiObjectRank newRank, U2OpStatus &os);
-    virtual U2DbiObjectRank getObjectRank(const U2DataId &objectId, U2OpStatus& os);
-    virtual void setParent(const U2DataId& parentId, const U2DataId& childId, U2OpStatus& os);
+    virtual U2DbiObjectRank getObjectRank(const U2DataId &objectId, U2OpStatus &os);
+    virtual void setParent(const U2DataId &parentId, const U2DataId &childId, U2OpStatus &os);
 
 private:
     SamtoolsBasedDbi &dbi;
     QList<U2DataId> assemblyObjectIds;
-}; // SamtoolsBasedObjectDbi
+};    // SamtoolsBasedObjectDbi
 
 int bamFetchFunction(const bam1_t *b, void *data);
 
 class SamtoolsBasedReadsIterator : public U2DbiIterator<U2AssemblyRead> {
     friend int bamFetchFunction(const bam1_t *b, void *data);
+
 public:
     SamtoolsBasedReadsIterator(int assemblyId, const U2Region &r, SamtoolsBasedDbi &dbi, const QByteArray &nameFilter = "");
-    virtual ~SamtoolsBasedReadsIterator() {}
+    virtual ~SamtoolsBasedReadsIterator() {
+    }
 
     virtual bool hasNext();
     virtual U2AssemblyRead next();
@@ -95,7 +97,7 @@ private:
 private:
     void fetchNextChunk();
     void applyNameFilter();
-}; // SamtoolsBasedReadsIterator
+};    // SamtoolsBasedReadsIterator
 
 class SamtoolsBasedAssemblyDbi : public U2SimpleAssemblyDbi {
 public:
@@ -120,7 +122,7 @@ private:
     SamtoolsBasedDbi &dbi;
 
     U2Region getCorrectRegion(const U2DataId &assemblyId, const U2Region &r, U2OpStatus &os);
-}; // SamtoolsBasedAssemblyDbi
+};    // SamtoolsBasedAssemblyDbi
 
 class SamtoolsBasedAttributeDbi : public U2SimpleAttributeDbi {
 public:
@@ -134,11 +136,11 @@ public:
     virtual U2StringAttribute getStringAttribute(const U2DataId &attributeId, U2OpStatus &os);
     virtual U2ByteArrayAttribute getByteArrayAttribute(const U2DataId &attributeId, U2OpStatus &os);
 
-    virtual QList<U2DataId> sort(const U2DbiSortConfig& sc, qint64 offset, qint64 count, U2OpStatus& os);
+    virtual QList<U2DataId> sort(const U2DbiSortConfig &sc, qint64 offset, qint64 count, U2OpStatus &os);
 
 private:
     SamtoolsBasedDbi &dbi;
-}; // SamtoolsBasedAttributeDbi
+};    // SamtoolsBasedAttributeDbi
 
 /**
  * This DBI could be initialized to work only with sorted indexed BAM files.
@@ -150,7 +152,9 @@ public:
 
     virtual void init(const QHash<QString, QString> &properties, const QVariantMap &persistentData, U2OpStatus &os);
     virtual QVariantMap shutdown(U2OpStatus &os);
-    virtual QHash<QString, QString> getDbiMetaInfo(U2OpStatus &) {return QHash<QString, QString>();}
+    virtual QHash<QString, QString> getDbiMetaInfo(U2OpStatus &) {
+        return QHash<QString, QString>();
+    }
     virtual U2DataType getEntityTypeById(const U2DataId &id) const;
     virtual U2ObjectDbi *getObjectDbi();
     virtual U2AssemblyDbi *getAssemblyDbi();
@@ -177,23 +181,25 @@ private:
      *  Returns true if all right
      */
     bool initBamStructures(const GUrl &fileName);
-}; // SamtoolsBasedDbi
+};    // SamtoolsBasedDbi
 
 class SamtoolsBasedDbiFactory : public U2DbiFactory {
 public:
     SamtoolsBasedDbiFactory();
 
     virtual U2Dbi *createDbi();
-    virtual U2DbiFactoryId getId()const;
+    virtual U2DbiFactoryId getId() const;
     virtual FormatCheckResult isValidDbi(const QHash<QString, QString> &properties, const QByteArray &rawData, U2OpStatus &os) const;
-    virtual GUrl id2Url(const U2DbiId& id) const {return GUrl(id, GUrl_File);}
-    virtual bool isDbiExists(const U2DbiId& id) const;
+    virtual GUrl id2Url(const U2DbiId &id) const {
+        return GUrl(id, GUrl_File);
+    }
+    virtual bool isDbiExists(const U2DbiId &id) const;
 
 public:
     static const QString ID;
-}; // SamtoolsBasedDbiFactory
+};    // SamtoolsBasedDbiFactory
 
-} // BAM
-} // U2
+}    // namespace BAM
+}    // namespace U2
 
-#endif // _U2_SAMTOOLS_BASED_DBI_H_
+#endif    // _U2_SAMTOOLS_BASED_DBI_H_

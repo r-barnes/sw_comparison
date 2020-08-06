@@ -31,14 +31,16 @@ class InSilicoPcrOPWidgetFactory : public OPWidgetFactory {
 public:
     InSilicoPcrOPWidgetFactory();
 
-    // OPWidgetFactory
-    QWidget * createWidget(GObjectView *objView);
-    OPGroupParameters getOPGroupParameters();
-    bool passFiltration(OPFactoryFilterVisitorInterface *filter);
+    QWidget *createWidget(GObjectView *objView, const QVariantMap &options) override;
+
+    OPGroupParameters getOPGroupParameters() override;
+
+    bool passFiltration(OPFactoryFilterVisitorInterface *filter) override;
+
 private:
     static const QString GROUP_DOC_PAGE;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_IN_SILICO_PCR_OP_WIDGET_FACTORY_H_
+#endif    // _U2_IN_SILICO_PCR_OP_WIDGET_FACTORY_H_

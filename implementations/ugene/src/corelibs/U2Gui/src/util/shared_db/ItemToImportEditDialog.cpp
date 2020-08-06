@@ -19,20 +19,20 @@
  * MA 02110-1301, USA.
  */
 
+#include "ItemToImportEditDialog.h"
+
 #include <U2Gui/HelpButton.h>
 
 #include "ImportOptionsWidget.h"
-#include "ItemToImportEditDialog.h"
 #include "ui_ItemToImportEditDialog.h"
 
 namespace U2 {
 
-ItemToImportEditDialog::ItemToImportEditDialog(const QString &item, const QString &folder, const ImportToDatabaseOptions& options, QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui_ItemToImportEditDialog)
-{
+ItemToImportEditDialog::ItemToImportEditDialog(const QString &item, const QString &folder, const ImportToDatabaseOptions &options, QWidget *parent)
+    : QDialog(parent),
+      ui(new Ui_ItemToImportEditDialog) {
     ui->setupUi(this);
-    new HelpButton(this, ui->buttonBox, "24742694");
+    new HelpButton(this, ui->buttonBox, "46501291");
     init(item, folder, options);
 }
 
@@ -48,9 +48,9 @@ ImportToDatabaseOptions ItemToImportEditDialog::getOptions() const {
     return ui->optionsWidget->getOptions();
 }
 
-void ItemToImportEditDialog::init(const QString &item, const QString &folder, const ImportToDatabaseOptions& options) {
+void ItemToImportEditDialog::init(const QString &item, const QString &folder, const ImportToDatabaseOptions &options) {
     ui->optionsWidget->init(folder, options);
     ui->leItem->setText(item);
 }
 
-}   // namespace U2
+}    // namespace U2

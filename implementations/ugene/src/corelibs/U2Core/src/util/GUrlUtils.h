@@ -22,12 +22,12 @@
 #ifndef _U2_GURL_UTILS_H_
 #define _U2_GURL_UTILS_H_
 
-#include <U2Core/global.h>
-#include <U2Core/GUrl.h>
-
 #include <QSet>
 #include <QStringList>
 #include <QUrl>
+
+#include <U2Core/GUrl.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -41,15 +41,14 @@ class U2OpStatus;
 class U2CORE_EXPORT GUrlUtils : public QObject {
     Q_OBJECT
 public:
-
     //gets the uncompressed extension for the URL. Filters 'gz' like suffixes
-    static QString getUncompressedExtension(const GUrl& url);
+    static QString getUncompressedExtension(const GUrl &url);
 
     //gets the complete base file name without ignoring 'gz' suffix
     static QString getUncompressedCompleteBaseName(const GUrl &url);
 
     // ensures that url ends with one of the exts
-    static GUrl     ensureFileExt(const GUrl& url, const QStringList& typeExt);
+    static GUrl ensureFileExt(const GUrl &url, const QStringList &typeExt);
 
     // Changes the file's extension without affecting the ".gz" extension, returns an empty GUrl if any error occurs
     // doesn't remove the previous extension if it doesn't belong to format defined by @oldFormatId
@@ -59,55 +58,56 @@ public:
     static GUrl changeFileExt(const GUrl &url, const DocumentFormatId &newFormatId);
 
     // returns url suitable for backup renaming (increments name for rolling file until non-existing name found)
-    static QString  rollFileName(const QString& url, const QString& rolledSuffix, const QSet<QString>& excludeList = QSet<QString>());
+    static QString rollFileName(const QString &url, const QString &rolledSuffix, const QSet<QString> &excludeList = QSet<QString>());
 
     // same as above but with empty suffix
-    static QString  rollFileName(const QString& url, const QSet<QString>& excludeList) { return rollFileName(url, "", excludeList);}
+    static QString rollFileName(const QString &url, const QSet<QString> &excludeList) {
+        return rollFileName(url, "", excludeList);
+    }
 
     // returns a list of existing files with rolled @originalUrl
-    static QStringList getRolledFilesList(const QString& originalUrl, const QString& rolledSuffix);
+    static QStringList getRolledFilesList(const QString &originalUrl, const QString &rolledSuffix);
 
     // inserts a suffix before the extension if is exists and returns the new url
     static QString insertSuffix(const QString &originalUrl, const QString &suffix);
 
     // renames actual file by rolling its name
-    static bool renameFileWithNameRoll(const QString& url, TaskStateInfo& ti, const QSet<QString>& excludeList = QSet<QString>(), Logger* log = NULL);
+    static bool renameFileWithNameRoll(const QString &url, TaskStateInfo &ti, const QSet<QString> &excludeList = QSet<QString>(), Logger *log = NULL);
 
     // converts GUrl to QUrl
-    static QUrl gUrl2qUrl( const GUrl& gurl);
+    static QUrl gUrl2qUrl(const GUrl &gurl);
 
-    static QList<QUrl> gUrls2qUrls( const QList<GUrl>& gurls);
+    static QList<QUrl> gUrls2qUrls(const QList<GUrl> &gurls);
 
     // converts QUrl to GUrl
-    static GUrl qUrl2gUrl( const QUrl& qurl);
+    static GUrl qUrl2gUrl(const QUrl &qurl);
 
-    static QList<GUrl> qUrls2gUrls( const QList<QUrl>& qurls);
-
+    static QList<GUrl> qUrls2gUrls(const QList<QUrl> &qurls);
 
     // adds baseSuffix to the url. Ensures that URL ends with one of the exts from typeExt
-    static QString prepareFileName(const QString& url, const QString& baseSuffix, const QStringList& typeExt);
+    static QString prepareFileName(const QString &url, const QString &baseSuffix, const QStringList &typeExt);
 
     // adds count to the url. Ensures that URL ends with one of the exts from typeExt
-    static QString prepareFileName(const QString& url, int count, const QStringList& typeExt);
+    static QString prepareFileName(const QString &url, int count, const QStringList &typeExt);
 
     // checks that file path is valid: creates required folder if needed.
     // Returns canonical path to file. Does not create nor remove file, affects just folder
     // Returns empty string and error message if some error occurs
     // Sample usage: processing URLs in "save file" inputs
-    static QString prepareFileLocation(const QString& filePath, U2OpStatus& os);
+    static QString prepareFileLocation(const QString &filePath, U2OpStatus &os);
 
     // checks that dir path is valid. Creates the folder if needed.
     // Returns canonical folder path. Does not affect folder if already exists.
     // Returns empty string and error message if some error occurs
     // Sample usage: processing URLs in "save dir" inputs
-    static QString prepareDirLocation(const QString& dirPath, U2OpStatus& os);
+    static QString prepareDirLocation(const QString &dirPath, U2OpStatus &os);
 
-    static QString prepareTmpFileLocation(const QString& dir, const QString& prefix, const QString& ext, U2OpStatus& os);
+    static QString prepareTmpFileLocation(const QString &dir, const QString &prefix, const QString &ext, U2OpStatus &os);
 
-    static void removeDir(const QString& path, U2OpStatus& os);
+    static void removeDir(const QString &path, U2OpStatus &os);
 
     /*removes file if exists and if its a file*/
-    static void removeFile(const QString& filePath, U2OpStatus& os);
+    static void removeFile(const QString &filePath, U2OpStatus &os);
 
     //checks if filePath is writable
     //creates and deletes a tmp file to check permissions
@@ -119,13 +119,13 @@ public:
     static QString getDefaultDataPath();
 
     //Get quoted input string if it has spaces
-    static QString getQuotedString(const QString& inString);
+    static QString getQuotedString(const QString &inString);
 
     // Creates the folder with a rolled path: @path + @suffix + "num". Returns the new path
     static QString createDirectory(const QString &path, const QString &suffix, U2OpStatus &os);
 
     // If url is local returns values from it, else returns default values: default data dir path from settings and @defaultBaseFileName
-    static void getLocalPathFromUrl(const GUrl& url, const QString& defaultBaseFileName, QString& dirPath, QString& baseFileName);
+    static void getLocalPathFromUrl(const GUrl &url, const QString &defaultBaseFileName, QString &dirPath, QString &baseFileName);
 
     // If url is local returns values from it, else returns default values
     static QString getLocalUrlFromUrl(const GUrl &url, const QString &defaultBaseFileName, const QString &dotExtention, const QString &suffix);
@@ -151,6 +151,6 @@ public:
     static bool containSpaces(const QString &string);
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

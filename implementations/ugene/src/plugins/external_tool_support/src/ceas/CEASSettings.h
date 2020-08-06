@@ -66,26 +66,26 @@ public:
     void setDump(bool value);
 
     QStringList getArgumentList() const;
-    const QString & getImageFilePath() const;
-    const QString & getImageFileFormat() const;
-    const QString & getAnnsFilePath() const;
+    const QString &getImageFilePath() const;
+    const QString &getImageFileFormat() const;
+    const QString &getAnnsFilePath() const;
 
 private:
-    QString bedFile;            // --bed=
-    QString wigFile;            // --wig=
-    QString gdbFile;            // --gt=
-    QString extraBedFile;       // --ebed=""
-    QString experimentName;     // --name=""
-    QList<int> sizes;           // --sizes=1000,2000,3000
-    QList<int> bisizes;         // --bisizes=2500,5000
-    bool bg;                    // --bg
-    int span;                   // --span=3000
-    int profilingRes;           // --pf-res=50
-    int relativeDist;           // --rel-dist=3000
-    QStringList geneGroups;     // --gn-groups=""
-    QStringList geneNames;      // --gn-group-names=""
-    bool name2;                 // --gname2
-    bool dump;                  // --dump
+    QString bedFile;    // --bed=
+    QString wigFile;    // --wig=
+    QString gdbFile;    // --gt=
+    QString extraBedFile;    // --ebed=""
+    QString experimentName;    // --name=""
+    QList<int> sizes;    // --sizes=1000,2000,3000
+    QList<int> bisizes;    // --bisizes=2500,5000
+    bool bg;    // --bg
+    int span;    // --span=3000
+    int profilingRes;    // --pf-res=50
+    int relativeDist;    // --rel-dist=3000
+    QStringList geneGroups;    // --gn-groups=""
+    QStringList geneNames;    // --gn-group-names=""
+    bool name2;    // --gname2
+    bool dump;    // --dump
 
     QString imageFile;
     QString imageFormat;
@@ -96,6 +96,6 @@ private:
     void initializeDefaults();
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_CEAS_SETTINGS_
+#endif    // _U2_CEAS_SETTINGS_

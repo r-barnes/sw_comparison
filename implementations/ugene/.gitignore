@@ -58,3 +58,7 @@ cmake-build-*
 
 # NGS taxonomy and databases
 data/ngs_classification
+
+# Local/tmp files for personal developer needs in the same root folder
+# to be available from IDE context.
+local/

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "AppSettingsImpl.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/AppResources.h>
 #include <U2Core/FormatSettings.h>
@@ -29,8 +31,6 @@
 #include <U2Core/UserApplicationsSettings.h>
 
 #include <U2Test/TestRunnerSettings.h>
-
-#include "AppSettingsImpl.h"
 
 namespace U2 {
 
@@ -59,5 +59,4 @@ void AppSettingsImpl::addPublicDbCredentials2Settings() {
     passStorage->addEntry(U2DbiUtils::PUBLIC_DATABASE_URL, U2DbiUtils::PUBLIC_DATABASE_PASSWORD, true);
 }
 
-} // namespace U2
-
+}    // namespace U2

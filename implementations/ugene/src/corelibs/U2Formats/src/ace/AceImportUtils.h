@@ -30,11 +30,15 @@ namespace U2 {
 
 class Assembly {
 public:
-    class Sequence {   // it is consensus in the ACE format specification
+    class Sequence {    // it is consensus in the ACE format specification
     public:
-        Sequence() : offset(0), isComplemented(false) {}
+        Sequence()
+            : offset(0), isComplemented(false) {
+        }
 
-        bool isValid() const { return !name.isEmpty() && offset >= 0; }
+        bool isValid() const {
+            return !name.isEmpty() && offset >= 0;
+        }
 
         QByteArray data;
         QByteArray name;
@@ -44,7 +48,7 @@ public:
 
     Assembly();
 
-    const Sequence & getReference();
+    const Sequence &getReference();
     void setReference(const Sequence &reference);
 
     QList<U2AssemblyRead> getReads() const;
@@ -71,11 +75,13 @@ public:
 
     Assembly getAssembly();
     bool isFinish();
-    int getContigsCount() { return contigsCount; }
+    int getContigsCount() {
+        return contigsCount;
+    }
 
 private:
     void skipBreaks(IOAdapter *io, char *buff, qint64 *len);
-    int getContigCount(const QByteArray& cur_line);
+    int getContigCount(const QByteArray &cur_line);
     int getSubString(QByteArray &line, int pos);
     int getReadsCount(const QByteArray &cur_line);
     void parseConsensus(IOAdapter *io, char *buff, QSet<QByteArray> &names, QByteArray &headerLine, Assembly::Sequence &consensus);
@@ -90,7 +96,7 @@ private:
     void parseRdAndQaTag(U2::IOAdapter *io, char *buff, QSet<QByteArray> &names, Assembly::Sequence &read);
     int getClearRangeStart(const QByteArray &cur_line);
     int getClearRangeEnd(const QByteArray &cur_line);
-    void formatSequence(QByteArray& data);
+    void formatSequence(QByteArray &data);
 
     IOAdapter *io;
     U2OpStatus *os;
@@ -129,6 +135,6 @@ private:
     U2OpStatus *os;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_ACE_IMPORT_UTILS_H_
+#endif    // _U2_ACE_IMPORT_UTILS_H_

@@ -19,13 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "ClarkTests.h"
+
 #include <QDomElement>
 #include <QFileInfo>
 #include <QTextStream>
 
 #include <U2Core/U2SafePoints.h>
-
-#include "ClarkTests.h"
 
 namespace U2 {
 
@@ -35,12 +35,12 @@ const QString GTest_CompareClarkDatabaseMetafiles::DATABASE1_PREFIXES = "databas
 const QString GTest_CompareClarkDatabaseMetafiles::DATABASE2_PREFIXES = "database2-prefixes";
 
 const QString GTest_CompareClarkDatabaseMetafiles::DATABASE_PREFIX_PLACEHOLDER = "!@#$%^&*()";
-const QStringList GTest_CompareClarkDatabaseMetafiles::DATABASE_METAFILES = { ".custom",
+const QStringList GTest_CompareClarkDatabaseMetafiles::DATABASE_METAFILES = {".custom",
                                                                              ".custom.fileToAccssnTaxID",
                                                                              ".custom.fileToTaxIDs",
                                                                              ".custom_rejected",
                                                                              "files_excluded.txt",
-                                                                             "targets.txt" };
+                                                                             "targets.txt"};
 const QString GTest_CompareClarkDatabaseMetafiles::PREFIXES_SEPARATOR = ";";
 
 void GTest_CompareClarkDatabaseMetafiles::init(XMLTestFormat *, const QDomElement &element) {
@@ -117,19 +117,26 @@ Task::ReportResult GTest_CompareClarkDatabaseMetafiles::report() {
 
             CHECK_EXT(metafile1Line == metafile2Line,
                       setError(QString("Metafiles '%1' and '%2' differs at line %3: '%4' and '%5'")
-                               .arg(metafile1Url).arg(metafile2Url).arg(++counter).arg(metafile1Line).arg(metafile2Line)), ReportResult_Finished);
+                                   .arg(metafile1Url)
+                                   .arg(metafile2Url)
+                                   .arg(++counter)
+                                   .arg(metafile1Line)
+                                   .arg(metafile2Line)),
+                      ReportResult_Finished);
         }
 
         CHECK_EXT(metafileStream1.atEnd() && metafileStream2.atEnd(),
                   setError(QString("Metafiles '%1' and '%2' have different number of lines")
-                           .arg(metafile1Url).arg(metafile2Url)), ReportResult_Finished);
+                               .arg(metafile1Url)
+                               .arg(metafile2Url)),
+                  ReportResult_Finished);
     }
 
     return ReportResult_Finished;
 }
 
 QList<XMLTestFactory *> ClarkTests::createTestFactories() {
-    return { GTest_CompareClarkDatabaseMetafiles::createFactory() };
+    return {GTest_CompareClarkDatabaseMetafiles::createFactory()};
 }
 
-}   // naamespace U2
+}    // namespace U2

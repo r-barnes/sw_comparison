@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "GFFFormat.h"
+
 #include <QScopedArrayPointer>
 
 #include <U2Core/AnnotationTableObject.h>
@@ -26,8 +28,8 @@
 #include <U2Core/GObjectReference.h>
 #include <U2Core/GObjectRelationRoles.h>
 #include <U2Core/IOAdapter.h>
-#include <U2Core/Log.h>
 #include <U2Core/L10n.h>
+#include <U2Core/Log.h>
 #include <U2Core/TextUtils.h>
 #include <U2Core/U1AnnotationUtils.h>
 #include <U2Core/U2DbiUtils.h>
@@ -37,28 +39,26 @@
 #include <U2Core/U2SequenceUtils.h>
 
 #include "DocumentFormatUtils.h"
-#include "GFFFormat.h"
 
+namespace U2 {
 
-namespace U2{
-
-#define SAVE_LINE_LEN 70            //line length for
-#define DEFAULT_EMPTY_FASTA_SEQUENCE_NAME "EMPTY_NAME"            //line length for
+#define SAVE_LINE_LEN 70    //line length for
+#define DEFAULT_EMPTY_FASTA_SEQUENCE_NAME "EMPTY_NAME"    //line length for
 
 const int GFFFormat::LOCAL_READ_BUFFER_SIZE = 32768;
 
-GFFFormat::GFFFormat(QObject* p) : TextDocumentFormat(p, BaseDocumentFormats::GFF, DocumentFormatFlag_SupportWriting, QStringList("gff")){
+GFFFormat::GFFFormat(QObject *p)
+    : TextDocumentFormat(p, BaseDocumentFormats::GFF, DocumentFormatFlag_SupportWriting, QStringList("gff")) {
     formatName = tr("GFF");
     formatDescription = tr("GFF is a format used for storing features and annotations");
-    supportedObjectTypes+=GObjectTypes::ANNOTATION_TABLE;
-    supportedObjectTypes+=GObjectTypes::SEQUENCE;
+    supportedObjectTypes += GObjectTypes::ANNOTATION_TABLE;
+    supportedObjectTypes += GObjectTypes::SEQUENCE;
 }
 
-
-Document* GFFFormat::loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& _fs, U2OpStatus& os) {
+Document *GFFFormat::loadTextDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &_fs, U2OpStatus &os) {
     CHECK_EXT(io != NULL && io->isOpen(), os.setError(L10N::badArgument("IO adapter")), NULL);
     QVariantMap fs = _fs;
-    QList<GObject*> objects;
+    QList<GObject *> objects;
 
     load(io, dbiRef, objects, fs, os);
 
@@ -67,11 +67,11 @@ Document* GFFFormat::loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, con
     DocumentFormatUtils::updateFormatHints(objects, fs);
     fs[DocumentReadingMode_LoadAsModified] = os.hasWarnings();
 
-    Document* doc = new Document(this, io->getFactory(), io->getURL(), dbiRef, objects, fs);
+    Document *doc = new Document(this, io->getFactory(), io->getURL(), dbiRef, objects, fs);
     return doc;
 }
 
-int readLongLine (QString &buffer, IOAdapter* io, QScopedArrayPointer<char> &charbuff, int readBufferSize, U2OpStatus& os) {
+int readLongLine(QString &buffer, IOAdapter *io, QScopedArrayPointer<char> &charbuff, int readBufferSize, U2OpStatus &os) {
     int len;
     buffer.clear();
     do {
@@ -85,24 +85,24 @@ int readLongLine (QString &buffer, IOAdapter* io, QScopedArrayPointer<char> &cha
     return buffer.length();
 }
 
-bool validateHeader(QStringList words){
+bool validateHeader(QStringList words) {
     if (!words[0].startsWith('#')) {
         return false;
     }
     bool isOk = false;
-    if(words.size() < 2){
+    if (words.size() < 2) {
         ioLog.error(GFFFormat::tr("Parsing error: invalid header"));
     }
     words[0] = words[0].remove("#");
-    if(!words[0].startsWith("gff-version")){
+    if (!words[0].startsWith("gff-version")) {
         ioLog.error(GFFFormat::tr("Parsing error: file does not contain version header"));
-    }else{
+    } else {
         int ver = words[1].toInt(&isOk);
-        if(!isOk){
+        if (!isOk) {
             ioLog.error(GFFFormat::tr("Parsing error: format version is not an integer"));
         }
         //is version supported
-        if(ver != 3){
+        if (ver != 3) {
             ioLog.info(GFFFormat::tr("Parsing error: GFF version %1 is not supported").arg(ver));
         }
     }
@@ -120,17 +120,17 @@ static QMap<QString, QString> initEscapeCharactersMap() {
 }
 static const QMap<QString, QString> escapeCharacters = initEscapeCharactersMap();
 
-static QString escapeBadCharacters(const QString & val) {
+static QString escapeBadCharacters(const QString &val) {
     QString ret(val);
-    foreach(const QString & key, escapeCharacters.keys()) {
+    foreach (const QString &key, escapeCharacters.keys()) {
         ret.replace(key, escapeCharacters.value(key));
     }
     return ret;
 }
 
-static QString fromEscapedString(const QString & val) {
+static QString fromEscapedString(const QString &val) {
     QString ret(val);
-    foreach(const QString & val, escapeCharacters.values()) {
+    foreach (const QString &val, escapeCharacters.values()) {
         ret.replace(val, escapeCharacters.key(val));
     }
     return ret;
@@ -138,12 +138,11 @@ static QString fromEscapedString(const QString & val) {
 
 U2SequenceObject *importSequence(DNASequence &sequence,
                                  const QString &objName,
-                                 QList<GObject*>& objects,
+                                 QList<GObject *> &objects,
                                  U2SequenceImporter &seqImporter,
-                                 const U2DbiRef& dbiRef,
-                                 const QString& folder,
-                                 U2OpStatus& os)
-{
+                                 const U2DbiRef &dbiRef,
+                                 const QString &folder,
+                                 U2OpStatus &os) {
     seqImporter.startSequence(os, dbiRef, folder, sequence.getName(), sequence.circular);
     CHECK_OP(os, NULL);
     seqImporter.addBlock(sequence.seq.constData(), sequence.seq.length(), os);
@@ -160,9 +159,7 @@ U2SequenceObject *importSequence(DNASequence &sequence,
     return seqObj;
 }
 
-void addAnnotations(const QList<SharedAnnotationData> &annList, QList<GObject *> &objects, QSet<AnnotationTableObject *> &atoSet, const QString &seqName,
-    const U2DbiRef &dbiRef, const QVariantMap& hints)
-{
+void addAnnotations(const QList<SharedAnnotationData> &annList, QList<GObject *> &objects, QSet<AnnotationTableObject *> &atoSet, const QString &seqName, const U2DbiRef &dbiRef, const QVariantMap &hints) {
     if (!annList.isEmpty()) {
         QString atoName = seqName + FEATURES_TAG;
         AnnotationTableObject *ato = NULL;
@@ -185,14 +182,13 @@ void addAnnotations(const QList<SharedAnnotationData> &annList, QList<GObject *>
 // This function works as QString::split(), however it doesn't take
 // into account separator inside of quoted string
 
-static QStringList splitGffAttributes(const QString& line, char sep) {
+static QStringList splitGffAttributes(const QString &line, char sep) {
     QStringList result;
     QString buf;
     int len = line.length();
     bool insideOfQuotes = false;
 
     for (int i = 0; i < len; ++i) {
-
         char c = line.at(i).toLatin1();
 
         if (c == '\"') {
@@ -220,14 +216,15 @@ static QStringList splitGffAttributes(const QString& line, char sep) {
 #define CHECK_OBJECT_COUNT() \
     if (objectsCountLimit > 0 && objects.size() >= objectsCountLimit) { \
         os.setError(GFFFormat::tr("File \"%1\" contains too many sequences to be displayed. " \
-            "However, you can process these data using instruments from the menu <i>Tools -> NGS data analysis</i> " \
-            "or pipelines built with Workflow Designer.").arg(io->getURL().getURLString())); \
+                                  "However, you can process these data using instruments from the menu <i>Tools -> NGS data analysis</i> " \
+                                  "or pipelines built with Workflow Designer.") \
+                        .arg(io->getURL().getURLString())); \
         break; \
     }
 
-void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& objects, const QVariantMap& hints, U2OpStatus& os) {
+void GFFFormat::load(IOAdapter *io, const U2DbiRef &dbiRef, QList<GObject *> &objects, const QVariantMap &hints, U2OpStatus &os) {
     DbiOperationsBlock opBlock(dbiRef, os);
-    CHECK_OP(os,);
+    CHECK_OP(os, );
     Q_UNUSED(opBlock);
 
     QScopedArrayPointer<char> buff(new char[LOCAL_READ_BUFFER_SIZE]);
@@ -239,10 +236,10 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
     QStringList words = qstrbuf.split(QRegExp("\\s+"));
     bool isOk;
     QSet<AnnotationTableObject *> atoSet;
-    QMap <QString, U2SequenceObject*> seqMap;
+    QMap<QString, U2SequenceObject *> seqMap;
     //header validation
     bool skipHeader = validateHeader(words);
-    int lineNumber = 2;//because first line checked in method validateHeader above
+    int lineNumber = 2;    //because first line checked in method validateHeader above
     if (!skipHeader) {
         io->skip(-io->bytesRead());
         CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
@@ -254,7 +251,7 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
     const QString folder = hints.value(DBI_FOLDER_HINT, U2ObjectDbi::ROOT_FOLDER).toString();
 
     QMap<QString, AnnotationData *> joinedAnnotations;
-    QMap<QString, QList<AnnotationData *> > annotationGroups;
+    QMap<QString, QList<AnnotationData *>> annotationGroups;
     QMap<AnnotationData *, AnnotationTableObject *> annotationTables;
     bool fastaSectionStarts = false;
     bool anyNamelessSequence = false;
@@ -296,14 +293,14 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
                 if (isNameModified && firstFasta) {
                     seq.append(words[0]);
                 }
-            } else if(words[0].startsWith(">")) {
+            } else if (words[0].startsWith(">")) {
                 CHECK_OBJECT_COUNT();
                 DNASequence sequence(objName, seq);
                 sequence.info.insert(DNAInfo::FASTA_HDR, objName);
                 U2SequenceObject *seqObj = importSequence(sequence, objName, objects, seqImporter, dbiRef, folder, os);
                 CHECK_OP(os, );
 
-                SAFE_POINT(seqObj != NULL, "DocumentFormatUtils::addSequenceObject returned NULL but didn't set error",);
+                SAFE_POINT(seqObj != NULL, "DocumentFormatUtils::addSequenceObject returned NULL but didn't set error", );
                 dbiObjects.objects << seqObj->getSequenceRef().entityId;
 
                 seqMap.insert(objName, seqObj);
@@ -312,31 +309,31 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
                 anyNamelessSequence = isNameModified || anyNamelessSequence;
                 seq = "";
             } else {
-                if(words.size() > 1){
+                if (words.size() > 1) {
                     os.setError(tr("Parsing error: sequence in FASTA sequence has whitespaces at line %1").arg(lineNumber));
                     return;
                 }
                 seq.append(words[0]);
             }
         } else if (!words[0].startsWith("#")) {
-            if(words.size() != 9){
+            if (words.size() != 9) {
                 os.setError(tr("Parsing error: too few fields at line %1").arg(lineNumber));
                 return;
             }
             //annotation's region
             int start = words[3].toInt(&isOk);
-            if(!isOk){
+            if (!isOk) {
                 os.setError(tr("Parsing error: start position at line %1 is not integer").arg(lineNumber));
                 return;
             }
 
             int end = words[4].toInt(&isOk);
-            if(!isOk){
+            if (!isOk) {
                 os.setError(tr("Parsing error: end position at line %1 is not integer").arg(lineNumber));
                 return;
             }
 
-            if(start > end){
+            if (start > end) {
                 os.setError(tr("Parsing error: incorrect annotation region at line %1").arg(lineNumber));
                 return;
             }
@@ -345,7 +342,7 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
             U2Region range(start, end - start);
 
             QString groupName = words[2];
-            QString annName = groupName; //by default annotation named as group
+            QString annName = groupName;    //by default annotation named as group
             //annotation's qualifiers from attributes
             AnnotationData *ad = new AnnotationData;
             AnnotationData *existingAnnotation = NULL;
@@ -358,9 +355,9 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
             if (-1 != commentCharIndex) {
                 words[8] = words[8].left(commentCharIndex);
             }
-            if(words[8] != "."){
+            if (words[8] != ".") {
                 QStringList pairs = splitGffAttributes(words[8], ';');
-                foreach(QString p, pairs){
+                foreach (QString p, pairs) {
                     QStringList qual = splitGffAttributes(p, '=');
                     if (qual.size() == 1) {
                         // save field as single attribute
@@ -372,7 +369,7 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
                             annName = qual[1];
                         } else {
                             ad->qualifiers.append(U2Qualifier(qual[0], qual[1]));
-                            if(qual[0] == "ID"){
+                            if (qual[0] == "ID") {
                                 id = qual[1];
                                 if (joinedAnnotations.contains(id)) {
                                     existingAnnotation = *(joinedAnnotations.find(id));
@@ -382,7 +379,7 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
                                     } else {
                                         existingAnnotation->location->regions << range;
                                     }
-                                }else{
+                                } else {
                                     newJoined = true;
                                 }
                             }
@@ -396,7 +393,7 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
 
             //if annotation joined, don't rewrite it data
             if (NULL == existingAnnotation) {
-                if(newJoined){
+                if (newJoined) {
                     joinedAnnotations.insert(id, ad);
                 }
                 ad->location->regions << range;
@@ -462,9 +459,9 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
     }
 
     // add annotation data to annotation table
-    foreach(const QString& key, annotationGroups.keys()) {
+    foreach (const QString &key, annotationGroups.keys()) {
         QList<AnnotationData *> data = annotationGroups.value(key);
-        foreach(AnnotationData* ann, data) {
+        foreach (AnnotationData *ann, data) {
             SAFE_POINT(data.contains(ann) && annotationTables.contains(ann), "Unexpected annotation!", );
 
             annotationTables[ann]->addAnnotations(QList<SharedAnnotationData>() << SharedAnnotationData(ann), key);
@@ -472,7 +469,7 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
     }
 
     //handling last fasta sequence
-    if(fastaSectionStarts){
+    if (fastaSectionStarts) {
         if (fastaHeaderName == DEFAULT_EMPTY_FASTA_SEQUENCE_NAME) {
             objName = extractSeqObjectName(fastaHeaderName, words, names, isNameModified);
             anyNamelessSequence = isNameModified || anyNamelessSequence;
@@ -487,7 +484,7 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
             delete seqObj;
             return;
         }
-        SAFE_POINT(seqObj != NULL, "DocumentFormatUtils::addSequenceObject returned NULL but didn't set error",);
+        SAFE_POINT(seqObj != NULL, "DocumentFormatUtils::addSequenceObject returned NULL but didn't set error", );
         seqMap.insert(objName, seqObj);
         dbiObjects.objects << seqObj->getSequenceRef().entityId;
         addAnnotations(seqImporter.getCaseAnnotations(), objects, atoSet, fastaHeaderName, dbiRef, hints);
@@ -497,7 +494,7 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
     foreach (AnnotationTableObject *ob, atoSet) {
         QString objName = ob->getGObjectName();
         objName.replace(FEATURES_TAG, SEQUENCE_TAG);
-        if(seqMap.contains(objName)){
+        if (seqMap.contains(objName)) {
             GObjectReference sequenceRef(GObjectReference(io->getURL().getURLString(), "", GObjectTypes::SEQUENCE));
             sequenceRef.objName = objName;
             ob->addObjectRelation(GObjectRelation(sequenceRef, ObjectRole_Sequence));
@@ -509,14 +506,14 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
     }
 }
 
-FormatCheckResult GFFFormat::checkRawTextData(const QByteArray& rawData, const GUrl&) const {
-    const char* data = rawData.constData();
+FormatCheckResult GFFFormat::checkRawTextData(const QByteArray &rawData, const GUrl &) const {
+    const char *data = rawData.constData();
     int size = rawData.size();
     int n = TextUtils::skip(TextUtils::WHITES, data, size);
     int newSize = size - n;
 
     bool hasBinaryData = TextUtils::contains(TextUtils::BINARY, data, size);
-    if(hasBinaryData){
+    if (hasBinaryData) {
         return FormatDetection_NotMatched;
     }
 
@@ -526,21 +523,21 @@ FormatCheckResult GFFFormat::checkRawTextData(const QByteArray& rawData, const G
     QString header(rawData);
     header = header.remove("#");
     FormatDetectionScore res = FormatDetection_NotMatched;
-    if(header.startsWith("gff-version")){
+    if (header.startsWith("gff-version")) {
         res = FormatDetection_Matched;
     }
 
     QString dataStr(rawData);
     QStringList qsl = dataStr.split("\n");
-    foreach(QString str, qsl){
-        if(!str.startsWith("#")){
+    foreach (QString str, qsl) {
+        if (!str.startsWith("#")) {
             QStringList l = parseLine(str);
-            if(l.size() == 9){
+            if (l.size() == 9) {
                 bool b3, b4;
                 l[3].toInt(&b3);
                 l[4].toInt(&b4);
-                if (b3 && b4){
-                    res = qMax(res, FormatDetection_HighSimilarity) ;
+                if (b3 && b4) {
+                    res = qMax(res, FormatDetection_HighSimilarity);
                 } else {
                     return FormatDetection_NotMatched;
                 }
@@ -551,35 +548,35 @@ FormatCheckResult GFFFormat::checkRawTextData(const QByteArray& rawData, const G
     return res;
 }
 
-QStringList GFFFormat::parseLine(const QString& line) const{
-    QChar prev('a'); //as default value not empty char
+QStringList GFFFormat::parseLine(const QString &line) const {
+    QChar prev('a');    //as default value not empty char
     QString pair;
     QStringList result;
     QString word;
 
-    foreach(QChar c, line){
+    foreach (QChar c, line) {
         pair.clear();
         pair.append(prev);
         pair.append(c);
-        if((c == '\t') || (pair == " \t") || ((pair == "  ") && result.size() < 8)){ //ignore double space pair in comment section
-            if((word != "  ") && (word != " ") && !word.isEmpty()){
+        if ((c == '\t') || (pair == " \t") || ((pair == "  ") && result.size() < 8)) {    //ignore double space pair in comment section
+            if ((word != "  ") && (word != " ") && !word.isEmpty()) {
                 result.append(word);
             }
             word.clear();
-        }else{
+        } else {
             word.append(c);
         }
         prev = c;
     }
-    if((word != "  ") && (word != " ") && !word.isEmpty()){
+    if ((word != "  ") && (word != " ") && !word.isEmpty()) {
         result.append(word);
     }
     return result;
 }
 
-QString normalizeQualifier(QString qual){
+QString normalizeQualifier(QString qual) {
     QRegExp rx("  +");
-    if(qual.contains(rx)){
+    if (qual.contains(rx)) {
         qual.replace(rx, " ");
     }
     QRegExp rxN("\n+");
@@ -587,22 +584,22 @@ QString normalizeQualifier(QString qual){
     return qual;
 }
 
-void GFFFormat::storeDocument(Document* doc, IOAdapter* io, U2OpStatus& os) {
+void GFFFormat::storeDocument(Document *doc, IOAdapter *io, U2OpStatus &os) {
     QByteArray header("##gff-version\t3\n");
     qint64 len = io->writeBlock(header);
-    if (len!=header.size()) {
+    if (len != header.size()) {
         os.setError(L10N::errorWritingFile(doc->getURL()));
         return;
     }
     QByteArray qbaRow;
-    QList<GObject*> atos = doc->findGObjectByType(GObjectTypes::ANNOTATION_TABLE);
+    QList<GObject *> atos = doc->findGObjectByType(GObjectTypes::ANNOTATION_TABLE);
     int joinID = 0;
     QSet<QString> knownIDs;
     QStringList cleanRow;
     for (int i = 0; i != 9; i++) {
         cleanRow.append(".");
     }
-    foreach (GObject *ato , atos) {
+    foreach (GObject *ato, atos) {
         AnnotationTableObject *annotationTable = dynamic_cast<AnnotationTableObject *>(ato);
         QList<Annotation *> aList = annotationTable->getAnnotations();
         //retrieving known IDs
@@ -619,7 +616,7 @@ void GFFFormat::storeDocument(Document* doc, IOAdapter* io, U2OpStatus& os) {
         } else {
             name = ato->getGObjectName();
             if (name.endsWith(QString(FEATURES_TAG))) {
-                name.chop(QString(FEATURES_TAG).size()); //removing previously added tag
+                name.chop(QString(FEATURES_TAG).size());    //removing previously added tag
             }
         }
         name.replace(' ', '_');
@@ -639,7 +636,8 @@ void GFFFormat::storeDocument(Document* doc, IOAdapter* io, U2OpStatus& os) {
             QVector<U2Qualifier> qualVec = ann->getQualifiers();
             //generating unique ID for joined annotation
             if ((location.size() > 1) && !Annotation::isValidQualifierName("ID")) {
-                for (;knownIDs.contains(QString::number(joinID)); joinID++) { }
+                for (; knownIDs.contains(QString::number(joinID)); joinID++) {
+                }
                 qualVec.append(U2Qualifier("ID", QString::number(joinID)));
             }
 
@@ -654,41 +652,41 @@ void GFFFormat::storeDocument(Document* doc, IOAdapter* io, U2OpStatus& os) {
                 row[2] = ann->getGroup()->getName();
                 QString additionalQuals = "name=" + escapeBadCharacters(aName);
                 //filling fields with qualifiers data
-                foreach(U2Qualifier q, qualVec){
-                    if(q.name == "source"){
+                foreach (U2Qualifier q, qualVec) {
+                    if (q.name == "source") {
                         row[1] = normalizeQualifier(q.value);
-                    }else if(q.name == "score"){
+                    } else if (q.name == "score") {
                         row[5] = normalizeQualifier(q.value);
-                    }else if(q.name == "frame"){
+                    } else if (q.name == "frame") {
                         row[7] = normalizeQualifier(q.value);
-                    }else{
+                    } else {
                         additionalQuals.append(";" + escapeBadCharacters(q.name) + "=" + escapeBadCharacters(normalizeQualifier(q.value)));
                     }
                 }
                 row[8] = additionalQuals;
                 qbaRow = row.join("\t").toLatin1() + "\n";
                 qint64 len = io->writeBlock(qbaRow);
-                if (len!=qbaRow.size()) {
+                if (len != qbaRow.size()) {
                     os.setError(L10N::errorWritingFile(doc->getURL()));
                     return;
                 }
             }
         }
     }
-    QList<GObject*> sequences = doc->findGObjectByType(GObjectTypes::SEQUENCE);
-    if(!sequences.isEmpty()){
+    QList<GObject *> sequences = doc->findGObjectByType(GObjectTypes::SEQUENCE);
+    if (!sequences.isEmpty()) {
         qbaRow = "##FASTA\n";
         if (io->writeBlock(qbaRow) != qbaRow.size()) {
             os.setError(L10N::errorWritingFile(doc->getURL()));
             return;
         }
-        foreach(GObject *s, sequences){
-            U2SequenceObject *dnaso = qobject_cast<U2SequenceObject*>(s);
+        foreach (GObject *s, sequences) {
+            U2SequenceObject *dnaso = qobject_cast<U2SequenceObject *>(s);
             QList<U2Region> lowerCaseRegs = U1AnnotationUtils::getRelatedLowerCaseRegions(dnaso, atos);
             QString fastaHeader = dnaso->getGObjectName();
             int tagSize = QString(SEQUENCE_TAG).size(), headerSize = fastaHeader.size();
-            if(fastaHeader.indexOf(QString(SEQUENCE_TAG), 0) != -1){
-                fastaHeader = fastaHeader.left(headerSize - tagSize);  //removing previously added tag
+            if (fastaHeader.indexOf(QString(SEQUENCE_TAG), 0) != -1) {
+                fastaHeader = fastaHeader.left(headerSize - tagSize);    //removing previously added tag
             }
             fastaHeader.prepend(">");
             fastaHeader.append('\n');
@@ -700,7 +698,7 @@ void GFFFormat::storeDocument(Document* doc, IOAdapter* io, U2OpStatus& os) {
 
             DNASequence wholeSeq = dnaso->getWholeSequence(os);
             CHECK_OP(os, );
-            const char* seq = U1AnnotationUtils::applyLowerCaseRegions(wholeSeq.seq.data(), 0, wholeSeq.length(), 0, lowerCaseRegs);
+            const char *seq = U1AnnotationUtils::applyLowerCaseRegions(wholeSeq.seq.data(), 0, wholeSeq.length(), 0, lowerCaseRegs);
             int len = wholeSeq.length();
             for (int i = 0; i < len; i += SAVE_LINE_LEN) {
                 int chunkSize = qMin(SAVE_LINE_LEN, len - i);
@@ -713,7 +711,7 @@ void GFFFormat::storeDocument(Document* doc, IOAdapter* io, U2OpStatus& os) {
     }
 }
 
-QString GFFFormat::extractSeqObjectName(QString &fastaHeaderName, const QStringList &words, QSet<QString> &names, bool &isNameModified){
+QString GFFFormat::extractSeqObjectName(QString &fastaHeaderName, const QStringList &words, QSet<QString> &names, bool &isNameModified) {
     fastaHeaderName = words.join(" ").remove(">");
     bool addSeqTag = true;
     bool notFastaHeaderMark = !words[0].startsWith(">");
@@ -732,4 +730,4 @@ QString GFFFormat::extractSeqObjectName(QString &fastaHeaderName, const QStringL
     return fastaHeaderName;
 }
 
-} //namespace
+}    // namespace U2

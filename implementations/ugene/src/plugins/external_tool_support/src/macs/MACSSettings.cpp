@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-
 #include "MACSSettings.h"
 
 #include <U2Core/GUrlUtils.h>
@@ -30,8 +29,7 @@ MACSSettings::MACSSettings() {
     initDefault();
 }
 
-void MACSSettings::initDefault(){
-
+void MACSSettings::initDefault() {
     outDir = "";
     fileNames = "default";
     wiggleOut = true;
@@ -39,58 +37,57 @@ void MACSSettings::initDefault(){
 
     genomeSizeInMbp = 2700;
     pValue = 0.00001;
-    qValue = 0.1; //(MACS 2)
+    qValue = 0.1;    //(MACS 2)
     useModel = true;
     modelFold = U2Region(9, 21);
     shiftSize = 100;
     keepDublicates = "1";
     bandWidth = 300;
-    extFr = false; //(???)
+    extFr = false;    //(???)
     //optional
-    tagSize = 0; //0 for default
+    tagSize = 0;    //0 for default
     //advanced
     useLambda = true;
     smallNearby = 1000;
     largeNearby = 10000;
     autoBimodal = false;
     scaleLarge = false;
-    shiftControl = false;   //(MACS 2)
-    halfExtend = false; //(MACS 2)
-    broad = false;  //(MACS 2)
-    broadCutoff = 0.1;  //(MACS 2)
-
+    shiftControl = false;    //(MACS 2)
+    halfExtend = false;    //(MACS 2)
+    broad = false;    //(MACS 2)
+    broadCutoff = 0.1;    //(MACS 2)
 }
 
-QStringList MACSSettings::getArguments( const QString& treatFilePath, const QString& conFilePath ){
+QStringList MACSSettings::getArguments(const QString &treatFilePath, const QString &conFilePath) {
     QStringList result;
 
     result << "--treatment=" + GUrlUtils::getQuotedString(treatFilePath);
 
-    if (!conFilePath.isEmpty()){
+    if (!conFilePath.isEmpty()) {
         result << "--control=" + GUrlUtils::getQuotedString(conFilePath);
     }
 
     result << "--name=" + fileNames;
 
-    result << "--gsize=" + QByteArray::number(static_cast<double>(genomeSizeInMbp) * 1000*1000);
+    result << "--gsize=" + QByteArray::number(static_cast<double>(genomeSizeInMbp) * 1000 * 1000);
 
-    if (tagSize > 0){
+    if (tagSize > 0) {
         result << "--tsize=" + QByteArray::number(tagSize);
     }
 
     result << "--bw=" + QByteArray::number(bandWidth);
 
-    if (pValue >= 0 && pValue <= 1){
+    if (pValue >= 0 && pValue <= 1) {
         result << "--pvalue=" + QByteArray::number(pValue);
     }
 
     result << "--mfold=" + QString("%1,%2").arg(modelFold.startPos + 1).arg(modelFold.endPos());
 
-    if(!useLambda){
+    if (!useLambda) {
         result << "--nolambda";
     }
 
-    if(!useModel){
+    if (!useModel) {
         result << "--nomodel";
     }
 
@@ -98,18 +95,18 @@ QStringList MACSSettings::getArguments( const QString& treatFilePath, const QStr
 
     result << "--keep-dup=" + QByteArray(qPrintable(keepDublicates));
 
-    if (scaleLarge){
+    if (scaleLarge) {
         result << "--to-large";
     }
 
     result << "--slocal=" + QByteArray::number(smallNearby);
     result << "--llocal=" + QByteArray::number(largeNearby);
 
-    if(autoBimodal){
+    if (autoBimodal) {
         result << "--on-auto";
     }
 
-    if(wiggleOut){
+    if (wiggleOut) {
         result << "--wig";
         result << "--single-profile";
         result << "--space=" + QByteArray::number(wiggleSpace);
@@ -118,4 +115,4 @@ QStringList MACSSettings::getArguments( const QString& treatFilePath, const QStr
     return result;
 }
 
-} // U2
+}    // namespace U2

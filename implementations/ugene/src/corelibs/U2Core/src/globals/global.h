@@ -31,75 +31,74 @@
 #include <U2Core/U2IdTypes.h>
 
 #ifdef _DEBUG
-#define U2_PRODUCT_NAME      "UGENED"
+#    define U2_PRODUCT_NAME "UGENED"
 #else
-#define U2_PRODUCT_NAME      "UGENE"
+#    define U2_PRODUCT_NAME "UGENE"
 #endif
 
 /** used to store settings with a project name in a key, etc. Same in debug and release */
-#define U2_PRODUCT_KEY          "ugene"
-#define U2_APP_TITLE            "UGENE"
+#define U2_PRODUCT_KEY "ugene"
+#define U2_APP_TITLE "UGENE"
 
-#define U2_ORGANIZATION_NAME    "Unipro"
-#define U2_USER_INI             "UGENE_USER_INI"
-#define U2_SYSTEM_INI           "UGENE_SYSTEM_INI"
-#define U2_PRINT_TO_FILE        "UGENE_PRINT_TO_FILE"
+#define U2_ORGANIZATION_NAME "Unipro"
+#define U2_USER_INI "UGENE_USER_INI"
+#define U2_SYSTEM_INI "UGENE_SYSTEM_INI"
+#define U2_PRINT_TO_FILE "UGENE_PRINT_TO_FILE"
 
-#define U2_VFS_URL_PREFIX       "VFS"
-#define U2_VFS_FILE_SEPARATOR   "!@#$"
-
+#define U2_VFS_URL_PREFIX "VFS"
+#define U2_VFS_FILE_SEPARATOR "!@#$"
 
 #ifdef BUILDING_U2CORE_DLL
-#define U2CORE_EXPORT Q_DECL_EXPORT
+#    define U2CORE_EXPORT Q_DECL_EXPORT
 #else
-#define U2CORE_EXPORT Q_DECL_IMPORT
+#    define U2CORE_EXPORT Q_DECL_IMPORT
 #endif
 #ifdef BUILDING_U2FORMATS_DLL
-#define U2FORMATS_EXPORT Q_DECL_EXPORT
+#    define U2FORMATS_EXPORT Q_DECL_EXPORT
 #else
-#define U2FORMATS_EXPORT Q_DECL_IMPORT
+#    define U2FORMATS_EXPORT Q_DECL_IMPORT
 #endif
 #ifdef BUILDING_U2ALGORITHM_DLL
-#define U2ALGORITHM_EXPORT Q_DECL_EXPORT
+#    define U2ALGORITHM_EXPORT Q_DECL_EXPORT
 #else
-#define U2ALGORITHM_EXPORT Q_DECL_IMPORT
+#    define U2ALGORITHM_EXPORT Q_DECL_IMPORT
 #endif
 #ifdef BUILDING_U2TEST_DLL
-#define U2TEST_EXPORT Q_DECL_EXPORT
+#    define U2TEST_EXPORT Q_DECL_EXPORT
 #else
-#define U2TEST_EXPORT Q_DECL_IMPORT
+#    define U2TEST_EXPORT Q_DECL_IMPORT
 #endif
 #ifdef BUILDING_U2LANG_DLL
-#define U2LANG_EXPORT Q_DECL_EXPORT
+#    define U2LANG_EXPORT Q_DECL_EXPORT
 #else
-#define U2LANG_EXPORT Q_DECL_IMPORT
+#    define U2LANG_EXPORT Q_DECL_IMPORT
 #endif
 #ifdef BUILDING_U2GUI_DLL
-#define U2GUI_EXPORT Q_DECL_EXPORT
+#    define U2GUI_EXPORT Q_DECL_EXPORT
 #else
-#define U2GUI_EXPORT Q_DECL_IMPORT
+#    define U2GUI_EXPORT Q_DECL_IMPORT
 #endif
 #ifdef BUILDING_U2VIEW_DLL
-#define U2VIEW_EXPORT Q_DECL_EXPORT
+#    define U2VIEW_EXPORT Q_DECL_EXPORT
 #else
-#define U2VIEW_EXPORT Q_DECL_IMPORT
+#    define U2VIEW_EXPORT Q_DECL_IMPORT
 #endif
 #ifdef BUILDING_U2DESIGNER_DLL
-#define U2DESIGNER_EXPORT Q_DECL_EXPORT
+#    define U2DESIGNER_EXPORT Q_DECL_EXPORT
 #else
-#define U2DESIGNER_EXPORT Q_DECL_IMPORT
+#    define U2DESIGNER_EXPORT Q_DECL_IMPORT
 #endif
 #ifdef BUILDING_U2PRIVATE_DLL
-#define U2PRIVATE_EXPORT Q_DECL_EXPORT
+#    define U2PRIVATE_EXPORT Q_DECL_EXPORT
 #else
-#define U2PRIVATE_EXPORT Q_DECL_IMPORT
+#    define U2PRIVATE_EXPORT Q_DECL_IMPORT
 #endif
 
 // UGENE_VERSION must be supplied as a preprocessor directive
 #ifndef UGENE_VERSION
-#error UGENE_VERSION is not set!
+#    error UGENE_VERSION is not set!
 #else
-#define U2_APP_VERSION UGENE_VERSION
+#    define U2_APP_VERSION UGENE_VERSION
 #endif
 
 //global
@@ -113,9 +112,9 @@
 #define ENV_USE_NATIVE_DIALOGS "UGENE_USE_NATIVE_DIALOGS"
 
 #ifdef __GNUC__
-#define ATTR_UNUSED __attribute__((unused))
+#    define ATTR_UNUSED __attribute__((unused))
 #else
-#define ATTR_UNUSED
+#    define ATTR_UNUSED
 #endif
 
 #define PATH_PREFIX_DATA "data"
@@ -129,7 +128,7 @@ enum TriState {
     TriState_No
 };
 
-enum UnloadedObjectFilter { //used as a separate type but not 'bool' to improve readability
+enum UnloadedObjectFilter {    //used as a separate type but not 'bool' to improve readability
     UOF_LoadedAndUnloaded,
     UOF_LoadedOnly
 };
@@ -139,7 +138,7 @@ enum NavigationDirection {
     Backward
 };
 
-}
+}    // namespace U2
 
 enum DNAAlphabetType {
     DNAAlphabet_UNDEFINED = 0x0,

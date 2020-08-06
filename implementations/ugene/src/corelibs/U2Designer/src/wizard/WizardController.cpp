@@ -19,10 +19,12 @@
  * MA 02110-1301, USA.
  */
 
+#include "WizardController.h"
+
 #include <QKeyEvent>
-#include <QVBoxLayout>
 #include <QLabel>
 #include <QSizePolicy>
+#include <QVBoxLayout>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/Settings.h>
@@ -46,29 +48,26 @@
 #include "WDWizardPage.h"
 #include "WizardPageController.h"
 
-#include "WizardController.h"
-
-#define WIZARD_SAFE_POINT_EXT(condition, message, extraOp, result)  \
+#define WIZARD_SAFE_POINT_EXT(condition, message, extraOp, result) \
     if (!(condition)) { \
-    coreLog.error(QString("Wizard error: %1").arg(message)); \
-    extraOp; \
-    return result; \
-    } \
+        coreLog.error(QString("Wizard error: %1").arg(message)); \
+        extraOp; \
+        return result; \
+    }
 
-#define WIZARD_SAFE_POINT_OP_EXT(os, extraOp, result)  \
-    WIZARD_SAFE_POINT_EXT(!os.hasError(), os.getError(), extraOp, result) \
+#define WIZARD_SAFE_POINT_OP_EXT(os, extraOp, result) \
+    WIZARD_SAFE_POINT_EXT(!os.hasError(), os.getError(), extraOp, result)
 
-#define WIZARD_SAFE_POINT(condition, message, result)  \
-    WIZARD_SAFE_POINT_EXT(condition, message, setBroken(), result) \
+#define WIZARD_SAFE_POINT(condition, message, result) \
+    WIZARD_SAFE_POINT_EXT(condition, message, setBroken(), result)
 
-#define WIZARD_SAFE_POINT_OP(os, result)  \
-    WIZARD_SAFE_POINT_OP_EXT(os, setBroken(), result) \
+#define WIZARD_SAFE_POINT_OP(os, result) \
+    WIZARD_SAFE_POINT_OP_EXT(os, setBroken(), result)
 
 namespace U2 {
 
 WizardController::WizardController(Schema *s, const Wizard *w)
-: QObject(), schema(s), wizard(w), runAfterApply(false)
-{
+    : QObject(), schema(s), wizard(w), runAfterApply(false) {
     rejected = false;
     broken = false;
     currentActors = s->getProcesses();
@@ -79,8 +78,8 @@ WizardController::~WizardController() {
     qDeleteAll(pageControllers);
 }
 
-QWizard * WizardController::createGui() {
-    QWizard *result = new QWizard((QWidget*)AppContext::getMainWindow()->getQMainWindow());
+QWizard *WizardController::createGui() {
+    QWizard *result = new QWizard((QWidget *)AppContext::getMainWindow()->getQMainWindow());
     result->setAttribute(Qt::WA_DeleteOnClose);
     setupButtons(result);
 
@@ -112,7 +111,7 @@ QWizard * WizardController::createGui() {
 void WizardController::setupButtons(QWizard *gui) {
     connect(gui, SIGNAL(customButtonClicked(int)), SLOT(sl_customButtonClicked(int)));
     QList<QWizard::WizardButton> order;
-    order << QWizard::Stretch << QWizard::BackButton << QWizard::NextButton << QWizard::FinishButton  << QWizard::CancelButton;
+    order << QWizard::Stretch << QWizard::BackButton << QWizard::NextButton << QWizard::FinishButton << QWizard::CancelButton;
     if (!wizard->getHelpPageId().isEmpty()) {
         //TODO: manually add button as in other layouts (mac, win, kde, gnome)
         order << QWizard::HelpButton;
@@ -142,7 +141,7 @@ bool WizardController::isRunAfterApply() const {
     return runAfterApply;
 }
 
-WizardPage * WizardController::findPage(QWizardPage *wPage) {
+WizardPage *WizardController::findPage(QWizardPage *wPage) {
     foreach (WizardPageController *ctrl, pageControllers) {
         if (ctrl->getQtPage() == wPage) {
             return ctrl->getPage();
@@ -156,77 +155,86 @@ void WizardController::run() {
 }
 
 namespace {
-    class WidgetDefaulter : public WizardWidgetVisitor {
-    public:
-        WidgetDefaulter(WizardController *wc) : wc(wc) {}
-        void visit(AttributeWidget *aw) {
-            Attribute *attr = wc->getAttribute(aw->getInfo());
-            CHECK(NULL != attr, );
-            wc->setAttributeValue(aw->getInfo(), attr->getDefaultPureValue());
-        }
-        void visit(WidgetsArea *wa) {
-            foreach (WizardWidget *w, wa->getWidgets()) {
-                WidgetDefaulter defaulter(wc);
-                w->accept(&defaulter);
-            }
-        }
-        void visit(GroupWidget *gw) {
-            visit((WidgetsArea*)gw);
-        }
-        void visit(LogoWidget *) {}
-        void visit(ElementSelectorWidget *) {}
-        void visit(PairedReadsWidget *prw) {
-            foreach (const AttributeInfo &info, prw->getInfos()) {
-                Attribute *attr = wc->getAttribute(info);
-                CHECK(NULL != attr, );
-                wc->setAttributeValue(info, attr->getDefaultPureValue());
-            }
-        }
-        void visit(UrlAndDatasetWidget *udw) {
-            foreach (const AttributeInfo &info, udw->getInfos()) {
-                Attribute *attr = wc->getAttribute(info);
-                CHECK(NULL != attr, );
-                wc->setAttributeValue(info, attr->getDefaultPureValue());
-            }
-        }
-        void visit(RadioWidget *) {}
-        void visit(SettingsWidget *) {}
-        void visit(BowtieWidget *bw) {
-            Attribute *dirAttr = wc->getAttribute(bw->idxDir);
-            CHECK(NULL != dirAttr, );
-            wc->setAttributeValue(bw->idxDir, dirAttr->getDefaultPureValue());
-
-            Attribute *nameAttr = wc->getAttribute(bw->idxName);
-            CHECK(NULL != nameAttr, );
-            wc->setAttributeValue(bw->idxName, nameAttr->getDefaultPureValue());
-        }
-
-        void visit(TophatSamplesWidget *tsw) {
-            QList<TophatSample> defSamples;
-            defSamples << TophatSample("Sample1", QStringList());
-            defSamples << TophatSample("Sample2", QStringList());
-            QString defaultSamples = WorkflowUtils::packSamples(defSamples);
-            wc->setAttributeValue(tsw->samplesAttr, defaultSamples);
-        }
-
-        void visit(LabelWidget *) {}
-
-    private:
-        WizardController *wc;
-    };
-
-    class PageDefaulter : public TemplatedPageVisitor {
-    public:
-        PageDefaulter(WizardController *wc) : wc(wc) {}
-        virtual void visit(DefaultPageContent *dp) {
+class WidgetDefaulter : public WizardWidgetVisitor {
+public:
+    WidgetDefaulter(WizardController *wc)
+        : wc(wc) {
+    }
+    void visit(AttributeWidget *aw) {
+        Attribute *attr = wc->getAttribute(aw->getInfo());
+        CHECK(NULL != attr, );
+        wc->setAttributeValue(aw->getInfo(), attr->getDefaultPureValue());
+    }
+    void visit(WidgetsArea *wa) {
+        foreach (WizardWidget *w, wa->getWidgets()) {
             WidgetDefaulter defaulter(wc);
-            dp->getParamsArea()->accept(&defaulter);
+            w->accept(&defaulter);
         }
+    }
+    void visit(GroupWidget *gw) {
+        visit((WidgetsArea *)gw);
+    }
+    void visit(LogoWidget *) {
+    }
+    void visit(ElementSelectorWidget *) {
+    }
+    void visit(PairedReadsWidget *prw) {
+        foreach (const AttributeInfo &info, prw->getInfos()) {
+            Attribute *attr = wc->getAttribute(info);
+            CHECK(NULL != attr, );
+            wc->setAttributeValue(info, attr->getDefaultPureValue());
+        }
+    }
+    void visit(UrlAndDatasetWidget *udw) {
+        foreach (const AttributeInfo &info, udw->getInfos()) {
+            Attribute *attr = wc->getAttribute(info);
+            CHECK(NULL != attr, );
+            wc->setAttributeValue(info, attr->getDefaultPureValue());
+        }
+    }
+    void visit(RadioWidget *) {
+    }
+    void visit(SettingsWidget *) {
+    }
+    void visit(BowtieWidget *bw) {
+        Attribute *dirAttr = wc->getAttribute(bw->idxDir);
+        CHECK(NULL != dirAttr, );
+        wc->setAttributeValue(bw->idxDir, dirAttr->getDefaultPureValue());
 
-    private:
-        WizardController *wc;
-    };
-}
+        Attribute *nameAttr = wc->getAttribute(bw->idxName);
+        CHECK(NULL != nameAttr, );
+        wc->setAttributeValue(bw->idxName, nameAttr->getDefaultPureValue());
+    }
+
+    void visit(TophatSamplesWidget *tsw) {
+        QList<TophatSample> defSamples;
+        defSamples << TophatSample("Sample1", QStringList());
+        defSamples << TophatSample("Sample2", QStringList());
+        QString defaultSamples = WorkflowUtils::packSamples(defSamples);
+        wc->setAttributeValue(tsw->samplesAttr, defaultSamples);
+    }
+
+    void visit(LabelWidget *) {
+    }
+
+private:
+    WizardController *wc;
+};
+
+class PageDefaulter : public TemplatedPageVisitor {
+public:
+    PageDefaulter(WizardController *wc)
+        : wc(wc) {
+    }
+    virtual void visit(DefaultPageContent *dp) {
+        WidgetDefaulter defaulter(wc);
+        dp->getParamsArea()->accept(&defaulter);
+    }
+
+private:
+    WizardController *wc;
+};
+}    // namespace
 
 void WizardController::defaults(QWizardPage *wPage) {
     WizardPage *page = findPage(wPage);
@@ -242,7 +250,7 @@ void WizardController::sl_customButtonClicked(int which) {
     if (QWizard::CustomButton1 == which) {
         run();
     } else if (QWizard::CustomButton2 == which) {
-        QWizard *w = dynamic_cast<QWizard*>(sender());
+        QWizard *w = dynamic_cast<QWizard *>(sender());
         CHECK(NULL != w, );
         defaults(w->currentPage());
     }
@@ -251,7 +259,7 @@ void WizardController::sl_customButtonClicked(int which) {
 void WizardController::sl_pageChanged(int num) {
     CHECK(-1 != num, );
 
-    QWizard *wizard = dynamic_cast<QWizard*>(sender());
+    QWizard *wizard = dynamic_cast<QWizard *>(sender());
     CHECK(NULL != wizard, );
 
     QWizardPage *page = wizard->currentPage();
@@ -264,10 +272,10 @@ void WizardController::sl_pageChanged(int num) {
 bool WizardController::eventFilter(QObject *watched, QEvent *event) {
     CHECK(NULL != event, false);
 
-    if (event->type() == QEvent::Close) { // if close button is pressed
+    if (event->type() == QEvent::Close) {    // if close button is pressed
         rejected = true;
-    } else if (event->type() == QEvent::KeyPress) { // if ESC is pressed
-        QKeyEvent *keyEvent = dynamic_cast<QKeyEvent*>(event);
+    } else if (event->type() == QEvent::KeyPress) {    // if ESC is pressed
+        QKeyEvent *keyEvent = dynamic_cast<QKeyEvent *>(event);
         CHECK(NULL != keyEvent, QObject::eventFilter(watched, event));
 
         if ((keyEvent->key() == Qt::Key_Escape) && (keyEvent->modifiers() == Qt::NoModifier)) {
@@ -323,14 +331,14 @@ void WizardController::saveDelegateTags() {
     }
 }
 
-const QList<Actor*> & WizardController::getCurrentActors() const {
+const QList<Actor *> &WizardController::getCurrentActors() const {
     return currentActors;
 }
 
-DelegateTags * WizardController::getTags(const AttributeInfo &info, bool returnNewTags) {
+DelegateTags *WizardController::getTags(const AttributeInfo &info, bool returnNewTags) {
     if (!propertyControllers.contains(info.toString())) {
         if (returnNewTags) {
-            DelegateTags* t = new DelegateTags();
+            DelegateTags *t = new DelegateTags();
             tagsWithoutController[info.toString()] = t;
             return t;
         } else {
@@ -341,12 +349,12 @@ DelegateTags * WizardController::getTags(const AttributeInfo &info, bool returnN
     return propertyControllers[info.toString()]->tags();
 }
 
-DelegateTags * WizardController::getTagsWithoutController(const AttributeInfo &info) const {
+DelegateTags *WizardController::getTagsWithoutController(const AttributeInfo &info) const {
     CHECK(tagsWithoutController.contains(info.toString()), NULL);
     return tagsWithoutController[info.toString()];
 }
 
-Attribute * WizardController::getAttribute(const AttributeInfo &info) const {
+Attribute *WizardController::getAttribute(const AttributeInfo &info) const {
     U2OpStatusImpl os;
     info.validate(currentActors, os);
     CHECK_OP(os, NULL);
@@ -354,7 +362,7 @@ Attribute * WizardController::getAttribute(const AttributeInfo &info) const {
     return actor->getParameter(info.attrId);
 }
 
-QWizardPage * WizardController::createPage(WizardPage *page) {
+QWizardPage *WizardController::createPage(WizardPage *page) {
     WizardPageController *controller = new WizardPageController(this, page);
     WDWizardPage *result = new WDWizardPage(controller);
 
@@ -367,25 +375,27 @@ int WizardController::getQtPageId(const QString &hrId) const {
     return pageIdMap[hrId];
 }
 
-const QMap<QString, Variable> & WizardController::getVariables() const {
+const QMap<QString, Variable> &WizardController::getVariables() const {
     return vars;
 }
 
 QVariant WizardController::getVariableValue(const QString &var) {
     WIZARD_SAFE_POINT(vars.contains(var),
-        QObject::tr("Undefined variable: %1").arg(var), QVariant());
+                      QObject::tr("Undefined variable: %1").arg(var),
+                      QVariant());
     return vars[var].getValue();
 }
 
 void WizardController::setVariableValue(const QString &var, const QString &value) {
     WIZARD_SAFE_POINT(vars.contains(var),
-        QObject::tr("Undefined variable: %1").arg(var), );
+                      QObject::tr("Undefined variable: %1").arg(var), );
     vars[var].setValue(value);
 }
 
 QVariant WizardController::getSelectorValue(ElementSelectorWidget *widget) {
     WIZARD_SAFE_POINT(vars.contains(widget->getActorId()),
-        QObject::tr("Undefined variable: %1").arg(widget->getActorId()), QVariant());
+                      QObject::tr("Undefined variable: %1").arg(widget->getActorId()),
+                      QVariant());
     Variable &v = vars[widget->getActorId()];
     if (v.isAssigned()) {
         return v.getValue();
@@ -402,7 +412,7 @@ QVariant WizardController::getSelectorValue(ElementSelectorWidget *widget) {
 
 void WizardController::setSelectorValue(ElementSelectorWidget *widget, const QVariant &value) {
     WIZARD_SAFE_POINT(vars.contains(widget->getActorId()),
-        QObject::tr("Undefined variable: %1").arg(widget->getActorId()), );
+                      QObject::tr("Undefined variable: %1").arg(widget->getActorId()), );
     Variable &v = vars[widget->getActorId()];
     v.setValue(value.toString());
     replaceCurrentActor(widget->getActorId(), value.toString());
@@ -457,7 +467,8 @@ WizardController::ApplyResult WizardController::applyChanges(Metadata &meta) {
     ApplyResult result = OK;
     foreach (const QString &varName, selectors.keys()) {
         WIZARD_SAFE_POINT(vars.contains(varName),
-            QObject::tr("Undefined variable: %1").arg(varName), BROKEN);
+                          QObject::tr("Undefined variable: %1").arg(varName),
+                          BROKEN);
         Variable &v = vars[varName];
         SelectorActors &s = selectors[varName];
         Actor *newActor = s.getActor(v.getValue());
@@ -479,7 +490,7 @@ void WizardController::clearControllers() {
     propertyControllers.clear();
 }
 
-RunFileSystem * WizardController::getRFS() {
+RunFileSystem *WizardController::getRFS() {
     RunFileSystem *result = new RunFileSystem(this);
     RFSUtils::initRFS(*result, schema->getProcesses(), this);
     return result;
@@ -507,8 +518,7 @@ void WizardController::setAttributeValue(const AttributeInfo &info, const QVaria
             continue;
         }
         AttributeInfo related(info.actorId, relation->getRelatedAttrId());
-        QVariant newValue = relation->getAffectResult(value, getAttributeValue(related), getTags(info),
-                                                      getTags(related, true));
+        QVariant newValue = relation->getAffectResult(value, getAttributeValue(related), getTags(info), getTags(related, true));
         Attribute *attr = getAttribute(info);
 
         bool canSetValue = false;
@@ -527,7 +537,7 @@ void WizardController::setAttributeValue(const AttributeInfo &info, const QVaria
             }
         }
     }
-    foreach (Attribute* otherAttr, actor->getParameters().values()) {
+    foreach (Attribute *otherAttr, actor->getParameters().values()) {
         if (otherAttr == attr) {
             continue;
         }
@@ -550,15 +560,11 @@ void WizardController::setAttributeValue(const AttributeInfo &info, const QVaria
 /* WidgetCreator */
 /************************************************************************/
 WidgetCreator::WidgetCreator(WizardController *_wc)
-: wc(_wc), labelSize(0), result(NULL), layout(NULL), widgetsArea(NULL), fullWidth(false)
-{
-
+    : wc(_wc), labelSize(0), result(NULL), layout(NULL), widgetsArea(NULL), fullWidth(false) {
 }
 
 WidgetCreator::WidgetCreator(WizardController *_wc, int _labelSize)
-: wc(_wc), labelSize(_labelSize), result(NULL), layout(NULL), widgetsArea(NULL), fullWidth(false)
-{
-
+    : wc(_wc), labelSize(_labelSize), result(NULL), layout(NULL), widgetsArea(NULL), fullWidth(false) {
 }
 
 bool WidgetCreator::hasFullWidth() {
@@ -626,7 +632,7 @@ void WidgetCreator::setupScrollArea(QWidget *scrollContent) {
 }
 
 void WidgetCreator::visit(GroupWidget *gw) {
-    visit((WidgetsArea*)gw);
+    visit((WidgetsArea *)gw);
     result = widgetsArea->takeWidget();
     delete widgetsArea;
     widgetsArea = NULL;
@@ -733,15 +739,15 @@ void WidgetCreator::visit(LabelWidget *lw) {
     result = label;
 }
 
-QWidget * WidgetCreator::getResult() {
+QWidget *WidgetCreator::getResult() {
     return result;
 }
 
-QList<WidgetController*> & WidgetCreator::getControllers() {
+QList<WidgetController *> &WidgetCreator::getControllers() {
     return controllers;
 }
 
-QBoxLayout * WidgetCreator::getLayout() {
+QBoxLayout *WidgetCreator::getLayout() {
     return layout;
 }
 
@@ -755,9 +761,7 @@ void WidgetCreator::setGroupBoxLayout(GroupBox *gb) {
 /* PageContentCreator */
 /************************************************************************/
 PageContentCreator::PageContentCreator(WizardController *_wc)
-    : wc(_wc), result(NULL), pageTitle(NULL), pageSubtitle(NULL)
-{
-
+    : wc(_wc), result(NULL), pageTitle(NULL), pageSubtitle(NULL) {
 }
 
 void PageContentCreator::visit(DefaultPageContent *content) {
@@ -767,7 +771,7 @@ void PageContentCreator::visit(DefaultPageContent *content) {
     contentLayout->setContentsMargins(0, 0, 0, 0);
     int paramsHeight = content->getPageDefaultHeight();
     int paramsWidth = content->getPageWidth();
-    { // create logo
+    {    // create logo
         WidgetCreator logoWC(wc);
         content->getLogoArea()->accept(&logoWC);
         if (NULL != logoWC.getResult()) {
@@ -779,10 +783,10 @@ void PageContentCreator::visit(DefaultPageContent *content) {
     }
     createTitle(contentLayout);
     createSubTitle(contentLayout);
-    { //TODO: compute real title and subtitle height
+    {    //TODO: compute real title and subtitle height
         paramsHeight = 0;
     }
-    { // create parameters
+    {    // create parameters
         WidgetCreator paramsWC(wc);
         content->getParamsArea()->accept(&paramsWC);
         if (NULL != paramsWC.getResult()) {
@@ -796,7 +800,7 @@ void PageContentCreator::visit(DefaultPageContent *content) {
 
             //let it process attribute relations
             foreach (WidgetController *wcc, controllers) {
-                PropertyWizardController *pwc = qobject_cast<PropertyWizardController*>(wcc);
+                PropertyWizardController *pwc = qobject_cast<PropertyWizardController *>(wcc);
                 if (pwc) {
                     wc->setAttributeValue(pwc->attributeWidget()->getInfo(), wc->getAttributeValue(pwc->attributeWidget()->getInfo()));
                 }
@@ -808,7 +812,7 @@ void PageContentCreator::visit(DefaultPageContent *content) {
     result = layout;
 }
 
-void PageContentCreator::setPageTitle(const QString& title) {
+void PageContentCreator::setPageTitle(const QString &title) {
     if (NULL != pageTitle && false == title.isEmpty()) {
         pageTitle->setText(title);
         pageTitle->show();
@@ -816,18 +820,18 @@ void PageContentCreator::setPageTitle(const QString& title) {
     }
 }
 
-void PageContentCreator::setPageSubtitle(const QString& subtitle) {
+void PageContentCreator::setPageSubtitle(const QString &subtitle) {
     if (NULL != pageSubtitle && false == subtitle.isEmpty()) {
         pageSubtitle->setText(subtitle);
         pageSubtitle->show();
     }
 }
 
-QLayout * PageContentCreator::getResult() {
+QLayout *PageContentCreator::getResult() {
     return result;
 }
 
-QList<WidgetController*> & PageContentCreator::getControllers() {
+QList<WidgetController *> &PageContentCreator::getControllers() {
     return controllers;
 }
 
@@ -858,8 +862,7 @@ void PageContentCreator::createSubTitle(QVBoxLayout *contentLayout) {
 const int GroupBox::MARGIN = 5;
 
 GroupBox::GroupBox(bool collapsible, const QString &title, bool fullWidth)
-: QGroupBox(title), hLayout(NULL), tip(NULL), showHideButton(NULL)
-{
+    : QGroupBox(title), hLayout(NULL), tip(NULL), showHideButton(NULL) {
     ui = new QWidget(this);
     QSizePolicy::Policy vPolicy = fullWidth ? QSizePolicy::MinimumExpanding : QSizePolicy::Maximum;
     ui->setSizePolicy(QSizePolicy::Minimum, vPolicy);
@@ -869,7 +872,7 @@ GroupBox::GroupBox(bool collapsible, const QString &title, bool fullWidth)
 #ifdef Q_OS_MAC
     layout->setContentsMargins(0, 0, 0, 0);
     QString style = "QGroupBox  {"
-                    "margin-top: 30px;" // leave space at the top for the title
+                    "margin-top: 30px;"    // leave space at the top for the title
                     "padding: 5 5 5 5px;"
                     "}"
 
@@ -945,4 +948,4 @@ void GroupBox::changeView(const QString &buttonText, const QString &showHide) {
     }
 }
 
-} // U2
+}    // namespace U2

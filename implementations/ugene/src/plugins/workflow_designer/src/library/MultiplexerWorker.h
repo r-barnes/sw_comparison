@@ -36,12 +36,14 @@ enum MultiplexingRules {
 class MultiplexerPrompter : public PrompterBase<MultiplexerPrompter> {
     Q_OBJECT
 public:
-    MultiplexerPrompter(Actor *p = NULL) : PrompterBase<MultiplexerPrompter>(p) {}
+    MultiplexerPrompter(Actor *p = NULL)
+        : PrompterBase<MultiplexerPrompter>(p) {
+    }
 
 protected:
     QString composeRichDoc();
 
-}; // MultiplexerPrompter
+};    // MultiplexerPrompter
 
 class MultiplexerWorker : public BaseWorker {
     Q_OBJECT
@@ -74,19 +76,21 @@ private:
     QString getInputActorName(IntegralBus *bus) const;
     QString getMessagesMismatchError() const;
 
-}; // MultiplexerWorker
+};    // MultiplexerWorker
 
 class MultiplexerWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
 
-    MultiplexerWorkerFactory() : DomainFactory(ACTOR_ID) {}
+    MultiplexerWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
     static void init();
     virtual Worker *createWorker(Actor *a);
 
-}; // MultiplexerWorkerFactory
+};    // MultiplexerWorkerFactory
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _MULTIPLEXER_WORKER_H_
+#endif    // _MULTIPLEXER_WORKER_H_

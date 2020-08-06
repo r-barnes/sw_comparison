@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DnaAssemblyTests.h"
+
 #include <QDir>
 #include <QDomElement>
 
@@ -35,8 +37,6 @@
 
 #include <U2View/DnaAssemblyUtils.h>
 
-#include "DnaAssemblyTests.h"
-
 namespace U2 {
 
 #define FILE1_ATTR "file1"
@@ -51,8 +51,7 @@ namespace U2 {
 #define PAIRED_READS_ATTR "paired-reads"
 #define IS_BAM_ATTR "isbam"
 
-void GTest_DnaAssemblyToReferenceTask::init(XMLTestFormat*, const QDomElement& el)  {
-
+void GTest_DnaAssemblyToReferenceTask::init(XMLTestFormat *, const QDomElement &el) {
     refSeqUrl = el.attribute(REF_SEQ_ATTR);
     if (refSeqUrl.isEmpty()) {
         failMissingValue(REF_SEQ_ATTR);
@@ -94,27 +93,25 @@ void GTest_DnaAssemblyToReferenceTask::init(XMLTestFormat*, const QDomElement& e
         return;
     }
 
+    QString buf = el.attribute(CUSTOM_ATTR);
+    QStringList customAttrs = buf.split(",");
+    foreach (const QString &attr, customAttrs) {
+        QStringList keyValPair = attr.split('=');
+        if (keyValPair.size() == 2) {
+            QString optName = keyValPair[0];
+            QString optVal = keyValPair[1];
+            customOptions.insert(optName, optVal);
+        }
+    }
 
-   QString buf = el.attribute(CUSTOM_ATTR);
-   QStringList customAttrs = buf.split(",");
-   foreach (const QString& attr, customAttrs) {
-       QStringList keyValPair = attr.split('=');
-       if (keyValPair.size() == 2) {
-           QString optName = keyValPair[0];
-           QString optVal = keyValPair[1];
-           customOptions.insert(optName, optVal);
-       }
-   }
-
-    foreach (const QString& url, shortReadList) {
+    foreach (const QString &url, shortReadList) {
         shortReadUrls.append(GUrl(env->getVar("COMMON_DATA_DIR") + "/" + url));
     }
     loadResultTask = NULL;
     assemblyMultiTask = NULL;
 }
 
-void GTest_DnaAssemblyToReferenceTask::prepare()
-{
+void GTest_DnaAssemblyToReferenceTask::prepare() {
     QString dir(env->getVar("TEMP_DATA_DIR"));
     if (!QDir(dir).exists()) {
         bool ok = QDir::root().mkpath(dir);
@@ -124,11 +121,11 @@ void GTest_DnaAssemblyToReferenceTask::prepare()
     }
     QString id = QString::number(rand());
     if (resultFileName.isEmpty()) {
-        resultFileName = GUrlUtils::rollFileName(dir+"/"+GUrl(refSeqUrl).baseFileName() + "_" + id + "_aligned.sam",DocumentUtils::getNewDocFileNameExcludesHint());
+        resultFileName = GUrlUtils::rollFileName(dir + "/" + GUrl(refSeqUrl).baseFileName() + "_" + id + "_aligned.sam", DocumentUtils::getNewDocFileNameExcludesHint());
     }
     DnaAssemblyToRefTaskSettings settings;
     if (indexFileName.isEmpty()) {
-        indexFileName = GUrlUtils::rollFileName(dir+"/"+GUrl(refSeqUrl).baseFileName() + "_index_" + id,DocumentUtils::getNewDocFileNameExcludesHint());
+        indexFileName = GUrlUtils::rollFileName(dir + "/" + GUrl(refSeqUrl).baseFileName() + "_index_" + id, DocumentUtils::getNewDocFileNameExcludesHint());
         settings.prebuiltIndex = false;
     } else {
         settings.prebuiltIndex = true;
@@ -141,14 +138,14 @@ void GTest_DnaAssemblyToReferenceTask::prepare()
     settings.resultFileName = resultFileName;
     settings.pairedReads = pairedReads;
 
-    foreach (const GUrl& url, shortReadUrls) {
-        settings.shortReadSets.append( url );
+    foreach (const GUrl &url, shortReadUrls) {
+        settings.shortReadSets.append(url);
     }
-    foreach (const QString& optionName, customOptions.keys()) {
+    foreach (const QString &optionName, customOptions.keys()) {
         settings.setCustomValue(optionName, customOptions.value(optionName));
     }
 
-    assemblyMultiTask = new DnaAssemblyMultiTask( settings,  false);
+    assemblyMultiTask = new DnaAssemblyMultiTask(settings, false);
     addSubTask(assemblyMultiTask);
 }
 
@@ -160,24 +157,26 @@ Task::ReportResult GTest_DnaAssemblyToReferenceTask::report() {
     return ReportResult_Finished;
 }
 
-void GTest_DnaAssemblyToReferenceTask::cleanup()
-{
+void GTest_DnaAssemblyToReferenceTask::cleanup() {
     // cleanup temporary files
 
     if (!XMLTestUtils::parentTasksHaveError(this)) {
         QDir dir(env->getVar("TEMP_DATA_DIR"));
-        QStringList tmpFiles = dir.entryList(QStringList() << "*.sarr" << "*.idx" << "*.ref", QDir::Files);
+        QStringList tmpFiles = dir.entryList(QStringList() << "*.sarr"
+                                                           << "*.idx"
+                                                           << "*.ref",
+                                             QDir::Files);
 
-        foreach (const QString& f, tmpFiles) {
+        foreach (const QString &f, tmpFiles) {
             QFile::remove(dir.absoluteFilePath(f));
         }
     }
 
-     XmlTest::cleanup();
+    XmlTest::cleanup();
 }
 
 //----------------------------------------------------------
-void GTest_AssemblycompareTwoSAMbyLength::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_AssemblycompareTwoSAMbyLength::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     file1Url = el.attribute(FILE1_ATTR);
@@ -185,19 +184,19 @@ void GTest_AssemblycompareTwoSAMbyLength::init(XMLTestFormat *tf, const QDomElem
         failMissingValue(FILE1_ATTR);
         return;
     }
-    file1Url = env->getVar("TEMP_DATA_DIR")+"/" + file1Url;
+    file1Url = env->getVar("TEMP_DATA_DIR") + "/" + file1Url;
 
     file2Url = el.attribute(FILE2_ATTR);
     if (file2Url.isEmpty()) {
         failMissingValue(FILE2_ATTR);
         return;
     }
-    file2Url = env->getVar("COMMON_DATA_DIR")+"/" + file2Url;
+    file2Url = env->getVar("COMMON_DATA_DIR") + "/" + file2Url;
 
     QString isBamAtr = el.attribute(IS_BAM_ATTR);
     if (!isBamAtr.isEmpty()) {
         isBam = true;
-    }else{
+    } else {
         isBam = false;
     }
 }
@@ -208,16 +207,14 @@ Task::ReportResult GTest_AssemblycompareTwoSAMbyLength::report() {
     return ReportResult_Finished;
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-QList<XMLTestFactory*> DnaAssemblyTests::createTestFactories()
-{
-    QList<XMLTestFactory*> res;
+QList<XMLTestFactory *> DnaAssemblyTests::createTestFactories() {
+    QList<XMLTestFactory *> res;
     res.append(GTest_DnaAssemblyToReferenceTask::createFactory());
     res.append(GTest_AssemblycompareTwoSAMbyLength::createFactory());
 
     return res;
 }
 
-} // U2
+}    // namespace U2

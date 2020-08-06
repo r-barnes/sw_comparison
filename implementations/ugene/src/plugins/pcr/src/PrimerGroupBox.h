@@ -35,7 +35,7 @@ class PrimerGroupBox : public QWidget, public Ui_PrimerGroupBox {
     Q_OBJECT
 public:
     PrimerGroupBox(QWidget *parent);
-    void setAnnotatedDnaView(AnnotatedDNAView* dnaView);
+    void setAnnotatedDnaView(AnnotatedDNAView *dnaView);
 
     QByteArray getPrimer() const;
     uint getMismatches() const;
@@ -54,15 +54,15 @@ private slots:
 private:
     static QString getTmString(const QString &sequence);
 
-    void findPrimerAlternatives(const QString& primer);
+    void findPrimerAlternatives(const QString &primer);
     void cancelFindPrimerTask();
 
     void updateStatistics(const QString &primer);
 
-    FindAlgorithmTask* findPrimerTask;
-    AnnotatedDNAView*   annotatedDnaView;
+    FindAlgorithmTask *findPrimerTask;
+    AnnotatedDNAView *annotatedDnaView;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_PCR_GROUP_BOX_H_
+#endif    // _U2_PCR_GROUP_BOX_H_

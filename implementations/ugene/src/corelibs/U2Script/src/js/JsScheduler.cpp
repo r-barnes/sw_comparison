@@ -19,48 +19,44 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/MultiTask.h>
-#include <U2Lang/WorkflowDebugStatus.h>
-
 #include "JsScheduler.h"
+
+#include <U2Core/MultiTask.h>
+
+#include <U2Lang/WorkflowDebugStatus.h>
 
 namespace U2 {
 
 namespace Js {
 
-JsScheduler::JsScheduler( Workflow::Schema *scheme, const Local<Function> &callback )
-    : ScriptableScheduler( scheme ), schedulerCallback( callback )
-{
-
+JsScheduler::JsScheduler(Workflow::Schema *scheme, const Local<Function> &callback)
+    : ScriptableScheduler(scheme), schedulerCallback(callback) {
 }
 
-JsScheduler::~JsScheduler( ) {
-
+JsScheduler::~JsScheduler() {
 }
 
-Task * JsScheduler::tick( ) {
+Task *JsScheduler::tick() {
     Local<Value> argv;
-    schedulerCallback->Call( Context::GetCurrent( )->Global( ), 0, &argv );
+    schedulerCallback->Call(Context::GetCurrent()->Global(), 0, &argv);
     QList<Task *> tickTasks;
-    foreach ( ActorId actor, nextTicks ) {
-        LocalWorkflow::BaseWorker *worker
-            = schema->actorById( actor )->castPeer<LocalWorkflow::BaseWorker>( );
-        worker->deleteBackupMessagesFromPreviousTick( );
-        Task *newTask = worker->tick( );
-        debugInfo->checkActorForBreakpoint( schema->actorById( actor ) );
-        if ( NULL != newTask ) {
-            tickTasks.append( newTask );
+    foreach (ActorId actor, nextTicks) {
+        LocalWorkflow::BaseWorker *worker = schema->actorById(actor)->castPeer<LocalWorkflow::BaseWorker>();
+        worker->deleteBackupMessagesFromPreviousTick();
+        Task *newTask = worker->tick();
+        debugInfo->checkActorForBreakpoint(schema->actorById(actor));
+        if (NULL != newTask) {
+            tickTasks.append(newTask);
         }
     }
-    Task *result = ( tickTasks.isEmpty( ) ) ? NULL
-        : new MultiTask( "Js-driven worker tasks", tickTasks );
-    if ( NULL != result ) {
-        result->setMaxParallelSubtasks( tickTasks.size() );
+    Task *result = (tickTasks.isEmpty()) ? NULL : new MultiTask("Js-driven worker tasks", tickTasks);
+    if (NULL != result) {
+        result->setMaxParallelSubtasks(tickTasks.size());
     }
     nextTicks.clear();
     return result;
 }
 
-} // namespace Js
+}    // namespace Js
 
-} // namespace U2
+}    // namespace U2

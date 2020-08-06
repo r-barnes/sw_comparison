@@ -19,19 +19,17 @@
  * MA 02110-1301, USA.
  */
 
+#include "FilteredProjectItemDelegate.h"
+
 #include <QAbstractTextDocumentLayout>
 #include <QApplication>
 #include <QPainter>
 #include <QTextDocument>
 
-#include "FilteredProjectItemDelegate.h"
-
 namespace U2 {
 
 FilteredProjectItemDelegate::FilteredProjectItemDelegate(QObject *parent)
-    : QStyledItemDelegate(parent)
-{
-
+    : QStyledItemDelegate(parent) {
 }
 
 void FilteredProjectItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const {
@@ -81,4 +79,4 @@ QSize FilteredProjectItemDelegate::sizeHint(const QStyleOptionViewItem &option, 
     return QSize(doc.idealWidth(), doc.size().height());
 }
 
-}
+}    // namespace U2

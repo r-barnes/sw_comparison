@@ -19,12 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "DiamondClassifyTask.h"
+
 #include <U2Core/AppContext.h>
-#include <U2Core/DNATranslation.h>
 #include <U2Core/Counter.h>
+#include <U2Core/DNATranslation.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "DiamondClassifyTask.h"
 #include "DiamondSupport.h"
 
 namespace U2 {
@@ -52,17 +53,14 @@ DiamondClassifyTaskSettings::DiamondClassifyTaskSettings()
       gap_open(-1),
       gap_extend(-1),
       index_chunks(4),
-      num_threads(1)
-{
-
+      num_threads(1) {
 }
 
-const QString DiamondClassifyTask::TAXONOMIC_CLASSIFICATION_OUTPUT_FORMAT = "102";  // from the DIAMOND manual
+const QString DiamondClassifyTask::TAXONOMIC_CLASSIFICATION_OUTPUT_FORMAT = "102";    // from the DIAMOND manual
 
 DiamondClassifyTask::DiamondClassifyTask(const DiamondClassifyTaskSettings &settings)
     : ExternalToolSupportTask(tr("Classify sequences with DIAMOND"), TaskFlags_FOSE_COSC),
-      settings(settings)
-{
+      settings(settings) {
     GCOUNTER(cvar, tvar, "DiamondClassifyTask");
     checkSettings();
     CHECK_OP(stateInfo, );
@@ -72,7 +70,7 @@ const QString &DiamondClassifyTask::getClassificationUrl() const {
     return settings.classificationUrl;
 }
 
-const LocalWorkflow::TaxonomyClassificationResult & DiamondClassifyTask::getParsedReport() const {
+const LocalWorkflow::TaxonomyClassificationResult &DiamondClassifyTask::getParsedReport() const {
     return parsedReport;
 }
 
@@ -84,7 +82,6 @@ void DiamondClassifyTask::run() {
         QByteArray line;
 
         while ((line = reportFile.readLine()).size() != 0) {
-
             QList<QByteArray> row = line.split('\t');
             if (row.size() == 3) {
                 QString objID = row[0];
@@ -120,7 +117,7 @@ void DiamondClassifyTask::checkSettings() {
     SAFE_POINT_EXT(!settings.readsUrl.isEmpty(), setError(tr("Reads URL is empty")), );
     SAFE_POINT_EXT(!settings.databaseUrl.isEmpty(), setError(tr("DIAMOND database URL is empty")), );
     SAFE_POINT_EXT(!settings.classificationUrl.isEmpty(), setError(tr("DIAMOND classification URL is empty")), );
-    QString id = DNATranslationID(%1);
+    QString id = DNATranslationID(% 1);
     SAFE_POINT_EXT(AppContext::getDNATranslationRegistry()->lookupTranslation(id.arg(settings.gencode)) != NULL,
                    setError(tr("Invalid genetic code: %1").arg(settings.gencode)), );
     // TODO validate matrix value??
@@ -165,4 +162,4 @@ QStringList DiamondClassifyTask::getArguments() const {
     return arguments;
 }
 
-}   // namespace U2
+}    // namespace U2

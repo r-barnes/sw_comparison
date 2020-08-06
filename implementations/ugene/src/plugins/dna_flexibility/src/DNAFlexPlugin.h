@@ -23,43 +23,39 @@
 #define _U2_DNA_FLEX_PLUGIN_H_
 
 #include <U2Core/PluginModel.h>
-#include <U2Gui/ObjectViewModel.h>
-#include <U2View/GraphMenu.h>
 
+#include <U2Gui/ObjectViewModel.h>
+
+#include <U2View/GraphMenu.h>
 
 namespace U2 {
 
-
-class DNAFlexPlugin : public Plugin
-{
+class DNAFlexPlugin : public Plugin {
     Q_OBJECT
 
 public:
     DNAFlexPlugin();
 
 private:
-    GObjectViewWindowContext* viewCtx;
+    GObjectViewWindowContext *viewCtx;
 };
 
-
-class DNAFlexViewContext : public GObjectViewWindowContext
-{
+class DNAFlexViewContext : public GObjectViewWindowContext {
     Q_OBJECT
 
 public:
-    DNAFlexViewContext(QObject* p);
+    DNAFlexViewContext(QObject *p);
 
 private slots:
     void sl_showDNAFlexDialog();
-    void sl_sequenceWidgetAdded(ADVSequenceWidget*);
+    void sl_sequenceWidgetAdded(ADVSequenceWidget *);
 
 private:
-    GSequenceGraphFactory* graphFactory;
+    GSequenceGraphFactory *graphFactory;
 
-    virtual void initViewContext(GObjectView* view);
+    virtual void initViewContext(GObjectView *view);
 };
 
-
-} // namespace
+}    // namespace U2
 
 #endif

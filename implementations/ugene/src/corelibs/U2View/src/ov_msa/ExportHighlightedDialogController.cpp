@@ -19,8 +19,10 @@
  * MA 02110-1301, USA.
  */
 
-#include <QPushButton>
+#include "ExportHighlightedDialogController.h"
+
 #include <QMessageBox>
+#include <QPushButton>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
@@ -32,33 +34,31 @@
 #include <U2Gui/HelpButton.h>
 #include <U2Gui/SaveDocumentController.h>
 
-#include "ExportHighlightedDialogController.h"
 #include "ov_msa/MSAEditorSequenceArea.h"
 #include "ui_ExportHighlightedDialog.h"
 
-namespace U2{
+namespace U2 {
 
-ExportHighligtingDialogController::ExportHighligtingDialogController(MaEditorWgt *msaui_, QWidget* p )
+ExportHighligtingDialogController::ExportHighligtingDialogController(MaEditorWgt *msaui_, QWidget *p)
     : QDialog(p),
       msaui(msaui_),
       saveController(NULL),
-      ui(new Ui_ExportHighlightedDialog())
-{
+      ui(new Ui_ExportHighlightedDialog()) {
     ui->setupUi(this);
-    new HelpButton(this, ui->buttonBox, "24742452");
+    new HelpButton(this, ui->buttonBox, "46499981");
 
     ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Export"));
     ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
     CHECK(AppContext::getAppSettings(), );
     CHECK(AppContext::getAppSettings()->getUserAppsSettings(), );
-    const MaEditor* editor = msaui->getEditor();
+    const MaEditor *editor = msaui->getEditor();
     CHECK(editor, );
 
     initSaveController();
 
     int alignLength = editor->getAlignmentLen();
-    const MaEditorSelection& selection = editor->getSelection();
+    const MaEditorSelection &selection = editor->getSelection();
 
     int startPos = -1;
     int endPos = -1;
@@ -83,19 +83,19 @@ ExportHighligtingDialogController::ExportHighligtingDialogController(MaEditorWgt
     connect(ui->endLineEdit, SIGNAL(valueChanged(int)), SLOT(sl_regionChanged()));
 }
 
-ExportHighligtingDialogController::~ExportHighligtingDialogController(){
+ExportHighligtingDialogController::~ExportHighligtingDialogController() {
     delete ui;
 }
 
-void ExportHighligtingDialogController::accept(){
+void ExportHighligtingDialogController::accept() {
     startPos = ui->startLineEdit->value();
     endPos = ui->endLineEdit->value();
-    if(ui->oneIndexRB->isChecked()){
+    if (ui->oneIndexRB->isChecked()) {
         startingIndex = 1;
-    }else{
+    } else {
         startingIndex = 0;
     }
-    if (saveController->getSaveFileName().isEmpty()){
+    if (saveController->getSaveFileName().isEmpty()) {
         QMessageBox::warning(this, tr("Warning"), tr("Export to file URL is empty!"));
         return;
     }
@@ -107,12 +107,12 @@ void ExportHighligtingDialogController::accept(){
     QDialog::accept();
 }
 
-void ExportHighligtingDialogController::lockKeepGaps(){
+void ExportHighligtingDialogController::lockKeepGaps() {
     ui->keepGapsBox->setChecked(true);
     ui->keepGapsBox->setDisabled(true);
 }
 
-void ExportHighligtingDialogController::sl_regionChanged(){
+void ExportHighligtingDialogController::sl_regionChanged() {
     bool validRange = ui->endLineEdit->value() - ui->startLineEdit->value() >= 0;
     ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(validRange);
 
@@ -139,4 +139,4 @@ void ExportHighligtingDialogController::initSaveController() {
     saveController = new SaveDocumentController(config, formats, this);
 }
 
-}
+}    // namespace U2

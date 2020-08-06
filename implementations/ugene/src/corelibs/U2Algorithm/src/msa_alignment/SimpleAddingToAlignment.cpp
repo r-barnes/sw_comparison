@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "SimpleAddingToAlignment.h"
+
 #include <U2Algorithm/BaseAlignmentAlgorithmsIds.h>
 
 #include <U2Core/Counter.h>
@@ -30,18 +32,16 @@
 #include <U2Core/MultipleSequenceAlignmentObject.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "SimpleAddingToAlignment.h"
-
 namespace U2 {
 
 /************************************************************************/
 /* SimpleAddToAlignmentTask */
 /************************************************************************/
-SimpleAddToAlignmentTask::SimpleAddToAlignmentTask(const AlignSequencesToAlignmentTaskSettings& settings)
+SimpleAddToAlignmentTask::SimpleAddToAlignmentTask(const AlignSequencesToAlignmentTaskSettings &settings)
     : AbstractAlignmentTask("Simple add to alignment task", TaskFlags_NR_FOSCOE), settings(settings) {
-    GCOUNTER(cvar, tvar, "SimpleAddToAlignmentTask" );
+    GCOUNTER(cvar, tvar, "SimpleAddToAlignmentTask");
 
-    SAFE_POINT_EXT(settings.isValid(), setError("Incorrect settings were passed into SimpleAddToAlignmentTask"),);
+    SAFE_POINT_EXT(settings.isValid(), setError("Incorrect settings were passed into SimpleAddToAlignmentTask"), );
 
     MultipleSequenceAlignmentExporter alnExporter;
     inputMsa = alnExporter.getAlignment(settings.msaRef.dbiRef, settings.msaRef.entityId, stateInfo);
@@ -53,20 +53,20 @@ void SimpleAddToAlignmentTask::prepare() {
     MSAUtils::removeColumnsWithGaps(inputMsa, inputMsa->getNumRows());
 
     QListIterator<QString> namesIterator(settings.addedSequencesNames);
-    foreach(const U2EntityRef& sequence, settings.addedSequencesRefs) {
-        if(hasError() || isCanceled()) {
+    foreach (const U2EntityRef &sequence, settings.addedSequencesRefs) {
+        if (hasError() || isCanceled()) {
             return;
         }
-        BestPositionFindTask* findTask = new BestPositionFindTask(inputMsa, sequence, namesIterator.next(), settings.referenceRowId);
+        BestPositionFindTask *findTask = new BestPositionFindTask(inputMsa, sequence, namesIterator.next(), settings.referenceRowId);
         findTask->setSubtaskProgressWeight(100.0 / settings.addedSequencesRefs.size());
         addSubTask(findTask);
     }
 }
 
-QList<Task*> SimpleAddToAlignmentTask::onSubTaskFinished(Task* subTask) {
-    BestPositionFindTask* findTask = qobject_cast<BestPositionFindTask*>(subTask);
+QList<Task *> SimpleAddToAlignmentTask::onSubTaskFinished(Task *subTask) {
+    BestPositionFindTask *findTask = qobject_cast<BestPositionFindTask *>(subTask);
     sequencePositions[findTask->getSequenceId()] = findTask->getPosition();
-    return QList<Task*>();
+    return QList<Task *>();
 }
 
 Task::ReportResult SimpleAddToAlignmentTask::report() {
@@ -102,7 +102,7 @@ Task::ReportResult SimpleAddToAlignmentTask::report() {
     }
 
     QStringList unalignedSequences;
-    foreach(const U2EntityRef& sequence, settings.addedSequencesRefs) {
+    foreach (const U2EntityRef &sequence, settings.addedSequencesRefs) {
         QString seqName = namesIterator.peekNext();
         U2SequenceObject seqObject(seqName, sequence);
         U2MsaRow row = MSAUtils::copyRowFromSequence(&seqObject, settings.msaRef.dbiRef, stateInfo);
@@ -134,7 +134,7 @@ Task::ReportResult SimpleAddToAlignmentTask::report() {
 
     if (!unalignedSequences.isEmpty()) {
         stateInfo.addWarning(tr("The following sequence(s) were not aligned as they do not contain meaningful characters: \"%1\".")
-                                .arg(unalignedSequences.join("\", \"")));
+                                 .arg(unalignedSequences.join("\", \"")));
     }
 
     if (hasDbiUpdates) {
@@ -145,14 +145,12 @@ Task::ReportResult SimpleAddToAlignmentTask::report() {
     return ReportResult_Finished;
 }
 
-
 /************************************************************************/
 /* BestPositionFindTask */
 /************************************************************************/
 
-BestPositionFindTask::BestPositionFindTask(const MultipleSequenceAlignment& alignment, const U2EntityRef& sequenceRef, const QString& sequenceId, int referenceRowId)
-: Task(tr("Best position find task"), TaskFlag_None), inputMsa(alignment), sequenceRef(sequenceRef), sequenceId(sequenceId), bestPosition(0), referenceRowId(referenceRowId) {
-
+BestPositionFindTask::BestPositionFindTask(const MultipleSequenceAlignment &alignment, const U2EntityRef &sequenceRef, const QString &sequenceId, int referenceRowId)
+    : Task(tr("Best position find task"), TaskFlag_None), inputMsa(alignment), sequenceRef(sequenceRef), sequenceId(sequenceId), bestPosition(0), referenceRowId(referenceRowId) {
 }
 void BestPositionFindTask::run() {
     U2SequenceObject dnaSeq("sequence", sequenceRef);
@@ -160,10 +158,10 @@ void BestPositionFindTask::run() {
     sequence.replace(U2Msa::GAP_CHAR, "");
     CHECK_OP(stateInfo, );
 
-    if(sequence.isEmpty()) {
+    if (sequence.isEmpty()) {
         return;
     }
-    if(!inputMsa->getAlphabet()->isCaseSensitive()) {
+    if (!inputMsa->getAlphabet()->isCaseSensitive()) {
         sequence = sequence.toUpper();
     }
     const int aliLen = inputMsa->getLength();
@@ -171,10 +169,10 @@ void BestPositionFindTask::run() {
 
     int similarity = 0;
 
-    if(referenceRowId >= 0) {
+    if (referenceRowId >= 0) {
         const MultipleSequenceAlignmentRow row = inputMsa->getMsaRow(referenceRowId);
         int iterationsNum = aliLen - sequence.length() + 1;
-        for (int p = 0; p < iterationsNum; p++ ) {
+        for (int p = 0; p < iterationsNum; p++) {
             stateInfo.setProgress(100 * p / iterationsNum);
             char c = row->charAt(p);
             int selLength = 0;
@@ -186,9 +184,9 @@ void BestPositionFindTask::run() {
         }
     } else {
         int processedRows = 0;
-        foreach(const MultipleSequenceAlignmentRow &row, inputMsa->getMsaRows()) {
+        foreach (const MultipleSequenceAlignmentRow &row, inputMsa->getMsaRows()) {
             stateInfo.setProgress(100 * processedRows / nSeq);
-            for (int p = 0; p < ( aliLen - sequence.length() + 1 ); p++ ) {
+            for (int p = 0; p < (aliLen - sequence.length() + 1); p++) {
                 char c = row->charAt(p);
                 int selLength = 0;
                 int patternSimilarity = MSAUtils::getPatternSimilarityIgnoreGaps(row, p, sequence, selLength);
@@ -202,21 +200,23 @@ void BestPositionFindTask::run() {
     }
 }
 
-int BestPositionFindTask::getPosition() const {return bestPosition;}
-const QString& BestPositionFindTask::getSequenceId() const {return sequenceId;}
+int BestPositionFindTask::getPosition() const {
+    return bestPosition;
+}
+const QString &BestPositionFindTask::getSequenceId() const {
+    return sequenceId;
+}
 
-AbstractAlignmentTask* SimpleAddToAlignmentTaskFactory::getTaskInstance(AbstractAlignmentTaskSettings *_settings) const {
-    AlignSequencesToAlignmentTaskSettings* addSettings = dynamic_cast<AlignSequencesToAlignmentTaskSettings*>(_settings);
+AbstractAlignmentTask *SimpleAddToAlignmentTaskFactory::getTaskInstance(AbstractAlignmentTaskSettings *_settings) const {
+    AlignSequencesToAlignmentTaskSettings *addSettings = dynamic_cast<AlignSequencesToAlignmentTaskSettings *>(_settings);
     SAFE_POINT(addSettings != NULL,
-        "Add sequences to alignment: incorrect settings", NULL);
+               "Add sequences to alignment: incorrect settings",
+               NULL);
     return new SimpleAddToAlignmentTask(*addSettings);
 }
 
-SimpleAddToAlignmentAlgorithm::SimpleAddToAlignmentAlgorithm() :
-AlignmentAlgorithm(AddToAlignment, BaseAlignmentAlgorithmsIds::ALIGN_SEQUENCES_TO_ALIGNMENT_BY_UGENE,
-                   new SimpleAddToAlignmentTaskFactory(),
-                   NULL)
-{
+SimpleAddToAlignmentAlgorithm::SimpleAddToAlignmentAlgorithm()
+    : AlignmentAlgorithm(AddToAlignment, BaseAlignmentAlgorithmsIds::ALIGN_SEQUENCES_TO_ALIGNMENT_BY_UGENE, new SimpleAddToAlignmentTaskFactory(), NULL) {
 }
 
-} // U2
+}    // namespace U2

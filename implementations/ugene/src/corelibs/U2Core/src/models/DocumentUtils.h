@@ -36,24 +36,29 @@ class DocumentImporter;
     */
 class U2CORE_EXPORT FormatDetectionResult {
 public:
-    FormatDetectionResult() : format(NULL), importer(NULL) {}
-    DocumentFormat*         format;
-    DocumentImporter*       importer;
-    QByteArray              rawData;
-    GUrl                    url;
-    QString                 extension;
+    FormatDetectionResult()
+        : format(NULL), importer(NULL) {
+    }
+    DocumentFormat *format;
+    DocumentImporter *importer;
+    QByteArray rawData;
+    GUrl url;
+    QString extension;
 
-    FormatCheckResult      rawDataCheckResult;
+    FormatCheckResult rawDataCheckResult;
 
     QString getFormatDescriptionText() const;
     QString getFormatOrImporterName() const;
-    int score() const { return rawDataCheckResult.score; }
-
+    int score() const {
+        return rawDataCheckResult.score;
+    }
 };
 
 class U2CORE_EXPORT FormatDetectionConfig {
 public:
-    FormatDetectionConfig() : bestMatchesOnly(true), useImporters(false), useExtensionBonus(true), excludeHiddenFormats(true) {}
+    FormatDetectionConfig()
+        : bestMatchesOnly(true), useImporters(false), useExtensionBonus(true), excludeHiddenFormats(true) {
+    }
 
     /** if true format detection algorithm returns list of best matches only */
     bool bestMatchesOnly;
@@ -72,7 +77,7 @@ class U2CORE_EXPORT DocumentUtils : public QObject {
     Q_OBJECT
 public:
     /* returns set with document urls */
-    static QSet<QString> getURLs(const QList<Document*>& docs);
+    static QSet<QString> getURLs(const QList<Document *> &docs);
 
     /*  The set of urls that should not be used for new documents
         returns list of loaded urls. Gets them from the active project
@@ -80,20 +85,19 @@ public:
     static QSet<QString> getNewDocFileNameExcludesHint();
 
     /* Detects document format. The best match goes first in the returned list */
-    static QList<FormatDetectionResult> detectFormat(const GUrl& url, const FormatDetectionConfig& conf = FormatDetectionConfig());
+    static QList<FormatDetectionResult> detectFormat(const GUrl &url, const FormatDetectionConfig &conf = FormatDetectionConfig());
 
     /*
         Detects document format. The best match goes first in the returned list
         IOAdapter must be opened
         */
-    static QList<FormatDetectionResult> detectFormat(IOAdapter* io, const FormatDetectionConfig& conf = FormatDetectionConfig());
+    static QList<FormatDetectionResult> detectFormat(IOAdapter *io, const FormatDetectionConfig &conf = FormatDetectionConfig());
 
     /*
         Detects document format. The best match goes first in the returned list
         ext & url can be used here to add extension bonus to the final score
         */
-    static QList<FormatDetectionResult> detectFormat(const QByteArray& rawData, const QString& ext = QString(),
-        const GUrl& url = GUrl(), const FormatDetectionConfig& conf = FormatDetectionConfig());
+    static QList<FormatDetectionResult> detectFormat(const QByteArray &rawData, const QString &ext = QString(), const GUrl &url = GUrl(), const FormatDetectionConfig &conf = FormatDetectionConfig());
 
     /*
         Find the best matching document format and stores it in @resultId.
@@ -105,24 +109,23 @@ public:
     };
     static Detection detectFormat(const GUrl &url, QString &resultId);
 
-    static QList<DocumentFormat*> toFormats(const QList<FormatDetectionResult>& infos);
+    static QList<DocumentFormat *> toFormats(const QList<FormatDetectionResult> &infos);
 
-    static bool canAddGObjectsToDocument(Document* doc, const GObjectType& type);
+    static bool canAddGObjectsToDocument(Document *doc, const GObjectType &type);
 
-    static bool canRemoveGObjectFromDocument(GObject* obj);
+    static bool canRemoveGObjectFromDocument(GObject *obj);
 
-    static void removeDocumentsContainigGObjectFromProject(GObject* obj);
+    static void removeDocumentsContainigGObjectFromProject(GObject *obj);
 
-    static QFile::Permissions getPermissions(Document* doc);
+    static QFile::Permissions getPermissions(Document *doc);
 
     /** Creates new document that contains data from original one restructured to new form according to document hints
         For example: combines all sequences to alignment, merge sequences, etc
         Return NULL if no restructuring was made
         */
-    static Document* createCopyRestructuredWithHints(Document* doc, U2OpStatus& os, bool shallowCopy = false);
+    static Document *createCopyRestructuredWithHints(Document *doc, U2OpStatus &os, bool shallowCopy = false);
 };
 
-}//namespace
+}    // namespace U2
 
 #endif
-

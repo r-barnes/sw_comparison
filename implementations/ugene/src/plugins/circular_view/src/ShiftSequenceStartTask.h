@@ -22,8 +22,8 @@
 #ifndef _U2_SHIFT_SEQUENCE_START_TASK_H_
 #define _U2_SHIFT_SEQUENCE_START_TASK_H_
 
-#include <U2Core/Task.h>
 #include <U2Core/DocumentModel.h>
+#include <U2Core/Task.h>
 #include <U2Core/U1AnnotationUtils.h>
 
 namespace U2 {
@@ -34,16 +34,15 @@ class ShiftSequenceStartTask : public Task {
     Q_OBJECT
 public:
     /** Shifts circular sequence start position to 'shift' symbols forward. */
-    ShiftSequenceStartTask(U2SequenceObject* sequenceObject, qint64 newSequenceStartPosition);
+    ShiftSequenceStartTask(U2SequenceObject *sequenceObject, qint64 newSequenceStartPosition);
 
     virtual Task::ReportResult report();
 
 private:
-    U2SequenceObject* sequenceObject;
+    U2SequenceObject *sequenceObject;
     qint64 newSequenceStartPosition;
 };
 
-
-}//ns
+}    // namespace U2
 
 #endif

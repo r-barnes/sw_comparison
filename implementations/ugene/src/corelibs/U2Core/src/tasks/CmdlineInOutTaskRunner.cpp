@@ -19,14 +19,14 @@
 * MA 02110-1301, USA.
 */
 
+#include "CmdlineInOutTaskRunner.h"
+
 #include <U2Core/DbiConnection.h>
 #include <U2Core/GObject.h>
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "CmdlineInOutTaskRunner.h"
 
 namespace U2 {
 
@@ -35,33 +35,31 @@ const QString CmdlineInOutTaskRunner::IN_ID_ARG = "input-id";
 const QString CmdlineInOutTaskRunner::OUT_DB_ARG = "output-db";
 
 CmdlineInOutTaskConfig::CmdlineInOutTaskConfig()
-: CmdlineTaskConfig(), emptyOutputPossible(false)
-{
+    : CmdlineTaskConfig(), emptyOutputPossible(false) {
 }
 
 namespace {
-    CmdlineTaskConfig prepareConfig(const CmdlineInOutTaskConfig &config) {
-        CmdlineTaskConfig result = config;
+CmdlineTaskConfig prepareConfig(const CmdlineInOutTaskConfig &config) {
+    CmdlineTaskConfig result = config;
 
-        QStringList dbList;
-        QStringList idList;
-        foreach (GObject *object, config.inputObjects) {
-            U2EntityRef entityRef = object->getEntityRef();
-            dbList << CmdlineInOutTaskRunner::toString(entityRef.dbiRef);
-            idList << QString::number(U2DbiUtils::toDbiId(entityRef.entityId));
-        }
-
-        QString argString = "--%1=\"%2\"";
-        result.arguments << argString.arg(CmdlineInOutTaskRunner::IN_DB_ARG).arg(dbList.join(";"));
-        result.arguments << argString.arg(CmdlineInOutTaskRunner::IN_ID_ARG).arg(idList.join(";"));
-        result.arguments << argString.arg(CmdlineInOutTaskRunner::OUT_DB_ARG).arg(CmdlineInOutTaskRunner::toString(config.outDbiRef));
-        return result;
+    QStringList dbList;
+    QStringList idList;
+    foreach (GObject *object, config.inputObjects) {
+        U2EntityRef entityRef = object->getEntityRef();
+        dbList << CmdlineInOutTaskRunner::toString(entityRef.dbiRef);
+        idList << QString::number(U2DbiUtils::toDbiId(entityRef.entityId));
     }
+
+    QString argString = "--%1=\"%2\"";
+    result.arguments << argString.arg(CmdlineInOutTaskRunner::IN_DB_ARG).arg(dbList.join(";"));
+    result.arguments << argString.arg(CmdlineInOutTaskRunner::IN_ID_ARG).arg(idList.join(";"));
+    result.arguments << argString.arg(CmdlineInOutTaskRunner::OUT_DB_ARG).arg(CmdlineInOutTaskRunner::toString(config.outDbiRef));
+    return result;
 }
+}    // namespace
 
 CmdlineInOutTaskRunner::CmdlineInOutTaskRunner(const CmdlineInOutTaskConfig &config)
-: CmdlineTaskRunner(prepareConfig(config)), config(config)
-{
+    : CmdlineTaskRunner(prepareConfig(config)), config(config) {
 }
 
 Task::ReportResult CmdlineInOutTaskRunner::report() {
@@ -76,7 +74,7 @@ Task::ReportResult CmdlineInOutTaskRunner::report() {
     return result;
 }
 
-const QList<U2DataId> & CmdlineInOutTaskRunner::getOutputObjects() const {
+const QList<U2DataId> &CmdlineInOutTaskRunner::getOutputObjects() const {
     return outputObjects;
 }
 
@@ -103,7 +101,7 @@ U2DataId CmdlineInOutTaskRunner::parseDataId(const QString &string, const U2DbiR
 }
 
 namespace {
-    const QString OUTPUT_OBJECT_TAG = "ugene-output-object-id=";
+const QString OUTPUT_OBJECT_TAG = "ugene-output-object-id=";
 }
 
 void CmdlineInOutTaskRunner::logOutputObject(const U2DataId &id) {
@@ -125,4 +123,4 @@ bool CmdlineInOutTaskRunner::parseCommandLogWord(const QString &logWord) {
     return false;
 }
 
-} // U2
+}    // namespace U2

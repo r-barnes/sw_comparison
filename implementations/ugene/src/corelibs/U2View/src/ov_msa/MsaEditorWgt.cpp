@@ -19,22 +19,23 @@
  * MA 02110-1301, USA.
  */
 
+#include "MsaEditorWgt.h"
+
 #include <U2Algorithm/MSADistanceAlgorithmRegistry.h>
 
 #include "MSAEditor.h"
 #include "MSAEditorConsensusArea.h"
-#include "MsaEditorNameList.h"
 #include "MSAEditorOverviewArea.h"
 #include "MSAEditorSequenceArea.h"
+#include "MsaEditorNameList.h"
 #include "MsaEditorSimilarityColumn.h"
 #include "MsaEditorStatusBar.h"
-#include "MsaEditorWgt.h"
-#include "helpers/MsaRowHeightController.h"
 #include "PhyTrees/MSAEditorMultiTreeViewer.h"
+#include "helpers/MsaRowHeightController.h"
 
 namespace U2 {
 
-MsaEditorWgt::MsaEditorWgt(MSAEditor* editor)
+MsaEditorWgt::MsaEditorWgt(MSAEditor *editor)
     : MaEditorWgt(editor),
       multiTreeViewer(NULL),
       similarityStatistics(NULL) {
@@ -44,15 +45,15 @@ MsaEditorWgt::MsaEditorWgt(MSAEditor* editor)
 }
 
 MSAEditor *MsaEditorWgt::getEditor() const {
-    return qobject_cast<MSAEditor* >(editor);
+    return qobject_cast<MSAEditor *>(editor);
 }
 
-MSAEditorSequenceArea* MsaEditorWgt::getSequenceArea() const {
-    return qobject_cast<MSAEditorSequenceArea* >(seqArea);
+MSAEditorSequenceArea *MsaEditorWgt::getSequenceArea() const {
+    return qobject_cast<MSAEditorSequenceArea *>(seqArea);
 }
 
 void MsaEditorWgt::sl_onTabsCountChanged(int curTabsNumber) {
-    if(curTabsNumber < 1) {
+    if (curTabsNumber < 1) {
         maSplitter.removeWidget(multiTreeViewer);
         delete multiTreeViewer;
         multiTreeViewer = NULL;
@@ -61,28 +62,27 @@ void MsaEditorWgt::sl_onTabsCountChanged(int curTabsNumber) {
     }
 }
 
-void MsaEditorWgt::createDistanceColumn(MSADistanceMatrix* matrix) {
+void MsaEditorWgt::createDistanceColumn(MSADistanceMatrix *matrix) {
     dataList->setMatrix(matrix);
     dataList->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
-    MsaEditorAlignmentDependentWidget* statisticsWidget = new MsaEditorAlignmentDependentWidget(dataList);
+    MsaEditorAlignmentDependentWidget *statisticsWidget = new MsaEditorAlignmentDependentWidget(dataList);
 
     maSplitter.addWidget(nameAreaContainer, statisticsWidget, 0.04, 1);
 }
 
-void MsaEditorWgt::addTreeView(GObjectViewWindow* treeView) {
+void MsaEditorWgt::addTreeView(GObjectViewWindow *treeView) {
     if (NULL == multiTreeViewer) {
         multiTreeViewer = new MSAEditorMultiTreeViewer(tr("Tree view"), getEditor());
         maSplitter.addWidget(nameAreaContainer, multiTreeViewer, 0.35);
         multiTreeViewer->addTreeView(treeView);
         emit si_showTreeOP();
         connect(multiTreeViewer, SIGNAL(si_tabsCountChanged(int)), SLOT(sl_onTabsCountChanged(int)));
-    }
-    else {
+    } else {
         multiTreeViewer->addTreeView(treeView);
     }
 }
 
-void MsaEditorWgt::setSimilaritySettings( const SimilarityStatisticsSettings* settings ) {
+void MsaEditorWgt::setSimilaritySettings(const SimilarityStatisticsSettings *settings) {
     similarityStatistics->setSettings(settings);
 }
 
@@ -91,7 +91,7 @@ void MsaEditorWgt::refreshSimilarityColumn() {
 }
 
 void MsaEditorWgt::showSimilarity() {
-    if(NULL == similarityStatistics) {
+    if (NULL == similarityStatistics) {
         SimilarityStatisticsSettings settings;
         settings.ma = getEditor()->getMaObject();
         settings.algoId = AppContext::getMSADistanceAlgorithmRegistry()->getAlgorithmIds().at(0);
@@ -102,15 +102,13 @@ void MsaEditorWgt::showSimilarity() {
         similarityStatistics = new MsaEditorAlignmentDependentWidget(dataList);
 
         maSplitter.addWidget(nameAreaContainer, similarityStatistics, 0.04, 1);
-    }
-    else {
+    } else {
         similarityStatistics->show();
     }
-
 }
 
 void MsaEditorWgt::hideSimilarity() {
-    if(NULL != similarityStatistics) {
+    if (NULL != similarityStatistics) {
         similarityStatistics->hide();
         similarityStatistics->cancelPendingTasks();
     }
@@ -120,7 +118,7 @@ const MsaEditorAlignmentDependentWidget *MsaEditorWgt::getSimilarityWidget() {
     return similarityStatistics;
 }
 
-void MsaEditorWgt::initSeqArea(GScrollBar* shBar, GScrollBar* cvBar) {
+void MsaEditorWgt::initSeqArea(GScrollBar *shBar, GScrollBar *cvBar) {
     seqArea = new MSAEditorSequenceArea(this, shBar, cvBar);
 }
 
@@ -140,20 +138,19 @@ void MsaEditorWgt::initStatusBar() {
     statusBar = new MsaEditorStatusBar(editor->getMaObject(), seqArea);
 }
 
-MSAEditorTreeViewer* MsaEditorWgt::getCurrentTree() const
-{
-    if(NULL == multiTreeViewer) {
+MSAEditorTreeViewer *MsaEditorWgt::getCurrentTree() const {
+    if (NULL == multiTreeViewer) {
         return NULL;
     }
-    GObjectViewWindow* page = qobject_cast<GObjectViewWindow*>(multiTreeViewer->getCurrentWidget());
-    if(NULL == page) {
+    GObjectViewWindow *page = qobject_cast<GObjectViewWindow *>(multiTreeViewer->getCurrentWidget());
+    if (NULL == page) {
         return NULL;
     }
-    return qobject_cast<MSAEditorTreeViewer*>(page->getObjectView());
+    return qobject_cast<MSAEditorTreeViewer *>(page->getObjectView());
 }
 
-MSAEditorMultiTreeViewer *MsaEditorWgt::getMultiTreeViewer(){
+MSAEditorMultiTreeViewer *MsaEditorWgt::getMultiTreeViewer() {
     return multiTreeViewer;
 }
 
-}   // namespace U2
+}    // namespace U2

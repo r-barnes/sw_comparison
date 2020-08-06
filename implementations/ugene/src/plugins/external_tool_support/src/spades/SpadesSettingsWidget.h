@@ -23,13 +23,14 @@
 #define _U2_SPADES_SETTINGS_WIDGET_H_
 
 #include <U2Algorithm/GenomeAssemblyRegistry.h>
+
 #include <U2Gui/U2SavableWidget.h>
+
 #include <U2View/DnaAssemblyGUIExtension.h>
 
 #include "ui_SpadesSettings.h"
 
 namespace U2 {
-
 
 class SpadesSettingsWidget : public GenomeAssemblyAlgorithmMainWidget, Ui_SpadesSettings, U2SavableWidget {
     Q_OBJECT
@@ -44,9 +45,6 @@ class SpadesGUIExtensionsFactory : public GenomeAssemblyGUIExtensionsFactory {
     bool hasMainWidget();
 };
 
+}    // namespace U2
 
-
-} // namespace U2
-
-#endif // _U2_SPADES_SETTINGS_WIDGET_H_
-
+#endif    // _U2_SPADES_SETTINGS_WIDGET_H_

@@ -22,45 +22,43 @@
 #ifndef _U2_SMITH_WATERMAN_ALG_IMPL_H_
 #define _U2_SMITH_WATERMAN_ALG_IMPL_H_
 
-#include <U2Algorithm/SmithWatermanTaskFactory.h>
-#include <U2Algorithm/PairwiseAlignmentTask.h>
+#include <QByteArray>
+
 #include <U2Algorithm/PairwiseAlignmentTask.h>
 #include <U2Algorithm/SmithWatermanSettings.h>
+#include <U2Algorithm/SmithWatermanTaskFactory.h>
+
 #include <U2Core/SequenceWalkerTask.h>
 #include <U2Core/Task.h>
 
 #include "SWAlgorithmTask.h"
 
-#include <QByteArray>
-
-
 namespace U2 {
 
 class PairwiseAlignmentTask;
 
-class SWTaskFactory: public SmithWatermanTaskFactory {          //for ADV search only
+class SWTaskFactory : public SmithWatermanTaskFactory {    //for ADV search only
 public:
     SWTaskFactory(SW_AlgType _algType);
     virtual ~SWTaskFactory();
-    virtual Task* getTaskInstance(const SmithWatermanSettings& config, const QString& taskName) const;
+    virtual Task *getTaskInstance(const SmithWatermanSettings &config, const QString &taskName) const;
 
 private:
-    bool isValidParameters(const SmithWatermanSettings& sWatermanConfig,  SequenceWalkerSubtask* t) const;      //not realized
+    bool isValidParameters(const SmithWatermanSettings &sWatermanConfig, SequenceWalkerSubtask *t) const;    //not realized
     SW_AlgType algType;
-
 };
 
-class PairwiseAlignmentSmithWatermanTaskFactory : public AbstractAlignmentTaskFactory {           //for pairwise alignment only
+class PairwiseAlignmentSmithWatermanTaskFactory : public AbstractAlignmentTaskFactory {    //for pairwise alignment only
 public:
     PairwiseAlignmentSmithWatermanTaskFactory(SW_AlgType _algType);
     virtual ~PairwiseAlignmentSmithWatermanTaskFactory();
 
-    virtual AbstractAlignmentTask* getTaskInstance(AbstractAlignmentTaskSettings* settings) const;
+    virtual AbstractAlignmentTask *getTaskInstance(AbstractAlignmentTaskSettings *settings) const;
 
 private:
     SW_AlgType algType;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_SMITH_WATERMAN_ALG_IMPL_H_
+#endif    // _U2_SMITH_WATERMAN_ALG_IMPL_H_

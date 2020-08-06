@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportSequences2MSADialog.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 
@@ -31,15 +33,13 @@
 #include <U2Gui/HelpButton.h>
 #include <U2Gui/SaveDocumentController.h>
 
-#include "ExportSequences2MSADialog.h"
-
 namespace U2 {
 
-ExportSequences2MSADialog::ExportSequences2MSADialog(QWidget* p, const QString& defaultUrl)
+ExportSequences2MSADialog::ExportSequences2MSADialog(QWidget *p, const QString &defaultUrl)
     : QDialog(p),
       saveController(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742331");
+    new HelpButton(this, buttonBox, "46499659");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Export"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
     okButton = buttonBox->button(QDialogButtonBox::Ok);
@@ -67,7 +67,8 @@ void ExportSequences2MSADialog::accept() {
 void ExportSequences2MSADialog::initSaveController(const QString &defaultUrl) {
     SaveDocumentControllerConfig config;
     config.defaultFileName = defaultUrl;
-    config.defaultFormatId = BaseDocumentFormats::CLUSTAL_ALN;;
+    config.defaultFormatId = BaseDocumentFormats::CLUSTAL_ALN;
+    ;
     config.fileDialogButton = fileButton;
     config.fileNameEdit = fileNameEdit;
     config.formatCombo = formatCombo;
@@ -80,12 +81,12 @@ void ExportSequences2MSADialog::initSaveController(const QString &defaultUrl) {
     saveController = new SaveDocumentController(config, formatConstraints, this);
 }
 
-void ExportSequences2MSADialog::setOkButtonText(const QString& text) const {
+void ExportSequences2MSADialog::setOkButtonText(const QString &text) const {
     okButton->setText(text);
 }
 
-void ExportSequences2MSADialog::setFileLabelText(const QString& text) const {
+void ExportSequences2MSADialog::setFileLabelText(const QString &text) const {
     fileLabel->setText(text);
 }
 
-}//namespace
+}    // namespace U2

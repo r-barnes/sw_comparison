@@ -22,49 +22,57 @@
 #ifndef _U2_GOBJECT_SELECTION_H_
 #define _U2_GOBJECT_SELECTION_H_
 
-#include "SelectionTypes.h"
-
 #include <U2Core/SelectionModel.h>
+
+#include "SelectionTypes.h"
 
 namespace U2 {
 
 class GObject;
 
-class  U2CORE_EXPORT GObjectSelection : public GSelection {
+class U2CORE_EXPORT GObjectSelection : public GSelection {
     Q_OBJECT
 public:
-    GObjectSelection(QObject* p = NULL);
+    GObjectSelection(QObject *p = NULL);
 
-    const QList<GObject*>& getSelectedObjects() const {return selectedObjects;}
+    const QList<GObject *> &getSelectedObjects() const {
+        return selectedObjects;
+    }
 
-    virtual bool isEmpty() const {return selectedObjects.isEmpty();}
+    virtual bool isEmpty() const {
+        return selectedObjects.isEmpty();
+    }
 
     virtual void clear();
 
-    void setSelection(const QList<GObject*>& objs);
+    void setSelection(const QList<GObject *> &objs);
 
-    void addToSelection(const QList<GObject*>& obj);
+    void addToSelection(const QList<GObject *> &obj);
 
-    void addToSelection(GObject* obj);
+    void addToSelection(GObject *obj);
 
-    void removeFromSelection(GObject* obj);
+    void removeFromSelection(GObject *obj);
 
-    void removeFromSelection(const QList<GObject*>& obj);
+    void removeFromSelection(const QList<GObject *> &obj);
 
-    bool contains(GObject* obj) const {return selectedObjects.contains(obj);}
+    bool contains(GObject *obj) const {
+        return selectedObjects.contains(obj);
+    }
 
 signals:
-    void si_selectionChanged(GObjectSelection* thiz, const QList<GObject*>& objectsAdded, const QList<GObject*>& objectsRemoved);
+    void si_selectionChanged(GObjectSelection *thiz, const QList<GObject *> &objectsAdded, const QList<GObject *> &objectsRemoved);
 
 protected:
-    virtual void _append(GObject* o) {selectedObjects.append(o);}
-    virtual void _remove(GObject* o) {selectedObjects.removeAll(o);};
+    virtual void _append(GObject *o) {
+        selectedObjects.append(o);
+    }
+    virtual void _remove(GObject *o) {
+        selectedObjects.removeAll(o);
+    };
 
 private:
-    QList<GObject*> selectedObjects;
+    QList<GObject *> selectedObjects;
 };
-
-
 
 /*
 class Document;
@@ -92,6 +100,5 @@ private slots:
 };
 */
 
-
-} //namespace
+}    // namespace U2
 #endif

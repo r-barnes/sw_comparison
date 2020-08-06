@@ -19,9 +19,10 @@
  * MA 02110-1301, USA.
  */
 
-#include <QDir>
+#include "TopHatSupportTask.h"
 
 #include <QCoreApplication>
+#include <QDir>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
@@ -42,14 +43,13 @@
 #include <U2Lang/WorkflowTasksRegistry.h>
 
 #include "ExternalToolSupportL10N.h"
-#include "TopHatSupportTask.h"
 #include "python/PythonSupport.h"
 
 namespace U2 {
 
 const QString TopHatSupportTask::outSubDirBaseName("tophat_out");
 
-TopHatSupportTask::TopHatSupportTask(const TopHatSettings& _settings)
+TopHatSupportTask::TopHatSupportTask(const TopHatSettings &_settings)
     : ExternalToolSupportTask(tr("Running TopHat task"), TaskFlags_NR_FOSE_COSC),
       settings(_settings),
       tmpDoc(NULL),
@@ -57,14 +57,11 @@ TopHatSupportTask::TopHatSupportTask(const TopHatSettings& _settings)
       topHatExtToolTask(NULL),
       tmpDocSaved(false),
       tmpDocPairedSaved(false),
-      bowtieIndexTask(NULL)
-{
+      bowtieIndexTask(NULL) {
     GCOUNTER(cvar, tvar, "NGS:TopHatTask");
 }
 
-
-TopHatSupportTask::~TopHatSupportTask()
-{
+TopHatSupportTask::~TopHatSupportTask() {
     delete tmpDoc;
     delete tmpDocPaired;
 }
@@ -72,9 +69,9 @@ TopHatSupportTask::~TopHatSupportTask()
 QString TopHatSupportTask::setupTmpDir() {
     // Add a new subdirectory for temporary files
     QString tmpDirName = "TopHat_" + QString::number(this->getTaskId()) + "_" +
-        QDate::currentDate().toString("dd.MM.yyyy") + "_" +
-        QTime::currentTime().toString("hh.mm.ss.zzz") + "_" +
-        QString::number(QCoreApplication::applicationPid()) + "/";
+                         QDate::currentDate().toString("dd.MM.yyyy") + "_" +
+                         QTime::currentTime().toString("hh.mm.ss.zzz") + "_" +
+                         QString::number(QCoreApplication::applicationPid()) + "/";
 
     QString topHatTmpDirName =
         AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath(TopHatSupport::TOPHAT_TMP_DIR);
@@ -83,7 +80,7 @@ QString TopHatSupportTask::setupTmpDir() {
     QDir tmpDir(topHatTmpDirName + "/" + tmpDirName);
 
     if (tmpDir.exists()) {
-        foreach (const QString& file, tmpDir.entryList()) {
+        foreach (const QString &file, tmpDir.entryList()) {
             tmpDir.remove(file);
         }
 
@@ -124,7 +121,7 @@ ExternalToolSupportTask *TopHatSupportTask::createIndexTask() {
                                                        false);
         } else {
             bowtieIndexTask = new Bowtie2BuildIndexTask(referenceGenome.absoluteFilePath(),
-                                                         settings.buildIndexPathAndBasename);
+                                                        settings.buildIndexPathAndBasename);
         }
         settings.bowtieIndexPathAndBasename = settings.buildIndexPathAndBasename;
 
@@ -136,7 +133,8 @@ ExternalToolSupportTask *TopHatSupportTask::createIndexTask() {
 void TopHatSupportTask::prepare() {
     settings.outDir = GUrlUtils::createDirectory(
         settings.outDir + "/" + outSubDirBaseName,
-        "_", stateInfo);
+        "_",
+        stateInfo);
     CHECK_OP(stateInfo, );
 
     workingDirectory = setupTmpDir();
@@ -171,15 +169,15 @@ void TopHatSupportTask::prepare() {
     }
 }
 
-SaveDocumentTask * TopHatSupportTask::createSaveTask(const QString &url, QPointer<Document> &doc, const QList<Workflow::SharedDbiDataHandler> &seqs) {
-    DocumentFormat* docFormat = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::FASTQ);
+SaveDocumentTask *TopHatSupportTask::createSaveTask(const QString &url, QPointer<Document> &doc, const QList<Workflow::SharedDbiDataHandler> &seqs) {
+    DocumentFormat *docFormat = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::FASTQ);
     doc = docFormat->createNewLoadedDocument(IOAdapterUtils::get(BaseIOAdapters::LOCAL_FILE), GUrl(url), stateInfo);
     CHECK_OP(stateInfo, NULL);
     doc->setDocumentOwnsDbiResources(false);
 
     // Add all sequence objects to the document
     foreach (Workflow::SharedDbiDataHandler seqId, seqs) {
-        U2SequenceObject* seqObj(Workflow::StorageUtils::getSequenceObject(settings.storage(), seqId));
+        U2SequenceObject *seqObj(Workflow::StorageUtils::getSequenceObject(settings.storage(), seqId));
 
         if (NULL == seqObj) {
             stateInfo.setError(tr("An unexpected error has occurred during preparing the TopHat task!"));
@@ -193,19 +191,19 @@ SaveDocumentTask * TopHatSupportTask::createSaveTask(const QString &url, QPointe
     return new SaveDocumentTask(doc, AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE), url);
 }
 
-void addOptionIfBoolParamIsSet(QStringList& arguments, bool optionIsSet, const QString& optionName) {
+void addOptionIfBoolParamIsSet(QStringList &arguments, bool optionIsSet, const QString &optionName) {
     if (optionIsSet) {
         arguments << optionName;
     }
 }
 
-void addOptionIfStringParamIsSet(QStringList& arguments, const QString& strValue, const QString& optionName) {
+void addOptionIfStringParamIsSet(QStringList &arguments, const QString &strValue, const QString &optionName) {
     if (!strValue.isEmpty()) {
         arguments << optionName << strValue;
     }
 }
 
-ExternalToolRunTask * TopHatSupportTask::runTophat() {
+ExternalToolRunTask *TopHatSupportTask::runTophat() {
     // Init the arguments list
     QStringList arguments;
 
@@ -261,17 +259,17 @@ ExternalToolRunTask * TopHatSupportTask::runTophat() {
     additionalPaths << QFileInfo(settings.bowtiePath).dir().absolutePath();
     additionalPaths << QFileInfo(settings.samtoolsPath).dir().absolutePath();
 
-    ExternalToolRunTask* runTask = new ExternalToolRunTask(TopHatSupport::ET_TOPHAT_ID,
-        arguments,
-        new ExternalToolLogParser(),
-        workingDirectory,
-        additionalPaths);
+    ExternalToolRunTask *runTask = new ExternalToolRunTask(TopHatSupport::ET_TOPHAT_ID,
+                                                           arguments,
+                                                           new ExternalToolLogParser(),
+                                                           workingDirectory,
+                                                           additionalPaths);
     setListenerForTask(runTask);
     return runTask;
 }
 
-QList<Task*> TopHatSupportTask::onSubTaskFinished(Task *subTask) {
-    QList<Task*> result;
+QList<Task *> TopHatSupportTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> result;
 
     if (subTask->hasError()) {
         stateInfo.setError(subTask->getError());
@@ -316,17 +314,19 @@ QList<Task*> TopHatSupportTask::onSubTaskFinished(Task *subTask) {
         }
 
         // Get assembly output
-        Workflow::WorkflowTasksRegistry* registry = Workflow::WorkflowEnv::getWorkflowTasksRegistry();
+        Workflow::WorkflowTasksRegistry *registry = Workflow::WorkflowEnv::getWorkflowTasksRegistry();
         SAFE_POINT(NULL != registry, "Internal error during parsing TopHat output: NULL WorkflowTasksRegistry", result);
-        Workflow::ReadDocumentTaskFactory* factory = registry->getReadDocumentTaskFactory(Workflow::ReadFactories::READ_ASSEMBLY);
+        Workflow::ReadDocumentTaskFactory *factory = registry->getReadDocumentTaskFactory(Workflow::ReadFactories::READ_ASSEMBLY);
         SAFE_POINT(NULL != factory, QString("Internal error during parsing TopHat output:"
-                                            " NULL WorkflowTasksRegistry: %1").arg(Workflow::ReadFactories::READ_ASSEMBLY), result);
+                                            " NULL WorkflowTasksRegistry: %1")
+                                        .arg(Workflow::ReadFactories::READ_ASSEMBLY),
+                   result);
         SAFE_POINT(NULL != settings.workflowContext(), "Internal error during parsing TopHat output: NULL workflow context!", result);
 
         readAssemblyOutputTask = factory->createTask(outputFiles.value(ACCEPTED_HITS), QVariantMap(), settings.workflowContext());
         result.append(readAssemblyOutputTask);
     } else if (subTask == readAssemblyOutputTask) {
-        Workflow::ReadDocumentTask* readDocTask = qobject_cast<Workflow::ReadDocumentTask*>(subTask);
+        Workflow::ReadDocumentTask *readDocTask = qobject_cast<Workflow::ReadDocumentTask *>(subTask);
         SAFE_POINT(NULL != readDocTask, "Internal error during parsing TopHat output: NULL read document task!", result);
 
         QList<Workflow::SharedDbiDataHandler> acceptedHitsResults;
@@ -343,13 +343,11 @@ QList<Task*> TopHatSupportTask::onSubTaskFinished(Task *subTask) {
     return result;
 }
 
-bool removeTmpDir(QString dirName)
-{
+bool removeTmpDir(QString dirName) {
     bool result = true;
     QDir tmpDir(dirName);
     if (tmpDir.exists()) {
-        foreach (QFileInfo info, tmpDir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
-        {
+        foreach (QFileInfo info, tmpDir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
             if (info.isDir()) {
                 result = removeTmpDir(info.absoluteFilePath());
             } else {
@@ -367,9 +365,7 @@ bool removeTmpDir(QString dirName)
     return result;
 }
 
-
-Task::ReportResult TopHatSupportTask::report()
-{
+Task::ReportResult TopHatSupportTask::report() {
     if (workingDirectory.isEmpty()) {
         return ReportResult_Finished;
     }
@@ -417,4 +413,4 @@ void TopHatSupportTask::renameOutputFiles() {
     renameOutputFile(DELETIONS, settings.outDir + "/" + GUrlUtils::rollFileName(GUrlUtils::fixFileName(settings.resultPrefix + "_deletions.bed"), "_"));
 }
 
-}
+}    // namespace U2

@@ -38,9 +38,9 @@ class U2ALGORITHM_EXPORT MsaHighlightingSchemeNoColorsFactory : public MsaHighli
 public:
     MsaHighlightingSchemeNoColorsFactory(QObject *parent, const QString &id, const QString &name, const AlphabetFlags &supportedAlphabets);
 
-    MsaHighlightingScheme * create(QObject *parent, MultipleAlignmentObject *maObj) const;
+    MsaHighlightingScheme *create(QObject *parent, MultipleAlignmentObject *maObj) const;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MSA_HIGHLIGHTING_SCHEME_NO_COLORS_H_
+#endif    // _U2_MSA_HIGHLIGHTING_SCHEME_NO_COLORS_H_

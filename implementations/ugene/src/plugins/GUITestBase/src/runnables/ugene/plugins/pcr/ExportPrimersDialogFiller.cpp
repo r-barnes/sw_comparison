@@ -19,25 +19,25 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportPrimersDialogFiller.h"
+#include <primitives/GTComboBox.h>
+#include <primitives/GTLineEdit.h>
+#include <primitives/GTWidget.h>
+
 #include <QApplication>
 #include <QComboBox>
 #include <QDialogButtonBox>
 #include <QLineEdit>
 
-#include "ExportPrimersDialogFiller.h"
 #include "GTUtilsTaskTreeView.h"
-#include <primitives/GTComboBox.h>
-#include <primitives/GTLineEdit.h>
-#include <primitives/GTWidget.h>
 #include "runnables/ugene/corelibs/U2Gui/SharedConnectionsDialogFiller.h"
 
 namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::ExportPrimersDialogFiller"
 
-ExportPrimersDialogFiller::ExportPrimersDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario) :
-    Filler(os, "ExportPrimersDialog", scenario)
-{
+ExportPrimersDialogFiller::ExportPrimersDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario)
+    : Filler(os, "ExportPrimersDialog", scenario) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
@@ -105,4 +105,4 @@ void ExportPrimersDialogFiller::setFolder(HI::GUITestOpStatus &os, const QString
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

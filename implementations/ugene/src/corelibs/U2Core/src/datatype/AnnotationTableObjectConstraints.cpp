@@ -19,24 +19,21 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/GObjectTypes.h>
-
 #include "AnnotationTableObjectConstraints.h"
+
+#include <U2Core/GObjectTypes.h>
 
 namespace U2 {
 
-AnnotationTableObjectConstraints::AnnotationTableObjectConstraints( QObject *p )
-    : GObjectConstraints( GObjectTypes::ANNOTATION_TABLE, p ), sequenceSizeToFit( 0 )
-{
-
+AnnotationTableObjectConstraints::AnnotationTableObjectConstraints(QObject *p)
+    : GObjectConstraints(GObjectTypes::ANNOTATION_TABLE, p), sequenceSizeToFit(0) {
 }
 
 AnnotationTableObjectConstraints::AnnotationTableObjectConstraints(
-    const AnnotationTableObjectConstraints &c, QObject *p )
-    : GObjectConstraints( GObjectTypes::ANNOTATION_TABLE, p ),
-    sequenceSizeToFit( c.sequenceSizeToFit )
-{
-
+    const AnnotationTableObjectConstraints &c,
+    QObject *p)
+    : GObjectConstraints(GObjectTypes::ANNOTATION_TABLE, p),
+      sequenceSizeToFit(c.sequenceSizeToFit) {
 }
 
-} // namespace U2
+}    // namespace U2

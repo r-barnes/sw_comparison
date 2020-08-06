@@ -19,31 +19,30 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
-
 #include "U2DbiUpgrader.h"
+
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
-U2DbiUpgrader::U2DbiUpgrader(const Version &versionFrom, const Version &versionTo) :
-    versionFrom(versionFrom),
-    versionTo(versionTo)
-{
+U2DbiUpgrader::U2DbiUpgrader(const Version &versionFrom, const Version &versionTo)
+    : versionFrom(versionFrom),
+      versionTo(versionTo) {
 }
 
 U2DbiUpgrader::~U2DbiUpgrader() {
-
 }
 
 bool U2DbiUpgrader::isAppliable(const Version &dbVersion) const {
     return versionFrom == dbVersion;
 }
 
-bool U2DbiUpgrader::operator < (const U2DbiUpgrader &other) const {
+bool U2DbiUpgrader::operator<(const U2DbiUpgrader &other) const {
     SAFE_POINT((versionFrom < other.versionFrom && versionTo < other.versionTo && versionTo <= other.versionFrom) ||
-               (versionFrom > other.versionFrom && versionTo > other.versionTo && versionFrom >= other.versionTo),
-                "Upgrader versions intersect, which will be used first is undefined", false);
+                   (versionFrom > other.versionFrom && versionTo > other.versionTo && versionFrom >= other.versionTo),
+               "Upgrader versions intersect, which will be used first is undefined",
+               false);
     return versionFrom < other.versionFrom && versionTo < other.versionTo;
 }
 
-}   // namespace U2
+}    // namespace U2

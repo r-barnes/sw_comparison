@@ -19,11 +19,10 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/AppContext.h>
-
 #include "SpadesSupport.h"
-
 #include <python/PythonSupport.h>
+
+#include <U2Core/AppContext.h>
 
 namespace U2 {
 
@@ -31,9 +30,8 @@ namespace U2 {
 const QString SpadesSupport::ET_SPADES = "SPAdes";
 const QString SpadesSupport::ET_SPADES_ID = "USUPP_SPADES";
 
-SpadesSupport::SpadesSupport(const QString& id, const QString &name, const QString &path):
-    ExternalTool(id, name, path)
-{
+SpadesSupport::SpadesSupport(const QString &id, const QString &name, const QString &path)
+    : ExternalTool(id, name, path) {
     if (AppContext::getMainWindow()) {
         icon = QIcon(":external_tool_support/images/cmdline.png");
         grayIcon = QIcon(":external_tool_support/images/cmdline_gray.png");
@@ -51,4 +49,4 @@ SpadesSupport::SpadesSupport(const QString& id, const QString &name, const QStri
     dependencies << PythonSupport::ET_PYTHON_ID;
 }
 
-} // namespace U2
+}    // namespace U2

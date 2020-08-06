@@ -52,9 +52,9 @@ public:
     virtual QColor getBackgroundColor(int seq, int pos, char c) const = 0;
     virtual QColor getFontColor(int seq, int pos, char c) const = 0;
 
-    virtual void applySettings(const QVariantMap& settings);
+    virtual void applySettings(const QVariantMap &settings);
 
-    const MsaColorSchemeFactory * getFactory() const;
+    const MsaColorSchemeFactory *getFactory() const;
 
     static const QString EMPTY;
 
@@ -65,6 +65,7 @@ public:
     static const QString IDENTPERC_NUCL_COLORED;
     static const QString IDENTPERC_NUCL_GRAY;
     static const QString CUSTOM_NUCL;
+    static const QString WEAK_SIMILARITIES_NUCL;
 
     static const QString UGENE_AMINO;
     static const QString ZAPPO_AMINO;
@@ -82,20 +83,20 @@ public:
     static const QString THRESHOLD_PARAMETER_NAME;
 
 protected:
-    const MsaColorSchemeFactory *   factory;
-    MultipleAlignmentObject *       maObj;
+    const MsaColorSchemeFactory *factory;
+    MultipleAlignmentObject *maObj;
 };
 
 class U2ALGORITHM_EXPORT MsaColorSchemeFactory : public QObject {
     Q_OBJECT
 public:
     MsaColorSchemeFactory(QObject *parent, const QString &id, const QString &name, const AlphabetFlags &supportedAlphabets);
-    virtual MsaColorScheme * create(QObject *p, MultipleAlignmentObject *obj) const = 0;
+    virtual MsaColorScheme *create(QObject *p, MultipleAlignmentObject *obj) const = 0;
 
-    const QString & getId() const;
+    const QString &getId() const;
     const QString getName() const;
 
-    bool isAlphabetTypeSupported(const DNAAlphabetType& alphabetType) const;
+    bool isAlphabetTypeSupported(const DNAAlphabetType &alphabetType) const;
     const AlphabetFlags getSupportedAlphabets() const;
     bool isThresholdNeeded() const;
 
@@ -103,10 +104,10 @@ signals:
     void si_factoryChanged();
 
 protected:
-    QString         id;
-    QString         name;
-    AlphabetFlags   supportedAlphabets;
-    bool            needThreshold;
+    QString id;
+    QString name;
+    AlphabetFlags supportedAlphabets;
+    bool needThreshold;
 };
 
 class U2ALGORITHM_EXPORT MsaColorSchemeRegistry : public QObject {
@@ -115,20 +116,20 @@ public:
     MsaColorSchemeRegistry();
     ~MsaColorSchemeRegistry();
 
-    const QList<MsaColorSchemeFactory *> & getSchemes() const;
+    const QList<MsaColorSchemeFactory *> &getSchemes() const;
     const QList<MsaColorSchemeCustomFactory *> &getCustomColorSchemes() const;
 
     QList<MsaColorSchemeFactory *> getAllSchemes(DNAAlphabetType alphabetType) const;
     QList<MsaColorSchemeFactory *> getSchemes(DNAAlphabetType alphabetType) const;
     QList<MsaColorSchemeFactory *> getCustomSchemes(DNAAlphabetType alphabetType) const;
 
-    QMap<AlphabetFlags, QList<MsaColorSchemeFactory*> > getAllSchemesGrouped() const;
-    QMap<AlphabetFlags, QList<MsaColorSchemeFactory*> > getSchemesGrouped() const;
-    QMap<AlphabetFlags, QList<MsaColorSchemeFactory *> > getCustomSchemesGrouped() const;
+    QMap<AlphabetFlags, QList<MsaColorSchemeFactory *>> getAllSchemesGrouped() const;
+    QMap<AlphabetFlags, QList<MsaColorSchemeFactory *>> getSchemesGrouped() const;
+    QMap<AlphabetFlags, QList<MsaColorSchemeFactory *>> getCustomSchemesGrouped() const;
 
-    MsaColorSchemeCustomFactory * getCustomSchemeFactoryById(const QString &id) const;
-    MsaColorSchemeFactory * getSchemeFactoryById(const QString &id) const;
-    MsaColorSchemeFactory * getEmptySchemeFactory() const;
+    MsaColorSchemeCustomFactory *getCustomSchemeFactoryById(const QString &id) const;
+    MsaColorSchemeFactory *getSchemeFactoryById(const QString &id) const;
+    MsaColorSchemeFactory *getEmptySchemeFactory() const;
 
 signals:
     void si_customSettingsChanged();
@@ -138,7 +139,7 @@ private slots:
 
 private:
     QList<MsaColorSchemeFactory *> customSchemesToCommon() const;
-    void addCustomScheme(const ColorSchemeData& scheme);
+    void addCustomScheme(const ColorSchemeData &scheme);
     void addMsaColorSchemeFactory(MsaColorSchemeFactory *commonFactory);
     void addMsaCustomColorSchemeFactory(MsaColorSchemeCustomFactory *customFactory);
 
@@ -150,6 +151,6 @@ private:
     QList<MsaColorSchemeCustomFactory *> customColorers;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MSA_COLOR_SCHEME_H_
+#endif    // _U2_MSA_COLOR_SCHEME_H_

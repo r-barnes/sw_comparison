@@ -20,15 +20,14 @@
  */
 
 #include "McaRowHeightController.h"
+
 #include "ov_msa/McaEditor.h"
 #include "ov_msa/view_rendering/SequenceWithChromatogramAreaRenderer.h"
 
 namespace U2 {
 
 McaRowHeightController::McaRowHeightController(McaEditorWgt *mcaEditorWgt)
-    : RowHeightController(mcaEditorWgt)
-{
-
+    : RowHeightController(mcaEditorWgt) {
 }
 
 int McaRowHeightController::getRowHeightByMaIndex(int maRowIndex) const {
@@ -42,4 +41,4 @@ int McaRowHeightController::getRowHeightByMaIndex(int maRowIndex) const {
     return rowHeigth;
 }
 
-}   // namespace U2
+}    // namespace U2

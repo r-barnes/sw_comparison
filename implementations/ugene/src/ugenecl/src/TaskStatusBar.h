@@ -26,7 +26,6 @@
 #define TSB_SETTINGS_ROOT QString("task_status_bar_settings/")
 namespace U2 {
 
-
 class TaskStatusBarCon : public QObject {
     Q_OBJECT
 public:
@@ -41,20 +40,19 @@ public:
     ~TaskStatusBarCon();
 
 private slots:
-    void sl_taskStateChanged(Task* t);
+    void sl_taskStateChanged(Task *t);
     void sl_taskStateChanged();
     void sl_update();
 
 private:
     void setTSBSettings();
     void updateState();
-    void setTaskToTrack(Task* t);
+    void setTaskToTrack(Task *t);
 
-    Task*           taskToTrack;
-    QString         emptyLine;
+    Task *taskToTrack;
+    QString emptyLine;
 };
 
-
-}//namespace
+}    // namespace U2
 
 #endif

@@ -64,6 +64,6 @@ private:
     QString getTip() const;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_DATASETS_LIST_WIDGET_H_
+#endif    // _U2_DATASETS_LIST_WIDGET_H_

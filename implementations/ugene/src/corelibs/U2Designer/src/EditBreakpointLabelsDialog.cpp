@@ -19,28 +19,31 @@
  * MA 02110-1301, USA.
  */
 
-#include <QStringList>
+#include "EditBreakpointLabelsDialog.h"
+
 #include <QCheckBox>
 #include <QKeyEvent>
+#include <QStringList>
+
+#include <U2Gui/HelpButton.h>
 
 #include "ui_EditBreakpointLabelsDialog.h"
-#include "EditBreakpointLabelsDialog.h"
-#include <U2Gui/HelpButton.h>
 
 const QString LABEL_LEFT_SIDE_OFFSET = "    ";
 
 namespace U2 {
 
 EditBreakpointLabelsDialog::EditBreakpointLabelsDialog(const QStringList &existingLabels,
-    const QStringList &initCallingBreakpointLabels, QWidget *parent, Qt::WindowFlags f)
+                                                       const QStringList &initCallingBreakpointLabels,
+                                                       QWidget *parent,
+                                                       Qt::WindowFlags f)
     : QDialog(parent, f),
       applienceControlsForLabels(),
       callingBreakpointLabels(initCallingBreakpointLabels),
       newLabelsAdded(),
-      ui(new Ui_EditBreakpointLabelsDialog())
-{
+      ui(new Ui_EditBreakpointLabelsDialog()) {
     ui->setupUi(this);
-    new HelpButton(this, ui->buttonBox, "24740355");
+    new HelpButton(this, ui->buttonBox, "46500386");
 
     ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -48,8 +51,7 @@ EditBreakpointLabelsDialog::EditBreakpointLabelsDialog(const QStringList &existi
     ui->addLabelButton->setEnabled(false);
     initExistingLabelsList(existingLabels);
 
-    connect(ui->newLabelEdit, SIGNAL(textChanged(const QString &)),
-        SLOT(sl_newLabelEditChanged(const QString &)));
+    connect(ui->newLabelEdit, SIGNAL(textChanged(const QString &)), SLOT(sl_newLabelEditChanged(const QString &)));
     connect(ui->addLabelButton, SIGNAL(clicked()), SLOT(sl_newLabelAdded()));
 
     QPushButton *okButton = ui->buttonBox->button(QDialogButtonBox::Ok);
@@ -58,7 +60,6 @@ EditBreakpointLabelsDialog::EditBreakpointLabelsDialog(const QStringList &existi
     connect(okButton, SIGNAL(clicked()), SLOT(accept()));
     connect(okButton, SIGNAL(clicked()), SLOT(sl_dialogAccepted()));
     connect(cancelButton, SIGNAL(clicked()), SLOT(reject()));
-
 }
 
 EditBreakpointLabelsDialog::~EditBreakpointLabelsDialog() {
@@ -66,7 +67,7 @@ EditBreakpointLabelsDialog::~EditBreakpointLabelsDialog() {
 }
 
 void EditBreakpointLabelsDialog::initExistingLabelsList(const QStringList &existingLabels) {
-    foreach(QString label, existingLabels) {
+    foreach (QString label, existingLabels) {
         addNewLabelToList(label, callingBreakpointLabels.contains(label));
     }
 }
@@ -76,7 +77,7 @@ void EditBreakpointLabelsDialog::sl_labelApplianceStateChanged(int state) {
     QCheckBox *labelApplianceController = qobject_cast<QCheckBox *>(activator);
     Q_ASSERT(NULL != labelApplianceController);
 
-    switch(state) {
+    switch (state) {
     case Qt::Checked:
         callingBreakpointLabels.append(applienceControlsForLabels[labelApplianceController]);
         break;
@@ -95,7 +96,7 @@ void EditBreakpointLabelsDialog::sl_newLabelEditChanged(const QString &text) {
 void EditBreakpointLabelsDialog::sl_newLabelAdded() {
     const QString newLabel = ui->newLabelEdit->text();
     Q_ASSERT(!newLabel.isEmpty());
-    if(ui->labelList->findItems(LABEL_LEFT_SIDE_OFFSET + newLabel, Qt::MatchExactly).isEmpty()) {
+    if (ui->labelList->findItems(LABEL_LEFT_SIDE_OFFSET + newLabel, Qt::MatchExactly).isEmpty()) {
         addNewLabelToList(newLabel, true);
         callingBreakpointLabels.append(newLabel);
         newLabelsAdded.append(newLabel);
@@ -104,33 +105,30 @@ void EditBreakpointLabelsDialog::sl_newLabelAdded() {
 }
 
 void EditBreakpointLabelsDialog::addNewLabelToList(const QString &newLabel,
-    bool appliedToCallingBreakpoint)
-{
+                                                   bool appliedToCallingBreakpoint) {
     QListWidgetItem *itemWithCurrentLabel = new QListWidgetItem(LABEL_LEFT_SIDE_OFFSET + newLabel,
-        ui->labelList);
+                                                                ui->labelList);
 
     QCheckBox *labelApplianceController = new QCheckBox(ui->labelList);
     labelApplianceController->setChecked(appliedToCallingBreakpoint);
-    connect(labelApplianceController, SIGNAL(stateChanged(int)),
-        SLOT(sl_labelApplianceStateChanged(int)));
+    connect(labelApplianceController, SIGNAL(stateChanged(int)), SLOT(sl_labelApplianceStateChanged(int)));
     applienceControlsForLabels[labelApplianceController] = newLabel;
 
     ui->labelList->setItemWidget(itemWithCurrentLabel, labelApplianceController);
 }
 
 void EditBreakpointLabelsDialog::sl_dialogAccepted() {
-    if(!newLabelsAdded.isEmpty()) {
+    if (!newLabelsAdded.isEmpty()) {
         emit si_labelsCreated(newLabelsAdded);
     }
     emit si_labelAddedToCallingBreakpoint(callingBreakpointLabels);
 }
 
 void EditBreakpointLabelsDialog::keyPressEvent(QKeyEvent *event) {
-    if((Qt::Key_Enter == event->key() || Qt::Key_Return == event->key())
-        && ui->addLabelButton->isEnabled()) {
+    if ((Qt::Key_Enter == event->key() || Qt::Key_Return == event->key()) && ui->addLabelButton->isEnabled()) {
         sl_newLabelAdded();
     }
     QDialog::keyPressEvent(event);
 }
 
-} // namespace U2
+}    // namespace U2

@@ -32,10 +32,9 @@
 
 #include "QueryEditor.h"
 
-Q_DECLARE_METATYPE(U2::PropertyDelegate*)
+Q_DECLARE_METATYPE(U2::PropertyDelegate *)
 
 namespace U2 {
-
 
 enum {
     DelegateRole = Qt::UserRole + 100,
@@ -44,19 +43,21 @@ enum {
 
 class QueryProcCfgDelegate : public QItemDelegate {
 public:
-    QueryProcCfgDelegate(QueryEditor* parent) : QItemDelegate(parent) {}
+    QueryProcCfgDelegate(QueryEditor *parent)
+        : QItemDelegate(parent) {
+    }
 
-    QWidget* createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const {
-        PropertyDelegate* d = index.model()->data(index, DelegateRole).value<PropertyDelegate*>();
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+        PropertyDelegate *d = index.model()->data(index, DelegateRole).value<PropertyDelegate *>();
         if (d) {
-            connect(d, SIGNAL(commitData(QWidget*)), SIGNAL(commitData(QWidget*)));
+            connect(d, SIGNAL(commitData(QWidget *)), SIGNAL(commitData(QWidget *)));
             return d->createEditor(parent, option, index);
         }
         return QItemDelegate::createEditor(parent, option, index);
     }
 
     void setEditorData(QWidget *editor, const QModelIndex &index) const {
-        PropertyDelegate* d = index.model()->data(index, DelegateRole).value<PropertyDelegate*>();
+        PropertyDelegate *d = index.model()->data(index, DelegateRole).value<PropertyDelegate *>();
         if (d) {
             d->setEditorData(editor, index);
             return;
@@ -66,7 +67,7 @@ public:
 
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
         QVariant old;
-        PropertyDelegate* d = model->data(index, DelegateRole).value<PropertyDelegate*>();
+        PropertyDelegate *d = model->data(index, DelegateRole).value<PropertyDelegate *>();
         if (d) {
             old = model->data(index, ConfigurationEditor::ItemValueRole);
             d->setModelData(editor, model, index);
@@ -85,6 +86,6 @@ public:
     }
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

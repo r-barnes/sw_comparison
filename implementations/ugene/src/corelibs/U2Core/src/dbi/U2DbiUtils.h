@@ -37,45 +37,55 @@ class U2CORE_EXPORT TmpDbiHandle {
 public:
     TmpDbiHandle();
 
-    TmpDbiHandle(const QString& alias, U2OpStatus& os,
-        const U2DbiFactoryId &factoryId = DEFAULT_DBI_ID);
+    TmpDbiHandle(const QString &alias, U2OpStatus &os, const U2DbiFactoryId &factoryId = DEFAULT_DBI_ID);
 
-    TmpDbiHandle(const TmpDbiHandle& dbiHandle);
+    TmpDbiHandle(const TmpDbiHandle &dbiHandle);
 
-    TmpDbiHandle& operator=(const TmpDbiHandle& dbiHandle);
+    TmpDbiHandle &operator=(const TmpDbiHandle &dbiHandle);
 
     ~TmpDbiHandle();
 
-    bool isValid() const {return dbiRef.isValid();}
+    bool isValid() const {
+        return dbiRef.isValid();
+    }
 
-    inline QString getAlias() const { return alias; }
+    inline QString getAlias() const {
+        return alias;
+    }
 
-    inline U2DbiRef getDbiRef() const { return dbiRef; }
+    inline U2DbiRef getDbiRef() const {
+        return dbiRef;
+    }
 
 private:
     /** DBI alias */
-    QString             alias;
+    QString alias;
 
     /** DBI reference */
-    U2DbiRef            dbiRef;
+    U2DbiRef dbiRef;
 };
 
 class U2CORE_EXPORT TmpDbiObjects {
 public:
-    TmpDbiObjects(const U2DbiRef& _dbiRef, U2OpStatus& _os) : dbiRef(_dbiRef), os(_os){}
+    TmpDbiObjects(const U2DbiRef &_dbiRef, U2OpStatus &_os)
+        : dbiRef(_dbiRef), os(_os) {
+    }
     ~TmpDbiObjects();
 
-    U2DbiRef            dbiRef;
-    QList<U2DataId>     objects;
-    U2OpStatus&         os;
+    U2DbiRef dbiRef;
+    QList<U2DataId> objects;
+    U2OpStatus &os;
 };
 
 /**
     Iterator over buffered data set
 */
-template<class T> class BufferedDbiIterator : public U2DbiIterator<T> {
+template<class T>
+class BufferedDbiIterator : public U2DbiIterator<T> {
 public:
-    BufferedDbiIterator(const QList<T>& _buffer, const T& _errValue = T()) : buffer(_buffer), pos(0), errValue(_errValue) {}
+    BufferedDbiIterator(const QList<T> &_buffer, const T &_errValue = T())
+        : buffer(_buffer), pos(0), errValue(_errValue) {
+    }
 
     /** returns true if there are more reads to iterate*/
     virtual bool hasNext() {
@@ -87,7 +97,7 @@ public:
         if (!hasNext()) {
             return errValue;
         }
-        const T& res = buffer.at(pos);
+        const T &res = buffer.at(pos);
         pos++;
         return res;
     }
@@ -98,48 +108,47 @@ public:
             return errValue;
         }
         return buffer.at(pos);
-
     }
 
 private:
-    QList<T>    buffer;
-    int         pos;
-    T           errValue;
+    QList<T> buffer;
+    int pos;
+    T errValue;
 };
 
-
-class U2CORE_EXPORT U2DbiUtils : public QObject{
+class U2CORE_EXPORT U2DbiUtils : public QObject {
     Q_OBJECT
 public:
     /**
         Logs that operation called is not supported by DBI
         If U2OpStatus has no error set, sets the error message
     */
-    static void logNotSupported(U2DbiFeature f, U2Dbi* dbi, U2OpStatus& os);
+    static void logNotSupported(U2DbiFeature f, U2Dbi *dbi, U2OpStatus &os);
 
-    template<class T> static QList<T> toList(U2DbiIterator<T>* it);
+    template<class T>
+    static QList<T> toList(U2DbiIterator<T> *it);
 
-    static U2DbiRef toRef(U2Dbi* dbi);
+    static U2DbiRef toRef(U2Dbi *dbi);
 
     /** Adds limit operator to the sql query */
-    static void addLimit(QString& sql, qint64 offset, qint64 count);
+    static void addLimit(QString &sql, qint64 offset, qint64 count);
 
     /** Converts internal database id to U2DataId*/
-    static U2DataId toU2DataId(qint64 id, U2DataType type, const QByteArray& dbExtra = QByteArray());
+    static U2DataId toU2DataId(qint64 id, U2DataType type, const QByteArray &dbExtra = QByteArray());
 
     /** Converts U2DataId to internal database id*/
-    static quint64 toDbiId(const U2DataId& id);
+    static quint64 toDbiId(const U2DataId &id);
 
     /** Extracts type info from U2DataId */
-    static U2DataType toType(const U2DataId& id);
+    static U2DataType toType(const U2DataId &id);
 
     /** Extracts table info from U2DataId */
-    static QByteArray toDbExtra(const U2DataId& id);
+    static QByteArray toDbExtra(const U2DataId &id);
 
     /** Return textual representation of the id */
-    static QString text(const U2DataId& id);
+    static QString text(const U2DataId &id);
 
-    static QString ref2Url(const U2DbiRef& dbiRef);
+    static QString ref2Url(const U2DbiRef &dbiRef);
 
     /**
      * Dbi url (short dbi url) looks like "host:port/database_name"
@@ -151,14 +160,14 @@ public:
     static QString createFullDbiUrl(const QString &userName, const QString &host, int port, const QString &dbName);
     static QString createFullDbiUrl(const QString &userName, const QString &dbiUrl);
 
-    static bool parseDbiUrl(const QString& dbiUrl, QString& host, int& port, QString& dbName);
-    static bool parseFullDbiUrl(const QString& dbiUrl, QString &userName, QString& host, int& port, QString& dbName);
+    static bool parseDbiUrl(const QString &dbiUrl, QString &host, int &port, QString &dbName);
+    static bool parseFullDbiUrl(const QString &dbiUrl, QString &userName, QString &host, int &port, QString &dbName);
 
-    static QString full2shortDbiUrl(const QString& fullDbiUrl);
-    static QString full2shortDbiUrl(const QString& fullDbiUrl, QString &userName);
-    static bool isFullDbiUrl(const QString& dbiUrl);
+    static QString full2shortDbiUrl(const QString &fullDbiUrl);
+    static QString full2shortDbiUrl(const QString &fullDbiUrl, QString &userName);
+    static bool isFullDbiUrl(const QString &dbiUrl);
 
-    static QString makeFolderCanonical(const QString& folder);
+    static QString makeFolderCanonical(const QString &folder);
 
     static bool isDbiReadOnly(const U2DbiRef &dbiRef);
     static Version getDbMinRequiredVersion(const U2DbiRef &dbiRef, U2OpStatus &os);
@@ -182,10 +191,11 @@ public:
 private:
     U2DbiRef dbiRef;
     DbiConnection *connection;
-    U2OpStatus& os;
+    U2OpStatus &os;
 };
 
-template<class T> QList<T> U2DbiUtils::toList(U2DbiIterator<T>* it) {
+template<class T>
+QList<T> U2DbiUtils::toList(U2DbiIterator<T> *it) {
     QList<T> result;
     while (it->hasNext()) {
         result << it->next();
@@ -193,6 +203,6 @@ template<class T> QList<T> U2DbiUtils::toList(U2DbiIterator<T>* it) {
     return result;
 }
 
-}   // namespace U2
+}    // namespace U2
 
 #endif

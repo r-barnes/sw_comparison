@@ -19,15 +19,16 @@
  * MA 02110-1301, USA.
  */
 
+#include "AppSettingsGUIImpl.h"
+
 #include <QMenu>
 
 #include <U2Core/AppContext.h>
-
-#include <U2Gui/MainWindow.h>
 #include <U2Core/QObjectScopedPointer.h>
 
+#include <U2Gui/MainWindow.h>
+
 #include "AppSettingsDialogController.h"
-#include "AppSettingsGUIImpl.h"
 #include "directories_settings/DirectoriesSettingsGUIController.h"
 #include "format_settings/FormatSettingsGUIController.h"
 #include "network_settings/NetworkSettingsGUIController.h"
@@ -36,12 +37,12 @@
 
 namespace U2 {
 
-AppSettingsGUIImpl::AppSettingsGUIImpl(QObject* p) : AppSettingsGUI(p)
-{
+AppSettingsGUIImpl::AppSettingsGUIImpl(QObject *p)
+    : AppSettingsGUI(p) {
     registerBuiltinPages();
-    QMenu* m = AppContext::getMainWindow()->getTopLevelMenu(MWMENU_SETTINGS);
-    
-    QAction* settingsDialogAction = new QAction(QIcon(":ugene/images/preferences.png"), tr("Preferences..."), this);
+    QMenu *m = AppContext::getMainWindow()->getTopLevelMenu(MWMENU_SETTINGS);
+
+    QAction *settingsDialogAction = new QAction(QIcon(":ugene/images/preferences.png"), tr("Preferences..."), this);
     connect(settingsDialogAction, SIGNAL(triggered()), SLOT(sl_showSettingsDialog()));
     settingsDialogAction->setObjectName("action__settings");
 #ifdef Q_OS_MAC
@@ -54,19 +55,19 @@ AppSettingsGUIImpl::AppSettingsGUIImpl(QObject* p) : AppSettingsGUI(p)
 }
 
 AppSettingsGUIImpl::~AppSettingsGUIImpl() {
-    foreach(AppSettingsGUIPageController* page, pages) {
+    foreach (AppSettingsGUIPageController *page, pages) {
         delete page;
     }
 }
 
-bool AppSettingsGUIImpl::registerPage(AppSettingsGUIPageController* page, const QString& beforePage) {
-    AppSettingsGUIPageController* c = findPageById(page->getPageId());
+bool AppSettingsGUIImpl::registerPage(AppSettingsGUIPageController *page, const QString &beforePage) {
+    AppSettingsGUIPageController *c = findPageById(page->getPageId());
     if (c != NULL) {
         return false;
     }
     if (!beforePage.isEmpty()) {
-        AppSettingsGUIPageController* before = findPageById(beforePage);        
-        if (before!=NULL) {
+        AppSettingsGUIPageController *before = findPageById(beforePage);
+        if (before != NULL) {
             int i = pages.indexOf(before);
             pages.insert(i, page);
             return true;
@@ -76,8 +77,8 @@ bool AppSettingsGUIImpl::registerPage(AppSettingsGUIPageController* page, const 
     return true;
 }
 
-bool AppSettingsGUIImpl::unregisterPage(AppSettingsGUIPageController* page) {
-    AppSettingsGUIPageController* c = findPageById(page->getPageId());
+bool AppSettingsGUIImpl::unregisterPage(AppSettingsGUIPageController *page) {
+    AppSettingsGUIPageController *c = findPageById(page->getPageId());
     if (c == NULL) {
         return false;
     }
@@ -85,14 +86,14 @@ bool AppSettingsGUIImpl::unregisterPage(AppSettingsGUIPageController* page) {
     return true;
 }
 
-void AppSettingsGUIImpl::showSettingsDialog(const QString& pageId) const {
-    QWidget *p = (QWidget*)(AppContext::getMainWindow()->getQMainWindow());
-    QObjectScopedPointer<AppSettingsDialogController> c = new AppSettingsDialogController(pageId,p);
+void AppSettingsGUIImpl::showSettingsDialog(const QString &pageId) const {
+    QWidget *p = (QWidget *)(AppContext::getMainWindow()->getQMainWindow());
+    QObjectScopedPointer<AppSettingsDialogController> c = new AppSettingsDialogController(pageId, p);
     c->exec();
 }
 
-AppSettingsGUIPageController* AppSettingsGUIImpl::findPageById(const QString& pageId) const {
-    foreach(AppSettingsGUIPageController* page, pages) {
+AppSettingsGUIPageController *AppSettingsGUIImpl::findPageById(const QString &pageId) const {
+    foreach (AppSettingsGUIPageController *page, pages) {
         if (page->getPageId() == pageId) {
             return page;
         }
@@ -108,4 +109,4 @@ void AppSettingsGUIImpl::registerBuiltinPages() {
     registerPage(new DirectoriesSettingsPageController());
 }
 
-}//namespace
+}    // namespace U2

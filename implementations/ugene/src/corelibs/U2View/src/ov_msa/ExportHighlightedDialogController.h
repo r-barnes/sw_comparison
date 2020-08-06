@@ -32,10 +32,10 @@ namespace U2 {
 
 class SaveDocumentController;
 
-class ExportHighligtingDialogController : public QDialog{
+class ExportHighligtingDialogController : public QDialog {
     Q_OBJECT
 public:
-    ExportHighligtingDialogController(MaEditorWgt *msaui_, QWidget* p);
+    ExportHighligtingDialogController(MaEditorWgt *msaui_, QWidget *p);
     ~ExportHighligtingDialogController();
 
     virtual void accept();
@@ -57,9 +57,9 @@ private:
 
     MaEditorWgt *msaui;
     SaveDocumentController *saveController;
-    Ui_ExportHighlightedDialog* ui;
+    Ui_ExportHighlightedDialog *ui;
 };
 
-}
+}    // namespace U2
 
 #endif

@@ -22,15 +22,15 @@
 #ifndef _U2_CODON_TABLE_H_
 #define _U2_CODON_TABLE_H_
 
+#include <QLabel>
+#include <QTableWidget>
+#include <QVBoxLayout>
+
 #include <U2Core/DNATranslation.h>
 
-#include <U2View/GSequenceLineViewAnnotated.h>
-#include <U2View/ADVSplitWidget.h>
 #include <U2View/ADVSequenceWidget.h>
-
-#include <QLabel>
-#include <QVBoxLayout>
-#include <QTableWidget>
+#include <U2View/ADVSplitWidget.h>
+#include <U2View/GSequenceLineViewAnnotated.h>
 
 namespace U2 {
 
@@ -39,9 +39,13 @@ class U2VIEW_EXPORT CodonTableView : public ADVSplitWidget {
 public:
     CodonTableView(AnnotatedDNAView *view);
 
-    virtual bool acceptsGObject(GObject*) {return false;}
-    virtual void updateState(const QVariantMap&) {}
-    virtual void saveState(QVariantMap&){}
+    virtual bool acceptsGObject(GObject *) {
+        return false;
+    }
+    virtual void updateState(const QVariantMap &) {
+    }
+    virtual void saveState(QVariantMap &) {
+    }
 
     static const QColor NONPOLAR_COLOR;
     static const QColor POLAR_COLOR;
@@ -52,20 +56,14 @@ public:
 public slots:
     void sl_setVisible();
     void sl_setAminoTranslation();
-    void sl_onSequenceFocusChanged(ADVSequenceWidget* from, ADVSequenceWidget* to);
+    void sl_onSequenceFocusChanged(ADVSequenceWidget *from, ADVSequenceWidget *to);
+
 private:
     QTableWidget *table;
 
-    void addItemToTable(int row, int column,
-                        const QString& text, const QColor& backgroundColor = QColor(0, 0, 0, 0),
-                        int rowSpan = 1, int columnSpan = 1);
-    void addItemToTable(int row, int column,
-                        const QString& text,
-                        int rowSpan = 1, int columnSpan = 1);
-    void addItemToTable(int row, int column,
-                        const QString& text, const QColor& backgroundColor,
-                        const QString& link,
-                        int rowSpan = 1, int columnSpan = 1);
+    void addItemToTable(int row, int column, const QString &text, const QColor &backgroundColor = QColor(0, 0, 0, 0), int rowSpan = 1, int columnSpan = 1);
+    void addItemToTable(int row, int column, const QString &text, int rowSpan = 1, int columnSpan = 1);
+    void addItemToTable(int row, int column, const QString &text, const QColor &backgroundColor, const QString &link, int rowSpan = 1, int columnSpan = 1);
     void addItemToTable(int row, int column, DNACodon *codon);
 
     void setAminoTranslation(const QString &trId);
@@ -73,6 +71,6 @@ private:
     QColor getColor(DNACodonGroup gr);
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_CODON_TABLE_H_
+#endif    // _U2_CODON_TABLE_H_

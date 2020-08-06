@@ -29,16 +29,17 @@ namespace U2 {
 class ConservationPlotSupport : public ExternalTool {
     Q_OBJECT
 public:
-    ConservationPlotSupport(const QString& id, const QString &name);
+    ConservationPlotSupport(const QString &id, const QString &name);
 
     static const QString ET_CONSERVATION_PLOT;
     static const QString ET_CONSERVATION_PLOT_ID;
     static const QString CONSERVATION_DIR_NAME;
     static const QString CONSERVATION_DATA_NAME;
+
 private:
     void initialize();
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_CONSERVATION_PLOT_SUPPORT_
+#endif    // _U2_CONSERVATION_PLOT_SUPPORT_

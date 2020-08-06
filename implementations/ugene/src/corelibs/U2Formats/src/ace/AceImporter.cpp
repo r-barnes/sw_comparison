@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "AceImporter.h"
+
 #include <QDir>
 #include <QTemporaryFile>
 
@@ -36,11 +38,10 @@
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/UserApplicationsSettings.h>
 
-#include <U2Gui/ImportWidget.h>
-
 #include <U2Formats/AceFormat.h>
 
-#include "AceImporter.h"
+#include <U2Gui/ImportWidget.h>
+
 #include "CloneAssemblyWithReferenceToDbiTask.h"
 #include "ConvertAceToSqliteTask.h"
 
@@ -50,14 +51,13 @@ namespace U2 {
 //// AceImporterTask
 ///////////////////////////////////
 
-AceImporterTask::AceImporterTask(const GUrl& url, const QVariantMap& settings) :
-    DocumentProviderTask(tr("ACE file import: %1").arg(url.fileName()), TaskFlags_NR_FOSE_COSC),
-    convertTask(NULL),
-    loadDocTask(NULL),
-    isSqliteDbTransit(false),
-    settings(settings),
-    srcUrl(url)
-{
+AceImporterTask::AceImporterTask(const GUrl &url, const QVariantMap &settings)
+    : DocumentProviderTask(tr("ACE file import: %1").arg(url.fileName()), TaskFlags_NR_FOSE_COSC),
+      convertTask(NULL),
+      loadDocTask(NULL),
+      isSqliteDbTransit(false),
+      settings(settings),
+      srcUrl(url) {
     documentDescription = srcUrl.fileName();
 }
 
@@ -90,8 +90,8 @@ void AceImporterTask::prepare() {
     addSubTask(convertTask);
 }
 
-QList<Task*> AceImporterTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> res;
+QList<Task *> AceImporterTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> res;
     CHECK_OP(stateInfo, res);
 
     if (isSqliteDbTransit && convertTask == subTask) {
@@ -143,7 +143,6 @@ void AceImporterTask::initLoadDocumentTask() {
     }
 }
 
-
 ///////////////////////////////////
 //// AceImporter
 ///////////////////////////////////
@@ -151,27 +150,27 @@ void AceImporterTask::initLoadDocumentTask() {
 const QString AceImporter::ID = "ace-importer";
 const QString AceImporter::SRC_URL = "source_url";
 
-AceImporter::AceImporter() :
-    DocumentImporter(ID, tr("ACE file importer")) {
+AceImporter::AceImporter()
+    : DocumentImporter(ID, tr("ACE file importer")) {
     ACEFormat aceFormat(NULL);
     extensions << aceFormat.getSupportedDocumentFileExtensions();
     formatIds << aceFormat.getFormatId();
-    importerDescription = tr("ACE files importer is used to convert conventional ACE files into UGENE database format." \
-                             "Having ACE file converted into UGENE DB format you get an fast and efficient interface " \
+    importerDescription = tr("ACE files importer is used to convert conventional ACE files into UGENE database format."
+                             "Having ACE file converted into UGENE DB format you get an fast and efficient interface "
                              "to your data with an option to change the content");
     supportedObjectTypes << GObjectTypes::ASSEMBLY;
 }
 
-FormatCheckResult AceImporter::checkRawData(const QByteArray& rawData, const GUrl& url) {
+FormatCheckResult AceImporter::checkRawData(const QByteArray &rawData, const GUrl &url) {
     ACEFormat aceFormat(NULL);
     return aceFormat.checkRawData(rawData, url);
 }
 
-DocumentProviderTask* AceImporter::createImportTask(const FormatDetectionResult& res, bool, const QVariantMap &hints) {
+DocumentProviderTask *AceImporter::createImportTask(const FormatDetectionResult &res, bool, const QVariantMap &hints) {
     QVariantMap settings;
     settings.insert(SRC_URL, res.url.getURLString());
 
-    AceImporterTask* task = NULL;
+    AceImporterTask *task = NULL;
     if (hints.contains(DocumentFormat::DBI_REF_HINT)) {
         QVariant hint = hints.value(DocumentFormat::DBI_REF_HINT);
         settings.insert(DocumentFormat::DBI_REF_HINT, hint);
@@ -181,4 +180,4 @@ DocumentProviderTask* AceImporter::createImportTask(const FormatDetectionResult&
     return task;
 }
 
-}   // namespace U2
+}    // namespace U2

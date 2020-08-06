@@ -27,14 +27,12 @@ namespace U2 {
 using namespace HI;
 
 EscapeClicker::EscapeClicker(HI::GUITestOpStatus &os, const QString &name, CustomScenario *scenario)
-    : Filler(os, name, scenario)
-{
-
+    : Filler(os, name, scenario) {
 }
 
 void EscapeClicker::commonScenario() {
     GTGlobals::sleep();
-    GTKeyboardDriver::keyClick( Qt::Key_Escape);
+    GTKeyboardDriver::keyClick(Qt::Key_Escape);
 }
 
-}
+}    // namespace U2

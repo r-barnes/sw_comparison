@@ -22,9 +22,10 @@
 #ifndef _U2_FASTQC_WORKER_H_
 #define _U2_FASTQC_WORKER_H_
 
+#include <U2Core/GUrl.h>
+
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
-#include <U2Core/GUrl.h>
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -35,18 +36,20 @@ typedef PrompterBase<FastQCPrompter> FastQCBase;
 class FastQCPrompter : public FastQCBase {
     Q_OBJECT
 public:
-    FastQCPrompter(Actor* p = 0) : FastQCBase(p) {}
+    FastQCPrompter(Actor *p = 0)
+        : FastQCBase(p) {
+    }
+
 protected:
     QString composeRichDoc();
-}; //FastQCPrompter
+};    //FastQCPrompter
 
-
-class FastQCWorker: public BaseWorker {
+class FastQCWorker : public BaseWorker {
     Q_OBJECT
 public:
     FastQCWorker(Actor *a);
     void init();
-    Task * tick();
+    Task *tick();
     void cleanup();
 
     static const QString BASE_FASTQC_SUBDIR;
@@ -63,21 +66,26 @@ private:
     IntegralBus *inputUrlPort;
 
 public slots:
-    void sl_taskFinished( Task *task );
+    void sl_taskFinished(Task *task);
 
 private:
     QString takeUrl();
-}; //FastQCWorker
+};    //FastQCWorker
 
 class FastQCFactory : public DomainFactory {
     static const QString ACTOR_ID;
+
 public:
     static void init();
-    FastQCFactory() : DomainFactory(ACTOR_ID) {}
-    Worker* createWorker(Actor* a) { return new FastQCWorker(a); }
+    FastQCFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    Worker *createWorker(Actor *a) {
+        return new FastQCWorker(a);
+    }
 };
 
-} //LocalWorkflow
-} //U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif //_U2_FASTQC_WORKER_H_
+#endif    //_U2_FASTQC_WORKER_H_

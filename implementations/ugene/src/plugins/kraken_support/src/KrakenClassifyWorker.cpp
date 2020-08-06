@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "KrakenClassifyWorker.h"
+
 #include <U2Core/FailTask.h>
 #include <U2Core/FileAndDirectoryUtils.h>
 #include <U2Core/GUrlUtils.h>
@@ -29,10 +31,9 @@
 #include <U2Lang/BaseSlots.h>
 #include <U2Lang/WorkflowMonitor.h>
 
-#include "KrakenClassifyTask.h"
-#include "KrakenClassifyWorker.h"
-#include "KrakenClassifyWorkerFactory.h"
 #include "../ngs_reads_classification/src/NgsReadsClassificationUtils.h"
+#include "KrakenClassifyTask.h"
+#include "KrakenClassifyWorkerFactory.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -42,11 +43,9 @@ const QString KrakenClassifyWorker::KRAKEN_DIR = "Kraken";
 KrakenClassifyWorker::KrakenClassifyWorker(Actor *actor)
     : BaseWorker(actor, false),
       input(NULL),
-//      pairedInput(NULL),
+      //      pairedInput(NULL),
       output(NULL),
-      pairedReadsInput(false)
-{
-
+      pairedReadsInput(false) {
 }
 
 void KrakenClassifyWorker::init() {
@@ -86,7 +85,6 @@ Task *KrakenClassifyWorker::tick() {
 }
 
 void KrakenClassifyWorker::cleanup() {
-
 }
 
 void KrakenClassifyWorker::sl_taskFinished(Task *task) {
@@ -105,8 +103,7 @@ void KrakenClassifyWorker::sl_taskFinished(Task *task) {
 
     LocalWorkflow::TaxonomyClassificationResult::const_iterator it;
     int classifiedCount = NgsReadsClassificationUtils::countClassified(classificationResult);
-    context->getMonitor()->addInfo(tr("There were %1 input reads, %2 reads were classified.").arg(QString::number(classificationResult.size())).arg(QString::number(classifiedCount))
-        , getActor()->getId(), WorkflowNotification::U2_INFO);
+    context->getMonitor()->addInfo(tr("There were %1 input reads, %2 reads were classified.").arg(QString::number(classificationResult.size())).arg(QString::number(classifiedCount)), getActor()->getId(), WorkflowNotification::U2_INFO);
 }
 
 bool KrakenClassifyWorker::isReadyToRun() const {
@@ -134,20 +131,18 @@ KrakenClassifyTaskSettings KrakenClassifyWorker::getSettings(U2OpStatus &os) {
     }
 
     QString tmpDir = FileAndDirectoryUtils::createWorkingDir(context->workingDir(), FileAndDirectoryUtils::WORKFLOW_INTERNAL, "", context->workingDir());
-    tmpDir = GUrlUtils::createDirectory(tmpDir + KRAKEN_DIR , "_", os);
+    tmpDir = GUrlUtils::createDirectory(tmpDir + KRAKEN_DIR, "_", os);
 
     settings.classificationUrl = getValue<QString>(KrakenClassifyWorkerFactory::OUTPUT_URL_ATTR_ID);
     if (settings.classificationUrl.isEmpty()) {
         const MessageMetadata metadata = context->getMetadataStorage().get(message.getMetadataId());
         QString fileUrl = metadata.getFileUrl();
-        settings.classificationUrl = tmpDir + "/" + (fileUrl.isEmpty() ? QString("Kraken_%1.txt").arg(NgsReadsClassificationUtils::CLASSIFICATION_SUFFIX)
-        : NgsReadsClassificationUtils::getBaseFileNameWithSuffixes(metadata.getFileUrl(), QStringList() << "Kraken" << NgsReadsClassificationUtils::CLASSIFICATION_SUFFIX,
-                                                                    "txt", pairedReadsInput));
+        settings.classificationUrl = tmpDir + "/" + (fileUrl.isEmpty() ? QString("Kraken_%1.txt").arg(NgsReadsClassificationUtils::CLASSIFICATION_SUFFIX) : NgsReadsClassificationUtils::getBaseFileNameWithSuffixes(metadata.getFileUrl(), QStringList() << "Kraken" << NgsReadsClassificationUtils::CLASSIFICATION_SUFFIX, "txt", pairedReadsInput));
     }
     settings.classificationUrl = GUrlUtils::rollFileName(settings.classificationUrl, "_");
 
     return settings;
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

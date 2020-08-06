@@ -19,21 +19,21 @@
  * MA 02110-1301, USA.
  */
 
+#include "StreamSequenceReader.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/DocumentUtils.h>
 #include <U2Core/IOAdapter.h>
 #include <U2Core/IOAdapterUtils.h>
-#include <U2Core/U2SafePoints.h>
 #include <U2Core/Timer.h>
-
-#include "StreamSequenceReader.h"
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
-DNASequence* StreamSequenceReader::getNextSequenceObject() {
+DNASequence *StreamSequenceReader::getNextSequenceObject() {
     if (hasNext()) {
-        DNASequence* result = currentSeq.data();
+        DNASequence *result = currentSeq.data();
         lookupPerformed = false;
         return result;
     }
@@ -41,9 +41,7 @@ DNASequence* StreamSequenceReader::getNextSequenceObject() {
 }
 
 StreamSequenceReader::StreamSequenceReader()
-: currentReaderIndex(-1), currentSeq(NULL), lookupPerformed(false)
-{
-
+    : currentReaderIndex(-1), currentSeq(NULL), lookupPerformed(false) {
 }
 
 bool StreamSequenceReader::hasNext() {
@@ -70,7 +68,6 @@ bool StreamSequenceReader::hasNext() {
                 break;
             }
         }
-
     }
 
     if (currentSeq.isNull()) {
@@ -88,8 +85,8 @@ bool StreamSequenceReader::init(const QStringList &urls) {
     return init(gUrls);
 }
 
-bool StreamSequenceReader::init( const QList<GUrl>& urls ) {
-    foreach (const GUrl& url, urls) {
+bool StreamSequenceReader::init(const QList<GUrl> &urls) {
+    foreach (const GUrl &url, urls) {
         QList<FormatDetectionResult> detectedFormats = DocumentUtils::detectFormat(url);
         if (detectedFormats.isEmpty()) {
             taskInfo.setError(tr("File %1 unsupported format.").arg(url.getURLString()));
@@ -97,11 +94,11 @@ bool StreamSequenceReader::init( const QList<GUrl>& urls ) {
         }
         ReaderContext ctx;
         ctx.format = detectedFormats.first().format;
-        if ( ctx.format->getFlags().testFlag(DocumentFormatFlag_SupportStreaming) == false  ) {
+        if (ctx.format->getFlags().testFlag(DocumentFormatFlag_SupportStreaming) == false) {
             break;
         }
-        IOAdapterFactory* factory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
-        IOAdapter* io = factory->createIOAdapter();
+        IOAdapterFactory *factory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
+        IOAdapter *io = factory->createIOAdapter();
         if (!io->open(url, IOAdapterMode_Read)) {
             break;
         }
@@ -116,12 +113,9 @@ bool StreamSequenceReader::init( const QList<GUrl>& urls ) {
         currentReaderIndex = 0;
         return true;
     }
-
-
 }
 
-const IOAdapter *StreamSequenceReader::getIO() const
-{
+const IOAdapter *StreamSequenceReader::getIO() const {
     if (currentReaderIndex < readers.count()) {
         ReaderContext ctx = readers.at(currentReaderIndex);
         return ctx.io;
@@ -129,8 +123,7 @@ const IOAdapter *StreamSequenceReader::getIO() const
     return NULL;
 }
 
-DocumentFormat *StreamSequenceReader::getFormat() const
-{
+DocumentFormat *StreamSequenceReader::getFormat() const {
     if (currentReaderIndex < readers.count()) {
         ReaderContext ctx = readers.at(currentReaderIndex);
         return ctx.format;
@@ -147,7 +140,7 @@ int StreamSequenceReader::getProgress() {
         return 0;
     }
 
-    float factor = 1/readers.count();
+    float factor = 1 / readers.count();
     int progress = 0;
     for (int i = 0; i < readers.count(); ++i) {
         progress += (int)(factor * readers[i].io->getProgress());
@@ -157,13 +150,13 @@ int StreamSequenceReader::getProgress() {
 }
 
 StreamSequenceReader::~StreamSequenceReader() {
-    for(int i =0; i < readers.size(); ++i) {
+    for (int i = 0; i < readers.size(); ++i) {
         delete readers[i].io;
         readers[i].io = NULL;
     }
 }
 
-int StreamSequenceReader::getNumberOfSequences(const QString& url, U2OpStatus& os) {
+int StreamSequenceReader::getNumberOfSequences(const QString &url, U2OpStatus &os) {
     int result = 0;
     StreamSequenceReader streamSequenceReader;
     bool wasInitialized = streamSequenceReader.init(QStringList() << url);
@@ -182,4 +175,4 @@ int StreamSequenceReader::getNumberOfSequences(const QString& url, U2OpStatus& o
     return result;
 }
 
-} //namespace
+}    // namespace U2

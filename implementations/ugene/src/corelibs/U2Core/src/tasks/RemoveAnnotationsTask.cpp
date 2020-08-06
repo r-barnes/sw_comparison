@@ -19,22 +19,21 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
-
 #include "RemoveAnnotationsTask.h"
+
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
 RemoveAnnotationsTask::RemoveAnnotationsTask(AnnotationTableObject *ao, const QString &gName)
-    : Task("Remove Annotations Task",TaskFlag_NoRun), aobj(ao), groupName(gName)
-{
+    : Task("Remove Annotations Task", TaskFlag_NoRun), aobj(ao), groupName(gName) {
     SAFE_POINT(!aobj.isNull(), "Invalid annotation table detected!", );
 }
 
 Task::ReportResult RemoveAnnotationsTask::report() {
     AnnotationGroup *rootGroup = aobj->getRootGroup();
     AnnotationGroup *subGroup = rootGroup->getSubgroup(groupName, false);
-    if (subGroup == NULL) { // subgroup having @groupName does not exist
+    if (subGroup == NULL) {    // subgroup having @groupName does not exist
         return ReportResult_Finished;
     }
 
@@ -56,4 +55,4 @@ Task::ReportResult RemoveAnnotationsTask::report() {
     return ReportResult_Finished;
 }
 
-} // namespace U2
+}    // namespace U2

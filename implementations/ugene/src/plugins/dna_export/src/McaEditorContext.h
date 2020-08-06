@@ -39,6 +39,6 @@ private:
     void buildMenu(GObjectView *view, QMenu *menu);
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MCA_EDITOR_CONTEXT_H_
+#endif    // _U2_MCA_EDITOR_CONTEXT_H_

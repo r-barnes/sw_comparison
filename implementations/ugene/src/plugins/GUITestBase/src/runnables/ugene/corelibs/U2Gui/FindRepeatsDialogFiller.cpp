@@ -20,15 +20,15 @@
  */
 
 #include "FindRepeatsDialogFiller.h"
-#include <primitives/GTWidget.h>
 #include <primitives/GTSpinBox.h>
 #include <primitives/GTTabWidget.h>
+#include <primitives/GTWidget.h>
 
-#include <QApplication>
-#include <QPushButton>
 #include <QAbstractButton>
+#include <QApplication>
 #include <QCheckBox>
 #include <QDialogButtonBox>
+#include <QPushButton>
 #include <QSpinBox>
 
 namespace U2 {
@@ -36,50 +36,43 @@ namespace U2 {
 #define GT_CLASS_NAME "GTUtilsDialog::FindRepeatsDialogFiller"
 #define GT_METHOD_NAME "run"
 
-FindRepeatsDialogFiller::FindRepeatsDialogFiller(HI::GUITestOpStatus &_os, const QString & _resultFilesPath,
-    bool _searchInverted, int minRepeatLength, int repeatsIdentity, int minDistance)
+FindRepeatsDialogFiller::FindRepeatsDialogFiller(HI::GUITestOpStatus &_os, const QString &_resultFilesPath, bool _searchInverted, int minRepeatLength, int repeatsIdentity, int minDistance)
     : Filler(_os, "FindRepeatsDialog"), button(Start), resultAnnotationFilesPath(_resultFilesPath),
-    searchInverted(_searchInverted), minRepeatLength(minRepeatLength), repeatsIdentity(repeatsIdentity), minDistance(minDistance)
-{
+      searchInverted(_searchInverted), minRepeatLength(minRepeatLength), repeatsIdentity(repeatsIdentity), minDistance(minDistance) {
     GTGlobals::sleep(10);
 }
 
-FindRepeatsDialogFiller::FindRepeatsDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario) :
-    Filler(os, "FindRepeatsDialog", scenario),
-    button(Start),
-    searchInverted(false),
-    minRepeatLength(0),
-    repeatsIdentity(0),
-    minDistance(0)
-{
-
+FindRepeatsDialogFiller::FindRepeatsDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario)
+    : Filler(os, "FindRepeatsDialog", scenario),
+      button(Start),
+      searchInverted(false),
+      minRepeatLength(0),
+      repeatsIdentity(0),
+      minDistance(0) {
 }
 
 void FindRepeatsDialogFiller::commonScenario() {
-    GTGlobals::sleep(1000);
-    QWidget* dialog = QApplication::activeModalWidget();
-    GT_CHECK(dialog, "activeModalWidget is NULL");
-
+    QWidget *dialog = GTWidget::getActiveModalWidget(os);
     if (button == Cancel) {
-        QAbstractButton *cancelButton = qobject_cast<QAbstractButton*>(GTWidget::findWidget(os, "cancelButton", dialog));
+        QAbstractButton *cancelButton = qobject_cast<QAbstractButton *>(GTWidget::findWidget(os, "cancelButton", dialog));
         GTWidget::click(os, cancelButton);
         return;
     }
 
-    QTabWidget *tabWidget = qobject_cast<QTabWidget*>(GTWidget::findWidget(os, "tabWidget", dialog));
+    QTabWidget *tabWidget = qobject_cast<QTabWidget *>(GTWidget::findWidget(os, "tabWidget", dialog));
     GTTabWidget::setCurrentIndex(os, tabWidget, 0);
 
-    if (-1 != minRepeatLength) {
+    if (minRepeatLength != -1) {
         QSpinBox *minLenBox = qobject_cast<QSpinBox *>(GTWidget::findWidget(os, "minLenBox", dialog));
-        GTSpinBox::setValue(os, minLenBox, minRepeatLength, GTGlobals::UseKeyBoard);
+        GTSpinBox::setValue(os, minLenBox, minRepeatLength);
     }
 
-    if (-1 != repeatsIdentity) {
+    if (repeatsIdentity != -1) {
         QSpinBox *identityBox = qobject_cast<QSpinBox *>(GTWidget::findWidget(os, "identityBox", dialog));
         GTSpinBox::setValue(os, identityBox, repeatsIdentity);
     }
 
-    if (-1 != minDistance) {
+    if (minDistance != -1) {
         QSpinBox *minDistBox = qobject_cast<QSpinBox *>(GTWidget::findWidget(os, "minDistBox", dialog));
         GTSpinBox::setValue(os, minDistBox, minDistance);
     }
@@ -98,4 +91,4 @@ void FindRepeatsDialogFiller::commonScenario() {
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-} // namespace U2
+}    // namespace U2

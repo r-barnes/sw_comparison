@@ -41,12 +41,12 @@ public:
     /* Returns if current context is the modified one */
     bool onSequenceChanged(ADVSequenceObjectContext *sequenceContext);
 
-    ADVSequenceObjectContext * productsContext() const;
+    ADVSequenceObjectContext *productsContext() const;
 
     QList<InSilicoPcrProduct> getSelectedProducts() const;
-    const QList<InSilicoPcrProduct> & getAllProducts() const;
+    const QList<InSilicoPcrProduct> &getAllProducts() const;
 
-    ADVSequenceObjectContext * getCurrentSequenceContext() const;
+    ADVSequenceObjectContext *getCurrentSequenceContext() const;
 
 private slots:
     void sl_selectionChanged();
@@ -61,6 +61,6 @@ private:
     QList<InSilicoPcrProduct> currentProducts;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_IN_SILICO_PCR_PRODUCTS_TABLE_H_
+#endif    // _U2_IN_SILICO_PCR_PRODUCTS_TABLE_H_

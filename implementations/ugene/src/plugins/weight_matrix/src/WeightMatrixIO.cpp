@@ -20,26 +20,24 @@
  */
 
 #include "WeightMatrixIO.h"
-#include "WeightMatrixPlugin.h"
+
+#include <QFile>
+#include <QMessageBox>
+#include <QTextStream>
+#include <QVector>
 
 #include <U2Core/AppContext.h>
+#include <U2Core/DIProperties.h>
+#include <U2Core/GUrlUtils.h>
 #include <U2Core/IOAdapter.h>
 #include <U2Core/IOAdapterUtils.h>
-#include <U2Core/GUrlUtils.h>
 #include <U2Core/L10n.h>
-
-#include <U2Core/TextUtils.h>
 #include <U2Core/SaveDocumentTask.h>
+#include <U2Core/TextUtils.h>
 
 #include <U2Gui/DialogUtils.h>
 
-#include <U2Core/DIProperties.h>
-
-#include <QVector>
-#include <QTextStream>
-#include <QFile>
-
-#include <QMessageBox>
+#include "WeightMatrixPlugin.h"
 
 /* TRANSLATOR U2::IOAdapter */
 
@@ -65,14 +63,14 @@ QString WeightMatrixIO::getPWMFileFilter(bool includeAll) {
 #define BUFF_SIZE 4096
 #define MATRIX_VAL_SEPARATOR ';'
 
-PFMatrix WeightMatrixIO::readPFMatrix(IOAdapterFactory* iof, const QString& url, TaskStateInfo& si) {
+PFMatrix WeightMatrixIO::readPFMatrix(IOAdapterFactory *iof, const QString &url, TaskStateInfo &si) {
     PFMatrix matrix;
     QVarLengthArray<int> res;
     int len = -1, msize = 0;
 
     QScopedPointer<IOAdapter> io(iof->createIOAdapter());
     if (!io->open(url, IOAdapterMode_Read)) {
-        si.setError(  L10N::errorOpeningFileRead(url) );
+        si.setError(L10N::errorOpeningFileRead(url));
         return matrix;
     }
     QByteArray text;
@@ -85,7 +83,7 @@ PFMatrix WeightMatrixIO::readPFMatrix(IOAdapterFactory* iof, const QString& url,
     qint64 blockLen = 0;
     while ((blockLen = io->readBlock(block.data(), BUFF_SIZE)) > 0) {
         text.append(QByteArray(block.data(), blockLen));
-        if (text.size() > 1000*1000) {
+        if (text.size() > 1000 * 1000) {
             si.setError(L10N::errorFileTooLarge(url));
             break;
         }
@@ -111,7 +109,7 @@ PFMatrix WeightMatrixIO::readPFMatrix(IOAdapterFactory* iof, const QString& url,
         }
 
         if (len != curr.length()) {
-            si.setError(tr("Error parsing settings line %1").arg(line) );
+            si.setError(tr("Error parsing settings line %1").arg(line));
             break;
         }
 
@@ -119,11 +117,11 @@ PFMatrix WeightMatrixIO::readPFMatrix(IOAdapterFactory* iof, const QString& url,
             bool ok;
             int val = curr[i].toInt(&ok);
             if (!ok) {
-                si.setError(tr("Error parsing value %1").arg(curr[i]) );
+                si.setError(tr("Error parsing value %1").arg(curr[i]));
                 break;
             }
             if (val < 0) {
-                si.setError(tr("Unexpected negative frequency value %1").arg(val) );
+                si.setError(tr("Unexpected negative frequency value %1").arg(val));
                 break;
             }
             res.append(val);
@@ -158,7 +156,8 @@ PFMatrix WeightMatrixIO::readPFMatrix(IOAdapterFactory* iof, const QString& url,
     bool found = false;
     while (!found && !jasparBase.atEnd()) {
         QString curr = QString(jasparBase.readLine());
-        if (!curr.startsWith(name)) continue;
+        if (!curr.startsWith(name))
+            continue;
         found = true;
         JasparInfo info(curr);
         matrix.setInfo(info);
@@ -167,14 +166,14 @@ PFMatrix WeightMatrixIO::readPFMatrix(IOAdapterFactory* iof, const QString& url,
     return matrix;
 }
 
-PWMatrix WeightMatrixIO::readPWMatrix(IOAdapterFactory* iof, const QString& url, TaskStateInfo& si) {
+PWMatrix WeightMatrixIO::readPWMatrix(IOAdapterFactory *iof, const QString &url, TaskStateInfo &si) {
     PWMatrix matrix;
     QVarLengthArray<float> res;
     int len = -1, msize = 0;
 
     QScopedPointer<IOAdapter> io(iof->createIOAdapter());
     if (!io->open(url, IOAdapterMode_Read)) {
-        si.setError(  L10N::errorOpeningFileRead(url) );
+        si.setError(L10N::errorOpeningFileRead(url));
         return matrix;
     }
     QByteArray text;
@@ -187,7 +186,7 @@ PWMatrix WeightMatrixIO::readPWMatrix(IOAdapterFactory* iof, const QString& url,
     qint64 blockLen = 0;
     while ((blockLen = io->readBlock(block.data(), BUFF_SIZE)) > 0) {
         text.append(QByteArray(block.data(), blockLen));
-        if (text.size() > 1000*1000) {
+        if (text.size() > 1000 * 1000) {
             si.setError(L10N::errorFileTooLarge(url));
             break;
         }
@@ -218,7 +217,7 @@ PWMatrix WeightMatrixIO::readPWMatrix(IOAdapterFactory* iof, const QString& url,
         }
 
         if (len != curr.length() - 1) {
-            si.setError(tr("Error parsing settings line %1").arg(line) );
+            si.setError(tr("Error parsing settings line %1").arg(line));
             break;
         }
 
@@ -248,9 +247,8 @@ PWMatrix WeightMatrixIO::readPWMatrix(IOAdapterFactory* iof, const QString& url,
     return matrix;
 }
 
-void WeightMatrixIO::writePFMatrix(IOAdapterFactory* iof, const QString& url, TaskStateInfo& si, const PFMatrix& model)
-{
-    assert (model.getLength() >= 0);
+void WeightMatrixIO::writePFMatrix(IOAdapterFactory *iof, const QString &url, TaskStateInfo &si, const PFMatrix &model) {
+    assert(model.getLength() >= 0);
     QByteArray res;
     int size = (model.getType() == PFM_MONONUCLEOTIDE) ? 4 : 16;
     for (int i = 0; i < size; i++) {
@@ -262,20 +260,19 @@ void WeightMatrixIO::writePFMatrix(IOAdapterFactory* iof, const QString& url, Ta
 
     QScopedPointer<IOAdapter> io(iof->createIOAdapter());
     if (!io->open(url, IOAdapterMode_Write)) {
-        si.setError(  L10N::errorOpeningFileWrite(url) );
+        si.setError(L10N::errorOpeningFileWrite(url));
         return;
     }
     int len = io->writeBlock(res);
     if (len != res.size()) {
-        si.setError(  L10N::errorWritingFile(url) );
+        si.setError(L10N::errorWritingFile(url));
         return;
     }
     io->close();
 }
 
-void WeightMatrixIO::writePWMatrix(IOAdapterFactory* iof, const QString& url, TaskStateInfo& si, const PWMatrix& model)
-{
-    assert (model.getLength() >= 0);
+void WeightMatrixIO::writePWMatrix(IOAdapterFactory *iof, const QString &url, TaskStateInfo &si, const PWMatrix &model) {
+    assert(model.getLength() >= 0);
     QByteArray res;
     int size = (model.getType() == PWM_MONONUCLEOTIDE) ? 4 : 16;
     for (int i = 0; i < size; i++) {
@@ -295,25 +292,24 @@ void WeightMatrixIO::writePWMatrix(IOAdapterFactory* iof, const QString& url, Ta
 
     QScopedPointer<IOAdapter> io(iof->createIOAdapter());
     if (!io->open(url, IOAdapterMode_Write)) {
-        si.setError(  L10N::errorOpeningFileWrite(url) );
+        si.setError(L10N::errorOpeningFileWrite(url));
         return;
     }
     int len = io->writeBlock(res);
     if (len != res.size()) {
-        si.setError(  L10N::errorWritingFile(url) );
+        si.setError(L10N::errorWritingFile(url));
         return;
     }
     io->close();
 }
 
-
 void PFMatrixReadTask::run() {
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
     model = WeightMatrixIO::readPFMatrix(iof, url, stateInfo);
 }
 
 void PFMatrixWriteTask::run() {
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
     if (fileMode & SaveDoc_Roll && !GUrlUtils::renameFileWithNameRoll(url, stateInfo)) {
         return;
     }
@@ -321,16 +317,16 @@ void PFMatrixWriteTask::run() {
 }
 
 void PWMatrixReadTask::run() {
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
     model = WeightMatrixIO::readPWMatrix(iof, url, stateInfo);
 }
 
 void PWMatrixWriteTask::run() {
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
     if (fileMode & SaveDoc_Roll && !GUrlUtils::renameFileWithNameRoll(url, stateInfo)) {
         return;
     }
     WeightMatrixIO::writePWMatrix(iof, url, stateInfo, model);
 }
 
-}//namespace
+}    // namespace U2

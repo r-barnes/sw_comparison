@@ -29,7 +29,8 @@ namespace U2 {
 class BreakpointEqualHitCounter : public BaseBreakpointHitCounter {
 public:
     BreakpointEqualHitCounter(BreakpointHitCountCondition
-        initCondition, quint32 initHitCount);
+                                  initCondition,
+                              quint32 initHitCount);
     virtual bool hit();
     virtual quint32 getHitCountParameter() const;
     virtual void setHitCountParameter(quint32 newParameter);
@@ -38,6 +39,6 @@ protected:
     quint32 targetHitCount;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_BREAKPOINT_EQUAL_HIT_COUNTER_H_
+#endif    // _U2_BREAKPOINT_EQUAL_HIT_COUNTER_H_

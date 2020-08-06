@@ -46,12 +46,12 @@ class MsaColorSchemeStaticFactory : public MsaColorSchemeFactory {
 public:
     MsaColorSchemeStaticFactory(QObject *parent, const QString &id, const QString &name, const AlphabetFlags &supportedAlphabets, const QVector<QColor> &colorsPerChar);
 
-    MsaColorScheme * create(QObject* parent, MultipleAlignmentObject * maObj) const;
+    MsaColorScheme *create(QObject *parent, MultipleAlignmentObject *maObj) const;
 
 private:
     QVector<QColor> colorsPerChar;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MSA_COLOR_SCHEME_STATIC_H_
+#endif    // _U2_MSA_COLOR_SCHEME_STATIC_H_

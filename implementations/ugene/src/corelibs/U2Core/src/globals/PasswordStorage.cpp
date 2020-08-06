@@ -19,10 +19,10 @@
  * MA 02110-1301, USA.
  */
 
+#include "PasswordStorage.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/Settings.h>
-
-#include "PasswordStorage.h"
 
 namespace U2 {
 
@@ -30,13 +30,13 @@ const QString PasswordStorage::SETTINGS_PATH = "/user_credentials/";
 
 PasswordStorage::PasswordStorage() {
     const QStringList keys = AppContext::getSettings()->getAllKeys(SETTINGS_PATH);
-    foreach(const QString& fullUrl, keys) {
+    foreach (const QString &fullUrl, keys) {
         const QString password = deserialize(AppContext::getSettings()->getValue(SETTINGS_PATH + fullUrl).toByteArray());
         registry.insert(fullUrl, password);
     }
 }
 
-void PasswordStorage::addEntry(const QString& fullUrl, const QString &password, bool rememberEntry) {
+void PasswordStorage::addEntry(const QString &fullUrl, const QString &password, bool rememberEntry) {
     registry.insert(fullUrl, password);
     if (rememberEntry) {
         remember(fullUrl, password);
@@ -45,20 +45,20 @@ void PasswordStorage::addEntry(const QString& fullUrl, const QString &password, 
     }
 }
 
-void PasswordStorage::removeEntry(const QString& fullUrl) {
+void PasswordStorage::removeEntry(const QString &fullUrl) {
     registry.remove(fullUrl);
     forget(fullUrl);
 }
 
-QString PasswordStorage::getEntry(const QString& fullUrl) const {
+QString PasswordStorage::getEntry(const QString &fullUrl) const {
     return registry.value(fullUrl);
 }
 
-bool PasswordStorage::contains(const QString& fullUrl) const {
+bool PasswordStorage::contains(const QString &fullUrl) const {
     return registry.contains(fullUrl);
 }
 
-bool PasswordStorage::isRemembered(const QString& fullUrl) const {
+bool PasswordStorage::isRemembered(const QString &fullUrl) const {
     return AppContext::getSettings()->contains(SETTINGS_PATH + fullUrl);
 }
 
@@ -70,7 +70,7 @@ void PasswordStorage::setRemembered(const QString &fullUrl, bool rememberValue) 
     }
 }
 
-void PasswordStorage::remember(const QString& fullUrl, const QString &password) {
+void PasswordStorage::remember(const QString &fullUrl, const QString &password) {
     AppContext::getSettings()->setValue(SETTINGS_PATH + fullUrl, serialize(password));
 }
 
@@ -86,4 +86,4 @@ QString PasswordStorage::deserialize(const QByteArray &data) {
     return QByteArray::fromBase64(data);
 }
 
-}   // namespce U2
+}    // namespace U2

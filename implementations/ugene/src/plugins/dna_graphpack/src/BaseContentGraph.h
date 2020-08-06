@@ -22,13 +22,13 @@
 #ifndef _U2_GRAPHPACK_BASE_CONTENT_H_
 #define _U2_GRAPHPACK_BASE_CONTENT_H_
 
-#include "DNAGraphPackPlugin.h"
+#include <QAction>
+#include <QBitArray>
+#include <QList>
 
 #include <U2View/GSequenceGraphView.h>
 
-#include <QAction>
-#include <QList>
-#include <QBitArray>
+#include "DNAGraphPackPlugin.h"
 
 namespace U2 {
 
@@ -37,10 +37,12 @@ class AnnotatedDNAView;
 class BaseContentGraphFactory : public GSequenceGraphFactory {
     Q_OBJECT
 public:
-    enum GType { GC, AG };
-    BaseContentGraphFactory(GType t, QObject* p);
-    virtual QList<QSharedPointer<GSequenceGraphData> > createGraphs(GSequenceGraphView* v);
-    virtual bool isEnabled(const U2SequenceObject* o) const;
+    enum GType { GC,
+                 AG };
+    BaseContentGraphFactory(GType t, QObject *p);
+    virtual QList<QSharedPointer<GSequenceGraphData>> createGraphs(GSequenceGraphView *v);
+    virtual bool isEnabled(const U2SequenceObject *o) const;
+
 private:
     QBitArray map;
 };
@@ -49,14 +51,13 @@ class BaseContentGraphAlgorithm : public GSequenceGraphAlgorithm {
 public:
     BaseContentGraphAlgorithm(const QBitArray &map);
 
-    virtual void calculate(QVector<float>& res, U2SequenceObject* o, const U2Region& r, const GSequenceGraphWindowData* d, U2OpStatus &os);
+    virtual void calculate(QVector<float> &res, U2SequenceObject *o, const U2Region &r, const GSequenceGraphWindowData *d, U2OpStatus &os);
 
 private:
-    void windowStrategyWithoutMemorize(QVector<float>& res, const QByteArray& seq, int startPos,
-        const GSequenceGraphWindowData* d, int nSteps, U2OpStatus &os);
+    void windowStrategyWithoutMemorize(QVector<float> &res, const QByteArray &seq, int startPos, const GSequenceGraphWindowData *d, int nSteps, U2OpStatus &os);
 
     QBitArray map;
 };
 
-} // namespace
+}    // namespace U2
 #endif

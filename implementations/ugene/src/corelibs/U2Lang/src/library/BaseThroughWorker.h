@@ -40,14 +40,14 @@ public:
 
 protected:
     // BaseOneOneWorker
-    Task * processNextInputMessage();
-    Task * onInputEnded();
+    Task *processNextInputMessage();
+    Task *onInputEnded();
     Message composeMessage(const QVariantMap &data);
 
-    virtual Task * createTask(const Message &message, U2OpStatus &os) = 0;
+    virtual Task *createTask(const Message &message, U2OpStatus &os) = 0;
 };
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_BASE_THROUGH_WORKER_H_
+#endif    // _U2_BASE_THROUGH_WORKER_H_

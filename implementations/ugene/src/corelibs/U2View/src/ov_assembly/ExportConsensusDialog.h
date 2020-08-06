@@ -22,10 +22,11 @@
 #ifndef _U2_EXPORT_CONSENSUS_DIALOG_H__
 #define _U2_EXPORT_CONSENSUS_DIALOG_H__
 
-#include "ExportConsensusTask.h"
 #include <ui_ExportConsensusDialog.h>
 
 #include <QDialog>
+
+#include "ExportConsensusTask.h"
 
 namespace U2 {
 
@@ -35,20 +36,22 @@ class RegionSelector;
 class ExportConsensusDialog : public QDialog, Ui_ExportConsensusDialog {
     Q_OBJECT
 public:
-    ExportConsensusDialog(QWidget * p, const ExportConsensusTaskSettings & settings, const U2Region & visibleRegion);
+    ExportConsensusDialog(QWidget *p, const ExportConsensusTaskSettings &settings, const U2Region &visibleRegion);
 
     virtual void accept();
 
-    const ExportConsensusTaskSettings & getSettings() const { return settings; }
+    const ExportConsensusTaskSettings &getSettings() const {
+        return settings;
+    }
 
 private:
     void initSaveController();
 
     ExportConsensusTaskSettings settings;
-    SaveDocumentController*     saveController;
-    RegionSelector*             regionSelector;
+    SaveDocumentController *saveController;
+    RegionSelector *regionSelector;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_EXPORT_CONSENSUS_DIALOG_H__
+#endif    // _U2_EXPORT_CONSENSUS_DIALOG_H__

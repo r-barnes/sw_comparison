@@ -26,7 +26,7 @@ namespace U2 {
 const QStringList Metaphlan2LogParser::wellKnownErrors = Metaphlan2LogParser::initWellKnownErrors();
 
 bool Metaphlan2LogParser::isError(const QString &line) const {
-    foreach(const QString &wellKnownError, wellKnownErrors) {
+    foreach (const QString &wellKnownError, wellKnownErrors) {
         if (line.contains(wellKnownError)) {
             return true;
         }
@@ -40,4 +40,4 @@ QStringList Metaphlan2LogParser::initWellKnownErrors() {
     return result;
 }
 
-}   // namespace U2
+}    // namespace U2

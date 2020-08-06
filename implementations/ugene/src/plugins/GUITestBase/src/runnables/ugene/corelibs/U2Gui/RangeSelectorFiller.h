@@ -27,13 +27,16 @@
 namespace U2 {
 using namespace HI;
 
-    class ZoomToRangeDialogFiller : public Filler {
-    public:
-        ZoomToRangeDialogFiller(HI::GUITestOpStatus &_os, int min = -1, int max = -1) : Filler(_os, "range_selection_dialog"), minVal(min), maxVal(max){}
-        void commonScenario();
-    private:
-        int minVal, maxVal;
-    };
-}
+class ZoomToRangeDialogFiller : public Filler {
+public:
+    ZoomToRangeDialogFiller(HI::GUITestOpStatus &_os, int min = -1, int max = -1)
+        : Filler(_os, "range_selection_dialog"), minVal(min), maxVal(max) {
+    }
+    void commonScenario();
+
+private:
+    int minVal, maxVal;
+};
+}    // namespace U2
 
 #endif

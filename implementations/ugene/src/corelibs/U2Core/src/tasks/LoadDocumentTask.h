@@ -22,12 +22,12 @@
 #ifndef _U2_LOAD_DOCUMENT_TASK_H_
 #define _U2_LOAD_DOCUMENT_TASK_H_
 
-#include <U2Core/GUrl.h>
-#include <U2Core/GObjectReference.h>
-#include <U2Core/DocumentProviderTask.h>
-
 #include <QPointer>
 #include <QVariantMap>
+
+#include <U2Core/DocumentProviderTask.h>
+#include <U2Core/GObjectReference.h>
+#include <U2Core/GUrl.h>
 
 namespace U2 {
 
@@ -41,50 +41,49 @@ class LoadDocumentTask;
 //NOTE: the default impl can create only limited set of objects
 class U2CORE_EXPORT LDTObjectFactory : public QObject {
 public:
-    LDTObjectFactory( QObject *p )
-        : QObject( p )
-    {
-
+    LDTObjectFactory(QObject *p)
+        : QObject(p) {
     }
 
-    virtual GObject * create( const GObjectReference &ref );
+    virtual GObject *create(const GObjectReference &ref);
 };
 
 class U2CORE_EXPORT LoadDocumentTaskConfig {
 public:
-    LoadDocumentTaskConfig(bool _createDoc = false, const GObjectReference& _ref = GObjectReference(),
-        LDTObjectFactory* _f = NULL)
-        : createDoc(_createDoc), checkObjRef(_ref), objFactory(_f){}
+    LoadDocumentTaskConfig(bool _createDoc = false, const GObjectReference &_ref = GObjectReference(), LDTObjectFactory *_f = NULL)
+        : createDoc(_createDoc), checkObjRef(_ref), objFactory(_f) {
+    }
 
-    bool                createDoc;      // if document is failed to load and 'createDoc' is true -> it will be created
-    GObjectReference    checkObjRef;    // if is valid task checks that ref is found in doc, fails if not
-    LDTObjectFactory*   objFactory;     // if not NULL and 'checkObjRef' is not found -> 'objFactory' is used to create obj
+    bool createDoc;    // if document is failed to load and 'createDoc' is true -> it will be created
+    GObjectReference checkObjRef;    // if is valid task checks that ref is found in doc, fails if not
+    LDTObjectFactory *objFactory;    // if not NULL and 'checkObjRef' is not found -> 'objFactory' is used to create obj
 };
 
 class U2CORE_EXPORT LoadUnloadedDocumentTask : public DocumentProviderTask {
     Q_OBJECT
 public:
-    LoadUnloadedDocumentTask(Document* d, const LoadDocumentTaskConfig& config = LoadDocumentTaskConfig());
+    LoadUnloadedDocumentTask(Document *d, const LoadDocumentTaskConfig &config = LoadDocumentTaskConfig());
 
     virtual void prepare();
     virtual ReportResult report();
-    virtual Document* getDocument(bool mainThread = true);
+    virtual Document *getDocument(bool mainThread = true);
 
+    static QString getResourceName(Document *d);
 
-    static QString getResourceName(Document* d);
+    const LoadDocumentTaskConfig &getConfig() const {
+        return config;
+    }
 
-    const LoadDocumentTaskConfig& getConfig() const {return config;}
-
-    static LoadUnloadedDocumentTask* findActiveLoadingTask(Document* d);
-    static bool addLoadingSubtask(Task* t, const LoadDocumentTaskConfig& config);
+    static LoadUnloadedDocumentTask *findActiveLoadingTask(Document *d);
+    static bool addLoadingSubtask(Task *t, const LoadDocumentTaskConfig &config);
 
 private:
     void clearResourceUse();
 
-    LoadDocumentTask*       loadTask;
-    QPointer<Document>      unloadedDoc;
-    QString                 resName;
-    LoadDocumentTaskConfig  config;
+    LoadDocumentTask *loadTask;
+    QPointer<Document> unloadedDoc;
+    QString resName;
+    LoadDocumentTaskConfig config;
 };
 
 class U2CORE_EXPORT LoadDocumentTask : public DocumentProviderTask {
@@ -95,20 +94,17 @@ public:
     static DocumentProviderTask *getCommonLoadDocTask(const GUrl &url);
 
 public:
-    LoadDocumentTask(DocumentFormatId format, const GUrl& url,
-                IOAdapterFactory* iof, const QVariantMap& hints = QVariantMap(),
-                const LoadDocumentTaskConfig& config = LoadDocumentTaskConfig());
+    LoadDocumentTask(DocumentFormatId format, const GUrl &url, IOAdapterFactory *iof, const QVariantMap &hints = QVariantMap(), const LoadDocumentTaskConfig &config = LoadDocumentTaskConfig());
 
-    LoadDocumentTask(DocumentFormat* format, const GUrl& url,
-        IOAdapterFactory* iof, const QVariantMap& hints = QVariantMap(),
-        const LoadDocumentTaskConfig& config = LoadDocumentTaskConfig());
-
+    LoadDocumentTask(DocumentFormat *format, const GUrl &url, IOAdapterFactory *iof, const QVariantMap &hints = QVariantMap(), const LoadDocumentTaskConfig &config = LoadDocumentTaskConfig());
 
     virtual void run();
     virtual void prepare();
     virtual ReportResult report();
 
-    const GUrl& getURL() const {return url;}
+    const GUrl &getURL() const {
+        return url;
+    }
     QString getURLString() const;
 
 private:
@@ -116,17 +112,15 @@ private:
     void processObjRef();
     int calculateMemory() const;
 
-    static void renameObjects(Document* doc, const QStringList& names);
+    static void renameObjects(Document *doc, const QStringList &names);
 
-
-    DocumentFormat*         format;
-    const GUrl              url;
-    IOAdapterFactory*       iof;
-    QVariantMap             hints;
-    LoadDocumentTaskConfig  config;
+    DocumentFormat *format;
+    const GUrl url;
+    IOAdapterFactory *iof;
+    QVariantMap hints;
+    LoadDocumentTaskConfig config;
 };
 
-
-}//namespace
+}    // namespace U2
 
 #endif

@@ -31,21 +31,21 @@ class DetViewSingleLineRenderer;
 /************************************************************************/
 /* DetViewMultiLineRenderer */
 /************************************************************************/
-class DetViewMultiLineRenderer: public DetViewRenderer {
+class DetViewMultiLineRenderer : public DetViewRenderer {
 public:
-    DetViewMultiLineRenderer(DetView* detView, SequenceObjectContext* ctx);
+    DetViewMultiLineRenderer(DetView *detView, SequenceObjectContext *ctx);
     ~DetViewMultiLineRenderer();
 
     qint64 coordToPos(const QPoint &p, const QSize &canvasSize, const U2Region &visibleRange) const;
-    float posToXCoordF(const qint64 p, const QSize& canvasSize, const U2Region& visibleRange) const;
+    float posToXCoordF(const qint64 p, const QSize &canvasSize, const U2Region &visibleRange) const;
 
-    U2Region getAnnotationYRange(Annotation *a, int r, const AnnotationSettings* as, const QSize& canvasSize, const U2Region& visibleRange) const;
+    U2Region getAnnotationYRange(Annotation *a, int r, const AnnotationSettings *as, const QSize &canvasSize, const U2Region &visibleRange) const;
     U2Region getMirroredYRange(const U2Strand &mStrand) const;
 
     qint64 getMinimumHeight() const;
     qint64 getOneLineHeight() const;
-    qint64 getLinesCount(const QSize& canvasSize) const;
-    qint64 getContentIndentY(const QSize& canvasSize, const U2Region& visibleRange) const;
+    qint64 getLinesCount(const QSize &canvasSize) const;
+    qint64 getContentIndentY(const QSize &canvasSize, const U2Region &visibleRange) const;
 
     int getDirectLine() const;
 
@@ -53,23 +53,23 @@ public:
 
     QSize getBaseCanvasSize(const U2Region &visibleRange) const;
 
-    bool isOnTranslationsLine(const QPoint &p, const QSize& canvasSize, const U2Region& visibleRange) const;
-    bool isOnAnnotationLine(const QPoint& p, Annotation*a, int region, const AnnotationSettings *as, const QSize &canvasSize, const U2Region& visibleRange) const;
+    bool isOnTranslationsLine(const QPoint &p, const QSize &canvasSize, const U2Region &visibleRange) const;
+    bool isOnAnnotationLine(const QPoint &p, Annotation *a, int region, const AnnotationSettings *as, const QSize &canvasSize, const U2Region &visibleRange) const;
 
     void drawAll(QPainter &p, const QSize &canvasSize, const U2Region &visibleRange);
     void drawSelection(QPainter &p, const QSize &canvasSize, const U2Region &visibleRange);
-    void drawCursor(QPainter &p, const QSize &canvasSize, const U2Region& visibleRange);
+    void drawCursor(QPainter &p, const QSize &canvasSize, const U2Region &visibleRange);
 
     void update();
 
 private:
-    DetViewSingleLineRenderer*    singleLinePainter;
+    DetViewSingleLineRenderer *singleLinePainter;
 
     int extraIndent;
 
     static const int INDENT_BETWEEN_LINES;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_DET_VIEW_MULTI_LINE_RENDERER_H_
+#endif    // _U2_DET_VIEW_MULTI_LINE_RENDERER_H_

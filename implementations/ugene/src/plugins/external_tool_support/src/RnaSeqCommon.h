@@ -24,14 +24,12 @@
 
 #include <QString>
 
-
 namespace U2 {
 
+enum BowtieMode { vMode = 0,
+                  nMode = 1 };
 
-enum BowtieMode {vMode = 0, nMode = 1};
-
-class RnaSeqLibraryType
-{
+class RnaSeqLibraryType {
 public:
     // Init library type as "fr-unstranded"
     RnaSeqLibraryType();
@@ -53,7 +51,6 @@ private:
     static const QString frSecondStrand;
 };
 
-
-} // namespace
+}    // namespace U2
 
 #endif

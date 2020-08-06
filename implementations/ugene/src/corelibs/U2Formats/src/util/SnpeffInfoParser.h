@@ -43,7 +43,7 @@ public:
      * For each annotation a U2Qualifier list will be produced.
      * So, @return will contain data for several annotations that are produced from one variation.
      */
-    QList<QList<U2Qualifier> > parse(U2OpStatus &os, const QString &snpeffInfo) const;
+    QList<QList<U2Qualifier>> parse(U2OpStatus &os, const QString &snpeffInfo) const;
 
 private:
     void initPartParsers();
@@ -59,8 +59,8 @@ class InfoPartParser : public QObject {
 public:
     InfoPartParser(const QString &keyWord, bool canStoreMessages = false);
 
-    const QString & getKeyWord() const;
-    QList<QList<U2Qualifier> > parse(U2OpStatus &os, const QString &infoPart) const;
+    const QString &getKeyWord() const;
+    QList<QList<U2Qualifier>> parse(U2OpStatus &os, const QString &infoPart) const;
 
 protected:
     virtual QStringList getQualifierNames() const = 0;
@@ -146,6 +146,6 @@ private:
     static const QString VALUES_SEPARATOR;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_SNPEFF_INFO_PARSER_H_
+#endif    // _U2_SNPEFF_INFO_PARSER_H_

@@ -19,60 +19,56 @@
  * MA 02110-1301, USA.
  */
 
+#include "ObjectViewTasks.h"
+
 #include <QFileInfo>
 
-#include <U2Core/DocumentModel.h>
-#include <U2Core/BaseDocumentFormats.h>
-#include <U2Core/PasswordStorage.h>
-#include <U2Core/CredentialsAsker.h>
-#include <U2Core/LoadDocumentTask.h>
-#include <U2Core/Log.h>
-#include <U2Core/DocumentModel.h>
 #include <U2Core/AppContext.h>
+#include <U2Core/BaseDocumentFormats.h>
+#include <U2Core/CredentialsAsker.h>
+#include <U2Core/DocumentModel.h>
+#include <U2Core/DocumentUtils.h>
 #include <U2Core/GObject.h>
 #include <U2Core/IOAdapter.h>
 #include <U2Core/IOAdapterUtils.h>
-#include <U2Core/DocumentUtils.h>
+#include <U2Core/L10n.h>
+#include <U2Core/LoadDocumentTask.h>
+#include <U2Core/Log.h>
+#include <U2Core/PasswordStorage.h>
 #include <U2Core/ProjectModel.h>
 #include <U2Core/U2DbiRegistry.h>
+#include <U2Core/U2OpStatus.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/U2Type.h>
-#include <U2Core/U2OpStatus.h>
-#include <U2Core/L10n.h>
-
-#include "ObjectViewTasks.h"
 
 namespace U2 {
 
 /* TRANSLATOR U2::ObjectViewTask */
 
-ObjectViewTask::ObjectViewTask(GObjectView* _view, const QString& stateName, const QVariantMap& s) 
-: Task("", TaskFlag_NoRun), taskType(Type_Update), stateData(s), view(_view), stateIsIllegal(false)
-{
-    assert(view!=NULL);
-    const QString& vName = view->getName();
+ObjectViewTask::ObjectViewTask(GObjectView *_view, const QString &stateName, const QVariantMap &s)
+    : Task("", TaskFlag_NoRun), taskType(Type_Update), stateData(s), view(_view), stateIsIllegal(false) {
+    assert(view != NULL);
+    const QString &vName = view->getName();
     setTaskName(tr("Update '%1' to '%2' state").arg(vName).arg(stateName));
     setVerboseLogMode(true);
 }
 
-ObjectViewTask::ObjectViewTask(GObjectViewFactoryId fid, const QString& vName, const QVariantMap& s) 
-: Task("", TaskFlag_NoRun), taskType(Type_Open), stateData(s), view(NULL), viewName(vName), stateIsIllegal(false)
-{
+ObjectViewTask::ObjectViewTask(GObjectViewFactoryId fid, const QString &vName, const QVariantMap &s)
+    : Task("", TaskFlag_NoRun), taskType(Type_Open), stateData(s), view(NULL), viewName(vName), stateIsIllegal(false) {
     if (vName.isEmpty()) {
         QString factoryName = AppContext::getObjectViewFactoryRegistry()->getFactoryById(fid)->getName();
         setTaskName(tr("Open new '%1'").arg(factoryName));
     } else {
         setTaskName(tr("Open '%1'").arg(vName));
     }
-    
+
     setVerboseLogMode(true);
 }
 
-
 void ObjectViewTask::prepare() {
-    QSet<Document*> processed;
-    foreach(QPointer<Document> pd, documentsToLoad) {
-        if (!pd.isNull() && !processed.contains(pd)){
+    QSet<Document *> processed;
+    foreach (QPointer<Document> pd, documentsToLoad) {
+        if (!pd.isNull() && !processed.contains(pd)) {
             addSubTask(new LoadUnloadedDocumentTask(pd));
             processed.insert(pd);
         }
@@ -80,8 +76,8 @@ void ObjectViewTask::prepare() {
 }
 
 Task::ReportResult ObjectViewTask::report() {
-    foreach(QPointer<Document> pd, documentsToLoad) {
-        if (pd.isNull()){
+    foreach (QPointer<Document> pd, documentsToLoad) {
+        if (pd.isNull()) {
             continue;
         }
         if (!pd->isLoaded()) {
@@ -105,26 +101,26 @@ Task::ReportResult ObjectViewTask::report() {
     return ReportResult_Finished;
 }
 
-Document* ObjectViewTask::createDocumentAndAddToProject( const QString& docUrl, Project* p, U2OpStatus& os) {
+Document *ObjectViewTask::createDocumentAndAddToProject(const QString &docUrl, Project *p, U2OpStatus &os) {
     SAFE_POINT(p != NULL, "Project is NULL!", NULL);
 
     GUrl url(docUrl);
-    Document* doc = NULL;
+    Document *doc = NULL;
     if (GUrl_File == url.getType()) {
         QFileInfo fi(docUrl);
-        CHECK_EXT(fi.exists(), os.setError(L10N::errorFileNotFound(docUrl)),  NULL);
+        CHECK_EXT(fi.exists(), os.setError(L10N::errorFileNotFound(docUrl)), NULL);
 
-        IOAdapterFactory * iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(docUrl));
+        IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(docUrl));
         QList<FormatDetectionResult> dfs = DocumentUtils::detectFormat(docUrl);
         CHECK_EXT(!dfs.isEmpty(), os.setError(L10N::notSupportedFileFormat(docUrl)), NULL);
 
-        DocumentFormat* df = dfs.first().format;
+        DocumentFormat *df = dfs.first().format;
         doc = df->createNewUnloadedDocument(iof, GUrl(docUrl), os);
     } else if (GUrl_Network == url.getType()) {
-        IOAdapterFactory* ioAdapterFactory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::DATABASE_CONNECTION);
+        IOAdapterFactory *ioAdapterFactory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::DATABASE_CONNECTION);
         SAFE_POINT_EXT(NULL != ioAdapterFactory, os.setError("Database connection IO adapter factory is NULL"), NULL);
 
-        DocumentFormat* format = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::DATABASE_CONNECTION);
+        DocumentFormat *format = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::DATABASE_CONNECTION);
         SAFE_POINT_EXT(NULL != format, os.setError("Database connection format is NULL"), NULL);
 
         if (!AppContext::getPasswordStorage()->contains(docUrl) && !AppContext::getCredentialsAsker()->askWithFixedLogin(docUrl)) {
@@ -143,15 +139,13 @@ Document* ObjectViewTask::createDocumentAndAddToProject( const QString& docUrl, 
 //////////////////////////////////////////////////////////////////////////
 // AddToViewTask
 
-AddToViewTask::AddToViewTask(GObjectView* v, GObject* obj) 
-: Task(tr("Add object to view %1").arg(obj->getGObjectName()), TaskFlags_NR_FOSCOE), 
-objView(v), viewName(v->getName()), objRef(obj), objDoc(obj->getDocument())
-{
-    assert(objDoc!=NULL);
+AddToViewTask::AddToViewTask(GObjectView *v, GObject *obj)
+    : Task(tr("Add object to view %1").arg(obj->getGObjectName()), TaskFlags_NR_FOSCOE),
+      objView(v), viewName(v->getName()), objRef(obj), objDoc(obj->getDocument()) {
+    assert(objDoc != NULL);
     if (obj->isUnloaded()) {
         addSubTask(new LoadUnloadedDocumentTask(objDoc));
     }
-    
 }
 
 Task::ReportResult AddToViewTask::report() {
@@ -162,7 +156,7 @@ Task::ReportResult AddToViewTask::report() {
         stateInfo.setError(tr("Document was removed %1").arg(objRef.docUrl));
         return ReportResult_Finished;
     }
-    GObject* obj = objDoc->findGObjectByName(objRef.objName);
+    GObject *obj = objDoc->findGObjectByName(objRef.objName);
     if (obj == NULL) {
         stateInfo.setError(tr("Object not found %1").arg(objRef.objName));
         return ReportResult_Finished;
@@ -175,4 +169,4 @@ Task::ReportResult AddToViewTask::report() {
     return ReportResult_Finished;
 }
 
-} // namespace
+}    // namespace U2

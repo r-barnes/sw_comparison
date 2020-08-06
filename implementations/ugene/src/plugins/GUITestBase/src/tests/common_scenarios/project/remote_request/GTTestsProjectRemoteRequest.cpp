@@ -19,11 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-#include <QDir>
-
-#include <U2View/AnnotatedDNAViewFactory.h>
-#include <U2View/MaEditorFactory.h>
-
 #include <GTGlobals.h>
 #include <base_dialogs/GTFileDialog.h>
 #include <drivers/GTKeyboardDriver.h>
@@ -33,10 +28,14 @@
 #include <utils/GTUtilsApp.h>
 #include <utils/GTUtilsToolTip.h>
 
+#include <QDir>
+
+#include <U2View/AnnotatedDNAViewFactory.h>
+#include <U2View/MaEditorFactory.h>
+
 #include "GTTestsProjectRemoteRequest.h"
 #include "GTUtilsDocument.h"
 #include "GTUtilsLog.h"
-#include "GTUtilsMdi.h"
 #include "GTUtilsMdi.h"
 #include "GTUtilsProject.h"
 #include "GTUtilsProjectTreeView.h"
@@ -45,16 +44,18 @@
 #include "GTUtilsWorkflowDesigner.h"
 #include "api/GTSequenceReadingModeDialogUtils.h"
 #include "runnables/ugene/corelibs/U2Gui/DownloadRemoteFileDialogFiller.h"
-#include "runnables/ugene/ugeneui/NCBISearchDialogFiller.h"
 #include "runnables/ugene/ugeneui/DocumentFormatSelectorDialogFiller.h"
+#include "runnables/ugene/ugeneui/NCBISearchDialogFiller.h"
 #include "runnables/ugene/ugeneui/SelectDocumentFormatDialogFiller.h"
-namespace U2{
+namespace U2 {
 
 namespace GUITest_common_scenarios_project_remote_request {
 
 GUI_TEST_CLASS_DEFINITION(test_0001) {
     GTUtilsDialog::waitForDialog(os, new RemoteDBDialogFillerDeprecated(os, "3EZB", 3));
-    GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Access remote database...", GTGlobals::UseKey);
+    GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                << "Access remote database...",
+                              GTGlobals::UseKey);
     GTGlobals::sleep();
 
     GTUtilsTaskTreeView::openView(os);
@@ -64,7 +65,8 @@ GUI_TEST_CLASS_DEFINITION(test_0001) {
 
 GUI_TEST_CLASS_DEFINITION(test_0002) {
     GTUtilsDialog::waitForDialog(os, new RemoteDBDialogFillerDeprecated(os, "NC_001363", 0));
-    GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Access remote database...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                << "Access remote database...");
     GTGlobals::sleep();
 
     GTGlobals::sleep(20000);
@@ -73,14 +75,14 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0003) {
-//    1. Select {File -> Access remote database} menu item in the main menu.
-//    2. Fill the dialog:
-//        Resource ID: NC_017775
-//        Database: NCBI GenBank (DNA sequence)
-//        Save to folder: any valid path
-//        Force download the appropriate sequence: unchecked
-//    and accept it.
-//    Expected state: after the downloading task finish a new document appears in the project, it contains an annotation table only.
+    //    1. Select {File -> Access remote database} menu item in the main menu.
+    //    2. Fill the dialog:
+    //        Resource ID: NC_017775
+    //        Database: NCBI GenBank (DNA sequence)
+    //        Save to folder: any valid path
+    //        Force download the appropriate sequence: unchecked
+    //    and accept it.
+    //    Expected state: after the downloading task finish a new document appears in the project, it contains an annotation table only.
 
     QDir().mkpath(sandBoxDir + "remote_request/test_0003");
     QList<DownloadRemoteFileDialogFiller::Action> actions;
@@ -92,7 +94,8 @@ GUI_TEST_CLASS_DEFINITION(test_0003) {
     actions << DownloadRemoteFileDialogFiller::Action(DownloadRemoteFileDialogFiller::ClickOk, "");
 
     GTUtilsDialog::waitForDialog(os, new DownloadRemoteFileDialogFiller(os, actions));
-    GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Access remote database...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                << "Access remote database...");
     GTGlobals::sleep();
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
@@ -102,14 +105,14 @@ GUI_TEST_CLASS_DEFINITION(test_0003) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0004) {
-//    1. Select {File -> Access remote database} menu item in the main menu.
-//    2. Fill the dialog:
-//        Resource ID: NC_017775
-//        Database: NCBI GenBank (DNA sequence)
-//        Save to folder: any valid path
-//        Force download the appropriate sequence: checked
-//    and accept it.
-//    Expected state: after the downloading task finish a new document appears in the project, it contains both a sequence and an annotation table.
+    //    1. Select {File -> Access remote database} menu item in the main menu.
+    //    2. Fill the dialog:
+    //        Resource ID: NC_017775
+    //        Database: NCBI GenBank (DNA sequence)
+    //        Save to folder: any valid path
+    //        Force download the appropriate sequence: checked
+    //    and accept it.
+    //    Expected state: after the downloading task finish a new document appears in the project, it contains both a sequence and an annotation table.
 
     QDir().mkpath(sandBoxDir + "remote_request/test_0004");
     QList<DownloadRemoteFileDialogFiller::Action> actions;
@@ -121,7 +124,8 @@ GUI_TEST_CLASS_DEFINITION(test_0004) {
     actions << DownloadRemoteFileDialogFiller::Action(DownloadRemoteFileDialogFiller::ClickOk, "");
 
     GTUtilsDialog::waitForDialog(os, new DownloadRemoteFileDialogFiller(os, actions));
-    GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Access remote database...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                << "Access remote database...");
     GTGlobals::sleep();
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
@@ -140,7 +144,8 @@ GUI_TEST_CLASS_DEFINITION(test_0005) {
     QDir().mkpath(sandBoxDir + "remote_request/test_0005");
 
     GTUtilsDialog::waitForDialog(os, new RemoteDBDialogFillerDeprecated(os, "ENSG00000205571 ENSG00000146463", 2, true, true, false, sandBoxDir + "remote_request/test_0005"));
-    GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Access remote database...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                << "Access remote database...");
     GTGlobals::sleep();
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
@@ -158,12 +163,12 @@ GUI_TEST_CLASS_DEFINITION(test_0006) {
     //        Save to folder: any valid path and accept it.
     //    Expected state: after the downloading task finish a new documents appears in the project
 
-
     QDir().mkpath(sandBoxDir + "remote_request/test_0006");
     GTUtilsDialog::waitForDialog(os, new DocumentFormatSelectorDialogFiller(os, "Swiss-Prot"));
 
     GTUtilsDialog::waitForDialog(os, new RemoteDBDialogFillerDeprecated(os, "Q9IGQ6;A0N8V2", 4, true, true, false, sandBoxDir + "remote_request/test_0006"));
-    GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Access remote database...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                << "Access remote database...");
     GTGlobals::sleep();
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
@@ -174,9 +179,9 @@ GUI_TEST_CLASS_DEFINITION(test_0006) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0007) {
-//    1. Select {File -> Access remote database} menu item in the main menu.
-//    2. Check all databases.
-//    Expected state: "Force download the appropriate sequence" checkbox is visible only for NCBI databases.
+    //    1. Select {File -> Access remote database} menu item in the main menu.
+    //    2. Check all databases.
+    //    Expected state: "Force download the appropriate sequence" checkbox is visible only for NCBI databases.
     QList<DownloadRemoteFileDialogFiller::Action> actions;
 
     actions << DownloadRemoteFileDialogFiller::Action(DownloadRemoteFileDialogFiller::SetDatabase, "NCBI GenBank (DNA sequence)");
@@ -196,19 +201,21 @@ GUI_TEST_CLASS_DEFINITION(test_0007) {
     actions << DownloadRemoteFileDialogFiller::Action(DownloadRemoteFileDialogFiller::ClickCancel, "");
 
     GTUtilsDialog::waitForDialog(os, new DownloadRemoteFileDialogFiller(os, actions));
-    GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Access remote database...", GTGlobals::UseKey);
+    GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                << "Access remote database...",
+                              GTGlobals::UseKey);
     GTGlobals::sleep();
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0008) {
-//    1. Select {File -> Search NCBI Genbak} menu item in the main menu.
-//    2. Search "human" in the "nucleotide" database. Download the first result.
-//    Expected state: the "Fetch Data from Remote Database" appears. It is filled with:
-//        Database: "NCBI GenBank (DNA sequence)", it the only database in the combobox.
-//        Output format: "gb".
-//        "Force download the appropriate sequence" checkbox is visible and checked.
-//    3. Set "fasta" format.
-//    Expected state: "Force download the appropriate sequence" checkbox becomes invisible.
+    //    1. Select {File -> Search NCBI Genbak} menu item in the main menu.
+    //    2. Search "human" in the "nucleotide" database. Download the first result.
+    //    Expected state: the "Fetch Data from Remote Database" appears. It is filled with:
+    //        Database: "NCBI GenBank (DNA sequence)", it the only database in the combobox.
+    //        Output format: "gb".
+    //        "Force download the appropriate sequence" checkbox is visible and checked.
+    //    3. Set "fasta" format.
+    //    Expected state: "Force download the appropriate sequence" checkbox becomes invisible.
     QList<NcbiSearchDialogFiller::Action> searchActions;
     QList<DownloadRemoteFileDialogFiller::Action> downloadActions;
 
@@ -232,19 +239,20 @@ GUI_TEST_CLASS_DEFINITION(test_0008) {
     searchActions << NcbiSearchDialogFiller::Action(NcbiSearchDialogFiller::ClickClose, "");
 
     GTUtilsDialog::waitForDialog(os, new NcbiSearchDialogFiller(os, searchActions));
-    GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Search NCBI GenBank...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                << "Search NCBI GenBank...");
     GTGlobals::sleep();
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0009) {
-//    1. Select {File -> Search NCBI Genbak} menu item in the main menu.
-//    2. Search "human" in the "protein" database. Download the first result.
-//    Expected state: the "Fetch Data from Remote Database" appears. It is filled with:
-//        Database: "NCBI protein sequence database", it the only database in the combobox.
-//        Output format: "gb".
-//        "Force download the appropriate sequence" checkbox is visible and checked.
-//    3. Set "fasta" format.
-//    Expected state: "Force download the appropriate sequence" checkbox becomes invisible.
+    //    1. Select {File -> Search NCBI Genbak} menu item in the main menu.
+    //    2. Search "human" in the "protein" database. Download the first result.
+    //    Expected state: the "Fetch Data from Remote Database" appears. It is filled with:
+    //        Database: "NCBI protein sequence database", it the only database in the combobox.
+    //        Output format: "gb".
+    //        "Force download the appropriate sequence" checkbox is visible and checked.
+    //    3. Set "fasta" format.
+    //    Expected state: "Force download the appropriate sequence" checkbox becomes invisible.
     QList<NcbiSearchDialogFiller::Action> searchActions;
     QList<DownloadRemoteFileDialogFiller::Action> downloadActions;
 
@@ -268,25 +276,26 @@ GUI_TEST_CLASS_DEFINITION(test_0009) {
     searchActions << NcbiSearchDialogFiller::Action(NcbiSearchDialogFiller::ClickClose, "");
 
     GTUtilsDialog::waitForDialog(os, new NcbiSearchDialogFiller(os, searchActions));
-    GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Search NCBI GenBank...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                << "Search NCBI GenBank...");
     GTGlobals::sleep();
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0010) {
-//    Test worker's GUI
+    //    Test worker's GUI
 
-//    1. Open WD, set "Read Sequence rom Remote Database" element to the scene, select it.
-//    Expected state:
-//        Database: required, "NCBI GenBank (DNA sequence)";
-//        Read resource ID(s) from source: required, "List of IDs";
-//        Resource ID(s): required, visible;
-//        File with resource IDs: invisible;
-//        Save file to folder: required.
+    //    1. Open WD, set "Read Sequence rom Remote Database" element to the scene, select it.
+    //    Expected state:
+    //        Database: required, "NCBI GenBank (DNA sequence)";
+    //        Read resource ID(s) from source: required, "List of IDs";
+    //        Resource ID(s): required, visible;
+    //        File with resource IDs: invisible;
+    //        Save file to folder: required.
 
-//    2. Set parameter "Read resource ID(s) from source" to "File with IDs".
-//    Expected state:
-//        Resource ID(s): invisible;
-//        File with resource IDs: required, visible.
+    //    2. Set parameter "Read resource ID(s) from source" to "File with IDs".
+    //    Expected state:
+    //        Resource ID(s): invisible;
+    //        File with resource IDs: required, visible.
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
     GTUtilsWorkflowDesigner::addAlgorithm(os, "Read Sequence from Remote Database");
     GTUtilsWorkflowDesigner::click(os, "Read Sequence from Remote Database");
@@ -310,7 +319,6 @@ GUI_TEST_CLASS_DEFINITION(test_0010) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0011) {
-
     //    1.  File->Access remote database...
     //    2.  Fill    "Resource ID": 1ezg
     //                "Database": PDB
@@ -318,14 +326,14 @@ GUI_TEST_CLASS_DEFINITION(test_0011) {
     //        Open.
     //    3.  Expected state: 1ezg appears in a project view.
 
-        GTUtilsDialog::waitForDialog(os, new RemoteDBDialogFillerDeprecated(os, "1ezg", 3, true, true, false,
-                                                                            sandBoxDir));
-        GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Access remote database...", GTGlobals::UseKey);
+    GTUtilsDialog::waitForDialog(os, new RemoteDBDialogFillerDeprecated(os, "1ezg", 3, true, true, false, sandBoxDir));
+    GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                << "Access remote database...",
+                              GTGlobals::UseKey);
 
-        GTUtilsTaskTreeView::waitTaskFinished(os);
-        GTGlobals::sleep(20000);
-        GTUtilsDocument::isDocumentLoaded(os, "1ezg.pdb");
-
+    GTUtilsTaskTreeView::waitTaskFinished(os);
+    GTGlobals::sleep(20000);
+    GTUtilsDocument::isDocumentLoaded(os, "1ezg.pdb");
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0012) {
@@ -337,16 +345,20 @@ GUI_TEST_CLASS_DEFINITION(test_0012) {
     //    3.  Expected state: 1ezg doesn't appear in a project view.
 
     GTUtilsDialog::waitForDialog(os, new RemoteDBDialogFillerDeprecated(os, "1ezg", 3, false, true, false, sandBoxDir));
-    GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Access remote database...", GTGlobals::UseKey);
+    GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                << "Access remote database...",
+                              GTGlobals::UseKey);
 
     GTUtilsDialog::waitForDialog(os, new RemoteDBDialogFillerDeprecated(os, "1CRN", 3, true, true, false, sandBoxDir));
-    GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Access remote database...", GTGlobals::UseKey);
+    GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                << "Access remote database...",
+                              GTGlobals::UseKey);
 
-    GTGlobals::sleep(10000);//some time needed for request
+    GTGlobals::sleep(10000);    //some time needed for request
     GTUtilsDocument::isDocumentLoaded(os, "1CRN.pdb");
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
-    CHECK_SET_ERR(!GTUtilsProjectTreeView::checkItem(os, "1ezg.pdb"), "Object shound not be in the project");
+    GTUtilsProjectTreeView::checkNoItem(os, "1ezg.pdb");
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0013) {
@@ -357,19 +369,18 @@ GUI_TEST_CLASS_DEFINITION(test_0013) {
     //        Save to folder: any valid path and accept it.
     //    Expected state: after the downloading task finish a new documents appears in the project
 
-
     QDir().mkpath(sandBoxDir + "remote_request/test_0013");
     QList<DownloadRemoteFileDialogFiller::Action> actions;
 
     GTUtilsDialog::waitForDialog(os, new DocumentFormatSelectorDialogFiller(os, "Swiss-Prot"));
     GTUtilsDialog::waitForDialog(os, new RemoteDBDialogFillerDeprecated(os, "P16152", 5, true, true, false, sandBoxDir));
-    GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Access remote database...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                << "Access remote database...");
     GTGlobals::sleep();
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     GTUtilsDocument::isDocumentLoaded(os, "P16152.txt");
     GTUtilsDocument::checkDocument(os, "P16152.txt", AnnotatedDNAViewFactory::ID);
-
 }
 GUI_TEST_CLASS_DEFINITION(test_0014) {
     //    1. Select {File -> Access remote database} menu item in the main menu.
@@ -379,19 +390,18 @@ GUI_TEST_CLASS_DEFINITION(test_0014) {
     //        Save to folder: any valid path and accept it.
     //    Expected state: after the downloading task finish a new documents appears in the project
 
-
     QDir().mkpath(sandBoxDir + "remote_request/test_0014");
     GTUtilsDialog::waitForDialog(os, new DocumentFormatSelectorDialogFiller(os, "Swiss-Prot"));
 
     GTUtilsDialog::waitForDialog(os, new RemoteDBDialogFillerDeprecated(os, "D0VTW9", 6, true, true, false, sandBoxDir));
-    GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Access remote database...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                << "Access remote database...");
     GTGlobals::sleep();
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     GTUtilsDocument::isDocumentLoaded(os, "D0VTW9.txt");
     GTUtilsDocument::checkDocument(os, "D0VTW9.txt", AnnotatedDNAViewFactory::ID);
-
 }
 
-} // namespace
-} // namespace U2
+}    // namespace GUITest_common_scenarios_project_remote_request
+}    // namespace U2

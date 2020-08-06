@@ -46,8 +46,8 @@ GUI_TEST_CLASS_DECLARATION(test_0013)
 GUI_TEST_CLASS_DECLARATION(test_0014)
 
 #undef GUI_TEST_SUITE
-}
+}    // namespace GUITest_common_scenarios_project_remote_request
 
-} //namespace
+}    // namespace U2
 
 #endif

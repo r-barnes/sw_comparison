@@ -22,16 +22,15 @@
 #ifndef _SEND_SELECTION_DIALOG_H_
 #define _SEND_SELECTION_DIALOG_H_
 
-#include "ui_RemoteBLASTDialog.h"
-
-#include <U2Core/DNASequenceObject.h>
-#include <U2Gui/CreateAnnotationWidgetController.h>
-
 #include <QMessageBox>
 
-#include "RemoteBLASTTask.h"
-#include "RemoteBLASTConsts.h"
+#include <U2Core/DNASequenceObject.h>
 
+#include <U2Gui/CreateAnnotationWidgetController.h>
+
+#include "RemoteBLASTConsts.h"
+#include "RemoteBLASTTask.h"
+#include "ui_RemoteBLASTDialog.h"
 
 namespace U2 {
 
@@ -39,17 +38,17 @@ class ADVSequenceObjectContext;
 class AnnotationTableObject;
 class CreateAnnotationWidgetController;
 
-class SendSelectionDialog: public QDialog, Ui_RemoteBLASTDialog {
+class SendSelectionDialog : public QDialog, Ui_RemoteBLASTDialog {
     Q_OBJECT
 public:
-    SendSelectionDialog(ADVSequenceObjectContext* seqCtx, bool _isAminoSeq, QWidget *p = NULL );
+    SendSelectionDialog(ADVSequenceObjectContext *seqCtx, bool _isAminoSeq, QWidget *p = NULL);
     QString getGroupName() const;
     const QString &getAnnotationDescription() const;
-    AnnotationTableObject * getAnnotationObject() const;
+    AnnotationTableObject *getAnnotationObject() const;
     const CreateAnnotationModel *getModel() const;
     QString getUrl() const;
 private slots:
-    void sl_scriptSelected( int index );
+    void sl_scriptSelected(int index);
     void sl_megablastChecked(int state);
     void sl_serviceChanged(int);
     void sl_OK();
@@ -73,11 +72,11 @@ public:
 
 private:
     bool isAminoSeq;
-    CreateAnnotationWidgetController * ca_c;
+    CreateAnnotationWidgetController *ca_c;
     bool extImported;
-    ADVSequenceObjectContext* seqCtx;
+    ADVSequenceObjectContext *seqCtx;
 };
 
-}
+}    // namespace U2
 
 #endif

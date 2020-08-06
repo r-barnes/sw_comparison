@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "RefSeqCommonWidget.h"
+
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/ShowHideSubgroupWidget.h>
@@ -28,13 +30,10 @@
 
 #include "../SequenceSelectorWidgetController.h"
 
-#include "RefSeqCommonWidget.h"
-
 namespace U2 {
 
 RefSeqCommonWidget::RefSeqCommonWidget(MSAEditor *_msaEditor)
-    : msaEditor(_msaEditor)
-{
+    : msaEditor(_msaEditor) {
     connect(msaEditor, SIGNAL(si_referenceSeqChanged(qint64)), SLOT(sl_refSeqChanged(qint64)));
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
@@ -48,7 +47,7 @@ RefSeqCommonWidget::RefSeqCommonWidget(MSAEditor *_msaEditor)
     setLayout(mainLayout);
 }
 
-QWidget* RefSeqCommonWidget::createReferenceGroup(){
+QWidget *RefSeqCommonWidget::createReferenceGroup() {
     QWidget *group = new QWidget(this);
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
@@ -69,30 +68,24 @@ void RefSeqCommonWidget::sl_refSeqChanged(qint64 sequenceId) {
     reSeqSelector->setSequenceId(sequenceId);
 }
 
-void RefSeqCommonWidget::sl_textControllerChanged(){
+void RefSeqCommonWidget::sl_textControllerChanged() {
     msaEditor->setReference(reSeqSelector->sequenceId());
 }
 
-
 RefSeqCommonWidgetFactory::RefSeqCommonWidgetFactory(QList<QString> groupIds)
-    : OPCommonWidgetFactory(groupIds)
-{
+    : OPCommonWidgetFactory(groupIds) {
 }
 
 RefSeqCommonWidgetFactory::~RefSeqCommonWidgetFactory() {
 }
 
-QWidget* RefSeqCommonWidgetFactory::createWidget(GObjectView *objView) {
+QWidget *RefSeqCommonWidgetFactory::createWidget(GObjectView *objView, const QVariantMap &options) {
     SAFE_POINT(NULL != objView, QString("NULL object view!"), NULL);
 
-    MSAEditor* msa = qobject_cast<MSAEditor*>(objView);
+    MSAEditor *msa = qobject_cast<MSAEditor *>(objView);
     SAFE_POINT(NULL != msa, QString("Not MSAEditor!"), NULL);
 
-    RefSeqCommonWidget *widget = new RefSeqCommonWidget(msa);
-
-    return widget;
+    return new RefSeqCommonWidget(msa);
 }
 
-
-
-}
+}    // namespace U2

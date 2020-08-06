@@ -19,9 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-#include <QVariant>
-
 #include "MarkerUtils.h"
+
+#include <QVariant>
 
 namespace U2 {
 
@@ -218,5 +218,4 @@ void MarkerUtils::textValueToString(const QVariantList &value, QString &string) 
     string += value.at(1).toString();
 }
 
-
-} // U2
+}    // namespace U2

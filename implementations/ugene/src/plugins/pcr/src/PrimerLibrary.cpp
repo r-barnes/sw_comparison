@@ -19,6 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "PrimerLibrary.h"
+
+#include <QDir>
+#include <QFileInfo>
+
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/L10n.h>
@@ -31,7 +36,6 @@
 #include <U2Core/UserApplicationsSettings.h>
 
 #include "PrimerStatistics.h"
-#include "PrimerLibrary.h"
 
 namespace U2 {
 
@@ -39,35 +43,46 @@ QScopedPointer<PrimerLibrary> PrimerLibrary::instance(NULL);
 QMutex PrimerLibrary::mutex;
 
 namespace {
-    const QString libraryName = "primer_library.ugenedb";
-    const UdrSchemaId PRIMER_UDR_ID = "Primer";
-    const int NAME_FILED = 0;
-    const int SEQ_FILED = 1;
-    const int GC_FILED = 2;
-    const int TM_FILED = 3;
-}
+const UdrSchemaId PRIMER_UDR_ID = "Primer";
+const int NAME_FILED = 0;
+const int SEQ_FILED = 1;
+const int GC_FILED = 2;
+const int TM_FILED = 3;
+}    // namespace
 
-PrimerLibrary * PrimerLibrary::getInstance(U2OpStatus &os) {
+PrimerLibrary *PrimerLibrary::getInstance(U2OpStatus &os) {
     QMutexLocker lock(&mutex);
-    if (NULL != instance.data()) {
+    if (instance.data() != nullptr) {
         return instance.data();
     }
 
     initPrimerUdr(os);
-    CHECK_OP(os, NULL);
+    CHECK_OP(os, nullptr);
 
     UserAppsSettings *settings = AppContext::getAppSettings()->getUserAppsSettings();
-    SAFE_POINT_EXT(NULL != settings, os.setError(L10N::nullPointerError("UserAppsSettings")), NULL);
+    SAFE_POINT_EXT(settings != nullptr, os.setError(L10N::nullPointerError("UserAppsSettings")), NULL);
 
     // open DBI connection
-    const QString path = settings->getFileStorageDir() + "/" + libraryName;
+    QString primerLibraryPath = qgetenv("UGENE_PRIMER_LIBRARY_PATH");
+    if (!primerLibraryPath.isEmpty()) {
+        QDir primerLibraryDir = QFileInfo(primerLibraryPath).dir();
+        if (!primerLibraryDir.exists()) {
+            bool isCreated = primerLibraryDir.mkpath(primerLibraryDir.absolutePath());
+            if (!isCreated) {
+                primerLibraryPath = "";
+            }
+        }
+    }
+    if (primerLibraryPath.isEmpty()) {
+        primerLibraryPath = settings->getFileStorageDir() + "/primer_library.ugenedb";
+    }
 
-    U2DbiRef dbiRef(DEFAULT_DBI_ID, path);
+    U2DbiRef dbiRef(DEFAULT_DBI_ID, primerLibraryPath);
     QHash<QString, QString> properties;
     properties[U2DbiOptions::U2_DBI_LOCKING_MODE] = "normal";
 
-    QScopedPointer<DbiConnection> connection(new DbiConnection(dbiRef, true, os, properties)); // create if not exists
-    SAFE_POINT_OP(os, NULL);
+    QScopedPointer<DbiConnection> connection(new DbiConnection(dbiRef, true, os, properties));    // create if not exists
+    SAFE_POINT_OP(os, nullptr);
 
     instance.reset(new PrimerLibrary(connection.take()));
 
@@ -80,8 +95,7 @@ void PrimerLibrary::release() {
 }
 
 PrimerLibrary::PrimerLibrary(DbiConnection *connection)
-: connection(connection), udrDbi(NULL)
-{
+    : connection(connection), udrDbi(NULL) {
     udrDbi = connection->dbi->getUdrDbi();
 }
 
@@ -197,4 +211,4 @@ void PrimerLibrary::setTmAndGcOfPrimer(Primer &primer) {
     }
 }
 
-} // U2
+}    // namespace U2

@@ -29,7 +29,7 @@ namespace U2 {
 class BreakpointMultipleHitCounter : public BaseBreakpointHitCounter {
 public:
     BreakpointMultipleHitCounter(BreakpointHitCountCondition initCondition,
-        quint32 initMultiple);
+                                 quint32 initMultiple);
     virtual bool hit();
     virtual quint32 getHitCountParameter() const;
     virtual void setHitCountParameter(quint32 newParameter);
@@ -38,6 +38,6 @@ protected:
     quint32 multiple;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_BREAKPOINT_MULTIPLE_HIT_COUNTER_H_
+#endif    // _U2_BREAKPOINT_MULTIPLE_HIT_COUNTER_H_

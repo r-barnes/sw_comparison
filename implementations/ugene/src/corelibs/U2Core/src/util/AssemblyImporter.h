@@ -43,7 +43,7 @@ public:
     void packReads(U2AssemblyReadsImportInfo &importInfo);
 
     bool isObjectExist() const;
-    const U2Assembly & getAssembly() const;
+    const U2Assembly &getAssembly() const;
 
 private:
     void finalizeAssembly();
@@ -54,6 +54,6 @@ private:
     bool objectExists;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_ASSEMBLY_IMPORTER_H_
+#endif    // _U2_ASSEMBLY_IMPORTER_H_

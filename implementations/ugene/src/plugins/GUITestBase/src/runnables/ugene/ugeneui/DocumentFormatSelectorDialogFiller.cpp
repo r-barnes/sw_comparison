@@ -19,43 +19,42 @@
  * MA 02110-1301, USA.
  */
 
+#include <drivers/GTMouseDriver.h>
+#include <primitives/GTComboBox.h>
+#include <primitives/GTRadioButton.h>
+#include <primitives/GTWidget.h>
+
 #include <QApplication>
 #include <QLabel>
 
-#include <primitives/GTComboBox.h>
-#include <primitives/GTRadioButton.h>
-#include <drivers/GTMouseDriver.h>
-#include <primitives/GTWidget.h>
-
 #include "DocumentFormatSelectorDialogFiller.h"
 
-namespace U2{
+namespace U2 {
 
 #define GT_CLASS_NAME "DocumentFormatSelectorDialogFiller"
 
 #define GT_METHOD_NAME "getButton"
-QRadioButton* DocumentFormatSelectorDialogFiller::getButton(HI::GUITestOpStatus &os){
-    QWidget* dialog = QApplication::activeModalWidget();
+QRadioButton *DocumentFormatSelectorDialogFiller::getButton(HI::GUITestOpStatus &os) {
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK_RESULT(dialog, "activeModalWidget is NULL", NULL);
-    QRadioButton* result = GTWidget::findExactWidget<QRadioButton*>(os, format, dialog, GTGlobals::FindOptions(false));
+    QRadioButton *result = GTWidget::findExactWidget<QRadioButton *>(os, format, dialog, GTGlobals::FindOptions(false));
 
     return result;
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "run"
-void DocumentFormatSelectorDialogFiller::commonScenario()
-{
-    QWidget* dialog = QApplication::activeModalWidget();
+void DocumentFormatSelectorDialogFiller::commonScenario() {
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
     GTGlobals::sleep(500);
 
-    QRadioButton* radio = getButton(os);
+    QRadioButton *radio = getButton(os);
     if (NULL != radio) {
         if (-1 != score) {
             GT_CHECK(formatLineLable != -1, "line is not defined");
 
-            QLabel* label = GTWidget::findExactWidget<QLabel*>(os, QString("label_%1").arg(formatLineLable), dialog, GTGlobals::FindOptions(false));
+            QLabel *label = GTWidget::findExactWidget<QLabel *>(os, QString("label_%1").arg(formatLineLable), dialog, GTGlobals::FindOptions(false));
             GT_CHECK(label, "label is NULL");
 
             const QString sign = label->text();
@@ -67,11 +66,11 @@ void DocumentFormatSelectorDialogFiller::commonScenario()
 
         GTRadioButton::click(os, radio);
     } else {
-        QRadioButton* chooseFormatManuallyRadio = GTWidget::findExactWidget<QRadioButton*>(os, "chooseFormatManuallyRadio", dialog);
+        QRadioButton *chooseFormatManuallyRadio = GTWidget::findExactWidget<QRadioButton *>(os, "chooseFormatManuallyRadio", dialog);
         GTRadioButton::click(os, chooseFormatManuallyRadio);
         GTGlobals::sleep();
 
-        QComboBox* userSelectedFormat = GTWidget::findExactWidget<QComboBox*>(os, "userSelectedFormat", dialog);
+        QComboBox *userSelectedFormat = GTWidget::findExactWidget<QComboBox *>(os, "userSelectedFormat", dialog);
         GTComboBox::setIndexWithText(os, userSelectedFormat, format, true, GTGlobals::UseMouse);
     }
 
@@ -80,4 +79,4 @@ void DocumentFormatSelectorDialogFiller::commonScenario()
 #undef GT_CLASS_NAME
 #undef GT_METHOD_NAME
 
-}
+}    // namespace U2

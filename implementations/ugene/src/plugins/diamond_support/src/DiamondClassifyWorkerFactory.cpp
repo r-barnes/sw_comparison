@@ -19,15 +19,17 @@
  * MA 02110-1301, USA.
  */
 
+#include "DiamondClassifyWorkerFactory.h"
+
 #include <QThread>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppResources.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/BaseDocumentFormats.h>
-#include <U2Core/DataPathRegistry.h>
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/DNATranslation.h>
+#include <U2Core/DataPathRegistry.h>
 
 #include <U2Designer/DelegateEditors.h>
 
@@ -38,13 +40,12 @@
 #include <U2Lang/BaseTypes.h>
 #include <U2Lang/WorkflowEnv.h>
 
+#include "../ngs_reads_classification/src/DatabaseDelegate.h"
+#include "../ngs_reads_classification/src/NgsReadsClassificationPlugin.h"
 #include "DiamondClassifyPrompter.h"
 #include "DiamondClassifyTask.h"
 #include "DiamondClassifyWorker.h"
-#include "DiamondClassifyWorkerFactory.h"
 #include "DiamondSupport.h"
-#include "../ngs_reads_classification/src/DatabaseDelegate.h"
-#include "../ngs_reads_classification/src/NgsReadsClassificationPlugin.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -75,9 +76,7 @@ const QString DiamondClassifyWorkerFactory::OUTPUT_URL_ATTR_ID("output-url");
 const QString DiamondClassifyWorkerFactory::WORKFLOW_CLASSIFY_TOOL_DIAMOND = "DIAMOND";
 
 DiamondClassifyWorkerFactory::DiamondClassifyWorkerFactory()
-    : DomainFactory(ACTOR_ID)
-{
-
+    : DomainFactory(ACTOR_ID) {
 }
 
 Worker *DiamondClassifyWorkerFactory::createWorker(Actor *actor) {
@@ -112,16 +111,15 @@ void DiamondClassifyWorkerFactory::init() {
 
     QList<Attribute *> attributes;
     {
-        Descriptor databaseDesc(DATABASE_ATTR_ID, DiamondClassifyPrompter::tr("Database"),
-                                      DiamondClassifyPrompter::tr("Input a binary DIAMOND database file."));
+        Descriptor databaseDesc(DATABASE_ATTR_ID, DiamondClassifyPrompter::tr("Database"), DiamondClassifyPrompter::tr("Input a binary DIAMOND database file."));
 
         Descriptor code(GENCODE_ATTR_ID, DiamondClassifyPrompter::tr("Genetic code"), DiamondClassifyPrompter::tr("Genetic code used for translation of query sequences (--query-gencode)."));
         Descriptor sense(SENSITIVE_ATTR_ID, DiamondClassifyPrompter::tr("Sensitive mode"), DiamondClassifyPrompter::tr("The sensitive modes (--sensitive, --more-sensitive) are generally recommended for aligning longer sequences. The default mode is mainly designed for short read alignment, i.e. finding significant matches of >50 bits on 30-40aa fragments."));
         Descriptor topAlignmentsPercentage(TOP_ALIGNMENTS_PERCENTAGE_ATTR_ID,
-                                                 DiamondClassifyPrompter::tr("Top alignments percentage"),
-                                                 DiamondClassifyPrompter::tr("DIAMOND uses the lowest common ancestor (LCA) algorithm for taxonomy classification of the input sequences. This parameter specifies what alignments should be taken into account during the calculations (--top)."
-                                                                             "<br><br>"
-                                                                             "For example, the default value \"10\" means to take top 10% of the best hits (i.e. sort all query/subject-alignments by score, take top 10% of the alignments with the best score, calculate the lowest common ancestor for them)."));
+                                           DiamondClassifyPrompter::tr("Top alignments percentage"),
+                                           DiamondClassifyPrompter::tr("DIAMOND uses the lowest common ancestor (LCA) algorithm for taxonomy classification of the input sequences. This parameter specifies what alignments should be taken into account during the calculations (--top)."
+                                                                       "<br><br>"
+                                                                       "For example, the default value \"10\" means to take top 10% of the best hits (i.e. sort all query/subject-alignments by score, take top 10% of the alignments with the best score, calculate the lowest common ancestor for them)."));
         Descriptor fshift(FSHIFT_ATTR_ID, DiamondClassifyPrompter::tr("Frameshift"), DiamondClassifyPrompter::tr("Penalty for frameshift in DNA-vs-protein alignments. Values around 15 are reasonable for this parameter. Enabling this feature will have the aligner tolerate missing bases in DNA sequences and is most recommended for long, error-prone sequences like MinION reads."));
         Descriptor evalue(EVALUE_ATTR_ID, DiamondClassifyPrompter::tr("Expected value"), DiamondClassifyPrompter::tr("Maximum expected value to report an alignment (--evalue/-e)."));
         Descriptor matrix(MATRIX_ATTR_ID, DiamondClassifyPrompter::tr("Matrix"), DiamondClassifyPrompter::tr("Scoring matrix (--matrix)."));
@@ -130,19 +128,18 @@ void DiamondClassifyWorkerFactory::init() {
         Descriptor threads(THREADS_ATTR_ID, DiamondClassifyPrompter::tr("Number of threads"), DiamondClassifyPrompter::tr("Number of CPU threads (--treads)."));
         Descriptor bsize(BSIZE_ATTR_ID, DiamondClassifyPrompter::tr("Block size"), DiamondClassifyPrompter::tr("Block size in billions of sequence letters to be processed at a time (--block-size). This is the main parameter for controlling the program’s memory usage. Bigger numbers will increase the use of memory and temporary disk space, but also improve performance. The program can be expected to use roughly six times this number of memory (in GB)."));
         Descriptor chunks(CHUNKS_ATTR_ID, DiamondClassifyPrompter::tr("Index chunks"), DiamondClassifyPrompter::tr("The number of chunks for processing the seed index (--index-chunks). This option can be additionally used to tune the performance. It is recommended to set this to 1 on a high memory server, which will increase performance and memory usage, but not the usage of temporary disk space."));
-        Descriptor outputUrlDesc(OUTPUT_URL_ATTR_ID, DiamondClassifyPrompter::tr("Output file"),
-                                       DiamondClassifyPrompter::tr("Specify the output file name."
-                                                                   "<br><br>"
-                                                                   "The output file is a tab-delimited file with the following fields:"
-                                                                   "<ul>"
-                                                                   "<li>Query ID</li>"
-                                                                   "<li>NCBI taxonomy ID (0 if unclassified)</li>"
-                                                                   "<li>E-value of the best alignment with a known taxonomy ID found for the query (0 if unclassified)</li>"
-                                                                   "</ul>"));
+        Descriptor outputUrlDesc(OUTPUT_URL_ATTR_ID, DiamondClassifyPrompter::tr("Output file"), DiamondClassifyPrompter::tr("Specify the output file name."
+                                                                                                                             "<br><br>"
+                                                                                                                             "The output file is a tab-delimited file with the following fields:"
+                                                                                                                             "<ul>"
+                                                                                                                             "<li>Query ID</li>"
+                                                                                                                             "<li>NCBI taxonomy ID (0 if unclassified)</li>"
+                                                                                                                             "<li>E-value of the best alignment with a known taxonomy ID found for the query (0 if unclassified)</li>"
+                                                                                                                             "</ul>"));
 
         Descriptor classifyToolDesc(NgsReadsClassificationPlugin::WORKFLOW_CLASSIFY_TOOL_ID,
-                                          WORKFLOW_CLASSIFY_TOOL_DIAMOND,
-                                          "Classify tool. Hidden attribute");
+                                    WORKFLOW_CLASSIFY_TOOL_DIAMOND,
+                                    "Classify tool. Hidden attribute");
 
         QString diamondDatabasePath;
         U2DataPath *uniref50DataPath = AppContext::getDataPathRegistry()->getDataPathByName(NgsReadsClassificationPlugin::DIAMOND_UNIPROT_50_DATABASE_DATA_ID);
@@ -164,14 +161,12 @@ void DiamondClassifyWorkerFactory::init() {
         attributes << new Attribute(matrix, BaseTypes::STRING_TYPE(), Attribute::None, DiamondClassifyTaskSettings::BLOSUM62);
         attributes << new Attribute(gapopen, BaseTypes::NUM_TYPE(), Attribute::None, -1);
         attributes << new Attribute(gapextend, BaseTypes::NUM_TYPE(), Attribute::None, -1);
-        attributes << new Attribute(bsize, BaseTypes::NUM_TYPE(), Attribute::None, 0.5); //NB: unless --very-sensitive supported
-        attributes << new Attribute(chunks, BaseTypes::NUM_TYPE(), Attribute::None, 4); //NB: unless --very-sensitive supported
+        attributes << new Attribute(bsize, BaseTypes::NUM_TYPE(), Attribute::None, 0.5);    //NB: unless --very-sensitive supported
+        attributes << new Attribute(chunks, BaseTypes::NUM_TYPE(), Attribute::None, 4);    //NB: unless --very-sensitive supported
         attributes << new Attribute(threads, BaseTypes::NUM_TYPE(), Attribute::None, AppContext::getAppSettings()->getAppResourcePool()->getIdealThreadCount());
         attributes << new Attribute(outputUrlDesc, BaseTypes::STRING_TYPE(), Attribute::Required | Attribute::NeedValidateEncoding | Attribute::CanBeEmpty);
 
-        attributes << new Attribute(classifyToolDesc, BaseTypes::STRING_TYPE(),
-                                    static_cast<Attribute::Flags>(Attribute::Hidden),
-                                    WORKFLOW_CLASSIFY_TOOL_DIAMOND);
+        attributes << new Attribute(classifyToolDesc, BaseTypes::STRING_TYPE(), static_cast<Attribute::Flags>(Attribute::Hidden), WORKFLOW_CLASSIFY_TOOL_DIAMOND);
     }
 
     QMap<QString, PropertyDelegate *> delegates;
@@ -184,11 +179,10 @@ void DiamondClassifyWorkerFactory::init() {
         }
         {
             QList<ComboItem> idMap;
-            QList<DNATranslation*> TTs = AppContext::getDNATranslationRegistry()->
-                lookupTranslation(AppContext::getDNAAlphabetRegistry()->findById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT()),
-                DNATranslationType_NUCL_2_AMINO);
+            QList<DNATranslation *> TTs = AppContext::getDNATranslationRegistry()->lookupTranslation(AppContext::getDNAAlphabetRegistry()->findById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT()),
+                                                                                                     DNATranslationType_NUCL_2_AMINO);
             int prefixLen = QString(DNATranslationID(1)).size() - 1;
-            foreach(DNATranslation* tt, TTs) {
+            foreach (DNATranslation *tt, TTs) {
                 QString id = tt->getTranslationId();
                 idMap.append(qMakePair(tt->getTranslationName(), id.mid(prefixLen).toInt()));
             }
@@ -307,5 +301,5 @@ void DiamondClassifyWorkerFactory::cleanup() {
     delete localDomain->unregisterEntry(ACTOR_ID);
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

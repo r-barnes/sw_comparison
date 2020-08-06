@@ -22,12 +22,13 @@
 #ifndef _U2_READ_SHORT_READS_SUB_TASK_H_
 #define _U2_READ_SHORT_READS_SUB_TASK_H_
 
-#include "GenomeAlignerSearchQuery.h"
-#include "GenomeAlignerIndex.h"
-#include "ReadShortReadsSubTask.h"
+#include <U2Algorithm/DnaAssemblyTask.h>
 
 #include <U2Core/Task.h>
-#include <U2Algorithm/DnaAssemblyTask.h>
+
+#include "GenomeAlignerIndex.h"
+#include "GenomeAlignerSearchQuery.h"
+#include "ReadShortReadsSubTask.h"
 
 namespace U2 {
 
@@ -39,7 +40,7 @@ class ReadShortReadsSubTask : public Task {
 public:
     ReadShortReadsSubTask(SearchQuery **lastQuery,
                           GenomeAlignerReader *seqReader,
-                          const DnaAssemblyToRefTaskSettings& settings,
+                          const DnaAssemblyToRefTaskSettings &settings,
                           AlignContext &alignContext,
                           quint64 freeMemorySize);
     virtual void run();
@@ -56,13 +57,13 @@ private:
     quint64 freeMemorySize;
     qint64 prevMemoryHint;
 
-    DataBunch* dataBunch;
+    DataBunch *dataBunch;
 
     inline bool add(int &CMAX, int &W, int &q, int &readNum, SearchQuery *query, GenomeAlignerTask *parent);
     void dropToAlignContext();
     void readingFinishedWakeAll();
 };
 
-} //namespace
+}    // namespace U2
 
-#endif // _U2_READ_SHORT_READS_SUB_TASK_H_
+#endif    // _U2_READ_SHORT_READS_SUB_TASK_H_

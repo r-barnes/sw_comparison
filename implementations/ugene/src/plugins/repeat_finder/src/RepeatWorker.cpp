@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "RepeatWorker.h"
+
 #include <U2Core/DNATranslation.h>
 #include <U2Core/FailTask.h>
 #include <U2Core/L10n.h>
@@ -33,8 +35,6 @@
 #include <U2Lang/BaseSlots.h>
 #include <U2Lang/BaseTypes.h>
 #include <U2Lang/WorkflowEnv.h>
-
-#include "RepeatWorker.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -70,14 +70,12 @@ FindRepeatsTaskSettings RepeatWorkerFactory::defaultSettings() {
 }
 
 void RepeatWorkerFactory::init() {
-    QList<PortDescriptor*> p;
-    QList<Attribute*> a;
+    QList<PortDescriptor *> p;
+    QList<Attribute *> a;
 
     {
-        Descriptor id(BasePorts::IN_SEQ_PORT_ID(), RepeatWorker::tr("Input sequences"),
-                        RepeatWorker::tr("A nucleotide sequence to search repeats in."));
-        Descriptor od(BasePorts::OUT_ANNOTATIONS_PORT_ID(), RepeatWorker::tr("Repeat annotations"),
-                        RepeatWorker::tr("A set of annotations marking repeats found in the sequence."));
+        Descriptor id(BasePorts::IN_SEQ_PORT_ID(), RepeatWorker::tr("Input sequences"), RepeatWorker::tr("A nucleotide sequence to search repeats in."));
+        Descriptor od(BasePorts::OUT_ANNOTATIONS_PORT_ID(), RepeatWorker::tr("Repeat annotations"), RepeatWorker::tr("A set of annotations marking repeats found in the sequence."));
         QMap<Descriptor, DataTypePtr> inM;
         inM[BaseSlots::DNA_SEQUENCE_SLOT()] = BaseTypes::DNA_SEQUENCE_TYPE();
         p << new PortDescriptor(id, DataTypePtr(new MapDataType("repeat.seq", inM)), true /*input*/);
@@ -126,11 +124,9 @@ void RepeatWorkerFactory::init() {
         a << aa;
     }
 
-    Descriptor desc(ACTOR_ID, RepeatWorker::tr("Find Repeats"),
-        RepeatWorker::tr("Finds repeats in each supplied sequence, stores found regions as annotations.")
-       );
-    ActorPrototype* proto = new IntegralBusActorPrototype(desc, p, a);
-    QMap<QString, PropertyDelegate*> delegates;
+    Descriptor desc(ACTOR_ID, RepeatWorker::tr("Find Repeats"), RepeatWorker::tr("Finds repeats in each supplied sequence, stores found regions as annotations."));
+    ActorPrototype *proto = new IntegralBusActorPrototype(desc, p, a);
+    QMap<QString, PropertyDelegate *> delegates;
     delegates[USE_MIN_DISTANCE_ATTR] = new ComboBoxWithBoolsDelegate();
     delegates[USE_MAX_DISTANCE_ATTR] = new ComboBoxWithBoolsDelegate();
 
@@ -180,7 +176,7 @@ void RepeatWorkerFactory::init() {
     proto->setIconPath(":repeat_finder/images/repeats.png");
     WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_BASIC(), proto);
 
-    DomainFactory* localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
+    DomainFactory *localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
     localDomain->registerEntry(new RepeatWorkerFactory());
 }
 
@@ -188,9 +184,9 @@ void RepeatWorkerFactory::init() {
  * RepeatPrompter
  ******************************/
 QString RepeatPrompter::composeRichDoc() {
-    IntegralBusPort* input = qobject_cast<IntegralBusPort*>(target->getPort(BasePorts::IN_SEQ_PORT_ID()));
-    Actor* producer = input->getProducer(BaseSlots::DNA_SEQUENCE_SLOT().getId());
-    QString unsetStr = "<font color='red'>"+tr("unset")+"</font>";
+    IntegralBusPort *input = qobject_cast<IntegralBusPort *>(target->getPort(BasePorts::IN_SEQ_PORT_ID()));
+    Actor *producer = input->getProducer(BaseSlots::DNA_SEQUENCE_SLOT().getId());
+    QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
     QString producerName = tr(" from <u>%1</u>").arg(producer ? producer->getLabel() : unsetStr);
 
     // TODO extend ?
@@ -198,13 +194,13 @@ QString RepeatPrompter::composeRichDoc() {
     QString inverted = getParameter(INVERT_ATTR).toBool() ? tr("inverted") : tr("direct");
 
     QString doc = tr("For each sequence%1, find <u>%2</u> repeats."
-        "<br>Detect <u>%3% identical</u> repeats <u>not shorter than %4 bps</u>."
-        "<br>Output the list of found regions annotated as <u>%5</u>.")
-        .arg(producerName) //sequence from Read Fasta 1
-        .arg(getHyperlink(INVERT_ATTR, inverted))
-        .arg(getHyperlink(IDENTITY_ATTR, getParameter(IDENTITY_ATTR).toInt()))
-        .arg(getHyperlink(LEN_ATTR, getParameter(LEN_ATTR).toInt()))
-        .arg(getHyperlink(NAME_ATTR, resultName));
+                     "<br>Detect <u>%3% identical</u> repeats <u>not shorter than %4 bps</u>."
+                     "<br>Output the list of found regions annotated as <u>%5</u>.")
+                      .arg(producerName)    //sequence from Read Fasta 1
+                      .arg(getHyperlink(INVERT_ATTR, inverted))
+                      .arg(getHyperlink(IDENTITY_ATTR, getParameter(IDENTITY_ATTR).toInt()))
+                      .arg(getHyperlink(LEN_ATTR, getParameter(LEN_ATTR).toInt()))
+                      .arg(getHyperlink(NAME_ATTR, resultName));
 
     return doc;
 }
@@ -212,7 +208,8 @@ QString RepeatPrompter::composeRichDoc() {
 /******************************
  * RepeatWorker
  ******************************/
-RepeatWorker::RepeatWorker(Actor* a) : BaseWorker(a), input(NULL), output(NULL) {
+RepeatWorker::RepeatWorker(Actor *a)
+    : BaseWorker(a), input(NULL), output(NULL) {
 }
 
 void RepeatWorker::init() {
@@ -220,7 +217,7 @@ void RepeatWorker::init() {
     output = ports.value(BasePorts::OUT_ANNOTATIONS_PORT_ID());
 }
 
-Task* RepeatWorker::tick() {
+Task *RepeatWorker::tick() {
     if (input->hasMessage()) {
         Message inputMessage = getMessageAndSetupScriptValues(input);
         if (inputMessage.isEmpty()) {
@@ -229,14 +226,14 @@ Task* RepeatWorker::tick() {
         }
         cfg.algo = RFAlgorithm(actor->getParameter(ALGO_ATTR)->getAttributeValue<int>(context));
         cfg.minLen = actor->getParameter(LEN_ATTR)->getAttributeValue<int>(context);
-        if(actor->getParameter(USE_MIN_DISTANCE_ATTR)->getAttributeValue<bool>(context)){
+        if (actor->getParameter(USE_MIN_DISTANCE_ATTR)->getAttributeValue<bool>(context)) {
             cfg.minDist = actor->getParameter(MIN_DIST_ATTR)->getAttributeValue<int>(context);
-        }else{
+        } else {
             cfg.minDist = 0;
         }
-        if(actor->getParameter(USE_MAX_DISTANCE_ATTR)->getAttributeValue<bool>(context)){
+        if (actor->getParameter(USE_MAX_DISTANCE_ATTR)->getAttributeValue<bool>(context)) {
             cfg.maxDist = actor->getParameter(MAX_DIST_ATTR)->getAttributeValue<int>(context);
-        }else{
+        } else {
             cfg.maxDist = INT_MAX;
         }
         int identity = actor->getParameter(IDENTITY_ATTR)->getAttributeValue<int>(context);
@@ -246,11 +243,11 @@ Task* RepeatWorker::tick() {
         cfg.filter = RepeatsFilterAlgorithm(actor->getParameter(NESTED_ATTR)->getAttributeValue<int>(context));
         cfg.excludeTandems = actor->getParameter(TANMEDS_ATTR)->getAttributeValue<bool>(context);
         resultName = actor->getParameter(NAME_ATTR)->getAttributeValue<QString>(context);
-        if(resultName.isEmpty()){
+        if (resultName.isEmpty()) {
             resultName = "repeat_unit";
             algoLog.error(tr("result name is empty, default name used"));
         }
-        if(identity > 100 || identity < 0){
+        if (identity > 100 || identity < 0) {
             algoLog.error(tr("Incorrect value: identity value must be between 0 and 100"));
             return new FailTask(tr("Incorrect value: identity value must be between 0 and 100"));
         }
@@ -264,7 +261,7 @@ Task* RepeatWorker::tick() {
         DNASequence seq = seqObj->getWholeSequence(os);
         CHECK_OP(os, new FailTask(os.getError()));
 
-        if(cfg.minDist < 0){
+        if (cfg.minDist < 0) {
             algoLog.error(tr("Incorrect value: minimal distance must be greater then zero"));
             return new FailTask(tr("Incorrect value: minimal distance must be greater then zero"));
         }
@@ -273,7 +270,7 @@ Task* RepeatWorker::tick() {
             QString err = tr("Sequence alphabet is not nucleic!");
             return new FailTask(err);
         }
-        Task* t = new FindRepeatsToAnnotationsTask(cfg, seq, resultName, QString(), "", GObjectReference());
+        Task *t = new FindRepeatsToAnnotationsTask(cfg, seq, resultName, QString(), "", GObjectReference());
         connect(t, SIGNAL(si_stateChanged()), SLOT(sl_taskFinished()));
         return t;
     } else if (input->isEnded()) {
@@ -300,5 +297,5 @@ void RepeatWorker::sl_taskFinished() {
 void RepeatWorker::cleanup() {
 }
 
-} //namespace LocalWorkflow
-} //namespace U2
+}    //namespace LocalWorkflow
+}    //namespace U2

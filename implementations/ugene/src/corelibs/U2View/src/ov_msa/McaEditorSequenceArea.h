@@ -22,9 +22,10 @@
 #ifndef _U2_MCA_EDITOR_SEQUENCE_AREA_
 #define _U2_MCA_EDITOR_SEQUENCE_AREA_
 
-#include "view_rendering/MaEditorSequenceArea.h"
-#include "McaEditor.h"
 #include <U2Gui/ScaleBar.h>
+
+#include "McaEditor.h"
+#include "view_rendering/MaEditorSequenceArea.h"
 
 namespace U2 {
 
@@ -33,7 +34,7 @@ class McaEditor;
 
 class ChromatogramViewSettings {
 public:
-    ChromatogramViewSettings()  {
+    ChromatogramViewSettings() {
         drawTraceA = true;
         drawTraceC = true;
         drawTraceG = true;
@@ -48,20 +49,26 @@ public:
 class U2VIEW_EXPORT McaEditorSequenceArea : public MaEditorSequenceArea {
     Q_OBJECT
 public:
-    McaEditorSequenceArea(McaEditorWgt *ui, GScrollBar* hb, GScrollBar* vb);
+    McaEditorSequenceArea(McaEditorWgt *ui, GScrollBar *hb, GScrollBar *vb);
 
-    McaEditor* getEditor() const { return qobject_cast<McaEditor*>(editor); }
+    McaEditor *getEditor() const {
+        return qobject_cast<McaEditor *>(editor);
+    }
 
-    const ChromatogramViewSettings&  getSettings() const { return settings; }
-    bool getShowQA() const {return showQVAction->isChecked(); }
+    const ChromatogramViewSettings &getSettings() const {
+        return settings;
+    }
+    bool getShowQA() const {
+        return showQVAction->isChecked();
+    }
 
-    void setSelection(const MaEditorSelection& sel);
+    void setSelection(const MaEditorSelection &sel);
 
     void moveSelection(int dx, int dy, bool allowSelectionResize = false);
 
-    virtual void adjustReferenceLength(U2OpStatus& os);
+    virtual void adjustReferenceLength(U2OpStatus &os);
 
-    MaAmbiguousCharactersController * getAmbiguousCharactersController() const;
+    MaAmbiguousCharactersController *getAmbiguousCharactersController() const;
 
     QMenu *getTraceActionsMenu() const;
     QAction *getIncreasePeaksHeightAction() const;
@@ -84,7 +91,7 @@ private slots:
     void sl_showAllTraces();
     void sl_setRenderAreaHeight(int k);
 
-    void sl_buildStaticToolbar(GObjectView* v, QToolBar* t);
+    void sl_buildStaticToolbar(GObjectView *v, QToolBar *t);
 
     void sl_addInsertion();
     void sl_removeGapBeforeSelection();
@@ -98,11 +105,11 @@ private:
     void initRenderer();
     void drawBackground(QPainter &p);
 
-    void updateCollapseModel(const MaModificationInfo& modInfo) override;
+    void updateCollapseModel(const MaModificationInfo &modInfo) override;
 
     void getColorAndHighlightingIds(QString &csid, QString &hsid);
 
-    QAction* createToggleTraceAction(const QString& actionName);
+    QAction *createToggleTraceAction(const QString &actionName);
 
     void insertChar(char newCharacter);
     bool isCharacterAcceptable(const QString &text) const;
@@ -114,23 +121,22 @@ private:
 
     void updateTrimActions(bool isEnabled);
 
-    ChromatogramViewSettings    settings;
+    ChromatogramViewSettings settings;
     MaAmbiguousCharactersController *ambiguousCharactersController;
 
-    QAction*    showQVAction;
-    QAction*    showAllTraces;
-    QMenu*      traceActionsMenu;
-    ScaleBar*   scaleBar;
-    QAction*    scaleAction;
+    QAction *showQVAction;
+    QAction *showAllTraces;
+    QMenu *traceActionsMenu;
+    ScaleBar *scaleBar;
+    QAction *scaleAction;
 
-    QAction*    insertAction;
-    QAction*    removeGapBeforeSelectionAction;
-    QAction*    removeColumnsOfGapsAction;
-    QAction*    trimLeftEndAction;
-    QAction*    trimRightEndAction;
+    QAction *insertAction;
+    QAction *removeGapBeforeSelectionAction;
+    QAction *removeColumnsOfGapsAction;
+    QAction *trimLeftEndAction;
+    QAction *trimRightEndAction;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MCA_EDITOR_SEQUENCE_AREA_
-
+#endif    // _U2_MCA_EDITOR_SEQUENCE_AREA_

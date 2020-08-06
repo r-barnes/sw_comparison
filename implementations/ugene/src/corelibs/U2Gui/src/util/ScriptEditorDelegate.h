@@ -46,7 +46,7 @@ public:
     virtual int cursorLineNumber() const = 0;
     virtual void installScriptHighlighter() const;
 
-    static AbstractScriptEditorDelegate * createInstance(QWidget *parent, ScriptEditorType type);
+    static AbstractScriptEditorDelegate *createInstance(QWidget *parent, ScriptEditorType type);
 
 signals:
     void si_textChanged();
@@ -85,6 +85,6 @@ private:
     QTextEdit *edit;
 };
 
-}
+}    // namespace U2
 
-#endif // _U2_SCRIPT_EDITOR_DELEGATE_H_
+#endif    // _U2_SCRIPT_EDITOR_DELEGATE_H_

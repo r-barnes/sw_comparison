@@ -19,11 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "RawDataUdrSchemaUnitTests.h"
+
 #include <U2Core/RawDataUdrSchema.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "RawDataUdrSchemaUnitTests.h"
 
 namespace U2 {
 
@@ -48,7 +48,7 @@ U2EntityRef RawDataUdrSchemaTestData::getObjRef() {
 
 void RawDataUdrSchemaTestData::init() {
     bool ok = dbiProvider.init(UDR_DB_URL, true);
-    SAFE_POINT(ok, "dbi provider failed to initialize",);
+    SAFE_POINT(ok, "dbi provider failed to initialize", );
 
     initData();
 
@@ -146,4 +146,4 @@ IMPLEMENT_TEST(RawDataUdrSchemaUnitTests, writeContent_Null) {
     CHECK_TRUE(os.hasError(), "no error");
 }
 
-} // U2
+}    // namespace U2

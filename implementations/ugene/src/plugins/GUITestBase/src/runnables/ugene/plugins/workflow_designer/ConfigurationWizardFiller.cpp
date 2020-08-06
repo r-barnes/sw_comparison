@@ -19,13 +19,14 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-
 #include "ConfigurationWizardFiller.h"
-#include "GTUtilsWizard.h"
 #include <drivers/GTMouseDriver.h>
 #include <primitives/GTRadioButton.h>
 #include <primitives/GTWidget.h>
+
+#include <QApplication>
+
+#include "GTUtilsWizard.h"
 
 namespace U2 {
 using namespace HI;
@@ -52,4 +53,4 @@ void ConfigurationWizardFiller::commonScenario() {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

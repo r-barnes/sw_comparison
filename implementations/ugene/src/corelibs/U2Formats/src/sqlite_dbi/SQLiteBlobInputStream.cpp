@@ -35,9 +35,7 @@ const int SQLiteBlobStream::READ_ONLY = 0;
 const int SQLiteBlobStream::READ_WRITE = 1;
 
 SQLiteBlobStream::SQLiteBlobStream()
-: handle(NULL), size(0), offset(0)
-{
-
+    : handle(NULL), size(0), offset(0) {
 }
 
 SQLiteBlobStream::~SQLiteBlobStream() {
@@ -55,8 +53,7 @@ void SQLiteBlobStream::init(int accessType, DbRef *db, const QByteArray &tableId
         columnId.constData(),
         U2DbiUtils::toDbiId(rowId),
         accessType,
-        &handle
-    );
+        &handle);
     if (SQLITE_OK != status) {
         os.setError(sqlite3_errmsg(db->handle));
     } else {
@@ -75,8 +72,7 @@ void SQLiteBlobStream::releaseHandle() {
 /* SQLiteBlobInputStream */
 /************************************************************************/
 SQLiteBlobInputStream::SQLiteBlobInputStream(DbRef *db, const QByteArray &tableId, const QByteArray &columnId, const U2DataId &rowId, U2OpStatus &os)
-: InputStream(), SQLiteBlobStream()
-{
+    : InputStream(), SQLiteBlobStream() {
     init(SQLiteBlobStream::READ_ONLY, db, tableId, columnId, rowId, os);
 }
 
@@ -95,7 +91,7 @@ int SQLiteBlobInputStream::read(char *buffer, int length, U2OpStatus &os) {
         return -1;
     }
 
-    int status = sqlite3_blob_read(handle, (void*)buffer, targetLength, offset);
+    int status = sqlite3_blob_read(handle, (void *)buffer, targetLength, offset);
     if (SQLITE_OK != status) {
         os.setError(QObject::tr("Can not read data. The database is closed or the data were changed."));
         return 0;
@@ -120,4 +116,4 @@ qint64 SQLiteBlobInputStream::skip(qint64 n, U2OpStatus &os) {
     return n;
 }
 
-} // U2
+}    // namespace U2

@@ -22,11 +22,11 @@
 #ifndef _U2_QUERY_DESIGNER_PLUGIN_H_
 #define _U2_QUERY_DESIGNER_PLUGIN_H_
 
-#include <U2Gui/ObjectViewModel.h>
 #include <U2Core/PluginModel.h>
 #include <U2Core/ServiceModel.h>
 #include <U2Core/ServiceTypes.h>
 
+#include <U2Gui/ObjectViewModel.h>
 
 namespace U2 {
 
@@ -37,18 +37,21 @@ class QueryDesignerPlugin : public Plugin {
     Q_OBJECT
 public:
     QueryDesignerPlugin();
+
 private:
     void registerLibFactories();
+
 private:
-    GObjectViewWindowContext* viewCtx;
+    GObjectViewWindowContext *viewCtx;
 };
 
 class QueryDesignerViewContext : public GObjectViewWindowContext {
     Q_OBJECT
 public:
-    QueryDesignerViewContext(QObject* p);
+    QueryDesignerViewContext(QObject *p);
+
 protected:
-    virtual void initViewContext(GObjectView* view);
+    virtual void initViewContext(GObjectView *view);
 private slots:
     void sl_showDialog();
 };
@@ -56,17 +59,20 @@ private slots:
 class QueryDesignerService : public Service {
     Q_OBJECT
 public:
-    QueryDesignerService() : Service(Service_QueryDesigner, tr("Query Designer"), "") {}
+    QueryDesignerService()
+        : Service(Service_QueryDesigner, tr("Query Designer"), "") {
+    }
     bool closeViews();
+
 protected:
-    virtual Task* createServiceEnablingTask();
-    virtual Task* createServiceDisablingTask();
+    virtual Task *createServiceEnablingTask();
+    virtual Task *createServiceDisablingTask();
     virtual void serviceStateChangedCallback(ServiceState oldState, bool enabledStateChanged);
 private slots:
     void sl_startQDPlugin();
     void sl_showDesignerWindow();
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

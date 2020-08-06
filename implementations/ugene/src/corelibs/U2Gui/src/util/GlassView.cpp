@@ -22,12 +22,12 @@
 #include "GlassView.h"
 
 #include <QEvent>
-#include <QResizeEvent>
 #include <QPainter>
+#include <QResizeEvent>
 
 namespace U2 {
 
-void GlassView::setGlass(GlassPane* glp) {
+void GlassView::setGlass(GlassPane *glp) {
     glass = glp;
     if (glass) {
         glass->resize(viewport()->size());
@@ -36,8 +36,7 @@ void GlassView::setGlass(GlassPane* glp) {
     viewport()->update();
 }
 
-void GlassView::paintEvent( QPaintEvent * e)
-{
+void GlassView::paintEvent(QPaintEvent *e) {
     QGraphicsView::paintEvent(e);
     if (glass) {
         QPainter painter;
@@ -48,20 +47,17 @@ void GlassView::paintEvent( QPaintEvent * e)
 }
 
 void GlassView::scrollContentsBy(int dx, int dy) {
-    QGraphicsView::scrollContentsBy(dx,dy);
+    QGraphicsView::scrollContentsBy(dx, dy);
     if (glass) {
         viewport()->update();
     }
 }
 
-bool GlassView::viewportEvent( QEvent * e )
-{
+bool GlassView::viewportEvent(QEvent *e) {
     if (glass) {
-
-        switch (e->type())
-        {
+        switch (e->type()) {
         case QEvent::Resize:
-            glass->resize(((QResizeEvent*)e)->size());
+            glass->resize(((QResizeEvent *)e)->size());
         case QEvent::Paint:
             return QGraphicsView::viewportEvent(e);
 
@@ -72,7 +68,7 @@ bool GlassView::viewportEvent( QEvent * e )
         case QEvent::KeyRelease:
         case QEvent::FocusIn:
         case QEvent::FocusOut:
-        case QEvent::Enter :
+        case QEvent::Enter:
         case QEvent::Leave:
         case QEvent::Wheel:
         case QEvent::DragEnter:
@@ -84,15 +80,15 @@ bool GlassView::viewportEvent( QEvent * e )
         case QEvent::HoverMove:
 
             if (glass->eventFilter(this, e)) {
-                return true;    
+                return true;
             }
             break;
-        default: break;
+        default:
+            break;
         }
     }
-    // else 
+    // else
     return QGraphicsView::viewportEvent(e);
-
 }
 
-}//namespace
+}    // namespace U2

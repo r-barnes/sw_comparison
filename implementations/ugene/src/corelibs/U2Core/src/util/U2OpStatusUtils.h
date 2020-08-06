@@ -22,8 +22,8 @@
 #ifndef _U2_OPSTATUS_UTILS_H_
 #define _U2_OPSTATUS_UTILS_H_
 
-#include <U2Core/U2OpStatus.h>
 #include <U2Core/Log.h>
+#include <U2Core/U2OpStatus.h>
 
 namespace U2 {
 
@@ -33,40 +33,74 @@ namespace U2 {
 */
 class U2CORE_EXPORT U2OpStatusImpl : public U2OpStatus {
 public:
-
 //#define FORCE_OP_STATUS_CHECK
 #ifdef FORCE_OP_STATUS_CHECK
-    U2OpStatusImpl() : cancelFlag(false), progress(-1) , muted(false), checked(false) {}
+    U2OpStatusImpl()
+        : cancelFlag(false), progress(-1), muted(false), checked(false) {
+    }
 
     ~U2OpStatusImpl() {
         if (!muted) {
             assert(checked);
         }
     }
-    void markChecked() const {checked = true;}
+    void markChecked() const {
+        checked = true;
+    }
 #else
-    U2OpStatusImpl() : cancelFlag(false), progress(-1) {}
-    void markChecked() const {}
+    U2OpStatusImpl()
+        : cancelFlag(false), progress(-1) {
+    }
+    void markChecked() const {
+    }
 #endif
 
-    virtual void setError(const QString & err) {error = err;}
-    virtual QString getError() const  {markChecked(); return error;}
+    virtual void setError(const QString &err) {
+        error = err;
+    }
+    virtual QString getError() const {
+        markChecked();
+        return error;
+    }
 
-    virtual bool hasError() const {markChecked(); return !error.isEmpty();}
+    virtual bool hasError() const {
+        markChecked();
+        return !error.isEmpty();
+    }
 
-    virtual bool isCanceled() const {return cancelFlag != 0;}
-    virtual void setCanceled(bool v)  {cancelFlag = v;}
+    virtual bool isCanceled() const {
+        return cancelFlag != 0;
+    }
+    virtual void setCanceled(bool v) {
+        cancelFlag = v;
+    }
 
-    virtual int getProgress() const {return progress;}
-    virtual void setProgress(int v)  {progress = v;}
+    virtual int getProgress() const {
+        return progress;
+    }
+    virtual void setProgress(int v) {
+        progress = v;
+    }
 
-    virtual QString getDescription() const {return statusDesc;}
-    virtual void setDescription(const QString& desc)  {statusDesc = desc;}
+    virtual QString getDescription() const {
+        return statusDesc;
+    }
+    virtual void setDescription(const QString &desc) {
+        statusDesc = desc;
+    }
 
-    virtual bool hasWarnings() const { return !warnings.isEmpty(); }
-    virtual void addWarning(const QString &w) { warnings << w; }
-    virtual QStringList getWarnings() const { return warnings; }
-    virtual void addWarnings(const QStringList &wList) { warnings << wList; }
+    virtual bool hasWarnings() const {
+        return !warnings.isEmpty();
+    }
+    virtual void addWarning(const QString &w) {
+        warnings << w;
+    }
+    virtual QStringList getWarnings() const {
+        return warnings;
+    }
+    virtual void addWarnings(const QStringList &wList) {
+        warnings << wList;
+    }
 
 protected:
     /** Keeps error message if operation failed */
@@ -76,24 +110,23 @@ protected:
     /** Keeps warning message */
     QStringList warnings;
     /** Indicates if operation is canceled or not. If yes - processing must be stopped */
-    int     cancelFlag;
+    int cancelFlag;
     /** Current operation progress. -1 - unknown */
-    int     progress;
+    int progress;
 
 #ifdef FORCE_OP_STATUS_CHECK
     /** Operation check state. If not muted - user must ask operation if there was an error! */
-    bool    muted;
+    bool muted;
     /** If true, operation result was checked by user */
-    mutable bool    checked;
+    mutable bool checked;
 #endif
 };
 
 /** Logs operation status error using specified log category */
-#define LOG_OP(os)\
-    if (os.hasError()) {\
-        coreLog.error(QString("Operation failed: %1 at %2:%3").arg(os.getError()).arg(__FILE__).arg(__LINE__));\
+#define LOG_OP(os) \
+    if (os.hasError()) { \
+        coreLog.error(QString("Operation failed: %1 at %2:%3").arg(os.getError()).arg(__FILE__).arg(__LINE__)); \
     }
-
 
 /**
     Used to dump error ops to coreLog.
@@ -101,7 +134,9 @@ protected:
 */
 class U2CORE_EXPORT U2OpStatus2Log : public U2OpStatusImpl {
 public:
-    U2OpStatus2Log(LogLevel l = LogLevel_ERROR) : level (l){}
+    U2OpStatus2Log(LogLevel l = LogLevel_ERROR)
+        : level(l) {
+    }
     virtual void setError(const QString &err) {
         U2OpStatusImpl::setError(err);
         coreLog.message(level, err);
@@ -111,18 +146,21 @@ private:
     LogLevel level;
 };
 
-class U2OpStatusMapping{
+class U2OpStatusMapping {
 public:
-    U2OpStatusMapping(int _start, int _len):start(_start),len(_len){}
+    U2OpStatusMapping(int _start, int _len)
+        : start(_start), len(_len) {
+    }
     int start;
     int len;
-
 };
 
-class U2OpStatusChildImpl : public U2OpStatusImpl{
+class U2OpStatusChildImpl : public U2OpStatusImpl {
 public:
-    U2OpStatusChildImpl(U2OpStatus* _parent = 0, const U2OpStatusMapping& _mapping = U2OpStatusMapping(0, 100)):parent(_parent), mapping(_mapping){}
-    virtual void setError(const QString & err) {
+    U2OpStatusChildImpl(U2OpStatus *_parent = 0, const U2OpStatusMapping &_mapping = U2OpStatusMapping(0, 100))
+        : parent(_parent), mapping(_mapping) {
+    }
+    virtual void setError(const QString &err) {
         parent->setError(err);
         error = err;
     }
@@ -134,25 +172,26 @@ public:
     virtual bool isCanceled() const {
         return parent->isCanceled() || cancelFlag != 0;
     }
-    virtual void setCanceled(bool v)  {
+    virtual void setCanceled(bool v) {
         parent->setCanceled(v);
         cancelFlag = v;
     }
 
-    virtual void setProgress(int v)  {
+    virtual void setProgress(int v) {
         parent->setProgress(mapping.start + v * mapping.len / 100);
         progress = v;
     }
 
-    virtual void setDescription(const QString& desc)  {
+    virtual void setDescription(const QString &desc) {
         parent->setDescription(desc);
         statusDesc = desc;
     }
+
 private:
-    U2OpStatus* parent;
+    U2OpStatus *parent;
     U2OpStatusMapping mapping;
 };
 
-}// namespace
+}    // namespace U2
 
 #endif

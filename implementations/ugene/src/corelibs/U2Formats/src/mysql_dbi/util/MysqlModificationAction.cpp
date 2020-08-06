@@ -19,23 +19,22 @@
  * MA 02110-1301, USA.
  */
 
+#include "MysqlModificationAction.h"
+
 #include <U2Core/U2SafePoints.h>
 
 #include "MysqlHelpers.h"
-#include "MysqlModificationAction.h"
 #include "mysql_dbi/MysqlDbi.h"
 #include "mysql_dbi/MysqlModDbi.h"
 #include "mysql_dbi/MysqlObjectDbi.h"
 
 namespace U2 {
 
-MysqlModificationAction::MysqlModificationAction(MysqlDbi* _dbi, const U2DataId& _masterObjId)
-    : ModificationAction(_dbi, _masterObjId)
-{
-
+MysqlModificationAction::MysqlModificationAction(MysqlDbi *_dbi, const U2DataId &_masterObjId)
+    : ModificationAction(_dbi, _masterObjId) {
 }
 
-U2TrackModType MysqlModificationAction::prepare(U2OpStatus& os) {
+U2TrackModType MysqlModificationAction::prepare(U2OpStatus &os) {
     CHECK_OP(os, NoTrack);
     MysqlTransaction t(getDbi()->getDbRef(), os);
     Q_UNUSED(t);
@@ -71,7 +70,7 @@ U2TrackModType MysqlModificationAction::prepare(U2OpStatus& os) {
     return trackMod;
 }
 
-void MysqlModificationAction::addModification(const U2DataId& objId, qint64 modType, const QByteArray& modDetails, U2OpStatus& os) {
+void MysqlModificationAction::addModification(const U2DataId &objId, qint64 modType, const QByteArray &modDetails, U2OpStatus &os) {
     CHECK_OP(os, );
 
     objIds.insert(objId);
@@ -96,7 +95,7 @@ void MysqlModificationAction::addModification(const U2DataId& objId, qint64 modT
     }
 }
 
-void MysqlModificationAction::complete(U2OpStatus& os) {
+void MysqlModificationAction::complete(U2OpStatus &os) {
     // TODO: rewrite it with another U2UseCommonMultiModStep
     CHECK_OP(os, );
     MysqlTransaction t(getDbi()->getDbRef(), os);
@@ -106,12 +105,10 @@ void MysqlModificationAction::complete(U2OpStatus& os) {
     if (TrackOnUpdate == trackMod) {
         if (0 == singleSteps.size()) {
             // do nothing
-        }
-        else if (1 == singleSteps.size()) {
+        } else if (1 == singleSteps.size()) {
             getDbi()->getMysqlModDbi()->createModStep(masterObjId, singleSteps.first(), os);
             CHECK_OP(os, );
-        }
-        else {
+        } else {
             MysqlUseCommonMultiModStep multi(getDbi(), masterObjId, os);
             CHECK_OP(os, );
             Q_UNUSED(multi);
@@ -124,15 +121,14 @@ void MysqlModificationAction::complete(U2OpStatus& os) {
     }
 
     // Increment versions of all objects
-    foreach (const U2DataId& objId, objIds) {
+    foreach (const U2DataId &objId, objIds) {
         MysqlObjectDbi::incrementVersion(objId, getDbi()->getDbRef(), os);
         CHECK_OP(os, );
     }
 }
 
-MysqlDbi* MysqlModificationAction::getDbi() const {
-    return static_cast<MysqlDbi*>(dbi);
-
+MysqlDbi *MysqlModificationAction::getDbi() const {
+    return static_cast<MysqlDbi *>(dbi);
 }
 
-}   // namespace U2
+}    // namespace U2

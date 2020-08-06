@@ -19,20 +19,21 @@
  * MA 02110-1301, USA.
  */
 
-#include "PhyMLDialogWidget.h"
 #include "PhyMLSupport.h"
-#include "PhyMLTask.h"
-#include "PhyMLTests.h"
 
 #include <U2Algorithm/PhyTreeGeneratorRegistry.h>
+
+#include "PhyMLDialogWidget.h"
+#include "PhyMLTask.h"
+#include "PhyMLTests.h"
 namespace U2 {
 
 const QString PhyMLSupport::PHYML("PhyML Maximum Likelihood");
 const QString PhyMLSupport::PHYML_ID("USUPP_PHYML");
 const QString PhyMLSupport::PHYML_TEMP_DIR("phyml");
 
-PhyMLSupport::PhyMLSupport(const QString& id, const QString& name) : ExternalTool(id, name, "")
-{
+PhyMLSupport::PhyMLSupport(const QString &id, const QString &name)
+    : ExternalTool(id, name, "") {
     if (AppContext::getMainWindow()) {
         icon = QIcon(":external_tool_support/images/cmdline.png");
         grayIcon = QIcon(":external_tool_support/images/cmdline_gray.png");
@@ -52,18 +53,18 @@ PhyMLSupport::PhyMLSupport(const QString& id, const QString& name) : ExternalToo
     toolKitName = "PhyML";
 
     //register the method
-    PhyTreeGeneratorRegistry* registry = AppContext::getPhyTreeGeneratorRegistry();
+    PhyTreeGeneratorRegistry *registry = AppContext::getPhyTreeGeneratorRegistry();
     registry->registerPhyTreeGenerator(new PhyMLAdapter(), PhyMLSupport::PHYML);
 }
 
 ////////////////////////////////////////
 //PhyMLAdapter
 
-Task* PhyMLAdapter::createCalculatePhyTreeTask(const MultipleSequenceAlignment& ma, const CreatePhyTreeSettings& s) {
+Task *PhyMLAdapter::createCalculatePhyTreeTask(const MultipleSequenceAlignment &ma, const CreatePhyTreeSettings &s) {
     return new PhyMLSupportTask(ma, s);
 }
 
-CreatePhyTreeWidget * PhyMLAdapter::createPhyTreeSettingsWidget(const MultipleSequenceAlignment &ma, QWidget *parent) {
+CreatePhyTreeWidget *PhyMLAdapter::createPhyTreeSettingsWidget(const MultipleSequenceAlignment &ma, QWidget *parent) {
     return new PhyMlWidget(ma, parent);
 }
 
@@ -72,45 +73,45 @@ CreatePhyTreeWidget * PhyMLAdapter::createPhyTreeSettingsWidget(const MultipleSe
 
 //Amino-acid substitution models
 const QStringList PhyMLModelTypes::aminoSubstitutionModels(QStringList()
-    << "LG"
-    << "WAG"
-    << "JTT"
-    << "MtREV"
-    << "Dayhoff"
-    << "DCMut"
-    << "RtREV"
-    << "CpREV"
-    << "VT"
-    << "Blosum62"
-    << "MtMam"
-    << "MtArt"
-    << "HIVw"
-    << "HIVb");
+                                                           << "LG"
+                                                           << "WAG"
+                                                           << "JTT"
+                                                           << "MtREV"
+                                                           << "Dayhoff"
+                                                           << "DCMut"
+                                                           << "RtREV"
+                                                           << "CpREV"
+                                                           << "VT"
+                                                           << "Blosum62"
+                                                           << "MtMam"
+                                                           << "MtArt"
+                                                           << "HIVw"
+                                                           << "HIVb");
 
 //Dna substitution models
 const QStringList PhyMLModelTypes::dnaSubstitutionModels(QStringList()
-    << "HKY85"
-    << "JC69"
-    << "K80"
-    << "F81"
-    << "F84"
-    << "TN93"
-    << "GTR");
+                                                         << "HKY85"
+                                                         << "JC69"
+                                                         << "K80"
+                                                         << "F81"
+                                                         << "F84"
+                                                         << "TN93"
+                                                         << "GTR");
 
 const QStringList PhyMLModelTypes::dnaModelsWithFixedTtRatio(QStringList()
-    << "GTR"
-    << "F81"
-    << "JC69");
+                                                             << "GTR"
+                                                             << "F81"
+                                                             << "JC69");
 
 const QStringList PhyMLModelTypes::dnaModelsWithEstimatedTtRatio(QStringList()
-    << "TN93");
+                                                                 << "TN93");
 
-SubstModelTrRatioType PhyMLModelTypes::getTtRatioType(const QString& modelName) {
-    if(dnaSubstitutionModels.contains(modelName)) {
-        if(dnaModelsWithFixedTtRatio.contains(modelName)) {
+SubstModelTrRatioType PhyMLModelTypes::getTtRatioType(const QString &modelName) {
+    if (dnaSubstitutionModels.contains(modelName)) {
+        if (dnaModelsWithFixedTtRatio.contains(modelName)) {
             return ONLY_FIXED_TT_RATIO;
         }
-        if(dnaModelsWithEstimatedTtRatio.contains(modelName)) {
+        if (dnaModelsWithEstimatedTtRatio.contains(modelName)) {
             return ONLY_ESTIMATED_TT_RATIO;
         }
         return ANY_TT_RATIO;
@@ -122,19 +123,19 @@ SubstModelTrRatioType PhyMLModelTypes::getTtRatioType(const QString& modelName) 
 //PhyMLRatioTestsTypes
 
 const QStringList PhyMLRatioTestsTypes::ratioTestsTypes(QStringList()
-    << "aLRT"
-    << "Chi2-based"
-    << "SH-like");
+                                                        << "aLRT"
+                                                        << "Chi2-based"
+                                                        << "SH-like");
 
 ////////////////////////////////////////
 //TreeSearchingParams
 const QStringList TreeSearchingParams::inputTreeTypes(QStringList()
-    << "Make initial tree automatically (BioNJ)"
-    << "Use tree from file");
+                                                      << "Make initial tree automatically (BioNJ)"
+                                                      << "Use tree from file");
 
 const QStringList TreeSearchingParams::treeImprovementTypes(QStringList()
-    << "NNI(fast)"
-    << "SRT(a bit slower than NNI)"
-    << "SRT & NNI(best of NNI and SPR search)");
+                                                            << "NNI(fast)"
+                                                            << "SRT(a bit slower than NNI)"
+                                                            << "SRT & NNI(best of NNI and SPR search)");
 
-}   // namespace U2
+}    // namespace U2

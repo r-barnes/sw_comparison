@@ -19,15 +19,16 @@
  * MA 02110-1301, USA.
  */
 
+#include "SequencePrototype.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/U2SequenceUtils.h>
 
-#include "ScriptEngineUtils.h"
 #include <U2Lang/WorkflowScriptEngine.h>
 
-#include "SequencePrototype.h"
+#include "ScriptEngineUtils.h"
 
 namespace U2 {
 
@@ -37,19 +38,17 @@ const QString SequenceScriptClass::CLASS_NAME("Sequence");
 /* SequencePrototype */
 /************************************************************************/
 SequencePrototype::SequencePrototype(QObject *parent)
-: DbiClassPrototype(parent)
-{
-
+    : DbiClassPrototype(parent) {
 }
 
-U2SequenceObject * SequencePrototype::getSequenceObject() const {
+U2SequenceObject *SequencePrototype::getSequenceObject() const {
     CHECK(NULL != thisData(), NULL);
     Workflow::DbiDataStorage *storage = dataStorage();
     CHECK(NULL != storage, NULL);
     return Workflow::StorageUtils::getSequenceObject(storage, thisData()->getId());
 }
 
-U2SequenceObject * SequencePrototype::getValidSequenceObject() const {
+U2SequenceObject *SequencePrototype::getValidSequenceObject() const {
     U2SequenceObject *result = getSequenceObject();
     SCRIPT_CHECK(NULL != result, context(), "Invalid sequence object", NULL);
     return result;
@@ -108,14 +107,13 @@ void SequencePrototype::splice() {
 /* SequenceScriptClass */
 /************************************************************************/
 SequenceScriptClass::SequenceScriptClass(QScriptEngine *engine)
-: DbiScriptClass(engine)
-{
+    : DbiScriptClass(engine) {
     qScriptRegisterMetaType<ScriptDbiData>(engine, toScriptValue<SequenceScriptClass>, fromScriptValue);
     proto = engine->newQObject(new SequencePrototype(this));
 }
 
 QScriptValue SequenceScriptClass::constructor(QScriptContext *ctx, QScriptEngine * /*engine*/) {
-    SequenceScriptClass *sClass = qscriptvalue_cast<SequenceScriptClass*>(ctx->callee().data());
+    SequenceScriptClass *sClass = qscriptvalue_cast<SequenceScriptClass *>(ctx->callee().data());
     if (!sClass) {
         return QScriptValue();
     }
@@ -174,8 +172,8 @@ QString SequenceScriptClass::name() const {
     return CLASS_NAME;
 }
 
-WorkflowScriptEngine * SequenceScriptClass::workflowEngine() const {
+WorkflowScriptEngine *SequenceScriptClass::workflowEngine() const {
     return ScriptEngineUtils::workflowEngine(engine());
 }
 
-} // U2
+}    // namespace U2

@@ -22,31 +22,60 @@
 #ifndef _U2_BAM_LOAD_BAM_INFO_TASK_H_
 #define _U2_BAM_LOAD_BAM_INFO_TASK_H_
 
-#include <U2Core/Task.h>
 #include <U2Core/GUrl.h>
+#include <U2Core/Task.h>
 
-#include "Index.h"
 #include "Header.h"
-
+#include "Index.h"
 
 namespace U2 {
 namespace BAM {
 
 class BAMInfo {
 public:
+    BAMInfo()
+        : _hasIndex(false), unmappedSelected(false) {
+    }
+    BAMInfo(const BAMInfo &src)
+        : header(src.header), selected(src.selected), index(src.index), _hasIndex(src._hasIndex), unmappedSelected(src.unmappedSelected) {
+    }
 
-    BAMInfo() : _hasIndex(false), unmappedSelected(false) {}
-    BAMInfo(const BAMInfo& src) : header(src.header), selected(src.selected), index(src.index), _hasIndex(src._hasIndex), unmappedSelected(src.unmappedSelected) {}
+    inline QList<bool> &getSelected() {
+        return selected;
+    }
+    inline bool hasIndex() const {
+        return _hasIndex;
+    }
+    inline bool isReferenceSelected(int id) {
+        if (id == -1)
+            return unmappedSelected;
+        else
+            return selected.at(id);
+    }
+    inline Index &getIndex() {
+        return index;
+    }
+    inline const Header &getHeader() {
+        return header;
+    }
+    inline bool isUnmappedSelected() {
+        return unmappedSelected;
+    }
+    void setIndex(Index &index) {
+        this->index = index;
+        _hasIndex = true;
+    }
+    void setHeader(const Header &header) {
+        this->header = header;
+        selected.clear();
+        for (int i = 0; i < header.getReferences().count(); i++) {
+            selected.append(true);
+        }
+    }
+    void setUnmappedSelected(bool unmappedSelected) {
+        this->unmappedSelected = unmappedSelected;
+    }
 
-    inline QList<bool>& getSelected() { return selected; }
-    inline bool hasIndex() const { return _hasIndex; }
-    inline bool isReferenceSelected(int id) { if(id == -1) return unmappedSelected; else return selected.at(id); }
-    inline Index& getIndex() { return index; }
-    inline const Header& getHeader() { return header; }
-    inline bool isUnmappedSelected() { return unmappedSelected; }
-    void setIndex(Index& index) { this->index = index; _hasIndex = true; }
-    void setHeader(const Header& header) { this->header = header; selected.clear(); for(int i=0; i< header.getReferences().count(); i++) { selected.append(true); } }
-    void setUnmappedSelected(bool unmappedSelected) { this->unmappedSelected = unmappedSelected; }
 private:
     Header header;
     QList<bool> selected;
@@ -58,18 +87,23 @@ private:
 class LoadInfoTask : public Task {
     Q_OBJECT
 public:
-    LoadInfoTask(const GUrl& sourceUrl, bool sam);
+    LoadInfoTask(const GUrl &sourceUrl, bool sam);
     void run();
-    inline BAMInfo& getInfo() { return bamInfo; }
-    const GUrl& getSourceUrl() const;
-    bool isSam() const { return sam; }
+    inline BAMInfo &getInfo() {
+        return bamInfo;
+    }
+    const GUrl &getSourceUrl() const;
+    bool isSam() const {
+        return sam;
+    }
+
 private:
     const GUrl sourceUrl;
     BAMInfo bamInfo;
     bool sam;
 };
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2
 
-#endif // _U2_BAM_LOAD_BAM_INFO_TASK_H_
+#endif    // _U2_BAM_LOAD_BAM_INFO_TASK_H_

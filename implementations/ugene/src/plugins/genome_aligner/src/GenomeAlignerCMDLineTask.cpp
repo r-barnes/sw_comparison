@@ -19,35 +19,34 @@
  * MA 02110-1301, USA.
  */
 
+#include "GenomeAlignerCMDLineTask.h"
+
 #include <QDir>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/CMDLineRegistry.h>
 
 #include "GenomeAlignerTask.h"
-#include "GenomeAlignerCMDLineTask.h"
 
 namespace U2 {
 
-#define OPTION_INDEX_PATH   "index"
-#define OPTION_SHORTREADS   "short-reads"
-#define OPTION_RESULT       "result"
-#define OPTION_BUILD_INDEX  "build-index"
-#define OPTION_REFERENCE    "reference"
-#define OPTION_MEMSIZE      "memsize"
-#define OPTION_USE_OPENCL   "use-opencl"
-#define OPTION_REF_FRAG     "ref-size"
-#define OPTION_N_MISMATHES  "n-mis"
+#define OPTION_INDEX_PATH "index"
+#define OPTION_SHORTREADS "short-reads"
+#define OPTION_RESULT "result"
+#define OPTION_BUILD_INDEX "build-index"
+#define OPTION_REFERENCE "reference"
+#define OPTION_MEMSIZE "memsize"
+#define OPTION_USE_OPENCL "use-opencl"
+#define OPTION_REF_FRAG "ref-size"
+#define OPTION_N_MISMATHES "n-mis"
 #define OPTION_PT_MISMATHES "pt-mis"
-#define OPTION_REVERSE      "rev-comp"
-#define OPTION_BEST_MODE    "best"
-#define OPTION_OMIT         "omit-size"
-#define OPTION_SAM          "sam"
+#define OPTION_REVERSE "rev-comp"
+#define OPTION_BEST_MODE "best"
+#define OPTION_OMIT "omit-size"
+#define OPTION_SAM "sam"
 
-
- GenomeAlignerCMDLineTask::GenomeAlignerCMDLineTask()
-:Task( tr( "Run genome aligner from command line" ), TaskFlags_NR_FOSCOE), onlyBuildIndex(false)
-{
+GenomeAlignerCMDLineTask::GenomeAlignerCMDLineTask()
+    : Task(tr("Run genome aligner from command line"), TaskFlags_NR_FOSCOE), onlyBuildIndex(false) {
     mismatchCount = 0;
     ptMismatchCount = 0;
     memSize = 1000;
@@ -63,10 +62,10 @@ namespace U2 {
 
     QList<StrStrPair> options = AppContext::getCMDLineRegistry()->getParameters();
 
-    foreach (const StrStrPair& opt, options ) {
-        if (opt.first == OPTION_INDEX_PATH  ) {
+    foreach (const StrStrPair &opt, options) {
+        if (opt.first == OPTION_INDEX_PATH) {
             indexPath = opt.second;
-        }else if (opt.first == OPTION_BUILD_INDEX ) {
+        } else if (opt.first == OPTION_BUILD_INDEX) {
             onlyBuildIndex = true;
         } else if (opt.first == OPTION_REFERENCE) {
             refPath = opt.second;
@@ -74,7 +73,7 @@ namespace U2 {
             resultPath = opt.second;
         } else if (opt.first == OPTION_SHORTREADS) {
             QStringList urls = opt.second.split(";");
-            foreach(const QString& url, urls) {
+            foreach (const QString &url, urls) {
                 shortReadUrls.append(url);
             }
         } else if (opt.first == OPTION_USE_OPENCL) {
@@ -88,13 +87,13 @@ namespace U2 {
         } else if (opt.first == OPTION_N_MISMATHES) {
             mismatchCount = opt.second.toInt();
             ptMismatchCount = 0;
-            if (mismatchCount<0) {
+            if (mismatchCount < 0) {
                 mismatchCount = 0;
             }
         } else if (opt.first == OPTION_PT_MISMATHES) {
             ptMismatchCount = opt.second.toInt();
             mismatchCount = 0;
-            if (ptMismatchCount<0) {
+            if (ptMismatchCount < 0) {
                 ptMismatchCount = 0;
             }
         } else if (opt.first == OPTION_REVERSE) {
@@ -105,7 +104,7 @@ namespace U2 {
             bestMode = true;
         } else if (opt.first == OPTION_OMIT) {
             qualityThreshold = opt.second.toInt();
-            if (qualityThreshold<0) {
+            if (qualityThreshold < 0) {
                 qualityThreshold = 0;
             }
         } else if (opt.first == OPTION_SAM) {
@@ -113,24 +112,21 @@ namespace U2 {
         }
     }
 
-    coreLog.info( tr( "Finished parsing genome aligner options." ) );
-
+    coreLog.info(tr("Finished parsing genome aligner options."));
 }
 
-GenomeAlignerCMDLineTask::~GenomeAlignerCMDLineTask()
-{
+GenomeAlignerCMDLineTask::~GenomeAlignerCMDLineTask() {
     // clean up resources
 }
 
-void GenomeAlignerCMDLineTask::prepare()
-{
+void GenomeAlignerCMDLineTask::prepare() {
     if (onlyBuildIndex && refPath.isEmpty()) {
         setError(tr("Path to reference sequence is not set."));
         return;
     }
 
     if (!onlyBuildIndex) {
-        if ( shortReadUrls.isEmpty() ) {
+        if (shortReadUrls.isEmpty()) {
             setError(tr("Short reads list is empty."));
             return;
         } else {
@@ -142,11 +138,11 @@ void GenomeAlignerCMDLineTask::prepare()
     }
 
     if (resultPath.isEmpty()) {
-        resultPath =  QDir::current().path() + "/output.sam";
+        resultPath = QDir::current().path() + "/output.sam";
     }
 
     settings.resultFileName = resultPath;
-    foreach (const GUrl& url, shortReadUrls ) {
+    foreach (const GUrl &url, shortReadUrls) {
         settings.shortReadSets.append(url);
     }
     settings.refSeqUrl = refPath;
@@ -169,14 +165,11 @@ void GenomeAlignerCMDLineTask::prepare()
     settings.setCustomValue(GenomeAlignerTask::OPTION_BEST, bestMode);
     settings.setCustomValue(GenomeAlignerTask::OPTION_QUAL_THRESHOLD, qualityThreshold);
 
-
-    GenomeAlignerTask* task = new GenomeAlignerTask(settings, onlyBuildIndex);
+    GenomeAlignerTask *task = new GenomeAlignerTask(settings, onlyBuildIndex);
     addSubTask(task);
-
 }
 
-QString GenomeAlignerCMDLineTask::getArgumentsDescritption()
-{
+QString GenomeAlignerCMDLineTask::getArgumentsDescritption() {
     QString desc;
     int fieldSize = -11;
     desc += tr("  --%1    Use this flag to only build index for reference sequence.\n\n").arg(OPTION_BUILD_INDEX, fieldSize);
@@ -196,6 +189,4 @@ QString GenomeAlignerCMDLineTask::getArgumentsDescritption()
     return desc;
 }
 
-
-}//namespace
-
+}    // namespace U2

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DatabaseSizeRelation.h"
+
 #include <QFileInfo>
 
 #include <U2Core/AppContext.h>
@@ -26,15 +28,11 @@
 #include <U2Core/AppSettings.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "DatabaseSizeRelation.h"
-
 namespace U2 {
 namespace LocalWorkflow {
 
 DatabaseSizeRelation::DatabaseSizeRelation(const QString &relatedAttributeId)
-    : ValuesRelation(relatedAttributeId, QVariantMap())
-{
-
+    : ValuesRelation(relatedAttributeId, QVariantMap()) {
 }
 
 QVariant DatabaseSizeRelation::getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue, DelegateTags *, DelegateTags *) const {
@@ -51,5 +49,5 @@ DatabaseSizeRelation *DatabaseSizeRelation::clone() const {
     return new DatabaseSizeRelation(*this);
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

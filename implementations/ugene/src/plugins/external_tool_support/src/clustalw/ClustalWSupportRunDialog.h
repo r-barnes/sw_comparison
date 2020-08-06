@@ -22,10 +22,12 @@
 #ifndef _U2_CLUSTALW_SUPPORT_RUN_DIALOG_H
 #define _U2_CLUSTALW_SUPPORT_RUN_DIALOG_H
 
+#include <ui_ClustalWSupportRunDialog.h>
+
 #include <QDialog>
 
 #include <U2Gui/DialogUtils.h>
-#include <ui_ClustalWSupportRunDialog.h>
+
 #include "ClustalWSupportTask.h"
 
 namespace U2 {
@@ -35,21 +37,21 @@ class SaveDocumentController;
 class ClustalWSupportRunDialog : public QDialog, public Ui_ClustalWSupportRunDialog {
     Q_OBJECT
 public:
-    ClustalWSupportRunDialog(const MultipleSequenceAlignment& ma, ClustalWSupportTaskSettings& settings, QWidget* parent);
+    ClustalWSupportRunDialog(const MultipleSequenceAlignment &ma, ClustalWSupportTaskSettings &settings, QWidget *parent);
 
 private slots:
     void accept();
     void sl_iterationTypeEnabled(bool checked);
 
 private:
-    MultipleSequenceAlignment                      ma;
-    ClustalWSupportTaskSettings&    settings;
+    MultipleSequenceAlignment ma;
+    ClustalWSupportTaskSettings &settings;
 };
 
 class ClustalWWithExtFileSpecifySupportRunDialog : public QDialog, public Ui_ClustalWSupportRunDialog {
     Q_OBJECT
 public:
-    ClustalWWithExtFileSpecifySupportRunDialog(ClustalWSupportTaskSettings& settings, QWidget* parent);
+    ClustalWWithExtFileSpecifySupportRunDialog(ClustalWSupportTaskSettings &settings, QWidget *parent);
 
 private slots:
     void accept();
@@ -59,9 +61,9 @@ private slots:
 private:
     void initSaveController();
 
-    ClustalWSupportTaskSettings&    settings;
-    SaveDocumentController *        saveController;
+    ClustalWSupportTaskSettings &settings;
+    SaveDocumentController *saveController;
 };
 
-}//namespace
-#endif // _U2_CLUSTALW_SUPPORT_RUN_DIALOG_H
+}    // namespace U2
+#endif    // _U2_CLUSTALW_SUPPORT_RUN_DIALOG_H

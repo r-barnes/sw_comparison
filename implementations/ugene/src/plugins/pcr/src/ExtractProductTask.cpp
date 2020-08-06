@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExtractProductTask.h"
+
 #include <QCoreApplication>
 #include <QDir>
 
@@ -40,14 +42,10 @@
 #include <U2Core/U2SequenceUtils.h>
 #include <U2Core/UserApplicationsSettings.h>
 
-#include "ExtractProductTask.h"
-
 namespace U2 {
 
 ExtractProductSettings::ExtractProductSettings()
-: annotationsExtraction(Inner)
-{
-
+    : annotationsExtraction(Inner) {
 }
 
 QString ExtractProductTask::getProductName(const QString &sequenceName, qint64 sequenceLength, const U2Region &region, bool fileName) {
@@ -64,8 +62,7 @@ QString ExtractProductTask::getProductName(const QString &sequenceName, qint64 s
 }
 
 ExtractProductTask::ExtractProductTask(const InSilicoPcrProduct &product, const ExtractProductSettings &settings)
-: Task(tr("Extract PCR product"), TaskFlags_FOSE_COSC), product(product), settings(settings), wholeSequenceLength(0), result(NULL)
-{
+    : Task(tr("Extract PCR product"), TaskFlags_FOSE_COSC), product(product), settings(settings), wholeSequenceLength(0), result(NULL) {
     GCOUNTER(cvar, tvar, "ExtractProductTask");
 }
 
@@ -119,60 +116,60 @@ QByteArray ExtractProductTask::toProductSequence(const QByteArray &targetSequenc
 }
 
 namespace {
-    bool prepareCircularRegions(const U2Region &begin, const U2Region &end, qint64 sequenceLength, QVector<U2Region> &regions) {
-        bool cropped = false;
-        QVector<U2Region> result;
-        for (int i=0; i<regions.size(); i++) {
-            U2Region region = regions[i];
-            if (region.intersects(begin) && region.intersects(end)) {
-                U2Region endIntersection = region.intersect(end);
-                endIntersection.startPos += sequenceLength;
-                result << region.intersect(begin);
-                result << endIntersection;
-                cropped = true;
-            } else if (region.intersects(end)) {
-                region.startPos += sequenceLength;
-                result << region;
-            } else {
-                result << region;
-            }
+bool prepareCircularRegions(const U2Region &begin, const U2Region &end, qint64 sequenceLength, QVector<U2Region> &regions) {
+    bool cropped = false;
+    QVector<U2Region> result;
+    for (int i = 0; i < regions.size(); i++) {
+        U2Region region = regions[i];
+        if (region.intersects(begin) && region.intersects(end)) {
+            U2Region endIntersection = region.intersect(end);
+            endIntersection.startPos += sequenceLength;
+            result << region.intersect(begin);
+            result << endIntersection;
+            cropped = true;
+        } else if (region.intersects(end)) {
+            region.startPos += sequenceLength;
+            result << region;
+        } else {
+            result << region;
         }
-        regions = result;
-        return cropped;
     }
-
-    bool crop(const U2Region &within, QVector<U2Region> &regions) {
-        bool cropped = false;
-        foreach (const U2Region &region, regions) {
-            if (!within.intersects(region)) {
-                int idx = regions.indexOf(region);
-                if (-1 != idx) {
-                    regions.remove(idx);
-                }
-                cropped = true;
-            }
-        }
-
-        for (int i=0; i<regions.size(); i++) {
-            U2Region &region = regions[i];
-            const U2Region intersection = within.intersect(region);
-            if (intersection != region) {
-                region = intersection;
-                cropped = true;
-            }
-        }
-        return cropped;
-    }
+    regions = result;
+    return cropped;
 }
+
+bool crop(const U2Region &within, QVector<U2Region> &regions) {
+    bool cropped = false;
+    foreach (const U2Region &region, regions) {
+        if (!within.intersects(region)) {
+            int idx = regions.indexOf(region);
+            if (-1 != idx) {
+                regions.remove(idx);
+            }
+            cropped = true;
+        }
+    }
+
+    for (int i = 0; i < regions.size(); i++) {
+        U2Region &region = regions[i];
+        const U2Region intersection = within.intersect(region);
+        if (intersection != region) {
+            region = intersection;
+            cropped = true;
+        }
+    }
+    return cropped;
+}
+}    // namespace
 
 void ExtractProductTask::addProductAnnotations(AnnotationTableObject *targetObject, const U2EntityRef &annsRef) const {
     QScopedPointer<AnnotationTableObject> annsObject(new AnnotationTableObject("features", annsRef));
     const bool contain = (ExtractProductSettings::Inner == settings.annotationsExtraction);
-    QSet<Annotation*> anns = annsObject->getAnnotationsByRegion(product.region, contain).toSet();
+    QSet<Annotation *> anns = annsObject->getAnnotationsByRegion(product.region, contain).toSet();
 
     U2Region begin = product.region;
     U2Region end(0, 0);
-    if (product.region.endPos() > wholeSequenceLength) { // circular
+    if (product.region.endPos() > wholeSequenceLength) {    // circular
         begin.length = wholeSequenceLength - product.region.startPos;
         end.length = product.region.endPos() % wholeSequenceLength;
         anns.unite(annsObject->getAnnotationsByRegion(end, contain).toSet());
@@ -255,7 +252,7 @@ void ExtractProductTask::run() {
     result = doc.take();
 }
 
-Document * ExtractProductTask::takeResult() {
+Document *ExtractProductTask::takeResult() {
     CHECK(NULL != result, NULL);
     if (result->thread() != QCoreApplication::instance()->thread()) {
         result->moveToThread(QCoreApplication::instance()->thread());
@@ -265,7 +262,7 @@ Document * ExtractProductTask::takeResult() {
     return returnValue;
 }
 
-const InSilicoPcrProduct & ExtractProductTask::getProduct() const {
+const InSilicoPcrProduct &ExtractProductTask::getProduct() const {
     return product;
 }
 
@@ -273,8 +270,7 @@ const InSilicoPcrProduct & ExtractProductTask::getProduct() const {
 /* ExtractProductWrapperTask */
 /************************************************************************/
 ExtractProductWrapperTask::ExtractProductWrapperTask(const InSilicoPcrProduct &product, const QString &sequenceName, qint64 sequenceLength, const ExtractProductSettings &settings)
-: Task(tr("Extract PCR product and open document"), TaskFlags_NR_FOSE_COSC), extractTask(NULL), settings(settings)
-{
+    : Task(tr("Extract PCR product and open document"), TaskFlags_NR_FOSE_COSC), extractTask(NULL), settings(settings) {
     prepareUrl(product, sequenceName, sequenceLength);
     CHECK_OP(stateInfo, );
     extractTask = new ExtractProductTask(product, this->settings);
@@ -284,8 +280,8 @@ void ExtractProductWrapperTask::prepare() {
     addSubTask(extractTask);
 }
 
-QList<Task*> ExtractProductWrapperTask::onSubTaskFinished(Task *subTask) {
-    QList<Task*> result;
+QList<Task *> ExtractProductWrapperTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> result;
     CHECK(extractTask == subTask, result);
     SaveDocFlags flags;
     flags |= SaveDoc_OpenAfter;
@@ -321,4 +317,4 @@ void ExtractProductWrapperTask::prepareUrl(const InSilicoPcrProduct &product, co
     file.close();
 }
 
-} // U2
+}    // namespace U2

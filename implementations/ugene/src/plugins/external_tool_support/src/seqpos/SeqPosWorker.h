@@ -22,17 +22,18 @@
 #ifndef _U2_SEQPOS_SUPPORT_WORKER_
 #define _U2_SEQPOS_SUPPORT_WORKER_
 
+#include <QLabel>
+
 #include <U2Core/U2OpStatus.h>
+
+#include <U2Designer/DelegateEditors.h>
 
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
 
-#include <U2Designer/DelegateEditors.h>
-
-#include "SeqPosTask.h"
 #include "SeqPosSettings.h"
+#include "SeqPosTask.h"
 #include "utils/CistromeDelegate.h"
-#include <QLabel>
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -54,25 +55,32 @@ private:
 
 private slots:
     void sl_taskFinished();
-}; // SeqPosWorker
+};    // SeqPosWorker
 
 class SeqPosComboBoxWithChecksDelegate : public ComboBoxWithChecksDelegate {
     Q_OBJECT
 public:
-    SeqPosComboBoxWithChecksDelegate(const QVariantMap& items, QObject *parent = 0) : ComboBoxWithChecksDelegate(items, parent) {}
-    virtual ~SeqPosComboBoxWithChecksDelegate() {}
+    SeqPosComboBoxWithChecksDelegate(const QVariantMap &items, QObject *parent = 0)
+        : ComboBoxWithChecksDelegate(items, parent) {
+    }
+    virtual ~SeqPosComboBoxWithChecksDelegate() {
+    }
 
-    virtual PropertyWidget* createWizardWidget(U2OpStatus &os, QWidget *parent) const;
-    virtual PropertyDelegate *clone() { return new SeqPosComboBoxWithChecksDelegate(items, parent()); }
+    virtual PropertyWidget *createWizardWidget(U2OpStatus &os, QWidget *parent) const;
+    virtual PropertyDelegate *clone() {
+        return new SeqPosComboBoxWithChecksDelegate(items, parent());
+    }
 };
 
 class SeqPosComboBoxWithChecksWidget : public ComboBoxWithChecksWidget {
     Q_OBJECT
 public:
-    SeqPosComboBoxWithChecksWidget( const QVariantMap &items, QWidget *parent = NULL);
+    SeqPosComboBoxWithChecksWidget(const QVariantMap &items, QWidget *parent = NULL);
 
     void setValue(const QVariant &value);
-    void setHint(const QString &hint) { hintLabel->setText(hint); }
+    void setHint(const QString &hint) {
+        hintLabel->setText(hint);
+    }
 
 protected slots:
     void sl_valueChanged(int index);
@@ -81,41 +89,49 @@ private:
     void checkHint();
 
 private:
-    QLabel* hintLabel;
+    QLabel *hintLabel;
 };
 
 class SeqPosComboBoxWithUrlsDelegate : public CistromeComboBoxWithUrlsDelegate {
 public:
-    SeqPosComboBoxWithUrlsDelegate(const QVariantMap& items, bool _isPath = false, QObject *parent = 0) : CistromeComboBoxWithUrlsDelegate(items, _isPath, parent) {}
+    SeqPosComboBoxWithUrlsDelegate(const QVariantMap &items, bool _isPath = false, QObject *parent = 0)
+        : CistromeComboBoxWithUrlsDelegate(items, _isPath, parent) {
+    }
 
 private:
     virtual void updateUgeneSettings();
 
     virtual QString getDataPathName();
     virtual QString getAttributeName();
-    virtual QString getDefaultValue() { return "hg19"; }
-}; // SeqPosComboBoxWithUrlsDelegate
+    virtual QString getDefaultValue() {
+        return "hg19";
+    }
+};    // SeqPosComboBoxWithUrlsDelegate
 
 class SeqPosWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
 
-    SeqPosWorkerFactory() : DomainFactory(ACTOR_ID) {}
+    SeqPosWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
     static void init();
     virtual Worker *createWorker(Actor *a);
-}; // SeqPosWorkerFactory
+};    // SeqPosWorkerFactory
 
 class SeqPosPrompter : public PrompterBase<SeqPosPrompter> {
     Q_OBJECT
 public:
-    SeqPosPrompter(Actor *p = NULL) : PrompterBase<SeqPosPrompter>(p) {}
+    SeqPosPrompter(Actor *p = NULL)
+        : PrompterBase<SeqPosPrompter>(p) {
+    }
 
 protected:
     QString composeRichDoc();
 
-}; // SeqPosPrompter
+};    // SeqPosPrompter
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_SEQPOS_SUPPORT_WORKER_
+#endif    // _U2_SEQPOS_SUPPORT_WORKER_

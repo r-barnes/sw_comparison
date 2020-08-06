@@ -39,24 +39,24 @@ class AnnotatedRegion;
 class U2Region;
 
 /** Label that can be pressed with two states: show all types or types for sequence only */
-class ShowAllAnnotTypesLabel : public QLabel
-{
+class ShowAllAnnotTypesLabel : public QLabel {
     Q_OBJECT
 public:
     ShowAllAnnotTypesLabel();
-    inline bool isShowAllSelected() { return showAllIsSelected; }
+    inline bool isShowAllSelected() {
+        return showAllIsSelected;
+    }
 
 signals:
     void si_showAllStateChanged();
 
 private:
-    virtual void mousePressEvent(QMouseEvent*);
+    virtual void mousePressEvent(QMouseEvent *);
 
     bool showAllIsSelected;
 };
 
-class AnnotHighlightWidget : public QWidget
-{
+class AnnotHighlightWidget : public QWidget {
     Q_OBJECT
 public:
     AnnotHighlightWidget(AnnotatedDNAView *);
@@ -126,7 +126,7 @@ private:
      *  - the first one in case @fromTheBeginning is true,
      *  - the last one in case @fromTheBeginning is false.
      */
-    bool isFirstAnnotatedRegion(Annotation *annotation, const U2Region& region, bool fromTheBeginning = true) const;
+    bool isFirstAnnotatedRegion(Annotation *annotation, const U2Region &region, bool fromTheBeginning = true) const;
 
     bool noAnnotatedRegions() const;
 
@@ -140,7 +140,7 @@ private:
 
     void updateAnnotationNames();
 
-    AnnotatedDNAView* annotatedDnaView;
+    AnnotatedDNAView *annotatedDnaView;
 
     /**
      * For each annotation type specifies whether the "Show on translation" option
@@ -148,16 +148,16 @@ private:
      */
     QMap<QString, bool> annotNamesWithAminoInfo;
 
-    QLabel* noAnnotTypesLabel;
-    QLabel* annotTreeTitle;
-    AnnotHighlightTree* annotTree;
-    ShowAllAnnotTypesLabel* showAllLabel;
-    QLabel* settingsTitle;
-    AnnotHighlightSettingsWidget* annotSettingsWidget;
-    QPushButton* nextAnnotationButton;
-    QPushButton* prevAnnotationButton;
+    QLabel *noAnnotTypesLabel;
+    QLabel *annotTreeTitle;
+    AnnotHighlightTree *annotTree;
+    ShowAllAnnotTypesLabel *showAllLabel;
+    QLabel *settingsTitle;
+    AnnotHighlightSettingsWidget *annotSettingsWidget;
+    QPushButton *nextAnnotationButton;
+    QPushButton *prevAnnotationButton;
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

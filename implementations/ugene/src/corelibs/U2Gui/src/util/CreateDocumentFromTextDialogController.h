@@ -40,25 +40,25 @@ class SaveDocumentController;
 class U2GUI_EXPORT CreateDocumentFromTextDialogController : public QDialog {
     Q_OBJECT
 public:
-    CreateDocumentFromTextDialogController(QWidget* p = NULL);
+    CreateDocumentFromTextDialogController(QWidget *p = NULL);
     ~CreateDocumentFromTextDialogController();
 
     void accept();
 
 private slots:
     void sl_filepathTextChanged();
-    
+
 private:
     void addSeqPasterWidget();
     QList<DNASequence> prepareSequences() const;
     void initSaveController();
-    
+
     SeqPasterWidgetController *w;
     SaveDocumentController *saveController;
     QString filter;
-    Ui_CreateDocumentFromTextDialog* ui;
+    Ui_CreateDocumentFromTextDialog *ui;
 };
 
-}//ns
+}    // namespace U2
 
 #endif

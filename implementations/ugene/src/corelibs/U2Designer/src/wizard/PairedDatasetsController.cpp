@@ -19,24 +19,23 @@
  * MA 02110-1301, USA.
  */
 
+#include "PairedDatasetsController.h"
+
 #include <U2Core/U2SafePoints.h>
 
-#include "PairedDatasetsController.h"
 #include "WizardController.h"
 
 namespace U2 {
 
 PairedDatasetsController::PairedDatasetsController(WizardController *wc, PairedReadsWidget *_widget)
-: WidgetController(wc), widget(_widget), dsc(NULL)
-{
-
+    : WidgetController(wc), widget(_widget), dsc(NULL) {
 }
 
 PairedDatasetsController::~PairedDatasetsController() {
     delete dsc;
 }
 
-QWidget * PairedDatasetsController::createGUI(U2OpStatus &os) {
+QWidget *PairedDatasetsController::createGUI(U2OpStatus &os) {
     if (2 != widget->getInfos().size()) {
         os.setError("Only 2 datasets are supported");
         return NULL;
@@ -46,8 +45,8 @@ QWidget * PairedDatasetsController::createGUI(U2OpStatus &os) {
     AttributeInfo info2 = widget->getInfos().at(1);
     QVariant value1 = wc->getAttributeValue(info1);
     QVariant value2 = wc->getAttributeValue(info2);
-    QList<Dataset> sets1 = value1.value< QList<Dataset> >();
-    QList<Dataset> sets2 = value2.value< QList<Dataset> >();
+    QList<Dataset> sets1 = value1.value<QList<Dataset>>();
+    QList<Dataset> sets2 = value2.value<QList<Dataset>>();
 
     if (NULL != dsc) {
         delete dsc;
@@ -59,8 +58,8 @@ QWidget * PairedDatasetsController::createGUI(U2OpStatus &os) {
 
 void PairedDatasetsController::sl_datasetsChanged() {
     CHECK(2 == widget->getInfos().size(), );
-    wc->setAttributeValue(widget->getInfos().at(0), qVariantFromValue< QList<Dataset> >(dsc->getDatasets(0)));
-    wc->setAttributeValue(widget->getInfos().at(1), qVariantFromValue< QList<Dataset> >(dsc->getDatasets(1)));
+    wc->setAttributeValue(widget->getInfos().at(0), qVariantFromValue<QList<Dataset>>(dsc->getDatasets(0)));
+    wc->setAttributeValue(widget->getInfos().at(1), qVariantFromValue<QList<Dataset>>(dsc->getDatasets(1)));
 }
 
-} // U2
+}    // namespace U2

@@ -25,7 +25,6 @@
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
 
-
 namespace U2 {
 
 class StringTieTaskSettings;
@@ -38,7 +37,7 @@ public:
     StringTieWorker(Actor *p);
 
     virtual void init();
-    virtual Task* tick();
+    virtual Task *tick();
     virtual void cleanup();
 private slots:
     void sl_taskFinished();
@@ -48,13 +47,14 @@ private:
     IntegralBus *outputPort;
 
 private:
-    StringTieTaskSettings getSettings(U2OpStatus &os, const QString& inputFile);
+    StringTieTaskSettings getSettings(U2OpStatus &os, const QString &inputFile);
 };
 
 class StringTiePrompter : public PrompterBase<StringTiePrompter> {
     Q_OBJECT
 public:
     StringTiePrompter(Actor *p = 0);
+
 protected:
     QString composeRichDoc();
 };
@@ -63,12 +63,14 @@ class StringTieWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
 
-    StringTieWorkerFactory() : DomainFactory(ACTOR_ID) {}
+    StringTieWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
     static void init();
-    virtual Worker* createWorker(Actor *a);
+    virtual Worker *createWorker(Actor *a);
 };
 
-}
+}    // namespace LocalWorkflow
 
-} // namespace
-#endif // _U2_STRINGTIE_WORKER_H_
+}    // namespace U2
+#endif    // _U2_STRINGTIE_WORKER_H_

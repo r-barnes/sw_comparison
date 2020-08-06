@@ -19,22 +19,20 @@
  * MA 02110-1301, USA.
  */
 
-
 #ifndef _U2_MSA_UNIT_TESTS_H_
 #define _U2_MSA_UNIT_TESTS_H_
 
-#include <U2Core/MultipleSequenceAlignment.h>
-
 #include <unittest.h>
 
+#include <U2Core/MultipleSequenceAlignment.h>
 
 namespace U2 {
 
 class MsaTestUtils {
 public:
     static MultipleSequenceAlignment initTestAlignment();
-    static QString getRowData(const MultipleSequenceAlignment&, int rowNum);
-    static bool testAlignmentNotChanged(const MultipleSequenceAlignment&);
+    static QString getRowData(const MultipleSequenceAlignment &, int rowNum);
+    static bool testAlignmentNotChanged(const MultipleSequenceAlignment &);
 
     static const int rowsNum;
     static const int firstRowLength;
@@ -267,8 +265,7 @@ DECLARE_TEST(MsaUnitTests, operNotEqual_notEqual);
 DECLARE_TEST(MsaUnitTests, hasEmptyGapModel_gaps);
 DECLARE_TEST(MsaUnitTests, hasEmptyGapModel_noGaps);
 
-
-} // namespace
+}    // namespace U2
 
 DECLARE_METATYPE(MsaUnitTests, clear_notEmpty);
 DECLARE_METATYPE(MsaUnitTests, name_ctor);
@@ -342,6 +339,4 @@ DECLARE_METATYPE(MsaUnitTests, operNotEqual_notEqual);
 DECLARE_METATYPE(MsaUnitTests, hasEmptyGapModel_gaps);
 DECLARE_METATYPE(MsaUnitTests, hasEmptyGapModel_noGaps);
 
-
 #endif
-

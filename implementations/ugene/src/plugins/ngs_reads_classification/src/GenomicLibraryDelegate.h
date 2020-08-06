@@ -48,7 +48,7 @@ private slots:
     void sl_commit();
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_GENOMIC_LIBRARY_DELEGATE_H_
+#endif    // _U2_GENOMIC_LIBRARY_DELEGATE_H_

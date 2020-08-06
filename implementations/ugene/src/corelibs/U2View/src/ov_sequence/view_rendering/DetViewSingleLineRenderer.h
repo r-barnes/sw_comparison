@@ -26,7 +26,6 @@
 
 namespace U2 {
 
-
 /************************************************************************/
 /* DetViewSingleLineRenderer */
 /************************************************************************/
@@ -34,9 +33,9 @@ class DetViewSingleLineRenderer : public DetViewRenderer {
 private:
     struct TranslationMetrics {
         TranslationMetrics();
-        TranslationMetrics(DetView* detView,
-                           const U2Region& visibleRange,
-                           const QFont& commonSequenceFont);
+        TranslationMetrics(DetView *detView,
+                           const U2Region &visibleRange,
+                           const QFont &commonSequenceFont);
 
         QVector<bool> visibleRows;
 
@@ -54,50 +53,53 @@ private:
         QFont fontBS;
         QFont fontIS;
     };
+
 public:
-    DetViewSingleLineRenderer(DetView* detView, SequenceObjectContext* ctx);
+    DetViewSingleLineRenderer(DetView *detView, SequenceObjectContext *ctx);
 
     virtual qint64 coordToPos(const QPoint &p, const QSize &canvasSize, const U2Region &visibleRange) const;
 
-    virtual U2Region getAnnotationYRange(Annotation *a, int r, const AnnotationSettings* as, const QSize& canvasSize, const U2Region& visibleRange) const;
+    virtual U2Region getAnnotationYRange(Annotation *a, int r, const AnnotationSettings *as, const QSize &canvasSize, const U2Region &visibleRange) const;
     virtual U2Region getMirroredYRange(const U2Strand &mStrand) const;
 
     qint64 getMinimumHeight() const;
     qint64 getOneLineHeight() const;
-    qint64 getLinesCount(const QSize& canvasSize) const;
-    qint64 getContentIndentY(const QSize& canvasSize, const U2Region& visibleRange) const;
+    qint64 getLinesCount(const QSize &canvasSize) const;
+    qint64 getContentIndentY(const QSize &canvasSize, const U2Region &visibleRange) const;
 
-    int getDirectLine() const { return directLine; }
+    int getDirectLine() const {
+        return directLine;
+    }
 
     int getRowsInLineCount() const;
 
     QSize getBaseCanvasSize(const U2Region &visibleRange) const;
 
-    bool isOnTranslationsLine(const QPoint& p, const QSize& canvasSize, const U2Region& visibleRange) const;
-    bool isOnAnnotationLine(const QPoint& p, Annotation*a, int region, const AnnotationSettings *as, const QSize &canvasSize, const U2Region& visibleRange) const;
+    bool isOnTranslationsLine(const QPoint &p, const QSize &canvasSize, const U2Region &visibleRange) const;
+    bool isOnAnnotationLine(const QPoint &p, Annotation *a, int region, const AnnotationSettings *as, const QSize &canvasSize, const U2Region &visibleRange) const;
 
-    virtual void drawAll(QPainter& p, const QSize& canvasSize, const U2Region& visibleRange);
-    virtual void drawSelection(QPainter& p, const QSize& canvasSize, const U2Region& visibleRange);
-    virtual void drawCursor(QPainter &p, const QSize &canvasSize, const U2Region& visibleRange);
+    virtual void drawAll(QPainter &p, const QSize &canvasSize, const U2Region &visibleRange);
+    virtual void drawSelection(QPainter &p, const QSize &canvasSize, const U2Region &visibleRange);
+    virtual void drawCursor(QPainter &p, const QSize &canvasSize, const U2Region &visibleRange);
 
     void update();
 
 private:
-    void drawDirect(QPainter& p, const U2Region& visibleRange);
-    void drawComplement(QPainter& p, const U2Region& visibleRange);
+    void drawDirect(QPainter &p, const U2Region &visibleRange);
+    void drawComplement(QPainter &p, const U2Region &visibleRange);
 
-    void drawTranslations(QPainter& p, const U2Region& visibleRange);
-    void drawDirectTranslations(QPainter& p,
-                                const U2Region& visibleRange,
-                                const char* seqBlock,
-                                const QList<SharedAnnotationData>& annotationsInRange);
-    void drawComplementTranslations(QPainter& p,
-                                     const U2Region& visibleRange,
-                                     const char* seqBlock,
-                                     const QList<SharedAnnotationData>& annotationsInRange);
+    void drawTranslations(QPainter &p, const U2Region &visibleRange);
+    void drawDirectTranslations(QPainter &p,
+                                const U2Region &visibleRange,
+                                const char *seqBlock,
+                                const QList<SharedAnnotationData> &annotationsInRange);
+    void drawComplementTranslations(QPainter &p,
+                                    const U2Region &visibleRange,
+                                    const char *seqBlock,
+                                    const QList<SharedAnnotationData> &annotationsInRange);
 
-    void drawRuler(QPainter& p, const QSize &canvasSize, const U2Region& visibleRange);
-    void drawSequenceSelection(QPainter& p, const QSize &canvasSize, const U2Region& visibleRange);
+    void drawRuler(QPainter &p, const QSize &canvasSize, const U2Region &visibleRange);
+    void drawSequenceSelection(QPainter &p, const QSize &canvasSize, const U2Region &visibleRange);
 
 private:
     int getLineY(int line) const;
@@ -112,18 +114,18 @@ private:
                                     const U2Strand &strand,
                                     const QList<SharedAnnotationData> &annotationsInRange,
                                     QColor &result);
-    void setFontAndPenForTranslation(const char* seq,
-                                     const QColor& charColor,
+    void setFontAndPenForTranslation(const char *seq,
+                                     const QColor &charColor,
                                      bool inAnnotation,
-                                     QPainter& p);
+                                     QPainter &p);
 
-    void highlight(QPainter& p, const U2Region& regionToHighlight, int line, const QSize& canvasSize, const U2Region& visibleRange);
+    void highlight(QPainter &p, const U2Region &regionToHighlight, int line, const QSize &canvasSize, const U2Region &visibleRange);
 
     int posToDirectTransLine(int p) const;
     int posToComplTransLine(int p) const;
 
 private:
-    TranslationMetrics  trMetrics;
+    TranslationMetrics trMetrics;
 
     int numLines;
     int rulerLine;
@@ -133,6 +135,6 @@ private:
     int firstComplTransLine;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_DET_VIEW_SINGLE_LINE_RENDERER_H_
+#endif    // _U2_DET_VIEW_SINGLE_LINE_RENDERER_H_

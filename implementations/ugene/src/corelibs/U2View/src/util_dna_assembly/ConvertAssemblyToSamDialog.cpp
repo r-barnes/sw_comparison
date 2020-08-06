@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ConvertAssemblyToSamDialog.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 
@@ -31,20 +33,18 @@
 #include <U2Gui/SaveDocumentController.h>
 #include <U2Gui/U2FileDialog.h>
 
-#include "ConvertAssemblyToSamDialog.h"
 #include "ui_AssemblyToSamDialog.h"
 
 namespace U2 {
 
 GUrl ConvertAssemblyToSamDialog::dbFileUrl;
 
-ConvertAssemblyToSamDialog::ConvertAssemblyToSamDialog(QWidget* parent, QString dbPath)
+ConvertAssemblyToSamDialog::ConvertAssemblyToSamDialog(QWidget *parent, QString dbPath)
     : QDialog(parent),
       ui(new Ui_AssemblyToSamDialog),
-      saveController(NULL)
-{
+      saveController(NULL) {
     ui->setupUi(this);
-    new HelpButton(this, ui->buttonBox, "24742609");
+    new HelpButton(this, ui->buttonBox, "46501241");
 
     ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Convert"));
     ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -68,11 +68,9 @@ ConvertAssemblyToSamDialog::ConvertAssemblyToSamDialog(QWidget* parent, QString 
 
 void ConvertAssemblyToSamDialog::accept() {
     if (ui->dbPathEdit->text().isEmpty()) {
-        QMessageBox::information(this, tr("Data base to SAM converter"),
-            tr("Data base file url is not set!") );
+        QMessageBox::information(this, tr("Data base to SAM converter"), tr("Data base file url is not set!"));
     } else if (saveController->getSaveFileName().isEmpty()) {
-        QMessageBox::information(this, tr("Data base to SAM converter"),
-            tr("SAM file url is not set!") );
+        QMessageBox::information(this, tr("Data base to SAM converter"), tr("SAM file url is not set!"));
     } else {
         if (ui->setDbPathButton->isEnabled()) {
             dbFileUrl = getDbFileUrl();
@@ -128,4 +126,4 @@ const GUrl ConvertAssemblyToSamDialog::getSamFileUrl() {
     return saveController->getSaveFileName();
 }
 
-} // U2
+}    // namespace U2

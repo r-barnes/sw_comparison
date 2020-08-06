@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CuffdiffSupportTask.h"
+
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/AssemblyObject.h>
@@ -30,7 +32,6 @@
 
 #include <U2Lang/DbiDataStorage.h>
 
-#include "CuffdiffSupportTask.h"
 #include "CufflinksSupport.h"
 #include "tophat/TopHatSettings.h"
 
@@ -39,55 +40,55 @@ namespace U2 {
 const QString CuffdiffSupportTask::outSubDirBaseName("cuffdiff_out");
 
 CuffdiffSupportTask::CuffdiffSupportTask(const CuffdiffSettings &_settings)
-: ExternalToolSupportTask(tr("Running Cuffdiff task"), TaskFlags_NR_FOSE_COSC),
-  settings(_settings),
-  diffTask(NULL)
-{
+    : ExternalToolSupportTask(tr("Running Cuffdiff task"), TaskFlags_NR_FOSE_COSC),
+      settings(_settings),
+      diffTask(NULL) {
     SAFE_POINT_EXT(NULL != settings.storage, setError(tr("Workflow data storage is NULL")), );
 }
 
 namespace {
-    QStringList prepareAssemblyUrlsArgs(bool groupBySamples, const QMap<QString, QStringList> &assemblyUrls) {
-        QStringList result;
+QStringList prepareAssemblyUrlsArgs(bool groupBySamples, const QMap<QString, QStringList> &assemblyUrls) {
+    QStringList result;
 
-        if (groupBySamples) {
-            result << "-L";
-            result << QStringList(assemblyUrls.keys()).join(",");
-            foreach (const QStringList &urls, assemblyUrls.values()) {
-                result << urls.join(",");
-            }
-        } else {
-            foreach (const QStringList &urls, assemblyUrls.values()) {
-                result << urls;
-            }
+    if (groupBySamples) {
+        result << "-L";
+        result << QStringList(assemblyUrls.keys()).join(",");
+        foreach (const QStringList &urls, assemblyUrls.values()) {
+            result << urls.join(",");
         }
-        return result;
+    } else {
+        foreach (const QStringList &urls, assemblyUrls.values()) {
+            result << urls;
+        }
     }
+    return result;
+}
 
-    int getSamplesCount(bool groupBySamples, const QMap<QString, QStringList> &assemblyUrls) {
-        if (groupBySamples) {
-            return assemblyUrls.size();
-        } else {
-            QStringList allUrls;
-            foreach (const QStringList &urls, assemblyUrls.values()) {
-                allUrls << urls;
-            }
-            return allUrls.size();
+int getSamplesCount(bool groupBySamples, const QMap<QString, QStringList> &assemblyUrls) {
+    if (groupBySamples) {
+        return assemblyUrls.size();
+    } else {
+        QStringList allUrls;
+        foreach (const QStringList &urls, assemblyUrls.values()) {
+            allUrls << urls;
         }
+        return allUrls.size();
     }
 }
+}    // namespace
 
 void CuffdiffSupportTask::prepare() {
     int samplesCount = getSamplesCount(settings.groupBySamples, settings.assemblyUrls);
     CHECK_EXT(samplesCount >= 2,
-        stateInfo.setError(tr("At least 2 sets of assemblies are required for Cuffdiff")), );
+              stateInfo.setError(tr("At least 2 sets of assemblies are required for Cuffdiff")), );
 
     setupWorkingDir();
     CHECK_OP(stateInfo, );
 
     settings.outDir = GUrlUtils::createDirectory(
-                settings.outDir + "/" + outSubDirBaseName,
-                "_", stateInfo);
+        settings.outDir + "/" + outSubDirBaseName,
+        "_",
+        stateInfo);
     CHECK_OP(stateInfo, );
 
     Task *t = createTranscriptTask();
@@ -103,8 +104,8 @@ void CuffdiffSupportTask::setupWorkingDir() {
     }
 }
 
-QList<Task*> CuffdiffSupportTask::onSubTaskFinished(Task *subTask) {
-    QList<Task*> tasks;
+QList<Task *> CuffdiffSupportTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> tasks;
     if (saveTasks.contains(subTask)) {
         saveTasks.removeOne(subTask);
     }
@@ -123,7 +124,7 @@ Task::ReportResult CuffdiffSupportTask::report() {
     return ReportResult_Finished;
 }
 
-Task * CuffdiffSupportTask::createTranscriptTask() {
+Task *CuffdiffSupportTask::createTranscriptTask() {
     createTranscriptDoc();
     CHECK_OP(stateInfo, NULL);
 
@@ -132,7 +133,7 @@ Task * CuffdiffSupportTask::createTranscriptTask() {
     return t;
 }
 
-Task * CuffdiffSupportTask::createCuffdiffTask() {
+Task *CuffdiffSupportTask::createCuffdiffTask() {
     // prepare arguments
     QStringList arguments;
 
@@ -180,9 +181,9 @@ Task * CuffdiffSupportTask::createCuffdiffTask() {
 
     // create task
     diffTask = new ExternalToolRunTask(CufflinksSupport::ET_CUFFDIFF_ID,
-        arguments,
-        new LogParser(),
-        workingDir);
+                                       arguments,
+                                       new LogParser(),
+                                       workingDir);
     setListenerForTask(diffTask);
 
     return diffTask;
@@ -261,9 +262,7 @@ QStringList CuffdiffSupportTask::getSystemOutputFiles() const {
 }
 
 CuffdiffSupportTask::LogParser::LogParser()
-: ExternalToolLogParser()
-{
-
+    : ExternalToolLogParser() {
 }
 
 void CuffdiffSupportTask::LogParser::parseErrOutput(const QString &partOfLog) {
@@ -279,9 +278,8 @@ void CuffdiffSupportTask::LogParser::parseErrOutput(const QString &partOfLog) {
 /************************************************************************/
 /* CuffdiffSettings */
 /************************************************************************/
-CuffdiffSettings::CuffdiffSettings() :
-    storage(NULL)
-{
+CuffdiffSettings::CuffdiffSettings()
+    : storage(NULL) {
     timeSeriesAnalysis = false;
     upperQuartileNorm = false;
     hitsNorm = Compatible;
@@ -301,4 +299,4 @@ void CuffdiffSettings::cleanup() {
     transcript.clear();
 }
 
-} // U2
+}    // namespace U2

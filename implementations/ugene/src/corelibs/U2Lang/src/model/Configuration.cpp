@@ -32,41 +32,42 @@
 
 namespace U2 {
 
-Configuration::Configuration() : editor(NULL), validator(NULL) {
+Configuration::Configuration()
+    : editor(NULL), validator(NULL) {
 }
 
 Configuration::~Configuration() {
     qDeleteAll(params.values());
 }
 
-QMap<QString, Attribute*> Configuration::getParameters() const {
+QMap<QString, Attribute *> Configuration::getParameters() const {
     return params;
 }
 
-Attribute * Configuration::getParameter(const QString & name) const {
+Attribute *Configuration::getParameter(const QString &name) const {
     return params.value(name, NULL);
 }
 
-Attribute * Configuration::removeParameter( const QString & name ) {
+Attribute *Configuration::removeParameter(const QString &name) {
     Attribute *attr = params.take(name);
     attrs.removeOne(attr);
     return attr;
 }
 
-void Configuration::addParameter( const QString & name, Attribute * attr ) {
+void Configuration::addParameter(const QString &name, Attribute *attr) {
     assert(attr != NULL);
     params[name] = attr;
     attrs << attr;
 }
 
-void Configuration::setParameter(const QString& name, const QVariant& val) {
-    if(params.contains(name)) {
+void Configuration::setParameter(const QString &name, const QVariant &val) {
+    if (params.contains(name)) {
         params[name]->setAttributeValue(val);
     }
 }
 
-void Configuration::setParameters(const QVariantMap& cfg) {
-    QMapIterator<QString,QVariant> it(cfg);
+void Configuration::setParameters(const QVariantMap &cfg) {
+    QMapIterator<QString, QVariant> it(cfg);
     while (it.hasNext()) {
         it.next();
         setParameter(it.key(), it.value());
@@ -81,45 +82,45 @@ QVariantMap Configuration::getValues() const {
     return result;
 }
 
-bool Configuration::hasParameter(const QString & name) const {
+bool Configuration::hasParameter(const QString &name) const {
     return params.contains(name);
 }
 
-ConfigurationEditor * Configuration::getEditor() const {
+ConfigurationEditor *Configuration::getEditor() const {
     return editor;
 }
 
-void Configuration::setEditor(ConfigurationEditor* ed) {
+void Configuration::setEditor(ConfigurationEditor *ed) {
     assert(ed != NULL);
     delete editor;
     editor = ed;
 }
 
-ConfigurationValidator * Configuration::getValidator() {
+ConfigurationValidator *Configuration::getValidator() {
     return validator;
 }
 
-void Configuration::setValidator(ConfigurationValidator* v) {
+void Configuration::setValidator(ConfigurationValidator *v) {
     assert(v != NULL);
     validator = v;
 }
 
 bool Configuration::validate(NotificationsList &notificationList) const {
     bool good = true;
-    foreach(Attribute* a, getParameters()) {
+    foreach (Attribute *a, getParameters()) {
         if (!isAttributeVisible(a)) {
             continue;
         }
-        good &= a->validate(notificationList);
+        good = a->validate(notificationList) && good;
     }
     if (validator) {
-        good &= validator->validate(this, notificationList);
+        good = validator->validate(this, notificationList) && good;
     }
     return good;
 }
 
-QList<Attribute*> Configuration::getAttributes() const {
-    return /*params.values()*/attrs;
+QList<Attribute *> Configuration::getAttributes() const {
+    return /*params.values()*/ attrs;
 }
 
 bool Configuration::isAttributeVisible(Attribute *attribute) const {
@@ -142,4 +143,4 @@ bool Configuration::isAttributeVisible(Attribute *attribute) const {
     return isVisible;
 }
 
-} // U2
+}    // namespace U2

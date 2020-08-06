@@ -19,9 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-#include <QFileInfo>
-
 #include "ImportToDatabaseOptions.h"
+
+#include <QFileInfo>
 
 namespace U2 {
 
@@ -36,32 +36,33 @@ const QString ImportToDatabaseOptions::PREFERRED_FORMATS = "preferred_formats";
 const QString ImportToDatabaseOptions::CREATE_SUBFOLDER_FOR_DOCUMENT = "create_subfolder_for_document";
 const QString ImportToDatabaseOptions::MERGE_MULTI_SEQUENCE_POLICY_SEPARATOR_SIZE = "merge_multi_sequence_policy_separator_size";
 
-ImportToDatabaseOptions::ImportToDatabaseOptions() :
-createSubfolderForEachDocument(true),
-createSubfolderForEachFile(true),
-createSubfolderForTopLevelFolder(false),
-importUnknownAsUdr(false),
-keepFileExtension(false),
-keepFoldersStructure(true),
-mergeMultiSequencePolicySeparatorSize(10),
-multiSequencePolicy(SEPARATE),
-processFoldersRecursively(true) {}
+ImportToDatabaseOptions::ImportToDatabaseOptions()
+    : createSubfolderForEachDocument(true),
+      createSubfolderForEachFile(true),
+      createSubfolderForTopLevelFolder(false),
+      importUnknownAsUdr(false),
+      keepFileExtension(false),
+      keepFoldersStructure(true),
+      mergeMultiSequencePolicySeparatorSize(10),
+      multiSequencePolicy(SEPARATE),
+      processFoldersRecursively(true) {
+}
 
-bool ImportToDatabaseOptions::operator == (const ImportToDatabaseOptions &other) const {
+bool ImportToDatabaseOptions::operator==(const ImportToDatabaseOptions &other) const {
     return createSubfolderForEachDocument == other.createSubfolderForEachDocument &&
-        createSubfolderForEachFile == other.createSubfolderForEachFile &&
-        createSubfolderForTopLevelFolder == other.createSubfolderForTopLevelFolder &&
-        importUnknownAsUdr == other.importUnknownAsUdr &&
-        keepFileExtension == other.keepFileExtension &&
-        keepFoldersStructure == other.keepFoldersStructure &&
-        mergeMultiSequencePolicySeparatorSize == other.mergeMultiSequencePolicySeparatorSize &&
-        multiSequencePolicy == other.multiSequencePolicy &&
-        preferredFormats == other.preferredFormats &&
-        processFoldersRecursively == other.processFoldersRecursively;
+           createSubfolderForEachFile == other.createSubfolderForEachFile &&
+           createSubfolderForTopLevelFolder == other.createSubfolderForTopLevelFolder &&
+           importUnknownAsUdr == other.importUnknownAsUdr &&
+           keepFileExtension == other.keepFileExtension &&
+           keepFoldersStructure == other.keepFoldersStructure &&
+           mergeMultiSequencePolicySeparatorSize == other.mergeMultiSequencePolicySeparatorSize &&
+           multiSequencePolicy == other.multiSequencePolicy &&
+           preferredFormats == other.preferredFormats &&
+           processFoldersRecursively == other.processFoldersRecursively;
 }
 
-bool ImportToDatabaseOptions::operator !=(const ImportToDatabaseOptions &other) const {
-    return !operator ==(other);
+bool ImportToDatabaseOptions::operator!=(const ImportToDatabaseOptions &other) const {
+    return !operator==(other);
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -22,9 +22,11 @@
 #ifndef _U2_GUITESTBASE_PLUGIN_H_
 #define _U2_GUITESTBASE_PLUGIN_H_
 
-#include <U2Core/PluginModel.h>
-#include "test_runner/GUITestRunner.h"
 #include <QAction>
+
+#include <U2Core/PluginModel.h>
+
+#include "test_runner/GUITestRunner.h"
 
 namespace U2 {
 
@@ -36,14 +38,15 @@ public:
     GUITestBasePlugin();
 private slots:
     void sl_showWindow();
+
 private:
     void registerTests(UGUITestBase *guiTestBase);
     void registerAdditionalActions(UGUITestBase *guiTestBase);
 
-    QAction*        openGUITestRunnerAction;
+    QAction *openGUITestRunnerAction;
     QPointer<GUITestRunner> view;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

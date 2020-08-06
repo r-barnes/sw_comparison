@@ -19,8 +19,10 @@
  * MA 02110-1301, USA.
  */
 
-#include <QAbstractItemModel>
+#include "TaxonomySupport.h"
 
+#include <QAbstractItemModel>
+#include <QFileInfo>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QtCore/QVariant>
@@ -30,8 +32,6 @@
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QWidget>
-
-#include <QFileInfo>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppResources.h>
@@ -50,11 +50,11 @@
 #include <U2Core/IOAdapter.h>
 #include <U2Core/IOAdapterUtils.h>
 #include <U2Core/L10n.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/TaskSignalMapper.h>
 #include <U2Core/Timer.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
-
 
 #include <U2Designer/DelegateEditors.h>
 
@@ -62,17 +62,9 @@
 #include <U2Formats/FastaFormat.h>
 #include <U2Formats/FastqFormat.h>
 
-
-#include <U2Core/AppContext.h>
-#include <U2Core/DataPathRegistry.h>
-#include <U2Core/U2SafePoints.h>
-#include <U2Core/QObjectScopedPointer.h>
-
-#include <U2Lang/WorkflowEnv.h>
-
 #include <U2Gui/HelpButton.h>
 
-#include "TaxonomySupport.h"
+#include <U2Lang/WorkflowEnv.h>
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -84,20 +76,19 @@ const TaxID TaxonomyTree::UNDEFINED_ID = (TaxID)-1;
 const TaxID TaxonomyTree::UNCLASSIFIED_ID = 0;
 
 TaxonomyTree *TaxonomyTree::the_tree = NULL;
-const int RANK_SHIFT = (sizeof(TaxID) - sizeof(char))* 8;
+const int RANK_SHIFT = (sizeof(TaxID) - sizeof(char)) * 8;
 const TaxID RANK_MASK = 0xFF << RANK_SHIFT;
 
 /********************************************************************/
 /*TaxonomySupport*/
 /********************************************************************/
 
-const Descriptor TaxonomySupport::TAXONOMY_CLASSIFICATION_SLOT()
-{
+const Descriptor TaxonomySupport::TAXONOMY_CLASSIFICATION_SLOT() {
     return Descriptor(TAXONOMY_CLASSIFICATION_SLOT_ID, tr("Taxonomy classification data"), tr("Taxonomy classification data"));
 }
 
 DataTypePtr TaxonomySupport::TAXONOMY_CLASSIFICATION_TYPE() {
-    DataTypeRegistry* dtr = Workflow::WorkflowEnv::getDataTypeRegistry();
+    DataTypeRegistry *dtr = Workflow::WorkflowEnv::getDataTypeRegistry();
     assert(dtr);
     static bool startup = true;
     if (startup) {
@@ -107,8 +98,7 @@ DataTypePtr TaxonomySupport::TAXONOMY_CLASSIFICATION_TYPE() {
     return dtr->getById(CLASSIFICATION_SLOT_TYPE_ID);
 }
 
-TaxonomyTree *TaxonomyTree::getInstance()
-{
+TaxonomyTree *TaxonomyTree::getInstance() {
     if (the_tree == NULL) {
         //fixme data race???
         the_tree = load(new TaxonomyTree);
@@ -116,8 +106,7 @@ TaxonomyTree *TaxonomyTree::getInstance()
     return the_tree;
 }
 
-QString TaxonomyTree::getName(TaxID id) const
-{
+QString TaxonomyTree::getName(TaxID id) const {
     if (unsigned(names.size()) > id) {
         return names.at(id);
     }
@@ -125,8 +114,7 @@ QString TaxonomyTree::getName(TaxID id) const
     return QString("Unknown taxon ID");
 }
 
-QString TaxonomyTree::getRank(TaxID id) const
-{
+QString TaxonomyTree::getRank(TaxID id) const {
     if (unsigned(nodes.size()) > id) {
         return ranks.at((nodes.at(id) & RANK_MASK) >> RANK_SHIFT);
     }
@@ -134,8 +122,7 @@ QString TaxonomyTree::getRank(TaxID id) const
     return QString("Unknown taxon ID");
 }
 
-TaxID TaxonomyTree::getParent(TaxID id) const
-{
+TaxID TaxonomyTree::getParent(TaxID id) const {
     if (unsigned(nodes.size()) > id) {
         return nodes.at(id) & ~RANK_MASK;
     }
@@ -143,8 +130,7 @@ TaxID TaxonomyTree::getParent(TaxID id) const
     return UNDEFINED_ID;
 }
 
-QList<TaxID> TaxonomyTree::getChildren(TaxID id) const
-{
+QList<TaxID> TaxonomyTree::getChildren(TaxID id) const {
     return childs.values(id);
 }
 
@@ -160,8 +146,7 @@ bool TaxonomyTree::isValid() const {
     return valid;
 }
 
-TaxID TaxonomyTree::match(TaxID id, QSet<TaxID> filter)
-{
+TaxID TaxonomyTree::match(TaxID id, QSet<TaxID> filter) {
     // first try fastpath
     if (id >= unsigned(nodes.size())) {
         return UNDEFINED_ID;
@@ -190,25 +175,23 @@ TaxID TaxonomyTree::match(TaxID id, QSet<TaxID> filter)
 }
 
 TaxonomyTree::TaxonomyTree()
-    : valid(false)
-{
-
+    : valid(false) {
 }
 
-class TaxonNameComparator
-{
+class TaxonNameComparator {
 public:
-    TaxonNameComparator( TaxonomyTree *tree) : tree(tree) {}
-    bool operator()(const TaxID left, const TaxID right ) const {
+    TaxonNameComparator(TaxonomyTree *tree)
+        : tree(tree) {
+    }
+    bool operator()(const TaxID left, const TaxID right) const {
         return tree->getName(left).compare(tree->getName(right));
     }
 
 private:
-TaxonomyTree *tree;
+    TaxonomyTree *tree;
 };
 
-TaxonomyTree *TaxonomyTree::load(TaxonomyTree *tree)
-{
+TaxonomyTree *TaxonomyTree::load(TaxonomyTree *tree) {
     U2DataPathRegistry *dataPathRegistry = AppContext::getDataPathRegistry();
     SAFE_POINT(NULL != dataPathRegistry, "U2DataPathRegistry is NULL", tree);
 
@@ -261,7 +244,7 @@ TaxonomyTree *TaxonomyTree::load(TaxonomyTree *tree)
                             assert(parentID == 1);
                         }
 
-                        assert (parentID == (parentID & ~RANK_MASK));
+                        assert(parentID == (parentID & ~RANK_MASK));
                         nodes[taxID] = parentID | (rankID << RANK_SHIFT);
                         assert(tree->getParent(taxID) == parentID);
                         assert(tree->getRank(taxID) == rank);
@@ -304,8 +287,7 @@ TaxonomyTree *TaxonomyTree::load(TaxonomyTree *tree)
                         while (unsigned(names.size()) <= taxID) {
                             names.append(QString());
                         }
-                        if (!names.at(taxID).isEmpty())
-                        {
+                        if (!names.at(taxID).isEmpty()) {
                             algoLog.error(QString("Non-unique scientific name for taxon ID : %1").arg(taxID));
                         }
                         names[taxID] = name;
@@ -326,7 +308,6 @@ TaxonomyTree *TaxonomyTree::load(TaxonomyTree *tree)
     return tree;
 }
 
-
 ////////////////////////// WD GUI ////////////////////////
 
 class TreeItem;
@@ -341,7 +322,7 @@ bool taxIdLessThan(const TaxID a, const TaxID b) {
     return TaxonomyTree::getInstance()->getName(a) < TaxonomyTree::getInstance()->getName(b);
 }
 
-}
+}    // namespace
 
 TaxonomyTreeModel::TaxonomyTreeModel(const QString &data, QObject *parent)
     : QAbstractItemModel(parent), tree(TaxonomyTree::getInstance()) {
@@ -410,7 +391,7 @@ bool TaxonomyTreeModel::setData(const QModelIndex &index, const QVariant &v, int
 
         QList<TaxID> children = getChildrenSorted(item);
         if (children.size() != 0) {
-            emit dataChanged(createIndex(0,0,children.first()), createIndex(children.size()-1,3,children.last()));
+            emit dataChanged(createIndex(0, 0, children.first()), createIndex(children.size() - 1, 3, children.last()));
         }
         TaxID parent = tree->getParent(item);
         while (parent > 1) {
@@ -419,20 +400,19 @@ bool TaxonomyTreeModel::setData(const QModelIndex &index, const QVariant &v, int
             } else {
                 tristate.remove(parent, item);
             }
-            emit dataChanged(createIndex(0,0,parent), createIndex(0,3,parent), checkRole);
+            emit dataChanged(createIndex(0, 0, parent), createIndex(0, 3, parent), checkRole);
             parent = tree->getParent(parent);
         }
     }
     return result;
 }
 
-
 QVariant TaxonomyTreeModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid())
         return QVariant();
 
     TaxID item = static_cast<TaxID>(index.internalId());
-    if ( role == Qt::CheckStateRole && index.column() == 0 ) {
+    if (role == Qt::CheckStateRole && index.column() == 0) {
         while (item > 1) {
             if (selected.contains(item)) {
                 return Qt::Checked;
@@ -453,7 +433,6 @@ QVariant TaxonomyTreeModel::data(const QModelIndex &index, int role) const {
         }
     }
     return QVariant();
-
 }
 
 Qt::ItemFlags TaxonomyTreeModel::flags(const QModelIndex &index) const {
@@ -474,17 +453,15 @@ Qt::ItemFlags TaxonomyTreeModel::flags(const QModelIndex &index) const {
         }
     }
 
-    if ( index.column() == 0 ) {
+    if (index.column() == 0) {
         flags |= Qt::ItemIsUserCheckable | Qt::ItemIsTristate;
     }
 
     return flags;
 }
 
-QVariant TaxonomyTreeModel::headerData(int section, Qt::Orientation orientation,
-                               int role) const {
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-    {
+QVariant TaxonomyTreeModel::headerData(int section, Qt::Orientation orientation, int role) const {
+    if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
         switch (section) {
         case 0:
             return TaxonomySupport::tr("Taxon name");
@@ -499,7 +476,7 @@ QVariant TaxonomyTreeModel::headerData(int section, Qt::Orientation orientation,
 }
 
 QModelIndex TaxonomyTreeModel::index(int row, int column, const QModelIndex &parent)
-            const {
+    const {
     if (!hasIndex(row, column, parent))
         return QModelIndex();
 
@@ -556,8 +533,7 @@ int TaxonomyTreeModel::rowCount(const QModelIndex &parent) const {
 static const QString PLACEHOLDER("Select IDs...");
 
 TaxonomyDelegate::TaxonomyDelegate(QObject *parent)
-    : PropertyDelegate(parent)
-{
+    : PropertyDelegate(parent) {
 }
 
 QVariant TaxonomyDelegate::getDisplayValue(const QVariant &value) const {
@@ -566,7 +542,7 @@ QVariant TaxonomyDelegate::getDisplayValue(const QVariant &value) const {
 }
 
 QWidget *TaxonomyDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const {
-    TaxonomyPropertyWidget* editor = new TaxonomyPropertyWidget(parent);
+    TaxonomyPropertyWidget *editor = new TaxonomyPropertyWidget(parent);
     connect(editor, SIGNAL(si_valueChanged(QVariant)), SLOT(sl_commit()));
     return editor;
 }
@@ -591,7 +567,7 @@ PropertyDelegate *TaxonomyDelegate::clone() {
 }
 
 void TaxonomyDelegate::sl_commit() {
-    TaxonomyPropertyWidget* editor = qobject_cast<TaxonomyPropertyWidget *>(sender());
+    TaxonomyPropertyWidget *editor = qobject_cast<TaxonomyPropertyWidget *>(sender());
     CHECK(editor != NULL, );
     emit commitData(editor);
 }
@@ -601,8 +577,7 @@ void TaxonomyDelegate::sl_commit() {
 /********************************************************************/
 
 TaxonomyPropertyWidget::TaxonomyPropertyWidget(QWidget *parent, DelegateTags *tags)
-    : PropertyWidget(parent, tags)
-{
+    : PropertyWidget(parent, tags) {
     lineEdit = new QLineEdit(this);
     lineEdit->setPlaceholderText(PLACEHOLDER);
     lineEdit->setReadOnly(true);
@@ -645,8 +620,7 @@ void TaxonomyPropertyWidget::sl_showDialog() {
 /********************************************************************/
 
 TaxonSelectionDialog::TaxonSelectionDialog(const QString &value, QWidget *parent)
-    : QDialog(parent)
-{
+    : QDialog(parent) {
     if (objectName().isEmpty()) {
         setObjectName(QStringLiteral("TaxonSelectionDialog"));
     }
@@ -655,7 +629,7 @@ TaxonSelectionDialog::TaxonSelectionDialog(const QString &value, QWidget *parent
     mainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
 
     treeView = new QTreeView(this);
-    treeModel = new TaxonomyTreeModel(value); //fixme delete
+    treeModel = new TaxonomyTreeModel(value);    //fixme delete
     treeView->setModel(treeModel);
     for (int column = 0; column < treeModel->columnCount(); ++column) {
         treeView->resizeColumnToContents(column);
@@ -667,7 +641,7 @@ TaxonSelectionDialog::TaxonSelectionDialog(const QString &value, QWidget *parent
     buttonBox = new QDialogButtonBox(this);
     buttonBox->setObjectName(QStringLiteral("buttonBox"));
     buttonBox->setOrientation(Qt::Horizontal);
-    buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
+    buttonBox->setStandardButtons(QDialogButtonBox::Cancel | QDialogButtonBox::Ok);
 
     mainLayout->addWidget(buttonBox);
 
@@ -681,14 +655,14 @@ TaxonSelectionDialog::TaxonSelectionDialog(const QString &value, QWidget *parent
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Select"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
-  //  adjustSize();
+    //  adjustSize();
     resize(580, 440);
-    setSizePolicy( QSizePolicy::Expanding,  QSizePolicy::Expanding);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
 QString TaxonSelectionDialog::getValue() const {
     return treeModel->getSelected();
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

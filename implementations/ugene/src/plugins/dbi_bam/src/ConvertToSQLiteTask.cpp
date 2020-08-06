@@ -49,21 +49,20 @@
 namespace U2 {
 namespace BAM {
 
-ConvertToSQLiteTask::ConvertToSQLiteTask(const GUrl &_sourceUrl, const U2DbiRef &dstDbiRef, BAMInfo& _bamInfo, bool _sam):
-    Task(tr("Convert BAM to UGENE database (%1)").arg(_sourceUrl.fileName()), TaskFlag_None),
-    sourceUrl(_sourceUrl),
-    dstDbiRef(dstDbiRef),
-    bamInfo(_bamInfo),
-    sam(_sam)
-{
-    GCOUNTER( cvar, tvar, "ConvertBamToUgenedb" );
+ConvertToSQLiteTask::ConvertToSQLiteTask(const GUrl &_sourceUrl, const U2DbiRef &dstDbiRef, BAMInfo &_bamInfo, bool _sam)
+    : Task(tr("Convert BAM to UGENE database (%1)").arg(_sourceUrl.fileName()), TaskFlag_None),
+      sourceUrl(_sourceUrl),
+      dstDbiRef(dstDbiRef),
+      bamInfo(_bamInfo),
+      sam(_sam) {
+    GCOUNTER(cvar, tvar, "ConvertBamToUgenedb");
     tpm = Progress_Manual;
 }
 
 static void enableCoverageOnImport(U2AssemblyCoverageImportInfo &cii, int referenceLength) {
     cii.computeCoverage = true;
     int coverageInfoSize = qMin(U2AssemblyUtils::MAX_COVERAGE_VECTOR_SIZE, referenceLength);
-    cii.coverageBasesPerPoint = qMax(1.0, ((double)referenceLength)/coverageInfoSize);
+    cii.coverageBasesPerPoint = qMax(1.0, ((double)referenceLength) / coverageInfoSize);
     cii.coverage.resize(coverageInfoSize);
 }
 
@@ -71,12 +70,11 @@ namespace {
 
 class BamIterator : public Iterator {
 public:
-    BamIterator(BamReader &reader):
-        reader(reader),
-        alignmentReader(NULL, 0, 0),
-        alignmentReaderValid(false),
-        readValid(false)
-    {
+    BamIterator(BamReader &reader)
+        : reader(reader),
+          alignmentReader(NULL, 0, 0),
+          alignmentReaderValid(false),
+          readValid(false) {
     }
 
     virtual bool hasNext() {
@@ -84,11 +82,11 @@ public:
     }
 
     virtual U2AssemblyRead next() {
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw Exception(BAMDbiPlugin::tr("The iteration has no next element"));
         }
-        if(!readValid) {
-            if(!alignmentReaderValid) {
+        if (!readValid) {
+            if (!alignmentReaderValid) {
                 alignmentReader = reader.getAlignmentReader();
             }
             alignmentReaderValid = false;
@@ -99,11 +97,11 @@ public:
     }
 
     virtual void skip() {
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw Exception(BAMDbiPlugin::tr("The iteration has no next element"));
         }
-        if(!readValid) {
-            if(!alignmentReaderValid) {
+        if (!readValid) {
+            if (!alignmentReaderValid) {
                 alignmentReader = reader.getAlignmentReader();
             }
             alignmentReaderValid = false;
@@ -113,11 +111,11 @@ public:
     }
 
     virtual const U2AssemblyRead &peek() {
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw Exception(BAMDbiPlugin::tr("The iteration has no next element"));
         }
-        if(!readValid) {
-            if(!alignmentReaderValid) {
+        if (!readValid) {
+            if (!alignmentReaderValid) {
                 alignmentReader = reader.getAlignmentReader();
             }
             alignmentReaderValid = false;
@@ -128,11 +126,11 @@ public:
     }
 
     virtual int peekReferenceId() {
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw Exception(BAMDbiPlugin::tr("The iteration has no next element"));
         }
-        if(!readValid) {
-            if(!alignmentReaderValid) {
+        if (!readValid) {
+            if (!alignmentReaderValid) {
                 alignmentReader = reader.getAlignmentReader();
                 alignmentReaderValid = true;
             }
@@ -150,11 +148,10 @@ private:
 
 class SamIterator : public Iterator {
 public:
-    SamIterator(SamReader &reader):
-        reader(reader),
-        readReferenceId(-1),
-        readValid(false)
-    {
+    SamIterator(SamReader &reader)
+        : reader(reader),
+          readReferenceId(-1),
+          readValid(false) {
     }
 
     virtual bool hasNext() {
@@ -162,10 +159,10 @@ public:
     }
 
     virtual U2AssemblyRead next() {
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw Exception(BAMDbiPlugin::tr("The iteration has no next element"));
         }
-        if(!readValid) {
+        if (!readValid) {
             bool eof = false;
             read = AssemblyDbi::alignmentToRead(reader.readAlignment(eof));
         }
@@ -178,10 +175,10 @@ public:
     }
 
     virtual const U2AssemblyRead &peek() {
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw Exception(BAMDbiPlugin::tr("The iteration has no next element"));
         }
-        if(!readValid) {
+        if (!readValid) {
             bool eof = false;
             Alignment alignemnt = reader.readAlignment(eof);
             readReferenceId = alignemnt.getReferenceId();
@@ -192,10 +189,10 @@ public:
     }
 
     virtual int peekReferenceId() {
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw Exception(BAMDbiPlugin::tr("The iteration has no next element"));
         }
-        if(!readValid) {
+        if (!readValid) {
             bool eof = false;
             Alignment alignemnt = reader.readAlignment(eof);
             readReferenceId = alignemnt.getReferenceId();
@@ -214,10 +211,9 @@ private:
 
 class ReferenceIterator : public Iterator {
 public:
-    ReferenceIterator(int referenceId, Iterator &iterator):
-        referenceId(referenceId),
-        iterator(iterator)
-    {
+    ReferenceIterator(int referenceId, Iterator &iterator)
+        : referenceId(referenceId),
+          iterator(iterator) {
     }
 
     virtual bool hasNext() {
@@ -225,28 +221,28 @@ public:
     }
 
     virtual U2AssemblyRead next() {
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw Exception(BAMDbiPlugin::tr("The iteration has no next element"));
         }
         return iterator.next();
     }
 
     virtual void skip() {
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw Exception(BAMDbiPlugin::tr("The iteration has no next element"));
         }
         iterator.skip();
     }
 
     virtual const U2AssemblyRead &peek() {
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw Exception(BAMDbiPlugin::tr("The iteration has no next element"));
         }
         return iterator.peek();
     }
 
     virtual int peekReferenceId() {
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw Exception(BAMDbiPlugin::tr("The iteration has no next element"));
         }
         return iterator.peekReferenceId();
@@ -259,9 +255,8 @@ private:
 
 class SkipUnmappedIterator : public Iterator {
 public:
-    SkipUnmappedIterator(Iterator &iterator):
-        iterator(iterator)
-    {
+    SkipUnmappedIterator(Iterator &iterator)
+        : iterator(iterator) {
     }
 
     virtual bool hasNext() {
@@ -271,7 +266,7 @@ public:
 
     virtual U2AssemblyRead next() {
         skipUnmappedReads();
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw Exception(BAMDbiPlugin::tr("The iteration has no next element"));
         }
         return iterator.next();
@@ -279,7 +274,7 @@ public:
 
     virtual void skip() {
         skipUnmappedReads();
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw Exception(BAMDbiPlugin::tr("The iteration has no next element"));
         }
         iterator.skip();
@@ -287,7 +282,7 @@ public:
 
     virtual const U2AssemblyRead &peek() {
         skipUnmappedReads();
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw Exception(BAMDbiPlugin::tr("The iteration has no next element"));
         }
         return iterator.peek();
@@ -295,7 +290,7 @@ public:
 
     virtual int peekReferenceId() {
         skipUnmappedReads();
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw Exception(BAMDbiPlugin::tr("The iteration has no next element"));
         }
         return iterator.peekReferenceId();
@@ -303,10 +298,10 @@ public:
 
 private:
     void skipUnmappedReads() {
-        while(iterator.hasNext()) {
-            if(-1 == iterator.peekReferenceId() ||
-               ReadFlagsUtils::isUnmappedRead(iterator.peek()->flags) ||
-               iterator.peek()->cigar.isEmpty()) {
+        while (iterator.hasNext()) {
+            if (-1 == iterator.peekReferenceId() ||
+                ReadFlagsUtils::isUnmappedRead(iterator.peek()->flags) ||
+                iterator.peek()->cigar.isEmpty()) {
                 iterator.skip();
             } else {
                 break;
@@ -320,7 +315,8 @@ private:
 
 class DbiIterator : public U2DbiIterator<U2AssemblyRead> {
 public:
-    virtual ~DbiIterator() {}
+    virtual ~DbiIterator() {
+    }
 
     virtual bool hasNext() = 0;
 
@@ -333,25 +329,24 @@ public:
 
 class SequentialDbiIterator : public DbiIterator {
 public:
-    SequentialDbiIterator(int referenceId, bool skipUnmapped, Iterator &inputIterator, TaskStateInfo &stateInfo, const IOAdapter &ioAdapter):
-        referenceIterator(referenceId, inputIterator),
-        skipUnmappedIterator(skipUnmapped? new SkipUnmappedIterator(referenceIterator):NULL),
-        iterator(skipUnmapped ? dynamic_cast<Iterator *>(skipUnmappedIterator.data()) : dynamic_cast<Iterator *>(&referenceIterator)),
-        readsImported(0),
-        stateInfo(stateInfo),
-        ioAdapter(ioAdapter)
-    {
+    SequentialDbiIterator(int referenceId, bool skipUnmapped, Iterator &inputIterator, TaskStateInfo &stateInfo, const IOAdapter &ioAdapter)
+        : referenceIterator(referenceId, inputIterator),
+          skipUnmappedIterator(skipUnmapped ? new SkipUnmappedIterator(referenceIterator) : NULL),
+          iterator(skipUnmapped ? dynamic_cast<Iterator *>(skipUnmappedIterator.data()) : dynamic_cast<Iterator *>(&referenceIterator)),
+          readsImported(0),
+          stateInfo(stateInfo),
+          ioAdapter(ioAdapter) {
     }
 
     virtual bool hasNext() {
-        if(stateInfo.isCanceled()) {
+        if (stateInfo.isCanceled()) {
             throw CancelledException(BAMDbiPlugin::tr("Task was cancelled"));
         }
         return iterator->hasNext();
     }
 
     virtual U2AssemblyRead next() {
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw Exception(BAMDbiPlugin::tr("The iteration has no next element"));
         }
         stateInfo.progress = ioAdapter.getProgress();
@@ -360,7 +355,7 @@ public:
     }
 
     virtual U2AssemblyRead peek() {
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw Exception(BAMDbiPlugin::tr("The iteration has no next element"));
         }
         return iterator->peek();
@@ -381,22 +376,21 @@ private:
 
 class IndexedBamDbiIterator : public DbiIterator {
 public:
-    IndexedBamDbiIterator(int referenceId, bool skipUnmapped, BamReader &reader, const Index &index, TaskStateInfo &stateInfo, const IOAdapter &ioAdapter):
-        iterator(reader),
-        dbiIterator(referenceId, skipUnmapped, iterator, stateInfo, ioAdapter),
-        hasReads(false)
-    {
+    IndexedBamDbiIterator(int referenceId, bool skipUnmapped, BamReader &reader, const Index &index, TaskStateInfo &stateInfo, const IOAdapter &ioAdapter)
+        : iterator(reader),
+          dbiIterator(referenceId, skipUnmapped, iterator, stateInfo, ioAdapter),
+          hasReads(false) {
         {
             VirtualOffset minOffset = VirtualOffset(0xffffffffffffLL, 0xffff);
-            foreach(const Index::ReferenceIndex::Bin &bin, index.getReferenceIndices()[referenceId].getBins()) {
-                foreach(const Index::ReferenceIndex::Chunk &chunk, bin.getChunks()) {
-                    if(minOffset > chunk.getStart()) {
+            foreach (const Index::ReferenceIndex::Bin &bin, index.getReferenceIndices()[referenceId].getBins()) {
+                foreach (const Index::ReferenceIndex::Chunk &chunk, bin.getChunks()) {
+                    if (minOffset > chunk.getStart()) {
                         minOffset = chunk.getStart();
                         hasReads = true;
                     }
                 }
             }
-            if(hasReads) {
+            if (hasReads) {
                 reader.seek(minOffset);
             }
         }
@@ -407,14 +401,14 @@ public:
     }
 
     virtual U2AssemblyRead next() {
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw Exception(BAMDbiPlugin::tr("The iteration has no next element"));
         }
         return dbiIterator.next();
     }
 
     virtual U2AssemblyRead peek() {
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw Exception(BAMDbiPlugin::tr("The iteration has no next element"));
         }
         return dbiIterator.peek();
@@ -430,15 +424,15 @@ private:
     bool hasReads;
 };
 
-static const int READS_CHUNK_SIZE = 250*1000;
+static const int READS_CHUNK_SIZE = 250 * 1000;
 
-} // namespace
+}    // namespace
 
 void ConvertToSQLiteTask::run() {
     try {
         taskLog.info(tr("Converting assembly from %1 to %2 started")
-                     .arg(sourceUrl.fileName())
-                     .arg(getDestinationUrl().fileName()));
+                         .arg(sourceUrl.fileName())
+                         .arg(getDestinationUrl().fileName()));
 
         time_t startTime = time(0);
 
@@ -459,28 +453,28 @@ void ConvertToSQLiteTask::run() {
         time_t totalTime = time(0) - startTime;
 
         taskLog.info(QString("Converting assembly from %1 to %2 successfully finished: imported %3 reads, total time %4 s, pack time %5 s")
-                     .arg(sourceUrl.fileName())
-                     .arg(getDestinationUrl().fileName())
-                     .arg(totalReadsImported)
-                     .arg(totalTime)
-                     .arg(packTime));
+                         .arg(sourceUrl.fileName())
+                         .arg(getDestinationUrl().fileName())
+                         .arg(totalReadsImported)
+                         .arg(totalTime)
+                         .arg(packTime));
 
-    } catch(const CancelledException & /*e*/) {
+    } catch (const CancelledException & /*e*/) {
         qDeleteAll(importers);
         importers.clear();
         if (getDestinationUrl().isLocalFile()) {
             QFile::remove(getDestinationUrl().getURLString());
         }
         taskLog.info(tr("Converting assembly from %1 to %2 cancelled")
-                     .arg(sourceUrl.fileName())
-                     .arg(getDestinationUrl().fileName()));
-    } catch(const Exception &e) {
+                         .arg(sourceUrl.fileName())
+                         .arg(getDestinationUrl().fileName()));
+    } catch (const Exception &e) {
         qDeleteAll(importers);
         importers.clear();
         setError(tr("Converting assembly from %1 to %2 failed: %3")
-                 .arg(sourceUrl.fileName())
-                 .arg(getDestinationUrl().fileName())
-                 .arg(e.getMessage()));
+                     .arg(sourceUrl.fileName())
+                     .arg(getDestinationUrl().fileName())
+                     .arg(e.getMessage()));
         if (getDestinationUrl().isLocalFile()) {
             QFile::remove(getDestinationUrl().getURLString());
         }
@@ -497,8 +491,8 @@ QList<U2Assembly> ConvertToSQLiteTask::getAssemblies() const {
 
 bool ConvertToSQLiteTask::isSorted(Reader *reader) const {
     return Header::Coordinate == reader->getHeader().getSortingOrder() ||
-            Header::QueryName == reader->getHeader().getSortingOrder() ||
-            bamInfo.hasIndex();
+           Header::QueryName == reader->getHeader().getSortingOrder() ||
+           bamInfo.hasIndex();
 }
 
 qint64 ConvertToSQLiteTask::importReads() {
@@ -518,7 +512,7 @@ qint64 ConvertToSQLiteTask::importReads() {
 
     references = reader->getHeader().getReferences();
 
-    for (int referenceId = -1;  referenceId < references.size(); referenceId++) {
+    for (int referenceId = -1; referenceId < references.size(); referenceId++) {
         importers[referenceId] = new AssemblyImporter(stateInfo);
     }
 
@@ -547,9 +541,9 @@ void ConvertToSQLiteTask::packReads() {
     foreach (int referenceId, importers.keys()) {
         SAFE_POINT_EXT(importers.contains(referenceId), throw Exception("An unexpected assembly"), );
         taskLog.details(tr("Packing reads for assembly '%1' (%2 of %3)")
-                        .arg(importers[referenceId]->getAssembly().visualName)
-                        .arg(referenceId + 1)
-                        .arg(importInfos.size()));
+                            .arg(importers[referenceId]->getAssembly().visualName)
+                            .arg(referenceId + 1)
+                            .arg(importInfos.size()));
 
         importers[referenceId]->packReads(importInfos[referenceId]);
         CHECK_EXT(!opStatus.isCoR(), throw Exception(opStatus.getError()), );
@@ -611,15 +605,15 @@ qint64 ConvertToSQLiteTask::importMappedSortedReads(BamReader *bamReader, Reader
             U2Assembly assembly;
             assembly.visualName = references[referenceId].getName();
             taskLog.details(tr("Importing assembly '%1' (%2 of %3)")
-                            .arg(assembly.visualName)
-                            .arg(referenceId + 1)
-                            .arg(references.size()));
+                                .arg(assembly.visualName)
+                                .arg(referenceId + 1)
+                                .arg(references.size()));
 
             U2AssemblyReadsImportInfo &importInfo = importInfos[referenceId];
             enableCoverageOnImport(importInfo.coverageInfo, references[referenceId].getLength());
 
             QScopedPointer<DbiIterator> dbiIterator;
-            if(bamInfo.hasIndex()) {
+            if (bamInfo.hasIndex()) {
                 dbiIterator.reset(new IndexedBamDbiIterator(referenceId, !bamInfo.isUnmappedSelected(), *bamReader, bamInfo.getIndex(), stateInfo, *ioAdapter));
             } else {
                 dbiIterator.reset(new SequentialDbiIterator(referenceId, !bamInfo.isUnmappedSelected(), *iterator, stateInfo, *ioAdapter));
@@ -632,12 +626,12 @@ qint64 ConvertToSQLiteTask::importMappedSortedReads(BamReader *bamReader, Reader
 
             totalReadsImported += dbiIterator->getReadsImported();
             taskLog.details(tr("Successfully imported %1 reads for assembly '%2' (total %3 reads imported)")
-                            .arg(dbiIterator->getReadsImported())
-                            .arg(assembly.visualName)
-                            .arg(totalReadsImported));
+                                .arg(dbiIterator->getReadsImported())
+                                .arg(assembly.visualName)
+                                .arg(totalReadsImported));
         } else {
             if (!bamInfo.hasIndex()) {
-                while(iterator->hasNext() && iterator->peekReferenceId() == referenceId) {
+                while (iterator->hasNext() && iterator->peekReferenceId() == referenceId) {
                     iterator->skip();
                 }
                 if (isCanceled()) {
@@ -675,7 +669,7 @@ qint64 ConvertToSQLiteTask::importUnmappedSortedReads(BamReader *bamReader, Read
             while (iterator->hasNext() && iterator->peekReferenceId() != -1) {
                 iterator->skip();
             }
-        } else{
+        } else {
             iterator.reset(new BamIterator(*bamReader));
         }
     }
@@ -746,13 +740,13 @@ qint64 ConvertToSQLiteTask::importReadsSequentially(Iterator *iterator) {
     U2OpStatusImpl opStatus;
 
     while (iterator->hasNext()) {
-        QMap<int, QList<U2AssemblyRead> > reads;
+        QMap<int, QList<U2AssemblyRead>> reads;
 
         int readCount = 0;
         while (iterator->hasNext() && readCount < READS_CHUNK_SIZE) {
             const int referenceId = iterator->peekReferenceId();
             if ((-1 == referenceId && bamInfo.isUnmappedSelected()) ||
-                    bamInfo.isReferenceSelected(referenceId)) {
+                bamInfo.isReferenceSelected(referenceId)) {
                 U2AssemblyReadsImportInfo &importInfo = importInfos[referenceId];
                 reads[referenceId] << iterator->next();
                 readCount++;
@@ -772,7 +766,7 @@ qint64 ConvertToSQLiteTask::importReadsSequentially(Iterator *iterator) {
     return totalReadsImported;
 }
 
-void ConvertToSQLiteTask::flushReads(const QMap<int, QList<U2AssemblyRead> > &reads) {
+void ConvertToSQLiteTask::flushReads(const QMap<int, QList<U2AssemblyRead>> &reads) {
     foreach (int index, reads.keys()) {
         if (!reads[index].isEmpty()) {
             BufferedDbiIterator<U2AssemblyRead> readsIterator(reads[index]);
@@ -859,7 +853,7 @@ void ConvertToSQLiteTask::updateImportInfoMaxProwAttribute(const U2AssemblyReads
         if (opStatus.hasError()) {
             throw Exception(opStatus.getError());
         }
-    } else if (importInfo.packStat.readsCount > 0){
+    } else if (importInfo.packStat.readsCount > 0) {
         // if there are reads, but maxProw == 0 => error
         taskLog.details(tr("Warning: incorrect maxProw == %1, probably packing was not done! Attribute was not set").arg(maxProw));
     }
@@ -911,5 +905,5 @@ IOAdapter *ConvertToSQLiteTask::prepareIoAdapter() {
     return ioAdapter.take();
 }
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2

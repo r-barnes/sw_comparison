@@ -28,17 +28,16 @@
 
 #include <U2View/MSAEditor.h>
 
-
 namespace U2 {
 
-class U2VIEW_EXPORT PairAlignFactory : public OPWidgetFactory
-{
+class U2VIEW_EXPORT PairAlignFactory : public OPWidgetFactory {
     Q_OBJECT
 public:
     PairAlignFactory();
 
-    virtual QWidget* createWidget(GObjectView* objView);
-    virtual OPGroupParameters getOPGroupParameters();
+    QWidget *createWidget(GObjectView *objView, const QVariantMap &options) override;
+
+    OPGroupParameters getOPGroupParameters() override;
 
 private:
     static const QString GROUP_ID;
@@ -46,6 +45,6 @@ private:
     static const QString GROUP_DOC_PAGE;
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

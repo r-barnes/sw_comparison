@@ -39,7 +39,7 @@ private:
 class OpenSavedTextObjectViewTask : public ObjectViewTask {
     Q_OBJECT
 public:
-    OpenSavedTextObjectViewTask(const QString& viewName, const QVariantMap& stateData);
+    OpenSavedTextObjectViewTask(const QString &viewName, const QVariantMap &stateData);
     virtual void open();
 
 private:
@@ -48,13 +48,11 @@ private:
 
 class UpdateSimpleTextObjectViewTask : public ObjectViewTask {
 public:
-    UpdateSimpleTextObjectViewTask(GObjectView* v, const QString& stateName, const QVariantMap& stateData);
+    UpdateSimpleTextObjectViewTask(GObjectView *v, const QString &stateName, const QVariantMap &stateData);
 
     virtual void update();
 };
 
-
-} // namespace
+}    // namespace U2
 
 #endif
-

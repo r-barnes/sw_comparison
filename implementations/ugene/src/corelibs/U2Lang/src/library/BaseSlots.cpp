@@ -19,9 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
-
 #include "BaseSlots.h"
+
+#include <U2Core/U2SafePoints.h>
 
 static const QString SEQ_SLOT_ID("sequence");
 static const QString MA_SLOT_ID("msa");
@@ -72,5 +72,5 @@ const Descriptor BaseSlots::DATASET_SLOT() {
     return Descriptor(DATASET_SLOT_ID, tr("Dataset name"), tr("Dataset name"));
 }
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

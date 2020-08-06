@@ -19,40 +19,34 @@
  * MA 02110-1301, USA.
  */
 
+#include "MergeBamTask.h"
+
 #include <QDir>
 #include <QFileInfo>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
+#include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/GUrlUtils.h>
 #include <U2Core/IOAdapterUtils.h>
-#include <U2Core/UserApplicationsSettings.h>
 #include <U2Core/U2SafePoints.h>
-
-#include <U2Core/BaseDocumentFormats.h>
+#include <U2Core/UserApplicationsSettings.h>
 
 #include <U2Formats/BAMUtils.h>
 
-#include "MergeBamTask.h"
 #include "DocumentFormatUtils.h"
 
 namespace U2 {
 
 //////////////////////////////////////////////////////////////////////////
 //MergeBamTask
-MergeBamTask::MergeBamTask(const QStringList& urls, const QString &dir, const QString & outName, bool sortInputBams)
-: Task(DocumentFormatUtils::tr("Merge BAM files with SAMTools merge"), TaskFlags_FOSCOE)
-, outputName(outName)
-, workingDir(dir)
-, targetUrl("")
-, bamUrls(urls)
-, sortInputBams(sortInputBams)
-{
+MergeBamTask::MergeBamTask(const QStringList &urls, const QString &dir, const QString &outName, bool sortInputBams)
+    : Task(DocumentFormatUtils::tr("Merge BAM files with SAMTools merge"), TaskFlags_FOSCOE), outputName(outName), workingDir(dir), targetUrl(""), bamUrls(urls), sortInputBams(sortInputBams) {
     if (!workingDir.endsWith("/") && !workingDir.endsWith("\\")) {
         this->workingDir += "/";
     }
-    if(outputName.isEmpty()){
+    if (outputName.isEmpty()) {
         outputName = "merged.bam";
     }
 }
@@ -62,7 +56,7 @@ QString MergeBamTask::getResult() const {
 }
 
 void cleanupTempDir(const QStringList &tempDirFiles) {
-    foreach(const QString& url, tempDirFiles) {
+    foreach (const QString &url, tempDirFiles) {
         QFile toDelete(url);
         if (toDelete.exists(url)) {
             toDelete.remove(url);
@@ -70,8 +64,8 @@ void cleanupTempDir(const QStringList &tempDirFiles) {
     }
 }
 
-void MergeBamTask::run(){
-    if(bamUrls.isEmpty()){
+void MergeBamTask::run() {
+    if (bamUrls.isEmpty()) {
         stateInfo.setError("No BAM files to merge");
         return;
     }
@@ -79,7 +73,7 @@ void MergeBamTask::run(){
     QString tmpDirPath = AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath();
     if (sortInputBams) {
         QStringList sortedNamesList;
-        foreach(const QString& url, bamUrls) {
+        foreach (const QString &url, bamUrls) {
             QFileInfo fi(url);
             QString sortedName = tmpDirPath + "/" + fi.completeBaseName() + "_sorted.bam";
             sortedNamesList.append(sortedName);
@@ -101,7 +95,6 @@ void MergeBamTask::run(){
     }
 
     BAMUtils::createBamIndex(targetUrl, stateInfo);
-
 }
 
-} // U2
+}    // namespace U2

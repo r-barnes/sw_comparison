@@ -22,11 +22,11 @@
 #ifndef _U2_QD_GC_CONTENT_ACTOR_H_
 #define _U2_QD_GC_CONTENT_ACTOR_H_
 
-#include <U2Lang/QDScheme.h>
-#include <U2Lang/QueryDesignerRegistry.h>
-
 #include <U2Core/DNASequence.h>
 #include <U2Core/U2Region.h>
+
+#include <U2Lang/QDScheme.h>
+#include <U2Lang/QueryDesignerRegistry.h>
 
 namespace U2 {
 
@@ -37,26 +37,30 @@ public:
     U2Region gcRangeInPercents;
     qint64 minLen;
     qint64 offset;
-    DNATranslation* complTT;
+    DNATranslation *complTT;
     QDStrandOption strand;
-    FindGcRegionsSettings() : gcRangeInPercents(20, 40), minLen(0), offset(0), complTT(NULL) {}
+    FindGcRegionsSettings()
+        : gcRangeInPercents(20, 40), minLen(0), offset(0), complTT(NULL) {
+    }
 };
 
 class FindGcRegionsTask : public Task {
     Q_OBJECT
 public:
-    FindGcRegionsTask(const FindGcRegionsSettings& settings, const DNASequence& sequence)
-        : Task(tr("Find base content task"), TaskFlag_None), settings_(settings), sequence_(sequence) {}
+    FindGcRegionsTask(const FindGcRegionsSettings &settings, const DNASequence &sequence)
+        : Task(tr("Find base content task"), TaskFlag_None), settings_(settings), sequence_(sequence) {
+    }
     void run();
     QList<SharedAnnotationData> getResultAsAnnotations() const;
+
 private:
-    void find(const char* seq,
-        qint64 seqLen,
-        U2Region gcRangeInPercents,
-        qint64 len,
-        QVector<U2Region>& result
-        );
-    static QList<SharedAnnotationData> createAnnotations(const QVector<U2Region>& regions, qint64 offset, U2Strand::Direction strand);
+    void find(const char *seq,
+              qint64 seqLen,
+              U2Region gcRangeInPercents,
+              qint64 len,
+              QVector<U2Region> &result);
+    static QList<SharedAnnotationData> createAnnotations(const QVector<U2Region> &regions, qint64 offset, U2Strand::Direction strand);
+
 private:
     FindGcRegionsSettings settings_;
     DNASequence sequence_;
@@ -67,22 +71,26 @@ private:
 class QDFindGcRegionsActor : public QDActor {
     Q_OBJECT
 public:
-    QDFindGcRegionsActor(QDActorPrototype const* proto);
+    QDFindGcRegionsActor(QDActorPrototype const *proto);
     int getMinResultLen() const;
     int getMaxResultLen() const;
     QString getText() const;
-    Task* getAlgorithmTask(const QVector<U2Region>& location);
-    QColor defaultColor() const { return QColor(0xc6, 0xc6, 0x55); }
+    Task *getAlgorithmTask(const QVector<U2Region> &location);
+    QColor defaultColor() const {
+        return QColor(0xc6, 0xc6, 0x55);
+    }
 private slots:
-    void sl_onTaskFinished(Task*);
+    void sl_onTaskFinished(Task *);
 };
 
 class QDFindGcActorPrototype : public QDActorPrototype {
 public:
     QDFindGcActorPrototype();
-    virtual QDActor* createInstance() const { return new QDFindGcRegionsActor(this); }
+    virtual QDActor *createInstance() const {
+        return new QDFindGcRegionsActor(this);
+    }
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

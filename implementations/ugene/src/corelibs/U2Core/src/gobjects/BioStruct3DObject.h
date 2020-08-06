@@ -22,8 +22,8 @@
 #ifndef _U2_BIOSTRUCT3D_OBJECT_H_
 #define _U2_BIOSTRUCT3D_OBJECT_H_
 
-#include <U2Core/GObject.h>
 #include <U2Core/BioStruct3D.h>
+#include <U2Core/GObject.h>
 #include <U2Core/U2RawData.h>
 
 namespace U2 {
@@ -39,11 +39,11 @@ public:
 class U2CORE_EXPORT BioStruct3DObject : public GObject {
     Q_OBJECT
 public:
-    static BioStruct3DObject * createInstance(const BioStruct3D &bioStruct3D, const QString &objectName, const U2DbiRef &dbiRef, U2OpStatus &os, const QVariantMap &hintsMap = QVariantMap());
+    static BioStruct3DObject *createInstance(const BioStruct3D &bioStruct3D, const QString &objectName, const U2DbiRef &dbiRef, U2OpStatus &os, const QVariantMap &hintsMap = QVariantMap());
     BioStruct3DObject(const QString &objectName, const U2EntityRef &structRef, const QVariantMap &hintsMap = QVariantMap());
 
-    const BioStruct3D & getBioStruct3D() const;
-    GObject * clone(const U2DbiRef &dstDbiRef, U2OpStatus &os, const QVariantMap &hints = QVariantMap()) const;
+    const BioStruct3D &getBioStruct3D() const;
+    GObject *clone(const U2DbiRef &dstDbiRef, U2OpStatus &os, const QVariantMap &hints = QVariantMap()) const;
 
 protected:
     void loadDataCore(U2OpStatus &os);
@@ -51,10 +51,9 @@ protected:
 private:
     BioStruct3DObject(const BioStruct3D &bioStruct3D, const QString &objectName, const U2EntityRef &structRef, const QVariantMap &hintsMap);
 
-    BioStruct3D     bioStruct3D;
+    BioStruct3D bioStruct3D;
 };
 
-} // U2
+}    // namespace U2
 
-
-#endif //_U2_BIOSTRUCT3D_OBJECT_H_
+#endif    //_U2_BIOSTRUCT3D_OBJECT_H_

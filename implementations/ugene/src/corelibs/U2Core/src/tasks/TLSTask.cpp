@@ -23,16 +23,16 @@
 
 namespace U2 {
 
-QThreadStorage<TLSContextRef*> TLSUtils::tls;
+QThreadStorage<TLSContextRef *> TLSUtils::tls;
 
 /************************************************************************/
 /* TaskLocalData                                                        */
 /************************************************************************/
-TLSContext* TLSUtils::current( QString contextId ) {
+TLSContext *TLSUtils::current(QString contextId) {
     Q_UNUSED(contextId)
-    TLSContextRef* ref = tls.localData();
-    if (ref!=NULL) {
-        assert(ref->ctx!=NULL);
+    TLSContextRef *ref = tls.localData();
+    if (ref != NULL) {
+        assert(ref->ctx != NULL);
         assert(ref->ctx->id == contextId);
         return ref->ctx;
     }
@@ -41,14 +41,14 @@ TLSContext* TLSUtils::current( QString contextId ) {
 }
 
 void TLSUtils::bindToTLSContext(TLSContext *ctx) {
-    assert(ctx!=NULL);
+    assert(ctx != NULL);
     assert(!tls.hasLocalData());
     tls.setLocalData(new TLSContextRef(ctx));
 }
 
 void TLSUtils::detachTLSContext() {
-    TLSContextRef* ref = tls.localData();
-    assert(ref!=NULL && ref->ctx!=NULL);
+    TLSContextRef *ref = tls.localData();
+    assert(ref != NULL && ref->ctx != NULL);
     ref->ctx = NULL;
     tls.setLocalData(NULL);
 }
@@ -57,31 +57,27 @@ void TLSUtils::detachTLSContext() {
 /* TLSTask                                                              */
 /************************************************************************/
 
-TLSTask::TLSTask( const QString& _name, TaskFlags _flags, bool _deleteContext)
-:Task(_name, _flags), taskContext(NULL), deleteContext(_deleteContext)
-{
+TLSTask::TLSTask(const QString &_name, TaskFlags _flags, bool _deleteContext)
+    : Task(_name, _flags), taskContext(NULL), deleteContext(_deleteContext) {
 }
 
-void TLSTask::prepare()
-{
+void TLSTask::prepare() {
     taskContext = createContextInstance();
 }
 
-void TLSTask::run()
-{
+void TLSTask::run() {
     TLSUtils::bindToTLSContext(taskContext);
     try {
         _run();
-    } catch(...) {
+    } catch (...) {
         stateInfo.setError("_run() throws exception");
     }
     TLSUtils::detachTLSContext();
 }
 
-TLSTask::~TLSTask()
-{
-    if(deleteContext)
+TLSTask::~TLSTask() {
+    if (deleteContext)
         delete taskContext;
     taskContext = NULL;
 }
-} //namespace U2
+}    //namespace U2

@@ -34,12 +34,15 @@ public:
     void prepare();
     void run();
 
-    QString getDbListFilePath() { return dbListFilePath; }
+    QString getDbListFilePath() {
+        return dbListFilePath;
+    }
+
 private:
     QString dbListFilePath;
     QString snpEffVersion;
 };
 
-} // nemaspace U2
+}    // namespace U2
 
-#endif // _U2_SNPEFF_DATABASE_LIST_TASK_H_
+#endif    // _U2_SNPEFF_DATABASE_LIST_TASK_H_

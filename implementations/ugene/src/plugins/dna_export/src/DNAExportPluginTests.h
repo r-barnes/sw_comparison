@@ -22,12 +22,13 @@
 #ifndef _U2_DNA_EXPORT_PLUGIN_TESTS_H_
 #define _U2_DNA_EXPORT_PLUGIN_TESTS_H_
 
+#include <QDomElement>
+
+#include <U2Core/U2Region.h>
 
 #include <U2Test/XMLTestUtils.h>
-#include <QDomElement>
-#include <U2Core/U2Region.h>
-#include "ExportTasks.h"
 
+#include "ExportTasks.h"
 
 namespace U2 {
 
@@ -41,39 +42,37 @@ public:
 
     void prepare();
 
-    QList<U2SequenceObject*> seqList;
+    QList<U2SequenceObject *> seqList;
     QStringList seqNameList;
-    QString     fileName;
-
+    QString fileName;
 };
 
 class GTest_ExportNucleicToAminoAlignmentTask : public XmlTest {
     Q_OBJECT
-
 
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_ExportNucleicToAminoAlignmentTask, "export-nucleic-alignment", TaskFlags_NR_FOSCOE);
 
     void prepare();
     ReportResult report();
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
-    int                 transTable;
-    QString             inputFile;
-    QString             outputFileName;
-    QString             expectedOutputFile;
-    U2Region             selectedRows;
-    ExportMSA2MSATask*  exportTask;
-    LoadDocumentTask*   resultLoadTask;
-    MultipleSequenceAlignment          srcAl;
-    MultipleSequenceAlignment          resAl;
+    int transTable;
+    QString inputFile;
+    QString outputFileName;
+    QString expectedOutputFile;
+    U2Region selectedRows;
+    ExportMSA2MSATask *exportTask;
+    LoadDocumentTask *resultLoadTask;
+    MultipleSequenceAlignment srcAl;
+    MultipleSequenceAlignment resAl;
 };
 
 class DNAExportPluginTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-} // namespace U2
+}    // namespace U2
 
 #endif

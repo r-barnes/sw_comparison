@@ -19,11 +19,11 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-
 #include <primitives/GTLineEdit.h>
 #include <primitives/GTRadioButton.h>
 #include <primitives/GTWidget.h>
+
+#include <QApplication>
 
 #include "HmmerSearchDialogFiller.h"
 namespace U2 {
@@ -31,18 +31,18 @@ namespace U2 {
 #define GT_CLASS_NAME "UHMM3SearchDialogFiller"
 #define GT_METHOD_NAME "run"
 
-void HmmerSearchDialogFiller::commonScenario(){
+void HmmerSearchDialogFiller::commonScenario() {
     QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog != NULL, "dialog not found");
 
-    QLineEdit* queryHmmFileEdit = GTWidget::findExactWidget<QLineEdit*>(os, "queryHmmFileEdit", dialog);
+    QLineEdit *queryHmmFileEdit = GTWidget::findExactWidget<QLineEdit *>(os, "queryHmmFileEdit", dialog);
     GTLineEdit::setText(os, queryHmmFileEdit, profile);
 
-    QRadioButton* radio = GTWidget::findExactWidget<QRadioButton*>(os, "rbCreateNewTable", dialog);
+    QRadioButton *radio = GTWidget::findExactWidget<QRadioButton *>(os, "rbCreateNewTable", dialog);
     CHECK_SET_ERR(radio != NULL, "rbCreateNewTable not found!");
     GTRadioButton::click(os, radio);
 
-    QLineEdit* newFilePathle = GTWidget::findExactWidget<QLineEdit*>(os, "leNewTablePath", dialog);
+    QLineEdit *newFilePathle = GTWidget::findExactWidget<QLineEdit *>(os, "leNewTablePath", dialog);
     GTLineEdit::setText(os, newFilePathle, newFilePath);
 
     GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
@@ -50,4 +50,4 @@ void HmmerSearchDialogFiller::commonScenario(){
 
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
-}
+}    // namespace U2

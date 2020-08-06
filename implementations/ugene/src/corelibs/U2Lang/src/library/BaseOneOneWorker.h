@@ -36,13 +36,13 @@ public:
     BaseOneOneWorker(Actor *a, bool autoTransitBus, const QString &inPortId, const QString &outPortId);
 
     void init();
-    Task * tick();
+    Task *tick();
 
 protected:
-    virtual Task * createPrepareTask(U2OpStatus &os) const;
+    virtual Task *createPrepareTask(U2OpStatus &os) const;
     virtual void onPrepared(Task *task, U2OpStatus &os);
-    virtual Task * processNextInputMessage() = 0;
-    virtual Task * onInputEnded() = 0;
+    virtual Task *processNextInputMessage() = 0;
+    virtual Task *onInputEnded() = 0;
     virtual QList<Message> fetchResult(Task *task, U2OpStatus &os) = 0;
 
 private slots:
@@ -50,7 +50,7 @@ private slots:
     void sl_prepared();
 
 private:
-    Task * prepare(U2OpStatus &os);
+    Task *prepare(U2OpStatus &os);
 
 protected:
     const QString inPortId;
@@ -61,7 +61,7 @@ protected:
     bool prepared;
 };
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_BASE_ONE_ONE_WORKER_H_
+#endif    // _U2_BASE_ONE_ONE_WORKER_H_

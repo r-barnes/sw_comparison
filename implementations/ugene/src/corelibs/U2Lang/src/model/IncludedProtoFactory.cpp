@@ -19,10 +19,10 @@
  * MA 02110-1301, USA.
  */
 
+#include "IncludedProtoFactory.h"
+
 #include <U2Lang/ActorPrototypeRegistry.h>
 #include <U2Lang/WorkflowEnv.h>
-
-#include "IncludedProtoFactory.h"
 
 namespace U2 {
 namespace Workflow {
@@ -33,8 +33,7 @@ void IncludedProtoFactory::init(IncludedProtoFactory *protoMaker) {
     instance = protoMaker;
 }
 
-ActorPrototype *IncludedProtoFactory::getScriptProto(QList<DataTypePtr > input, QList<DataTypePtr > output, QList<Attribute*> attrs,
-                                                     const QString &name, const QString &description, const QString &actorFilePath, bool isAliasName) {
+ActorPrototype *IncludedProtoFactory::getScriptProto(QList<DataTypePtr> input, QList<DataTypePtr> output, QList<Attribute *> attrs, const QString &name, const QString &description, const QString &actorFilePath, bool isAliasName) {
     if (NULL != instance) {
         return instance->_getScriptProto(input, output, attrs, name, description, actorFilePath, isAliasName);
     } else {
@@ -74,7 +73,7 @@ void IncludedProtoFactory::registerScriptWorker(const QString &actorName) {
     }
 }
 
-ExternalProcessConfig* IncludedProtoFactory::getExternalToolWorker(const QString& id) {
+ExternalProcessConfig *IncludedProtoFactory::getExternalToolWorker(const QString &id) {
     if (nullptr != instance) {
         return instance->_getExternalToolWorker(id);
     } else {
@@ -111,8 +110,8 @@ bool IncludedProtoFactory::isRegisteredTheSameProto(const QString &actorId, Acto
 
     // compare attributes
     {
-        QList<Attribute*> attrList = proto->getAttributes();
-        QList<Attribute*> regAttrList = regProto->getAttributes();
+        QList<Attribute *> attrList = proto->getAttributes();
+        QList<Attribute *> regAttrList = regProto->getAttributes();
         if (attrList.size() != regAttrList.size()) {
             return false;
         }
@@ -132,8 +131,8 @@ bool IncludedProtoFactory::isRegisteredTheSameProto(const QString &actorId, Acto
 
     // compare ports
     {
-        QList<PortDescriptor*> portList = proto->getPortDesciptors();
-        QList<PortDescriptor*> regPortList = regProto->getPortDesciptors();
+        QList<PortDescriptor *> portList = proto->getPortDesciptors();
+        QList<PortDescriptor *> regPortList = regProto->getPortDesciptors();
         if (portList.size() != regPortList.size()) {
             return false;
         }
@@ -155,5 +154,5 @@ bool IncludedProtoFactory::isRegisteredTheSameProto(const QString &actorId, Acto
     return true;
 }
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

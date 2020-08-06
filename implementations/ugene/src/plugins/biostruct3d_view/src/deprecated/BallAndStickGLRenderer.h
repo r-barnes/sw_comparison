@@ -22,14 +22,15 @@
 #ifndef _U2_BIOSTRUCT3D_BALLANDSTICK_RENDERER_H_
 #define _U2_BIOSTRUCT3D_BALLANDSTICK_RENDERER_H_
 
-#include "BioStruct3DGLRender.h"
 #include <QtOpenGL>
+
+#include "BioStruct3DGLRender.h"
 
 namespace U2 {
 
 class BallAndStickGLRenderer : public BioStruct3DGLRenderer {
 protected:
-    BallAndStickGLRenderer(const BioStruct3D& struc, const BioStruct3DColorScheme* s, const QList<int> &shownModels, const BioStruct3DRendererSettings *settings);
+    BallAndStickGLRenderer(const BioStruct3D &struc, const BioStruct3DColorScheme *s, const QList<int> &shownModels, const BioStruct3DRendererSettings *settings);
 
 public:
     virtual ~BallAndStickGLRenderer();
@@ -54,6 +55,6 @@ private:
     RENDERER_FACTORY(BallAndStickGLRenderer)
 };
 
-} //namespace
+}    // namespace U2
 
-#endif // _U2_BIOSTRUCT3D_BALLANDSTICK_RENDERER_H_
+#endif    // _U2_BIOSTRUCT3D_BALLANDSTICK_RENDERER_H_

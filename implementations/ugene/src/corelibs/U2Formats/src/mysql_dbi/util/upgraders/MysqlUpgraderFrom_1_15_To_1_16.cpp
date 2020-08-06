@@ -19,27 +19,27 @@
  * MA 02110-1301, USA.
  */
 
+#include "MysqlUpgraderFrom_1_15_To_1_16.h"
+
 #include <QCryptographicHash>
 
 #include <U2Core/Folder.h>
 #include <U2Core/GenbankFeatures.h>
 #include <U2Core/L10n.h>
-#include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2FeatureUtils.h>
+#include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/Version.h>
 
 #include <U2Gui/ProjectUtils.h>
 
-#include "MysqlUpgraderFrom_1_15_To_1_16.h"
 #include "mysql_dbi/MysqlDbi.h"
 #include "mysql_dbi/util/MysqlHelpers.h"
 
 namespace U2 {
 
-MysqlUpgraderFrom_1_15_To_1_16::MysqlUpgraderFrom_1_15_To_1_16(MysqlDbi *dbi) :
-    MysqlUpgrader(Version::parseVersion("1.15.0"), Version::parseVersion("1.16.0"), dbi)
-{
+MysqlUpgraderFrom_1_15_To_1_16::MysqlUpgraderFrom_1_15_To_1_16(MysqlDbi *dbi)
+    : MysqlUpgrader(Version::parseVersion("1.15.0"), Version::parseVersion("1.16.0"), dbi) {
 }
 
 void MysqlUpgraderFrom_1_15_To_1_16::upgrade(U2OpStatus &os) const {
@@ -54,9 +54,12 @@ void MysqlUpgraderFrom_1_15_To_1_16::upgrade(U2OpStatus &os) const {
 
 void MysqlUpgraderFrom_1_15_To_1_16::upgradeFeatureDbi(U2OpStatus &os, MysqlDbRef *dbRef) const {
     const bool featureClassFieldExist = (1 == U2SqlQuery(QString("SELECT count(*) FROM information_schema.COLUMNS WHERE "
-                                                         "TABLE_SCHEMA = '%1' AND TABLE_NAME = 'Feature' "
-                                                         "AND COLUMN_NAME = 'class'").
-                                                         arg(dbRef->handle.databaseName()), dbRef, os).selectInt64());
+                                                                 "TABLE_SCHEMA = '%1' AND TABLE_NAME = 'Feature' "
+                                                                 "AND COLUMN_NAME = 'class'")
+                                                             .arg(dbRef->handle.databaseName()),
+                                                         dbRef,
+                                                         os)
+                                                  .selectInt64());
     CHECK_OP(os, );
     CHECK(!featureClassFieldExist, );
 
@@ -93,4 +96,4 @@ void MysqlUpgraderFrom_1_15_To_1_16::upgradeFeatureDbi(U2OpStatus &os, MysqlDbRe
     CHECK_OP(os, );
 }
 
-}   // namespace U2
+}    // namespace U2

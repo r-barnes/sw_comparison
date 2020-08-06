@@ -19,23 +19,21 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-
 #include "ExportBlastResultDialogFiller.h"
 #include <primitives/GTCheckBox.h>
 #include <primitives/GTLineEdit.h>
 #include <primitives/GTWidget.h>
 
+#include <QApplication>
+
 namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::ExportAnnotationsFiller"
 
-ExportBlastResultDialogFiller::ExportBlastResultDialogFiller(HI::GUITestOpStatus &os, const QString &filePath, bool _addRefBoxChecked) :
-    Filler(os, "ExportBlastResultDialog"),
-    filePath(filePath),
-    addRefBoxChecked(_addRefBoxChecked)
-{
-
+ExportBlastResultDialogFiller::ExportBlastResultDialogFiller(HI::GUITestOpStatus &os, const QString &filePath, bool _addRefBoxChecked)
+    : Filler(os, "ExportBlastResultDialog"),
+      filePath(filePath),
+      addRefBoxChecked(_addRefBoxChecked) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
@@ -45,7 +43,7 @@ void ExportBlastResultDialogFiller::commonScenario() {
 
     GTLineEdit::setText(os, GTWidget::findExactWidget<QLineEdit *>(os, "fileNameEdit", dialog), filePath);
 
-    GTCheckBox::setChecked(os, GTWidget::findExactWidget<QCheckBox*>(os, "addRefBox", dialog), addRefBoxChecked);
+    GTCheckBox::setChecked(os, GTWidget::findExactWidget<QCheckBox *>(os, "addRefBox", dialog), addRefBoxChecked);
 
     GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
 }
@@ -53,4 +51,4 @@ void ExportBlastResultDialogFiller::commonScenario() {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

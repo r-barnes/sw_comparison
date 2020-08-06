@@ -19,11 +19,12 @@
  * MA 02110-1301, USA.
  */
 
+#include "NgsReadsClassificationPlugin.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DataPathRegistry.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "NgsReadsClassificationPlugin.h"
 #include "ClassificationFilterWorker.h"
 #include "ClassificationReportWorker.h"
 #include "EnsembleClassificationWorker.h"
@@ -85,22 +86,23 @@ const QString NgsReadsClassificationPlugin::WORKFLOW_ELEMENTS_GROUP = TR("NGS: M
 
 const QString NgsReadsClassificationPlugin::WORKFLOW_CLASSIFY_TOOL_ID = "ClassifyToolName";
 
-extern "C" Q_DECL_EXPORT Plugin* U2_PLUGIN_INIT_FUNC() {
+extern "C" Q_DECL_EXPORT Plugin *U2_PLUGIN_INIT_FUNC() {
     NgsReadsClassificationPlugin *plugin = new NgsReadsClassificationPlugin();
     return plugin;
 }
 
 class LoadTaxonomyTreeTask : public Task {
 public:
-    LoadTaxonomyTreeTask() : Task(NgsReadsClassificationPlugin::tr("Loading NCBI taxonomy data"), TaskFlag_None) {}
+    LoadTaxonomyTreeTask()
+        : Task(NgsReadsClassificationPlugin::tr("Loading NCBI taxonomy data"), TaskFlag_None) {
+    }
     void run() {
-         LocalWorkflow::TaxonomyTree::getInstance();
+        LocalWorkflow::TaxonomyTree::getInstance();
     }
 };
 
 NgsReadsClassificationPlugin::NgsReadsClassificationPlugin()
-    : Plugin(PLUGIN_NAME, PLUGIN_DESCRIPRION)
-{
+    : Plugin(PLUGIN_NAME, PLUGIN_DESCRIPRION) {
     registerData(TAXONOMY_DATA_ID, TAXONOMY_PATH, tr("NCBI taxonomy classification data"), false);
     registerData(CLARK_VIRAL_DATABASE_DATA_ID, CLARK_VIRAL_DATABASE_PATH, tr("CLARK viral database"), true);
     registerData(CLARK_BACTERIAL_VIRAL_DATABASE_DATA_ID, CLARK_BACTERIAL_VIRAL_DATABASE_PATH, tr("CLARK bacterial and viral database"), true);
@@ -129,7 +131,7 @@ NgsReadsClassificationPlugin::~NgsReadsClassificationPlugin() {
 }
 
 void NgsReadsClassificationPlugin::registerData(const QString &dataId, const QString &relativePath, const QString &description, bool addAsFolder) {
-    U2DataPathRegistry* dataPathRegistry = AppContext::getDataPathRegistry();
+    U2DataPathRegistry *dataPathRegistry = AppContext::getDataPathRegistry();
     const QString path = QFileInfo(QString(PATH_PREFIX_DATA) + ":" + relativePath).absoluteFilePath();
     const U2DataPath::Options options = addAsFolder ? U2DataPath::AddOnlyFolders | U2DataPath::AddTopLevelFolder : U2DataPath::None;
     U2DataPath *dataPath = new U2DataPath(dataId, path, description, options);
@@ -143,10 +145,10 @@ void NgsReadsClassificationPlugin::registerData(const QString &dataId, const QSt
 }
 
 void NgsReadsClassificationPlugin::unregisterData(const QString &dataId) {
-    U2DataPathRegistry* dataPathRegistry = AppContext::getDataPathRegistry();
+    U2DataPathRegistry *dataPathRegistry = AppContext::getDataPathRegistry();
     CHECK(NULL != dataPathRegistry, );
     dataPathRegistry->unregisterEntry(dataId);
     registeredData.removeAll(dataId);
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -19,16 +19,16 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-
 #include <primitives/GTRadioButton.h>
 #include <primitives/GTWidget.h>
+
+#include <QApplication>
 
 #include "DocumentProviderSelectorDialogFiller.h"
 
 namespace U2 {
 
-QMap<DocumentProviderSelectorDialogFiller::OpenWith, QString> DocumentProviderSelectorDialogFiller::initMap(){
+QMap<DocumentProviderSelectorDialogFiller::OpenWith, QString> DocumentProviderSelectorDialogFiller::initMap() {
     QMap<DocumentProviderSelectorDialogFiller::OpenWith, QString> result;
     result.insert(DocumentProviderSelectorDialogFiller::AlignmentEditor,
                   "Multiple sequence alignment in the Alignment Editor_radio");
@@ -37,15 +37,15 @@ QMap<DocumentProviderSelectorDialogFiller::OpenWith, QString> DocumentProviderSe
     return result;
 }
 const QMap<DocumentProviderSelectorDialogFiller::OpenWith, QString> DocumentProviderSelectorDialogFiller::openWithMap =
-        DocumentProviderSelectorDialogFiller::initMap();
+    DocumentProviderSelectorDialogFiller::initMap();
 
 #define GT_CLASS_NAME "DocumentProviderSelectorDialogFiller"
 #define GT_METHOD_NAME "commonScenario"
-void DocumentProviderSelectorDialogFiller::commonScenario(){
-    QWidget* dialog = QApplication::activeModalWidget();
+void DocumentProviderSelectorDialogFiller::commonScenario() {
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
-    QRadioButton* radio = GTWidget::findExactWidget<QRadioButton*>(os, openWithMap.value(openWith), dialog);
+    QRadioButton *radio = GTWidget::findExactWidget<QRadioButton *>(os, openWithMap.value(openWith), dialog);
     GTWidget::click(os, radio);
 
     GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
@@ -53,4 +53,4 @@ void DocumentProviderSelectorDialogFiller::commonScenario(){
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

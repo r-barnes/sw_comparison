@@ -22,24 +22,26 @@
 #ifndef _DIST_BUILD_SARRAY_WIDGET_H_
 #define _DIST_BUILD_SARRAY_WIDGET_H_
 
-#include "ui_BuildSuffixArraySettings.h"
 #include "U2View/DnaAssemblyGUIExtension.h"
 
-namespace U2{
+#include "ui_BuildSuffixArraySettings.h"
+
+namespace U2 {
 
 class BuildSArraySettingsWidget : public DnaAssemblyAlgorithmBuildIndexWidget, Ui_BuildSuffixArraySettings {
     Q_OBJECT
 public:
-    BuildSArraySettingsWidget(QWidget* parent);
-    virtual QMap<QString,QVariant> getBuildIndexCustomSettings();
+    BuildSArraySettingsWidget(QWidget *parent);
+    virtual QMap<QString, QVariant> getBuildIndexCustomSettings();
     virtual QString getIndexFileExtension();
-    virtual GUrl buildIndexUrl(const GUrl& url);
+    virtual GUrl buildIndexUrl(const GUrl &url);
 private slots:
     void sl_onPartSliderChanged(int value);
+
 private:
     int systemSize;
 };
 
-}
+}    // namespace U2
 
 #endif

@@ -20,41 +20,42 @@
  */
 
 #include "KalignDialogFiller.h"
-#include <primitives/GTWidget.h>
 #include <primitives/GTCheckBox.h>
 #include <primitives/GTDoubleSpinBox.h>
+#include <primitives/GTWidget.h>
 
 #include <QApplication>
-#include <QPushButton>
 #include <QDialogButtonBox>
+#include <QPushButton>
 
 namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::KalignDialogFiller"
 
-KalignDialogFiller::KalignDialogFiller(HI::GUITestOpStatus &_os, int _gapOpenVal, bool _toAmino) : Filler(_os, "KalignDialog"),
-    gapOpenVal(_gapOpenVal), toAmino(_toAmino) {}
+KalignDialogFiller::KalignDialogFiller(HI::GUITestOpStatus &_os, int _gapOpenVal, bool _toAmino)
+    : Filler(_os, "KalignDialog"),
+      gapOpenVal(_gapOpenVal), toAmino(_toAmino) {
+}
 
 #define GT_METHOD_NAME "commonScenario"
-void KalignDialogFiller::commonScenario()
-{
+void KalignDialogFiller::commonScenario() {
     QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog != NULL, "dialog not found");
 
-    if(gapOpenVal){
-        QCheckBox* gapOpenCheckBox = dialog->findChild<QCheckBox*>("gapOpenCheckBox");
-        GTCheckBox::setChecked(os,gapOpenCheckBox, true);
+    if (gapOpenVal) {
+        QCheckBox *gapOpenCheckBox = dialog->findChild<QCheckBox *>("gapOpenCheckBox");
+        GTCheckBox::setChecked(os, gapOpenCheckBox, true);
 
-        QDoubleSpinBox* gapOpenSpinBox = dialog->findChild<QDoubleSpinBox*>("gapOpenSpinBox");
-        GTDoubleSpinbox::setValue(os,gapOpenSpinBox,gapOpenVal,GTGlobals::UseKeyBoard);
+        QDoubleSpinBox *gapOpenSpinBox = dialog->findChild<QDoubleSpinBox *>("gapOpenSpinBox");
+        GTDoubleSpinbox::setValue(os, gapOpenSpinBox, gapOpenVal, GTGlobals::UseKeyBoard);
     }
 
-    QCheckBox* translateCheckBox = GTWidget::findExactWidget<QCheckBox*>(os, "translateCheckBox", dialog);
+    QCheckBox *translateCheckBox = GTWidget::findExactWidget<QCheckBox *>(os, "translateCheckBox", dialog);
     GTCheckBox::setChecked(os, translateCheckBox, toAmino);
-    
+
     GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
 }
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

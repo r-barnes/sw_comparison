@@ -19,16 +19,17 @@
  * MA 02110-1301, USA.
  */
 
+#include "ScrollController.h"
+
+#include "U2Core/U2SafePoints.h"
 #include <U2Core/MultipleAlignmentObject.h>
 #include <U2Core/SignalBlocker.h>
-#include "U2Core/U2SafePoints.h"
 
 #include "BaseWidthController.h"
 #include "DrawHelper.h"
 #include "RowHeightController.h"
-#include "ScrollController.h"
-#include "ov_msa/MaEditor.h"
 #include "ov_msa/MaCollapseModel.h"
+#include "ov_msa/MaEditor.h"
 #include "ov_msa/view_rendering/MaEditorSequenceArea.h"
 #include "ov_msa/view_rendering/MaEditorWgt.h"
 
@@ -40,8 +41,7 @@ ScrollController::ScrollController(MaEditor *maEditor, MaEditorWgt *maEditorUi, 
       ui(maEditorUi),
       collapsibleModel(collapsibleModel),
       savedFirstVisibleMaRow(0),
-      savedFirstVisibleMaRowOffset(0)
-{
+      savedFirstVisibleMaRowOffset(0) {
     connect(this, SIGNAL(si_visibleAreaChanged()), maEditorUi, SIGNAL(si_completeRedraw()));
     connect(collapsibleModel, SIGNAL(si_aboutToBeToggled()), SLOT(sl_collapsibleModelIsAboutToBeChanged()));
     connect(collapsibleModel, SIGNAL(si_toggled()), SLOT(sl_collapsibleModelChanged()));
@@ -63,7 +63,7 @@ QPoint ScrollController::getScreenPosition() const {
     return QPoint(hScrollBar->value(), vScrollBar->value());
 }
 
-QPoint ScrollController::getGlobalMousePosition(const QPoint& mousePos) const {
+QPoint ScrollController::getGlobalMousePosition(const QPoint &mousePos) const {
     return mousePos + getScreenPosition();
 }
 
@@ -189,7 +189,7 @@ void ScrollController::scrollStep(ScrollController::Direction direction) {
         hScrollBar->triggerAction(QAbstractSlider::SliderSingleStepAdd);
         break;
     default:
-        FAIL("An unknown direction" ,);
+        FAIL("An unknown direction", );
         break;
     }
 }
@@ -209,7 +209,7 @@ void ScrollController::scrollPage(ScrollController::Direction direction) {
         hScrollBar->triggerAction(QAbstractSlider::SliderPageStepAdd);
         break;
     default:
-        FAIL("An unknown direction" ,);
+        FAIL("An unknown direction", );
         break;
     }
 }
@@ -235,10 +235,7 @@ void ScrollController::scrollToEnd(ScrollController::Direction direction) {
 }
 
 void ScrollController::scrollToMovedSelection(int deltaX, int deltaY) {
-    const Direction direction = (deltaX != 0 ? (deltaX < 0 ? ScrollController::Left : ScrollController::Right)
-                                             : (deltaY != 0 ? (deltaY < 0 ? ScrollController::Up
-                                                                          : ScrollController::Down)
-                                                            : ScrollController::None));
+    const Direction direction = (deltaX != 0 ? (deltaX < 0 ? ScrollController::Left : ScrollController::Right) : (deltaY != 0 ? (deltaY < 0 ? ScrollController::Up : ScrollController::Down) : ScrollController::None));
     scrollToMovedSelection(direction);
 }
 
@@ -448,7 +445,7 @@ void ScrollController::updateVerticalScrollBarPrivate() {
     vScrollBar->setVisible(numVisibleSequences < viewRowCount);
 }
 
-QPoint ScrollController::getViewPosByScreenPoint(const QPoint& point, bool reportOverflow) const {
+QPoint ScrollController::getViewPosByScreenPoint(const QPoint &point, bool reportOverflow) const {
     int column = ui->getBaseWidthController()->screenXPositionToColumn(point.x());
     int row = ui->getRowHeightController()->getViewRowIndexByScreenYPosition(point.y());
     QPoint result(column, row);
@@ -463,5 +460,4 @@ QPoint ScrollController::getViewPosByScreenPoint(const QPoint& point, bool repor
     return QPoint(-1, -1);
 }
 
-
-}   // namespace U2
+}    // namespace U2

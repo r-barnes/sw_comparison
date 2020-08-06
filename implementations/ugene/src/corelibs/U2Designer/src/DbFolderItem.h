@@ -37,7 +37,7 @@ public:
     ~DbFolderItem();
 
     virtual void accept(UrlItemVisitor *visitor);
-    virtual QWidget * getOptionsWidget();
+    virtual QWidget *getOptionsWidget();
 
     void setRecursive(bool value);
     bool isRecursive() const;
@@ -62,6 +62,6 @@ private:
     Ui_DbFolderOptions *ui;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif //_U2_DB_FOLDER_ITEM_H_
+#endif    //_U2_DB_FOLDER_ITEM_H_

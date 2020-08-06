@@ -106,7 +106,7 @@ private:
     static QScopedPointer<TrimmomaticStepsRegistry> instance;
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_TRIMMOMATIC_STEP_H_
+#endif    // _U2_TRIMMOMATIC_STEP_H_

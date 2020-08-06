@@ -32,7 +32,7 @@ class CropStep : public TrimmomaticStep {
 public:
     CropStep();
 
-    TrimmomaticStepSettingsWidget* createWidget() const;
+    TrimmomaticStepSettingsWidget *createWidget() const;
 
 private:
     QString serializeState(const QVariantMap &widgetState) const;
@@ -48,7 +48,7 @@ public:
     CropStep *createStep() const;
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_CROP_STEP_H_
+#endif    // _U2_CROP_STEP_H_

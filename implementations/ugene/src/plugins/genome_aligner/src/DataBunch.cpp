@@ -20,27 +20,28 @@
  */
 
 #include "DataBunch.h"
-#include <U2Core/Timer.h>
-#include <U2Core/Log.h>
+
 #include <U2Algorithm/SyncSort.h>
+
+#include <U2Core/Log.h>
+#include <U2Core/Timer.h>
 
 namespace U2 {
 
 void DataBunch::prepareSorted() {
-
-    if (sortedBitValuesV.size()>0) {
+    if (sortedBitValuesV.size() > 0) {
         return;
     }
 
     qint64 t0 = GTimer::currentTimeMicros();
     sortedBitValuesV.reserve(bitValuesV.size());
-    foreach(BMType n, bitValuesV) {
+    foreach (BMType n, bitValuesV) {
         sortedBitValuesV.append(n);
     }
     sortedBitValuesV.squeeze();
 
     sortedIndexes.resize(sortedBitValuesV.size());
-    for (int i=0; i<sortedIndexes.size(); i++) {
+    for (int i = 0; i < sortedIndexes.size(); i++) {
         sortedIndexes[i] = i;
     }
     sortedIndexes.squeeze();
@@ -55,7 +56,7 @@ void DataBunch::prepareSorted() {
 qint64 DataBunch::memoryHint() const {
     qint64 m = sizeof(*this);
 
-    m += queries.capacity() * (qint64)sizeof(SearchQuery*);
+    m += queries.capacity() * (qint64)sizeof(SearchQuery *);
     m += bitValuesV.capacity() * (qint64)sizeof(BMType);
     m += readNumbersV.capacity() * (qint64)sizeof(int);
     m += positionsAtReadV.capacity() * (qint64)sizeof(int);
@@ -76,4 +77,4 @@ void DataBunch::squeeze() {
     windowSizes.squeeze();
 }
 
-} // U2
+}    // namespace U2

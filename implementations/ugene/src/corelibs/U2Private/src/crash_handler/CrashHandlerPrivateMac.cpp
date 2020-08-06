@@ -22,41 +22,38 @@
 #include <qglobal.h>
 #ifdef Q_OS_MAC
 
-#include <execinfo.h>
-#include <stdio.h>
+#    include <client/mac/handler/exception_handler.h>
+#    include <execinfo.h>
+#    include <stdio.h>
 
-#include <QDir>
+#    include <QDir>
 
-#include <client/mac/handler/exception_handler.h>
+#    include <U2Core/AppContext.h>
 
-#include <U2Core/AppContext.h>
-
-#include "CrashHandler.h"
-#include "CrashHandlerArgsHelper.h"
-#include "CrashHandlerPrivateMac.h"
+#    include "CrashHandler.h"
+#    include "CrashHandlerArgsHelper.h"
+#    include "CrashHandlerPrivateMac.h"
 
 namespace U2 {
 
 const QString CrashHandlerPrivateMac::LEGACY_STACKTRACE_FILE_PATH = "/tmp/UGENEstacktrace.txt";
 
-CrashHandlerPrivateMac::CrashHandlerPrivateMac() :
-    CrashHandlerPrivate(),
-    legacyStacktraceFileWasSucessfullyRemoved(true),
-    stacktraceFileWasSucessfullyRemoved(true),
-    stacktraceFileSucessfullyCreated(true),
-    stacktraceFileWasSucessfullyClosed(true),
-    crashDirWasSucessfullyCreated(true),
-    dumpWasSuccessfullySaved(true)
-{
-
+CrashHandlerPrivateMac::CrashHandlerPrivateMac()
+    : CrashHandlerPrivate(),
+      legacyStacktraceFileWasSucessfullyRemoved(true),
+      stacktraceFileWasSucessfullyRemoved(true),
+      stacktraceFileSucessfullyCreated(true),
+      stacktraceFileWasSucessfullyClosed(true),
+      crashDirWasSucessfullyCreated(true),
+      dumpWasSuccessfullySaved(true) {
 }
 
-CrashHandlerPrivateMac::~CrashHandlerPrivateMac()  {
+CrashHandlerPrivateMac::~CrashHandlerPrivateMac() {
     shutdown();
 }
 
 void CrashHandlerPrivateMac::setupHandler() {
-#ifndef _DEBUG      // debugger fails to launch if exception handler is installed
+#    ifndef _DEBUG    // debugger fails to launch if exception handler is installed
     if (QFile::exists(LEGACY_STACKTRACE_FILE_PATH)) {
         legacyStacktraceFileWasSucessfullyRemoved = QFile(LEGACY_STACKTRACE_FILE_PATH).remove();
     }
@@ -72,7 +69,7 @@ void CrashHandlerPrivateMac::setupHandler() {
     }
 
     breakpadHandler = new google_breakpad::ExceptionHandler(dumpDir.toStdString(), NULL, breakpadCallback, this, true, NULL);
-#endif
+#    endif
 }
 
 void CrashHandlerPrivateMac::shutdown() {
@@ -89,7 +86,7 @@ void CrashHandlerPrivateMac::storeStackTrace() {
     name_buf[readlink(path.toLatin1().constData(), name_buf, 511)] = 0;
     FILE *fp = fopen(stacktraceFilePath.toLocal8Bit().constData(), "w+");
     stacktraceFileSucessfullyCreated = (NULL != fp);
-    void * stackTrace[1024];
+    void *stackTrace[1024];
     int frames = backtrace(stackTrace, 1024);
     backtrace_symbols_fd(stackTrace, frames, fileno(fp));
     const int closed = fclose(fp);
@@ -140,6 +137,6 @@ bool CrashHandlerPrivateMac::breakpadCallback(const char *dump_dir, const char *
     return true;
 }
 
-}   // namespace U2
+}    // namespace U2
 
 #endif

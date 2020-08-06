@@ -22,10 +22,11 @@
 #ifndef _U2_CLARK_WORKER_H_
 #define _U2_CLARK_WORKER_H_
 
-#include <U2Lang/LocalDomain.h>
-#include <U2Lang/WorkflowUtils.h>
 #include <U2Core/ExternalToolRunTask.h>
 #include <U2Core/GUrl.h>
+
+#include <U2Lang/LocalDomain.h>
+#include <U2Lang/WorkflowUtils.h>
 
 #include "../../ngs_reads_classification/src/TaxonomySupport.h"
 
@@ -39,12 +40,20 @@ public:
 
     enum Rank {
         // NB: values follow Clark definitions!
-        Species=0, Genus, Family, Order, Class, Phylum
+        Species = 0,
+        Genus,
+        Family,
+        Order,
+        Class,
+        Phylum
     };
 
     enum Mode {
         // NB: values follow Clark definitions!
-        Full=0, Default, Express, Spectrum
+        Full = 0,
+        Default,
+        Express,
+        Spectrum
     };
 
     ClarkClassifySettings();
@@ -69,18 +78,22 @@ typedef PrompterBase<ClarkClassifyPrompter> ClarkClassifyBase;
 class ClarkClassifyPrompter : public ClarkClassifyBase {
     Q_OBJECT
 public:
-    ClarkClassifyPrompter(Actor* p = 0) : ClarkClassifyBase(p) {}
+    ClarkClassifyPrompter(Actor *p = 0)
+        : ClarkClassifyBase(p) {
+    }
+
 protected:
     QString composeRichDoc();
 };
 
-class ClarkClassifyWorker: public BaseWorker {
+class ClarkClassifyWorker : public BaseWorker {
     Q_OBJECT
 public:
     ClarkClassifyWorker(Actor *a);
+
 protected:
     void init();
-    Task * tick();
+    Task *tick();
     void cleanup();
 
 private slots:
@@ -96,7 +109,7 @@ protected:
 class ClarkClassifyValidator : public ActorValidator {
     Q_DECLARE_TR_FUNCTIONS(ClarkClassifyValidator)
 public:
-    bool validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString>& options) const;
+    bool validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &options) const;
 
 private:
     bool validateDatabase(const Actor *actor, NotificationsList &notificationList) const;
@@ -110,8 +123,12 @@ class ClarkClassifyWorkerFactory : public DomainFactory {
 public:
     static void init();
     static void cleanup();
-    ClarkClassifyWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    Worker* createWorker(Actor* a) { return new ClarkClassifyWorker(a); }
+    ClarkClassifyWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    Worker *createWorker(Actor *a) {
+        return new ClarkClassifyWorker(a);
+    }
 
     static const QString ACTOR_ID;
 
@@ -145,6 +162,7 @@ public:
 };
 
 class ClarkLogParser : public ExternalToolLogParser {
+    Q_OBJECT
 public:
     ClarkLogParser();
 
@@ -161,8 +179,11 @@ class ClarkClassifyTask : public ExternalToolSupportTask {
 public:
     ClarkClassifyTask(const ClarkClassifySettings &cfg, const QString &readsUrl, const QString &pairedReadsUrl, const QString &reportUrl);
 
-    const QString &getReportUrl() const {return reportUrl;}
+    const QString &getReportUrl() const {
+        return reportUrl;
+    }
     const TaxonomyClassificationResult &getParsedReport() const;
+
 private:
     void prepare() override;
     void run() override;
@@ -175,9 +196,9 @@ private:
     TaxonomyClassificationResult parsedReport;
 };
 
-} //LocalWorkflow
-} //U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 Q_DECLARE_METATYPE(U2::LocalWorkflow::ClarkClassifySettings::Mode)
 
-#endif //_U2_CLARK_WORKER_H_
+#endif    //_U2_CLARK_WORKER_H_

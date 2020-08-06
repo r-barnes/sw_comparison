@@ -36,19 +36,17 @@ namespace U2 {
 class CreateExportItemsFromSeqRegionsTask : public Task {
     Q_OBJECT
 public:
-    CreateExportItemsFromSeqRegionsTask(const QPointer<U2SequenceObject> &seqObject, const QList<QPointer<AnnotationTableObject> > &connectedAts,
-        const QVector<U2Region> &regions, const ExportSequenceTaskSettings &exportSettings, const DNATranslation *aminoTrans,
-        const DNATranslation *backTranslation, const DNATranslation *complTrans);
+    CreateExportItemsFromSeqRegionsTask(const QPointer<U2SequenceObject> &seqObject, const QList<QPointer<AnnotationTableObject>> &connectedAts, const QVector<U2Region> &regions, const ExportSequenceTaskSettings &exportSettings, const DNATranslation *aminoTrans, const DNATranslation *backTranslation, const DNATranslation *complTrans);
 
     void run();
 
-    const ExportSequenceTaskSettings & getExportSettings() const;
+    const ExportSequenceTaskSettings &getExportSettings() const;
 
 private:
     QList<SharedAnnotationData> findAnnotationsInRegion(const U2Region &region);
 
     QPointer<U2SequenceObject> seqObject;
-    QList<QPointer<AnnotationTableObject> > annotations;
+    QList<QPointer<AnnotationTableObject>> annotations;
     const QVector<U2Region> regions;
     ExportSequenceTaskSettings exportSettings;
     const DNATranslation *aminoTrans;
@@ -63,16 +61,14 @@ private:
 class ExportSelectedSeqRegionsTask : public DocumentProviderTask {
     Q_OBJECT
 public:
-    ExportSelectedSeqRegionsTask(U2SequenceObject *seqObject, const QSet<AnnotationTableObject *> &connectedAts,
-        const QVector<U2Region> &regions, const ExportSequenceTaskSettings &exportSettings, const DNATranslation *aminoTrans,
-        const DNATranslation *backTrans, const DNATranslation *complTrans);
+    ExportSelectedSeqRegionsTask(U2SequenceObject *seqObject, const QSet<AnnotationTableObject *> &connectedAts, const QVector<U2Region> &regions, const ExportSequenceTaskSettings &exportSettings, const DNATranslation *aminoTrans, const DNATranslation *backTrans, const DNATranslation *complTrans);
 
     void prepare();
     QList<Task *> onSubTaskFinished(Task *subTask);
 
 private:
     QPointer<U2SequenceObject> seqObject;
-    QList<QPointer<AnnotationTableObject> > annotations;
+    QList<QPointer<AnnotationTableObject>> annotations;
     const QVector<U2Region> regions;
     ExportSequenceTaskSettings exportSettings;
     const DNATranslation *aminoTrans;
@@ -80,6 +76,6 @@ private:
     const DNATranslation *complTrans;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_EXPORT_SELECTED_SEQ_REGIONS_TASK_H_
+#endif    // _U2_EXPORT_SELECTED_SEQ_REGIONS_TASK_H_

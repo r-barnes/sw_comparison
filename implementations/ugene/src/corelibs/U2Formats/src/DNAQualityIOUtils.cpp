@@ -20,41 +20,35 @@
  */
 
 #include "DNAQualityIOUtils.h"
-
-#include <U2Core/IOAdapter.h>
-#include <U2Core/AppContext.h>
-#include <U2Core/TextUtils.h>
-#include <U2Core/U2SafePoints.h>
-#include <U2Core/L10n.h>
-#include <U2Core/IOAdapterUtils.h>
-
 #include <time.h>
 
-namespace U2  {
+#include <U2Core/AppContext.h>
+#include <U2Core/IOAdapter.h>
+#include <U2Core/IOAdapterUtils.h>
+#include <U2Core/L10n.h>
+#include <U2Core/TextUtils.h>
+#include <U2Core/U2SafePoints.h>
 
-void DNAQualityIOUtils::writeDNAQuality(const U2SequenceObject* seqObj, const QString& dstFilePath,
-                                        bool appendData, bool decode, U2OpStatus& stateInfo) {
+namespace U2 {
 
-    const DNAQuality& seqQuality = seqObj->getQuality();
-    const QString& seqName = seqObj->getSequenceName();
-    writeDNAQuality(seqName, seqQuality,dstFilePath, appendData, decode, stateInfo );
+void DNAQualityIOUtils::writeDNAQuality(const U2SequenceObject *seqObj, const QString &dstFilePath, bool appendData, bool decode, U2OpStatus &stateInfo) {
+    const DNAQuality &seqQuality = seqObj->getQuality();
+    const QString &seqName = seqObj->getSequenceName();
+    writeDNAQuality(seqName, seqQuality, dstFilePath, appendData, decode, stateInfo);
 }
 
-static QByteArray getDecodedQuality(const DNAQuality& quality) {
+static QByteArray getDecodedQuality(const DNAQuality &quality) {
     QByteArray res;
     for (int i = 0, sz = quality.qualCodes.size(); i < sz; ++i) {
         QByteArray buf;
-        buf.setNum( quality.getValue(i) );
+        buf.setNum(quality.getValue(i));
         res.append(buf);
         res.append(" ");
     }
     return res;
 }
 
-void DNAQualityIOUtils::writeDNAQuality( const QString& seqName, const DNAQuality& seqQuality,
-                                        const QString& dstFilePath, bool appendData, bool decode,
-                                        U2OpStatus& stateInfo )
-{
+void DNAQualityIOUtils::writeDNAQuality(const QString &seqName, const DNAQuality &seqQuality, const QString &dstFilePath, bool appendData, bool decode, U2OpStatus &stateInfo) {
     if (seqQuality.isEmpty()) {
         stateInfo.setError("Quality score is not set!");
         return;
@@ -64,7 +58,7 @@ void DNAQualityIOUtils::writeDNAQuality( const QString& seqName, const DNAQualit
 
     IOAdapterId ioAdapterId = IOAdapterUtils::url2io(dstFilePath);
     IOAdapterFactory *ioAdapterFactory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(ioAdapterId);
-    CHECK_EXT (ioAdapterFactory != NULL, stateInfo.setError(tr("No IO adapter found for URL: %1").arg(dstFilePath)), );
+    CHECK_EXT(ioAdapterFactory != NULL, stateInfo.setError(tr("No IO adapter found for URL: %1").arg(dstFilePath)), );
     ioAdapter.reset(ioAdapterFactory->createIOAdapter());
 
     if (!ioAdapter->open(dstFilePath, appendData ? IOAdapterMode_Append : IOAdapterMode_Write)) {
@@ -76,7 +70,7 @@ void DNAQualityIOUtils::writeDNAQuality( const QString& seqName, const DNAQualit
     data.append(">");
     data.append(seqName.toLatin1());
     data.append("\n");
-    data.append( decode ? getDecodedQuality(seqQuality) : seqQuality.qualCodes );
+    data.append(decode ? getDecodedQuality(seqQuality) : seqQuality.qualCodes);
     data.append("\n");
 
     if (0 == ioAdapter->writeBlock(data)) {
@@ -86,5 +80,4 @@ void DNAQualityIOUtils::writeDNAQuality( const QString& seqName, const DNAQualit
     ioAdapter->close();
 }
 
-} // namespace
-
+}    // namespace U2

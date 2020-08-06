@@ -21,19 +21,19 @@
 
 #include "AnnotationSettings.h"
 
-#include <U2Core/AppContext.h>
-#include <U2Core/Settings.h>
-#include <U2Core/FeatureColors.h>
-#include <U2Core/AnnotationTableObject.h>
-
 #include <QSet>
+
+#include <U2Core/AnnotationTableObject.h>
+#include <U2Core/AppContext.h>
+#include <U2Core/FeatureColors.h>
+#include <U2Core/Settings.h>
 
 namespace U2 {
 
 #define SETTINGS_ROOT QString("annotation_settings/")
 #define MAX_CACHE_SIZE 1000
 
-AnnotationSettingsRegistry::AnnotationSettingsRegistry(const QList<AnnotationSettings*>& predefined) {
+AnnotationSettingsRegistry::AnnotationSettingsRegistry(const QList<AnnotationSettings *> &predefined) {
     changeSettings(predefined, false);
     read();
 }
@@ -44,12 +44,12 @@ AnnotationSettingsRegistry::~AnnotationSettingsRegistry() {
     qDeleteAll(transientMap);
 }
 
-void AnnotationSettingsRegistry::changeSettings(const QList<AnnotationSettings*>& settings, bool saveAsPersistent) {
+void AnnotationSettingsRegistry::changeSettings(const QList<AnnotationSettings *> &settings, bool saveAsPersistent) {
     if (settings.isEmpty()) {
         return;
     }
     QStringList changedNames;
-    foreach(AnnotationSettings* s, settings) {
+    foreach (AnnotationSettings *s, settings) {
         assert(s->color.isValid());
         assert(!s->name.isEmpty());
         persistentMap.remove(s->name);
@@ -68,7 +68,7 @@ QStringList AnnotationSettingsRegistry::getAllSettings() const {
     return (persistentMap.keys() + transientMap.keys()).toSet().toList();
 }
 
-AnnotationSettings * AnnotationSettingsRegistry::getAnnotationSettings(const SharedAnnotationData &a) {
+AnnotationSettings *AnnotationSettingsRegistry::getAnnotationSettings(const SharedAnnotationData &a) {
     AnnotationSettings *s = getAnnotationSettings(a->name);
     //don't show non-positional features that span the whole sequence
     if (a->findFirstQualifierValue("non-positional") != QString::null) {
@@ -77,7 +77,7 @@ AnnotationSettings * AnnotationSettingsRegistry::getAnnotationSettings(const Sha
     return s;
 }
 
-AnnotationSettings* AnnotationSettingsRegistry::getAnnotationSettings(const QString &name) {
+AnnotationSettings *AnnotationSettingsRegistry::getAnnotationSettings(const QString &name) {
     //Search in persistent settings:
     AnnotationSettings *s = persistentMap.value(name);
     if (s != NULL) {
@@ -86,7 +86,7 @@ AnnotationSettings* AnnotationSettingsRegistry::getAnnotationSettings(const QStr
 
     //search in transient cache:
     s = transientMap.value(name);
-    if (s!=NULL) {
+    if (s != NULL) {
         return s;
     }
     s = new AnnotationSettings();
@@ -97,17 +97,16 @@ AnnotationSettings* AnnotationSettingsRegistry::getAnnotationSettings(const QStr
         //todo: mutex!?
         transientMap.erase(transientMap.begin());
     }
-    transientMap[name]=s;
+    transientMap[name] = s;
     return s;
 }
 
 void AnnotationSettingsRegistry::read() {
-
-    Settings* s = AppContext::getSettings();
+    Settings *s = AppContext::getSettings();
     QStringList annotations = s->getChildGroups(SETTINGS_ROOT);
-    QList<AnnotationSettings*> list;
-    foreach(const QString& name, annotations) {
-        AnnotationSettings* as = transientMap.value(name);
+    QList<AnnotationSettings *> list;
+    foreach (const QString &name, annotations) {
+        AnnotationSettings *as = transientMap.value(name);
         if (as == NULL) {
             as = new AnnotationSettings();
             as->name = name;
@@ -117,7 +116,7 @@ void AnnotationSettingsRegistry::read() {
         if (!as->color.isValid()) {
             // previously color was stored as QColor, not by name
             as->color = color.value<QColor>();
-            if (!as->color.isValid()) { // if still invalid - get the default value
+            if (!as->color.isValid()) {    // if still invalid - get the default value
                 as->color = FeatureColors::genLightColor(as->name);
             }
         }
@@ -134,9 +133,9 @@ void AnnotationSettingsRegistry::read() {
 }
 
 void AnnotationSettingsRegistry::save() {
-    Settings* s = AppContext::getSettings();
+    Settings *s = AppContext::getSettings();
     QStringList keys = s->getAllKeys(SETTINGS_ROOT);
-    foreach(const AnnotationSettings* as, persistentMap.values()) {
+    foreach (const AnnotationSettings *as, persistentMap.values()) {
         s->setValue(SETTINGS_ROOT + as->name + "/color", as->color.name());
         s->setValue(SETTINGS_ROOT + as->name + "/visible", as->visible);
         s->setValue(SETTINGS_ROOT + as->name + "/amino", as->amino);
@@ -153,23 +152,16 @@ AnnotationSettings::AnnotationSettings() {
     showNameQuals = false;
 }
 
-AnnotationSettings::AnnotationSettings(const QString& _name, bool _amino, const QColor& _color, bool _visible)
+AnnotationSettings::AnnotationSettings(const QString &_name, bool _amino, const QColor &_color, bool _visible)
     : name(_name),
       color(_color),
       amino(_amino),
       visible(_visible),
-      showNameQuals(false)
-{
+      showNameQuals(false) {
 }
 
-bool AnnotationSettings::equals(const AnnotationSettings* as) const {
-    return name == as->name
-        && amino == as->amino
-        && color == as->color
-        && visible == as->visible
-        && showNameQuals == as->showNameQuals
-        && nameQuals == as->nameQuals;
+bool AnnotationSettings::equals(const AnnotationSettings *as) const {
+    return name == as->name && amino == as->amino && color == as->color && visible == as->visible && showNameQuals == as->showNameQuals && nameQuals == as->nameQuals;
 }
 
-
-}//namespace
+}    // namespace U2

@@ -20,36 +20,37 @@
  */
 
 #include "SnpEffSupport.h"
-#include "SnpEffDatabaseListModel.h"
-#include "SnpEffDatabaseListTask.h"
-#include "java/JavaSupport.h"
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppResources.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/DataPathRegistry.h>
-#include <U2Core/U2SafePoints.h>
-#include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/ScriptingToolRegistry.h>
 #include <U2Core/Settings.h>
+#include <U2Core/U2OpStatusUtils.h>
+#include <U2Core/U2SafePoints.h>
 
 #include <U2Formats/ConvertFileTask.h>
 
+#include "SnpEffDatabaseListModel.h"
+#include "SnpEffDatabaseListTask.h"
+#include "java/JavaSupport.h"
+
 namespace U2 {
 
-SnpEffDatabaseListModel* SnpEffSupport::databaseModel = new SnpEffDatabaseListModel();
+SnpEffDatabaseListModel *SnpEffSupport::databaseModel = new SnpEffDatabaseListModel();
 const QString SnpEffSupport::ET_SNPEFF = "SnpEff";
 const QString SnpEffSupport::ET_SNPEFF_ID = "USUPP_SNPEFF";
 
-SnpEffSupport::SnpEffSupport(const QString& id, const QString& name, const QString& path) : ExternalTool(id, name, path)
-{
+SnpEffSupport::SnpEffSupport(const QString &id, const QString &name, const QString &path)
+    : ExternalTool(id, name, path) {
     if (AppContext::getMainWindow()) {
         icon = QIcon(":external_tool_support/images/cmdline.png");
         grayIcon = QIcon(":external_tool_support/images/cmdline_gray.png");
         warnIcon = QIcon(":external_tool_support/images/cmdline_warn.png");
     }
 
-    executableFileName="snpEff.jar";
+    executableFileName = "snpEff.jar";
 
     validMessage = "Usage: snpEff \\[command\\] \\[options\\] \\[files\\]";
     description = tr("<i>SnpEff</i>: Genetic variant annotation and effect prediction toolbox.");
@@ -66,33 +67,33 @@ SnpEffSupport::SnpEffSupport(const QString& id, const QString& name, const QStri
 
 QStringList SnpEffSupport::getToolRunnerAdditionalOptions() const {
     QStringList result;
-    AppResourcePool* s = AppContext::getAppSettings()->getAppResourcePool();
+    AppResourcePool *s = AppContext::getAppSettings()->getAppResourcePool();
     CHECK(s != NULL, result);
     //java VM can't allocate whole free memory, Xmx size should be lesser than free memory
     int memSize = s->getMaxMemorySizeInMB();
 #if (defined(Q_OS_WIN) || defined(Q_OS_LINUX))
-    ExternalToolRegistry* etRegistry = AppContext::getExternalToolRegistry();
-    JavaSupport* java =  qobject_cast<JavaSupport*>(etRegistry->getById(JavaSupport::ET_JAVA_ID));
+    ExternalToolRegistry *etRegistry = AppContext::getExternalToolRegistry();
+    JavaSupport *java = qobject_cast<JavaSupport *>(etRegistry->getById(JavaSupport::ET_JAVA_ID));
     CHECK(java != NULL, result);
     if (java->getArchitecture() == JavaSupport::x32) {
         memSize = memSize > 1212 ? 1212 : memSize;
     }
-#endif // windows or linux
+#endif    // windows or linux
     result << "-Xmx" + QString::number(memSize > 150 ? memSize - 150 : memSize) + "M";
     return result;
 }
 
 void SnpEffSupport::sl_validationStatusChanged(bool isValid) {
     if (isValid) {
-        SnpEffDatabaseListTask* task = new SnpEffDatabaseListTask();
+        SnpEffDatabaseListTask *task = new SnpEffDatabaseListTask();
         connect(task, SIGNAL(si_stateChanged()), SLOT(sl_databaseListIsReady()));
         AppContext::getTaskScheduler()->registerTopLevelTask(task);
     }
 }
 
 void SnpEffSupport::sl_databaseListIsReady() {
-    SnpEffDatabaseListTask* task = dynamic_cast<SnpEffDatabaseListTask*>(sender());
-    SAFE_POINT(task != NULL, "SnpEffDatabaseListTask is NULL: wrong sender",);
+    SnpEffDatabaseListTask *task = dynamic_cast<SnpEffDatabaseListTask *>(sender());
+    SAFE_POINT(task != NULL, "SnpEffDatabaseListTask is NULL: wrong sender", );
     if (task->isCanceled() || task->hasError() || !task->isFinished()) {
         return;
     }
@@ -102,5 +103,4 @@ void SnpEffSupport::sl_databaseListIsReady() {
     SnpEffSupport::databaseModel->getData(dbListFilePath);
 }
 
-}//namespace
-
+}    // namespace U2

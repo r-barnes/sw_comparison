@@ -20,14 +20,16 @@
  */
 
 #include "MenuManager.h"
+
 #include <QMainWindow>
+
 #include <U2Core/Log.h>
 
 namespace U2 {
 #define STATIC_MENU_MODEL 1
 
-MWMenuManagerImpl::MWMenuManagerImpl(QObject* p, QMenuBar* mb) : QObject(p) 
-{
+MWMenuManagerImpl::MWMenuManagerImpl(QObject *p, QMenuBar *mb)
+    : QObject(p) {
     menuBar = mb;
     menuBar->setObjectName(MWMENU);
     createTopLevelMenu(MWMENU_FILE, tr("&File"));
@@ -38,8 +40,8 @@ MWMenuManagerImpl::MWMenuManagerImpl(QObject* p, QMenuBar* mb) : QObject(p)
     createTopLevelMenu(MWMENU_HELP, tr("&Help"), MWMENU_WINDOW);
 }
 
-QMenu* MWMenuManagerImpl::getTopLevelMenu(const QString& sysName) const {
-    foreach(QMenu* m, toplevelMenus) {
+QMenu *MWMenuManagerImpl::getTopLevelMenu(const QString &sysName) const {
+    foreach (QMenu *m, toplevelMenus) {
         if (m->menuAction()->objectName() == sysName) {
             return m;
         }
@@ -63,18 +65,18 @@ void MWMenuManagerImpl::registerAction(QAction *action) {
     additionalActions << QPointer<QAction>(action);
 }
 
-QMenu* MWMenuManagerImpl::createTopLevelMenu(const QString& sysName, const QString& title, const QString& afterSysName) {
-    QMenu* qmenu = getTopLevelMenu(sysName);
+QMenu *MWMenuManagerImpl::createTopLevelMenu(const QString &sysName, const QString &title, const QString &afterSysName) {
+    QMenu *qmenu = getTopLevelMenu(sysName);
     assert(!qmenu);
     if (qmenu) {
         return qmenu;
     }
-    QMenu* menuBefore = getTopLevelMenu(afterSysName);
+    QMenu *menuBefore = getTopLevelMenu(afterSysName);
     if (menuBefore == NULL) {
         menuBefore = getTopLevelMenu(MWMENU_TOOLS);
     }
     qmenu = new QMenu(title, menuBar);
-    qmenu->setObjectName(sysName);//??? need refactoring...
+    qmenu->setObjectName(sysName);    //??? need refactoring...
     qmenu->menuAction()->setObjectName(sysName);
     int insertPos = toplevelMenus.indexOf(menuBefore) + 1;
     if (insertPos == 0) {
@@ -84,26 +86,25 @@ QMenu* MWMenuManagerImpl::createTopLevelMenu(const QString& sysName, const QStri
 
 #ifdef STATIC_MENU_MODEL
     menuBar->addMenu(qmenu);
-//#else
+    //#else
     if (MWMENU_WINDOW != sysName) {
         qmenu->installEventFilter(this);
-#ifndef Q_OS_MAC
+#    ifndef Q_OS_MAC
         qmenu->setEnabled(false);
-#else
+#    else
 //        if (!QApplication::testAttribute(Qt::AA_DontUseNativeMenuBar)) {          //UGENE-339, not tested for attribute set
 //            qmenu->setEnabled(false);
 //        }
-#endif
+#    endif
     }
 #endif
     return qmenu;
 }
 
-
-static void touchMenu(QMenu* menu ) {
-    QList<QMenu*> menus = menu->findChildren<QMenu*>();
-    foreach(QMenu* menu, menus) {
-        if (!menu->isEnabled() ) {
+static void touchMenu(QMenu *menu) {
+    QList<QMenu *> menus = menu->findChildren<QMenu *>();
+    foreach (QMenu *menu, menus) {
+        if (!menu->isEnabled()) {
             continue;
         }
         menu->setEnabled(false);
@@ -114,42 +115,42 @@ static void touchMenu(QMenu* menu ) {
 }
 
 bool MWMenuManagerImpl::eventFilter(QObject *obj, QEvent *event) {
-    if (event->type() == QEvent::ActionAdded || event->type() == QEvent::ActionRemoved)  {
-            QMenu* menu = qobject_cast<QMenu*>(obj);
-            assert(menu!=NULL);
-            //coreLog.trace("aaa:EventFilter (Menu Manager)");
+    if (event->type() == QEvent::ActionAdded || event->type() == QEvent::ActionRemoved) {
+        QMenu *menu = qobject_cast<QMenu *>(obj);
+        assert(menu != NULL);
+        //coreLog.trace("aaa:EventFilter (Menu Manager)");
 #ifndef Q_OS_MAC
-            menu->setEnabled(!menu->isEmpty());
+        menu->setEnabled(!menu->isEmpty());
 #else
-            touchMenu(menu);
+        touchMenu(menu);
 #endif
-            //updateTopLevelMenuVisibility(menu);
+        //updateTopLevelMenuVisibility(menu);
     }
 
     return QObject::eventFilter(obj, event);
 }
 
-void MWMenuManagerImpl::updateTopLevelMenuVisibility(QMenu* m) {
-    const QList<QAction*>& activeActions = menuBar->actions();
-    if (m->isEmpty() && activeActions.contains(m->menuAction()) && m->menuAction()->objectName()!=MWMENU_WINDOW) {
+void MWMenuManagerImpl::updateTopLevelMenuVisibility(QMenu *m) {
+    const QList<QAction *> &activeActions = menuBar->actions();
+    if (m->isEmpty() && activeActions.contains(m->menuAction()) && m->menuAction()->objectName() != MWMENU_WINDOW) {
         unlinkTopLevelMenu(m);
-    } else if (!m->isEmpty() && !activeActions.contains(m->menuAction())){
+    } else if (!m->isEmpty() && !activeActions.contains(m->menuAction())) {
         linkTopLevelMenu(m);
     }
 }
 
-void MWMenuManagerImpl::unlinkTopLevelMenu(QMenu* m){
+void MWMenuManagerImpl::unlinkTopLevelMenu(QMenu *m) {
     Q_UNUSED(m);
     //assert(menuBar->actions().contains(m->menuAction()));
     //menuBar->removeAction(m->menuAction());
 }
 
-void MWMenuManagerImpl::linkTopLevelMenu(QMenu* m) {
+void MWMenuManagerImpl::linkTopLevelMenu(QMenu *m) {
     assert(!menuBar->actions().contains(m->menuAction()));
-    const QList<QAction*>& activeActions = menuBar->actions();
-    QAction* nextActiveAction = NULL;
-    for (int i = toplevelMenus.indexOf(m)+1; i < toplevelMenus.size();i++) {
-        QMenu* tmpM = toplevelMenus.at(i);
+    const QList<QAction *> &activeActions = menuBar->actions();
+    QAction *nextActiveAction = NULL;
+    for (int i = toplevelMenus.indexOf(m) + 1; i < toplevelMenus.size(); i++) {
+        QMenu *tmpM = toplevelMenus.at(i);
         if (activeActions.contains(tmpM->menuAction())) {
             nextActiveAction = tmpM->menuAction();
             break;
@@ -158,5 +159,4 @@ void MWMenuManagerImpl::linkTopLevelMenu(QMenu* m) {
     menuBar->insertAction(nextActiveAction, m->menuAction());
 }
 
-
-}//namespace
+}    // namespace U2

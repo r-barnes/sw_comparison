@@ -22,13 +22,13 @@
 #ifndef __ZOOMABLE_ASSEMBLY_OVERVIEW_H__
 #define __ZOOMABLE_ASSEMBLY_OVERVIEW_H__
 
-#include "AssemblyBrowserSettings.h"
-#include "CoverageInfo.h"
+#include <QSharedPointer>
+#include <QWidget>
 
 #include <U2Core/U2Region.h>
 
-#include <QSharedPointer>
-#include <QWidget>
+#include "AssemblyBrowserSettings.h"
+#include "CoverageInfo.h"
 
 class QMenu;
 
@@ -38,37 +38,38 @@ class AssemblyModel;
 class AssemblyBrowserUi;
 class AssemblyBrowser;
 
-
-class ZoomableAssemblyOverview: public QWidget {
+class ZoomableAssemblyOverview : public QWidget {
     Q_OBJECT
 public:
-    ZoomableAssemblyOverview(AssemblyBrowserUi * ui, bool zoomable = false);
+    ZoomableAssemblyOverview(AssemblyBrowserUi *ui, bool zoomable = false);
 
     void setScaleType(AssemblyBrowserSettings::OverviewScaleType t);
-    AssemblyBrowserSettings::OverviewScaleType getScaleType()const;
+    AssemblyBrowserSettings::OverviewScaleType getScaleType() const;
 
     void checkedSetVisibleRange(qint64 newStartPos, qint64 newLen, bool force = false);
-    void checkedSetVisibleRange(const U2Region & newRegion, bool force = false);
-    inline U2Region getVisibleRange() const {return visibleRange;}
+    void checkedSetVisibleRange(const U2Region &newRegion, bool force = false);
+    inline U2Region getVisibleRange() const {
+        return visibleRange;
+    }
 
 signals:
     void si_visibleRangeChanged(const U2Region &);
     void si_coverageReady();
 
 protected:
-    void paintEvent(QPaintEvent * e);
-    void resizeEvent(QResizeEvent * e);
-    void mousePressEvent(QMouseEvent * me);
-    void mouseMoveEvent(QMouseEvent * me);
-    void mouseReleaseEvent(QMouseEvent * me);
-    void wheelEvent(QWheelEvent * e);
-    void contextMenuEvent(QContextMenuEvent * e);
+    void paintEvent(QPaintEvent *e);
+    void resizeEvent(QResizeEvent *e);
+    void mousePressEvent(QMouseEvent *me);
+    void mouseMoveEvent(QMouseEvent *me);
+    void mouseReleaseEvent(QMouseEvent *me);
+    void wheelEvent(QWheelEvent *e);
+    void contextMenuEvent(QContextMenuEvent *e);
 
 private slots:
     void sl_visibleAreaChanged();
     void sl_redraw();
-    void sl_zoomIn(const QPoint & pos);
-    void sl_zoomOut(const QPoint & pos);
+    void sl_zoomIn(const QPoint &pos);
+    void sl_zoomOut(const QPoint &pos);
 
     void sl_zoomInContextMenu();
     void sl_zoomOutContextMenu();
@@ -86,7 +87,7 @@ private:
     void zoomToPixRange(int x_pix_start, int x_pix_end);
     void checkedMoveVisibleRange(qint64 newStartPos);
     qint64 minimalOverviewedLen() const;
-    bool canZoomToRange(const U2Region & range) const;
+    bool canZoomToRange(const U2Region &range) const;
 
     void setupActions();
     void updateActions();
@@ -94,26 +95,26 @@ private:
     void initSelectionRedraw();
 
     void drawAll();
-    void drawBackground(QPainter & p);
-    void drawSelection(QPainter & p);
-    void drawCoordLabels(QPainter & p);
-    void drawZoomToRegion(QPainter & p);
+    void drawBackground(QPainter &p);
+    void drawSelection(QPainter &p);
+    void drawCoordLabels(QPainter &p);
+    void drawZoomToRegion(QPainter &p);
 
     void launchCoverageCalculation();
 
 private:
-    AssemblyBrowserUi * ui;
-    AssemblyBrowser * browser;
+    AssemblyBrowserUi *ui;
+    AssemblyBrowser *browser;
     QSharedPointer<AssemblyModel> model;
 
-    QMenu * contextMenu;
+    QMenu *contextMenu;
     QPoint contextMenuPos;
 
     //context menu actions
-    QAction * zoomInAction;
-    QAction * zoomOutAction;
-    QAction * zoomIn100xActon;
-    QAction * restoreGlobalOverviewAction;
+    QAction *zoomInAction;
+    QAction *zoomOutAction;
+    QAction *zoomIn100xActon;
+    QAction *restoreGlobalOverviewAction;
 
     bool zoomable;
     U2Region visibleRange;
@@ -138,7 +139,9 @@ private:
     AssemblyBrowserSettings::OverviewScaleType scaleType;
 
     struct ZoomToRegionSelector {
-        ZoomToRegionSelector() : scribbling(false) {}
+        ZoomToRegionSelector()
+            : scribbling(false) {
+        }
         bool scribbling;
         QPoint startPos;
     } zoomToRegionSelector;
@@ -147,6 +150,6 @@ private:
     const static double ZOOM_MULT;
 };
 
-} //ns
+}    // namespace U2
 
 #endif

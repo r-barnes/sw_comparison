@@ -40,7 +40,7 @@ private slots:
     void sl_textControllerChanged();
 
 private:
-    QWidget* createReferenceGroup();
+    QWidget *createReferenceGroup();
     MSAEditor *msaEditor;
     SequenceSelectorWidgetController *reSeqSelector;
 };
@@ -51,9 +51,9 @@ public:
     RefSeqCommonWidgetFactory(QList<QString> groups);
     virtual ~RefSeqCommonWidgetFactory();
 
-    virtual QWidget* createWidget(GObjectView *objView);
+    virtual QWidget *createWidget(GObjectView *objView, const QVariantMap &options);
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_MSA_REF_SEQ_COMMON_WIDGET_H_
+#endif    // _U2_MSA_REF_SEQ_COMMON_WIDGET_H_

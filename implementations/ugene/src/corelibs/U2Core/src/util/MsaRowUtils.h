@@ -22,8 +22,8 @@
 #ifndef _U2_MSAROWUTILS_H_
 #define _U2_MSAROWUTILS_H_
 
-#include <U2Core/global.h>
 #include <U2Core/U2Msa.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -46,8 +46,8 @@ public:
      */
     static qint64 getUngappedPosition(const U2MsaRowGapModel &gaps, qint64 dataLength, qint64 position, bool allowGapInPos = false);
     //Only inner gaps, no leading and trailing
-    static U2Region getGappedRegion(const U2MsaRowGapModel& gaps, const U2Region &ungapped);
-    static U2Region getUngappedRegion(const U2MsaRowGapModel& gaps, const U2Region& selection);
+    static U2Region getGappedRegion(const U2MsaRowGapModel &gaps, const U2Region &ungapped);
+    static U2Region getUngappedRegion(const U2MsaRowGapModel &gaps, const U2Region &selection);
     static int getCoreStart(const U2MsaRowGapModel &gaps);
 
     static void insertGaps(U2OpStatus &os, U2MsaRowGapModel &gaps, int rowLengthWithoutTrailing, int position, int count);
@@ -61,7 +61,7 @@ public:
     static void shiftGapModel(U2MsaRowGapModel &gapModel, int shiftSize);
     static bool isGap(int dataLength, const U2MsaRowGapModel &gapModel, int position);
     static void chopGapModel(U2MsaRowGapModel &gapModel, qint64 maxLength);
-    static void chopGapModel(U2MsaRowGapModel &gapModel, const U2Region &boundRegion);  // gaps will be shifted
+    static void chopGapModel(U2MsaRowGapModel &gapModel, const U2Region &boundRegion);    // gaps will be shifted
     static QByteArray joinCharsAndGaps(const DNASequence &sequence, const U2MsaRowGapModel &gapModel, int rowLength, bool keepLeadingGaps, bool keepTrailingGaps);
     static U2MsaRowGapModel insertGapModel(const U2MsaRowGapModel &firstGapModel, const U2MsaRowGapModel &secondGapModel);
     static void mergeConsecutiveGaps(U2MsaRowGapModel &gapModel);
@@ -77,6 +77,6 @@ public:
     static void removeTrailingGapsFromModel(qint64 length, U2MsaRowGapModel &gapModel);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_MSAROWUTILS_H_
+#endif    // _U2_MSAROWUTILS_H_

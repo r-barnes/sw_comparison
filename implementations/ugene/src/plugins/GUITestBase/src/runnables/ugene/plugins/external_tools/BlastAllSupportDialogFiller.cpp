@@ -19,33 +19,28 @@
  * MA 02110-1301, USA.
  */
 
+#include <base_dialogs/GTFileDialog.h>
+#include <primitives/GTComboBox.h>
+#include <primitives/GTWidget.h>
+
 #include <QApplication>
 #include <QComboBox>
 
 #include <U2Test/UGUITest.h>
 
-#include <primitives/GTComboBox.h>
-#include <base_dialogs/GTFileDialog.h>
-#include <primitives/GTWidget.h>
-
-#include "GTUtilsTaskTreeView.h"
-
 #include "BlastAllSupportDialogFiller.h"
+#include "GTUtilsTaskTreeView.h"
 
 namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::BlastAllSupportDialogFiller"
 
 BlastAllSupportDialogFiller::BlastAllSupportDialogFiller(const Parameters &parameters, HI::GUITestOpStatus &os)
-: Filler(os, "BlastAllSupportDialog"), parameters(parameters), dialog(NULL)
-{
-
+    : Filler(os, "BlastAllSupportDialog"), parameters(parameters), dialog(NULL) {
 }
 
 BlastAllSupportDialogFiller::BlastAllSupportDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario)
-    : Filler(os, "BlastAllSupportDialog", scenario), dialog(NULL)
-{
-
+    : Filler(os, "BlastAllSupportDialog", scenario), dialog(NULL) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
@@ -63,7 +58,7 @@ void BlastAllSupportDialogFiller::commonScenario() {
         return;
     }
 
-    QComboBox *programName = qobject_cast<QComboBox*>(GTWidget::findWidget(os, "programName", dialog));
+    QComboBox *programName = qobject_cast<QComboBox *>(GTWidget::findWidget(os, "programName", dialog));
     GT_CHECK(programName, "programName is NULL");
     GTComboBox::setIndexWithText(os, programName, parameters.programNameText);
 
@@ -108,4 +103,4 @@ void BlastAllSupportDialogFiller::test_3211() {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

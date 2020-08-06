@@ -34,7 +34,7 @@ namespace U2 {
 class PhyMLSupport : public ExternalTool {
     Q_OBJECT
 public:
-    PhyMLSupport(const QString& id, const QString& name);
+    PhyMLSupport(const QString &id, const QString &name);
 
     static const QString PHYML;
     static const QString PHYML_ID;
@@ -43,7 +43,7 @@ public:
 
 class PhyMLAdapter : public PhyTreeGenerator {
 public:
-    Task * createCalculatePhyTreeTask(const MultipleSequenceAlignment &ma, const CreatePhyTreeSettings &s) ;
+    Task *createCalculatePhyTreeTask(const MultipleSequenceAlignment &ma, const CreatePhyTreeSettings &s);
     CreatePhyTreeWidget *createPhyTreeSettingsWidget(const MultipleSequenceAlignment &ma, QWidget *parent = NULL);
 };
 
@@ -54,33 +54,46 @@ enum SubstModelTrRatioType {
     WITHOUT_TT_RATIO
 };
 
-class PhyMLModelTypes{
+class PhyMLModelTypes {
 public:
-    static const QStringList& getAminoAcidModelTypes() {return aminoSubstitutionModels;}
-    static const QStringList& getDnaModelTypes() {return dnaSubstitutionModels;}
-    static SubstModelTrRatioType getTtRatioType(const QString& modelName);
+    static const QStringList &getAminoAcidModelTypes() {
+        return aminoSubstitutionModels;
+    }
+    static const QStringList &getDnaModelTypes() {
+        return dnaSubstitutionModels;
+    }
+    static SubstModelTrRatioType getTtRatioType(const QString &modelName);
+
 private:
-    static const QStringList dnaSubstitutionModels;//all dna models
-    static const QStringList dnaModelsWithFixedTtRatio;//only fixed Transition / transversion ratio
-    static const QStringList dnaModelsWithEstimatedTtRatio;//only estimated Transition / transversion ratio
+    static const QStringList dnaSubstitutionModels;    //all dna models
+    static const QStringList dnaModelsWithFixedTtRatio;    //only fixed Transition / transversion ratio
+    static const QStringList dnaModelsWithEstimatedTtRatio;    //only estimated Transition / transversion ratio
     static const QStringList aminoSubstitutionModels;
 };
 
-class PhyMLRatioTestsTypes{
+class PhyMLRatioTestsTypes {
 public:
-    static const QStringList& getRatioTestsTypes() {return ratioTestsTypes;}
+    static const QStringList &getRatioTestsTypes() {
+        return ratioTestsTypes;
+    }
+
 private:
     static const QStringList ratioTestsTypes;
 };
 
 class TreeSearchingParams {
 public:
-    static const QStringList& getInputTreeTypes() {return inputTreeTypes;}
-    static const QStringList& getTreeImprovementTypes() {return treeImprovementTypes;}
+    static const QStringList &getInputTreeTypes() {
+        return inputTreeTypes;
+    }
+    static const QStringList &getTreeImprovementTypes() {
+        return treeImprovementTypes;
+    }
+
 private:
     static const QStringList inputTreeTypes;
     static const QStringList treeImprovementTypes;
 };
 
-}   // namespace U2
-#endif // _U2_PHYML_SUPPORT_H_
+}    // namespace U2
+#endif    // _U2_PHYML_SUPPORT_H_

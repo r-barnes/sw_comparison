@@ -29,18 +29,19 @@ namespace U2 {
 class FormatDetectionResult;
 
 class DocumentReadingModeSelectorController : public QObject {
-	Q_OBJECT
-    
-    DocumentReadingModeSelectorController(){}
+    Q_OBJECT
+
+    DocumentReadingModeSelectorController() {
+    }
 
 public:
     /** 
         Adds additional hints to dr.rawCheckResult.properties on format reading mode  
         If 'false' is returned -> user pressed cancel
     */
-    static bool adjustReadingMode(FormatDetectionResult& dr, bool forceReadingOptions, bool optionsAlreadyChoosed);
+    static bool adjustReadingMode(FormatDetectionResult &dr, bool forceReadingOptions, bool optionsAlreadyChoosed);
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

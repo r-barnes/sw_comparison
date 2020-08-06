@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "MSAGeneralTabFactory.h"
+
 #include <QPixmap>
 
 #include <U2Core/U2SafePoints.h>
@@ -27,34 +29,32 @@
 
 #include "MSAGeneralTab.h"
 
-#include "MSAGeneralTabFactory.h"
-
 namespace U2 {
 
 const QString MSAGeneralTabFactory::GROUP_ID = "OP_MSA_GENERAL";
 const QString MSAGeneralTabFactory::GROUP_ICON_STR = ":core/images/settings2.png";
-const QString MSAGeneralTabFactory::GROUP_DOC_PAGE = "24742450";
+const QString MSAGeneralTabFactory::GROUP_DOC_PAGE = "46499988";
 
 MSAGeneralTabFactory::MSAGeneralTabFactory() {
     objectViewOfWidget = ObjViewType_AlignmentEditor;
 }
 
-QWidget* MSAGeneralTabFactory::createWidget(GObjectView* objView) {
-    SAFE_POINT(NULL != objView,
-        QString("Internal error: unable to create widget for group '%1', object view is NULL.").arg(GROUP_ID),
-        NULL);
+QWidget *MSAGeneralTabFactory::createWidget(GObjectView *objView, const QVariantMap &options) {
+    SAFE_POINT(objView != nullptr,
+               QString("Internal error: unable to create widget for group '%1', object view is NULL.").arg(GROUP_ID),
+               nullptr);
 
-    MSAEditor* msa = qobject_cast<MSAEditor*>(objView);
-    SAFE_POINT(NULL != msa,
-        QString("Internal error: unable to cast object view to MSAEditor for group '%1'.").arg(GROUP_ID),
-        NULL);
+    MSAEditor *msa = qobject_cast<MSAEditor *>(objView);
+    SAFE_POINT(msa != nullptr,
+               QString("Internal error: unable to cast object view to MSAEditor for group '%1'.").arg(GROUP_ID),
+               nullptr);
 
     MSAGeneralTab *widget = new MSAGeneralTab(msa);
     widget->setObjectName("MsaGeneralTab");
     return widget;
 }
 
-const QString & MSAGeneralTabFactory::getGroupId() {
+const QString &MSAGeneralTabFactory::getGroupId() {
     return GROUP_ID;
 }
 
@@ -62,4 +62,4 @@ OPGroupParameters MSAGeneralTabFactory::getOPGroupParameters() {
     return OPGroupParameters(GROUP_ID, QPixmap(GROUP_ICON_STR), QObject::tr("General"), GROUP_DOC_PAGE);
 }
 
-} // namespace U2
+}    // namespace U2

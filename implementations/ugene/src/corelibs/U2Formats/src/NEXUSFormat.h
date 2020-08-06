@@ -22,18 +22,16 @@
 #ifndef _U2_NEXUS_FORMAT_H_
 #define _U2_NEXUS_FORMAT_H_
 
+#include <cassert>
+
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentModel.h>
-
 #include <U2Core/IOAdapter.h>
 #include <U2Core/Task.h>
 
-#include <cassert>
-
 #include "TextDocumentFormat.h"
 
-namespace U2
-{
+namespace U2 {
 
 class IOAdapter;
 
@@ -43,16 +41,17 @@ class U2FORMATS_EXPORT NEXUSFormat : public TextDocumentFormat {
 public:
     NEXUSFormat(QObject *p);
 
-    virtual void storeDocument(Document* d, IOAdapter* io, U2OpStatus& os);
+    virtual void storeDocument(Document *d, IOAdapter *io, U2OpStatus &os);
+
 protected:
-    virtual FormatCheckResult checkRawTextData(const QByteArray &rawData, const GUrl& = GUrl()) const;
-    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
+    virtual FormatCheckResult checkRawTextData(const QByteArray &rawData, const GUrl & = GUrl()) const;
+    virtual Document *loadTextDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os);
 
 private:
-    QList<GObject*> loadObjects(IOAdapter *io, const U2DbiRef& dbiRef, const QVariantMap &fs, U2OpStatus &ti);
-    void storeObjects(QList<GObject*> objects, bool simpleNames, IOAdapter *io, U2OpStatus &ti);
+    QList<GObject *> loadObjects(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &ti);
+    void storeObjects(QList<GObject *> objects, bool simpleNames, IOAdapter *io, U2OpStatus &ti);
 };
 
-} // namespace U2
+}    // namespace U2
 
 #endif    // #ifndef _U2_NEXUS_FORMAT_H_

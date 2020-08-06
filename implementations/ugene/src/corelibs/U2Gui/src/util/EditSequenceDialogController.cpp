@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "EditSequenceDialogController.h"
+
 #include <QDir>
 #include <QKeyEvent>
 #include <QMessageBox>
@@ -35,16 +37,15 @@
 #include <U2Gui/HelpButton.h>
 #include <U2Gui/SaveDocumentController.h>
 
-#include "EditSequenceDialogController.h"
 #include "ui_EditSequenceDialog.h"
 
-namespace U2{
+namespace U2 {
 
 //////////////////////////////////////////////////////////////////////////
 //SeqPasterEventFilter
-bool SeqPasterEventFilter::eventFilter( QObject* obj, QEvent *event ){
+bool SeqPasterEventFilter::eventFilter(QObject *obj, QEvent *event) {
     if (QEvent::KeyPress == event->type()) {
-        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
         if (Qt::Key_Return == keyEvent->key()) {
             emit si_enterPressed();
             return true;
@@ -53,9 +54,8 @@ bool SeqPasterEventFilter::eventFilter( QObject* obj, QEvent *event ){
     return QObject::eventFilter(obj, event);
 }
 
-SeqPasterEventFilter::SeqPasterEventFilter( QObject* parent )
-:QObject(parent){
-
+SeqPasterEventFilter::SeqPasterEventFilter(QObject *parent)
+    : QObject(parent) {
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -65,11 +65,10 @@ EditSequenceDialogController::EditSequenceDialogController(const EditSequencDial
       filter(""),
       pos(1),
       saveController(NULL),
-      config(cfg)
-{
+      config(cfg) {
     ui = new Ui_EditSequenceDialog;
     ui->setupUi(this);
-    new HelpButton(this, ui->buttonBox, "24742378");
+    new HelpButton(this, ui->buttonBox, "46499774");
     ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -79,7 +78,7 @@ EditSequenceDialogController::EditSequenceDialogController(const EditSequencDial
 
     //selection
     ui->selectionGroupBox->setEnabled(false);
-    if (!cfg.selectionRegions.isEmpty()){
+    if (!cfg.selectionRegions.isEmpty()) {
         ui->selectionLineEdit->setText(U1AnnotationUtils::buildLocationString(cfg.selectionRegions));
     }
     connect(ui->beforeSelectionToolButton, SIGNAL(clicked()), this, SLOT(sl_beforeSlectionClicked()));
@@ -115,37 +114,36 @@ EditSequenceDialogController::EditSequenceDialogController(const EditSequencDial
     connect(ui->endPosToolButton, SIGNAL(clicked()), this, SLOT(sl_endPositionliClicked()));
 
     //event filter
-    SeqPasterEventFilter* evFilter= new SeqPasterEventFilter(this);
+    SeqPasterEventFilter *evFilter = new SeqPasterEventFilter(this);
     w->setEventFilter(evFilter);
     connect(evFilter, SIGNAL(si_enterPressed()), this, SLOT(sl_enterPressed()));
 }
 
-void EditSequenceDialogController::accept(){
+void EditSequenceDialogController::accept() {
     QString validationError = w->validate();
-    if(!validationError.isEmpty()){
+    if (!validationError.isEmpty()) {
         QMessageBox::critical(this, this->windowTitle(), validationError);
         return;
     }
 
-    if ((w->getSequences().isEmpty() || w->getSequences().first().seq == config.initialText)
-            && config.mode == EditSequenceMode_Replace ) {
+    if ((w->getSequences().isEmpty() || w->getSequences().first().seq == config.initialText) && config.mode == EditSequenceMode_Replace) {
         QDialog::reject();
         return;
     }
 
-    if(!modifyCurrentDocument()){
+    if (!modifyCurrentDocument()) {
         const QString url = saveController->getSaveFileName();
         QFileInfo fi(url);
         QDir dirToSave(fi.dir());
-        if (!dirToSave.exists()){
+        if (!dirToSave.exists()) {
             QMessageBox::critical(this, this->windowTitle(), tr("Folder to save is not exists"));
             return;
         }
-        if(url.isEmpty()){
+        if (url.isEmpty()) {
             QMessageBox::critical(this, this->windowTitle(), tr("Entered path is empty"));
             return;
         }
-        if(fi.baseName().isEmpty()){
+        if (fi.baseName().isEmpty()) {
             QMessageBox::critical(this, this->windowTitle(), tr("Filename is empty"));
             return;
         }
@@ -155,10 +153,9 @@ void EditSequenceDialogController::accept(){
     QDialog::accept();
 }
 
-void EditSequenceDialogController::addSeqpasterWidget(){
+void EditSequenceDialogController::addSeqpasterWidget() {
     w = new SeqPasterWidgetController(this, config.initialText, true);
     ui->globalLayout->insertWidget(0, w);
-
 }
 
 int EditSequenceDialogController::getPosToInsert() const {
@@ -168,9 +165,9 @@ int EditSequenceDialogController::getPosToInsert() const {
 U1AnnotationUtils::AnnotationStrategyForResize EditSequenceDialogController::getAnnotationStrategy() const {
     if (ui->resizeRB->isChecked()) {
         return U1AnnotationUtils::AnnotationStrategyForResize_Resize;
-    } else if(ui->splitRB->isChecked()) {
+    } else if (ui->splitRB->isChecked()) {
         return U1AnnotationUtils::AnnotationStrategyForResize_Split_To_Joined;
-    } else if(ui->split_separateRB->isChecked()) {
+    } else if (ui->split_separateRB->isChecked()) {
         return U1AnnotationUtils::AnnotationStrategyForResize_Split_To_Separate;
     } else {
         assert(ui->removeRB->isChecked());
@@ -237,28 +234,28 @@ void EditSequenceDialogController::initSaveController() {
     saveController = new SaveDocumentController(conf, formats, this);
 }
 
-void EditSequenceDialogController::sl_startPositionliClicked(){
+void EditSequenceDialogController::sl_startPositionliClicked() {
     ui->insertPositionSpin->setValue(1);
 }
 
-void EditSequenceDialogController::sl_endPositionliClicked(){
+void EditSequenceDialogController::sl_endPositionliClicked() {
     ui->insertPositionSpin->setValue(seqEndPos);
 }
 
-void EditSequenceDialogController::sl_beforeSlectionClicked(){
+void EditSequenceDialogController::sl_beforeSlectionClicked() {
     SAFE_POINT(!config.selectionRegions.isEmpty(), "No selection", );
     U2Region containingregion = U2Region::containingRegion(config.selectionRegions);
     ui->insertPositionSpin->setValue(containingregion.startPos + 1);
 }
 
-void EditSequenceDialogController::sl_afterSlectionClicked(){
+void EditSequenceDialogController::sl_afterSlectionClicked() {
     SAFE_POINT(!config.selectionRegions.isEmpty(), "No selection", );
     U2Region containingregion = U2Region::containingRegion(config.selectionRegions);
     ui->insertPositionSpin->setValue(containingregion.endPos() + 1);
 }
 
-void EditSequenceDialogController::sl_enterPressed(){
+void EditSequenceDialogController::sl_enterPressed() {
     accept();
 }
 
-} // U2
+}    // namespace U2

@@ -22,8 +22,8 @@
 #ifndef _U2_WORKFLOW_INVESTIGATION_WIDGETS_CONTROLLER_H_
 #define _U2_WORKFLOW_INVESTIGATION_WIDGETS_CONTROLLER_H_
 
-#include <QObject>
 #include <QMap>
+#include <QObject>
 
 #include <U2Lang/ActorModel.h>
 #include <U2Lang/WorkflowInvestigationData.h>
@@ -52,7 +52,7 @@ public:
 
 public slots:
     void sl_currentInvestigationUpdateResponse(const WorkflowInvestigationData &investigationInfo,
-        const Workflow::Link *bus);
+                                               const Workflow::Link *bus);
     void sl_countOfMessagesResponse(const Workflow::Link *bus, int countOfMessages);
 
 signals:
@@ -60,7 +60,8 @@ signals:
     void si_updateCurrentInvestigation(const Workflow::Link *bus, int messageNumber);
     void si_countOfMessagesRequested(const Workflow::Link *bus);
     void si_convertionMessages2DocumentsIsRequested(const Workflow::Link *bus,
-        const QString &messageType, int messageNumber);
+                                                    const QString &messageType,
+                                                    int messageNumber);
 
 private slots:
     void sl_contextMenuRequested(const QPoint &cursorPosition);
@@ -92,9 +93,9 @@ private:
     QAction *hideAllColumnsButThisAction;
     QAction *showAllColumnsAction;
     int selectedColumn;
-    QMap<const Workflow::Link *, QVector<int> > columnWidths;
+    QMap<const Workflow::Link *, QVector<int>> columnWidths;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_WORKFLOW_INVESTIGATION_WIDGETS_CONTROLLER_H_
+#endif    // _U2_WORKFLOW_INVESTIGATION_WIDGETS_CONTROLLER_H_

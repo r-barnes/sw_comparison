@@ -33,30 +33,33 @@ namespace U2 {
 class ClustalOSupport : public ExternalTool {
     Q_OBJECT
 public:
-    ClustalOSupport(const QString& id, const QString& name, const QString& path = "");
-    GObjectViewWindowContext* getViewContext(){ return viewCtx; }
+    ClustalOSupport(const QString &id, const QString &name, const QString &path = "");
+    GObjectViewWindowContext *getViewContext() {
+        return viewCtx;
+    }
 
     static const QString ET_CLUSTALO;
     static const QString ET_CLUSTALO_ID;
     static const QString CLUSTALO_TMP_DIR;
 public slots:
     void sl_runWithExtFileSpecify();
+
 private:
-    GObjectViewWindowContext* viewCtx;
+    GObjectViewWindowContext *viewCtx;
 };
 
-class ClustalOSupportContext: public GObjectViewWindowContext {
+class ClustalOSupportContext : public GObjectViewWindowContext {
     Q_OBJECT
 public:
-    ClustalOSupportContext(QObject* p);
+    ClustalOSupportContext(QObject *p);
 
 protected slots:
     void sl_align_with_ClustalO();
 
 protected:
-    virtual void initViewContext(GObjectView* view);
-    virtual void buildMenu(GObjectView* view, QMenu* m);
+    virtual void initViewContext(GObjectView *view);
+    virtual void buildMenu(GObjectView *view, QMenu *m);
 };
 
-}//namespace
-#endif // _U2_CLUSTALO_SUPPORT_H
+}    // namespace U2
+#endif    // _U2_CLUSTALO_SUPPORT_H

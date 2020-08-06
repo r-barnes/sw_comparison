@@ -21,21 +21,20 @@
 
 #include "CreateAnnotationTask.h"
 
-#include "LoadDocumentTask.h"
-
-#include <U2Core/DocumentModel.h>
 #include <U2Core/AnnotationTableObject.h>
+#include <U2Core/DocumentModel.h>
 #include <U2Core/GObjectUtils.h>
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2FeatureUtils.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
+#include "LoadDocumentTask.h"
+
 namespace U2 {
 
-CreateAnnotationsTask::CreateAnnotationsTask(AnnotationTableObject *ao, const QList<SharedAnnotationData> &data,  const QString &g)
-    : Task(tr("Create annotations"), TaskFlags_FOSE_COSC), aobj(ao)
-{
+CreateAnnotationsTask::CreateAnnotationsTask(AnnotationTableObject *ao, const QList<SharedAnnotationData> &data, const QString &g)
+    : Task(tr("Create annotations"), TaskFlags_FOSE_COSC), aobj(ao) {
     aData.insert(g, data);
 
     initAnnObjectRef();
@@ -44,8 +43,7 @@ CreateAnnotationsTask::CreateAnnotationsTask(AnnotationTableObject *ao, const QL
 }
 
 CreateAnnotationsTask::CreateAnnotationsTask(const GObjectReference &r, const QList<SharedAnnotationData> &data, const QString &g)
-    : Task(tr("Create annotations"), TaskFlags_FOSE_COSC), aRef(r)
-{
+    : Task(tr("Create annotations"), TaskFlags_FOSE_COSC), aRef(r) {
     aData.insert(g, data);
 
     GObject *ao = (GObjectUtils::selectObjectByReference(aRef, UOF_LoadedAndUnloaded));
@@ -55,9 +53,8 @@ CreateAnnotationsTask::CreateAnnotationsTask(const GObjectReference &r, const QL
     tpm = Progress_Manual;
 }
 
-CreateAnnotationsTask::CreateAnnotationsTask(AnnotationTableObject *o, const QMap<QString, QList<SharedAnnotationData> > &data)
-    : Task(tr("Create annotations"), TaskFlags_FOSE_COSC), aobj(o), aData(data)
-{
+CreateAnnotationsTask::CreateAnnotationsTask(AnnotationTableObject *o, const QMap<QString, QList<SharedAnnotationData>> &data)
+    : Task(tr("Create annotations"), TaskFlags_FOSE_COSC), aobj(o), aData(data) {
     initAnnObjectRef();
     CHECK_OP(stateInfo, );
     tpm = Progress_Manual;
@@ -71,7 +68,7 @@ void CreateAnnotationsTask::initAnnObjectRef() {
 
 void CreateAnnotationsTask::run() {
     AnnotationTableObject *parentObject = getGObject();
-    CHECK_EXT(NULL != parentObject, setError(tr("Annotation table has been removed unexpectedly")),);
+    CHECK_EXT(NULL != parentObject, setError(tr("Annotation table has been removed unexpectedly")), );
 
     DbiOperationsBlock opBlock(parentObject->getEntityRef().dbiRef, stateInfo);
     Q_UNUSED(opBlock);
@@ -119,7 +116,7 @@ Task::ReportResult CreateAnnotationsTask::report() {
     return ReportResult_Finished;
 }
 
-AnnotationTableObject * CreateAnnotationsTask::getGObject() const {
+AnnotationTableObject *CreateAnnotationsTask::getGObject() const {
     AnnotationTableObject *result = NULL;
     if (aRef.isValid()) {
         SAFE_POINT(aobj.isNull(), "Unexpected annotation table object content!", NULL);
@@ -142,4 +139,4 @@ QList<Annotation *> CreateAnnotationsTask::getResultAnnotations() const {
     return resultAnnotations;
 }
 
-} // namespace
+}    // namespace U2

@@ -19,12 +19,13 @@
  * MA 02110-1301, USA.
  */
 
-
 #ifndef _U2_SELECTION_MODIFICATION_HELPER_
 #define _U2_SELECTION_MODIFICATION_HELPER_
 
 #include <QCursor>
 
+#include <U2Core/U2Region.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -42,20 +43,20 @@ public:
         RightBottomCorner
     };
 
-    static MovableSide getMovableSide(const Qt::CursorShape shape, const QPoint& globalMousePos, const QRect& selection, const QSizeF& baseSize);
+    static MovableSide getMovableSide(const Qt::CursorShape shape, const QPoint &globalMousePos, const QRect &selection, const QSizeF &baseSize);
     static MovableSide getMovableSide(const double arcsinCurrent, const int startBase, const int endBase, const int sequenceLength);
-    static Qt::CursorShape getCursorShape(const QPoint& globalMousePos, const QRect& selection, const double baseWidth, const double baseHeight);
+    static Qt::CursorShape getCursorShape(const QPoint &globalMousePos, const QRect &selection, const double baseWidth, const double baseHeight);
     static Qt::CursorShape getCursorShape(const MovableSide border, const Qt::CursorShape currentShape);
     static Qt::CursorShape getCursorShape(const double arcsinCurrent, const int startBase, const int endBase, const int sequenceLength);
     static Qt::CursorShape getCursorShape(const double arcsinCurrent);
-    static QRect getNewSelection(MovableSide& movableSide, const QPoint& globalMousePos, const QSizeF& baseSize, const QRect& currentSelection);
-    static QList<U2Region> getNewSelection(MovableSide& border, const double mouseAngle, const double rotation, const int sequenceLength, const int startBase, const int endBase, bool& isTwoRegions);
+    static QRect getNewSelection(MovableSide &movableSide, const QPoint &globalMousePos, const QSizeF &baseSize, const QRect &currentSelection);
+    static QList<U2Region> getNewSelection(MovableSide &border, const double mouseAngle, const double rotation, const int sequenceLength, const int startBase, const int endBase, bool &isTwoRegions);
 
 private:
     static MovableSide getMovableSide(const int globalMousePos, const int selectionPos, const int selectionSize, const double baseSize);
-    static U2Region getNewSelectionForBorderMoving(MovableSide& border, const int globalMousePos, const double baseSize, const U2Region& currentSelection);
-    static QRect getNewSelectionForCornerMoving(MovableSide& corner, const QPoint& globalMousePos, const QSizeF& baseSize, const QRect& currentSelection);
-    static void calculateBordersPositions(const int selectionPos, const int selectionSize, const double baseSize, double& leftOrTopBorderPosition, double& rightOrBottomBorderPosition);
+    static U2Region getNewSelectionForBorderMoving(MovableSide &border, const int globalMousePos, const double baseSize, const U2Region &currentSelection);
+    static QRect getNewSelectionForCornerMoving(MovableSide &corner, const QPoint &globalMousePos, const QSizeF &baseSize, const QRect &currentSelection);
+    static void calculateBordersPositions(const int selectionPos, const int selectionSize, const double baseSize, double &leftOrTopBorderPosition, double &rightOrBottomBorderPosition);
     static MovableSide getOppositeBorder(const MovableSide border);
     static MovableSide getNewMovableCorner(const MovableSide horizontalBorder, const MovableSide verticalBorder);
 
@@ -67,6 +68,6 @@ private:
     static const int GRADUATION;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_SELECTION_MODIFICATION_HELPER_
+#endif    // _U2_SELECTION_MODIFICATION_HELPER_

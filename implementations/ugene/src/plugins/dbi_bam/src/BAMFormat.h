@@ -22,12 +22,11 @@
 #ifndef _U2_BAM_FORMAT_H_
 #define _U2_BAM_FORMAT_H_
 
+#include <QStringList>
+
 #include <U2Core/DbiDocumentFormat.h>
 #include <U2Core/GUrl.h>
 #include <U2Core/U2FormatCheckResult.h>
-
-#include <QStringList>
-
 
 namespace U2 {
 
@@ -41,21 +40,22 @@ public:
 
 namespace BAM {
 
-class BAMFormatUtils : public QObject
-{
+class BAMFormatUtils : public QObject {
     Q_OBJECT
 public:
     BAMFormatUtils(QObject *parent = NULL);
 
-    FormatCheckResult checkRawData(const QByteArray &rawData, const GUrl& url = GUrl()) const;
+    FormatCheckResult checkRawData(const QByteArray &rawData, const GUrl &url = GUrl()) const;
 
-    QStringList getSupportedDocumentFileExtensions() const { return fileExtensions; }
+    QStringList getSupportedDocumentFileExtensions() const {
+        return fileExtensions;
+    }
 
 private:
     QStringList fileExtensions;
 };
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2
 
-#endif // _U2_BAM_FORMAT_H_
+#endif    // _U2_BAM_FORMAT_H_

@@ -22,10 +22,10 @@
 #ifndef _U2_LOG_CACHE_H_
 #define _U2_LOG_CACHE_H_
 
-#include <U2Core/Log.h>
-
 #include <QFileInfo>
 #include <QReadWriteLock>
+
+#include <U2Core/Log.h>
 
 namespace U2 {
 
@@ -35,19 +35,20 @@ class U2CORE_EXPORT LogFilterItem {
 public:
     QString category;
     LogLevel minLevel;
-    LogFilterItem(const QString& category = QString(), LogLevel minLevel = LogLevel_INFO);
+    LogFilterItem(const QString &category = QString(), LogLevel minLevel = LogLevel_INFO);
 };
 
 class U2CORE_EXPORT LogFilter {
 public:
-    LogFilter() {}
+    LogFilter() {
+    }
     QList<LogFilterItem> filters;
-    bool isEmpty() const { return filters.isEmpty(); }
-    bool matches(const LogMessage& msg) const;
-    QString selectEffectiveCategory(const LogMessage& msg) const;
-
+    bool isEmpty() const {
+        return filters.isEmpty();
+    }
+    bool matches(const LogMessage &msg) const;
+    QString selectEffectiveCategory(const LogMessage &msg) const;
 };
-
 
 class U2CORE_EXPORT LogCache : public QObject, public LogListener {
     Q_OBJECT
@@ -55,23 +56,25 @@ public:
     LogCache(int maxLogMessages = MAX_CACHE_SIZE);
     virtual ~LogCache();
 
-    static void setAppGlobalInstance(LogCache* cache);
-    static LogCache* getAppGlobalInstance() { return appGlobalCache; }
+    static void setAppGlobalInstance(LogCache *cache);
+    static LogCache *getAppGlobalInstance() {
+        return appGlobalCache;
+    }
 
-    virtual void onMessage(const LogMessage& msg);
+    virtual void onMessage(const LogMessage &msg);
     QList<LogMessage> getLastMessages(int count = -1);
 
 private:
-    static LogCache* appGlobalCache;
+    static LogCache *appGlobalCache;
     void updateSize();
 
     QReadWriteLock lock;
     int maxLogMessages;
+
 public:
-    QList<LogMessage*> messages;
+    QList<LogMessage *> messages;
     LogFilter filter;
 };
-
 
 /** Extended cache version that dumps messages to file or console */
 class U2CORE_EXPORT LogCacheExt : public LogCache {
@@ -79,24 +82,30 @@ class U2CORE_EXPORT LogCacheExt : public LogCache {
 public:
     LogCacheExt();
 
-    void setConsoleOutputEnabled(bool enabled) { consoleEnabled = enabled; }
-    bool isConsoleOutputEnabled() const { return consoleEnabled; }
+    void setConsoleOutputEnabled(bool enabled) {
+        consoleEnabled = enabled;
+    }
+    bool isConsoleOutputEnabled() const {
+        return consoleEnabled;
+    }
 
-    bool setFileOutputEnabled(const QString& file);
+    bool setFileOutputEnabled(const QString &file);
     void setFileOutputDisabled();
-    bool isFileOutputEnabled() const { return fileEnabled; }
-    QString getFileOutputPath() const { return QFileInfo(file).canonicalFilePath(); }
+    bool isFileOutputEnabled() const {
+        return fileEnabled;
+    }
+    QString getFileOutputPath() const {
+        return QFileInfo(file).canonicalFilePath();
+    }
 
-    virtual void onMessage(const LogMessage& msg);
-
+    virtual void onMessage(const LogMessage &msg);
 
 private:
     bool consoleEnabled;
     bool fileEnabled;
     QFile file;
-
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

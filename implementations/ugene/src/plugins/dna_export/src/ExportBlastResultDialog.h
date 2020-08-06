@@ -22,11 +22,11 @@
 #ifndef _U2_EXPORT_BLAST_RESULT_DIALOG_H_
 #define _U2_EXPORT_BLAST_RESULT_DIALOG_H_
 
+#include <ui_ExportBlastResultDialog.h>
+
 #include <QDialog>
 
 #include <U2Core/global.h>
-
-#include <ui_ExportBlastResultDialog.h>
 
 namespace U2 {
 
@@ -35,10 +35,10 @@ class SaveDocumentController;
 class ExportBlastResultDialog : public QDialog, private Ui_ExportBlastResultDialog {
     Q_OBJECT
 public:
-    ExportBlastResultDialog(QWidget* p, const QString& defaultUrl = QString());
+    ExportBlastResultDialog(QWidget *p, const QString &defaultUrl = QString());
 
-    void setOkButtonText(const QString& text) const;
-    void setFileLabelText(const QString& text) const;
+    void setOkButtonText(const QString &text) const;
+    void setFileLabelText(const QString &text) const;
 
     virtual void accept();
 
@@ -46,16 +46,16 @@ public:
     QString url;
     DocumentFormatId format;
     QString qualiferId;
-    bool    addToProjectFlag;
-    bool    useGenbankHeader;
-    bool    addRefFlag;
+    bool addToProjectFlag;
+    bool useGenbankHeader;
+    bool addRefFlag;
 
 private:
     void initSaveController(const QString &defaultUrl);
 
-    SaveDocumentController* saveController;
+    SaveDocumentController *saveController;
 };
 
-}//namespace
+}    // namespace U2
 
-#endif // _U2_EXPORT_BLAST_RESULT_DIALOG_H_
+#endif    // _U2_EXPORT_BLAST_RESULT_DIALOG_H_

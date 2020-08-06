@@ -28,19 +28,18 @@ namespace U2 {
 
 struct TreeOpWidgetViewSettings;
 
-class U2VIEW_EXPORT MSATreeOptionsWidgetFactory : public OPWidgetFactory
-{
+class U2VIEW_EXPORT MSATreeOptionsWidgetFactory : public OPWidgetFactory {
     Q_OBJECT
 public:
     MSATreeOptionsWidgetFactory();
     ~MSATreeOptionsWidgetFactory();
 
-    virtual QWidget* createWidget(GObjectView* objView);
+    QWidget *createWidget(GObjectView *objView, const QVariantMap &options) override;
 
-    virtual OPGroupParameters getOPGroupParameters();
+    OPGroupParameters getOPGroupParameters() override;
 
 private slots:
-    void sl_onWidgetViewSaved(const TreeOpWidgetViewSettings& settings);
+    void sl_onWidgetViewSaved(const TreeOpWidgetViewSettings &settings);
 
 private:
     static const QString GROUP_ID;
@@ -50,19 +49,19 @@ private:
     TreeOpWidgetViewSettings *viewSettings;
 };
 
-class U2VIEW_EXPORT TreeOptionsWidgetFactory : public OPWidgetFactory
-{
+class U2VIEW_EXPORT TreeOptionsWidgetFactory : public OPWidgetFactory {
     Q_OBJECT
 public:
     TreeOptionsWidgetFactory();
     ~TreeOptionsWidgetFactory();
 
-    virtual QWidget* createWidget(GObjectView* objView);
+    QWidget *createWidget(GObjectView *objView, const QVariantMap &options) override;
 
-    virtual OPGroupParameters getOPGroupParameters();
+    OPGroupParameters getOPGroupParameters() override;
 
 private slots:
-    void sl_onWidgetViewSaved(const TreeOpWidgetViewSettings& settings);
+    void sl_onWidgetViewSaved(const TreeOpWidgetViewSettings &settings);
+
 private:
     static const QString GROUP_ID;
     static const QString GROUP_ICON_STR;
@@ -71,16 +70,16 @@ private:
     TreeOpWidgetViewSettings *viewSettings;
 };
 
-class U2VIEW_EXPORT AddTreeWidgetFactory : public OPWidgetFactory
-{
+class U2VIEW_EXPORT AddTreeWidgetFactory : public OPWidgetFactory {
     Q_OBJECT
 public:
     AddTreeWidgetFactory();
-    virtual ~AddTreeWidgetFactory(){}
+    virtual ~AddTreeWidgetFactory() {
+    }
 
-    virtual QWidget* createWidget(GObjectView* objView);
+    QWidget *createWidget(GObjectView *objView, const QVariantMap &options) override;
 
-    virtual OPGroupParameters getOPGroupParameters();
+    OPGroupParameters getOPGroupParameters() override;
 
 private:
     static const QString GROUP_ID;
@@ -88,6 +87,6 @@ private:
     static const QString GROUP_DOC_PAGE;
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

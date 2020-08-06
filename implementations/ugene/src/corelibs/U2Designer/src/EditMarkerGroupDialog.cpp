@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "EditMarkerGroupDialog.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 
@@ -33,30 +35,34 @@
 #include <U2Lang/Marker.h>
 #include <U2Lang/MarkerUtils.h>
 
-#include "EditMarkerGroupDialog.h"
-
 namespace U2 {
 
 /************************************************************************/
 /* EditMarkerGroupDialog */
 /************************************************************************/
 EditMarkerGroupDialog::EditMarkerGroupDialog(bool isNew, Marker *marker, Workflow::MarkerGroupListCfgModel *_allModel, QWidget *parent)
-    : QDialog(parent), isNew(isNew), marker(NULL), allModel(_allModel), currentTypeIndex(-1)
-{
+    : QDialog(parent), isNew(isNew), marker(NULL), allModel(_allModel), currentTypeIndex(-1) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24740226");
+    new HelpButton(this, buttonBox, "46500437");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
     {
         QStringList types;
-        types << MarkerTypes::SEQ_LENGTH().getDisplayName(); typeIds << MarkerTypes::SEQ_LENGTH().getId();
-        types << MarkerTypes::SEQ_NAME().getDisplayName(); typeIds << MarkerTypes::SEQ_NAME().getId();
-        types << MarkerTypes::ANNOTATION_COUNT().getDisplayName(); typeIds << MarkerTypes::ANNOTATION_COUNT().getId();
+        types << MarkerTypes::SEQ_LENGTH().getDisplayName();
+        typeIds << MarkerTypes::SEQ_LENGTH().getId();
+        types << MarkerTypes::SEQ_NAME().getDisplayName();
+        typeIds << MarkerTypes::SEQ_NAME().getId();
+        types << MarkerTypes::ANNOTATION_COUNT().getDisplayName();
+        typeIds << MarkerTypes::ANNOTATION_COUNT().getId();
         //types << MarkerTypes::ANNOTATION_LENGTH().getDisplayName(); typeIds << MarkerTypes::ANNOTATION_LENGTH().getId();
-        types << MarkerTypes::QUAL_INT_VALUE().getDisplayName(); typeIds << MarkerTypes::QUAL_INT_VALUE().getId();
-        types << MarkerTypes::QUAL_TEXT_VALUE().getDisplayName(); typeIds << MarkerTypes::QUAL_TEXT_VALUE().getId();
-        types << MarkerTypes::QUAL_FLOAT_VALUE().getDisplayName(); typeIds << MarkerTypes::QUAL_FLOAT_VALUE().getId();
-        types << MarkerTypes::TEXT().getDisplayName(); typeIds << MarkerTypes::TEXT().getId();
+        types << MarkerTypes::QUAL_INT_VALUE().getDisplayName();
+        typeIds << MarkerTypes::QUAL_INT_VALUE().getId();
+        types << MarkerTypes::QUAL_TEXT_VALUE().getDisplayName();
+        typeIds << MarkerTypes::QUAL_TEXT_VALUE().getId();
+        types << MarkerTypes::QUAL_FLOAT_VALUE().getDisplayName();
+        typeIds << MarkerTypes::QUAL_FLOAT_VALUE().getId();
+        types << MarkerTypes::TEXT().getDisplayName();
+        typeIds << MarkerTypes::TEXT().getId();
         typeBox->addItems(types);
         typeBox->setCurrentIndex(0);
 
@@ -102,7 +108,7 @@ void EditMarkerGroupDialog::updateUi() {
     table->setModel(markerModel);
 
     if (NONE != marker->hasAdditionalParameter()) {
-        addParamLabel->setText(marker->getAdditionalParameterName()+":");
+        addParamLabel->setText(marker->getAdditionalParameterName() + ":");
         addParamEdit->setText(marker->getAdditionalParameter().toString());
         addParamLabel->setVisible(true);
         addParamEdit->setVisible(true);
@@ -157,7 +163,7 @@ void EditMarkerGroupDialog::sl_onEditButtonClicked() {
     QMap<QString, QString>::iterator i = marker->getValues().begin();
     i += selected.first().row();
     QVariantList values;
-    MarkerUtils::stringToValue(MarkerTypes::getDataTypeById(marker->getType()),marker->getValues().key(*i), values);
+    MarkerUtils::stringToValue(MarkerTypes::getDataTypeById(marker->getType()), marker->getValues().key(*i), values);
     QObjectScopedPointer<EditMarkerDialog> dlg = new EditMarkerDialog(false, marker->getType(), *i, values, this);
 
     const int dialogResult = dlg->exec();
@@ -194,7 +200,7 @@ void EditMarkerGroupDialog::sl_onTypeChanged(int newTypeIndex) {
     MarkerDataType newType = MarkerTypes::getDataTypeById(typeIds.at(newTypeIndex));
 
     bool changeMarker = false;
-    if (1 == marker->getValues().size()) { // contains only "rest"
+    if (1 == marker->getValues().size()) {    // contains only "rest"
         changeMarker = true;
     } else {
         if (oldType == newType) {
@@ -237,7 +243,7 @@ bool EditMarkerGroupDialog::checkEditMarkerResult(const QString &oldName, const 
     }
 
     if (values.contains(newValue)) {
-        if (values.value(newValue) != oldName) { // adding duplicating marker value
+        if (values.value(newValue) != oldName) {    // adding duplicating marker value
             message.append(tr("Duplicate marker's value: %1").arg(newValue));
             return false;
         }
@@ -274,8 +280,8 @@ bool EditMarkerGroupDialog::checkAddMarkerResult(const QString &newName, const Q
 
 void EditMarkerGroupDialog::accept() {
     marker->setName(markerGroupNameEdit->text());
-    { // check edit/add marker result
-        MarkerEditorWidget *parent = dynamic_cast<MarkerEditorWidget*>(this->parent());
+    {    // check edit/add marker result
+        MarkerEditorWidget *parent = dynamic_cast<MarkerEditorWidget *>(this->parent());
         QString message;
 
         ParameterState state = marker->hasAdditionalParameter();
@@ -306,9 +312,7 @@ void EditMarkerGroupDialog::accept() {
 /* MarkerListCfgModel */
 /************************************************************************/
 MarkerListCfgModel::MarkerListCfgModel(QObject *parent, Marker *marker)
-: QAbstractTableModel(parent), marker(marker)
-{
-
+    : QAbstractTableModel(parent), marker(marker) {
 }
 
 QVariant MarkerListCfgModel::data(const QModelIndex &index, int role) const {
@@ -334,14 +338,14 @@ int MarkerListCfgModel::rowCount(const QModelIndex &) const {
     return marker->getValues().size();
 }
 
-Qt::ItemFlags MarkerListCfgModel::flags( const QModelIndex & index ) const {
+Qt::ItemFlags MarkerListCfgModel::flags(const QModelIndex &index) const {
     Q_UNUSED(index);
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
 QVariant MarkerListCfgModel::headerData(int section, Qt::Orientation orientation, int role) const {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
-        switch(section) {
+        switch (section) {
         case 0:
             return tr("Marker name");
         case 1:
@@ -354,8 +358,10 @@ QVariant MarkerListCfgModel::headerData(int section, Qt::Orientation orientation
     return QVariant();
 }
 
-bool MarkerListCfgModel::setData(const QModelIndex & index, const QVariant & value, int role) {
-    Q_UNUSED(index); Q_UNUSED(value); Q_UNUSED(role);
+bool MarkerListCfgModel::setData(const QModelIndex &index, const QVariant &value, int role) {
+    Q_UNUSED(index);
+    Q_UNUSED(value);
+    Q_UNUSED(role);
     return true;
 }
 
@@ -370,7 +376,7 @@ bool MarkerListCfgModel::removeRows(int row, int count, const QModelIndex &paren
     if (MarkerUtils::REST_OPERATION == marker->getValues().key(*i)) {
         return false;
     }
-    beginRemoveRows(QModelIndex(), row, row+count-1);
+    beginRemoveRows(QModelIndex(), row, row + count - 1);
     marker->getValues().erase(i);
     endRemoveRows();
 
@@ -391,10 +397,9 @@ void MarkerListCfgModel::addMarker(const QString &valueString, const QString &na
 /* EditMarkerDialog */
 /************************************************************************/
 EditMarkerDialog::EditMarkerDialog(bool isNew, const QString &type, const QString &name, const QVariantList &values, QWidget *parent)
-: QDialog(parent), isNew(isNew), type(type), name(name), values(values), editWidget(NULL)
-{
+    : QDialog(parent), isNew(isNew), type(type), name(name), values(values), editWidget(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24740226");
+    new HelpButton(this, buttonBox, "46500437");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
     if (!isNew) {
@@ -410,26 +415,26 @@ EditMarkerDialog::EditMarkerDialog(bool isNew, const QString &type, const QStrin
     if (!type.isEmpty()) {
         MarkerDataType dataType = MarkerTypes::getDataTypeById(type);
         switch (dataType) {
-            case INTEGER:
-                editWidget = new EditIntegerMarkerWidget(isNew, values, this);
-                break;
-            case FLOAT:
-                editWidget = new EditFloatMarkerWidget(isNew, values, this);
-                break;
-            case STRING:
-                editWidget = new EditStringMarkerWidget(isNew, values, this);
-                break;
-            default:
-                assert(0);
+        case INTEGER:
+            editWidget = new EditIntegerMarkerWidget(isNew, values, this);
+            break;
+        case FLOAT:
+            editWidget = new EditFloatMarkerWidget(isNew, values, this);
+            break;
+        case STRING:
+            editWidget = new EditStringMarkerWidget(isNew, values, this);
+            break;
+        default:
+            assert(0);
         }
-        QVBoxLayout *layout = qobject_cast<QVBoxLayout*>(this->layout());
+        QVBoxLayout *layout = qobject_cast<QVBoxLayout *>(this->layout());
         layout->insertWidget(1, editWidget);
     }
 }
 
 void EditMarkerDialog::accept() {
-    { // check edit/add marker result
-        EditMarkerGroupDialog *parent = dynamic_cast<EditMarkerGroupDialog*>(this->parent());
+    {    // check edit/add marker result
+        EditMarkerGroupDialog *parent = dynamic_cast<EditMarkerGroupDialog *>(this->parent());
         QString message;
         QString valueString;
         QVariantList newVals;
@@ -464,8 +469,7 @@ void EditMarkerDialog::accept() {
 /* EditTypedMarkerWidget */
 /************************************************************************/
 EditIntegerMarkerWidget::EditIntegerMarkerWidget(bool isNew, const QVariantList &values, QWidget *parent)
-: EditTypedMarkerWidget(values, parent)
-{
+    : EditTypedMarkerWidget(values, parent) {
     setupUi(this);
     lessButton->toggle();
     greaterButton->toggle();
@@ -516,8 +520,7 @@ QVariantList EditIntegerMarkerWidget::getValues() {
 }
 
 EditFloatMarkerWidget::EditFloatMarkerWidget(bool isNew, const QVariantList &values, QWidget *parent)
-: EditTypedMarkerWidget(values, parent)
-{
+    : EditTypedMarkerWidget(values, parent) {
     setupUi(this);
     lessButton->toggle();
     greaterButton->toggle();
@@ -568,8 +571,7 @@ QVariantList EditFloatMarkerWidget::getValues() {
 }
 
 EditStringMarkerWidget::EditStringMarkerWidget(bool isNew, const QVariantList &values, QWidget *parent)
-: EditTypedMarkerWidget(values, parent)
-{
+    : EditTypedMarkerWidget(values, parent) {
     setupUi(this);
     endsButton->toggle();
     containsButton->toggle();
@@ -614,4 +616,4 @@ QVariantList EditStringMarkerWidget::getValues() {
     return values;
 }
 
-} // U2
+}    // namespace U2

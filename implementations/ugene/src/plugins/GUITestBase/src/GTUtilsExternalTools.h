@@ -23,16 +23,17 @@
 #define _GTUTILS_EXTERNAL_TOOLS_H_
 
 #include <U2Core/U2OpStatus.h>
+#include <core/GUITestOpStatus.h>
 
 namespace U2 {
 
 class GTUtilsExternalTools {
 public:
     static void removeTool(HI::GUITestOpStatus &os, const QString &toolName);
-    static void checkValidation(HI::GUITestOpStatus& os, const QString& toolName);
+    static void checkValidation(HI::GUITestOpStatus &os, const QString &toolName);
     static void setToolUrl(HI::GUITestOpStatus &os, const QString &toolName, const QString &url);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _GTUTILS_EXTERNAL_TOOLS_H_
+#endif    // _GTUTILS_EXTERNAL_TOOLS_H_

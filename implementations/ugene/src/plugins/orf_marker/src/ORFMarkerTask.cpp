@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ORFMarkerTask.h"
+
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/CreateAnnotationTask.h>
@@ -29,8 +31,6 @@
 #include <U2Core/U1AnnotationUtils.h>
 #include <U2Core/U2FeatureUtils.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "ORFMarkerTask.h"
 
 namespace U2 {
 
@@ -46,7 +46,7 @@ const QString ORFSettingsKeys::INCLUDE_STOP_CODON("orf_finder/incldue_stop_codon
 const QString ORFSettingsKeys::MAX_RESULT("orf_finder/max_result");
 const QString ORFSettingsKeys::IS_RESULT_LIMITED("orf_finder/is_result_limited");
 
-void ORFSettingsKeys::save(const ORFAlgorithmSettings& cfg, Settings* s) {
+void ORFSettingsKeys::save(const ORFAlgorithmSettings &cfg, Settings *s) {
     s->setValue(ORFSettingsKeys::AMINO_TRANSL, cfg.proteinTT->getTranslationId());
     s->setValue(ORFSettingsKeys::MUST_FIT, cfg.mustFit);
     s->setValue(ORFSettingsKeys::MUST_INIT, cfg.mustInit);
@@ -56,18 +56,18 @@ void ORFSettingsKeys::save(const ORFAlgorithmSettings& cfg, Settings* s) {
     s->setValue(ORFSettingsKeys::SEARCH_REGION, QVariant::fromValue(cfg.searchRegion));
     s->setValue(ORFSettingsKeys::STRAND, ORFAlgorithmSettings::getStrandStringId(cfg.strand));
     s->setValue(ORFSettingsKeys::INCLUDE_STOP_CODON, cfg.includeStopCodon);
-    s->setValue(ORFSettingsKeys::MAX_RESULT,cfg.maxResult2Search);
-    s->setValue(ORFSettingsKeys::IS_RESULT_LIMITED,cfg.isResultsLimited);
+    s->setValue(ORFSettingsKeys::MAX_RESULT, cfg.maxResult2Search);
+    s->setValue(ORFSettingsKeys::IS_RESULT_LIMITED, cfg.isResultsLimited);
 }
 
-void ORFSettingsKeys::read(ORFAlgorithmSettings& cfg, const Settings* s) {
+void ORFSettingsKeys::read(ORFAlgorithmSettings &cfg, const Settings *s) {
     cfg.mustFit = s->getValue(ORFSettingsKeys::MUST_FIT, false).toBool();
     cfg.mustInit = s->getValue(ORFSettingsKeys::MUST_INIT, true).toBool();
     cfg.allowAltStart = s->getValue(ORFSettingsKeys::ALLOW_ALT_START, false).toBool();
     cfg.allowOverlap = s->getValue(ORFSettingsKeys::ALLOW_OVERLAP, false).toBool();
     cfg.minLen = s->getValue(ORFSettingsKeys::MIN_LEN, 100).toInt();
-    cfg.maxResult2Search =  s->getValue(ORFSettingsKeys::MAX_RESULT,200000).toInt();
-    cfg.isResultsLimited = s->getValue(ORFSettingsKeys::IS_RESULT_LIMITED,true).toBool();
+    cfg.maxResult2Search = s->getValue(ORFSettingsKeys::MAX_RESULT, 200000).toInt();
+    cfg.isResultsLimited = s->getValue(ORFSettingsKeys::IS_RESULT_LIMITED, true).toBool();
 
     QString strandId = s->getValue(ORFSettingsKeys::STRAND, ORFAlgorithmSettings::STRAND_BOTH).toString();
     cfg.strand = ORFAlgorithmSettings::getStrandByStringId(strandId);
@@ -81,21 +81,17 @@ void ORFSettingsKeys::read(ORFAlgorithmSettings& cfg, const Settings* s) {
     cfg.searchRegion = s->getValue(ORFSettingsKeys::SEARCH_REGION).value<U2Region>();
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 // find ORFS and save 2 annotations task
 
-FindORFsToAnnotationsTask::FindORFsToAnnotationsTask( AnnotationTableObject* aobj,const U2EntityRef& _entityRef,
-                                                     const ORFAlgorithmSettings& settings, const QString& gName,
-                                                      const QString &annDescription)
+FindORFsToAnnotationsTask::FindORFsToAnnotationsTask(AnnotationTableObject *aobj, const U2EntityRef &_entityRef, const ORFAlgorithmSettings &settings, const QString &gName, const QString &annDescription)
     : Task(tr("Find ORFs and save to annotations"), TaskFlags_NR_FOSCOE),
       aObj(aobj),
       cfg(settings),
       groupName(gName),
       annDescription(annDescription),
-      entityRef(_entityRef)
-{
-    SAFE_POINT_EXT( aobj != NULL, setError(tr("Annotation table object is NULL!")), );
+      entityRef(_entityRef) {
+    SAFE_POINT_EXT(aobj != NULL, setError(tr("Annotation table object is NULL!")), );
     if (groupName.isEmpty()) {
         groupName = ORFAlgorithmSettings::ANNOTATION_GROUP_NAME;
     }
@@ -123,15 +119,12 @@ QList<Task *> FindORFsToAnnotationsTask::onSubTaskFinished(Task *subTask) {
 // ORFs auto annotation updater
 
 ORFAutoAnnotationsUpdater::ORFAutoAnnotationsUpdater()
-: AutoAnnotationsUpdater(tr("ORFs"), ORFAlgorithmSettings::ANNOTATION_GROUP_NAME, false, true)
-{
-
+    : AutoAnnotationsUpdater(tr("ORFs"), ORFAlgorithmSettings::ANNOTATION_GROUP_NAME, false, true) {
 }
 
-Task* ORFAutoAnnotationsUpdater::createAutoAnnotationsUpdateTask( const AutoAnnotationObject* aa )
-{
+Task *ORFAutoAnnotationsUpdater::createAutoAnnotationsUpdateTask(const AutoAnnotationObject *aa) {
     AnnotationTableObject *aObj = aa->getAnnotationObject();
-    U2SequenceObject* dnaObj = aa->getSeqObject();
+    U2SequenceObject *dnaObj = aa->getSeqObject();
 
     ORFAlgorithmSettings cfg;
     ORFSettingsKeys::read(cfg, AppContext::getSettings());
@@ -146,16 +139,16 @@ Task* ORFAutoAnnotationsUpdater::createAutoAnnotationsUpdateTask( const AutoAnno
         cfg.searchRegion = wholeSequenceRegion;
     }
 
-    Task* task = new FindORFsToAnnotationsTask(aObj, dnaObj->getSequenceRef(), cfg );
+    Task *task = new FindORFsToAnnotationsTask(aObj, dnaObj->getSequenceRef(), cfg);
 
     return task;
 }
 
-bool ORFAutoAnnotationsUpdater::checkConstraints( const AutoAnnotationConstraints& constraints ) {
+bool ORFAutoAnnotationsUpdater::checkConstraints(const AutoAnnotationConstraints &constraints) {
     if (constraints.alphabet == NULL) {
         return false;
     }
     return constraints.alphabet->isNucleic();
 }
 
-} // U2 namespace
+}    // namespace U2

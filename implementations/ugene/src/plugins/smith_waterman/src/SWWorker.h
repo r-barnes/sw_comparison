@@ -22,12 +22,14 @@
 #ifndef _U2_SW_WORKER_H_
 #define _U2_SW_WORKER_H_
 
-#include <U2Lang/LocalDomain.h>
-#include <U2Designer/DelegateEditors.h>
-#include <U2Lang/WorkflowUtils.h>
+#include <U2Algorithm/SmithWatermanReportCallback.h>
 #include <U2Algorithm/SmithWatermanSettings.h>
 #include <U2Algorithm/SmithWatermanTaskFactory.h>
-#include <U2Algorithm/SmithWatermanReportCallback.h>
+
+#include <U2Designer/DelegateEditors.h>
+
+#include <U2Lang/LocalDomain.h>
+#include <U2Lang/WorkflowUtils.h>
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -35,7 +37,10 @@ namespace LocalWorkflow {
 class SWPrompter : public PrompterBase<SWPrompter> {
     Q_OBJECT
 public:
-    SWPrompter(Actor* p = 0) : PrompterBase<SWPrompter>(p) {}
+    SWPrompter(Actor *p = 0)
+        : PrompterBase<SWPrompter>(p) {
+    }
+
 protected:
     QString composeRichDoc();
 };
@@ -43,31 +48,34 @@ protected:
 class SWAlgoEditor : public ComboBoxDelegate {
     Q_OBJECT
 public:
-    SWAlgoEditor(ActorPrototype* proto) : ComboBoxDelegate(QVariantMap()), proto(proto) {}
+    SWAlgoEditor(ActorPrototype *proto)
+        : ComboBoxDelegate(QVariantMap()), proto(proto) {
+    }
 public slots:
     void populate();
+
 private:
-    ActorPrototype* proto;
+    ActorPrototype *proto;
 };
 
 class SWWorker : public BaseWorker {
     Q_OBJECT
 public:
-    SWWorker(Actor* a);
+    SWWorker(Actor *a);
 
     virtual void init();
     virtual bool isReady() const;
-    virtual Task* tick();
+    virtual Task *tick();
     virtual void cleanup();
 
 private slots:
-    void sl_taskFinished(Task*);
+    void sl_taskFinished(Task *);
 
 private:
     IntegralBus *input, *patternPort, *output;
-    QMap<Task*, SmithWatermanReportCallbackAnnotImpl*> callbacks;
+    QMap<Task *, SmithWatermanReportCallbackAnnotImpl *> callbacks;
     QList<QByteArray> patternList;
-    QMap<Task*, QByteArray> patterns;
+    QMap<Task *, QByteArray> patterns;
     QMap<QString, QString> patternNames;
 };
 
@@ -75,11 +83,15 @@ class SWWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
     static void init();
-    SWWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual Worker* createWorker(Actor* a) {return new SWWorker(a);}
+    SWWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual Worker *createWorker(Actor *a) {
+        return new SWWorker(a);
+    }
 };
 
-} //namespace LocalWorkflow
-} // U2 namespace
+}    //namespace LocalWorkflow
+}    // namespace U2
 
 #endif

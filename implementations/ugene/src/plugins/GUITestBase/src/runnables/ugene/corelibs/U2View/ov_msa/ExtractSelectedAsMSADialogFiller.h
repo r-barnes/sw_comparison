@@ -58,6 +58,6 @@ private:
     bool dontCheckFilepath;
 };
 
-}
+}    // namespace U2
 
 #endif

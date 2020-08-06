@@ -22,10 +22,10 @@
 #ifndef _U2_MSA_SELECT_SUBALIGNMENT_DIALOG_H_
 #define _U2_MSA_SELECT_SUBALIGNMENT_DIALOG_H_
 
-#include "ui_SelectSubalignmentDialog.h"
-
 #include <U2Core/MultipleSequenceAlignmentObject.h>
 #include <U2Core/U2Region.h>
+
+#include "ui_SelectSubalignmentDialog.h"
 
 namespace U2 {
 
@@ -34,14 +34,20 @@ class MaEditor;
 class SelectSubalignmentDialog : public QDialog, Ui_SelectSubalignmentDialog {
     Q_OBJECT
 public:
-    SelectSubalignmentDialog( MaEditor *editor, const U2Region& region = U2Region(), const QList<int>& selectedIndexes = QList<int>(), QWidget *p = NULL);
+    SelectSubalignmentDialog(MaEditor *editor, const U2Region &region = U2Region(), const QList<int> &selectedIndexes = QList<int>(), QWidget *p = NULL);
 
     void accept();
 
-    const U2Region getRegion() const { return window; }
+    const U2Region getRegion() const {
+        return window;
+    }
 
-    const QStringList& getSelectedSeqNames() const { return selectedNames; }
-    const QList<int>& getSelectedSeqIndexes() const { return selectedIndexes; }
+    const QStringList &getSelectedSeqNames() const {
+        return selectedNames;
+    }
+    const QList<int> &getSelectedSeqIndexes() const {
+        return selectedIndexes;
+    }
 
 public slots:
     void sl_allButtonClicked();
@@ -51,13 +57,13 @@ public slots:
 private:
     void init();
 
-    MaEditor* editor;
+    MaEditor *editor;
 
     U2Region window;
     QStringList selectedNames;
     QList<int> selectedIndexes;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_MSA_SELECT_SUBALIGNMENT_DIALOG_H_
+#endif    // _U2_MSA_SELECT_SUBALIGNMENT_DIALOG_H_

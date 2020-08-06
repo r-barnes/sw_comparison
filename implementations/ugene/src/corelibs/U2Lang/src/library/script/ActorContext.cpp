@@ -19,12 +19,12 @@
  * MA 02110-1301, USA.
  */
 
+#include "ActorContext.h"
+
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Lang/IntegralBusType.h>
 #include <U2Lang/ScriptEngineUtils.h>
-
-#include "ActorContext.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -87,5 +87,5 @@ QScriptValue ActorContext::createOutBus(Port *port, QScriptEngine *engine) {
     return busArray;
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

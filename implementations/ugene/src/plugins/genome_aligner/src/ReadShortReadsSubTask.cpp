@@ -19,13 +19,14 @@
  * MA 02110-1301, USA.
  */
 #include "ReadShortReadsSubTask.h"
-#include "GenomeAlignerTask.h"
 
 #include <U2Core/AppContext.h>
 #include <U2Core/DNATranslation.h>
 #include <U2Core/TextUtils.h>
 #include <U2Core/Timer.h>
 #include <U2Core/U2SafePoints.h>
+
+#include "GenomeAlignerTask.h"
 
 namespace U2 {
 
@@ -43,7 +44,7 @@ static bool isDnaQualityAboveThreshold(const DNAQuality &dna, int threshold) {
     return true;
 }
 
-static bool checkDnaQuality(SearchQuery* query, int qualityThreshold) {
+static bool checkDnaQuality(SearchQuery *query, int qualityThreshold) {
     if (!(qualityThreshold > 0 && query->hasQuality())) {
         return true;
     }
@@ -52,7 +53,7 @@ static bool checkDnaQuality(SearchQuery* query, int qualityThreshold) {
     return isDnaQualityAboveThreshold(query->getQuality(), qualityThreshold);
 }
 
-static void updateMinMaxReadLengths(AlignContext& alignContext, int l) {
+static void updateMinMaxReadLengths(AlignContext &alignContext, int l) {
     if (GenomeAlignerTask::MIN_SHORT_READ_LENGTH <= l) {
         if (alignContext.minReadLength > l) {
             alignContext.minReadLength = l;
@@ -63,7 +64,7 @@ static void updateMinMaxReadLengths(AlignContext& alignContext, int l) {
     }
 }
 
-static SearchQuery* createRevComplQuery(SearchQuery* query, DNATranslation* transl) {
+static SearchQuery *createRevComplQuery(SearchQuery *query, DNATranslation *transl) {
     SAFE_POINT(query != NULL, "Query is null", NULL);
     SAFE_POINT(transl != NULL, "Transl is null", NULL);
 
@@ -72,10 +73,11 @@ static SearchQuery* createRevComplQuery(SearchQuery* query, DNATranslation* tran
 
     DNASequence dnaSeq(QString("%1_rev").arg(query->getName()), reversed, NULL);
     SearchQuery *rQu = new SearchQuery(&dnaSeq, query);
-    transl->translate(const_cast<char*>(rQu->constData()), rQu->length());
+    transl->translate(const_cast<char *>(rQu->constData()), rQu->length());
 
     if (rQu->constSequence() == query->constSequence()) {
-        delete rQu; rQu = NULL;
+        delete rQu;
+        rQu = NULL;
         return NULL;
     }
 
@@ -88,10 +90,9 @@ ReadShortReadsSubTask::ReadShortReadsSubTask(SearchQuery **_lastQuery,
                                              const DnaAssemblyToRefTaskSettings &_settings,
                                              AlignContext &_alignContext,
                                              quint64 m)
-: Task("ReadShortReadsSubTask", TaskFlag_None), lastQuery(_lastQuery),
-seqReader(_seqReader), settings(_settings), alignContext(_alignContext),
-freeMemorySize(m), prevMemoryHint(0), dataBunch(NULL)
-{
+    : Task("ReadShortReadsSubTask", TaskFlag_None), lastQuery(_lastQuery),
+      seqReader(_seqReader), settings(_settings), alignContext(_alignContext),
+      freeMemorySize(m), prevMemoryHint(0), dataBunch(NULL) {
     minReadLength = INT_MAX;
     maxReadLength = 0;
 }
@@ -99,7 +100,8 @@ freeMemorySize(m), prevMemoryHint(0), dataBunch(NULL)
 void ReadShortReadsSubTask::readingFinishedWakeAll() {
     taskLog.trace("Wake all");
 
-    delete dataBunch; dataBunch = NULL;
+    delete dataBunch;
+    dataBunch = NULL;
 
     QMutexLocker lock(&alignContext.readingStatusMutex);
     alignContext.isReadingFinished = true;
@@ -120,11 +122,10 @@ void ReadShortReadsSubTask::dropToAlignContext() {
     alignContext.listM.unlock();
 }
 
-
 void ReadShortReadsSubTask::run() {
     stateInfo.setProgress(0);
     GTIMER(cvar, tvar, "ReadSubTask");
-    GenomeAlignerTask *parent = static_cast<GenomeAlignerTask*>(getParentTask());
+    GenomeAlignerTask *parent = static_cast<GenomeAlignerTask *>(getParentTask());
     if (!alignContext.bestMode) {
         parent->pWriteTask->flush();
     }
@@ -141,13 +142,12 @@ void ReadShortReadsSubTask::run() {
     bool alignReversed = settings.getCustomValue(GenomeAlignerTask::OPTION_ALIGN_REVERSED, true).toBool();
     int qualityThreshold = settings.getCustomValue(GenomeAlignerTask::OPTION_QUAL_THRESHOLD, 0).toInt();
 
-    DNATranslation* transl = AppContext::getDNATranslationRegistry()->
-        lookupTranslation(BaseDNATranslationIds::NUCL_DNA_DEFAULT_COMPLEMENT);
+    DNATranslation *transl = AppContext::getDNATranslationRegistry()->lookupTranslation(BaseDNATranslationIds::NUCL_DNA_DEFAULT_COMPLEMENT);
 
     alignContext.isReadingStarted = true;
     bunchSize = 0;
     int readNum = 0;
-    while(!seqReader->isEnd()) {
+    while (!seqReader->isEnd()) {
         if (isCanceled()) {
             readingFinishedWakeAll();
             return;
@@ -189,7 +189,7 @@ void ReadShortReadsSubTask::run() {
             break;
         }
 
-        SAFE_POINT(NULL != dataBunch, "No dataBunch",);
+        SAFE_POINT(NULL != dataBunch, "No dataBunch", );
         if (dataBunch->bitValuesV.size() > DROP_BUNCH_DATA_SIZE) {
             dropToAlignContext();
             readNum = 0;
@@ -210,18 +210,24 @@ inline bool ReadShortReadsSubTask::add(int &CMAX, int &W, int &q, int &readNum, 
         CMAX = (W * alignContext.ptMismatches) / MAX_PERCENTAGE;
     }
     q = W / (CMAX + 1);
-    CHECK_EXT(0 != q,, false);
+    CHECK_EXT(0 != q, , false);
 
-    const char* querySeq = query->constData();
+    const char *querySeq = query->constData();
     SAFE_POINT(NULL != querySeq, "No querySeq", false);
 
     int win = query->length() < GenomeAlignerTask::MIN_SHORT_READ_LENGTH ?
-        GenomeAlignerTask::calculateWindowSize(alignContext.absMismatches,
-            alignContext.nMismatches, alignContext.ptMismatches, query->length(), query->length()) :
-        GenomeAlignerTask::calculateWindowSize(alignContext.absMismatches,
-            alignContext.nMismatches, alignContext.ptMismatches, alignContext.minReadLength, alignContext.maxReadLength);
+                  GenomeAlignerTask::calculateWindowSize(alignContext.absMismatches,
+                                                         alignContext.nMismatches,
+                                                         alignContext.ptMismatches,
+                                                         query->length(),
+                                                         query->length()) :
+                  GenomeAlignerTask::calculateWindowSize(alignContext.absMismatches,
+                                                         alignContext.nMismatches,
+                                                         alignContext.ptMismatches,
+                                                         alignContext.minReadLength,
+                                                         alignContext.maxReadLength);
 
-    for (int i = 0; i < W - q + 1; i+=q) {
+    for (int i = 0; i < W - q + 1; i += q) {
         const char *seq = querySeq + i;
         BMType bv = parent->index->getBitValue(seq, qMin(GenomeAlignerIndex::charsInMask, W - i));
 
@@ -236,4 +242,4 @@ inline bool ReadShortReadsSubTask::add(int &CMAX, int &W, int &q, int &readNum, 
     return true;
 }
 
-} // U2
+}    // namespace U2

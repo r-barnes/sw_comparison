@@ -26,37 +26,40 @@
 namespace U2 {
 
 /* attributes */
-static const QString URL("url");                // file to check
-static const QString FORMAT("format");          // check detection score for this format
+static const QString URL("url");    // file to check
+static const QString FORMAT("format");    // check detection score for this format
 
 // GTest_CheckScore specific
-static const QString EQUAL_TO("equal-to");      // score should be equal to
+static const QString EQUAL_TO("equal-to");    // score should be equal to
 static const QString LESS_THAN("less-than");    // score should be less than
 static const QString MORE_THAN("more-than");    // score should be more than
 
-
 /* class GTest_CheckScore : public XmlTest */
 
-static bool equal_to(int a, int b) { return a == b; }
-static bool less_than(int a, int b) { return a < b; }
-static bool more_than(int a, int b) { return a > b; }
+static bool equal_to(int a, int b) {
+    return a == b;
+}
+static bool less_than(int a, int b) {
+    return a < b;
+}
+static bool more_than(int a, int b) {
+    return a > b;
+}
 
-typedef bool(*CmpFun)(int,int);
+typedef bool (*CmpFun)(int, int);
 static CmpFun getCmpFun(const QString &name) {
     if (name == EQUAL_TO) {
         return equal_to;
-    }
-    else if (name == LESS_THAN) {
+    } else if (name == LESS_THAN) {
         return less_than;
-    }
-    else if (name == MORE_THAN) {
+    } else if (name == MORE_THAN) {
         return more_than;
     }
 
     return 0;
 }
 
-void GTest_CheckScore::init(XMLTestFormat*, const QDomElement& el) {
+void GTest_CheckScore::init(XMLTestFormat *, const QDomElement &el) {
     QString fileURLStr = el.attribute(URL);
     if (fileURLStr.isEmpty()) {
         failMissingValue(URL);
@@ -126,10 +129,9 @@ Task::ReportResult GTest_CheckScore::report() {
     return ReportResult_Finished;
 }
 
-
 /*class GTest_PerfectMatch : public XmlTest */
 
-void GTest_PerfectMatch::init(XMLTestFormat*, const QDomElement& el) {
+void GTest_PerfectMatch::init(XMLTestFormat *, const QDomElement &el) {
     QString fileURLStr = el.attribute(URL);
     if (fileURLStr.isEmpty()) {
         failMissingValue(URL);
@@ -162,10 +164,7 @@ Task::ReportResult GTest_PerfectMatch::report() {
 
     if (!matchedFormats.isEmpty()) {
         if (matchedFormats.size() > 1 &&
-            (matchedFormats[0].score() == matchedFormats[1].score()
-            || (matchedFormats[1].score() > FormatDetection_AverageSimilarity && matchedFormats[0].score() < FormatDetection_Matched)
-            || (matchedFormats[0].score() <= FormatDetection_AverageSimilarity)))
-        {
+            (matchedFormats[0].score() == matchedFormats[1].score() || (matchedFormats[1].score() > FormatDetection_AverageSimilarity && matchedFormats[0].score() < FormatDetection_Matched) || (matchedFormats[0].score() <= FormatDetection_AverageSimilarity))) {
             // matched to multipe formats
             QString matchedFormatsStr;
             foreach (const FormatDetectionResult &dr, matchedFormats) {
@@ -175,18 +174,16 @@ Task::ReportResult GTest_PerfectMatch::report() {
             matchedFormatsStr.chop(2);
 
             stateInfo.setError(QString("Matched to multiple formats: %1; expected %2").arg(matchedFormatsStr).arg(expectedFormat));
-        }
-        else {
+        } else {
             // matched exactly
-            FormatDetectionResult &dr =  matchedFormats.first();
+            FormatDetectionResult &dr = matchedFormats.first();
             assert(dr.format && "Importers should be disabled");
 
             if (dr.format->getFormatId() != expectedFormat) {
                 stateInfo.setError(QString("Matched to %1 (score: %2) format, expected %3").arg(dr.format->getFormatId()).arg(dr.score()).arg(expectedFormat));
             }
         }
-    }
-    else {
+    } else {
         // not matched
         stateInfo.setError(QString("Not matched to any format, expected: %1").arg(expectedFormat));
     }
@@ -195,8 +192,8 @@ Task::ReportResult GTest_PerfectMatch::report() {
 }
 
 /* class FormatDetectionTests */
-QList<XMLTestFactory*> FormatDetectionTests::createTestFactories() {
-    QList<XMLTestFactory*> res;
+QList<XMLTestFactory *> FormatDetectionTests::createTestFactories() {
+    QList<XMLTestFactory *> res;
 
     res.append(GTest_CheckScore::createFactory());
     res.append(GTest_PerfectMatch::createFactory());
@@ -204,4 +201,4 @@ QList<XMLTestFactory*> FormatDetectionTests::createTestFactories() {
     return res;
 }
 
-}   // namespace U2
+}    // namespace U2

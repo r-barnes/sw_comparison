@@ -25,14 +25,16 @@
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
 
-
 namespace U2 {
 namespace LocalWorkflow {
 
 class GenerateDNAPrompter : public PrompterBase<GenerateDNAPrompter> {
     Q_OBJECT
 public:
-    GenerateDNAPrompter(Actor* p = 0) : PrompterBase<GenerateDNAPrompter>(p) {}
+    GenerateDNAPrompter(Actor *p = 0)
+        : PrompterBase<GenerateDNAPrompter>(p) {
+    }
+
 protected:
     QString composeRichDoc();
 };
@@ -40,28 +42,35 @@ protected:
 class GenerateDNAWorker : public BaseWorker {
     Q_OBJECT
 public:
-    GenerateDNAWorker(Actor* a) : BaseWorker(a), ch(NULL) {}
+    GenerateDNAWorker(Actor *a)
+        : BaseWorker(a), ch(NULL) {
+    }
 
     virtual void init();
-    virtual Task* tick();
-    virtual void cleanup() {}
+    virtual Task *tick();
+    virtual void cleanup() {
+    }
 
 private slots:
-    void sl_taskFinished(Task*);
+    void sl_taskFinished(Task *);
 
 private:
-    CommunicationChannel* ch;
+    CommunicationChannel *ch;
 };
 
 class GenerateDNAWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
     static void init();
-    GenerateDNAWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual Worker* createWorker(Actor* a) { return new GenerateDNAWorker(a); }
+    GenerateDNAWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual Worker *createWorker(Actor *a) {
+        return new GenerateDNAWorker(a);
+    }
 };
 
-} // LocalWorkflow namespace
-} // U2 namespace
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

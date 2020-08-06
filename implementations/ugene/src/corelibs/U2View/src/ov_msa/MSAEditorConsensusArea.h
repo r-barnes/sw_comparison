@@ -36,9 +36,11 @@ class U2VIEW_EXPORT MSAEditorConsensusArea : public MaEditorConsensusArea {
     Q_OBJECT
     Q_DISABLE_COPY(MSAEditorConsensusArea)
 public:
-    MSAEditorConsensusArea(MsaEditorWgt* ui);
+    MSAEditorConsensusArea(MsaEditorWgt *ui);
 
-    QString getDefaultAlgorithmId() const { return BuiltInConsensusAlgorithms::DEFAULT_ALGO; }
+    QString getDefaultAlgorithmId() const {
+        return BuiltInConsensusAlgorithms::DEFAULT_ALGO;
+    }
 
 private slots:
     void sl_buildStaticMenu(GObjectView *view, QMenu *menu);
@@ -50,6 +52,5 @@ private:
     void buildMenu(QMenu *menu);
 };
 
-} // namespace
-#endif // _U2_MSA_EDITOR_CONSENSUS_AREA_H_
-
+}    // namespace U2
+#endif    // _U2_MSA_EDITOR_CONSENSUS_AREA_H_

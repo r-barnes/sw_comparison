@@ -22,12 +22,12 @@
 #ifndef _U2_PWMatrix_TESTS_H_
 #define _U2_PWMatrix_TESTS_H_
 
-#include <U2Test/XMLTestUtils.h>
-
 #include <QDomElement>
 
 #include <U2Core/PFMatrix.h>
 #include <U2Core/PWMatrix.h>
+
+#include <U2Test/XMLTestUtils.h>
 
 namespace U2 {
 
@@ -37,47 +37,52 @@ class Document;
 class GTest_PFMtoPWMConvertTest : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_PFMtoPWMConvertTest, "check-pfm2pwm-convert");
+
 private:
-    QString             objContextName;
-    PWMatrixType        type;
+    QString objContextName;
+    PWMatrixType type;
+
 public:
-    ReportResult        report();
+    ReportResult report();
 };
 
 class GTest_PFMCreateTest : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_PFMCreateTest, "check-pfm-create");
+
 private:
-    QString                 objContextName;
-    QString                 objType;
-    int                     size;
-    int                     length;
-    PFMatrixType            type;
-    QVarLengthArray<int>    values[16];
+    QString objContextName;
+    QString objType;
+    int size;
+    int length;
+    PFMatrixType type;
+    QVarLengthArray<int> values[16];
+
 public:
     ReportResult report();
 };
 
 class GTest_PWMCreateTest : public XmlTest {
     Q_OBJECT
-        SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_PWMCreateTest, "check-pwm-create");
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_PWMCreateTest, "check-pwm-create");
 
 private:
-    QString                 objContextName;
-    QString                 objType;
-    QString                 algo;
-    int                     size;
-    int                     length;
-    PWMatrixType            type;
+    QString objContextName;
+    QString objType;
+    QString algo;
+    int size;
+    int length;
+    PWMatrixType type;
     QVarLengthArray<double> values[16];
+
 public:
     ReportResult report();
 };
 //---------------------------------------------------------------------
 class PWMatrixTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-}//namespace
+}    // namespace U2
 #endif

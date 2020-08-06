@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CistromeDelegate.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DataPathRegistry.h>
 #include <U2Core/Settings.h>
@@ -28,7 +30,6 @@
 #include <U2Lang/ActorPrototypeRegistry.h>
 #include <U2Lang/WorkflowEnv.h>
 
-#include "CistromeDelegate.h"
 #include "utils/ExternalToolUtils.h"
 
 namespace U2 {
@@ -42,10 +43,10 @@ void CistromeComboBoxWithUrlsDelegate::update() {
 void CistromeComboBoxWithUrlsDelegate::updateValues(const QString &dataPathName, const QString &attributeName, const QString &defaultValue) {
     items.clear();
 
-    U2DataPathRegistry* dpr = AppContext::getDataPathRegistry();
+    U2DataPathRegistry *dpr = AppContext::getDataPathRegistry();
     SAFE_POINT(dpr, "U2DataPathRegistry is NULL", );
 
-    U2DataPath* dataPath = dpr->getDataPathByName(dataPathName);
+    U2DataPath *dataPath = dpr->getDataPathByName(dataPathName);
     CHECK(dataPath && dataPath->isValid(), );
 
     QVariant newValue;
@@ -60,10 +61,10 @@ void CistromeComboBoxWithUrlsDelegate::updateValues(const QString &dataPathName,
         }
     }
 
-    QMap<Descriptor, QList<Workflow::ActorPrototype*> > protos = Workflow::WorkflowEnv::getProtoRegistry()->getProtos();
-    foreach (QList<Workflow::ActorPrototype*> list, protos.values()) {
-        foreach (Workflow::ActorPrototype* proto, list) {
-            DelegateEditor* editor = dynamic_cast<DelegateEditor*>(proto->getEditor());
+    QMap<Descriptor, QList<Workflow::ActorPrototype *>> protos = Workflow::WorkflowEnv::getProtoRegistry()->getProtos();
+    foreach (QList<Workflow::ActorPrototype *> list, protos.values()) {
+        foreach (Workflow::ActorPrototype *proto, list) {
+            DelegateEditor *editor = dynamic_cast<DelegateEditor *>(proto->getEditor());
             if (editor && editor->getDelegate(attributeName)) {
                 proto->getAttribute(attributeName)->setAttributeValue(newValue);
             }
@@ -75,13 +76,13 @@ void CistromeComboBoxWithUrlsDelegate::updateDataPath(const QString &dataPathNam
     QString cistromeDataPath = AppContext::getSettings()->getValue(ExternalToolUtils::CISTROME_DATA_DIR).toString();
     QString dirPath = cistromeDataPath + QDir::separator() + dirName;
 
-    U2DataPathRegistry* dpr = AppContext::getDataPathRegistry();
+    U2DataPathRegistry *dpr = AppContext::getDataPathRegistry();
     SAFE_POINT(dpr, "U2DataPathRegistry is NULL", );
 
-    U2DataPath* oldDp = dpr->getDataPathByName(dataPathName);
-    U2DataPath* newDp = new U2DataPath(dataPathName, dirPath, "", U2DataPath::CutFileExtension | (folders ? U2DataPath::AddOnlyFolders : U2DataPath::None));
+    U2DataPath *oldDp = dpr->getDataPathByName(dataPathName);
+    U2DataPath *newDp = new U2DataPath(dataPathName, dirPath, "", U2DataPath::CutFileExtension | (folders ? U2DataPath::AddOnlyFolders : U2DataPath::None));
     if (newDp->isValid() &&
-            (!oldDp || *oldDp != *newDp)) {
+        (!oldDp || *oldDp != *newDp)) {
         if (oldDp) {
             dpr->unregisterEntry(dataPathName);
         }
@@ -92,5 +93,5 @@ void CistromeComboBoxWithUrlsDelegate::updateDataPath(const QString &dataPathNam
     }
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

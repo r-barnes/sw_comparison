@@ -24,10 +24,10 @@
 namespace U2 {
 
 BreakpointEqualHitCounter::BreakpointEqualHitCounter(BreakpointHitCountCondition
-    initCondition, quint32 initHitCount) : BaseBreakpointHitCounter(initCondition),
-    targetHitCount(initHitCount)
-{
-
+                                                         initCondition,
+                                                     quint32 initHitCount)
+    : BaseBreakpointHitCounter(initCondition),
+      targetHitCount(initHitCount) {
 }
 
 bool BreakpointEqualHitCounter::hit() {
@@ -42,5 +42,4 @@ void BreakpointEqualHitCounter::setHitCountParameter(quint32 newParameter) {
     targetHitCount = newParameter;
 }
 
-
-} // namespace U2
+}    // namespace U2

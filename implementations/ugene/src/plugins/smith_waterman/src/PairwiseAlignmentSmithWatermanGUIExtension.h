@@ -22,24 +22,24 @@
 #ifndef _U2_PAIRWISE_ALIGNMENT_SMITH_WATERMAN_GUI_EXTENSION_H_
 #define _U2_PAIRWISE_ALIGNMENT_SMITH_WATERMAN_GUI_EXTENSION_H_
 
-#include "SWAlgorithmTask.h"
-#include "ui_PairwiseAlignmentSmithWatermanOptionsPanelMainWidget.h"
+#include <QComboBox>
+#include <QDoubleSpinBox>
+#include <QVariantMap>
+#include <QWidget>
 
 #include <U2View/AlignmentAlgorithmGUIExtension.h>
 
-#include <QVariantMap>
-#include <QWidget>
-#include <QComboBox>
-#include <QDoubleSpinBox>
+#include "SWAlgorithmTask.h"
+#include "ui_PairwiseAlignmentSmithWatermanOptionsPanelMainWidget.h"
 
 namespace U2 {
 
 class PairwiseAlignmentSmithWatermanMainWidget : public AlignmentAlgorithmMainWidget,
-        public Ui_PairwiseAlignmentSmithWatermanOptionsPanelMainWidget {
+                                                 public Ui_PairwiseAlignmentSmithWatermanOptionsPanelMainWidget {
     Q_OBJECT
 
 public:
-    PairwiseAlignmentSmithWatermanMainWidget(QWidget* parent, QVariantMap* s);
+    PairwiseAlignmentSmithWatermanMainWidget(QWidget *parent, QVariantMap *s);
     virtual ~PairwiseAlignmentSmithWatermanMainWidget();
     virtual QVariantMap getAlignmentAlgorithmCustomSettings(bool append);
     virtual void updateWidget();
@@ -50,12 +50,12 @@ private:
     virtual void fillInnerSettings();
 
 protected:
-    static const qint64 SW_MIN_GAP_OPEN         = 1;
-    static const qint64 SW_MAX_GAP_OPEN         = 65535;
-    static const qint64 SW_DEFAULT_GAP_OPEN     = 10;       //http://www.ebi.ac.uk - default value is 10
-    static const qint64 SW_MIN_GAP_EXTD         = 1;
-    static const qint64 SW_MAX_GAP_EXTD         = 65535;    //it isn`t the maximum, it may be larger
-    static const qint64 SW_DEFAULT_GAP_EXTD     = 1;        //http://www.ebi.ac.uk - default value is 0.5
+    static const qint64 SW_MIN_GAP_OPEN = 1;
+    static const qint64 SW_MAX_GAP_OPEN = 65535;
+    static const qint64 SW_DEFAULT_GAP_OPEN = 10;    //http://www.ebi.ac.uk - default value is 10
+    static const qint64 SW_MIN_GAP_EXTD = 1;
+    static const qint64 SW_MAX_GAP_EXTD = 65535;    //it isn`t the maximum, it may be larger
+    static const qint64 SW_DEFAULT_GAP_EXTD = 1;    //http://www.ebi.ac.uk - default value is 0.5
 };
 
 class PairwiseAlignmentSmithWatermanGUIExtensionFactory : public AlignmentAlgorithmGUIExtensionFactory {
@@ -63,12 +63,12 @@ class PairwiseAlignmentSmithWatermanGUIExtensionFactory : public AlignmentAlgori
 
 public:
     PairwiseAlignmentSmithWatermanGUIExtensionFactory(SW_AlgType _algType);
-    virtual AlignmentAlgorithmMainWidget* createMainWidget(QWidget* parent, QVariantMap* s);
+    virtual AlignmentAlgorithmMainWidget *createMainWidget(QWidget *parent, QVariantMap *s);
 
 private:
     SW_AlgType algType;
 };
 
-}   //namespace
+}    // namespace U2
 
-#endif // _U2_PAIRWISE_ALIGNMENT_SMITH_WATERMAN_GUI_EXTENSION_H_
+#endif    // _U2_PAIRWISE_ALIGNMENT_SMITH_WATERMAN_GUI_EXTENSION_H_

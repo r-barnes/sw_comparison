@@ -55,6 +55,7 @@ private:
 };
 
 class GenomicLibraryDialog : public QDialog {
+    Q_OBJECT
 public:
     GenomicLibraryDialog(const Dataset &dataset, QWidget *parent);
     ~GenomicLibraryDialog();
@@ -66,7 +67,7 @@ private:
     SingleDatasetController *singleDatasetController;
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_GENOMIC_LIBRARY_DIALOG_H_
+#endif    // _U2_GENOMIC_LIBRARY_DIALOG_H_

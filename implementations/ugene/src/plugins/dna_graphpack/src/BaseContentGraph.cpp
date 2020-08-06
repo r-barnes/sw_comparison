@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "BaseContentGraph.h"
+
 #include <U2Algorithm/RollingArray.h>
 
 #include <U2Core/DNAAlphabet.h>
@@ -26,8 +28,6 @@
 #include <U2Core/L10n.h>
 
 #include "DNAGraphPackPlugin.h"
-
-#include "BaseContentGraph.h"
 
 /* TRANSLATOR U2::BaseContentGraphFactory */
 
@@ -38,27 +38,25 @@ static QString nameByType(BaseContentGraphFactory::GType t) {
         return BaseContentGraphFactory::tr("AG Content (%)");
     }
     return BaseContentGraphFactory::tr("GC Content (%)");
-
 }
 
-BaseContentGraphFactory::BaseContentGraphFactory(GType t, QObject* p)
-: GSequenceGraphFactory(nameByType(t), p) , map(256, false)
-{
-    if ( t == BaseContentGraphFactory::AG) {
-        map['A']=map['G']=true;
+BaseContentGraphFactory::BaseContentGraphFactory(GType t, QObject *p)
+    : GSequenceGraphFactory(nameByType(t), p), map(256, false) {
+    if (t == BaseContentGraphFactory::AG) {
+        map['A'] = map['G'] = true;
     } else {
-        map['G']=map['C']=true;
+        map['G'] = map['C'] = true;
     }
 }
 
-bool BaseContentGraphFactory::isEnabled(const U2SequenceObject* o) const {
-    const DNAAlphabet* al = o->getAlphabet();
+bool BaseContentGraphFactory::isEnabled(const U2SequenceObject *o) const {
+    const DNAAlphabet *al = o->getAlphabet();
     return al->isNucleic();
 }
 
-QList<QSharedPointer<GSequenceGraphData> > BaseContentGraphFactory::createGraphs(GSequenceGraphView* v) {
+QList<QSharedPointer<GSequenceGraphData>> BaseContentGraphFactory::createGraphs(GSequenceGraphView *v) {
     Q_UNUSED(v);
-    QList<QSharedPointer<GSequenceGraphData> > res;
+    QList<QSharedPointer<GSequenceGraphData>> res;
     assert(isEnabled(v->getSequenceObject()));
     QSharedPointer<GSequenceGraphData> d = QSharedPointer<GSequenceGraphData>(new GSequenceGraphData(getGraphName()));
     d->ga = new BaseContentGraphAlgorithm(map);
@@ -66,17 +64,14 @@ QList<QSharedPointer<GSequenceGraphData> > BaseContentGraphFactory::createGraphs
     return res;
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 // BaseContentGraphAlgorithm
 
-BaseContentGraphAlgorithm::BaseContentGraphAlgorithm(const QBitArray& _map)  :  map(_map)
-{
+BaseContentGraphAlgorithm::BaseContentGraphAlgorithm(const QBitArray &_map)
+    : map(_map) {
 }
 
-void BaseContentGraphAlgorithm::windowStrategyWithoutMemorize(QVector<float> &res, const QByteArray &seq,
-    int startPos, const GSequenceGraphWindowData *d, int nSteps, U2OpStatus &os)
-{
+void BaseContentGraphAlgorithm::windowStrategyWithoutMemorize(QVector<float> &res, const QByteArray &seq, int startPos, const GSequenceGraphWindowData *d, int nSteps, U2OpStatus &os) {
     for (int i = 0; i < nSteps; i++) {
         int start = startPos + i * d->step;
         int end = start + d->window;
@@ -88,13 +83,11 @@ void BaseContentGraphAlgorithm::windowStrategyWithoutMemorize(QVector<float> &re
                 base_count++;
             }
         }
-        res.append((base_count / (float)(d->window))*100);
+        res.append((base_count / (float)(d->window)) * 100);
     }
 }
 
-void BaseContentGraphAlgorithm::calculate(QVector<float> &res, U2SequenceObject *o, const U2Region &vr,
-    const GSequenceGraphWindowData *d, U2OpStatus &os)
-{
+void BaseContentGraphAlgorithm::calculate(QVector<float> &res, U2SequenceObject *o, const U2Region &vr, const GSequenceGraphWindowData *d, U2OpStatus &os) {
     SAFE_POINT(d != NULL, L10N::nullPointerError("window graph"), );
     SAFE_POINT(o != NULL, L10N::nullPointerError("sequence object"), );
 
@@ -106,5 +99,4 @@ void BaseContentGraphAlgorithm::calculate(QVector<float> &res, U2SequenceObject 
     windowStrategyWithoutMemorize(res, seq, startPos, d, nSteps, os);
 }
 
-} // namespace
-
+}    // namespace U2

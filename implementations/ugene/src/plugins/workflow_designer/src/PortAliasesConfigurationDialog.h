@@ -22,17 +22,18 @@
 #ifndef _PORT_ALIASES_DIALOG_CONTROLLER_H_
 #define _PORT_ALIASES_DIALOG_CONTROLLER_H_
 
+#include <ui_PortAliasesConfigurationDialog.h>
+
 #include <U2Lang/Aliasing.h>
 #include <U2Lang/Schema.h>
-#include <ui_PortAliasesConfigurationDialog.h>
 
 namespace U2 {
 namespace Workflow {
 
-typedef QPair<QString, QString> PortInfo; // alias, description
+typedef QPair<QString, QString> PortInfo;    // alias, description
 struct PortAliasesCfgDlgModel {
-    QMap<Port*, QMap<Descriptor, QString> > aliases;
-    QMap<Port*, PortInfo> ports;
+    QMap<Port *, QMap<Descriptor, QString>> aliases;
+    QMap<Port *, PortInfo> ports;
 };
 
 class PortAliasesConfigurationDialog : public QDialog, public Ui_PortAliasesConfigurationDialog {
@@ -56,15 +57,15 @@ private slots:
     void sl_portDescriptionChanged(const QString &newStr);
 
 private:
-    PortAliasesCfgDlgModel      model;
-    QMap<int, Port*>            portListMap; // pairs (row, port)
-    int                         currentRow;
+    PortAliasesCfgDlgModel model;
+    QMap<int, Port *> portListMap;    // pairs (row, port)
+    int currentRow;
 
     void accept();
 
-}; // PortAliasesConfigurationDialog
+};    // PortAliasesConfigurationDialog
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2
 
-#endif // _PORT_ALIASES_DIALOG_CONTROLLER_H_
+#endif    // _PORT_ALIASES_DIALOG_CONTROLLER_H_

@@ -19,18 +19,17 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-
 #include "StructuralAlignmentDialogFiller.h"
-#include <primitives/GTWidget.h>
 #include <primitives/GTComboBox.h>
+#include <primitives/GTWidget.h>
+
+#include <QApplication>
 
 namespace U2 {
 
 #define GT_CLASS_NAME "StructuralAlignmentDialogFiller"
-StructuralAlignmentDialogFiller::StructuralAlignmentDialogFiller(HI::GUITestOpStatus &os, const QStringList& chainIndexes) :
-    Filler(os, "StructuralAlignmentDialog"), chainIndexes(chainIndexes)
-{
+StructuralAlignmentDialogFiller::StructuralAlignmentDialogFiller(HI::GUITestOpStatus &os, const QStringList &chainIndexes)
+    : Filler(os, "StructuralAlignmentDialog"), chainIndexes(chainIndexes) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
@@ -38,10 +37,10 @@ void StructuralAlignmentDialogFiller::commonScenario() {
     QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog != NULL, "dialog not found");
 
-    if (!chainIndexes.isEmpty()){
-        QComboBox* combo = qobject_cast<QComboBox*>(GTWidget::findWidget(os, "chainCombo", dialog));
+    if (!chainIndexes.isEmpty()) {
+        QComboBox *combo = qobject_cast<QComboBox *>(GTWidget::findWidget(os, "chainCombo", dialog));
         CHECK_SET_ERR(combo != NULL, "chainCombo not found!");
-        foreach(const QString& curString, chainIndexes) {
+        foreach (const QString &curString, chainIndexes) {
             int index = combo->findText(curString, Qt::MatchContains);
             GT_CHECK(index != -1, "Index '" + curString + "' was not found");
         }
@@ -53,4 +52,4 @@ void StructuralAlignmentDialogFiller::commonScenario() {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

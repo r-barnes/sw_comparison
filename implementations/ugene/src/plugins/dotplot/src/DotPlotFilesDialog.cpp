@@ -19,28 +19,27 @@
  * MA 02110-1301, USA.
  */
 
+#include "DotPlotFilesDialog.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 
 #include <U2Core/DocumentUtils.h>
 #include <U2Core/GObjectTypes.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/DialogUtils.h>
 #include <U2Gui/HelpButton.h>
 #include <U2Gui/LastUsedDirHelper.h>
-#include <U2Core/QObjectScopedPointer.h>
 #include <U2Gui/U2FileDialog.h>
-
-#include "DotPlotFilesDialog.h"
 
 namespace U2 {
 
 DotPlotFilesDialog::DotPlotFilesDialog(QWidget *parent)
-: QDialog(parent)
-{
+    : QDialog(parent) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742430");
+    new HelpButton(this, buttonBox, "46499937");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Next"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -51,13 +50,10 @@ DotPlotFilesDialog::DotPlotFilesDialog(QWidget *parent)
     connect(mergeFirstCheckBox, SIGNAL(clicked()), SLOT(sl_mergeFirst()));
     connect(mergeSecondCheckBox, SIGNAL(clicked()), SLOT(sl_mergeSecond()));
 
-    filter = DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT, true).append("\n").append(
-        DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::SEQUENCE, false));
-
+    filter = DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT, true).append("\n").append(DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::SEQUENCE, false));
 }
 
 void DotPlotFilesDialog::sl_oneSequence() {
-
     secondFileEdit->setDisabled(oneSequenceCheckBox->isChecked());
     openSecondButton->setDisabled(oneSequenceCheckBox->isChecked());
 
@@ -75,7 +71,6 @@ void DotPlotFilesDialog::sl_mergeSecond() {
 
 // open first file button clicked
 void DotPlotFilesDialog::sl_openFirstFile() {
-
     LastUsedDirHelper lod("DotPlot first file");
     lod.url = U2FileDialog::getOpenFileName(NULL, tr("Open first file"), lod.dir, filter);
 
@@ -86,14 +81,14 @@ void DotPlotFilesDialog::sl_openFirstFile() {
         conf.useImporters = true;
         conf.bestMatchesOnly = true;
         QList<FormatDetectionResult> results = DocumentUtils::detectFormat(lod.url, conf);
-        if (results.isEmpty()){
+        if (results.isEmpty()) {
             firstFileEdit->setText("");
             lod.url = "";
             return;
         }
-        FormatDetectionResult format = results.at(0); //get moslty matched format
+        FormatDetectionResult format = results.at(0);    //get moslty matched format
         bool multySeq = format.rawDataCheckResult.properties.value(RawDataCheckResult_MultipleSequences).toBool();
-        if(multySeq){
+        if (multySeq) {
             mergeFirstCheckBox->setChecked(true);
             sl_mergeFirst();
         }
@@ -102,7 +97,6 @@ void DotPlotFilesDialog::sl_openFirstFile() {
 
 // open second file button clicked
 void DotPlotFilesDialog::sl_openSecondFile() {
-
     LastUsedDirHelper lod("DotPlot second file");
     if (lod.dir.isEmpty()) {
         LastUsedDirHelper lodFirst("DotPlot first file");
@@ -118,14 +112,14 @@ void DotPlotFilesDialog::sl_openSecondFile() {
         conf.useImporters = true;
         conf.bestMatchesOnly = true;
         QList<FormatDetectionResult> results = DocumentUtils::detectFormat(lod.url, conf);
-        if (results.isEmpty()){
+        if (results.isEmpty()) {
             secondFileEdit->setText("");
             lod.url = "";
             return;
         }
-        FormatDetectionResult format = results.at(0); //get moslty matched format
+        FormatDetectionResult format = results.at(0);    //get moslty matched format
         bool multySeq = format.rawDataCheckResult.properties.value(RawDataCheckResult_MultipleSequences).toBool();
-        if(multySeq){
+        if (multySeq) {
             mergeSecondCheckBox->setChecked(true);
             sl_mergeSecond();
         }
@@ -134,7 +128,6 @@ void DotPlotFilesDialog::sl_openSecondFile() {
 
 // ok button clicked
 void DotPlotFilesDialog::accept() {
-
     SAFE_POINT(firstFileEdit, "firstFileEdit is NULL", );
     SAFE_POINT(secondFileEdit, "secondFileEdit is NULL", );
 
@@ -147,10 +140,10 @@ void DotPlotFilesDialog::accept() {
 
     if (firstFileName.isEmpty() || secondFileName.isEmpty()) {
         QString error = oneSequenceCheckBox->isChecked() ?
-                    tr("Select a file with a sequence to build dotplot!")
-                  : firstFileName.isEmpty()?
-                        tr("Select first file with a sequence to build dotplot!")
-                      : tr("Input the second sequence or check the 'Compare sequence against itself' option.");
+                            tr("Select a file with a sequence to build dotplot!") :
+                            firstFileName.isEmpty() ?
+                            tr("Select first file with a sequence to build dotplot!") :
+                            tr("Input the second sequence or check the 'Compare sequence against itself' option.");
         QObjectScopedPointer<QMessageBox> mb = new QMessageBox(QMessageBox::Critical, tr("Select files"), error);
         mb->exec();
         return;
@@ -158,7 +151,7 @@ void DotPlotFilesDialog::accept() {
 
     FormatDetectionConfig conf;
     QList<FormatDetectionResult> results = DocumentUtils::detectFormat(firstFileName, conf);
-    if (results.isEmpty()){
+    if (results.isEmpty()) {
         QObjectScopedPointer<QMessageBox> mb = new QMessageBox(QMessageBox::Critical, tr("Select files"), tr("Unable to detect file format %1.").arg(firstFileName));
         mb->exec();
         return;
@@ -166,7 +159,7 @@ void DotPlotFilesDialog::accept() {
 
     if (firstFileName != secondFileName) {
         results = DocumentUtils::detectFormat(secondFileName, conf);
-        if (results.isEmpty()){
+        if (results.isEmpty()) {
             QObjectScopedPointer<QMessageBox> mb = new QMessageBox(QMessageBox::Critical, tr("Select files"), tr("Unable to detect file format %1.").arg(secondFileName));
             mb->exec();
             return;
@@ -177,23 +170,19 @@ void DotPlotFilesDialog::accept() {
 }
 
 int DotPlotFilesDialog::getFirstGap() const {
-
     if (mergeFirstCheckBox->isChecked()) {
         return gapFirst->value();
-    }
-    else {
+    } else {
         return -1;
     }
 }
 
 int DotPlotFilesDialog::getSecondGap() const {
-
     if (mergeSecondCheckBox->isChecked()) {
         return gapSecond->value();
-    }
-    else {
+    } else {
         return -1;
     }
 }
 
-}//namespace
+}    // namespace U2

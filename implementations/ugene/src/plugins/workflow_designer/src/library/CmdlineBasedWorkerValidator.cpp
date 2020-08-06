@@ -19,20 +19,21 @@
  * MA 02110-1301, USA.
  */
 
+#include "CmdlineBasedWorkerValidator.h"
+
 #include <QDir>
 
 #include <U2Lang/ActorPrototype.h>
 #include <U2Lang/ExternalToolCfg.h>
 #include <U2Lang/WorkflowEnv.h>
 
-#include "CmdlineBasedWorkerValidator.h"
 #include "util/CustomWorkerUtils.h"
 
 namespace U2 {
 namespace Workflow {
 
-bool CmdlineBasedWorkerValidator::validate(const Actor* actor, NotificationsList& notificationList, const QMap<QString, QString>& options) const {
-    ExternalProcessConfig* config = WorkflowEnv::getExternalCfgRegistry()->getConfigById(actor->getProto()->getId());
+bool CmdlineBasedWorkerValidator::validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &options) const {
+    ExternalProcessConfig *config = WorkflowEnv::getExternalCfgRegistry()->getConfigById(actor->getProto()->getId());
     if (CustomWorkerUtils::commandContainsVarName(config->cmdLine, CustomWorkerUtils::TOOL_PATH_VAR_NAME)) {
         CHECK_EXT(QFile(config->customToolPath).exists(),
                   notificationList << WorkflowNotification(tr("The element specifies a nonexistent path to an external tool executable."), actor->getId()),
@@ -45,5 +46,5 @@ bool CmdlineBasedWorkerValidator::validate(const Actor* actor, NotificationsList
     return true;
 }
 
-}
-}
+}    // namespace Workflow
+}    // namespace U2

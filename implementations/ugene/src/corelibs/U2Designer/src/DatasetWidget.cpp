@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DatasetWidget.h"
+
 #include <QContextMenuEvent>
 #include <QDesktopWidget>
 #include <QInputDialog>
@@ -41,7 +43,6 @@
 
 #include <U2Lang/SharedDbUrlUtils.h>
 
-#include "DatasetWidget.h"
 #include "ui_DatasetWidget.h"
 
 namespace U2 {
@@ -51,8 +52,7 @@ URLListWidget::URLListWidget(URLListController *_ctrl)
       ui(new Ui_DatasetWidget),
       ctrl(_ctrl),
       connectToDbDialog(new SharedConnectionsDialog(this)),
-      waitingForDbToConnect(false)
-{
+      waitingForDbToConnect(false) {
     ui->setupUi(this);
     popup = new OptionsPopup(this);
 
@@ -151,7 +151,7 @@ ProjectTreeControllerModeSettings createProjectTreeSettings(const QSet<GObjectTy
     return settings;
 }
 
-}
+}    // namespace
 
 void URLListWidget::sl_sharedDbConnected() {
     SAFE_POINT(waitingForDbToConnect, "Unexpected database state", );
@@ -168,9 +168,9 @@ void URLListWidget::sl_addFromDbButton() {
             waitingForDbToConnect = true;
         }
         return;
-     } else {
+    } else {
         waitingForDbToConnect = false;
-     }
+    }
 
     const QSet<GObjectType> compatTypes = ctrl->getCompatibleObjTypes();
     SAFE_POINT(!compatTypes.isEmpty(), "Invalid object types", );
@@ -223,7 +223,7 @@ bool URLListWidget::readingFromDbIsSupported() const {
 void URLListWidget::sl_downButton() {
     CHECK(ui->itemsArea->selectedItems().size() > 0, );
 
-    for (int pos = ui->itemsArea->count() - 2; pos >= 0; pos--) { // without last item
+    for (int pos = ui->itemsArea->count() - 2; pos >= 0; pos--) {    // without last item
         if (ui->itemsArea->item(pos)->isSelected()) {
             QListWidgetItem *item = ui->itemsArea->takeItem(pos);
             ui->itemsArea->insertItem(pos + 1, item);
@@ -236,7 +236,7 @@ void URLListWidget::sl_downButton() {
 void URLListWidget::sl_upButton() {
     CHECK(ui->itemsArea->selectedItems().size() > 0, );
 
-    for (int pos = 1; pos < ui->itemsArea->count(); pos++) { // without first item
+    for (int pos = 1; pos < ui->itemsArea->count(); pos++) {    // without first item
         if (ui->itemsArea->item(pos)->isSelected()) {
             QListWidgetItem *item = ui->itemsArea->takeItem(pos);
             ui->itemsArea->insertItem(pos - 1, item);
@@ -261,7 +261,7 @@ void URLListWidget::sl_selectAll() {
 }
 
 void URLListWidget::sl_dataChanged() {
-    ctrl->updateUrl(dynamic_cast<UrlItem*>(sender()));
+    ctrl->updateUrl(dynamic_cast<UrlItem *>(sender()));
 }
 
 bool URLListWidget::eventFilter(QObject *obj, QEvent *event) {
@@ -274,7 +274,7 @@ bool URLListWidget::eventFilter(QObject *obj, QEvent *event) {
         CHECK(NULL != item, false);
         CHECK(item->isSelected(), false);
 
-        UrlItem *urlItem = static_cast<UrlItem*>(item);
+        UrlItem *urlItem = static_cast<UrlItem *>(item);
         CHECK(NULL != urlItem, false);
 
         QWidget *options = urlItem->getOptionsWidget();
@@ -290,8 +290,7 @@ bool URLListWidget::eventFilter(QObject *obj, QEvent *event) {
 /* OptionsPopup */
 /************************************************************************/
 OptionsPopup::OptionsPopup(QWidget *parent)
-: QFrame(parent)
-{
+    : QFrame(parent) {
     l = new QVBoxLayout(this);
     l->setMargin(0);
     setWindowFlags(Qt::Popup);
@@ -333,4 +332,4 @@ void OptionsPopup::hideOptions() {
     hide();
 }
 
-} // U2
+}    // namespace U2

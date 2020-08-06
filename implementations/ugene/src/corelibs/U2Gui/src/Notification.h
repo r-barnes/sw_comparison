@@ -19,48 +19,48 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef _TOOL_TIP_H_
-#define _TOOL_TIP_H_
-
-#include <U2Core/global.h>
-#include <U2Core/U2OpStatusUtils.h>
-#include "NotificationWidget.h"
-#include "NotificationsTypes.h"
+#ifndef _NOTIFICATION_H_
+#define _NOTIFICATION_H_
 
 #include <QAction>
-#include <QLabel>
-#include <QPushButton>
-#include <QDialog>
-#include <QTextEdit>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
 #include <QCheckBox>
+#include <QDialog>
+#include <QHBoxLayout>
+#include <QHelpEvent>
+#include <QLabel>
 #include <QLayout>
 #include <QMainWindow>
-#include <QScrollArea>
-#include <QToolTip>
 #include <QMouseEvent>
-#include <QHelpEvent>
-
-
 #include <QPoint>
+#include <QPushButton>
+#include <QScrollArea>
+#include <QTextEdit>
 #include <QTimer>
+#include <QToolTip>
+#include <QVBoxLayout>
+
+#include <U2Core/U2OpStatusUtils.h>
+#include <U2Core/global.h>
+
+#include "NotificationWidget.h"
+#include "NotificationsTypes.h"
 
 namespace U2 {
 
 #define MAX_NOTIFICATION 100
 
-class U2GUI_EXPORT Notification: public QLabel {
+class U2GUI_EXPORT Notification : public QLabel {
     Q_OBJECT
 
 public:
-    Notification(const QString& message, NotificationType _type, QAction *_action = 0);
-    ~Notification() {}
+    Notification(const QString &message, NotificationType _type, QAction *_action = 0);
+    ~Notification() {
+    }
 
     void showNotification(int x, int y);
     QString getText() const;
     NotificationType getType() const;
-    virtual bool eventFilter( QObject * watched, QEvent * event ); 
+    virtual bool eventFilter(QObject *watched, QEvent *event);
     void increaseCounter();
 
     // Switches notification to embedded visual state:
@@ -95,9 +95,9 @@ private:
     int counter;
 };
 
-class U2GUI_EXPORT NotificationStack: public QObject {
+class U2GUI_EXPORT NotificationStack : public QObject {
     Q_OBJECT
-    
+
 public:
     NotificationStack(QObject *o = NULL);
     ~NotificationStack();
@@ -105,16 +105,16 @@ public:
     void addNotification(Notification *t);
     int count() const;
     Notification *getNotification(int row) const;
-    QList<Notification *>  getItems() const;
+    QList<Notification *> getItems() const;
     void showStack();
     bool hasError() const;
     void setFixed(bool val);
 
     // just a shortcut to write less
-    static void addNotification(const QString& message, NotificationType type, QAction *action = 0);
- private slots:
-     void sl_notificationDissapear();
-     void sl_delete();
+    static void addNotification(const QString &message, NotificationType type, QAction *action = 0);
+private slots:
+    void sl_notificationDissapear();
+    void sl_delete();
 
 signals:
     void si_changed();
@@ -123,7 +123,7 @@ private:
     QPoint getBottomRightOfMainWindow();    // because of Mac's strange behavior
 
     // Adds notification as a child to notification widget
-    void addToNotificationWidget(Notification* n);
+    void addToNotificationWidget(Notification *n);
 
     NotificationWidget *w;
 
@@ -132,7 +132,6 @@ private:
     int notificationPosition;
     int notificationNumber;
 };
-
 
 /**
     Used to handle important errors that needs to be reported to user.
@@ -144,19 +143,18 @@ private:
 class U2GUI_EXPORT U2OpStatus2Notification : public U2OpStatus2Log {
 public:
     U2OpStatus2Notification(NotificationType t = Error_Not, LogLevel l = LogLevel_ERROR)
-        : U2OpStatus2Log(l), notificationType(t) {}
+        : U2OpStatus2Log(l), notificationType(t) {
+    }
 
     virtual void setError(const QString &err) {
         U2OpStatus2Log::setError(err);
         NotificationStack::addNotification(err, notificationType);
     }
+
 private:
     NotificationType notificationType;
 };
 
-}
-
-
-
+}    // namespace U2
 
 #endif

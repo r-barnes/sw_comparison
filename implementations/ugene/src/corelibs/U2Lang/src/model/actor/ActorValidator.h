@@ -22,17 +22,18 @@
 #ifndef _U2_ACTORVALIDATOR_H_
 #define _U2_ACTORVALIDATOR_H_
 
+#include <QMutex>
+
 #include <U2Lang/Actor.h>
 #include <U2Lang/ConfigurationValidator.h>
-
-#include <QMutex>
 
 namespace U2 {
 namespace Workflow {
 
 class U2LANG_EXPORT ActorValidator : public ConfigurationValidator {
 public:
-    virtual ~ActorValidator() {}
+    virtual ~ActorValidator() {
+    }
 
     virtual bool validate(const Configuration *cfg, NotificationsList &notificationList) const;
     virtual bool validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &options) const = 0;
@@ -47,11 +48,11 @@ public:
     ActorValidatorRegistry();
     ~ActorValidatorRegistry();
     bool addValidator(const QString &id, ActorValidator *validator);
-    ActorValidator * findValidator(const QString &id);
+    ActorValidator *findValidator(const QString &id);
 
 private:
     QMutex mutex;
-    QMap<QString, ActorValidator*> validators;
+    QMap<QString, ActorValidator *> validators;
 };
 
 template<class T>
@@ -63,7 +64,7 @@ T ActorValidator::getValue(const Actor *actor, const QString &attrId) const {
     return attr->getAttributePureValue().value<T>();
 }
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2
 
-#endif // _U2_ACTORVALIDATOR_H_
+#endif    // _U2_ACTORVALIDATOR_H_

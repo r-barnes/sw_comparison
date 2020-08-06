@@ -29,12 +29,14 @@ using namespace HI;
 
 class InsertSequenceFiller : public Filler {
 public:
-    enum documentFormat {FASTA, Genbank};
-    enum RegionResolvingMode {Resize, Remove, SplitJoin, SplitSeparate};
+    enum documentFormat { FASTA,
+                          Genbank };
+    enum RegionResolvingMode { Resize,
+                               Remove,
+                               SplitJoin,
+                               SplitSeparate };
 
-    InsertSequenceFiller(HI::GUITestOpStatus &_os, const QString &_pasteDataHere, RegionResolvingMode _regionResolvingMode = Resize, int _insertPosition = 1,
-        const QString &_documentLocation = "",  documentFormat _format = FASTA, bool _saveToNewFile = false, bool _mergeAnnotations = false,
-        GTGlobals::UseMethod method = GTGlobals::UseMouse, bool _wrongInput = false, bool recalculateQuals = false);
+    InsertSequenceFiller(HI::GUITestOpStatus &_os, const QString &_pasteDataHere, RegionResolvingMode _regionResolvingMode = Resize, int _insertPosition = 1, const QString &_documentLocation = "", documentFormat _format = FASTA, bool _saveToNewFile = false, bool _mergeAnnotations = false, GTGlobals::UseMethod method = GTGlobals::UseMouse, bool _wrongInput = false, bool recalculateQuals = false);
     void commonScenario();
 
 private:
@@ -52,6 +54,6 @@ private:
     QMap<documentFormat, QString> comboBoxItems;
 };
 
-}
+}    // namespace U2
 
 #endif

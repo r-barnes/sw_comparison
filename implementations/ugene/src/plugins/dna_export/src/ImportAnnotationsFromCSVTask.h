@@ -25,8 +25,8 @@
 #include <QMap>
 #include <QPointer>
 
-#include <U2Core/Task.h>
 #include <U2Core/AnnotationData.h>
+#include <U2Core/Task.h>
 
 #include "CSVColumnConfiguration.h"
 
@@ -35,27 +35,31 @@ namespace U2 {
 // FIXME: implement splitToken as a default value for parsing script (i.e line.split(<separator>))
 class CSVParsingConfig {
 public:
-    CSVParsingConfig() : defaultAnnotationName("misc_feature"), linesToSkip(0), keepEmptyParts(true), removeQuotes(true){}
-    QString             defaultAnnotationName;
-    QString             splitToken;
-    int                 linesToSkip;
-    QString             prefixToSkip;
-    bool                keepEmptyParts;
+    CSVParsingConfig()
+        : defaultAnnotationName("misc_feature"), linesToSkip(0), keepEmptyParts(true), removeQuotes(true) {
+    }
+    QString defaultAnnotationName;
+    QString splitToken;
+    int linesToSkip;
+    QString prefixToSkip;
+    bool keepEmptyParts;
     QList<ColumnConfig> columns;
-    QString             parsingScript;
-    bool                removeQuotes;
+    QString parsingScript;
+    bool removeQuotes;
 
-    static QBitArray    QUOTES;
+    static QBitArray QUOTES;
 };
 
 class ImportAnnotationsFromCSVTaskConfig {
 public:
-    ImportAnnotationsFromCSVTaskConfig() : addToProject(true) {}
+    ImportAnnotationsFromCSVTaskConfig()
+        : addToProject(true) {
+    }
 
-    QString             csvFile;
-    QString             dstFile;
-    bool                addToProject;
-    DocumentFormatId    formatId;
+    QString csvFile;
+    QString dstFile;
+    bool addToProject;
+    DocumentFormatId formatId;
 
     CSVParsingConfig parsingOptions;
 };
@@ -66,39 +70,41 @@ class AddDocumentTask;
 class Annotation;
 class Document;
 
-class ImportAnnotationsFromCSVTask: public Task {
+class ImportAnnotationsFromCSVTask : public Task {
     Q_OBJECT
 public:
-    ImportAnnotationsFromCSVTask(ImportAnnotationsFromCSVTaskConfig& config);
+    ImportAnnotationsFromCSVTask(ImportAnnotationsFromCSVTaskConfig &config);
 
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
 private:
-    QMap<QString, QList<SharedAnnotationData> > prepareAnnotations() const;
+    QMap<QString, QList<SharedAnnotationData>> prepareAnnotations() const;
 
-    Document * prepareNewDocument(const QMap<QString, QList<SharedAnnotationData> > &annotations);
+    Document *prepareNewDocument(const QMap<QString, QList<SharedAnnotationData>> &annotations);
 
-    ImportAnnotationsFromCSVTaskConfig  config;
-    ReadCSVAsAnnotationsTask*           readTask;
-    SaveDocumentTask*                   writeTask;
-    AddDocumentTask*                    addTask;
-    QPointer<Document>                  doc;
+    ImportAnnotationsFromCSVTaskConfig config;
+    ReadCSVAsAnnotationsTask *readTask;
+    SaveDocumentTask *writeTask;
+    AddDocumentTask *addTask;
+    QPointer<Document> doc;
 };
 
 class ReadCSVAsAnnotationsTask : public Task {
-Q_OBJECT
+    Q_OBJECT
 public:
-    ReadCSVAsAnnotationsTask(const QString& file, const CSVParsingConfig& config);
+    ReadCSVAsAnnotationsTask(const QString &file, const CSVParsingConfig &config);
 
     void run();
 
-    QMap<QString, QList<SharedAnnotationData> > getResult() const { return result; }
+    QMap<QString, QList<SharedAnnotationData>> getResult() const {
+        return result;
+    }
 
-    static QList<QStringList> parseLinesIntoTokens(const QString& text, const CSVParsingConfig& config, int& maxColumns, TaskStateInfo& ti);
+    static QList<QStringList> parseLinesIntoTokens(const QString &text, const CSVParsingConfig &config, int &maxColumns, TaskStateInfo &ti);
 
-    static QStringList parseLineIntoTokens(const QString& line, const CSVParsingConfig& config, TaskStateInfo& ti, int lineNum = 1);
+    static QStringList parseLineIntoTokens(const QString &line, const CSVParsingConfig &config, TaskStateInfo &ti, int lineNum = 1);
 
-    static QString guessSeparatorString(const QString& text, const CSVParsingConfig& config);
+    static QString guessSeparatorString(const QString &text, const CSVParsingConfig &config);
 
     // script variable that holds line value
     static QString LINE_VAR;
@@ -106,12 +112,12 @@ public:
     static QString LINE_NUM_VAR;
 
 private:
-    QString                         file;
-    CSVParsingConfig                config;
+    QString file;
+    CSVParsingConfig config;
     // Group name <-> annotations
-    QMap<QString, QList<SharedAnnotationData> > result;
+    QMap<QString, QList<SharedAnnotationData>> result;
 };
 
-} // namespace U2
+}    // namespace U2
 
 #endif

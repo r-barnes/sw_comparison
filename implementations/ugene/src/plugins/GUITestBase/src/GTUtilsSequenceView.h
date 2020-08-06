@@ -22,8 +22,9 @@
 #ifndef _U2_GT_UTILS_SEQUENCE_VIEW_H
 #define _U2_GT_UTILS_SEQUENCE_VIEW_H
 
-#include <QString>
 #include <GTGlobals.h>
+
+#include <QString>
 
 namespace U2 {
 
@@ -37,6 +38,15 @@ class TextLabel;
 
 class GTUtilsSequenceView {
 public:
+    /** Returns active sequence view window or fails if not found. */
+    static QWidget *getActiveSequenceViewWindow(HI::GUITestOpStatus &os);
+
+    /** Checks that there is an active sequence view window or fails if not found. */
+    static void checkSequenceViewWindowIsActive(HI::GUITestOpStatus &os);
+
+    /** Checks that there is no sequence view window opened: either active or non-active. */
+    static void checkNoSequenceViewWindowIsOpened(HI::GUITestOpStatus &os);
+
     static void getSequenceAsString(HI::GUITestOpStatus &os, QString &sequence);
     static QString getSequenceAsString(HI::GUITestOpStatus &os, int number = 0);
     static QString getBeginOfSequenceAsString(HI::GUITestOpStatus &os, int length);
@@ -53,10 +63,22 @@ public:
 
     static void goToPosition(HI::GUITestOpStatus &os, int position);
 
-    static ADVSingleSequenceWidget * getSeqWidgetByNumber(HI::GUITestOpStatus &os, int number = 0, const GTGlobals::FindOptions& = GTGlobals::FindOptions());
-    static DetView * getDetViewByNumber(HI::GUITestOpStatus &os, int number = 0, const GTGlobals::FindOptions& = GTGlobals::FindOptions());
-    static PanView * getPanViewByNumber(HI::GUITestOpStatus &os, int number = 0, const GTGlobals::FindOptions& = GTGlobals::FindOptions());
-    static Overview* getOverviewByNumber(HI::GUITestOpStatus &os, int number = 0, const GTGlobals::FindOptions& = GTGlobals::FindOptions());
+    /** Moves mouse to the safe sequence view area (Pan or Det view, not a scrollbar) and clicks (brings focus) into it. */
+    static void clickMouseOnTheSafeSequenceViewArea(HI::GUITestOpStatus &os);
+
+    /** Opens popup menu safely on the sequence view. The sequence view must have either Det or Pan view widget. */
+    static void openPopupMenuOnSequenceViewArea(HI::GUITestOpStatus &os, int number = 0);
+
+    /**
+     * Returns currenly opened PanView or DetView widget.
+     * This method is useful to trigger mouse events over a sequence safely with no chance of hitting scrollbars, etc...
+     */
+    static QWidget *getPanOrDetView(HI::GUITestOpStatus &os, int number = 0);
+
+    static ADVSingleSequenceWidget *getSeqWidgetByNumber(HI::GUITestOpStatus &os, int number = 0, const GTGlobals::FindOptions & = GTGlobals::FindOptions());
+    static DetView *getDetViewByNumber(HI::GUITestOpStatus &os, int number = 0, const GTGlobals::FindOptions & = GTGlobals::FindOptions());
+    static PanView *getPanViewByNumber(HI::GUITestOpStatus &os, int number = 0, const GTGlobals::FindOptions & = GTGlobals::FindOptions());
+    static Overview *getOverviewByNumber(HI::GUITestOpStatus &os, int number = 0, const GTGlobals::FindOptions & = GTGlobals::FindOptions());
     static int getSeqWidgetsNumber(HI::GUITestOpStatus &os);
     static QVector<U2Region> getSelection(HI::GUITestOpStatus &os, int number = 0);
     static QString getSeqName(HI::GUITestOpStatus &os, int number = 0);
@@ -66,10 +88,10 @@ public:
     static void clickAnnotationDet(HI::GUITestOpStatus &os, QString name, int startpos, int number = 0, const bool isDoubleClick = false, Qt::MouseButton button = Qt::LeftButton);
     static void clickAnnotationPan(HI::GUITestOpStatus &os, QString name, int startpos, int number = 0, const bool isDoubleClick = false, Qt::MouseButton button = Qt::LeftButton);
 
-    static GSequenceGraphView* getGraphView(HI::GUITestOpStatus &os);
-    static QList<QVariant> getLabelPositions(HI::GUITestOpStatus &os, GSequenceGraphView* graph);
-    static QList<TextLabel*> getGraphLabels(HI::GUITestOpStatus &os, GSequenceGraphView* graph);
-    static QColor getGraphColor(HI::GUITestOpStatus &os, GSequenceGraphView* graph);
+    static GSequenceGraphView *getGraphView(HI::GUITestOpStatus &os);
+    static QList<QVariant> getLabelPositions(HI::GUITestOpStatus &os, GSequenceGraphView *graph);
+    static QList<TextLabel *> getGraphLabels(HI::GUITestOpStatus &os, GSequenceGraphView *graph);
+    static QColor getGraphColor(HI::GUITestOpStatus &os, GSequenceGraphView *graph);
 
     static void enableEditingMode(HI::GUITestOpStatus &os, bool enable = true, int sequenceNumber = 0);
 
@@ -81,11 +103,11 @@ public:
 
     static qint64 getCursor(HI::GUITestOpStatus &os);
 
-    static QString getRegionAsString(HI::GUITestOpStatus &os, const U2Region& region);
+    static QString getRegionAsString(HI::GUITestOpStatus &os, const U2Region &region);
 
     static void clickOnDetView(HI::GUITestOpStatus &os);
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // GTSEQUENCEVIEWUTILS_H
+#endif    // GTSEQUENCEVIEWUTILS_H

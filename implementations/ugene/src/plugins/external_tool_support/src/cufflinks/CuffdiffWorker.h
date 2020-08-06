@@ -30,12 +30,11 @@
 namespace U2 {
 namespace LocalWorkflow {
 
-class CuffdiffPrompter : public PrompterBase<CuffdiffPrompter>
-{
+class CuffdiffPrompter : public PrompterBase<CuffdiffPrompter> {
     Q_OBJECT
 
 public:
-    CuffdiffPrompter(Actor* parent = 0);
+    CuffdiffPrompter(Actor *parent = 0);
 
 protected:
     QString composeRichDoc();
@@ -48,7 +47,7 @@ public:
 
     void init();
     bool isReady() const;
-    Task * tick();
+    Task *tick();
     void cleanup();
 
 private slots:
@@ -68,16 +67,19 @@ private:
     void takeAssembly();
 };
 
-class CuffdiffWorkerFactory : public DomainFactory
-{
+class CuffdiffWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
     static void init();
-    CuffdiffWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual Worker* createWorker(Actor* actor) { return new CuffdiffWorker(actor); }
+    CuffdiffWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual Worker *createWorker(Actor *actor) {
+        return new CuffdiffWorker(actor);
+    }
 };
 
-} // namespace LocalWorkflow
-} // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

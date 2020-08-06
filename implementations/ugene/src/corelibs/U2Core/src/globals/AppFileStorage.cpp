@@ -19,16 +19,16 @@
  * MA 02110-1301, USA.
  */
 
+#include "AppFileStorage.h"
+
 #include <QApplication>
 #include <QDir>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
-#include <U2Core/UserApplicationsSettings.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "AppFileStorage.h"
+#include <U2Core/UserApplicationsSettings.h>
 
 namespace U2 {
 
@@ -46,15 +46,11 @@ namespace FileStorage {
 /* FileInfo */
 /************************************************************************/
 FileInfo::FileInfo(const QString &url, const QString &role, const QString &info)
-    : U2Triplet(url, role, info)
-{
-
+    : U2Triplet(url, role, info) {
 }
 
 FileInfo::FileInfo(const U2Triplet &triplet)
-    : U2Triplet(triplet)
-{
-
+    : U2Triplet(triplet) {
 }
 
 QString FileInfo::getFile() const {
@@ -77,9 +73,7 @@ bool FileInfo::isFileToFileInfo() const {
 /* WorkflowProcess */
 /************************************************************************/
 WorkflowProcess::WorkflowProcess(const QString &_id)
-: id(_id)
-{
-
+    : id(_id) {
 }
 
 WorkflowProcess::~WorkflowProcess() {
@@ -119,15 +113,13 @@ void WorkflowProcess::unuseFiles() {
     usedFiles.clear();
 }
 
-} // FileStorage
+}    // namespace FileStorage
 
 /************************************************************************/
 /* AppFileStorage */
 /************************************************************************/
 AppFileStorage::AppFileStorage()
-: storage(NULL)
-{
-
+    : storage(NULL) {
 }
 
 void AppFileStorage::init(U2OpStatus &os) {
@@ -262,7 +254,7 @@ void AppFileStorage::cleanup(U2OpStatus &os) {
                 storage->removeValue(info, logOs);
             } else {
                 unremovedFiles << url;
-                unremovedFiles << info.getKey(); // source url for hash
+                unremovedFiles << info.getKey();    // source url for hash
             }
         } else {
             newData << triplet;
@@ -312,4 +304,4 @@ QString AppFileStorage::createDirectory() const {
     return storageRoot.path() + "/" + result;
 }
 
-} // U2
+}    // namespace U2

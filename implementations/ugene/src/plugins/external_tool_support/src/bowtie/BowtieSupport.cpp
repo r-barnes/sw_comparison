@@ -19,9 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/AppContext.h>
-
 #include "BowtieSupport.h"
+
+#include <U2Core/AppContext.h>
 
 namespace U2 {
 
@@ -31,41 +31,40 @@ const QString BowtieSupport::ET_BOWTIE_ID = "USUPP_BOWTIE";
 const QString BowtieSupport::ET_BOWTIE_BUILD = "Bowtie build indexer";
 const QString BowtieSupport::ET_BOWTIE_BUILD_ID = "USUPP_BOWTIE_BUILD";
 
-BowtieSupport::BowtieSupport(const QString& id, const QString &name, const QString &path):
-    ExternalTool(id, name, path)
-{
+BowtieSupport::BowtieSupport(const QString &id, const QString &name, const QString &path)
+    : ExternalTool(id, name, path) {
     if (AppContext::getMainWindow()) {
         icon = QIcon(":external_tool_support/images/cmdline.png");
         grayIcon = QIcon(":external_tool_support/images/cmdline_gray.png");
         warnIcon = QIcon(":external_tool_support/images/cmdline_warn.png");
     }
-    if(ET_BOWTIE == name) {
+    if (ET_BOWTIE == name) {
 #ifdef Q_OS_WIN
-        executableFileName="bowtie.exe";
+        executableFileName = "bowtie.exe";
 #else
-    #if defined(Q_OS_UNIX)
-        executableFileName="bowtie";
-    #endif
+#    if defined(Q_OS_UNIX)
+        executableFileName = "bowtie";
+#    endif
 #endif
     } else {
 #ifdef Q_OS_WIN
-        executableFileName="bowtie-build.exe";
+        executableFileName = "bowtie-build.exe";
 #else
-    #if defined(Q_OS_UNIX)
-        executableFileName="bowtie-build";
-    #endif
+#    if defined(Q_OS_UNIX)
+        executableFileName = "bowtie-build";
+#    endif
 #endif
     }
     validationArguments.append("--version");
-    validMessage="version";
-    description=tr("<i>Bowtie</i> is an ultrafast, memory-efficient short read aligner. "
-                   "It aligns short DNA sequences (reads) to the human genome at "
-                   "a rate of over 25 million 35-bp reads per hour. "
-                   "Bowtie indexes the genome with a Burrows-Wheeler index to keep "
-                   "its memory footprint small: typically about 2.2 GB for the human "
-                   "genome (2.9 GB for paired-end).");
-    versionRegExp=QRegExp("version (\\d+\\.\\d+\\.\\d+)");
-    toolKitName="Bowtie";
+    validMessage = "version";
+    description = tr("<i>Bowtie</i> is an ultrafast, memory-efficient short read aligner. "
+                     "It aligns short DNA sequences (reads) to the human genome at "
+                     "a rate of over 25 million 35-bp reads per hour. "
+                     "Bowtie indexes the genome with a Burrows-Wheeler index to keep "
+                     "its memory footprint small: typically about 2.2 GB for the human "
+                     "genome (2.9 GB for paired-end).");
+    versionRegExp = QRegExp("version (\\d+\\.\\d+\\.\\d+)");
+    toolKitName = "Bowtie";
 }
 
-} // namespace U2
+}    // namespace U2

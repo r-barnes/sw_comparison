@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "RemovePartFromSequenceDialogController.h"
+
 #include <QDir>
 #include <QMessageBox>
 #include <QPushButton>
@@ -39,27 +41,25 @@
 #include <U2Gui/SaveDocumentController.h>
 #include <U2Gui/U2FileDialog.h>
 
-#include "RemovePartFromSequenceDialogController.h"
 #include "ui_RemovePartFromSequenceDialog.h"
 
-namespace U2{
+namespace U2 {
 
-RemovePartFromSequenceDialogController::RemovePartFromSequenceDialogController(U2Region _toDelete, 
-                                                                               U2Region _source, 
-                                                                               const QString & docUrl,
+RemovePartFromSequenceDialogController::RemovePartFromSequenceDialogController(U2Region _toDelete,
+                                                                               U2Region _source,
+                                                                               const QString &docUrl,
                                                                                QWidget *p)
     : QDialog(p),
       toDelete(_toDelete),
       source(_source),
       ui(new Ui_RemovePartFromSequenceDialog),
-      saveController(NULL)
-{
+      saveController(NULL) {
     ui->setupUi(this);
-    new HelpButton(this, ui->buttonBox, "24742378");
+    new HelpButton(this, ui->buttonBox, "46499774");
 
     ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Remove"));
     ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
-    
+
     initSaveController(docUrl);
 
     SharedAnnotationData ad(new AnnotationData);
@@ -73,11 +73,11 @@ void RemovePartFromSequenceDialogController::accept() {
     QString genbankRegion = ui->removeLocationEdit->text();
     U2Location location;
     Genbank::LocationParser::parseLocation(genbankRegion.toLatin1().constData(), genbankRegion.length(), location);
-    if (location->isMultiRegion()){
+    if (location->isMultiRegion()) {
         QMessageBox::critical(this, this->windowTitle(), tr("There must be only one region to delete"));
         return;
-    }    
-    if (location->isEmpty()){
+    }
+    if (location->isEmpty()) {
         QMessageBox::critical(this, this->windowTitle(), tr("Unable to parse region to delete"));
         return;
     }
@@ -87,8 +87,8 @@ void RemovePartFromSequenceDialogController::accept() {
         QMessageBox::critical(this, this->windowTitle(), tr("Cannot remove the whole sequence"));
         return;
     }
-    
-    if (toDelete.startPos < source.startPos || toDelete.endPos() > source.endPos()){
+
+    if (toDelete.startPos < source.startPos || toDelete.endPos() > source.endPos()) {
         QMessageBox::critical(this, this->windowTitle(), tr("Region to delete is out of sequence bounds"));
         return;
     }
@@ -96,10 +96,10 @@ void RemovePartFromSequenceDialogController::accept() {
     QDialog::accept();
 }
 
-U1AnnotationUtils::AnnotationStrategyForResize RemovePartFromSequenceDialogController::getStrategy(){
-    if(ui->removeRB->isChecked()){
+U1AnnotationUtils::AnnotationStrategyForResize RemovePartFromSequenceDialogController::getStrategy() {
+    if (ui->removeRB->isChecked()) {
         return U1AnnotationUtils::AnnotationStrategyForResize_Remove;
-    }else{
+    } else {
         assert(ui->resizeRB->isChecked());
         return U1AnnotationUtils::AnnotationStrategyForResize_Resize;
     }
@@ -113,7 +113,7 @@ bool RemovePartFromSequenceDialogController::recalculateQualifiers() const {
     return ui->recalculateQualsCheckBox->isChecked();
 }
 
-void RemovePartFromSequenceDialogController::sl_mergeAnnotationsToggled( bool ) {
+void RemovePartFromSequenceDialogController::sl_mergeAnnotationsToggled(bool) {
     const QString fastaFormatName = DocumentFormatUtils::getFormatNameById(BaseDocumentFormats::FASTA);
     CHECK(!fastaFormatName.isEmpty(), );
 
@@ -163,4 +163,4 @@ RemovePartFromSequenceDialogController::~RemovePartFromSequenceDialogController(
     delete ui;
 }
 
-}//ns
+}    // namespace U2

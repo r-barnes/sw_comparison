@@ -22,34 +22,40 @@
 #ifndef _U2_SUGGESTCOMPLETER_H_
 #define _U2_SUGGESTCOMPLETER_H_
 
-#include <U2Core/global.h>
 #include <QLineEdit>
+
+#include <U2Core/global.h>
 
 class QTreeWidget;
 
 namespace U2 {
 
-class U2GUI_EXPORT CompletionFiller{
+class U2GUI_EXPORT CompletionFiller {
 public:
-    virtual ~CompletionFiller(){};
+    virtual ~CompletionFiller() {};
     virtual QStringList getSuggestions(const QString &str) = 0;
     virtual QString finalyze(const QString &editorText, const QString &suggestion) = 0;
 };
 
 class U2GUI_EXPORT MSACompletionFiller : public CompletionFiller {
 public:
-    MSACompletionFiller():CompletionFiller(),seqNameList(QStringList()), defaultValue(""){};
-    MSACompletionFiller(QStringList &_seqNameList, const QString &defVal = ""):CompletionFiller(),seqNameList(_seqNameList), defaultValue(defVal){};
+    MSACompletionFiller()
+        : CompletionFiller(), seqNameList(QStringList()), defaultValue("") {};
+    MSACompletionFiller(QStringList &_seqNameList, const QString &defVal = "")
+        : CompletionFiller(), seqNameList(_seqNameList), defaultValue(defVal) {};
 
     QStringList getSuggestions(const QString &str);
-    void updateSeqList(QStringList list){seqNameList = list;};
+    void updateSeqList(QStringList list) {
+        seqNameList = list;
+    };
     QString finalyze(const QString &editorText, const QString &suggestion);
+
 private:
     QStringList seqNameList;
     const QString defaultValue;
 };
 
-class U2GUI_EXPORT BaseCompleter : public QObject{
+class U2GUI_EXPORT BaseCompleter : public QObject {
     Q_OBJECT
 public:
     BaseCompleter(CompletionFiller *filler, QLineEdit *parent = 0);
@@ -64,7 +70,7 @@ signals:
 
 protected slots:
     void doneCompletion();
-    void sl_textChanged(const QString&);
+    void sl_textChanged(const QString &);
 
 private:
     CompletionFiller *filler;
@@ -73,6 +79,6 @@ private:
     int lastChosenItemIndex;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_URLLINEEDIT_H_
+#endif    // _U2_URLLINEEDIT_H_

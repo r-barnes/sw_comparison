@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DatabaseDelegate.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DataPathRegistry.h>
 #include <U2Core/L10n.h>
@@ -27,8 +29,6 @@
 
 #include <U2Lang/ActorPrototypeRegistry.h>
 #include <U2Lang/WorkflowEnv.h>
-
-#include "DatabaseDelegate.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -41,8 +41,7 @@ DatabaseDelegate::DatabaseDelegate(const QString &_actorPrototypeId,
     : URLDelegate("", _localDomain, false, _isFolder, false),
       actorPrototypeId(_actorPrototypeId),
       attributeName(_attributeName),
-      dataPathItems(_dataPathItems)
-{
+      dataPathItems(_dataPathItems) {
     tags()->set(DelegateTags::PLACEHOLDER_TEXT, L10N::required());
 }
 
@@ -55,8 +54,7 @@ DatabaseDelegate::DatabaseDelegate(const QString &_actorPrototypeId,
     : URLDelegate("", _localDomain, false, _isFolder, false),
       actorPrototypeId(_actorPrototypeId),
       attributeName(_attributeName),
-      dataPathItems(QList<StrStrPair>() << StrStrPair(_dataPathDataId, _dataPathItemId))
-{
+      dataPathItems(QList<StrStrPair>() << StrStrPair(_dataPathDataId, _dataPathItemId)) {
     tags()->set(DelegateTags::PLACEHOLDER_TEXT, L10N::required());
 }
 
@@ -78,11 +76,11 @@ void DatabaseDelegate::update() {
 U2DataPath *DatabaseDelegate::getDataPath(QString &appropriateDataPathItemId) const {
     appropriateDataPathItemId = QString();
 
-    U2DataPathRegistry* dataPathRegistry = AppContext::getDataPathRegistry();
+    U2DataPathRegistry *dataPathRegistry = AppContext::getDataPathRegistry();
     SAFE_POINT(dataPathRegistry, "U2DataPathRegistry is NULL", NULL);
 
     for (int i = 0; i < dataPathItems.size(); i++) {
-        U2DataPath* dataPath = dataPathRegistry->getDataPathByName(dataPathItems[i].first);
+        U2DataPath *dataPath = dataPathRegistry->getDataPathByName(dataPathItems[i].first);
         if (NULL != dataPath &&
             dataPath->isValid() &&
             !dataPath->getPathByName(dataPathItems[i].second).isEmpty()) {
@@ -93,5 +91,5 @@ U2DataPath *DatabaseDelegate::getDataPath(QString &appropriateDataPathItemId) co
     return NULL;
 }
 
-}   // namesapce LocalWorkflow
-}   // namesapce U2
+}    // namespace LocalWorkflow
+}    // namespace U2

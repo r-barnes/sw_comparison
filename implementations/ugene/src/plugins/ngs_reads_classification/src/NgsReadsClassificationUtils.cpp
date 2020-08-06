@@ -19,23 +19,23 @@
  * MA 02110-1301, USA.
  */
 
+#include "NgsReadsClassificationUtils.h"
+
 #include <QFileInfo>
 
 #include <U2Core/GUrlUtils.h>
-
-#include "NgsReadsClassificationUtils.h"
 
 namespace U2 {
 
 const QString NgsReadsClassificationUtils::CLASSIFICATION_SUFFIX = "classification";
 
 QString NgsReadsClassificationUtils::getBaseFileNameWithSuffixes(const QString &sourceFileUrl,
-                                                             const QStringList &suffixes,
-                                                             const QString &extension,
-                                                             bool truncate) {
+                                                                 const QStringList &suffixes,
+                                                                 const QString &extension,
+                                                                 bool truncate) {
     QString pairedName = GUrlUtils::getPairedFastqFilesBaseName(sourceFileUrl, truncate);
     QString result = pairedName;
-    foreach(const QString& suffix, suffixes) {
+    foreach (const QString &suffix, suffixes) {
         result += QString("_%1").arg(suffix);
     }
     if (pairedName.isEmpty()) {
@@ -46,12 +46,12 @@ QString NgsReadsClassificationUtils::getBaseFileNameWithSuffixes(const QString &
 }
 
 QString NgsReadsClassificationUtils::getBaseFileNameWithPrefixes(const QString &sourceFileUrl,
-                                                             const QStringList &prefixes,
-                                                             const QString &extension,
-                                                             bool truncate) {
+                                                                 const QStringList &prefixes,
+                                                                 const QString &extension,
+                                                                 bool truncate) {
     QString pairedName = GUrlUtils::getPairedFastqFilesBaseName(sourceFileUrl, truncate);
     QString result = "";
-    foreach(const QString& prefix, prefixes) {
+    foreach (const QString &prefix, prefixes) {
         result += QString("%1_").arg(prefix);
     }
     result += pairedName;
@@ -62,7 +62,7 @@ QString NgsReadsClassificationUtils::getBaseFileNameWithPrefixes(const QString &
     return result;
 }
 
-int NgsReadsClassificationUtils::countClassified(const LocalWorkflow::TaxonomyClassificationResult& classification) {
+int NgsReadsClassificationUtils::countClassified(const LocalWorkflow::TaxonomyClassificationResult &classification) {
     LocalWorkflow::TaxonomyClassificationResult::const_iterator it;
     int classifiedCount = 0;
     for (it = classification.constBegin(); it != classification.constEnd(); ++it) {
@@ -74,4 +74,4 @@ int NgsReadsClassificationUtils::countClassified(const LocalWorkflow::TaxonomyCl
     return classifiedCount;
 }
 
-}   // namespace U2
+}    // namespace U2

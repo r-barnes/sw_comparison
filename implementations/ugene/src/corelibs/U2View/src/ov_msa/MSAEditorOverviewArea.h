@@ -22,12 +22,12 @@
 #ifndef _U2_MSA_EDITOR_OVERVIEW_H_
 #define _U2_MSA_EDITOR_OVERVIEW_H_
 
-#include "Overview/MaEditorOverviewArea.h"
+#include <QAction>
+#include <QWidget>
 
 #include <U2Core/global.h>
 
-#include <QAction>
-#include <QWidget>
+#include "Overview/MaEditorOverviewArea.h"
 
 namespace U2 {
 
@@ -40,7 +40,7 @@ class MaOverviewContextMenu;
 class U2VIEW_EXPORT MSAEditorOverviewArea : public MaEditorOverviewArea {
     Q_OBJECT
 public:
-    MSAEditorOverviewArea(MaEditorWgt* ui);
+    MSAEditorOverviewArea(MaEditorWgt *ui);
 
     void contextMenuEvent(QContextMenuEvent *event);
     void cancelRendering();
@@ -51,11 +51,11 @@ private slots:
     void sl_show();
 
 private:
-    MaGraphOverview*   graphOverview;
-    MaSimpleOverview*  simpleOverview;
-    MaOverviewContextMenu* contextMenu;
+    MaGraphOverview *graphOverview;
+    MaSimpleOverview *simpleOverview;
+    MaOverviewContextMenu *contextMenu;
 };
 
-}
+}    // namespace U2
 
-#endif // _U2_MSA_EDITOR_OVERVIEW_H_
+#endif    // _U2_MSA_EDITOR_OVERVIEW_H_

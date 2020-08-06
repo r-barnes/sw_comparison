@@ -22,10 +22,10 @@
 #ifndef _U2_WIZARDPAGECONTROLLER_H_
 #define _U2_WIZARDPAGECONTROLLER_H_
 
-#include <U2Lang/WizardPage.h>
-#include <U2Lang/Schema.h>
-
 #include <U2Designer/WizardController.h>
+
+#include <U2Lang/Schema.h>
+#include <U2Lang/WizardPage.h>
 
 namespace U2 {
 
@@ -38,8 +38,8 @@ public:
     virtual ~WizardPageController();
 
     void setQtPage(WDWizardPage *value);
-    WDWizardPage * getQtPage() const;
-    WizardPage * getPage() const;
+    WDWizardPage *getQtPage() const;
+    WizardPage *getPage() const;
     void applyLayout();
     int nextId() const;
 
@@ -47,13 +47,13 @@ private:
     WDWizardPage *wPage;
     WizardController *wc;
     WizardPage *page;
-    QList<WidgetController*> controllers;
+    QList<WidgetController *> controllers;
 
 private:
     void removeLayout(QLayout *l);
     void setError(WDWizardPage *wPage);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_WIZARDPAGECONTROLLER_H_
+#endif    // _U2_WIZARDPAGECONTROLLER_H_

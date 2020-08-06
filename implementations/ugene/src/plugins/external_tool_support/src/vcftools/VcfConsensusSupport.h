@@ -29,13 +29,13 @@ namespace U2 {
 class VcfConsensusSupport : public ExternalTool {
     Q_OBJECT
 public:
-    VcfConsensusSupport(const QString& id, const QString& name, const QString& path = "");
+    VcfConsensusSupport(const QString &id, const QString &name, const QString &path = "");
 
     static const QString ET_VCF_CONSENSUS;
     static const QString ET_VCF_CONSENSUS_ID;
     static const QString VCF_CONSENSUS_TMP_DIR;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_VCF_CONSENSUS_SUPPORT_H_
+#endif    // _U2_VCF_CONSENSUS_SUPPORT_H_

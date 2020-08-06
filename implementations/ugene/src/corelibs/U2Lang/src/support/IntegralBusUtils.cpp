@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "IntegralBusUtils.h"
+
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
@@ -26,8 +28,6 @@
 #include <U2Lang/BaseTypes.h>
 #include <U2Lang/IntegralBus.h>
 #include <U2Lang/IntegralBusModel.h>
-
-#include "IntegralBusUtils.h"
 
 namespace U2 {
 namespace Workflow {
@@ -78,7 +78,7 @@ void IntegralBusUtils::remapPathedSlotString(QString &pathedSlotStr, const Actor
     pathedSlotStr = slot.toString();
 
     if (!path.isEmpty()) {
-        for (QStringList::iterator i=path.begin(); i!=path.end(); i++) {
+        for (QStringList::iterator i = path.begin(); i != path.end(); i++) {
             if (*i == oldId) {
                 *i = newId;
             }
@@ -88,30 +88,30 @@ void IntegralBusUtils::remapPathedSlotString(QString &pathedSlotStr, const Actor
 }
 
 namespace {
-    enum StringSlotType {
-        TEXT,
-        URL,
-        DATASET
-    };
+enum StringSlotType {
+    TEXT,
+    URL,
+    DATASET
+};
 
-    bool isUrlSlot(const Descriptor &slot) {
-        const QString id = slot.getId();
-        return id.contains(BaseSlots::URL_SLOT().getId());
-    }
-    bool isDatasetSlot(const Descriptor &slot) {
-        return (BaseSlots::DATASET_SLOT() == slot);
-    }
-
-    StringSlotType getSlotType(const Descriptor &slot) {
-        if (isUrlSlot(slot)) {
-            return URL;
-        }
-        if (isDatasetSlot(slot)) {
-            return DATASET;
-        }
-        return TEXT;
-    }
+bool isUrlSlot(const Descriptor &slot) {
+    const QString id = slot.getId();
+    return id.contains(BaseSlots::URL_SLOT().getId());
 }
+bool isDatasetSlot(const Descriptor &slot) {
+    return (BaseSlots::DATASET_SLOT() == slot);
+}
+
+StringSlotType getSlotType(const Descriptor &slot) {
+    if (isUrlSlot(slot)) {
+        return URL;
+    }
+    if (isDatasetSlot(slot)) {
+        return DATASET;
+    }
+    return TEXT;
+}
+}    // namespace
 
 QList<Descriptor> IntegralBusUtils::getSlotsByType(const QMap<Descriptor, DataTypePtr> &busMap, const Descriptor &slot, const DataTypePtr &type) {
     QList<Descriptor> result = busMap.keys(type);
@@ -132,7 +132,9 @@ QList<Descriptor> IntegralBusUtils::getSlotsByType(const QMap<Descriptor, DataTy
 /************************************************************************/
 class DefaultSplitter : public CandidatesSplitter {
 public:
-    DefaultSplitter() : CandidatesSplitter(ID) {}
+    DefaultSplitter()
+        : CandidatesSplitter(ID) {
+    }
 
     bool canSplit(const Descriptor & /*toDesc*/, DataTypePtr /*toDatatype*/) {
         return true;
@@ -150,7 +152,9 @@ const QString DefaultSplitter::ID = "default";
 
 class TextSplitter : public CandidatesSplitter {
 public:
-    TextSplitter() : CandidatesSplitter(ID) {}
+    TextSplitter()
+        : CandidatesSplitter(ID) {
+    }
 
     bool canSplit(const Descriptor & /*toDesc*/, DataTypePtr toDatatype) {
         return (BaseTypes::STRING_TYPE() == toDatatype);
@@ -160,15 +164,16 @@ public:
 
 protected:
     bool isMain(const QString &candidateSlotId) {
-        return (BaseSlots::URL_SLOT().getId() != candidateSlotId
-            && BaseSlots::DATASET_SLOT().getId() != candidateSlotId);
+        return (BaseSlots::URL_SLOT().getId() != candidateSlotId && BaseSlots::DATASET_SLOT().getId() != candidateSlotId);
     }
 };
 const QString TextSplitter::ID = "text";
 
 class DatasetsSplitter : public CandidatesSplitter {
 public:
-    DatasetsSplitter() : CandidatesSplitter(ID) {}
+    DatasetsSplitter()
+        : CandidatesSplitter(ID) {
+    }
 
     bool canSplit(const Descriptor &toDesc, DataTypePtr toDatatype) {
         return ((BaseTypes::STRING_TYPE() == toDatatype) && isDatasetSlot(toDesc));
@@ -186,7 +191,9 @@ const QString DatasetsSplitter::ID = "datasets";
 
 class UrlSplitter : public CandidatesSplitter {
 public:
-    UrlSplitter() : CandidatesSplitter(ID) {}
+    UrlSplitter()
+        : CandidatesSplitter(ID) {
+    }
 
     bool canSplit(const Descriptor &toDesc, DataTypePtr toDatatype) {
         return ((BaseTypes::STRING_TYPE() == toDatatype) && isUrlSlot(toDesc));
@@ -206,13 +213,10 @@ const QString UrlSplitter::ID = "url";
 /* CandidatesSplitter */
 /************************************************************************/
 CandidatesSplitter::CandidatesSplitter(const QString &_id)
-    : id(_id)
-{
-
+    : id(_id) {
 }
 
 CandidatesSplitter::~CandidatesSplitter() {
-
 }
 
 IntegralBusUtils::SplitResult CandidatesSplitter::splitCandidates(const QList<Descriptor> &candidates) {
@@ -237,14 +241,14 @@ const QString &CandidatesSplitter::getId() const {
 /* CandidatesSplitterRegistry */
 /************************************************************************/
 CandidatesSplitterRegistry *CandidatesSplitterRegistry::_instance = NULL;
-CandidatesSplitterRegistry * CandidatesSplitterRegistry::instance() {
+CandidatesSplitterRegistry *CandidatesSplitterRegistry::instance() {
     if (NULL == _instance) {
         _instance = new CandidatesSplitterRegistry();
     }
     return _instance;
 }
 
-CandidatesSplitter * CandidatesSplitterRegistry::findSplitter(const Descriptor &toDesc, DataTypePtr toDatatype) {
+CandidatesSplitter *CandidatesSplitterRegistry::findSplitter(const Descriptor &toDesc, DataTypePtr toDatatype) {
     foreach (CandidatesSplitter *splitter, splitters) {
         if (splitter->canSplit(toDesc, toDatatype)) {
             return splitter;
@@ -288,5 +292,5 @@ CandidatesSplitterRegistry::~CandidatesSplitterRegistry() {
     splitters.clear();
 }
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

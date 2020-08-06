@@ -22,13 +22,15 @@
 #ifndef _U2_ASSEMBLY_DBI_UNIT_TESTS_H_
 #define _U2_ASSEMBLY_DBI_UNIT_TESTS_H_
 
-#include "core/dbi/DbiTest.h"
-
-#include <U2Core/U2DbiRegistry.h>
-#include <U2Core/U2AssemblyDbi.h>
-#include <U2Core/U2OpStatusUtils.h>
-#include <U2Test/TestRunnerSettings.h>
 #include <unittest.h>
+
+#include <U2Core/U2AssemblyDbi.h>
+#include <U2Core/U2DbiRegistry.h>
+#include <U2Core/U2OpStatusUtils.h>
+
+#include <U2Test/TestRunnerSettings.h>
+
+#include "core/dbi/DbiTest.h"
 
 namespace U2 {
 
@@ -36,15 +38,17 @@ class AssemblyTestData {
 public:
     static void init();
     static void shutdown();
-    static U2AssemblyDbi* getAssemblyDbi();
+    static U2AssemblyDbi *getAssemblyDbi();
     static void close();
-    static QList<U2DataId>* getAssemblyIds() { return assemblyIds; };
+    static QList<U2DataId> *getAssemblyIds() {
+        return assemblyIds;
+    };
 
 public:
-    static U2AssemblyDbi* assemblyDbi;
-    static QList<U2DataId>* assemblyIds;
+    static U2AssemblyDbi *assemblyDbi;
+    static QList<U2DataId> *assemblyIds;
 
-    static const QString& ASS_DB_URL;
+    static const QString &ASS_DB_URL;
 
 protected:
     static TestDbiProvider dbiProvider;
@@ -166,7 +170,7 @@ public:
     void Test();
 };
 
-}
+}    // namespace U2
 
 Q_DECLARE_METATYPE(U2::AssemblyDbiUnitTests_addReads);
 Q_DECLARE_METATYPE(U2::AssemblyDbiUnitTests_addReadsInvalid);
@@ -192,4 +196,4 @@ Q_DECLARE_METATYPE(U2::AssemblyDbiUnitTests_packInvalid);
 Q_DECLARE_METATYPE(U2::AssemblyDbiUnitTests_removeReads);
 Q_DECLARE_METATYPE(U2::AssemblyDbiUnitTests_removeReadsInvalid);
 
-#endif //_U2_ASSEMBLY_DBI_UNITTESTS_H_
+#endif    //_U2_ASSEMBLY_DBI_UNITTESTS_H_

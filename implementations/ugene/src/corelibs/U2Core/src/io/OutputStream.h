@@ -31,8 +31,10 @@ namespace U2 {
  */
 class U2CORE_EXPORT OutputStream {
 public:
-    OutputStream() {}
-    virtual ~OutputStream() {}
+    OutputStream() {
+    }
+    virtual ~OutputStream() {
+    }
 
     /**
      * Closes this output stream and releases any system resources associated with this stream.
@@ -44,6 +46,6 @@ public:
     virtual void write(const char *buffer, int length, U2OpStatus &os) = 0;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_OUTPUTSTREAM_H_
+#endif    // _U2_OUTPUTSTREAM_H_

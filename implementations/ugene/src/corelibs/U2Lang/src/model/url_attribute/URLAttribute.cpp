@@ -19,26 +19,25 @@
  * MA 02110-1301, USA.
  */
 
+#include "URLAttribute.h"
+
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Lang/URLContainer.h>
 #include <U2Lang/WorkflowUtils.h>
 
-#include "URLAttribute.h"
-
 namespace U2 {
 
 URLAttribute::URLAttribute(const Descriptor &d, const DataTypePtr type, bool required)
-: Attribute(d, type, required)
-{
+    : Attribute(d, type, required) {
     sets << Dataset();
-    defaultValue = qVariantFromValue< QList<Dataset> >(sets);
-    value = qVariantFromValue< QList<Dataset> >(sets);
+    defaultValue = qVariantFromValue<QList<Dataset>>(sets);
+    value = qVariantFromValue<QList<Dataset>>(sets);
 }
 
 void URLAttribute::setAttributeValue(const QVariant &newVal) {
-    if (newVal.canConvert< QList<Dataset> >()) {
-        sets = newVal.value< QList<Dataset> >();
+    if (newVal.canConvert<QList<Dataset>>()) {
+        sets = newVal.value<QList<Dataset>>();
     } else {
         QStringList urls = newVal.toString().split(";", QString::SkipEmptyParts);
         Dataset dSet;
@@ -48,14 +47,14 @@ void URLAttribute::setAttributeValue(const QVariant &newVal) {
         sets.clear();
         sets << dSet;
     }
-    value = qVariantFromValue< QList<Dataset> >(sets);
+    value = qVariantFromValue<QList<Dataset>>(sets);
 }
 
-const QVariant & URLAttribute::getAttributePureValue() const {
+const QVariant &URLAttribute::getAttributePureValue() const {
     return value;
 }
 
-const QVariant & URLAttribute::getDefaultPureValue() const {
+const QVariant &URLAttribute::getDefaultPureValue() const {
     return defaultValue;
 }
 
@@ -80,7 +79,7 @@ URLAttribute *URLAttribute::clone() {
     return new URLAttribute(*this);
 }
 
-QList<Dataset> & URLAttribute::getDatasets() {
+QList<Dataset> &URLAttribute::getDatasets() {
     return sets;
 }
 
@@ -89,18 +88,17 @@ void URLAttribute::updateValue() {
     foreach (const Dataset &dSet, sets) {
         res << dSet;
     }
-    value = qVariantFromValue< QList<Dataset> >(res);
+    value = qVariantFromValue<QList<Dataset>>(res);
 }
 
 URLAttribute::URLAttribute(const URLAttribute &other)
-    : Attribute(other)
-{
+    : Attribute(other) {
     copy(other);
 }
 
 URLAttribute &URLAttribute::operator=(const URLAttribute &other) {
     CHECK(this != &other, *this);
-    Attribute::operator =(other);
+    Attribute::operator=(other);
     copy(other);
     return *this;
 }
@@ -147,7 +145,7 @@ bool URLAttribute::validate(NotificationsList &notificationList) {
     return true;
 }
 
-const QSet<GObjectType> & URLAttribute::getCompatibleObjectTypes() const {
+const QSet<GObjectType> &URLAttribute::getCompatibleObjectTypes() const {
     return compatibleObjectTypes;
 }
 
@@ -155,4 +153,4 @@ void URLAttribute::setCompatibleObjectTypes(const QSet<GObjectType> &types) {
     compatibleObjectTypes = types;
 }
 
-} // U2
+}    // namespace U2

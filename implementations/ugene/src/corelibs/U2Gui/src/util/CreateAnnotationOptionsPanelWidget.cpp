@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CreateAnnotationOptionsPanelWidget.h"
+
 #include <QMenu>
 
 #include <U2Core/Counter.h>
@@ -27,13 +29,10 @@
 #include <U2Gui/SaveDocumentController.h>
 #include <U2Gui/ShowHideSubgroupWidget.h>
 
-#include "CreateAnnotationOptionsPanelWidget.h"
-
 namespace U2 {
 
-CreateAnnotationOptionsPanelWidget::CreateAnnotationOptionsPanelWidget(QWidget *parent) :
-    CreateAnnotationWidget(parent)
-{
+CreateAnnotationOptionsPanelWidget::CreateAnnotationOptionsPanelWidget(QWidget *parent)
+    : CreateAnnotationWidget(parent) {
     setupUi(this);
     initLayout();
     init();
@@ -199,7 +198,7 @@ void CreateAnnotationOptionsPanelWidget::showSelectGroupMenu(QMenu &menu) {
     menu.exec(menuPos);
 }
 
-GObjectComboBoxController * CreateAnnotationOptionsPanelWidget::createGObjectComboBoxController(const GObjectComboBoxControllerConstraints &constraints) {
+GObjectComboBoxController *CreateAnnotationOptionsPanelWidget::createGObjectComboBoxController(const GObjectComboBoxControllerConstraints &constraints) {
     return new GObjectComboBoxController(this, constraints, cbExistingTable);
 }
 
@@ -237,4 +236,4 @@ void CreateAnnotationOptionsPanelWidget::connectSignals() {
     connect(chbUsePatternNames, SIGNAL(stateChanged(int)), SIGNAL(si_usePatternNamesStateChanged()));
 }
 
-}   // namespace U2
+}    // namespace U2

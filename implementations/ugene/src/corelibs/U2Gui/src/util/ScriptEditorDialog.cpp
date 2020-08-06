@@ -19,10 +19,12 @@
  * MA 02110-1301, USA.
  */
 
+#include "ScriptEditorDialog.h"
+
 #include <QFile>
+#include <QMessageBox>
 #include <QMouseEvent>
 #include <QScriptEngine>
-#include <QMessageBox>
 
 #include <U2Core/L10n.h>
 
@@ -31,17 +33,15 @@
 #include <U2Gui/LastUsedDirHelper.h>
 #include <U2Gui/U2FileDialog.h>
 
-#include "ScriptEditorDialog.h"
 #include "ScriptEditorWidget.h"
 #include "ui_ScriptEditorDialog.h"
 
 namespace U2 {
 
-ScriptEditorDialog::ScriptEditorDialog(QWidget* w, const QString& roHeaderText, const QString & scriptText) 
-: QDialog(w), ui(new Ui_ScriptEditorDialog())
-{
+ScriptEditorDialog::ScriptEditorDialog(QWidget *w, const QString &roHeaderText, const QString &scriptText)
+    : QDialog(w), ui(new Ui_ScriptEditorDialog()) {
     ui->setupUi(this);
-    new HelpButton(this, ui->buttonBox, "24740118");
+    new HelpButton(this, ui->buttonBox, "46500324");
     ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Done"));
     ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -57,19 +57,18 @@ ScriptEditorDialog::ScriptEditorDialog(QWidget* w, const QString& roHeaderText, 
     connect(ui->openButton, SIGNAL(clicked()), SLOT(sl_openScript()));
     connect(ui->saveButton, SIGNAL(clicked()), SLOT(sl_saveScript()));
     connect(ui->saveAsButton, SIGNAL(clicked()), SLOT(sl_saveAsScript()));
-    connect(ui->scriptPathEdit, SIGNAL(textChanged(const QString&)), SLOT(sl_nameChanged(const QString&)));
+    connect(ui->scriptPathEdit, SIGNAL(textChanged(const QString &)), SLOT(sl_nameChanged(const QString &)));
     connect(scriptEdit, SIGNAL(si_textChanged()), SLOT(sl_scriptChanged()));
     connect(scriptEdit, SIGNAL(si_cursorPositionChanged()), SLOT(sl_cursorPositionChanged()));
 
     updateState();
-
 }
 
 ScriptEditorDialog::~ScriptEditorDialog() {
     delete ui;
 }
 
-void ScriptEditorDialog::sl_nameChanged(const QString&) {
+void ScriptEditorDialog::sl_nameChanged(const QString &) {
     updateState();
 }
 
@@ -77,19 +76,18 @@ void ScriptEditorDialog::sl_scriptChanged() {
     updateState();
 }
 
-
 void ScriptEditorDialog::updateState() {
     bool hasScript = !scriptEdit->scriptText().simplified().isEmpty();
     bool hasPath = !ui->scriptPathEdit->text().isEmpty();
     ui->saveButton->setEnabled(hasPath && hasScript);
 }
 
-void ScriptEditorDialog::setScriptText(const QString& text) {
+void ScriptEditorDialog::setScriptText(const QString &text) {
     ui->scriptPathEdit->clear();
     scriptEdit->setScriptText(text);
 }
 
-void ScriptEditorDialog::setScriptPath(const QString& path) {
+void ScriptEditorDialog::setScriptPath(const QString &path) {
     QFile file(path);
     bool ok = file.open(QFile::ReadOnly);
     if (file.size() > 100 * 1000) {
@@ -104,7 +102,6 @@ void ScriptEditorDialog::setScriptPath(const QString& path) {
     scriptEdit->setScriptText(script);
     ui->scriptPathEdit->setText(path);
 }
-
 
 #define SCRIPTS_DOMAIN QString("scripts")
 
@@ -140,7 +137,7 @@ void ScriptEditorDialog::sl_saveAsScript() {
     save(ld.url);
 }
 
-void ScriptEditorDialog::save(const QString& url) {
+void ScriptEditorDialog::save(const QString &url) {
     QString script = scriptEdit->scriptText();
     QFile file(url);
     bool ok = file.open(QFile::WriteOnly | QFile::Truncate);
@@ -169,17 +166,15 @@ void ScriptEditorDialog::sl_checkSyntax() {
     } else {
         QMessageBox::information(this, tr("Check result"), tr("Syntax is OK!"));
     }
-
 }
 
-QString ScriptEditorDialog::getScriptText() const
-{
+QString ScriptEditorDialog::getScriptText() const {
     return scriptEdit->scriptText();
 }
 
-void ScriptEditorDialog::sl_cursorPositionChanged(){
+void ScriptEditorDialog::sl_cursorPositionChanged() {
     int lineNumber = scriptEdit->scriptEditCursorLineNumber();
     ui->lineInfo->setText("Line: " + QString::number(lineNumber + 1));
 }
 
-}// namespace
+}    // namespace U2

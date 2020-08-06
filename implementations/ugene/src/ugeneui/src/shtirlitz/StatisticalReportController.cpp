@@ -19,12 +19,14 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/Version.h>
 #include "StatisticalReportController.h"
+
+#include <U2Core/Version.h>
 
 namespace U2 {
 
-StatisticalReportController::StatisticalReportController(const QString &htmlContent, QWidget *parent) : QDialog(parent) {
+StatisticalReportController::StatisticalReportController(const QString &htmlContent, QWidget *parent)
+    : QDialog(parent) {
     setupUi(this);
     lblStat->setText(tr("<b>Optional:</b> Help make UGENE better by automatically sending anonymous usage statistics."));
 
@@ -46,14 +48,13 @@ void StatisticalReportController::accept() {
     QDialog::close();
 }
 
-void StatisticalReportController::resizeEvent( QResizeEvent* event ) {
+void StatisticalReportController::resizeEvent(QResizeEvent *event) {
     htmlView->sl_updateSize();
-    QDialog::resizeEvent( event );
+    QDialog::resizeEvent(event);
 }
 
-ContentSizeHtmlViewer::ContentSizeHtmlViewer(QWidget* parent, const QString& html)
-    : QTextBrowser(parent)
-{
+ContentSizeHtmlViewer::ContentSizeHtmlViewer(QWidget *parent, const QString &html)
+    : QTextBrowser(parent) {
     setOpenExternalLinks(true);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -74,4 +75,4 @@ void ContentSizeHtmlViewer::sl_updateSize() {
     setMinimumHeight(docSize.height() + 10);
 }
 
-} // namespace
+}    // namespace U2

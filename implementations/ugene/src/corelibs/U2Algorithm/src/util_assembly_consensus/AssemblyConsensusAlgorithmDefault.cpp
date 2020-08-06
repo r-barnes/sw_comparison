@@ -20,11 +20,12 @@
  */
 
 #include "AssemblyConsensusAlgorithmDefault.h"
-#include "BuiltInAssemblyConsensusAlgorithms.h"
-#include "AssemblyConsensusUtils.h"
 
 #include <U2Core/Log.h>
 #include <U2Core/U2AssemblyReadIterator.h>
+
+#include "AssemblyConsensusUtils.h"
+#include "BuiltInAssemblyConsensusAlgorithms.h"
 
 namespace U2 {
 
@@ -32,8 +33,8 @@ namespace U2 {
 // Factory
 
 AssemblyConsensusAlgorithmFactoryDefault::AssemblyConsensusAlgorithmFactoryDefault()
-    : AssemblyConsensusAlgorithmFactory(BuiltInAssemblyConsensusAlgorithms::DEFAULT_ALGO)
-{}
+    : AssemblyConsensusAlgorithmFactory(BuiltInAssemblyConsensusAlgorithms::DEFAULT_ALGO) {
+}
 
 QString AssemblyConsensusAlgorithmFactoryDefault::getName() const {
     return tr("Default");
@@ -43,7 +44,7 @@ QString AssemblyConsensusAlgorithmFactoryDefault::getDescription() const {
     return tr("Returns simply the most frequent base and 'N' are no reads intersecting this position");
 }
 
-AssemblyConsensusAlgorithm* AssemblyConsensusAlgorithmFactoryDefault::createAlgorithm() {
+AssemblyConsensusAlgorithm *AssemblyConsensusAlgorithmFactoryDefault::createAlgorithm() {
     return new AssemblyConsensusAlgorithmDefault(this);
 }
 
@@ -54,7 +55,7 @@ QByteArray AssemblyConsensusAlgorithmDefault::getConsensusRegion(const U2Region 
     AssemblyBasesFrequenciesStat s;
     s.frequencyInfos.resize(region.length);
 
-    while(reads->hasNext()) {
+    while (reads->hasNext()) {
         U2AssemblyRead r = reads->next();
         U2Region readRegion = U2Region(r->leftmostPos, r->effectiveLen);
         U2Region readCroppedRegion = readRegion.intersect(region);
@@ -65,9 +66,9 @@ QByteArray AssemblyConsensusAlgorithmDefault::getConsensusRegion(const U2Region 
 
         U2AssemblyReadIterator readIterator(r->readSequence, r->cigar, offsetInRead);
 
-        for(int i = 0; i < length; ++i) {
+        for (int i = 0; i < length; ++i) {
             U2AssemblyBasesFrequenciesInfo &fi = s.frequencyInfos[offsetInArray + i];
-            if(readIterator.hasNext()) {
+            if (readIterator.hasNext()) {
                 char c = readIterator.nextLetter();
                 fi.addToCharFrequency(c);
             } else {
@@ -75,7 +76,7 @@ QByteArray AssemblyConsensusAlgorithmDefault::getConsensusRegion(const U2Region 
             }
         }
         // Support canceling
-        if(os.isCoR()) {
+        if (os.isCoR()) {
             break;
         }
     }
@@ -83,4 +84,4 @@ QByteArray AssemblyConsensusAlgorithmDefault::getConsensusRegion(const U2Region 
     return s.getConsensusFragment();
 }
 
-} // namespace
+}    // namespace U2

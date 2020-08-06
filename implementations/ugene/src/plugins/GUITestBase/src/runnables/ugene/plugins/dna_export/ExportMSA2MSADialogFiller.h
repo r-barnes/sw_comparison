@@ -27,14 +27,15 @@
 namespace U2 {
 using namespace HI;
 
-    class ExportMSA2MSADialogFiller : public Filler {
-    public:
-        ExportMSA2MSADialogFiller(HI::GUITestOpStatus &_os, int _formatVal = -1, QString _path="");
-        void commonScenario();
-    private:
-        int formatVal;
-        QString path;
-    };
-}
+class ExportMSA2MSADialogFiller : public Filler {
+public:
+    ExportMSA2MSADialogFiller(HI::GUITestOpStatus &_os, int _formatVal = -1, QString _path = "");
+    void commonScenario();
+
+private:
+    int formatVal;
+    QString path;
+};
+}    // namespace U2
 
 #endif

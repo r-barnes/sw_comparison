@@ -19,6 +19,8 @@
 * MA 02110-1301, USA.
 */
 
+#include "GenerateDNAWorker.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/FailTask.h>
@@ -41,7 +43,6 @@
 #include <U2Lang/WorkflowEnv.h>
 
 #include "DNASequenceGenerator.h"
-#include "GenerateDNAWorker.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -75,7 +76,7 @@ const QString ContentIds::REFERENCE("reference");
 const QString ContentIds::MANUAL("manual");
 
 void GenerateDNAWorkerFactory::init() {
-    QList<PortDescriptor*> p;
+    QList<PortDescriptor *> p;
     {
         Descriptor d(BasePorts::OUT_SEQ_PORT_ID(), GenerateDNAWorker::tr("Sequences"), GenerateDNAWorker::tr("Generated sequences"));
 
@@ -84,7 +85,7 @@ void GenerateDNAWorkerFactory::init() {
         p << new PortDescriptor(d, DataTypePtr(new MapDataType("random.sequence", outM)), false, true);
     }
 
-    QList<Attribute*> a;
+    QList<Attribute *> a;
     {
         Descriptor ld(LENGHT_ATTR, GenerateDNAWorker::tr("Length"), GenerateDNAWorker::tr("Length of the resulted sequence(s)."));
         Descriptor nd(SEQ_NUM_ATTR, GenerateDNAWorker::tr("Count"), GenerateDNAWorker::tr("Number of sequences to generate."));
@@ -94,11 +95,11 @@ void GenerateDNAWorkerFactory::init() {
         Descriptor cpd(C_PERCENT_ATTR, GenerateDNAWorker::tr("C"), GenerateDNAWorker::tr("Cytosine content."));
         Descriptor gpd(G_PERCENT_ATTR, GenerateDNAWorker::tr("G"), GenerateDNAWorker::tr("Guanine content."));
         Descriptor tpd(T_PERCENT_ATTR, GenerateDNAWorker::tr("T"), GenerateDNAWorker::tr("Thymine content."));
-        Descriptor alg(ALGORITHM, GenerateDNAWorker::tr("Algorithm"),GenerateDNAWorker::tr("Algorithm for generating."));
+        Descriptor alg(ALGORITHM, GenerateDNAWorker::tr("Algorithm"), GenerateDNAWorker::tr("Algorithm for generating."));
         Descriptor wnd(WINDOW_SIZE, GenerateDNAWorker::tr("Window size"), GenerateDNAWorker::tr("Size of window where set content."));
         Descriptor gcSkew(GC_SKEW, GenerateDNAWorker::tr("GC Skew"), GenerateDNAWorker::tr("GC Skew."));
         Descriptor seed(SEED, GenerateDNAWorker::tr("Seed"), GenerateDNAWorker::tr("Value to initialize the random generator. "
-            "By default (seed = -1) the generator is initialized with the system time."));
+                                                                                   "By default (seed = -1) the generator is initialized with the system time."));
 
         a << new Attribute(ld, BaseTypes::NUM_TYPE(), false, 1000);
         a << new Attribute(nd, BaseTypes::NUM_TYPE(), false, 1);
@@ -126,7 +127,7 @@ void GenerateDNAWorkerFactory::init() {
         a << attr;
     }
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
         QVariantMap lenMap;
         lenMap["minimum"] = 1;
@@ -173,16 +174,15 @@ void GenerateDNAWorkerFactory::init() {
         delegates[SEED] = new SpinBoxDelegate(seedMap);
     }
 
-    Descriptor desc(ACTOR_ID, GenerateDNAWorker::tr("Generate DNA"),
-        GenerateDNAWorker::tr("Generates random DNA sequences with given nucleotide content"
-        " that can be specified manually or evaluated from the reference file."));
+    Descriptor desc(ACTOR_ID, GenerateDNAWorker::tr("Generate DNA"), GenerateDNAWorker::tr("Generates random DNA sequences with given nucleotide content"
+                                                                                           " that can be specified manually or evaluated from the reference file."));
 
-    ActorPrototype* proto = new IntegralBusActorPrototype(desc, p, a);
+    ActorPrototype *proto = new IntegralBusActorPrototype(desc, p, a);
     proto->setPrompter(new GenerateDNAPrompter());
     proto->setEditor(new DelegateEditor(delegates));
     WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_STATISTIC(), proto);
 
-    DomainFactory* localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
+    DomainFactory *localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
     localDomain->registerEntry(new GenerateDNAWorkerFactory());
 }
 
@@ -202,7 +202,7 @@ void GenerateDNAWorker::init() {
     ch = ports.value(BasePorts::OUT_SEQ_PORT_ID());
 }
 
-Task* GenerateDNAWorker::tick() {
+Task *GenerateDNAWorker::tick() {
     setDone();
     DNASequenceGeneratorConfig cfg;
     cfg.sequenceName = "Sequence ";
@@ -226,7 +226,7 @@ Task* GenerateDNAWorker::tick() {
             return new FailTask(err);
         }
     } else {
-        if(actor->getParameter(ALGORITHM)->getAttributeValue<QString>(context) == "GC Skew") {
+        if (actor->getParameter(ALGORITHM)->getAttributeValue<QString>(context) == "GC Skew") {
             double percentA = qrand();
             double percentC = qrand();
             double percentG = qrand();
@@ -252,7 +252,7 @@ Task* GenerateDNAWorker::tick() {
             int percentC = actor->getParameter(C_PERCENT_ATTR)->getAttributeValue<int>(context);
             int percentG = actor->getParameter(G_PERCENT_ATTR)->getAttributeValue<int>(context);
             int percentT = actor->getParameter(T_PERCENT_ATTR)->getAttributeValue<int>(context);
-            if (percentA<0 || percentC<0 || percentG<0 || percentT<0) {
+            if (percentA < 0 || percentC < 0 || percentG < 0 || percentT < 0) {
                 QString err = tr("Base content must be between 0 and 100");
                 return new FailTask(err);
             }
@@ -288,19 +288,19 @@ Task* GenerateDNAWorker::tick() {
     // true is used when executed from the dialog window
     cfg.saveDoc = false;
 
-    Task* t = new DNASequenceGeneratorTask(cfg);
-    connect(new TaskSignalMapper(t), SIGNAL(si_taskFinished(Task*)), SLOT(sl_taskFinished(Task*)));
+    Task *t = new DNASequenceGeneratorTask(cfg);
+    connect(new TaskSignalMapper(t), SIGNAL(si_taskFinished(Task *)), SLOT(sl_taskFinished(Task *)));
     return t;
 }
 
-void GenerateDNAWorker::sl_taskFinished(Task* t) {
-    DNASequenceGeneratorTask* task = qobject_cast<DNASequenceGeneratorTask*>(t);
-    SAFE_POINT( NULL != t, "Invalid task is encountered", );
-    if ( t->isCanceled( ) ) {
+void GenerateDNAWorker::sl_taskFinished(Task *t) {
+    DNASequenceGeneratorTask *task = qobject_cast<DNASequenceGeneratorTask *>(t);
+    SAFE_POINT(NULL != t, "Invalid task is encountered", );
+    if (t->isCanceled()) {
         return;
     }
     if (ch) {
-        foreach(DNASequence seq, task->getSequences()) {
+        foreach (DNASequence seq, task->getSequences()) {
             SharedDbiDataHandler handler = context->getDataStorage()->putSequence(seq);
             ch->put(Message(BaseTypes::DNA_SEQUENCE_TYPE(), qVariantFromValue<SharedDbiDataHandler>(handler)));
         }
@@ -308,5 +308,5 @@ void GenerateDNAWorker::sl_taskFinished(Task* t) {
     }
 }
 
-} //namespace LocalWorkflow
-} // U2 namespace
+}    //namespace LocalWorkflow
+}    // namespace U2

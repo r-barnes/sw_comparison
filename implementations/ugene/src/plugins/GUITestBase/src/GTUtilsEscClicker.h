@@ -30,13 +30,13 @@ using namespace HI;
 
 class GTUtilsEscClicker : public Filler {
 public:
-    GTUtilsEscClicker( HI::GUITestOpStatus &_os, const QString &menuObjectName, bool _mouse = false );
+    GTUtilsEscClicker(HI::GUITestOpStatus &_os, const QString &menuObjectName, bool _mouse = false);
     void commonScenario();
 
 private:
     bool mouse;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // GTUTILS_ESC_CLICKER_H_
+#endif    // GTUTILS_ESC_CLICKER_H_

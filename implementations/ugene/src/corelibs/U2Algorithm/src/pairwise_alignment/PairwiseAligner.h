@@ -43,12 +43,13 @@ protected:
 
 class U2ALGORITHM_EXPORT PairwiseAlignerFactory {
 public:
-    static PairwiseAligner * createAligner(const QString &alignerId,
-        const QByteArray &seq1, const QByteArray &seq2);
+    static PairwiseAligner *createAligner(const QString &alignerId,
+                                          const QByteArray &seq1,
+                                          const QByteArray &seq2);
 
     static const QString NEEDLEMAN_WUNSCH;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_PAIRWISE_ALIGNER_H_
+#endif    // _U2_PAIRWISE_ALIGNER_H_

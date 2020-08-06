@@ -19,14 +19,10 @@
  * MA 02110-1301, USA.
  */
 
-#include <QThread>
-
-#include "Metaphlan2Prompter.h"
-#include "Metaphlan2Support.h"
-#include "Metaphlan2Validator.h"
-#include "Metaphlan2Worker.h"
 #include "Metaphlan2WorkerFactory.h"
-#include "Metaphlan2Task.h"
+#include <../ngs_reads_classification/src/DatabaseDelegate.h>
+
+#include <QThread>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppResources.h>
@@ -42,7 +38,11 @@
 #include <U2Lang/PairedReadsPortValidator.h>
 #include <U2Lang/WorkflowEnv.h>
 
-#include <../ngs_reads_classification/src/DatabaseDelegate.h>
+#include "Metaphlan2Prompter.h"
+#include "Metaphlan2Support.h"
+#include "Metaphlan2Task.h"
+#include "Metaphlan2Validator.h"
+#include "Metaphlan2Worker.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -106,10 +106,11 @@ const QString Metaphlan2WorkerFactory::NOT_SKIP_NORMILIZE_BY_SIZE = "normalize";
 const QString Metaphlan2WorkerFactory::SINGLE_END = "single-end";
 const QString Metaphlan2WorkerFactory::PAIRED_END = "paired-end";
 
-Metaphlan2WorkerFactory::Metaphlan2WorkerFactory() :
-                         DomainFactory(ACTOR_ID) {}
+Metaphlan2WorkerFactory::Metaphlan2WorkerFactory()
+    : DomainFactory(ACTOR_ID) {
+}
 
-Worker* Metaphlan2WorkerFactory::createWorker(Actor *actor) {
+Worker *Metaphlan2WorkerFactory::createWorker(Actor *actor) {
     return new Metaphlan2Worker(actor);
 }
 
@@ -137,7 +138,7 @@ void Metaphlan2WorkerFactory::init() {
         ports << new PortDescriptor(inPortDescriptor, DataTypePtr(new MapDataType(ACTOR_ID + "-in", inType)), true);
     }
 
-    QList<Attribute*> attributes;
+    QList<Attribute *> attributes;
     {
         Descriptor sequencingReadsDescriptor(SEQUENCING_READS,
                                              tr("Input data"),
@@ -147,7 +148,6 @@ void Metaphlan2WorkerFactory::init() {
                                                 "One or two slots of the input port are used depending on the value of the parameter. "
                                                 "Pass URL(s) to data to these slots.<br><br>"
                                                 "The input files should be in FASTA or FASTQ formats. See \"Input file format\" parameter."));
-
 
         Descriptor databaseDescriptor(DB_URL,
                                       tr("Database"),
@@ -184,14 +184,14 @@ void Metaphlan2WorkerFactory::init() {
         Descriptor taxLevelDescriptor(TAX_LEVEL,
                                       tr("Tax level"),
                                       tr("The taxonomic level for the relative abundance output: "
-                                      "all, kingdoms (Bacteria and Archaea) only, phyla only, etc. (--tax_lev)."));
+                                         "all, kingdoms (Bacteria and Archaea) only, phyla only, etc. (--tax_lev)."));
 
         Descriptor normalizeBySizeDescriptor(NORMALIZE,
                                              tr("Normalize by metagenome size"),
                                              tr("If \"Normalize\" is selected, "
-                                                 "the total number of reads in the original metagenome is taken into account for normlization: "
-                                                 "UGENE calculates the number of reads in an input "
-                                                 "FASTA/FASTQ file and passes \"--nreads\" parameter to MetaPhlAn2."));
+                                                "the total number of reads in the original metagenome is taken into account for normlization: "
+                                                "UGENE calculates the number of reads in an input "
+                                                "FASTA/FASTQ file and passes \"--nreads\" parameter to MetaPhlAn2."));
 
         Descriptor precenceThresholdDescriptor(PRESENCE_THRESHOLD,
                                                tr("Presence threshold"),
@@ -200,13 +200,13 @@ void Metaphlan2WorkerFactory::init() {
         Descriptor bowtie2OutputDescriptor(BOWTIE2_OUTPUT_URL,
                                            tr("Bowtie2 output file"),
                                            tr("The file for saving the output of BowTie2 (--bowtie2out). "
-                                                                  "In case of PE reads one file is created per each pair of files."));
+                                              "In case of PE reads one file is created per each pair of files."));
         Descriptor outputUrlDescriptor(OUTPUT_URL,
                                        tr("Output file"),
                                        tr("MetaPhlAn2 output depends on the \"Analysis type\" parameter. "
                                           "By default, it is a tab-delimited file with the predicted taxon relative abundances."));
 
-        Attribute* sequencingReadsAttribute = new Attribute(sequencingReadsDescriptor,
+        Attribute *sequencingReadsAttribute = new Attribute(sequencingReadsDescriptor,
                                                             BaseTypes::STRING_TYPE(),
                                                             Attribute::None,
                                                             SINGLE_END);
@@ -215,46 +215,45 @@ void Metaphlan2WorkerFactory::init() {
                                                                              QVariantList() << PAIRED_END));
 
         QString databasePath;
-        U2DataPath* metaphlan2DataPath = AppContext::getDataPathRegistry()->getDataPathByName(NgsReadsClassificationPlugin::METAPHLAN2_DATABASE_DATA_ID);
+        U2DataPath *metaphlan2DataPath = AppContext::getDataPathRegistry()->getDataPathByName(NgsReadsClassificationPlugin::METAPHLAN2_DATABASE_DATA_ID);
         if (NULL != metaphlan2DataPath && metaphlan2DataPath->isValid()) {
             databasePath = metaphlan2DataPath->getPathByName(NgsReadsClassificationPlugin::METAPHLAN2_DATABASE_ITEM_ID);
         }
-        Attribute* databaseAttribute = new Attribute(databaseDescriptor,
+        Attribute *databaseAttribute = new Attribute(databaseDescriptor,
                                                      BaseTypes::STRING_TYPE(),
                                                      Attribute::Required | Attribute::NeedValidateEncoding,
                                                      databasePath);
 
-        Attribute* numberOfThreadsAttribute = new Attribute(numberOfThreadsDescriptor,
+        Attribute *numberOfThreadsAttribute = new Attribute(numberOfThreadsDescriptor,
                                                             BaseTypes::NUM_TYPE(),
                                                             Attribute::None,
                                                             AppContext::getAppSettings()->getAppResourcePool()->getIdealThreadCount());
 
-        Attribute* analysisTypeAttribute = new Attribute(analysisTypeDescriptor,
+        Attribute *analysisTypeAttribute = new Attribute(analysisTypeDescriptor,
                                                          BaseTypes::STRING_TYPE(),
                                                          Attribute::None,
                                                          ANALYSIS_TYPE_REL_AB_VALUE);
 
-        Attribute* taxLevelAttribute = new Attribute(taxLevelDescriptor,
+        Attribute *taxLevelAttribute = new Attribute(taxLevelDescriptor,
                                                      BaseTypes::STRING_TYPE(),
                                                      Attribute::None,
                                                      TAX_LEVEL_ALL_VALUE);
 
-        Attribute* normalizeBySizeAttribute = new Attribute(normalizeBySizeDescriptor,
+        Attribute *normalizeBySizeAttribute = new Attribute(normalizeBySizeDescriptor,
                                                             BaseTypes::STRING_TYPE(),
                                                             Attribute::None,
                                                             SKIP_NORMILIZE_BY_SIZE);
 
-        Attribute* precenceThresholdAttribute = new Attribute(precenceThresholdDescriptor,
+        Attribute *precenceThresholdAttribute = new Attribute(precenceThresholdDescriptor,
                                                               BaseTypes::NUM_TYPE(),
                                                               Attribute::None,
                                                               1);
 
-
-        Attribute* bowtie2OutputAttribute = new Attribute(bowtie2OutputDescriptor,
+        Attribute *bowtie2OutputAttribute = new Attribute(bowtie2OutputDescriptor,
                                                           BaseTypes::STRING_TYPE(),
                                                           Attribute::Required | Attribute::NeedValidateEncoding | Attribute::CanBeEmpty);
 
-        Attribute* outputUrlAttribute = new Attribute(outputUrlDescriptor,
+        Attribute *outputUrlAttribute = new Attribute(outputUrlDescriptor,
                                                       BaseTypes::STRING_TYPE(),
                                                       Attribute::Required | Attribute::NeedValidateEncoding | Attribute::CanBeEmpty);
 
@@ -271,9 +270,9 @@ void Metaphlan2WorkerFactory::init() {
         attributes << precenceThresholdAttribute;
         attributes << bowtie2OutputAttribute;
         attributes << outputUrlAttribute;
-        }
+    }
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
         QVariantMap sequencingReadsMap;
         sequencingReadsMap[SINGLE_END_TEXT] = SINGLE_END;
@@ -344,16 +343,17 @@ void Metaphlan2WorkerFactory::init() {
     }
 
     const Descriptor actorDescription(ACTOR_ID,
-        tr("Classify Sequences with MetaPhlAn2"),
-        tr("MetaPhlAn2 (METAgenomic PHyLogenetic ANalysis) is a tool "
-                               "for profiling the composition of microbial communities "
-                               "(bacteria, archaea, eukaryotes, and viruses) from "
-                               "whole-metagenome shotgun sequencing data.<br><br>"
-                               "The tool relies on ~1M unique clade - specific marker genes "
-                               "identified from ~17,000 reference genomes "
-                               "(~13,500 bacterial and archaeal, ~3,500 viral, and ~110 eukaryotic)"));
+                                      tr("Classify Sequences with MetaPhlAn2"),
+                                      tr("MetaPhlAn2 (METAgenomic PHyLogenetic ANalysis) is a tool "
+                                         "for profiling the composition of microbial communities "
+                                         "(bacteria, archaea, eukaryotes, and viruses) from "
+                                         "whole-metagenome shotgun sequencing data.<br><br>"
+                                         "The tool relies on ~1M unique clade - specific marker genes "
+                                         "identified from ~17,000 reference genomes "
+                                         "(~13,500 bacterial and archaeal, ~3,500 viral, and ~110 eukaryotic)"));
     ActorPrototype *proto = new IntegralBusActorPrototype(actorDescription,
-                                                          ports, attributes);
+                                                          ports,
+                                                          attributes);
     proto->setEditor(new DelegateEditor(delegates));
     proto->setPrompter(new Metaphlan2Prompter(nullptr));
     proto->addExternalTool(Metaphlan2Support::TOOL_ID);
@@ -372,5 +372,5 @@ void Metaphlan2WorkerFactory::cleanup() {
     delete localDomain->unregisterEntry(ACTOR_ID);
 }
 
-}
-}
+}    // namespace LocalWorkflow
+}    // namespace U2

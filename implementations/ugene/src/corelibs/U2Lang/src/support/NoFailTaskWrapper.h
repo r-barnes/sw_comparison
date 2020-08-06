@@ -36,7 +36,7 @@ public:
     NoFailTaskWrapper(Task *task);
     virtual void prepare();
 
-    Task * originalTask() const;
+    Task *originalTask() const;
 
     virtual bool hasWarning() const;
     virtual QStringList getWarnings() const;
@@ -45,6 +45,6 @@ private:
     Task *subTask;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_NOFAILTASKWRAPPER_H_
+#endif    // _U2_NOFAILTASKWRAPPER_H_

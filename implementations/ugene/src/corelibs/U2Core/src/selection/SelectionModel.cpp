@@ -21,22 +21,20 @@
 
 #include "SelectionModel.h"
 
-
 namespace U2 {
 
-void MultiGSelection::addSelection(const GSelection* s) {
+void MultiGSelection::addSelection(const GSelection *s) {
     assert(!selections.contains(s));
     selections.push_back(s);
 }
 
-void MultiGSelection::removeSelection(const GSelection* s) {
+void MultiGSelection::removeSelection(const GSelection *s) {
     assert(selections.contains(s));
     selections.removeAll(s);
 }
 
-
-const GSelection* MultiGSelection::findSelectionByType(GSelectionType t) const {
-    foreach(const GSelection* s, selections) {
+const GSelection *MultiGSelection::findSelectionByType(GSelectionType t) const {
+    foreach (const GSelection *s, selections) {
         if (s->getSelectionType() == t) {
             return s;
         }
@@ -48,6 +46,4 @@ void GSelection::sl_selectionChanged() {
     emit si_onSelectionChanged(this);
 }
 
-
-
-}//namespace
+}    // namespace U2

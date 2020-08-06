@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "GrouperEditorWidget.h"
+
 #include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/U2SafePoints.h>
 
@@ -28,14 +30,13 @@
 #include <U2Lang/CoreLibConstants.h>
 #include <U2Lang/IntegralBusModel.h>
 
-#include "GrouperEditorWidget.h"
 #include "NewGrouperSlotDialog.h"
 
 namespace U2 {
 
 using namespace Workflow;
 static QMap<Descriptor, DataTypePtr> getBusMap(Port *inPort) {
-    QMap<Port*,Link*> links = inPort->getLinks();
+    QMap<Port *, Link *> links = inPort->getLinks();
     if (links.size() != 1) {
         return QMap<Descriptor, DataTypePtr>();
     }
@@ -43,7 +44,7 @@ static QMap<Descriptor, DataTypePtr> getBusMap(Port *inPort) {
     {
         Port *src = links.keys().first();
         assert(src->isOutput());
-        IntegralBusPort *bus = dynamic_cast<IntegralBusPort*>(src);
+        IntegralBusPort *bus = dynamic_cast<IntegralBusPort *>(src);
         assert(NULL != bus);
         DataTypePtr type = bus->getType();
         busMap = type->getDatatypesMap();
@@ -52,8 +53,7 @@ static QMap<Descriptor, DataTypePtr> getBusMap(Port *inPort) {
 }
 
 GrouperEditorWidget::GrouperEditorWidget(GrouperSlotsCfgModel *grouperModel, Actor *grouper, QWidget *parent)
-: QWidget(parent), grouperModel(grouperModel), grouper(grouper)
-{
+    : QWidget(parent), grouperModel(grouperModel), grouper(grouper) {
     assert(1 == grouper->getInputPorts().size());
     inPort = grouper->getInputPorts().first();
     QString groupSlot = grouper->getParameter(CoreLibConstants::GROUPER_SLOT_ATTR)->getAttributeValueWithoutScript<QString>();
@@ -79,7 +79,6 @@ GrouperEditorWidget::GrouperEditorWidget(GrouperSlotsCfgModel *grouperModel, Act
             if (BaseTypes::DNA_SEQUENCE_TYPE() == type ||
                 BaseTypes::MULTIPLE_ALIGNMENT_TYPE() == type ||
                 BaseTypes::STRING_TYPE() == type) {
-
                 slotBox->addItem(d.getDisplayName(), d.getId());
                 if (groupSlot == d.getId()) {
                     slotBox->setCurrentIndex(currentIdx);
@@ -109,7 +108,7 @@ GrouperEditorWidget::GrouperEditorWidget(GrouperSlotsCfgModel *grouperModel, Act
 void GrouperEditorWidget::setupGroupOpBox(int slotIdx, const QString &groupOp, const QMap<Descriptor, DataTypePtr> &busMap) {
     operationBox->model()->removeRows(0, operationBox->count());
 
-    operationBox->addItem(tr("By value"), "by-value"); // for all types
+    operationBox->addItem(tr("By value"), "by-value");    // for all types
 
     QString slotId = slotBox->itemData(slotIdx).toString();
     operationBox->setDisabled(slotId.isEmpty());
@@ -119,7 +118,7 @@ void GrouperEditorWidget::setupGroupOpBox(int slotIdx, const QString &groupOp, c
         operationBox->addItem(tr("By name"), "by-name");
     }
 
-    for (int i=0; i<operationBox->count(); i++) {
+    for (int i = 0; i < operationBox->count(); i++) {
         QString data = operationBox->itemData(i).toString();
         if (data == groupOp) {
             operationBox->setCurrentIndex(i);
@@ -183,7 +182,7 @@ void GrouperEditorWidget::sl_onAddButtonClicked() {
         return;
     }
     QStringList names;
-    for (int i=0; i<grouperModel->rowCount(QModelIndex()); i++) {
+    for (int i = 0; i < grouperModel->rowCount(QModelIndex()); i++) {
         QModelIndex idx = grouperModel->index(i, 0);
         names.append(grouperModel->data(idx).toString());
     }
@@ -208,7 +207,7 @@ void GrouperEditorWidget::sl_onAddButtonClicked() {
             GrouperOutSlot newSlot(outSlotName, inSlotId);
             newSlot.setAction(action);
 
-            GrouperSlotsCfgModel *model = dynamic_cast<GrouperSlotsCfgModel*>(grouperModel);
+            GrouperSlotsCfgModel *model = dynamic_cast<GrouperSlotsCfgModel *>(grouperModel);
             assert(NULL != model);
             model->addGrouperSlot(newSlot);
         }
@@ -226,7 +225,7 @@ void GrouperEditorWidget::sl_onEditButtonClicked() {
     QModelIndex leftIdx = selected.first();
     QModelIndex rightIdx = leftIdx.child(leftIdx.row(), 1);
 
-    GrouperSlotsCfgModel *model = dynamic_cast<GrouperSlotsCfgModel*>(grouperModel);
+    GrouperSlotsCfgModel *model = dynamic_cast<GrouperSlotsCfgModel *>(grouperModel);
     assert(NULL != model);
     QString outSlotName = model->data(leftIdx).toString();
     QString inSlotId = GrouperOutSlot::readable2busMap(model->data(rightIdx).toString());
@@ -264,9 +263,7 @@ void GrouperEditorWidget::sl_onRemoveButtonClicked() {
 /* GrouperSlotsCfgModel */
 /************************************************************************/
 GrouperSlotsCfgModel::GrouperSlotsCfgModel(QObject *parent, QList<GrouperOutSlot> &outSlots)
-: QAbstractTableModel(parent), outSlots(outSlots)
-{
-
+    : QAbstractTableModel(parent), outSlots(outSlots) {
 }
 
 QVariant GrouperSlotsCfgModel::data(const QModelIndex &index, int role) const {
@@ -292,13 +289,13 @@ int GrouperSlotsCfgModel::rowCount(const QModelIndex &) const {
     return outSlots.size();
 }
 
-Qt::ItemFlags GrouperSlotsCfgModel::flags( const QModelIndex & ) const {
+Qt::ItemFlags GrouperSlotsCfgModel::flags(const QModelIndex &) const {
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
 QVariant GrouperSlotsCfgModel::headerData(int section, Qt::Orientation orientation, int role) const {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
-        switch(section) {
+        switch (section) {
         case 0:
             return tr("Output slot name");
         case 1:
@@ -311,7 +308,7 @@ QVariant GrouperSlotsCfgModel::headerData(int section, Qt::Orientation orientati
     return QVariant();
 }
 
-bool GrouperSlotsCfgModel::setData( const QModelIndex &, const QVariant &, int ) {
+bool GrouperSlotsCfgModel::setData(const QModelIndex &, const QVariant &, int) {
     return true;
 }
 
@@ -325,7 +322,7 @@ bool GrouperSlotsCfgModel::removeRows(int row, int count, const QModelIndex &) {
 
     const GrouperOutSlot &slot = outSlots.at(row);
     QString outSlotName = slot.getOutSlotId();
-    beginRemoveRows(QModelIndex(), row, row+count-1);
+    beginRemoveRows(QModelIndex(), row, row + count - 1);
     outSlots.removeOne(slot);
     endRemoveRows();
 
@@ -356,7 +353,7 @@ GrouperSlotAction *GrouperSlotsCfgModel::getSlotAction(const QString &outSlotNam
 
 void GrouperSlotsCfgModel::addGrouperSlot(const GrouperOutSlot &newSlot) {
     int rows = rowCount(QModelIndex());
-    rows = rows>0 ? rows-1 : 0;
+    rows = rows > 0 ? rows - 1 : 0;
     beginInsertRows(QModelIndex(), 0, rows);
     outSlots << newSlot;
     endInsertRows();
@@ -374,4 +371,4 @@ void GrouperSlotsCfgModel::setNewAction(const QString &outSlotName, const Groupe
     }
 }
 
-} // U2
+}    // namespace U2

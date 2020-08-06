@@ -22,24 +22,25 @@
 #ifndef _U2_BWA_SETTINGS_WIDGET_H_
 #define _U2_BWA_SETTINGS_WIDGET_H_
 
-#include "ui_BwaSettings.h"
-#include "ui_BwaMemSettings.h"
-#include "ui_BwaSwSettings.h"
-#include "ui_BwaBuildSettings.h"
 #include "U2View/DnaAssemblyGUIExtension.h"
+
+#include "ui_BwaBuildSettings.h"
+#include "ui_BwaMemSettings.h"
+#include "ui_BwaSettings.h"
+#include "ui_BwaSwSettings.h"
 
 class BwaIndexAlgorithmWarningReporter : public QObject {
     Q_OBJECT
 public:
-    BwaIndexAlgorithmWarningReporter( QObject *parent );
-    void setReportingLabel( QLabel *reportLabel );
-    void setRefSequencePath( const U2::GUrl &path );
+    BwaIndexAlgorithmWarningReporter(QObject *parent);
+    void setReportingLabel(QLabel *reportLabel);
+    void setRefSequencePath(const U2::GUrl &path);
 
 public slots:
-    void sl_IndexAlgorithmChanged( int index );
+    void sl_IndexAlgorithmChanged(int index);
 
 private:
-    void setReportLabelStyle( );
+    void setReportLabelStyle();
 
     QLabel *reportLabel;
     U2::GUrl referenceSequencePath;
@@ -64,6 +65,7 @@ public:
     BwaSwSettingsWidget(QWidget *parent);
     QMap<QString, QVariant> getDnaAssemblyCustomSettings() const;
     void validateReferenceSequence(const GUrl &url) const;
+
 private:
     BwaIndexAlgorithmWarningReporter *warningReporter;
 };
@@ -74,6 +76,7 @@ public:
     BwaMemSettingsWidget(QWidget *parent);
     QMap<QString, QVariant> getDnaAssemblyCustomSettings() const;
     void validateReferenceSequence(const GUrl &url) const;
+
 private:
     BwaIndexAlgorithmWarningReporter *warningReporter;
 };
@@ -82,9 +85,9 @@ class BwaBuildSettingsWidget : public DnaAssemblyAlgorithmBuildIndexWidget, Ui_B
     Q_OBJECT
 public:
     BwaBuildSettingsWidget(QWidget *parent);
-    virtual QMap<QString,QVariant> getBuildIndexCustomSettings();
+    virtual QMap<QString, QVariant> getBuildIndexCustomSettings();
     virtual QString getIndexFileExtension();
-    virtual GUrl buildIndexUrl(const GUrl& url);
+    virtual GUrl buildIndexUrl(const GUrl &url);
     void validateReferenceSequence(const GUrl &url) const;
 
 private:
@@ -112,8 +115,6 @@ class BwaMemGUIExtensionsFactory : public DnaAssemblyGUIExtensionsFactory {
     bool hasBuildIndexWidget();
 };
 
+}    // namespace U2
 
-
-} // namespace U2
-
-#endif // _U2_BWA_SETTINGS_WIDGET_H_
+#endif    // _U2_BWA_SETTINGS_WIDGET_H_

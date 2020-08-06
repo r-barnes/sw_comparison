@@ -32,17 +32,17 @@ namespace LocalWorkflow {
 class Metaphlan2Worker : public BaseWorker {
     Q_OBJECT
 public:
-    Metaphlan2Worker(Actor* actor);
+    Metaphlan2Worker(Actor *actor);
 
     void init();
-    Task* tick();
+    Task *tick();
     void cleanup();
 
 private slots:
-    void sl_taskFinished(Task* task);
+    void sl_taskFinished(Task *task);
 
 private:
-    enum Output{
+    enum Output {
         Bowtie2,
         MetaPhlAn2
     };
@@ -50,12 +50,12 @@ private:
     bool dataFinished() const;
     Metaphlan2TaskSettings getSettings(U2OpStatus &os);
     QString getDefaultOutputDir() const;
-    QString createOutputToolDirectory(const QString& tmpDir,
-                                      const Message& message,
+    QString createOutputToolDirectory(const QString &tmpDir,
+                                      const Message &message,
                                       const bool isPairedEnd,
                                       const Output out) const;
-    void createDirectory(QString& dir) const;
-    void addOutputToDashboard(const QString& outputUrl, const QString& outputName) const;
+    void createDirectory(QString &dir) const;
+    void addOutputToDashboard(const QString &outputUrl, const QString &outputName) const;
 
     IntegralBus *input;
 
@@ -66,7 +66,7 @@ private:
     static const QString PROFILE_SUFFIX;
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_METAPHLAN2_WORKER_H_
+#endif    // _U2_METAPHLAN2_WORKER_H_

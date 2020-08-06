@@ -23,36 +23,35 @@
 
 #include <U2Core/AppContext.h>
 #include <U2Core/DNAAlphabet.h>
-#include <U2Core/U2Msa.h>
-#include <U2Core/U2OpStatusUtils.h>
-#include <U2Core/U2SequenceDbi.h>
-#include <U2Core/U2MsaDbi.h>
 #include <U2Core/MsaDbiUtils.h>
 #include <U2Core/MultipleSequenceAlignmentExporter.h>
 #include <U2Core/U2AlphabetUtils.h>
+#include <U2Core/U2Msa.h>
+#include <U2Core/U2MsaDbi.h>
+#include <U2Core/U2OpStatusUtils.h>
+#include <U2Core/U2SequenceDbi.h>
 
 namespace U2 {
 
 const QString MsaDbiUtilsTestUtils::alignmentName = QString("MsaDbiUtils test alignment");
 TestDbiProvider MsaDbiUtilsTestUtils::dbiProvider = TestDbiProvider();
-const QString& MsaDbiUtilsTestUtils::MSA_DB_URL("msa-dbi-utils.ugenedb");
-U2MsaDbi* MsaDbiUtilsTestUtils::msaDbi = NULL;
-U2SequenceDbi* MsaDbiUtilsTestUtils::sequenceDbi = NULL;
-
+const QString &MsaDbiUtilsTestUtils::MSA_DB_URL("msa-dbi-utils.ugenedb");
+U2MsaDbi *MsaDbiUtilsTestUtils::msaDbi = NULL;
+U2SequenceDbi *MsaDbiUtilsTestUtils::sequenceDbi = NULL;
 
 void MsaDbiUtilsTestUtils::init() {
     SAFE_POINT(NULL == msaDbi, "msaDbi has been already initialized!", );
     SAFE_POINT(NULL == sequenceDbi, "sequenceDbi has been already initialized!", );
 
     bool ok = dbiProvider.init(MSA_DB_URL, true);
-    SAFE_POINT(ok, "Dbi provider failed to initialize in MsaTestData::init()!",);
+    SAFE_POINT(ok, "Dbi provider failed to initialize in MsaTestData::init()!", );
 
-    U2Dbi* dbi = dbiProvider.getDbi();
+    U2Dbi *dbi = dbiProvider.getDbi();
     msaDbi = dbi->getMsaDbi();
-    SAFE_POINT(NULL != msaDbi, "Failed to get msaDbi!",);
+    SAFE_POINT(NULL != msaDbi, "Failed to get msaDbi!", );
 
     sequenceDbi = dbi->getSequenceDbi();
-    SAFE_POINT(NULL != sequenceDbi, "Failed to get sequenceDbi!",);
+    SAFE_POINT(NULL != sequenceDbi, "Failed to get sequenceDbi!", );
 }
 
 void MsaDbiUtilsTestUtils::shutdown() {
@@ -67,20 +66,19 @@ void MsaDbiUtilsTestUtils::shutdown() {
     }
 }
 
-U2MsaDbi* MsaDbiUtilsTestUtils::getMsaDbi() {
+U2MsaDbi *MsaDbiUtilsTestUtils::getMsaDbi() {
     if (NULL == msaDbi) {
         init();
     }
     return msaDbi;
 }
 
-U2SequenceDbi* MsaDbiUtilsTestUtils::getSequenceDbi() {
+U2SequenceDbi *MsaDbiUtilsTestUtils::getSequenceDbi() {
     if (NULL == sequenceDbi) {
         init();
     }
     return sequenceDbi;
 }
-
 
 U2EntityRef MsaDbiUtilsTestUtils::initTestAlignment(const qint64 rowCount) {
     getMsaDbi();
@@ -117,7 +115,7 @@ U2EntityRef MsaDbiUtilsTestUtils::initTestAlignment(const qint64 rowCount) {
     return msaRef;
 }
 
-U2EntityRef MsaDbiUtilsTestUtils::initTestAlignment(const QStringList& rowsData = QStringList()) {
+U2EntityRef MsaDbiUtilsTestUtils::initTestAlignment(const QStringList &rowsData = QStringList()) {
     getMsaDbi();
     getSequenceDbi();
 
@@ -162,7 +160,7 @@ U2EntityRef MsaDbiUtilsTestUtils::initTestAlignment(const QStringList& rowsData 
     return msaRef;
 }
 
-U2EntityRef MsaDbiUtilsTestUtils::initTestAlignment(QList<U2MsaRow>& rows) {
+U2EntityRef MsaDbiUtilsTestUtils::initTestAlignment(QList<U2MsaRow> &rows) {
     getMsaDbi();
     getSequenceDbi();
 
@@ -180,9 +178,7 @@ U2EntityRef MsaDbiUtilsTestUtils::initTestAlignment(QList<U2MsaRow>& rows) {
     return msaRef;
 }
 
-void Utils::addRow(U2Dbi *dbi, const U2DataId &msaId,
-    const QByteArray &name, const QByteArray &seq, const QList<U2MsaGap> &gaps,
-    U2OpStatus &os) {
+void Utils::addRow(U2Dbi *dbi, const U2DataId &msaId, const QByteArray &name, const QByteArray &seq, const QList<U2MsaGap> &gaps, U2OpStatus &os) {
     U2Sequence sequence;
     sequence.alphabet = BaseDNAAlphabetIds::NUCL_DNA_DEFAULT();
     sequence.visualName = name;
@@ -250,7 +246,7 @@ U2EntityRef MsaDbiUtilsTestUtils::removeRegionTestAlignment(U2OpStatus &os) {
     Utils::addRow(dbi, msaId, "13", "", QList<U2MsaGap>() << U2MsaGap(0, 14), os);
     CHECK_OP(os, U2EntityRef());
 
-    return  U2EntityRef(msaDbi->getRootDbi()->getDbiRef(), msaId);
+    return U2EntityRef(msaDbi->getRootDbi()->getDbiRef(), msaId);
 }
 
 QStringList MsaDbiUtilsTestUtils::getRowNames(U2EntityRef msaRef) {
@@ -268,9 +264,8 @@ QStringList MsaDbiUtilsTestUtils::getRowNames(U2EntityRef msaRef) {
     return res;
 }
 
-
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_oneLineInMiddle) {
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     U2OpStatusImpl os;
     int rowCount = 7;
 
@@ -313,7 +308,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_oneLineInMiddle) {
 }
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_oneLineInMiddleToTheTop) {
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     U2OpStatusImpl os;
     int rowCount = 7;
 
@@ -369,7 +364,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_oneLineInMiddleToTheTop) {
 }
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_oneLineInMiddleToTheBottom) {
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     U2OpStatusImpl os;
     int rowCount = 7;
 
@@ -425,7 +420,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_oneLineInMiddleToTheBottom) {
 }
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_oneBlockInMiddle) {
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     U2OpStatusImpl os;
     int rowCount = 7;
 
@@ -470,7 +465,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_oneBlockInMiddle) {
 }
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_oneBlockInMiddleToTheOutside) {
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     U2OpStatusImpl os;
     int rowCount = 7;
 
@@ -515,7 +510,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_oneBlockInMiddleToTheOutside) {
 }
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_twoBlocksInMiddleWithoutGluing) {
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     U2OpStatusImpl os;
     int rowCount = 7;
 
@@ -560,7 +555,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_twoBlocksInMiddleWithoutGluing) {
 }
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_twoBlocksInMiddleWithGluing) {
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     U2OpStatusImpl os;
     int rowCount = 7;
 
@@ -605,7 +600,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_twoBlocksInMiddleWithGluing) {
 }
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_twoBlocksOnTopWithoutGluing) {
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     U2OpStatusImpl os;
     int rowCount = 7;
 
@@ -650,7 +645,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_twoBlocksOnTopWithoutGluing) {
 }
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_twoBlocksOnTopWithGluing) {
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     U2OpStatusImpl os;
     int rowCount = 7;
 
@@ -695,7 +690,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_twoBlocksOnTopWithGluing) {
 }
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_twoBlocksOnBottomWithoutGluing) {
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     U2OpStatusImpl os;
     int rowCount = 7;
 
@@ -740,7 +735,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_twoBlocksOnBottomWithoutGluing) {
 }
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_twoBlocksOnBottomWithGluing) {
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     U2OpStatusImpl os;
     int rowCount = 7;
 
@@ -785,7 +780,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_twoBlocksOnBottomWithGluing) {
 }
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_threeBlocksWithoutGluing) {
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     U2OpStatusImpl os;
     int rowCount = 7;
 
@@ -832,7 +827,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_threeBlocksWithoutGluing) {
 }
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_threeBlocksWithOnceGluing) {
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     U2OpStatusImpl os;
     int rowCount = 7;
 
@@ -879,7 +874,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_threeBlocksWithOnceGluing) {
 }
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_threeBlocksWithTwiceGluing) {
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     U2OpStatusImpl os;
     int rowCount = 7;
 
@@ -926,7 +921,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_threeBlocksWithTwiceGluing) {
 }
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_UnorderedList) {
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     U2OpStatusImpl os;
     int rowCount = 7;
 
@@ -965,10 +960,14 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, moveRows_InvalidRowList) {
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, trim_noGaps) {
     //Init test data
     U2OpStatusImpl os;
-    U2EntityRef msaRef = MsaDbiUtilsTestUtils::initTestAlignment(QStringList() << "AACCGGTT" << "CCGGTTAA" << "GGTTAACC");
+    U2EntityRef msaRef = MsaDbiUtilsTestUtils::initTestAlignment(QStringList() << "AACCGGTT"
+                                                                               << "CCGGTTAA"
+                                                                               << "GGTTAACC");
 
     //Prepare expected state
-    QStringList expected = QStringList() << "AACCGGTT" << "CCGGTTAA" << "GGTTAACC";
+    QStringList expected = QStringList() << "AACCGGTT"
+                                         << "CCGGTTAA"
+                                         << "GGTTAACC";
 
     //Call test function
     MsaDbiUtils::trim(msaRef, os);
@@ -992,10 +991,14 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, trim_noGaps) {
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, trim_leadingGaps) {
     //Init test data
     U2OpStatusImpl os;
-    U2EntityRef msaRef = MsaDbiUtilsTestUtils::initTestAlignment(QStringList() << "--AACCGGTT" << "--CCGGTTAA" << "--GGTTA--C");
+    U2EntityRef msaRef = MsaDbiUtilsTestUtils::initTestAlignment(QStringList() << "--AACCGGTT"
+                                                                               << "--CCGGTTAA"
+                                                                               << "--GGTTA--C");
 
     //Prepare expected state
-    QStringList expected = QStringList() << "AACCGGTT" << "CCGGTTAA" << "GGTTA--C";
+    QStringList expected = QStringList() << "AACCGGTT"
+                                         << "CCGGTTAA"
+                                         << "GGTTA--C";
 
     //Call test function
     MsaDbiUtils::trim(msaRef, os);
@@ -1019,10 +1022,14 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, trim_leadingGaps) {
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, trim_trailingGaps) {
     //Init test data
     U2OpStatusImpl os;
-    U2EntityRef msaRef = MsaDbiUtilsTestUtils::initTestAlignment(QStringList() << "AACCGGTT--" << "CCG--TAA--" << "GGTTAACC--");
+    U2EntityRef msaRef = MsaDbiUtilsTestUtils::initTestAlignment(QStringList() << "AACCGGTT--"
+                                                                               << "CCG--TAA--"
+                                                                               << "GGTTAACC--");
 
     //Prepare expected state
-    QStringList expected = QStringList() << "AACCGGTT" << "CCG--TAA" << "GGTTAACC";
+    QStringList expected = QStringList() << "AACCGGTT"
+                                         << "CCG--TAA"
+                                         << "GGTTAACC";
 
     //Call test function
     MsaDbiUtils::trim(msaRef, os);
@@ -1046,10 +1053,14 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, trim_trailingGaps) {
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, trim_leadingGapsCutOff) {
     //Init test data
     U2OpStatusImpl os;
-    U2EntityRef msaRef = MsaDbiUtilsTestUtils::initTestAlignment(QStringList() << "---TAACCGG" << "--CCGGTTAA" << "--GGTTAACC");
+    U2EntityRef msaRef = MsaDbiUtilsTestUtils::initTestAlignment(QStringList() << "---TAACCGG"
+                                                                               << "--CCGGTTAA"
+                                                                               << "--GGTTAACC");
 
     //Prepare expected state
-    QStringList expected = QStringList() << "-TAACCGG" << "CCGGTTAA" << "GGTTAACC";
+    QStringList expected = QStringList() << "-TAACCGG"
+                                         << "CCGGTTAA"
+                                         << "GGTTAACC";
 
     //Call test function
     MsaDbiUtils::trim(msaRef, os);
@@ -1073,10 +1084,14 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, trim_leadingGapsCutOff) {
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, trim_trailingGapsCutOff) {
     //Init test data
     U2OpStatusImpl os;
-    U2EntityRef msaRef = MsaDbiUtilsTestUtils::initTestAlignment(QStringList() << "AACCGGT---" << "CCGGTTAA--" << "GGTTAACC--");
+    U2EntityRef msaRef = MsaDbiUtilsTestUtils::initTestAlignment(QStringList() << "AACCGGT---"
+                                                                               << "CCGGTTAA--"
+                                                                               << "GGTTAACC--");
 
     //Prepare expected state
-    QStringList expected = QStringList() << "AACCGGT-" << "CCGGTTAA" << "GGTTAACC";
+    QStringList expected = QStringList() << "AACCGGT-"
+                                         << "CCGGTTAA"
+                                         << "GGTTAACC";
 
     //Call test function
     MsaDbiUtils::trim(msaRef, os);
@@ -1100,10 +1115,14 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, trim_trailingGapsCutOff) {
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, trim_leadingAndTrailingGaps) {
     //Init test data
     U2OpStatusImpl os;
-    U2EntityRef msaRef = MsaDbiUtilsTestUtils::initTestAlignment(QStringList() << "--AACCGGTT--" << "---ACCGGT--" << "----CCGGTT---");
+    U2EntityRef msaRef = MsaDbiUtilsTestUtils::initTestAlignment(QStringList() << "--AACCGGTT--"
+                                                                               << "---ACCGGT--"
+                                                                               << "----CCGGTT---");
 
     //Prepare expected state
-    QStringList expected = QStringList() << "AACCGGTT" << "-ACCGGT-" << "--CCGGTT";
+    QStringList expected = QStringList() << "AACCGGTT"
+                                         << "-ACCGGT-"
+                                         << "--CCGGTT";
 
     //Call test function
     MsaDbiUtils::trim(msaRef, os);
@@ -1127,10 +1146,14 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, trim_leadingAndTrailingGaps) {
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, trim_gapsOnly) {
     //Init test data
     U2OpStatusImpl os;
-    U2EntityRef msaRef = MsaDbiUtilsTestUtils::initTestAlignment(QStringList() << "------" << "----" << "-----");
+    U2EntityRef msaRef = MsaDbiUtilsTestUtils::initTestAlignment(QStringList() << "------"
+                                                                               << "----"
+                                                                               << "-----");
 
     //Prepare expected state
-    QStringList expected = QStringList() << "" << "" << "";
+    QStringList expected = QStringList() << ""
+                                         << ""
+                                         << "";
 
     //Call test function
     MsaDbiUtils::trim(msaRef, os);
@@ -1156,7 +1179,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, removeRegion_oneRow) {
     U2EntityRef msaRef = MsaDbiUtilsTestUtils::removeRegionTestAlignment(os);
     CHECK_NO_ERROR(os);
 
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     QList<qint64> baseRowIds = msaDbi->getRowsOrder(msaRef.entityId, os);
     CHECK_NO_ERROR(os);
 
@@ -1183,7 +1206,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, removeRegion_threeRows) {
     U2EntityRef msaRef = MsaDbiUtilsTestUtils::removeRegionTestAlignment(os);
     CHECK_NO_ERROR(os);
 
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     QList<qint64> baseRowIds = msaDbi->getRowsOrder(msaRef.entityId, os);
     CHECK_NO_ERROR(os);
 
@@ -1210,7 +1233,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, removeRegion_lengthChange) {
     U2EntityRef msaRef = MsaDbiUtilsTestUtils::removeRegionTestAlignment(os);
     CHECK_NO_ERROR(os);
 
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     QList<qint64> baseRowIds = msaDbi->getRowsOrder(msaRef.entityId, os);
     CHECK_NO_ERROR(os);
 
@@ -1239,7 +1262,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, removeRegion_allRows) {
     U2EntityRef msaRef = MsaDbiUtilsTestUtils::removeRegionTestAlignment(os);
     CHECK_NO_ERROR(os);
 
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     QList<qint64> baseRowIds = msaDbi->getRowsOrder(msaRef.entityId, os);
     CHECK_NO_ERROR(os);
 
@@ -1286,7 +1309,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, removeRegion_all) {
     U2EntityRef msaRef = MsaDbiUtilsTestUtils::removeRegionTestAlignment(os);
     CHECK_NO_ERROR(os);
 
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     QList<qint64> baseRowIds = msaDbi->getRowsOrder(msaRef.entityId, os);
     CHECK_NO_ERROR(os);
 
@@ -1311,7 +1334,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, removeRegion_negativePos) {
     U2EntityRef msaRef = MsaDbiUtilsTestUtils::removeRegionTestAlignment(os);
     CHECK_NO_ERROR(os);
 
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     QList<qint64> baseRowIds = msaDbi->getRowsOrder(msaRef.entityId, os);
     CHECK_NO_ERROR(os);
 
@@ -1335,7 +1358,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, removeRegion_wrongId) {
     U2EntityRef msaRef = MsaDbiUtilsTestUtils::removeRegionTestAlignment(os);
     CHECK_NO_ERROR(os);
 
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     QList<qint64> baseRowIds = msaDbi->getRowsOrder(msaRef.entityId, os);
     CHECK_NO_ERROR(os);
 
@@ -1363,7 +1386,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, removeRegion_wrongCount) {
     U2EntityRef msaRef = MsaDbiUtilsTestUtils::removeRegionTestAlignment(os);
     CHECK_NO_ERROR(os);
 
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
     QList<qint64> baseRowIds = msaDbi->getRowsOrder(msaRef.entityId, os);
     CHECK_NO_ERROR(os);
 
@@ -1384,15 +1407,15 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, removeRegion_wrongCount) {
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_empty) {
     U2OpStatusImpl os;
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
-    U2SequenceDbi* seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2SequenceDbi *seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
     U2DataId msaId = msaDbi->createMsaObject("", MsaDbiUtilsTestUtils::alignmentName, BaseDNAAlphabetIds::NUCL_DNA_DEFAULT(), os);
     CHECK_NO_ERROR(os);
     U2DbiRef dbiRef(msaDbi->getRootDbi()->getFactoryId(), msaDbi->getRootDbi()->getDbiId());
     U2EntityRef msaRef(dbiRef, msaId);
 
     // Prepare input data
-    const DNAAlphabet* alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
+    const DNAAlphabet *alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
     MultipleSequenceAlignment ma(MsaDbiUtilsTestUtils::alignmentName, alphabet);
     ma->addRow("1", "AAAA--AAA", -1);
     ma->addRow("2", "C--CCCCCC", -1);
@@ -1439,15 +1462,15 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_empty) {
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_nothingNew) {
     U2OpStatusImpl os;
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
-    U2SequenceDbi* seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2SequenceDbi *seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
     U2DataId msaId = msaDbi->createMsaObject("", MsaDbiUtilsTestUtils::alignmentName, BaseDNAAlphabetIds::NUCL_DNA_DEFAULT(), os);
     CHECK_NO_ERROR(os);
     U2DbiRef dbiRef(msaDbi->getRootDbi()->getFactoryId(), msaDbi->getRootDbi()->getDbiId());
     U2EntityRef msaRef(dbiRef, msaId);
 
     // Prepare input data
-    const DNAAlphabet* alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
+    const DNAAlphabet *alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
     MultipleSequenceAlignment ma(MsaDbiUtilsTestUtils::alignmentName, alphabet);
     ma->addRow("1", "AAAA--AAA", -1);
     ma->addRow("2", "C--CCCCCC", -1);
@@ -1498,15 +1521,15 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_nothingNew) {
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_newOrder) {
     U2OpStatusImpl os;
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
-    U2SequenceDbi* seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2SequenceDbi *seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
     U2DataId msaId = msaDbi->createMsaObject("", MsaDbiUtilsTestUtils::alignmentName, BaseDNAAlphabetIds::NUCL_DNA_DEFAULT(), os);
     CHECK_NO_ERROR(os);
     U2DbiRef dbiRef(msaDbi->getRootDbi()->getFactoryId(), msaDbi->getRootDbi()->getDbiId());
     U2EntityRef msaRef(dbiRef, msaId);
 
     // Prepare input data
-    const DNAAlphabet* alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
+    const DNAAlphabet *alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
     MultipleSequenceAlignment ma(MsaDbiUtilsTestUtils::alignmentName, alphabet);
     ma->addRow("1", "AAAA--AAA", -1);
     ma->addRow("2", "C--CCCCCC", -1);
@@ -1560,15 +1583,15 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_newOrder) {
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_newName) {
     U2OpStatusImpl os;
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
-    U2SequenceDbi* seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2SequenceDbi *seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
     U2DataId msaId = msaDbi->createMsaObject("", MsaDbiUtilsTestUtils::alignmentName, BaseDNAAlphabetIds::NUCL_DNA_DEFAULT(), os);
     CHECK_NO_ERROR(os);
     U2DbiRef dbiRef(msaDbi->getRootDbi()->getFactoryId(), msaDbi->getRootDbi()->getDbiId());
     U2EntityRef msaRef(dbiRef, msaId);
 
     // Prepare input data
-    const DNAAlphabet* alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
+    const DNAAlphabet *alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
     MultipleSequenceAlignment ma(MsaDbiUtilsTestUtils::alignmentName, alphabet);
     ma->addRow("1", "AAAA--AAA", -1);
     ma->addRow("2", "C--CCCCCC", -1);
@@ -1622,15 +1645,15 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_newName) {
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_newAlphabet) {
     U2OpStatusImpl os;
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
-    U2SequenceDbi* seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2SequenceDbi *seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
     U2DataId msaId = msaDbi->createMsaObject("", MsaDbiUtilsTestUtils::alignmentName, BaseDNAAlphabetIds::NUCL_DNA_DEFAULT(), os);
     CHECK_NO_ERROR(os);
     U2DbiRef dbiRef(msaDbi->getRootDbi()->getFactoryId(), msaDbi->getRootDbi()->getDbiId());
     U2EntityRef msaRef(dbiRef, msaId);
 
     // Prepare input data
-    const DNAAlphabet* alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
+    const DNAAlphabet *alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
     MultipleSequenceAlignment ma(MsaDbiUtilsTestUtils::alignmentName, alphabet);
     ma->addRow("1", "AAAA--AAA", -1);
     ma->addRow("2", "C--CCCCCC", -1);
@@ -1644,7 +1667,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_newAlphabet) {
     CHECK_NO_ERROR(os);
 
     // Change alignment alphabet
-    const DNAAlphabet* newAlphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_EXTENDED());
+    const DNAAlphabet *newAlphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_EXTENDED());
     ma->setAlphabet(newAlphabet);
 
     // Test call with new alphabet
@@ -1685,15 +1708,15 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_newAlphabet) {
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_newContent) {
     U2OpStatusImpl os;
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
-    U2SequenceDbi* seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2SequenceDbi *seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
     U2DataId msaId = msaDbi->createMsaObject("", MsaDbiUtilsTestUtils::alignmentName, BaseDNAAlphabetIds::NUCL_DNA_DEFAULT(), os);
     CHECK_NO_ERROR(os);
     U2DbiRef dbiRef(msaDbi->getRootDbi()->getFactoryId(), msaDbi->getRootDbi()->getDbiId());
     U2EntityRef msaRef(dbiRef, msaId);
 
     // Prepare input data
-    const DNAAlphabet* alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
+    const DNAAlphabet *alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
     MultipleSequenceAlignment ma(MsaDbiUtilsTestUtils::alignmentName, alphabet);
     ma->addRow("1", "AAAA--AAA", -1);
     ma->addRow("2", "C--CCCCCC", -1);
@@ -1747,15 +1770,15 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_newContent) {
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_newSequence) {
     U2OpStatusImpl os;
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
-    U2SequenceDbi* seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2SequenceDbi *seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
     U2DataId msaId = msaDbi->createMsaObject("", MsaDbiUtilsTestUtils::alignmentName, BaseDNAAlphabetIds::NUCL_DNA_DEFAULT(), os);
     CHECK_NO_ERROR(os);
     U2DbiRef dbiRef(msaDbi->getRootDbi()->getFactoryId(), msaDbi->getRootDbi()->getDbiId());
     U2EntityRef msaRef(dbiRef, msaId);
 
     // Prepare input data
-    const DNAAlphabet* alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
+    const DNAAlphabet *alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
     MultipleSequenceAlignment ma(MsaDbiUtilsTestUtils::alignmentName, alphabet);
     ma->addRow("1", "AAAA--AAA", -1);
     ma->addRow("2", "C--CCCCCC", -1);
@@ -1827,15 +1850,15 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_newSequence) {
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_additionalRows) {
     U2OpStatusImpl os;
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
-    U2SequenceDbi* seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2SequenceDbi *seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
     U2DataId msaId = msaDbi->createMsaObject("", MsaDbiUtilsTestUtils::alignmentName, BaseDNAAlphabetIds::NUCL_DNA_DEFAULT(), os);
     CHECK_NO_ERROR(os);
     U2DbiRef dbiRef(msaDbi->getRootDbi()->getFactoryId(), msaDbi->getRootDbi()->getDbiId());
     U2EntityRef msaRef(dbiRef, msaId);
 
     // Prepare input data
-    const DNAAlphabet* alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
+    const DNAAlphabet *alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
     MultipleSequenceAlignment ma(MsaDbiUtilsTestUtils::alignmentName, alphabet);
     ma->addRow("1", "AAAA--AAA", -1);
     ma->addRow("2", "C--CCCCCC", -1);
@@ -1890,15 +1913,15 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_additionalRows) {
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_removeRows) {
     U2OpStatusImpl os;
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
-    U2SequenceDbi* seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2SequenceDbi *seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
     U2DataId msaId = msaDbi->createMsaObject("", MsaDbiUtilsTestUtils::alignmentName, BaseDNAAlphabetIds::NUCL_DNA_DEFAULT(), os);
     CHECK_NO_ERROR(os);
     U2DbiRef dbiRef(msaDbi->getRootDbi()->getFactoryId(), msaDbi->getRootDbi()->getDbiId());
     U2EntityRef msaRef(dbiRef, msaId);
 
     // Prepare input data
-    const DNAAlphabet* alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
+    const DNAAlphabet *alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
     MultipleSequenceAlignment ma(MsaDbiUtilsTestUtils::alignmentName, alphabet);
     ma->addRow("1", "AAAA--AAA", -1);
     ma->addRow("2", "C--CCCCCC", -1);
@@ -1955,15 +1978,15 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_removeRows) {
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_clear) {
     U2OpStatusImpl os;
-    U2MsaDbi* msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
-    U2SequenceDbi* seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
+    U2MsaDbi *msaDbi = MsaDbiUtilsTestUtils::getMsaDbi();
+    U2SequenceDbi *seqDbi = MsaDbiUtilsTestUtils::getSequenceDbi();
     U2DataId msaId = msaDbi->createMsaObject("", MsaDbiUtilsTestUtils::alignmentName, BaseDNAAlphabetIds::NUCL_DNA_DEFAULT(), os);
     CHECK_NO_ERROR(os);
     U2DbiRef dbiRef(msaDbi->getRootDbi()->getFactoryId(), msaDbi->getRootDbi()->getDbiId());
     U2EntityRef msaRef(dbiRef, msaId);
 
     // Prepare input data
-    const DNAAlphabet* alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
+    const DNAAlphabet *alphabet = U2AlphabetUtils::getById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
     MultipleSequenceAlignment ma(MsaDbiUtilsTestUtils::alignmentName, alphabet);
     ma->addRow("1", "AAAA--AAA", -1);
     ma->addRow("2", "C--CCCCCC", -1);
@@ -2015,4 +2038,4 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, updateMsa_clear) {
     }
 }
 
-}   // namespace
+}    // namespace U2

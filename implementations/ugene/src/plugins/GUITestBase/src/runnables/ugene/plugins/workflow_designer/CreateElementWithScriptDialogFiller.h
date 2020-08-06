@@ -24,28 +24,32 @@
 
 #include "utils/GTUtilsDialog.h"
 
-namespace U2{
+namespace U2 {
 using namespace HI;
 
-class CreateElementWithScriptDialogFiller : public Filler
-{
+class CreateElementWithScriptDialogFiller : public Filler {
 public:
-    CreateElementWithScriptDialogFiller(HI::GUITestOpStatus& os, QString _name):Filler(os, "CreateScriptBlockDialog"),
-        name(_name){}
+    CreateElementWithScriptDialogFiller(HI::GUITestOpStatus &os, QString _name)
+        : Filler(os, "CreateScriptBlockDialog"),
+          name(_name) {
+    }
     void commonScenario();
+
 private:
     QString name;
 };
 
-class ScriptEditorDialogFiller: public Filler
-{
+class ScriptEditorDialogFiller : public Filler {
 public:
-    ScriptEditorDialogFiller(HI::GUITestOpStatus& os, QString _url = "", QString _text = "", bool _checkSyntax = false, QString _checkSyntaxResult = ""): Filler(os, "ScriptEditorDialog"),
-        url(_url),
-        text(_text),
-        checkSyntaxResult(_checkSyntaxResult),
-        checkSyntax(_checkSyntax) {}
+    ScriptEditorDialogFiller(HI::GUITestOpStatus &os, QString _url = "", QString _text = "", bool _checkSyntax = false, QString _checkSyntaxResult = "")
+        : Filler(os, "ScriptEditorDialog"),
+          url(_url),
+          text(_text),
+          checkSyntaxResult(_checkSyntaxResult),
+          checkSyntax(_checkSyntax) {
+    }
     void commonScenario();
+
 private:
     QString url;
     QString text;
@@ -53,16 +57,18 @@ private:
     bool checkSyntax;
 };
 
-class ScriptEditorDialogSyntaxChecker: public Filler
-{
+class ScriptEditorDialogSyntaxChecker : public Filler {
 public:
-    ScriptEditorDialogSyntaxChecker(HI::GUITestOpStatus& os, QString _text = "", QString _message = ""): Filler(os, "ScriptEditorDialog"),
-        text(_text),
-        message(_message){}
+    ScriptEditorDialogSyntaxChecker(HI::GUITestOpStatus &os, QString _text = "", QString _message = "")
+        : Filler(os, "ScriptEditorDialog"),
+          text(_text),
+          message(_message) {
+    }
     void commonScenario();
+
 private:
     QString text, message;
 };
-}
+}    // namespace U2
 
-#endif // CREATEELEMENTWITHSCRIPTDIALOGFILLER_H
+#endif    // CREATEELEMENTWITHSCRIPTDIALOGFILLER_H

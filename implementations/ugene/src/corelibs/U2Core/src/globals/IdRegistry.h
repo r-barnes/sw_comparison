@@ -29,10 +29,13 @@ namespace U2 {
 /*************************************
  * template class for default registry
  *************************************/
-template <class T> class IdRegistry {
+template<class T>
+class IdRegistry {
 public:
-    virtual T* getById(const QString& id) {return registry.value(id, NULL);}
-    virtual bool registerEntry(T* t) {
+    virtual T *getById(const QString &id) {
+        return registry.value(id, NULL);
+    }
+    virtual bool registerEntry(T *t) {
         if (registry.contains(t->getId())) {
             return false;
         } else {
@@ -40,17 +43,25 @@ public:
             return true;
         }
     }
-    virtual T* unregisterEntry(const QString& id) {return registry.contains(id) ? registry.take(id) : NULL;}
-    virtual ~IdRegistry() { qDeleteAll(registry.values());}
+    virtual T *unregisterEntry(const QString &id) {
+        return registry.contains(id) ? registry.take(id) : NULL;
+    }
+    virtual ~IdRegistry() {
+        qDeleteAll(registry.values());
+    }
 
-    virtual QList<T*> getAllEntries() const {return registry.values();}
-    virtual QList<QString> getAllIds() const {return registry.uniqueKeys();}
+    virtual QList<T *> getAllEntries() const {
+        return registry.values();
+    }
+    virtual QList<QString> getAllIds() const {
+        return registry.uniqueKeys();
+    }
 
 protected:
-    QMap<QString, T*> registry;
+    QMap<QString, T *> registry;
 
-}; // IdRegistry
+};    // IdRegistry
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_COREAPI_ID_REGISTRY_H_
+#endif    // _U2_COREAPI_ID_REGISTRY_H_

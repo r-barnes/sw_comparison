@@ -19,19 +19,18 @@
  * MA 02110-1301, USA.
  */
 
+#include "MysqlUpgraderFrom_1_16_To_1_17.h"
+
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "MysqlUpgraderFrom_1_16_To_1_17.h"
 #include "mysql_dbi/MysqlDbi.h"
 #include "mysql_dbi/util/MysqlHelpers.h"
 
 namespace U2 {
 
-MysqlUpgraderFrom_1_16_To_1_17::MysqlUpgraderFrom_1_16_To_1_17(MysqlDbi *dbi) :
-    MysqlUpgrader(Version::parseVersion("1.16.0"), Version::parseVersion("1.17.0"), dbi)
-{
-
+MysqlUpgraderFrom_1_16_To_1_17::MysqlUpgraderFrom_1_16_To_1_17(MysqlDbi *dbi)
+    : MysqlUpgrader(Version::parseVersion("1.16.0"), Version::parseVersion("1.17.0"), dbi) {
 }
 
 void MysqlUpgraderFrom_1_16_To_1_17::upgrade(U2OpStatus &os) const {
@@ -50,4 +49,4 @@ void MysqlUpgraderFrom_1_16_To_1_17::upgradeFeatureDbi(U2OpStatus &os, MysqlDbRe
     CHECK_OP(os, );
 }
 
-}   // namespace U2
+}    // namespace U2

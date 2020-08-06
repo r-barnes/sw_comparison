@@ -19,14 +19,14 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
+#include "PropertyWizardController.h"
 
-#include "../PropertyWidget.h"
+#include <U2Core/U2SafePoints.h>
 
 #include <U2Lang/BaseTypes.h>
 #include <U2Lang/WorkflowUtils.h>
 
-#include "PropertyWizardController.h"
+#include "../PropertyWidget.h"
 
 namespace U2 {
 
@@ -34,8 +34,7 @@ namespace U2 {
 /* PropertyWizardController */
 /************************************************************************/
 PropertyWizardController::PropertyWizardController(WizardController *wc, AttributeWidget *_widget)
-: WidgetController(wc), widget(_widget), _tags(NULL)
-{
+    : WidgetController(wc), widget(_widget), _tags(NULL) {
     actor = WorkflowUtils::actorById(wc->getCurrentActors(), widget->getActorId());
     wc->addPropertyController(widget->getInfo(), this);
 }
@@ -43,7 +42,7 @@ PropertyWizardController::PropertyWizardController(WizardController *wc, Attribu
 PropertyWizardController::~PropertyWizardController() {
 }
 
-Attribute * PropertyWizardController::attribute() {
+Attribute *PropertyWizardController::attribute() {
     return actor->getParameter(widget->getAttributeId());
 }
 
@@ -59,8 +58,7 @@ void PropertyWizardController::updateVisibility(bool newValue) {
     emit si_updateVisibility(newValue);
 }
 
-
-DelegateTags * PropertyWizardController::tags() const {
+DelegateTags *PropertyWizardController::tags() const {
     return _tags;
 }
 
@@ -68,23 +66,21 @@ DelegateTags * PropertyWizardController::tags() const {
 /* InUrlDatasetsController */
 /************************************************************************/
 InUrlDatasetsController::InUrlDatasetsController(WizardController *wc, AttributeWidget *widget)
-: PropertyWizardController(wc, widget), dsc(NULL)
-{
-
+    : PropertyWizardController(wc, widget), dsc(NULL) {
 }
 
 InUrlDatasetsController::~InUrlDatasetsController() {
     delete dsc;
 }
 
-QWidget * InUrlDatasetsController::createGUI(U2OpStatus & /*os*/) {
+QWidget *InUrlDatasetsController::createGUI(U2OpStatus & /*os*/) {
     if (NULL != dsc) {
         delete dsc;
     }
     QList<Dataset> sets;
     QVariant value = wc->getAttributeValue(widget->getInfo());
-    if (value.canConvert< QList<Dataset> >()) {
-        sets = value.value< QList<Dataset> >();
+    if (value.canConvert<QList<Dataset>>()) {
+        sets = value.value<QList<Dataset>>();
     } else {
         coreLog.error("Can not convert value to dataset list");
         sets.clear();
@@ -93,30 +89,29 @@ QWidget * InUrlDatasetsController::createGUI(U2OpStatus & /*os*/) {
     URLAttribute *attr = dynamic_cast<URLAttribute *>(attribute());
     SAFE_POINT(NULL != attr, "Unexpected attribute value", NULL);
     const QSet<GObjectType> compatibleObjTypes = NULL != attr ? attr->getCompatibleObjectTypes() : QSet<GObjectType>();
-    dsc = new AttributeDatasetsController(sets,  compatibleObjTypes);
+    dsc = new AttributeDatasetsController(sets, compatibleObjTypes);
     connect(dsc, SIGNAL(si_attributeChanged()), SLOT(sl_datasetsChanged()));
     return dsc->getWigdet();
 }
 
 void InUrlDatasetsController::sl_datasetsChanged() {
-    sl_valueChanged(qVariantFromValue< QList<Dataset> >(dsc->getDatasets()));
+    sl_valueChanged(qVariantFromValue<QList<Dataset>>(dsc->getDatasets()));
 }
 
 /************************************************************************/
 /* DefaultPropertyController */
 /************************************************************************/
 DefaultPropertyController::DefaultPropertyController(WizardController *wc, AttributeWidget *widget, int _labelSize)
-: PropertyWizardController(wc, widget), labelSize(_labelSize), noDelegate(false)
-{
-
+    : PropertyWizardController(wc, widget), labelSize(_labelSize), noDelegate(false) {
 }
 
 DefaultPropertyController::~DefaultPropertyController() {
 }
 
-QWidget * DefaultPropertyController::createGUI(U2OpStatus &os) {
+QWidget *DefaultPropertyController::createGUI(U2OpStatus &os) {
     CHECK_EXT(AttributeInfo::DEFAULT == widget->getProperty(AttributeInfo::TYPE),
-        os.setError("Widget type is not default"), NULL);
+              os.setError("Widget type is not default"),
+              NULL);
 
     PropertyWidget *propWidget = createPropertyWidget(os);
     CHECK_OP(os, NULL);
@@ -143,7 +138,7 @@ QWidget * DefaultPropertyController::createGUI(U2OpStatus &os) {
     return result;
 }
 
-PropertyWidget * DefaultPropertyController::createPropertyWidget(U2OpStatus &os) {
+PropertyWidget *DefaultPropertyController::createPropertyWidget(U2OpStatus &os) {
     PropertyWidget *result = NULL;
     PropertyDelegate *delegate = NULL;
     {
@@ -182,4 +177,4 @@ void DefaultPropertyController::setNoDelegate(bool value) {
     noDelegate = value;
 }
 
-} // U2
+}    // namespace U2

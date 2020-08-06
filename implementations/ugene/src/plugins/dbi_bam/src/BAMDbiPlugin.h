@@ -43,7 +43,6 @@ class BAMDbiPlugin : public Plugin {
     Q_OBJECT
 public:
     BAMDbiPlugin();
-
 };
 
 class BAMImporter : public DocumentImporter {
@@ -51,9 +50,9 @@ class BAMImporter : public DocumentImporter {
 public:
     BAMImporter();
 
-    virtual FormatCheckResult checkRawData(const QByteArray& rawData, const GUrl& url);
+    virtual FormatCheckResult checkRawData(const QByteArray &rawData, const GUrl &url);
 
-    virtual DocumentProviderTask* createImportTask(const FormatDetectionResult& res, bool showGui, const QVariantMap &hints);
+    virtual DocumentProviderTask *createImportTask(const FormatDetectionResult &res, bool showGui, const QVariantMap &hints);
 };
 
 class LoadInfoTask;
@@ -62,10 +61,10 @@ class ConvertToSQLiteTask;
 class BAMImporterTask : public DocumentProviderTask {
     Q_OBJECT
 public:
-    BAMImporterTask(const GUrl& url, bool useGui, const QVariantMap &hints);
+    BAMImporterTask(const GUrl &url, bool useGui, const QVariantMap &hints);
 
     void prepare();
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
     ReportResult report();
 
 private:
@@ -75,24 +74,24 @@ private:
     void initCloneObjectTasks();
     void initLoadDocumentTask();
 
-    LoadInfoTask *           loadInfoTask;
-    LoadInfoTask *           loadBamInfoTask;
-    PrepareToImportTask *    prepareToImportTask;
-    ConvertToSQLiteTask *    convertTask;
-    QList<Task *>            cloneTasks;
-    LoadDocumentTask *       loadDocTask;
+    LoadInfoTask *loadInfoTask;
+    LoadInfoTask *loadBamInfoTask;
+    PrepareToImportTask *prepareToImportTask;
+    ConvertToSQLiteTask *convertTask;
+    QList<Task *> cloneTasks;
+    LoadDocumentTask *loadDocTask;
 
-    bool                     isSqliteDbTransit;
-    bool                     useGui;
-    bool                     sam;
+    bool isSqliteDbTransit;
+    bool useGui;
+    bool sam;
 
-    QVariantMap              hints;
-    U2DbiRef                 hintedDbiRef;
-    U2DbiRef                 localDbiRef;
-    time_t                   startTime;
+    QVariantMap hints;
+    U2DbiRef hintedDbiRef;
+    U2DbiRef localDbiRef;
+    time_t startTime;
 };
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2
 
-#endif // _U2_BAM_DBI_PLUGIN_H_
+#endif    // _U2_BAM_DBI_PLUGIN_H_

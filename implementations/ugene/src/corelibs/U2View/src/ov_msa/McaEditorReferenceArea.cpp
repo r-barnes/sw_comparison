@@ -19,6 +19,10 @@
  * MA 02110-1301, USA.
  */
 
+#include "McaEditorReferenceArea.h"
+
+#include <QApplication>
+
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/DNASequenceSelection.h>
 #include <U2Core/SignalBlocker.h>
@@ -27,26 +31,22 @@
 
 #include <U2View/SequenceObjectContext.h>
 
+#include "MSAEditorConsensusArea.h"
 #include "McaEditor.h"
 #include "McaEditorConsensusArea.h"
-#include "McaEditorReferenceArea.h"
 #include "McaEditorSequenceArea.h"
-#include "MSAEditorConsensusArea.h"
 #include "helpers/DrawHelper.h"
 #include "helpers/ScrollController.h"
 #include "ov_msa/helpers/BaseWidthController.h"
-
-#include <QApplication>
 
 namespace U2 {
 
 McaEditorReferenceArea::McaEditorReferenceArea(McaEditorWgt *ui, SequenceObjectContext *ctx)
     : PanView(ui, ctx, McaEditorReferenceRenderAreaFactory(ui, NULL != ui ? ui->getEditor() : NULL)),
-    editor(NULL != ui ? ui->getEditor() : NULL),
-    ui(ui),
-    renderer(dynamic_cast<McaReferenceAreaRenderer *>(getRenderArea()->getRenderer())),
-    firstPressedSelectionPosition(-1)
-{
+      editor(NULL != ui ? ui->getEditor() : NULL),
+      ui(ui),
+      renderer(dynamic_cast<McaReferenceAreaRenderer *>(getRenderArea()->getRenderer())),
+      firstPressedSelectionPosition(-1) {
     SAFE_POINT(NULL != renderer, "Renderer is NULL", );
 
     setObjectName("mca_editor_reference_area");
@@ -57,26 +57,22 @@ McaEditorReferenceArea::McaEditorReferenceArea(McaEditorWgt *ui, SequenceObjectC
     scrollBar->hide();
     rowBar->hide();
 
-    connect(ui->getEditor()->getMaObject(), SIGNAL(si_alignmentChanged(MultipleAlignment,MaModificationInfo)),
-            SLOT(completeUpdate()));
+    connect(ui->getEditor()->getMaObject(), SIGNAL(si_alignmentChanged(MultipleAlignment, MaModificationInfo)), SLOT(completeUpdate()));
 
     connect(ui->getScrollController(), SIGNAL(si_visibleAreaChanged()), SLOT(sl_visibleRangeChanged()));
     connect(ctx->getSequenceSelection(),
-        SIGNAL(si_selectionChanged(LRegionsSelection*, const QVector<U2Region>&, const QVector<U2Region>&)),
-        SLOT(sl_onSelectionChanged(LRegionsSelection*, const QVector<U2Region>&, const QVector<U2Region>&)));
+            SIGNAL(si_selectionChanged(LRegionsSelection *, const QVector<U2Region> &, const QVector<U2Region> &)),
+            SLOT(sl_onSelectionChanged(LRegionsSelection *, const QVector<U2Region> &, const QVector<U2Region> &)));
 
-    connect(this, SIGNAL(si_selectionChanged()),
-            ui->getSequenceArea(), SLOT(sl_backgroundSelectionChanged()));
+    connect(this, SIGNAL(si_selectionChanged()), ui->getSequenceArea(), SLOT(sl_backgroundSelectionChanged()));
     connect(editor, SIGNAL(si_fontChanged(const QFont &)), SLOT(sl_fontChanged(const QFont &)));
 
     connect(ui->getConsensusArea(), SIGNAL(si_mismatchRedrawRequired()), SLOT(completeUpdate()));
     connect(scrollBar, SIGNAL(valueChanged(int)), ui->getScrollController()->getHorizontalScrollBar(), SLOT(setValue(int)));
     connect(ui->getScrollController()->getHorizontalScrollBar(), SIGNAL(valueChanged(int)), scrollBar, SLOT(setValue(int)));
     connect(ui, SIGNAL(si_clearSelection()), SLOT(sl_clearSelection()));
-    connect(ui->getSequenceArea(), SIGNAL(si_clearReferenceSelection()),
-            SLOT(sl_clearSelection()));
-    connect(ui->getSequenceArea(), SIGNAL(si_selectionChanged(MaEditorSelection, MaEditorSelection)),
-            SLOT(sl_selectionChanged(MaEditorSelection, MaEditorSelection)));
+    connect(ui->getSequenceArea(), SIGNAL(si_clearReferenceSelection()), SLOT(sl_clearSelection()));
+    connect(ui->getSequenceArea(), SIGNAL(si_selectionChanged(MaEditorSelection, MaEditorSelection)), SLOT(sl_selectionChanged(MaEditorSelection, MaEditorSelection)));
 
     setMouseTracking(false);
 
@@ -84,7 +80,7 @@ McaEditorReferenceArea::McaEditorReferenceArea(McaEditorWgt *ui, SequenceObjectC
 }
 
 void McaEditorReferenceArea::sl_selectMismatch(int pos) {
-    MaEditorSequenceArea* seqArea = ui->getSequenceArea();
+    MaEditorSequenceArea *seqArea = ui->getSequenceArea();
     if (seqArea->getFirstVisibleBase() > pos || seqArea->getLastVisibleBase(false) < pos) {
         seqArea->centerPos(pos);
     }
@@ -112,20 +108,20 @@ void McaEditorReferenceArea::sl_fontChanged(const QFont &newFont) {
     setFixedHeight(renderer->getMinimumHeight());
 }
 
-void McaEditorReferenceArea::mousePressEvent(QMouseEvent* e) {
+void McaEditorReferenceArea::mousePressEvent(QMouseEvent *e) {
     if (e->buttons() & Qt::LeftButton) {
         Qt::KeyboardModifiers km = QApplication::keyboardModifiers();
         const bool isShiftPressed = km.testFlag(Qt::ShiftModifier);
         if (!isShiftPressed) {
             firstPressedSelectionPosition = -1;
-            emit ui->si_clearSelection();
+            emit editor->si_clearSelection();
         }
     } else {
         PanView::mousePressEvent(e);
     }
 }
 
-void McaEditorReferenceArea::mouseMoveEvent(QMouseEvent* e) {
+void McaEditorReferenceArea::mouseMoveEvent(QMouseEvent *e) {
     if (e->buttons() & Qt::LeftButton) {
         setReferenceSelection(e);
         e->accept();
@@ -134,7 +130,7 @@ void McaEditorReferenceArea::mouseMoveEvent(QMouseEvent* e) {
     }
 }
 
-void McaEditorReferenceArea::mouseReleaseEvent(QMouseEvent* e) {
+void McaEditorReferenceArea::mouseReleaseEvent(QMouseEvent *e) {
     if (e->button() == Qt::LeftButton) {
         setReferenceSelection(e);
         e->accept();
@@ -146,14 +142,14 @@ void McaEditorReferenceArea::mouseReleaseEvent(QMouseEvent* e) {
 void McaEditorReferenceArea::keyPressEvent(QKeyEvent *event) {
     const int key = event->key();
     bool accepted = false;
-    DNASequenceSelection * const selection = ctx->getSequenceSelection();
+    DNASequenceSelection *const selection = ctx->getSequenceSelection();
     U2Region selectedRegion = (NULL != selection && !selection->isEmpty() ? selection->getSelectedRegions().first() : U2Region());
     const qint64 selectionEndPos = selectedRegion.endPos() - 1;
     Qt::KeyboardModifiers km = QApplication::keyboardModifiers();
     const bool isShiftPressed = km.testFlag(Qt::ShiftModifier);
     qint64 baseToScroll = firstPressedSelectionPosition;
 
-    switch(key) {
+    switch (key) {
     case Qt::Key_Left:
         if (!selectedRegion.isEmpty() && selectedRegion.startPos > 0) {
             if (isShiftPressed) {
@@ -224,7 +220,6 @@ void McaEditorReferenceArea::keyPressEvent(QKeyEvent *event) {
         break;
     }
 
-
     if (accepted) {
         event->accept();
     } else {
@@ -232,7 +227,7 @@ void McaEditorReferenceArea::keyPressEvent(QKeyEvent *event) {
     }
 }
 
-void McaEditorReferenceArea::setReferenceSelection(QMouseEvent* e) {
+void McaEditorReferenceArea::setReferenceSelection(QMouseEvent *e) {
     QPoint p = e->pos();
     QPoint areaPoint = toRenderAreaPoint(p);
     qint64 pos = renderArea->coordToPos(areaPoint);
@@ -254,7 +249,7 @@ void McaEditorReferenceArea::updateScrollBar() {
     SignalBlocker signalBlocker(scrollBar);
     Q_UNUSED(signalBlocker);
 
-    const QScrollBar * const hScrollbar = ui->getScrollController()->getHorizontalScrollBar();
+    const QScrollBar *const hScrollbar = ui->getScrollController()->getHorizontalScrollBar();
 
     scrollBar->setMinimum(hScrollbar->minimum());
     scrollBar->setMaximum(hScrollbar->maximum());
@@ -291,7 +286,7 @@ void McaEditorReferenceArea::sl_onSelectionChanged(LRegionsSelection * /*selecti
 
 McaEditorReferenceRenderArea::McaEditorReferenceRenderArea(McaEditorWgt *_ui, PanView *d, PanViewRenderer *renderer)
     : PanViewRenderArea(d, renderer),
-    ui(_ui) {
+      ui(_ui) {
 }
 
 qint64 McaEditorReferenceRenderArea::coordToPos(int x) const {
@@ -304,13 +299,12 @@ qint64 McaEditorReferenceRenderArea::coordToPos(int x) const {
 
 McaEditorReferenceRenderAreaFactory::McaEditorReferenceRenderAreaFactory(McaEditorWgt *_ui, McaEditor *_editor)
     : PanViewRenderAreaFactory(),
-    ui(_ui),
-    maEditor(_editor) {
-
+      ui(_ui),
+      maEditor(_editor) {
 }
 
-PanViewRenderArea * McaEditorReferenceRenderAreaFactory::createRenderArea(PanView *panView) const {
+PanViewRenderArea *McaEditorReferenceRenderAreaFactory::createRenderArea(PanView *panView) const {
     return new McaEditorReferenceRenderArea(ui, panView, new McaReferenceAreaRenderer(panView, panView->getSequenceContext(), maEditor));
 }
 
-}   // namespace U2
+}    // namespace U2

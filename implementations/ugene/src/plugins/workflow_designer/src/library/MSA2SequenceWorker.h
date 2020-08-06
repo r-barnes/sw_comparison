@@ -22,8 +22,8 @@
 #ifndef _MSA_2_SEQUENCE_WORKER_H_
 #define _MSA_2_SEQUENCE_WORKER_H_
 
-#include <U2Lang/WorkflowUtils.h>
 #include <U2Lang/LocalDomain.h>
+#include <U2Lang/WorkflowUtils.h>
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -31,12 +31,14 @@ namespace LocalWorkflow {
 class Alignment2SequencePrompter : public PrompterBase<Alignment2SequencePrompter> {
     Q_OBJECT
 public:
-    Alignment2SequencePrompter(Actor * p = NULL) : PrompterBase<Alignment2SequencePrompter>(p) {}
+    Alignment2SequencePrompter(Actor *p = NULL)
+        : PrompterBase<Alignment2SequencePrompter>(p) {
+    }
 
 protected:
     QString composeRichDoc();
 
-}; // Text2SequencePrompter
+};    // Text2SequencePrompter
 
 class Alignment2SequenceWorker : public BaseWorker {
     Q_OBJECT
@@ -44,29 +46,33 @@ public:
     static QMap<QString, QString> cuteAlIdNames;
 
 public:
-    Alignment2SequenceWorker(Actor * p) : BaseWorker(p), input(NULL), output(NULL) {}
+    Alignment2SequenceWorker(Actor *p)
+        : BaseWorker(p), input(NULL), output(NULL) {
+    }
 
     virtual void init();
-    virtual Task * tick();
+    virtual Task *tick();
     virtual void cleanup();
 
 private:
-    IntegralBus * input;
-    IntegralBus * output;
+    IntegralBus *input;
+    IntegralBus *output;
 
-}; // Text2SequenceWorker
+};    // Text2SequenceWorker
 
 class Alignment2SequenceWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
 
-    Alignment2SequenceWorkerFactory() : DomainFactory(ACTOR_ID) {}
+    Alignment2SequenceWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
     static void init();
-    virtual Worker * createWorker(Actor* a);
+    virtual Worker *createWorker(Actor *a);
 
-}; // Text2SequenceWorkerFactory
+};    // Text2SequenceWorkerFactory
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

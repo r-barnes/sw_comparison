@@ -22,37 +22,36 @@
 #ifndef _U2_REPEAT_FINDER_ALG_IMPL_H_
 #define _U2_REPEAT_FINDER_ALG_IMPL_H_
 
-#include <U2Algorithm/RepeatFinderTaskFactory.h>
 #include <U2Algorithm/RepeatFinderSettings.h>
-#include <U2Core/Task.h>
+#include <U2Algorithm/RepeatFinderTaskFactory.h>
 
 #include <U2Core/DNASequence.h>
+#include <U2Core/Task.h>
 
 namespace U2 {
 
 class RevComplSequenceTask;
 
-class RFTaskFactory: public RepeatFinderTaskFactory {
+class RFTaskFactory : public RepeatFinderTaskFactory {
 public:
     RFTaskFactory() {};
 
-    virtual Task* getTaskInstance(const RepeatFinderSettings& config) const;
-    virtual void setRFResultsListener(Task*, RFResultsListener*);
+    virtual Task *getTaskInstance(const RepeatFinderSettings &config) const;
+    virtual void setRFResultsListener(Task *, RFResultsListener *);
 };
 
 /** Reverses X sequence and runs repeat finder task */
 class ReverseAndCreateTask : public Task {
     Q_OBJECT
 public:
-    ReverseAndCreateTask(const RepeatFinderSettings& c);
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    ReverseAndCreateTask(const RepeatFinderSettings &c);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
 private:
     RepeatFinderSettings c;
     RevComplSequenceTask *revTask;
-
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

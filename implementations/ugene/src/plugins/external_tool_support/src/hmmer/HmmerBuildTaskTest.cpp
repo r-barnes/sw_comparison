@@ -19,14 +19,14 @@
 * MA 02110-1301, USA.
 */
 
+#include "HmmerBuildTaskTest.h"
+
 #include <QDomElement>
 #include <QFile>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/IOAdapterUtils.h>
 #include <U2Core/TextUtils.h>
-
-#include "HmmerBuildTaskTest.h"
 
 namespace U2 {
 
@@ -47,7 +47,7 @@ const QString GTest_UHMMER3Build::EFFECTIVE_WEIGHTING_OPTION_TAG = "ew";
 const QString GTest_UHMMER3Build::E_VALUE_CALIBRATION_OPTION_TAG = "eval";
 
 float infinity() {
-    return std::numeric_limits< float >::infinity();
+    return std::numeric_limits<float>::infinity();
 }
 
 bool isfin(float x) {
@@ -65,18 +65,18 @@ int isinf(float x) {
     return inf == x || inf == -x;
 }
 
-#if (!defined(_MSC_VER) || _MSC_VER < 1800)
+#    if (!defined(_MSC_VER) || _MSC_VER < 1800)
 float roundf(float x) {
     if (isnan(x) || isinf(x)) {
         -return x;
     }
     return (float)(x >= 0.0 ? (int)(x + 0.5) : (int)(x - (int)(x - 1) + 0.5) + (int)(x - 1));
 }
-#endif
+#    endif
 
-#endif // _WINDOWS
+#endif    // _WINDOWS
 
-static void setSeedOption(HmmerBuildSettings & settings, TaskStateInfo & stateInfo, const QString& str) {
+static void setSeedOption(HmmerBuildSettings &settings, TaskStateInfo &stateInfo, const QString &str) {
     if (str.isEmpty()) {
         return;
     }
@@ -90,7 +90,7 @@ static void setSeedOption(HmmerBuildSettings & settings, TaskStateInfo & stateIn
     settings.seed = num;
 }
 
-static void setModelConstructionOption(HmmerBuildSettings & settings, TaskStateInfo & stateInfo, const QString& s) {
+static void setModelConstructionOption(HmmerBuildSettings &settings, TaskStateInfo &stateInfo, const QString &s) {
     QString str = s.toLower();
     if (str.startsWith("fast")) {
         settings.modelConstructionStrategy = HmmerBuildSettings::p7_ARCH_FAST;
@@ -116,7 +116,7 @@ static void setModelConstructionOption(HmmerBuildSettings & settings, TaskStateI
     }
 }
 
-static void setRelativeWeightingOption(HmmerBuildSettings & settings, TaskStateInfo & stateInfo, const QString& s) {
+static void setRelativeWeightingOption(HmmerBuildSettings &settings, TaskStateInfo &stateInfo, const QString &s) {
     QString str = s.toLower();
     if (str.startsWith("wgsc")) {
         settings.relativeSequenceWeightingStrategy = HmmerBuildSettings::p7_WGT_GSC;
@@ -153,7 +153,7 @@ static void setRelativeWeightingOption(HmmerBuildSettings & settings, TaskStateI
     }
 }
 
-static void setEffectiveWeightingOption(HmmerBuildSettings & settings, TaskStateInfo & stateInfo, const QString& s) {
+static void setEffectiveWeightingOption(HmmerBuildSettings &settings, TaskStateInfo &stateInfo, const QString &s) {
     QString str = s.toLower();
     if (str.startsWith("eent")) {
         settings.effectiveSequenceWeightingStrategy = HmmerBuildSettings::p7_EFFN_ENTROPY;
@@ -216,7 +216,7 @@ static void setEffectiveWeightingOption(HmmerBuildSettings & settings, TaskState
     }
 }
 
-static void setEvalueCalibrationOption(HmmerBuildSettings & settings, TaskStateInfo & stateInfo, const QString& s) {
+static void setEvalueCalibrationOption(HmmerBuildSettings &settings, TaskStateInfo &stateInfo, const QString &s) {
     QString str = s.toLower();
     if (str.isEmpty()) {
         return;
@@ -233,7 +233,7 @@ static void setEvalueCalibrationOption(HmmerBuildSettings & settings, TaskStateI
     settings.eft = l[4].toDouble();
 }
 
-void GTest_UHMMER3Build::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_UHMMER3Build::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     inFile = el.attribute(INPUT_FILE_TAG);
@@ -245,7 +245,7 @@ void GTest_UHMMER3Build::init(XMLTestFormat *tf, const QDomElement& el) {
     setBuildSettings(bldSettings, el, stateInfo);
 }
 
-void GTest_UHMMER3Build::setBuildSettings(HmmerBuildSettings & settings, const QDomElement& el, TaskStateInfo & ti) {
+void GTest_UHMMER3Build::setBuildSettings(HmmerBuildSettings &settings, const QDomElement &el, TaskStateInfo &ti) {
     setModelConstructionOption(settings, ti, el.attribute(MODEL_CONSTRUCTION_OPTION_TAG));
     setRelativeWeightingOption(settings, ti, el.attribute(RELATIVE_WEIGHTING_OPTION_TAG));
     setEffectiveWeightingOption(settings, ti, el.attribute(EFFECTIVE_WEIGHTING_OPTION_TAG));
@@ -312,8 +312,8 @@ const QString GTest_CompareHmmFiles::FILE2_NAME_TAG = "file2";
 const QString GTest_CompareHmmFiles::FILE1_TMP_TAG = "tmp1";
 const QString GTest_CompareHmmFiles::FILE2_TMP_TAG = "tmp2";
 
-const int   BUF_SZ = 2048;
-const char  TERM_SYM = '\0';
+const int BUF_SZ = 2048;
+const char TERM_SYM = '\0';
 
 const QByteArray DATE_STR = "DATE";
 const QByteArray NAME_STR = "NAME";
@@ -348,7 +348,7 @@ void GTest_CompareHmmFiles::setAndCheckArgs() {
 
 static const float BUILD_COMPARE_FLOAT_EPS = (float)0.00002;
 
-static bool compareStr(const QString& s1, const QString& s2) {
+static bool compareStr(const QString &s1, const QString &s2) {
     assert(s1.size() == s2.size());
 
     QStringList words1 = s1.split(QRegExp("\\s+"), QString::SkipEmptyParts);
@@ -397,7 +397,7 @@ Task::ReportResult GTest_CompareHmmFiles::report() {
         return ReportResult_Finished;
     }
 
-    IOAdapterFactory* iof1 = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(filename1));
+    IOAdapterFactory *iof1 = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(filename1));
     QScopedPointer<IOAdapter> io1(iof1->createIOAdapter());
     if (io1.isNull()) {
         stateInfo.setError(tr("Error creating ioadapter for first file"));
@@ -408,7 +408,7 @@ Task::ReportResult GTest_CompareHmmFiles::report() {
         return ReportResult_Finished;
     }
 
-    IOAdapterFactory* iof2 = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(filename2));
+    IOAdapterFactory *iof2 = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(filename2));
     QScopedPointer<IOAdapter> io2(iof2->createIOAdapter());
     if (io2.isNull()) {
         stateInfo.setError(tr("Error creating ioadapter for second file"));
@@ -459,4 +459,4 @@ Task::ReportResult GTest_CompareHmmFiles::report() {
     return ReportResult_Finished;
 }
 
-}
+}    // namespace U2

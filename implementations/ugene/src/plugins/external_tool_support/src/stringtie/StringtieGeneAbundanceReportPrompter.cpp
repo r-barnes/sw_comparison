@@ -25,14 +25,12 @@ namespace U2 {
 namespace LocalWorkflow {
 
 StringtieGeneAbundanceReportPrompter::StringtieGeneAbundanceReportPrompter(Actor *actor)
-    : PrompterBase<StringtieGeneAbundanceReportPrompter>(actor)
-{
-
+    : PrompterBase<StringtieGeneAbundanceReportPrompter>(actor) {
 }
 
 QString StringtieGeneAbundanceReportPrompter::composeRichDoc() {
     return tr("Create a general report for several StringTie gene abundance output files.");
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

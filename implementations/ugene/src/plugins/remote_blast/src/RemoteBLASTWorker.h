@@ -36,39 +36,46 @@ typedef PrompterBase<RemoteBLASTPrompter> RemoteBLASTPrompterBase;
 class RemoteBLASTPrompter : public RemoteBLASTPrompterBase {
     Q_OBJECT
 public:
-    RemoteBLASTPrompter(Actor* p = 0) : RemoteBLASTPrompterBase(p) {}
+    RemoteBLASTPrompter(Actor *p = 0)
+        : RemoteBLASTPrompterBase(p) {
+    }
+
 protected:
     QString composeRichDoc();
 };
 
-
-class RemoteBLASTWorker: public BaseWorker {
+class RemoteBLASTWorker : public BaseWorker {
     Q_OBJECT
 public:
-    RemoteBLASTWorker(Actor *a) : BaseWorker(a), input(NULL), output(NULL) {}
+    RemoteBLASTWorker(Actor *a)
+        : BaseWorker(a), input(NULL), output(NULL) {
+    }
     virtual void init();
-    virtual Task* tick();
+    virtual Task *tick();
     virtual void cleanup() {};
 private slots:
     void sl_taskFinished();
+
 protected:
     IntegralBus *input, *output;
     //QString resultName,transId;
     RemoteBLASTTaskSettings cfg;
 };
 
-class RemoteBLASTWorkerFactory:public DomainFactory {
+class RemoteBLASTWorkerFactory : public DomainFactory {
     static const QString ACTOR_ID;
+
 public:
     static void init();
-    RemoteBLASTWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual Worker* createWorker(Actor* a) {return new RemoteBLASTWorker(a);}
+    RemoteBLASTWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual Worker *createWorker(Actor *a) {
+        return new RemoteBLASTWorker(a);
+    }
 };
 
-}
-}
-
-
-
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

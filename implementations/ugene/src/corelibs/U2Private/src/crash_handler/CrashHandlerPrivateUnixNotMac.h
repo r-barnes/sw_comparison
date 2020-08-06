@@ -25,9 +25,9 @@
 #include <qglobal.h>
 #if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
 
-#include <client/linux/handler/exception_handler.h>
+#    include <client/linux/handler/exception_handler.h>
 
-#include "CrashHandlerPrivate.h"
+#    include "CrashHandlerPrivate.h"
 
 namespace U2 {
 
@@ -61,8 +61,8 @@ private:
     static const QString STACKTRACE_FILE_PATH;
 };
 
-}   // namespace U2
+}    // namespace U2
 
 #endif
 
-#endif // _U2_CRASH_HANDLER_PRIVATE_UNIX_NOT_MAC_H_
+#endif    // _U2_CRASH_HANDLER_PRIVATE_UNIX_NOT_MAC_H_

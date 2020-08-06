@@ -20,14 +20,15 @@
  */
 
 #include "api/GTGraphicsItem.h"
+
 #include <QGraphicsView>
 
 namespace U2 {
 #define GT_CLASS_NAME "GTGraphicsItem"
 #define GT_METHOD_NAME "getGraphicsItemRect"
-QRect GTGraphicsItem::getGraphicsItemRect(HI::GUITestOpStatus &os, QGraphicsItem* it){
-    QGraphicsView* sceneView = qobject_cast<QGraphicsView*>(it->scene()->views().at(0));
-    GT_CHECK_RESULT(sceneView,"sceneView not found", QRect());
+QRect GTGraphicsItem::getGraphicsItemRect(HI::GUITestOpStatus &os, QGraphicsItem *it) {
+    QGraphicsView *sceneView = qobject_cast<QGraphicsView *>(it->scene()->views().at(0));
+    GT_CHECK_RESULT(sceneView, "sceneView not found", QRect());
 
     QPointF scenePButton = it->mapToScene(it->boundingRect().bottomRight());
     QPoint viewP = sceneView->mapFromScene(scenePButton);
@@ -37,16 +38,16 @@ QRect GTGraphicsItem::getGraphicsItemRect(HI::GUITestOpStatus &os, QGraphicsItem
     viewP = sceneView->mapFromScene(scenePTop);
     QPoint globalTopLeftPos = sceneView->viewport()->mapToGlobal(viewP);
 
-    QRect globalRect(globalTopLeftPos,globalBottomRightPos);
+    QRect globalRect(globalTopLeftPos, globalBottomRightPos);
 
     return globalRect;
 }
 #undef GT_METHOD_NAME
 
-QPoint GTGraphicsItem::getItemCenter(HI::GUITestOpStatus &os, QGraphicsItem *it){
+QPoint GTGraphicsItem::getItemCenter(HI::GUITestOpStatus &os, QGraphicsItem *it) {
     QRect r = getGraphicsItemRect(os, it);
     QPoint p = r.center();
     return p;
 }
 #undef GT_CLASS_NAME
-} //namespace
+}    // namespace U2

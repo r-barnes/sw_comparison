@@ -22,11 +22,11 @@
 #ifndef _U2_SEQUENCES_TO_MSA_WORKER_H_
 #define _U2_SEQUENCES_TO_MSA_WORKER_H_
 
+#include <U2Core/DNASequence.h>
+#include <U2Core/MultipleSequenceAlignment.h>
+
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
-
-#include <U2Core/MultipleSequenceAlignment.h>
-#include <U2Core/DNASequence.h>
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -34,7 +34,9 @@ namespace LocalWorkflow {
 class SequencesToMSAPromter : public PrompterBase<SequencesToMSAPromter> {
     Q_OBJECT
 public:
-    SequencesToMSAPromter( Actor * p = 0 ) : PrompterBase<SequencesToMSAPromter>(p) {};
+    SequencesToMSAPromter(Actor *p = 0)
+        : PrompterBase<SequencesToMSAPromter>(p) {};
+
 protected:
     QString composeRichDoc();
 };
@@ -42,16 +44,19 @@ protected:
 class SequencesToMSAWorker : public BaseWorker {
     Q_OBJECT
 public:
-    SequencesToMSAWorker( Actor * p ) : BaseWorker(p), inPort(NULL), outPort(NULL) {};
+    SequencesToMSAWorker(Actor *p)
+        : BaseWorker(p), inPort(NULL), outPort(NULL) {};
 
     virtual void init();
-    virtual Task* tick();
+    virtual Task *tick();
     virtual void cleanup();
+
 private:
-    IntegralBus* inPort;
-    IntegralBus* outPort;
+    IntegralBus *inPort;
+    IntegralBus *outPort;
 private slots:
-    void sl_onTaskFinished(Task* t);
+    void sl_onTaskFinished(Task *t);
+
 private:
     QList<DNASequence> data;
 };
@@ -59,24 +64,31 @@ private:
 class SequencesToMSAWorkerFactory : public DomainFactory {
 public:
     const static QString ACTOR_ID;
-    SequencesToMSAWorkerFactory() : DomainFactory(ACTOR_ID) {};
+    SequencesToMSAWorkerFactory()
+        : DomainFactory(ACTOR_ID) {};
     static void init();
-    virtual Worker* createWorker( Actor * a ) { return new SequencesToMSAWorker(a); }
+    virtual Worker *createWorker(Actor *a) {
+        return new SequencesToMSAWorker(a);
+    }
 };
 
 class MSAFromSequencesTask : public Task {
     Q_OBJECT
 public:
-    MSAFromSequencesTask(const QList<DNASequence>& sequences)
-        : Task(tr("MSAFromSequencesTask"), TaskFlag_None), sequences_(sequences) {}
+    MSAFromSequencesTask(const QList<DNASequence> &sequences)
+        : Task(tr("MSAFromSequencesTask"), TaskFlag_None), sequences_(sequences) {
+    }
     void run();
-    MultipleSequenceAlignment getResult() const { return ma; }
+    MultipleSequenceAlignment getResult() const {
+        return ma;
+    }
+
 private:
     QList<DNASequence> sequences_;
     MultipleSequenceAlignment ma;
 };
 
-} //LocalWorkflow namespace
-} //U2 namespace
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

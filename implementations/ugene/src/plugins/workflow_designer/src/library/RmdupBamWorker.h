@@ -22,9 +22,10 @@
 #ifndef _U2_RMDUP_BAM_WORKER_H_
 #define _U2_RMDUP_BAM_WORKER_H_
 
+#include <U2Core/GUrl.h>
+
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
-#include <U2Core/GUrl.h>
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -35,17 +36,20 @@ typedef PrompterBase<RmdupBamPrompter> RmdupBamBase;
 class RmdupBamPrompter : public RmdupBamBase {
     Q_OBJECT
 public:
-    RmdupBamPrompter(Actor* p = 0) : RmdupBamBase(p) {}
+    RmdupBamPrompter(Actor *p = 0)
+        : RmdupBamBase(p) {
+    }
+
 protected:
     QString composeRichDoc();
-}; //RmdupBamPrompter
+};    //RmdupBamPrompter
 
-class RmdupBamWorker: public BaseWorker {
+class RmdupBamWorker : public BaseWorker {
     Q_OBJECT
 public:
     RmdupBamWorker(Actor *a);
     void init();
-    Task * tick();
+    Task *tick();
     void cleanup();
 
 private:
@@ -53,31 +57,38 @@ private:
     IntegralBus *outputUrlPort;
     QStringList outUrls;
 public slots:
-    void sl_taskFinished( Task *task );
+    void sl_taskFinished(Task *task);
 
 private:
     QString takeUrl();
-    QString getTargetName(const QString& fileUrl, const QString& outDir);
+    QString getTargetName(const QString &fileUrl, const QString &outDir);
     void sendResult(const QString &url);
-}; //RmdupBamWorker
+};    //RmdupBamWorker
 
 class RmdupBamWorkerFactory : public DomainFactory {
     static const QString ACTOR_ID;
+
 public:
     static void init();
-    RmdupBamWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    Worker* createWorker(Actor* a) { return new RmdupBamWorker(a); }
-}; //RmdupBamWorkerFactory
+    RmdupBamWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    Worker *createWorker(Actor *a) {
+        return new RmdupBamWorker(a);
+    }
+};    //RmdupBamWorkerFactory
 
-class BamRmdupSetting{
+class BamRmdupSetting {
 public:
-    BamRmdupSetting(): outDir(""), outName(""),inputUrl(""), removeSingleEnd(false), treatReads(false){}
+    BamRmdupSetting()
+        : outDir(""), outName(""), inputUrl(""), removeSingleEnd(false), treatReads(false) {
+    }
 
     QString outDir;
     QString outName;
     QString inputUrl;
-    bool    removeSingleEnd;
-    bool    treatReads;
+    bool removeSingleEnd;
+    bool treatReads;
 
     QStringList getSamtoolsArguments() const;
 };
@@ -90,7 +101,9 @@ public:
     void prepare();
     void run();
 
-    QString getResult(){return resultUrl;}
+    QString getResult() {
+        return resultUrl;
+    }
 
 private:
     void start(const ProcessRun &pRun, const QString &toolName);
@@ -100,11 +113,10 @@ private:
     BamRmdupSetting settings;
     QString resultUrl;
 
-    static const QString SAMTOOLS_ID;       // this constant is taken from the appropriate file in external_tool_support plugin
+    static const QString SAMTOOLS_ID;    // this constant is taken from the appropriate file in external_tool_support plugin
 };
 
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-} //LocalWorkflow
-} //U2
-
-#endif //_U2_REMDUP_BAM_WORKER_H_
+#endif    //_U2_REMDUP_BAM_WORKER_H_

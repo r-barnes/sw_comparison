@@ -22,13 +22,12 @@
 #ifndef _U2_POSITION_FREQUENCY_MATRIX_H_
 #define _U2_POSITION_FREQUENCY_MATRIX_H_
 
-#include <U2Core/global.h>
-
-#include <U2Core/MultipleSequenceAlignment.h>
-#include <U2Core/DNASequence.h>
-
-#include <QVarLengthArray>
 #include <QMap>
+#include <QVarLengthArray>
+
+#include <U2Core/DNASequence.h>
+#include <U2Core/MultipleSequenceAlignment.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -39,12 +38,12 @@ public:
     JasparInfo();
 
     //constructor from parsed data
-    JasparInfo(const QMap<QString, QString>& properties);
+    JasparInfo(const QMap<QString, QString> &properties);
 
     //constructor from matrix_list.txt string
-    JasparInfo(const QString& line);
+    JasparInfo(const QString &line);
 
-    QString getProperty(const QString& name) const;
+    QString getProperty(const QString &name) const;
 
     QMap<QString, QString> getProperties() const;
 
@@ -61,20 +60,23 @@ enum PFMatrixType {
 //Position frequency matrix
 class U2CORE_EXPORT PFMatrix {
     friend class FMatrixSerializer;
+
 public:
     //create empty matrix
-    PFMatrix() : data(QVarLengthArray<int>()), length(0), type(PFM_MONONUCLEOTIDE) {};
+    PFMatrix()
+        : data(QVarLengthArray<int>()), length(0), type(PFM_MONONUCLEOTIDE) {};
 
     //create matrix from pre-counted data
-    PFMatrix(const QVarLengthArray<int>& data, const PFMatrixType type);
+    PFMatrix(const QVarLengthArray<int> &data, const PFMatrixType type);
 
     //create matrix from alignment (without gaps)
-    PFMatrix(const MultipleSequenceAlignment& data, const PFMatrixType type);
+    PFMatrix(const MultipleSequenceAlignment &data, const PFMatrixType type);
 
     //create matrix from set of sequences with equal length
-    PFMatrix(const QList<DNASequence*>& data, const PFMatrixType type);
+    PFMatrix(const QList<DNASequence *> &data, const PFMatrixType type);
 
-    PFMatrix(const PFMatrix &m) :data(m.data), length(m.length), type(m.type), info(m.info) {};
+    PFMatrix(const PFMatrix &m)
+        : data(m.data), length(m.length), type(m.type), info(m.info) {};
 
     //get internal index of position in 1-dimensional array
     int index(int row, int column) const;
@@ -89,16 +91,16 @@ public:
     int getValue(int row, int column) const;
 
     //set JASPAR info for matrix
-    void setInfo(const JasparInfo& info);
+    void setInfo(const JasparInfo &info);
 
     //get specified Jaspar property
-    QString getProperty(const QString& propertyName) const;
+    QString getProperty(const QString &propertyName) const;
 
     //get all Jaspar properties
     QMap<QString, QString> getProperties() const;
 
     //convert dinucleotide matrix to mononucleotide one
-    static PFMatrix convertDi2Mono(const PFMatrix& source);
+    static PFMatrix convertDi2Mono(const PFMatrix &source);
 
 private:
     QVarLengthArray<int> data;
@@ -107,6 +109,6 @@ private:
     JasparInfo info;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

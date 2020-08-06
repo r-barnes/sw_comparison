@@ -19,11 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "SaveSelectedSequenceFromMSADialogController.h"
+
 #include <QDir>
 #include <QMessageBox>
 #include <QPushButton>
-
-#include "ui_SaveSelectedSequenceFromMSADialog.h"
 
 #include <U2Core/AppContext.h>
 #include <U2Core/BaseDocumentFormats.h>
@@ -31,29 +31,27 @@
 #include <U2Core/L10n.h>
 #include <U2Core/U2SafePoints.h>
 
-#include <U2Gui/U2FileDialog.h>
 #include <U2Gui/HelpButton.h>
 #include <U2Gui/LastUsedDirHelper.h>
 #include <U2Gui/SaveDocumentController.h>
+#include <U2Gui/U2FileDialog.h>
 
-#include "SaveSelectedSequenceFromMSADialogController.h"
-
+#include "ui_SaveSelectedSequenceFromMSADialog.h"
 
 namespace U2 {
 
-#if defined(Q_OS_LINUX) | defined (Q_OS_MAC)
+#if defined(Q_OS_LINUX) | defined(Q_OS_MAC)
 const QString SaveDocumentInFolderController::HOME_DIR_IDENTIFIER = "~/";
 #else
 const QString SaveDocumentInFolderController::HOME_DIR_IDENTIFIER = "%UserProfile%/";
 #endif
 
-SaveSelectedSequenceFromMSADialogController::SaveSelectedSequenceFromMSADialogController(QWidget* p, const QString& defaultCustomFilename)
+SaveSelectedSequenceFromMSADialogController::SaveSelectedSequenceFromMSADialogController(QWidget *p, const QString &defaultCustomFilename)
     : QDialog(p),
       saveController(NULL),
-      ui(new Ui_SaveSelectedSequenceFromMSADialog())
-{
+      ui(new Ui_SaveSelectedSequenceFromMSADialog()) {
     ui->setupUi(this);
-    new HelpButton(this, ui->buttonBox, "24742479");
+    new HelpButton(this, ui->buttonBox, "46500041");
     ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Export"));
     ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -65,7 +63,7 @@ SaveSelectedSequenceFromMSADialogController::SaveSelectedSequenceFromMSADialogCo
 
     initSaveController();
 }
-SaveSelectedSequenceFromMSADialogController::~SaveSelectedSequenceFromMSADialogController(){
+SaveSelectedSequenceFromMSADialogController::~SaveSelectedSequenceFromMSADialogController() {
     delete ui;
 }
 
@@ -83,7 +81,6 @@ void SaveSelectedSequenceFromMSADialogController::accept() {
             QMessageBox::critical(this, L10N::errorTitle(), tr("File \"%1\" is already exists, choose another filename or select another directory for save!").arg(ui->customFileNameEdit->text()));
             return;
         }
-
     }
     trimGapsFlag = !ui->keepGapsBox->isChecked();
     addToProjectFlag = ui->addToProjectBox->isChecked();
@@ -91,8 +88,6 @@ void SaveSelectedSequenceFromMSADialogController::accept() {
 
     QDialog::accept();
 }
-
-
 
 QString SaveSelectedSequenceFromMSADialogController::getUrl() const {
     return url;
@@ -132,23 +127,23 @@ void SaveSelectedSequenceFromMSADialogController::initSaveController() {
     saveController = new SaveDocumentInFolderController(config, formatConstraints, this);
 }
 
-SaveDocumentInFolderControllerConfig::SaveDocumentInFolderControllerConfig() :
-    SaveDocumentControllerConfig(),
-    folderLineEdit(NULL) {
+SaveDocumentInFolderControllerConfig::SaveDocumentInFolderControllerConfig()
+    : SaveDocumentControllerConfig(),
+      folderLineEdit(NULL) {
 }
 
-SaveDocumentInFolderController::SaveDocumentInFolderController(const SaveDocumentInFolderControllerConfig& config, const DocumentFormatConstraints& formatConstraints, QObject* parent)
+SaveDocumentInFolderController::SaveDocumentInFolderController(const SaveDocumentInFolderControllerConfig &config, const DocumentFormatConstraints &formatConstraints, QObject *parent)
     : QObject(parent),
-    conf(config) {
+      conf(config) {
     DocumentFormatConstraints fc(formatConstraints);
     fc.addFlagToExclude(DocumentFormatFlag_CannotBeCreated);
 
-    DocumentFormatRegistry* fr = AppContext::getDocumentFormatRegistry();
+    DocumentFormatRegistry *fr = AppContext::getDocumentFormatRegistry();
     QList<DocumentFormatId> selectedFormats = fr->selectFormats(fc);
-    foreach(const DocumentFormatId& id, selectedFormats) {
+    foreach (const DocumentFormatId &id, selectedFormats) {
         formatsInfo.addFormat(id,
-            fr->getFormatById(id)->getFormatName(),
-            fr->getFormatById(id)->getSupportedDocumentFileExtensions());
+                              fr->getFormatById(id)->getFormatName(),
+                              fr->getFormatById(id)->getSupportedDocumentFileExtensions());
     }
 
     init();
@@ -211,4 +206,4 @@ QString SaveDocumentInFolderController::getSaveDirName() const {
     return filePath;
 }
 
-}
+}    // namespace U2

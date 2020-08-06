@@ -27,8 +27,8 @@
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
 
-#include "Peak2GeneTask.h"
 #include "Peak2GeneSettings.h"
+#include "Peak2GeneTask.h"
 #include "utils/CistromeDelegate.h"
 
 namespace U2 {
@@ -52,40 +52,48 @@ private:
 
 private slots:
     void sl_taskFinished();
-}; // Peak2GeneWorker
+};    // Peak2GeneWorker
 
 class Peak2GeneComboBoxWithUrlsDelegate : public CistromeComboBoxWithUrlsDelegate {
 public:
-    Peak2GeneComboBoxWithUrlsDelegate(const QVariantMap& items, bool _isPath = false, QObject *parent = 0) : CistromeComboBoxWithUrlsDelegate(items, _isPath, parent) {}
+    Peak2GeneComboBoxWithUrlsDelegate(const QVariantMap &items, bool _isPath = false, QObject *parent = 0)
+        : CistromeComboBoxWithUrlsDelegate(items, _isPath, parent) {
+    }
 
 private:
     virtual void updateUgeneSettings();
 
     virtual QString getDataPathName();
     virtual QString getAttributeName();
-    virtual QString getDefaultValue() { return "hg19"; }
-}; // Peak2GeneComboBoxWithUrlsDelegate
+    virtual QString getDefaultValue() {
+        return "hg19";
+    }
+};    // Peak2GeneComboBoxWithUrlsDelegate
 
 class Peak2GeneWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
 
-    Peak2GeneWorkerFactory() : DomainFactory(ACTOR_ID) {}
+    Peak2GeneWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
     static void init();
     virtual Worker *createWorker(Actor *a);
-}; // Peak2GeneWorkerFactory
+};    // Peak2GeneWorkerFactory
 
 class Peak2GenePrompter : public PrompterBase<Peak2GenePrompter> {
     Q_OBJECT
 public:
-    Peak2GenePrompter(Actor *p = NULL) : PrompterBase<Peak2GenePrompter>(p) {}
+    Peak2GenePrompter(Actor *p = NULL)
+        : PrompterBase<Peak2GenePrompter>(p) {
+    }
 
 protected:
     QString composeRichDoc();
 
-}; // Peak2GenePrompter
+};    // Peak2GenePrompter
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_PEAK2GENE_SUPPORT_WORKER_
+#endif    // _U2_PEAK2GENE_SUPPORT_WORKER_

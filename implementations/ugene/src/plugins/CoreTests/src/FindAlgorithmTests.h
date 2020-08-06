@@ -23,8 +23,10 @@
 #define _U2_FINDALGORITHM_TESTS_H_
 
 #include <U2Algorithm/FindAlgorithmTask.h>
-#include <U2Test/XMLTestUtils.h>
+
 #include <U2Core/DNASequenceObject.h>
+
+#include <U2Test/XMLTestUtils.h>
 
 namespace U2 {
 
@@ -47,9 +49,9 @@ private:
 
 class FindAlgorithmTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-}//ns
+}    // namespace U2
 
 #endif

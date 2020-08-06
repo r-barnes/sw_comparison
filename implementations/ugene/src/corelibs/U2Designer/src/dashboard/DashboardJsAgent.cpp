@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DashboardJsAgent.h"
+
 #include <QApplication>
 #include <QClipboard>
 #include <QDesktopServices>
@@ -41,17 +43,15 @@
 #include <U2Lang/WorkflowUtils.h>
 
 #include "Dashboard.h"
-#include "DashboardJsAgent.h"
 #include "DashboardPageController.h"
 
 namespace U2 {
 
 const QString DashboardJsAgent::ID = "agent";
 
-DashboardJsAgent::DashboardJsAgent(Dashboard* parent)
+DashboardJsAgent::DashboardJsAgent(Dashboard *parent)
     : JavaScriptAgent(parent),
-      monitor(parent->getMonitor())
-{
+      monitor(parent->getMonitor()) {
     fillWorkerParamsInfo();
 }
 
@@ -59,7 +59,7 @@ const QString &DashboardJsAgent::getId() const {
     return ID;
 }
 
-void DashboardJsAgent::sl_onJsError(const QString& errorMessage) {
+void DashboardJsAgent::sl_onJsError(const QString &errorMessage) {
     coreLog.error(errorMessage);
 }
 
@@ -76,7 +76,7 @@ void DashboardJsAgent::openUrl(const QString &relative) {
 void DashboardJsAgent::openByOS(const QString &relative) {
     QString url = absolute(relative);
     if (!QFile::exists(url)) {
-        QMessageBox::critical((QWidget*)AppContext::getMainWindow()->getQMainWindow(), tr("Error"), tr("The file does not exist"));
+        QMessageBox::critical((QWidget *)AppContext::getMainWindow()->getQMainWindow(), tr("Error"), tr("The file does not exist"));
         return;
     }
     QDesktopServices::openUrl(QUrl("file:///" + url));
@@ -86,19 +86,20 @@ QString DashboardJsAgent::absolute(const QString &url) {
     if (QFileInfo(url).isAbsolute()) {
         return url;
     }
-    return qobject_cast<Dashboard*>(parent())->directory() + url;
+    return qobject_cast<Dashboard *>(parent())->directory() + url;
 }
 
-void DashboardJsAgent::loadSchema(){
-    qobject_cast<Dashboard*>(parent())->loadSchema();
+void DashboardJsAgent::loadSchema() {
+    Dashboard *dashboard = qobject_cast<Dashboard *>(parent());
+    dashboard->sl_loadSchema();
 }
 
-void DashboardJsAgent::setClipboardText(const QString &text){
+void DashboardJsAgent::setClipboardText(const QString &text) {
     QApplication::clipboard()->setText(text);
 }
 
 void DashboardJsAgent::hideLoadButtonHint() {
-    Dashboard* dashboard = qobject_cast<Dashboard*>(parent());
+    Dashboard *dashboard = qobject_cast<Dashboard *>(parent());
     SAFE_POINT(NULL != dashboard, "NULL dashboard!", );
     dashboard->initiateHideLoadButtonHint();
 }
@@ -129,12 +130,12 @@ void DashboardJsAgent::fillWorkerParamsInfo() {
         workerInfoJS["workerName"] = workerInfo.workerName;
         workerInfoJS["actor"] = workerInfo.actor->getLabel();
         QJsonArray parameters;
-        foreach (Attribute* parameter, workerInfo.parameters) {
+        foreach (Attribute *parameter, workerInfo.parameters) {
             QJsonObject parameterJS;
             parameterJS["name"] = parameter->getDisplayName();
             QVariant paramValueVariant = parameter->getAttributePureValue();
-            if (paramValueVariant.canConvert< QList<Dataset> >()) {
-                QList<Dataset> sets = paramValueVariant.value< QList<Dataset > >();
+            if (paramValueVariant.canConvert<QList<Dataset>>()) {
+                QList<Dataset> sets = paramValueVariant.value<QList<Dataset>>();
                 foreach (const Dataset &set, sets) {
                     QString paramName = parameter->getDisplayName();
                     if (sets.size() > 1) {
@@ -170,4 +171,4 @@ void DashboardJsAgent::fillWorkerParamsInfo() {
     }
 }
 
-}   // namespace U2
+}    // namespace U2

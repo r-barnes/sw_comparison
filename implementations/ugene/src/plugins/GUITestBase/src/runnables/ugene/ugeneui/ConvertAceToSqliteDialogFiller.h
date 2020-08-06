@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-
 #ifndef CONVERTACETOSQLITEDIALOGFILLER_H
 #define CONVERTACETOSQLITEDIALOGFILLER_H
 
@@ -28,16 +27,21 @@
 namespace U2 {
 using namespace HI;
 
-class ConvertAceToSqliteDialogFiller : public Filler
-{
+class ConvertAceToSqliteDialogFiller : public Filler {
 public:
-    enum OutFileAction { NOT_SET, REPLACE, APPEND, CANCEL };
-    ConvertAceToSqliteDialogFiller(HI::GUITestOpStatus& _os, QString _leDest, OutFileAction action = NOT_SET): Filler(_os, "AceImportDialog"),
-        leDestUrl(_leDest), action(action) {}
+    enum OutFileAction { NOT_SET,
+                         REPLACE,
+                         APPEND,
+                         CANCEL };
+    ConvertAceToSqliteDialogFiller(HI::GUITestOpStatus &_os, QString _leDest, OutFileAction action = NOT_SET)
+        : Filler(_os, "AceImportDialog"),
+          leDestUrl(_leDest), action(action) {
+    }
     void commonScenario();
+
 private:
     QString leDestUrl;
     OutFileAction action;
 };
-}
-#endif // CONVERTACETOSQLITEDIALOGFILLER_H
+}    // namespace U2
+#endif    // CONVERTACETOSQLITEDIALOGFILLER_H

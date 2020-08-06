@@ -22,8 +22,8 @@
 #ifndef _U2_DIALOG_UTILS_H_
 #define _U2_DIALOG_UTILS_H_
 
-#include <QWidget>
 #include <QLineEdit>
+#include <QWidget>
 
 #include <U2Core/global.h>
 
@@ -38,18 +38,18 @@ class TaskStateInfo;
 class U2GUI_EXPORT DialogUtils : public QObject {
     Q_OBJECT
 public:
-    static void showProjectIsLockedWarning(QWidget* p = NULL);
+    static void showProjectIsLockedWarning(QWidget *p = NULL);
 
-    static QString prepareFileFilter(const QString& name, const QStringList& exts, bool any = true, const QStringList& extraExts = QStringList(".gz"));
+    static QString prepareFileFilter(const QString &name, const QStringList &exts, bool any = true, const QStringList &extraExts = QStringList(".gz"));
 
-    static QString prepareDocumentsFileFilter(const DocumentFormatId& fid, bool any, const QStringList& extraExts = QStringList(".gz"));
+    static QString prepareDocumentsFileFilter(const DocumentFormatId &fid, bool any, const QStringList &extraExts = QStringList(".gz"));
 
     //returns filter for all formats supported. All-docs filter is returned first if any==true
-    static QString prepareDocumentsFileFilter(bool any, const QStringList& extraExts = QStringList(".gz"));
+    static QString prepareDocumentsFileFilter(bool any, const QStringList &extraExts = QStringList(".gz"));
 
-    static QString prepareDocumentsFileFilter(const DocumentFormatConstraints& c, bool any);
+    static QString prepareDocumentsFileFilter(const DocumentFormatConstraints &c, bool any);
 
-    static QString prepareDocumentsFileFilterByObjType(const GObjectType& t, bool any);
+    static QString prepareDocumentsFileFilterByObjType(const GObjectType &t, bool any);
 
     static void setWizardMinimumSize(QWizard *wizard, const QSize &minimumSize = QSize());
 };
@@ -57,17 +57,18 @@ public:
 class U2GUI_EXPORT FileLineEdit : public QLineEdit {
     Q_OBJECT
 public:
-    FileLineEdit(const QString& filter, const QString& type, bool multi, QWidget *parent)
-        : QLineEdit(parent), FileFilter(filter), type(type), multi(multi) {}
+    FileLineEdit(const QString &filter, const QString &type, bool multi, QWidget *parent)
+        : QLineEdit(parent), FileFilter(filter), type(type), multi(multi) {
+    }
 private slots:
     void sl_onBrowse();
 
 private:
     QString FileFilter;
     QString type;
-    bool    multi;
+    bool multi;
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

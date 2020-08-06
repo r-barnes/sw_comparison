@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "BlastPlusSupportRunDialog.h"
+
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QToolButton>
@@ -39,6 +41,7 @@
 #include <U2Core/LoadDocumentTask.h>
 #include <U2Core/ProjectModel.h>
 #include <U2Core/ProjectService.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/U2DbiRegistry.h>
 #include <U2Core/U2OpStatusUtils.h>
 
@@ -47,33 +50,30 @@
 #include <U2Gui/DialogUtils.h>
 #include <U2Gui/GUIUtils.h>
 #include <U2Gui/OpenViewTask.h>
-#include <U2Core/QObjectScopedPointer.h>
+#include <U2Gui/RegionSelector.h>
 
 #include <U2View/ADVSequenceObjectContext.h>
 #include <U2View/AnnotatedDNAView.h>
-#include <U2Gui/RegionSelector.h>
 
 #include "BlastPlusSupport.h"
-#include "BlastPlusSupportRunDialog.h"
 #include "ExternalToolSupportSettingsController.h"
 
 namespace U2 {
 
 namespace {
-    QStringList getCompValues() {
-        QStringList result;
-        result << "blastp";
-        result << "blastx";
-        result << "tblastn";
-        return result;
-    }
+QStringList getCompValues() {
+    QStringList result;
+    result << "blastp";
+    result << "blastx";
+    result << "tblastn";
+    return result;
 }
+}    // namespace
 
 ////////////////////////////////////////
 //BlastAllSupportRunDialog
-BlastPlusSupportRunDialog::BlastPlusSupportRunDialog(ADVSequenceObjectContext* seqCtx, QString &lastDBPath, QString &lastDBName, QWidget *parent)
-: BlastRunCommonDialog(parent, BlastPlus, true, getCompValues()), lastDBPath(lastDBPath), lastDBName(lastDBName), seqCtx(seqCtx), regionSelector(NULL)
-{
+BlastPlusSupportRunDialog::BlastPlusSupportRunDialog(ADVSequenceObjectContext *seqCtx, QString &lastDBPath, QString &lastDBName, QWidget *parent)
+    : BlastRunCommonDialog(parent, BlastPlus, true, getCompValues()), lastDBPath(lastDBPath), lastDBName(lastDBName), seqCtx(seqCtx), regionSelector(NULL) {
     dnaso = seqCtx->getSequenceObject();
     CreateAnnotationModel ca_m;
     ca_m.hideAnnotationType = true;
@@ -89,32 +89,32 @@ BlastPlusSupportRunDialog::BlastPlusSupportRunDialog(ADVSequenceObjectContext* s
     settingsGridLayout->addWidget(regionSelector, lastRow, 0, 1, 3);
 
     //programName->removeItem(3);//cuda-blastp
-    if(dnaso->getAlphabet()->getType() == DNAAlphabet_AMINO){
-        programName->removeItem(0);//blastn
-        programName->removeItem(1);//blastx
-        programName->removeItem(2);//tblastx
-        settings.isNucleotideSeq=false;
-    }else{
-        programName->removeItem(1);//blastp
-        programName->removeItem(1);//gpu-blastp
-        programName->removeItem(2);//tblastn
-        settings.isNucleotideSeq=true;
+    if (dnaso->getAlphabet()->getType() == DNAAlphabet_AMINO) {
+        programName->removeItem(0);    //blastn
+        programName->removeItem(1);    //blastx
+        programName->removeItem(2);    //tblastx
+        settings.isNucleotideSeq = false;
+    } else {
+        programName->removeItem(1);    //blastp
+        programName->removeItem(1);    //gpu-blastp
+        programName->removeItem(2);    //tblastn
+        settings.isNucleotideSeq = true;
     }
     dbSelector->databasePathLineEdit->setText(lastDBPath);
     dbSelector->baseNameLineEdit->setText(lastDBName);
-    connect(cancelButton,SIGNAL(clicked()),SLOT(reject()));
+    connect(cancelButton, SIGNAL(clicked()), SLOT(reject()));
 }
 
 U2Region BlastPlusSupportRunDialog::getSelectedRegion() const {
     return regionSelector->isWholeSequenceSelected() ? U2Region(0, seqCtx->getSequenceLength()) : regionSelector->getRegion();
 }
 
-void BlastPlusSupportRunDialog::sl_lineEditChanged(){
+void BlastPlusSupportRunDialog::sl_lineEditChanged() {
     okButton->setEnabled(dbSelector->isInputDataValid());
 }
 
-bool BlastPlusSupportRunDialog::checkToolPath(){
-    bool needSetToolPath=false;
+bool BlastPlusSupportRunDialog::checkToolPath() {
+    bool needSetToolPath = false;
     QString toolName;
     QString toolId;
     QObjectScopedPointer<QMessageBox> msgBox = new QMessageBox;
@@ -122,72 +122,71 @@ bool BlastPlusSupportRunDialog::checkToolPath(){
     msgBox->setInformativeText(tr("Do you want to select it now?"));
     msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     msgBox->setDefaultButton(QMessageBox::Yes);
-    if((programName->currentText() == "blastn") &&
-       (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_BLASTN_ID)->getPath().isEmpty())){
-        needSetToolPath=true;
-        toolName= BlastPlusSupport::ET_BLASTN;
+    if ((programName->currentText() == "blastn") &&
+        (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_BLASTN_ID)->getPath().isEmpty())) {
+        needSetToolPath = true;
+        toolName = BlastPlusSupport::ET_BLASTN;
         toolId = BlastPlusSupport::ET_BLASTN_ID;
 
-    }else if((programName->currentText() == "blastp") &&
-             (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_BLASTP_ID)->getPath().isEmpty())){
-        needSetToolPath=true;
-        toolName= BlastPlusSupport::ET_BLASTP;
+    } else if ((programName->currentText() == "blastp") &&
+               (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_BLASTP_ID)->getPath().isEmpty())) {
+        needSetToolPath = true;
+        toolName = BlastPlusSupport::ET_BLASTP;
         toolId = BlastPlusSupport::ET_BLASTP_ID;
 
-// https://ugene.net/tracker/browse/UGENE-945
-//     }else if((programName->currentText() == "gpu-blastp") &&
-//              (AppContext::getExternalToolRegistry()->getByName(GPU_BLASTP_TOOL_NAME)->getPath().isEmpty())){
-//         needSetToolPath=true;
-//         toolName=GPU_BLASTP_TOOL_NAME;
+        // https://ugene.net/tracker/browse/UGENE-945
+        //     }else if((programName->currentText() == "gpu-blastp") &&
+        //              (AppContext::getExternalToolRegistry()->getByName(GPU_BLASTP_TOOL_NAME)->getPath().isEmpty())){
+        //         needSetToolPath=true;
+        //         toolName=GPU_BLASTP_TOOL_NAME;
 
-    }else if((programName->currentText() == "blastx") &&
-             (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_TBLASTX_ID)->getPath().isEmpty())){
-        needSetToolPath=true;
-        toolName= BlastPlusSupport::ET_BLASTX;
+    } else if ((programName->currentText() == "blastx") &&
+               (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_TBLASTX_ID)->getPath().isEmpty())) {
+        needSetToolPath = true;
+        toolName = BlastPlusSupport::ET_BLASTX;
         toolId = BlastPlusSupport::ET_BLASTX_ID;
 
-    }else if((programName->currentText() == "tblastn") &&
-             (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_TBLASTN_ID)->getPath().isEmpty())){
-        needSetToolPath=true;
-        toolName= BlastPlusSupport::ET_TBLASTN;
+    } else if ((programName->currentText() == "tblastn") &&
+               (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_TBLASTN_ID)->getPath().isEmpty())) {
+        needSetToolPath = true;
+        toolName = BlastPlusSupport::ET_TBLASTN;
         toolId = BlastPlusSupport::ET_TBLASTN_ID;
 
-    }else if((programName->currentText() == "tblastx") &&
-             (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_TBLASTX_ID)->getPath().isEmpty())){
-        needSetToolPath=true;
-        toolName= BlastPlusSupport::ET_TBLASTX;
+    } else if ((programName->currentText() == "tblastx") &&
+               (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_TBLASTX_ID)->getPath().isEmpty())) {
+        needSetToolPath = true;
+        toolName = BlastPlusSupport::ET_TBLASTX;
         toolId = BlastPlusSupport::ET_TBLASTX_ID;
     }
-    if(needSetToolPath){
+    if (needSetToolPath) {
         msgBox->setText(tr("Path for <i>BLAST+ %1</i> tool not selected.").arg(toolName));
         const int ret = msgBox->exec();
         CHECK(!msgBox.isNull(), false);
 
         switch (ret) {
-           case QMessageBox::Yes:
-               AppContext::getAppSettingsGUI()->showSettingsDialog(ExternalToolSupportSettingsPageId);
-               break;
-           case QMessageBox::No:
-               return false;
-               break;
-           default:
-               assert(false);
-               break;
+        case QMessageBox::Yes:
+            AppContext::getAppSettingsGUI()->showSettingsDialog(ExternalToolSupportSettingsPageId);
+            break;
+        case QMessageBox::No:
+            return false;
+            break;
+        default:
+            assert(false);
+            break;
         }
-        if(!AppContext::getExternalToolRegistry()->getById(toolId)->getPath().isEmpty()){
+        if (!AppContext::getExternalToolRegistry()->getById(toolId)->getPath().isEmpty()) {
             return true;
-        }else{
+        } else {
             return false;
         }
 
-    }else{
+    } else {
         return true;
     }
 }
 
-void BlastPlusSupportRunDialog::sl_runQuery(){
-
-    if(!checkToolPath()){
+void BlastPlusSupportRunDialog::sl_runQuery() {
+    if (!checkToolPath()) {
         return;
     }
 
@@ -196,17 +195,16 @@ void BlastPlusSupportRunDialog::sl_runQuery(){
         QMessageBox::critical(NULL, tr("Wrong parameters for creating annotations"), error);
         return;
     }
-    settings.outputResFile=ca_c->getModel().newDocUrl;
-    if(ca_c->isNewObject()) {
+    settings.outputResFile = ca_c->getModel().newDocUrl;
+    if (ca_c->isNewObject()) {
         U2OpStatusImpl os;
-        const U2DbiRef dbiRef = AppContext::getDbiRegistry( )->getSessionTmpDbiRef( os );
-        SAFE_POINT_OP( os, );
-        settings.aobj = new AnnotationTableObject( "Annotations", dbiRef );
+        const U2DbiRef dbiRef = AppContext::getDbiRegistry()->getSessionTmpDbiRef(os);
+        SAFE_POINT_OP(os, );
+        settings.aobj = new AnnotationTableObject("Annotations", dbiRef);
         settings.aobj->addObjectRelation(GObjectRelation(ca_c->getModel().sequenceObjectRef, ObjectRole_Sequence));
-    }
-    else {
+    } else {
         bool objectPrepared = ca_c->prepareAnnotationObject();
-        if (!objectPrepared){
+        if (!objectPrepared) {
             QMessageBox::warning(this, tr("Error"), tr("Cannot create an annotation object. Please check settings"));
             return;
         }
@@ -222,8 +220,8 @@ void BlastPlusSupportRunDialog::sl_runQuery(){
     settings.alphabet = dnaso->getAlphabet();
     lastDBPath = dbSelector->databasePathLineEdit->text();
     lastDBName = dbSelector->baseNameLineEdit->text();
-    settings.outputType = 5;//By default set output file format to xml
-    if(seqCtx != NULL){
+    settings.outputType = 5;    //By default set output file format to xml
+    if (seqCtx != NULL) {
         seqCtx->getAnnotatedDNAView()->tryAddObject(settings.aobj);
     }
     accept();
@@ -231,54 +229,53 @@ void BlastPlusSupportRunDialog::sl_runQuery(){
 ////////////////////////////////////////
 //BlastPlusWithExtFileSpecifySupportRunDialog
 BlastPlusWithExtFileSpecifySupportRunDialog::BlastPlusWithExtFileSpecifySupportRunDialog(QString &lastDBPath, QString &lastDBName, QWidget *parent)
-: BlastRunCommonDialog(parent, BlastPlus, true, getCompValues()), lastDBPath(lastDBPath), lastDBName(lastDBName), hasValidInput(false)
-{
-    ca_c=NULL;
-    wasNoOpenProject=false;
+    : BlastRunCommonDialog(parent, BlastPlus, true, getCompValues()), lastDBPath(lastDBPath), lastDBName(lastDBName), hasValidInput(false) {
+    ca_c = NULL;
+    wasNoOpenProject = false;
     //create input file widget
-    QWidget * widget = new QWidget(parent);
-    inputFileLineEdit= new FileLineEdit("","", false, widget);
+    QWidget *widget = new QWidget(parent);
+    inputFileLineEdit = new FileLineEdit("", "", false, widget);
     inputFileLineEdit->setReadOnly(true);
     inputFileLineEdit->setText("");
-    QToolButton * selectToolPathButton = new QToolButton(widget);
+    QToolButton *selectToolPathButton = new QToolButton(widget);
     selectToolPathButton->setObjectName("browseInput");
     selectToolPathButton->setVisible(true);
     selectToolPathButton->setText("...");
     connect(selectToolPathButton, SIGNAL(clicked()), inputFileLineEdit, SLOT(sl_onBrowse()));
-    connect(inputFileLineEdit,SIGNAL(textChanged(QString)),this, SLOT(sl_inputFileLineEditChanged(QString)));
+    connect(inputFileLineEdit, SIGNAL(textChanged(QString)), this, SLOT(sl_inputFileLineEditChanged(QString)));
 
-    QHBoxLayout* layout = new QHBoxLayout(widget);
+    QHBoxLayout *layout = new QHBoxLayout(widget);
     layout->setSizeConstraint(QLayout::SetMinAndMaxSize);
     layout->addWidget(inputFileLineEdit);
     layout->addWidget(selectToolPathButton);
 
-    QGroupBox* inputFileGroupBox=new QGroupBox(tr("Select input file"),widget);
+    QGroupBox *inputFileGroupBox = new QGroupBox(tr("Select input file"), widget);
     inputFileGroupBox->setLayout(layout);
-    QBoxLayout* parentLayout = qobject_cast<QBoxLayout*>(this->layout());
+    QBoxLayout *parentLayout = qobject_cast<QBoxLayout *>(this->layout());
     assert(parentLayout);
     parentLayout->insertWidget(0, inputFileGroupBox);
 
-    programName->removeItem(3);//cuda-blastp
+    programName->removeItem(3);    //cuda-blastp
 
     dbSelector->databasePathLineEdit->setText(lastDBPath);
     dbSelector->baseNameLineEdit->setText(lastDBName);
-    connect(cancelButton,SIGNAL(clicked()),SLOT(sl_cancel()));
-    connect(this,SIGNAL(rejected()),SLOT(sl_cancel()));
+    connect(cancelButton, SIGNAL(clicked()), SLOT(sl_cancel()));
+    connect(this, SIGNAL(rejected()), SLOT(sl_cancel()));
 }
 
 const QList<BlastTaskSettings> &BlastPlusWithExtFileSpecifySupportRunDialog::getSettingsList() const {
     return settingsList;
 }
 
-void BlastPlusWithExtFileSpecifySupportRunDialog::sl_lineEditChanged(){
+void BlastPlusWithExtFileSpecifySupportRunDialog::sl_lineEditChanged() {
     okButton->setEnabled(dbSelector->isInputDataValid() && hasValidInput);
 }
 
 namespace {
-    const char *INPUT_URL_PROP = "input_url";
+const char *INPUT_URL_PROP = "input_url";
 }
 
-void BlastPlusWithExtFileSpecifySupportRunDialog::sl_inputFileLineEditChanged(const QString &url){
+void BlastPlusWithExtFileSpecifySupportRunDialog::sl_inputFileLineEditChanged(const QString &url) {
     hasValidInput = false;
     sl_lineEditChanged();
     CHECK(!url.isEmpty(), );
@@ -292,7 +289,7 @@ void BlastPlusWithExtFileSpecifySupportRunDialog::sl_inputFileLineEditChanged(co
             if (doc->isLoaded()) {
                 tryApplyDoc(doc);
             } else {
-                LoadUnloadedDocumentAndOpenViewTask *loadTask= new LoadUnloadedDocumentAndOpenViewTask(doc);
+                LoadUnloadedDocumentAndOpenViewTask *loadTask = new LoadUnloadedDocumentAndOpenViewTask(doc);
                 loadTask->setProperty(INPUT_URL_PROP, url);
                 connect(loadTask, SIGNAL(si_stateChanged()), SLOT(sl_inputFileOpened()));
                 AppContext::getTaskScheduler()->registerTopLevelTask(loadTask);
@@ -318,7 +315,7 @@ void BlastPlusWithExtFileSpecifySupportRunDialog::loadDoc(const QString &url) {
     DocumentFormat *format = formats.first().format;
     CHECK_EXT(format->getSupportedObjectTypes().contains(GObjectTypes::SEQUENCE), onFormatError(), );
 
-    LoadDocumentTask *loadTask= new LoadDocumentTask(format->getFormatId(), url, AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url)));
+    LoadDocumentTask *loadTask = new LoadDocumentTask(format->getFormatId(), url, AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url)));
     AddDocumentAndOpenViewTask *openTask = new AddDocumentAndOpenViewTask(loadTask);
     openTask->setProperty(INPUT_URL_PROP, url);
 
@@ -327,7 +324,7 @@ void BlastPlusWithExtFileSpecifySupportRunDialog::loadDoc(const QString &url) {
 }
 
 void BlastPlusWithExtFileSpecifySupportRunDialog::sl_inputFileOpened() {
-    Task *t = qobject_cast<Task*>(sender());
+    Task *t = qobject_cast<Task *>(sender());
     CHECK(NULL != t, );
     CHECK(t->isFinished() && !t->hasError(), );
 
@@ -361,7 +358,7 @@ void BlastPlusWithExtFileSpecifySupportRunDialog::tryApplyDoc(Document *doc) {
         if (obj->getGObjectType() != GObjectTypes::SEQUENCE) {
             continue;
         }
-        U2SequenceObject *seq = dynamic_cast<U2SequenceObject*>(obj);
+        U2SequenceObject *seq = dynamic_cast<U2SequenceObject *>(obj);
         SAFE_POINT(NULL != seq, "NULL sequence object", );
 
         BlastTaskSettings localSettings;
@@ -369,7 +366,7 @@ void BlastPlusWithExtFileSpecifySupportRunDialog::tryApplyDoc(Document *doc) {
         localSettings.querySequence = seq->getWholeSequenceData(os);
         CHECK_OP_EXT(os, QMessageBox::critical(this, L10N::errorTitle(), os.getError()), );
         localSettings.alphabet = seq->getAlphabet();
-        if (localSettings.alphabet->getType() != DNAAlphabet_AMINO){
+        if (localSettings.alphabet->getType() != DNAAlphabet_AMINO) {
             localSettings.isNucleotideSeq = true;
         }
         localSettings.queryFile = doc->getURLString();
@@ -396,75 +393,74 @@ void BlastPlusWithExtFileSpecifySupportRunDialog::tryApplyDoc(Document *doc) {
     sl_lineEditChanged();
 }
 
-bool BlastPlusWithExtFileSpecifySupportRunDialog::checkToolPath(){
-    bool needSetToolPath=false;
+bool BlastPlusWithExtFileSpecifySupportRunDialog::checkToolPath() {
+    bool needSetToolPath = false;
     QString toolId;
     QObjectScopedPointer<QMessageBox> msgBox = new QMessageBox;
     msgBox->setWindowTitle("BLAST+ Search");
     msgBox->setInformativeText(tr("Do you want to select it now?"));
     msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     msgBox->setDefaultButton(QMessageBox::Yes);
-    if((programName->currentText() == "blastn") &&
-       (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_TBLASTN_ID)->getPath().isEmpty())){
-        needSetToolPath=true;
-        toolId= BlastPlusSupport::ET_BLASTN_ID;
+    if ((programName->currentText() == "blastn") &&
+        (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_TBLASTN_ID)->getPath().isEmpty())) {
+        needSetToolPath = true;
+        toolId = BlastPlusSupport::ET_BLASTN_ID;
 
-    }else if((programName->currentText() == "blastp") &&
-             (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_BLASTP_ID)->getPath().isEmpty())){
-        needSetToolPath=true;
-        toolId= BlastPlusSupport::ET_BLASTP_ID;
+    } else if ((programName->currentText() == "blastp") &&
+               (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_BLASTP_ID)->getPath().isEmpty())) {
+        needSetToolPath = true;
+        toolId = BlastPlusSupport::ET_BLASTP_ID;
 
-// https://ugene.net/tracker/browse/UGENE-945
-//     }else if((programName->currentText() == "gpu-blastp") &&
-//              (AppContext::getExternalToolRegistry()->getByName(GPU_BLASTP_TOOL_NAME)->getPath().isEmpty())){
-//         needSetToolPath=true;
-//         toolName=GPU_BLASTP_TOOL_NAME;
+        // https://ugene.net/tracker/browse/UGENE-945
+        //     }else if((programName->currentText() == "gpu-blastp") &&
+        //              (AppContext::getExternalToolRegistry()->getByName(GPU_BLASTP_TOOL_NAME)->getPath().isEmpty())){
+        //         needSetToolPath=true;
+        //         toolName=GPU_BLASTP_TOOL_NAME;
 
-    }else if((programName->currentText() == "blastx") &&
-             (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_BLASTX_ID)->getPath().isEmpty())){
-        needSetToolPath=true;
-        toolId= BlastPlusSupport::ET_BLASTX_ID;
+    } else if ((programName->currentText() == "blastx") &&
+               (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_BLASTX_ID)->getPath().isEmpty())) {
+        needSetToolPath = true;
+        toolId = BlastPlusSupport::ET_BLASTX_ID;
 
-    }else if((programName->currentText() == "tblastn") &&
-             (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_TBLASTN_ID)->getPath().isEmpty())){
-        needSetToolPath=true;
-        toolId= BlastPlusSupport::ET_TBLASTN_ID;
+    } else if ((programName->currentText() == "tblastn") &&
+               (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_TBLASTN_ID)->getPath().isEmpty())) {
+        needSetToolPath = true;
+        toolId = BlastPlusSupport::ET_TBLASTN_ID;
 
-    }else if((programName->currentText() == "tblastx") &&
-             (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_TBLASTX_ID)->getPath().isEmpty())){
-        needSetToolPath=true;
-        toolId= BlastPlusSupport::ET_TBLASTX_ID;
+    } else if ((programName->currentText() == "tblastx") &&
+               (AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_TBLASTX_ID)->getPath().isEmpty())) {
+        needSetToolPath = true;
+        toolId = BlastPlusSupport::ET_TBLASTX_ID;
     }
-    if(needSetToolPath){
+    if (needSetToolPath) {
         msgBox->setText(tr("Path for <i>BLAST+ %1</i> tool not selected.").arg(AppContext::getExternalToolRegistry()->getById(toolId)->getName()));
         const int ret = msgBox->exec();
         CHECK(!msgBox.isNull(), false);
 
         switch (ret) {
-           case QMessageBox::Yes:
-               AppContext::getAppSettingsGUI()->showSettingsDialog(ExternalToolSupportSettingsPageId);
-               break;
-           case QMessageBox::No:
-               return false;
-               break;
-           default:
-               assert(false);
-               break;
+        case QMessageBox::Yes:
+            AppContext::getAppSettingsGUI()->showSettingsDialog(ExternalToolSupportSettingsPageId);
+            break;
+        case QMessageBox::No:
+            return false;
+            break;
+        default:
+            assert(false);
+            break;
         }
-        if(!AppContext::getExternalToolRegistry()->getById(toolId)->getPath().isEmpty()){
+        if (!AppContext::getExternalToolRegistry()->getById(toolId)->getPath().isEmpty()) {
             return true;
-        }else{
+        } else {
             return false;
         }
 
-    }else{
+    } else {
         return true;
     }
 }
 
-void BlastPlusWithExtFileSpecifySupportRunDialog::sl_runQuery(){
-
-    if(!checkToolPath()){
+void BlastPlusWithExtFileSpecifySupportRunDialog::sl_runQuery() {
+    if (!checkToolPath()) {
         return;
     }
 
@@ -474,32 +470,32 @@ void BlastPlusWithExtFileSpecifySupportRunDialog::sl_runQuery(){
         return;
     }
 
-    for(int i=0; i<settingsList.length();i++){
-        settingsList[i].outputResFile=ca_c->getModel().newDocUrl;
-        if(ca_c->isNewObject()) {
+    for (int i = 0; i < settingsList.length(); i++) {
+        settingsList[i].outputResFile = ca_c->getModel().newDocUrl;
+        if (ca_c->isNewObject()) {
             U2OpStatusImpl os;
-            const U2DbiRef dbiRef = AppContext::getDbiRegistry( )->getSessionTmpDbiRef( os );
-            SAFE_POINT_OP( os, );
-            settingsList[i].aobj = new AnnotationTableObject(sequencesRefList[i].objName+" annotations", dbiRef);
+            const U2DbiRef dbiRef = AppContext::getDbiRegistry()->getSessionTmpDbiRef(os);
+            SAFE_POINT_OP(os, );
+            settingsList[i].aobj = new AnnotationTableObject(sequencesRefList[i].objName + " annotations", dbiRef);
             settingsList[i].aobj->addObjectRelation(GObjectRelation(sequencesRefList[i], ObjectRole_Sequence));
         } else {
-            assert(false);//always created new document for annotations
+            assert(false);    //always created new document for annotations
         }
-        settingsList[i].groupName=ca_c->getModel().groupName;
+        settingsList[i].groupName = ca_c->getModel().groupName;
 
         getSettings(settingsList[i]);
-        settingsList[i].outputType = 5;//By default set output file format to xml
+        settingsList[i].outputType = 5;    //By default set output file format to xml
     }
-    bool docAlreadyInProject=false;
-    Project* proj=AppContext::getProject();
-    foreach(Document* doc, proj->getDocuments()){
-        if(doc->getURL() == inputFileLineEdit->text()){
-            docAlreadyInProject=true;
+    bool docAlreadyInProject = false;
+    Project *proj = AppContext::getProject();
+    foreach (Document *doc, proj->getDocuments()) {
+        if (doc->getURL() == inputFileLineEdit->text()) {
+            docAlreadyInProject = true;
         }
     }
-    if(!docAlreadyInProject){
+    if (!docAlreadyInProject) {
         QString url = inputFileLineEdit->text();
-        Task * t = AppContext::getProjectLoader()->openWithProjectTask(url);
+        Task *t = AppContext::getProjectLoader()->openWithProjectTask(url);
         if (t != NULL) {
             AppContext::getTaskScheduler()->registerTopLevelTask(t);
         }
@@ -511,15 +507,15 @@ void BlastPlusWithExtFileSpecifySupportRunDialog::sl_runQuery(){
     lastDBName = dbSelector->baseNameLineEdit->text();
     accept();
 }
-void BlastPlusWithExtFileSpecifySupportRunDialog::sl_cancel(){
-    if(qobject_cast<BlastPlusWithExtFileSpecifySupportRunDialog*>(sender()) == NULL){
+void BlastPlusWithExtFileSpecifySupportRunDialog::sl_cancel() {
+    if (qobject_cast<BlastPlusWithExtFileSpecifySupportRunDialog *>(sender()) == NULL) {
         reject();
         return;
     }
-    if(wasNoOpenProject){
+    if (wasNoOpenProject) {
         ProjectService *projService = AppContext::getProjectService();
         CHECK(NULL != projService, );
         AppContext::getTaskScheduler()->registerTopLevelTask(projService->closeProjectTask());
     }
 }
-}//namespace
+}    // namespace U2

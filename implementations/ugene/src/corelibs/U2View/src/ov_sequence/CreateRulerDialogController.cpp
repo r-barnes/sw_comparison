@@ -21,20 +21,20 @@
 
 #include "CreateRulerDialogController.h"
 
+#include <QColorDialog>
+#include <QMessageBox>
+#include <QPushButton>
+
 #include <U2Core/TextUtils.h>
 
-#include <QPushButton>
-#include <QMessageBox>
-#include <QColorDialog>
 #include <U2Gui/HelpButton.h>
 
 namespace U2 {
 
-CreateRulerDialogController::CreateRulerDialogController(const QSet<QString>& namesToFilter, int defaultOffset, QWidget* p)
-: QDialog(p)
-{
+CreateRulerDialogController::CreateRulerDialogController(const QSet<QString> &namesToFilter, int defaultOffset, QWidget *p)
+    : QDialog(p) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742368");
+    new HelpButton(this, buttonBox, "46499756");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Create"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -56,7 +56,6 @@ CreateRulerDialogController::CreateRulerDialogController(const QSet<QString>& na
 
     connect(colorButton, SIGNAL(clicked()), SLOT(sl_colorButtonClicked()));
     setWindowIcon(QIcon(":/ugene/images/ugene_16.png"));
-
 }
 
 void CreateRulerDialogController::updateColorSample() {
@@ -92,6 +91,4 @@ void CreateRulerDialogController::accept() {
     QDialog::accept();
 }
 
-}//namespace
-
-
+}    // namespace U2

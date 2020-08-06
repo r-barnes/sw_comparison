@@ -19,12 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "DbiClassPrototype.h"
+
 #include <U2Core/U2SafePoints.h>
 
-#include "ScriptEngineUtils.h"
 #include <U2Lang/WorkflowScriptEngine.h>
 
-#include "DbiClassPrototype.h"
+#include "ScriptEngineUtils.h"
 
 namespace U2 {
 
@@ -32,20 +33,16 @@ namespace U2 {
 /* ScriptDbiData */
 /************************************************************************/
 ScriptDbiData::ScriptDbiData() {
-
 }
 
 ScriptDbiData::~ScriptDbiData() {
-
 }
 
 ScriptDbiData::ScriptDbiData(const Workflow::SharedDbiDataHandler &_seqId)
-: id(_seqId)
-{
-
+    : id(_seqId) {
 }
 
-const Workflow::SharedDbiDataHandler & ScriptDbiData::getId() const {
+const Workflow::SharedDbiDataHandler &ScriptDbiData::getId() const {
     return id;
 }
 
@@ -57,13 +54,10 @@ void ScriptDbiData::release() {
 /* DbiClassPrototype */
 /************************************************************************/
 DbiClassPrototype::DbiClassPrototype(QObject *parent)
-: QObject(parent)
-{
-
+    : QObject(parent) {
 }
 
 DbiClassPrototype::~DbiClassPrototype() {
-
 }
 
 QScriptValue DbiClassPrototype::getId() {
@@ -79,17 +73,17 @@ void DbiClassPrototype::release() {
     thisData()->release();
 }
 
-ScriptDbiData * DbiClassPrototype::thisData() const {
-    ScriptDbiData *result = qscriptvalue_cast<ScriptDbiData*>(thisObject().data());
+ScriptDbiData *DbiClassPrototype::thisData() const {
+    ScriptDbiData *result = qscriptvalue_cast<ScriptDbiData *>(thisObject().data());
     SCRIPT_CHECK(NULL != result, context(), "No this object", NULL);
     return result;
 }
 
-WorkflowScriptEngine * DbiClassPrototype::workflowEngine() const {
+WorkflowScriptEngine *DbiClassPrototype::workflowEngine() const {
     return ScriptEngineUtils::workflowEngine(engine());
 }
 
-Workflow::DbiDataStorage * DbiClassPrototype::dataStorage() const {
+Workflow::DbiDataStorage *DbiClassPrototype::dataStorage() const {
     WorkflowScriptEngine *we = workflowEngine();
     CHECK(NULL != we, NULL);
     Workflow::WorkflowContext *wc = we->getWorkflowContext();
@@ -101,9 +95,7 @@ Workflow::DbiDataStorage * DbiClassPrototype::dataStorage() const {
 /* DbiScriptClass */
 /************************************************************************/
 DbiScriptClass::DbiScriptClass(QScriptEngine *engine)
-: QObject(engine), QScriptClass(engine)
-{
-
+    : QObject(engine), QScriptClass(engine) {
 }
 
 QScriptValue DbiScriptClass::prototype() const {
@@ -120,4 +112,4 @@ void DbiScriptClass::fromScriptValue(const QScriptValue &obj, ScriptDbiData &id)
     id = qvariant_cast<ScriptDbiData>(obj.data().toVariant());
 }
 
-} // U2
+}    // namespace U2

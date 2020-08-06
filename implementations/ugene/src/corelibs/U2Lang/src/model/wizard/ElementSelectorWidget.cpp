@@ -19,20 +19,18 @@
  * MA 02110-1301, USA.
  */
 
+#include "ElementSelectorWidget.h"
+
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Lang/WizardWidgetVisitor.h>
-
-#include "ElementSelectorWidget.h"
 
 namespace U2 {
 
 const QString ElementSelectorWidget::ID("element-selector");
 
 ElementSelectorWidget::ElementSelectorWidget()
-: WizardWidget()
-{
-
+    : WizardWidget() {
 }
 
 void ElementSelectorWidget::accept(WizardWidgetVisitor *visitor) {
@@ -51,19 +49,19 @@ void ElementSelectorWidget::setLabel(const QString &value) {
     label = value;
 }
 
-const QString & ElementSelectorWidget::getActorId() const {
+const QString &ElementSelectorWidget::getActorId() const {
     return actorId;
 }
 
-const QList<SelectorValue> & ElementSelectorWidget::getValues() const {
+const QList<SelectorValue> &ElementSelectorWidget::getValues() const {
     return values;
 }
 
-const QString & ElementSelectorWidget::getLabel() const {
+const QString &ElementSelectorWidget::getLabel() const {
     return label;
 }
 
-void ElementSelectorWidget::validate(const QList<Actor*> &actors, U2OpStatus &os) const {
+void ElementSelectorWidget::validate(const QList<Actor *> &actors, U2OpStatus &os) const {
     Workflow::Actor *actor = validateActorId(actors, os);
     CHECK_OP(os, );
 
@@ -78,7 +76,7 @@ void ElementSelectorWidget::validate(const QList<Actor*> &actors, U2OpStatus &os
     }
 }
 
-Workflow::Actor * ElementSelectorWidget::validateActorId(QList<Workflow::Actor*> actors, U2OpStatus &os) const {
+Workflow::Actor *ElementSelectorWidget::validateActorId(QList<Workflow::Actor *> actors, U2OpStatus &os) const {
     Workflow::Actor *result = NULL;
     foreach (Workflow::Actor *actor, actors) {
         if (actor->getId() == actorId) {
@@ -93,10 +91,11 @@ Workflow::Actor * ElementSelectorWidget::validateActorId(QList<Workflow::Actor*>
 }
 
 void ElementSelectorWidget::validateDuplicates(const SelectorValue &value,
-    const QSet<QString> &valueSet, U2OpStatus &os) const {
+                                               const QSet<QString> &valueSet,
+                                               U2OpStatus &os) const {
     if (valueSet.contains(value.getValue())) {
         os.setError(QObject::tr("Duplicated selector value: %1").arg(value.getValue()));
     }
 }
 
-} // U2
+}    // namespace U2

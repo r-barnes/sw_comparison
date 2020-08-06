@@ -21,14 +21,14 @@
 
 #ifdef SW2_BUILD_WITH_CUDA
 
-#ifndef _SW_CUDA_CPP_H
-#define _SW_CUDA_CPP_H
+#    ifndef _SW_CUDA_CPP_H
+#        define _SW_CUDA_CPP_H
 
-#include <U2Core/U2Region.h>
-#include <U2Algorithm/SmithWatermanSettings.h>
+#        include <U2Algorithm/SmithWatermanSettings.h>
 
-struct resType
-{
+#        include <U2Core/U2Region.h>
+
+struct resType {
     U2::U2Region refSubseq;
     U2::U2Region patternSubseq;
     QByteArray pairAlign;
@@ -39,15 +39,13 @@ class sw_cuda_cpp {
 public:
     typedef int ScoreType;
 
-    QList<resType> launch(const char * seqLib, int seqLibLength, ScoreType* queryProfile, ScoreType qProfLen,
-                            int queryLength, ScoreType gapOpen, ScoreType gapExtension, ScoreType maxScore,
-                            U2::SmithWatermanSettings::SWResultView resultView);
-    static quint64 estimateNeededGpuMemory( int seqLibLength, ScoreType qProfLen, int queryLength, const U2::SmithWatermanSettings::SWResultView resultView);
+    QList<resType> launch(const char *seqLib, int seqLibLength, ScoreType *queryProfile, ScoreType qProfLen, int queryLength, ScoreType gapOpen, ScoreType gapExtension, ScoreType maxScore, U2::SmithWatermanSettings::SWResultView resultView);
+    static quint64 estimateNeededGpuMemory(int seqLibLength, ScoreType qProfLen, int queryLength, const U2::SmithWatermanSettings::SWResultView resultView);
     static quint64 estimateNeededRamAmount(int seqLibLength, ScoreType qProfLen, int queryLength, const U2::SmithWatermanSettings::SWResultView resultView);
     static const int MAX_BLOCKS_NUMBER;
     static const int MAX_SHARED_VECTOR_LENGTH;
 };
 
-#endif
+#    endif
 
-#endif //SW2_BUILD_WITH_CUDA
+#endif    //SW2_BUILD_WITH_CUDA

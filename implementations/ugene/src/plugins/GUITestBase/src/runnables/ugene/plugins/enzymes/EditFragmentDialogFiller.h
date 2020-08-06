@@ -22,8 +22,9 @@
 #ifndef _U2_EDIT_FRAGMENT_DIALOG_FILLER_H_
 #define _U2_EDIT_FRAGMENT_DIALOG_FILLER_H_
 
-#include "utils/GTUtilsDialog.h"
 #include <base_dialogs/GTFileDialog.h>
+
+#include "utils/GTUtilsDialog.h"
 
 namespace U2 {
 using namespace HI;
@@ -32,15 +33,14 @@ class EditFragmentDialogFiller : public Filler {
 public:
     class Parameters {
     public:
-        Parameters():
-              lSticky(false),
+        Parameters()
+            : lSticky(false),
               lCustom(false),
               lDirect(false),
               rSticky(false),
               rCustom(false),
               rDirect(false),
-              checkRComplText(false)
-        {
+              checkRComplText(false) {
         }
 
         bool lSticky;
@@ -67,6 +67,6 @@ private:
     Parameters parameters;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_EDIT_FRAGMENT_DIALOG_FILLER_H_
+#endif    // _U2_EDIT_FRAGMENT_DIALOG_FILLER_H_

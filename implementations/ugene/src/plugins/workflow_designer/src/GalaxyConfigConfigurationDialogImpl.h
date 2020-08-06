@@ -22,8 +22,9 @@
 #ifndef _U2_GALAXY_CONFIG_CONFIGURATION_DIALOG_H_
 #define _U2_GALAXY_CONFIG_CONFIGURATION_DIALOG_H_
 
-#include <U2Lang/Schema.h>
 #include <ui_GalaxyConfigConfigurationDialog.h>
+
+#include <U2Lang/Schema.h>
 
 namespace U2 {
 namespace Workflow {
@@ -31,19 +32,20 @@ namespace Workflow {
 class GalaxyConfigConfigurationDialogImpl : public QDialog, public Ui_GalaxyConfigConfigurationDialog {
     Q_OBJECT
 public:
-    GalaxyConfigConfigurationDialogImpl( const QString & schemePath, QWidget * p = NULL );
-    bool createGalaxyConfigTask(  );
+    GalaxyConfigConfigurationDialogImpl(const QString &schemePath, QWidget *p = NULL);
+    bool createGalaxyConfigTask();
+
 private:
     QString schemePath;
 
 private slots:
-    void sl_ugeneToolButtonClicked( );
-    void sl_galaxyToolButtonClicked( );
-    void sl_destinationToolButtonClicked( );
+    void sl_ugeneToolButtonClicked();
+    void sl_galaxyToolButtonClicked();
+    void sl_destinationToolButtonClicked();
 
-}; //GalaxyConfigConfigurationDialogImpl
+};    //GalaxyConfigConfigurationDialogImpl
 
-} //Workflow
-} //U2
+}    // namespace Workflow
+}    // namespace U2
 
 #endif

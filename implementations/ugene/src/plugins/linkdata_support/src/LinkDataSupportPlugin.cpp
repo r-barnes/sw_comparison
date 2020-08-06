@@ -20,20 +20,20 @@
  */
 
 #include "LinkDataSupportPlugin.h"
-#include "LinkDataScriptLibrary.h"
 
 #include <U2Core/AppContext.h>
 
+#include "LinkDataScriptLibrary.h"
+
 namespace U2 {
 
-extern "C" Q_DECL_EXPORT Plugin* U2_PLUGIN_INIT_FUNC() {
-    LinkDataSupportPlugin * plug = new LinkDataSupportPlugin();
+extern "C" Q_DECL_EXPORT Plugin *U2_PLUGIN_INIT_FUNC() {
+    LinkDataSupportPlugin *plug = new LinkDataSupportPlugin();
     return plug;
 }
 
 LinkDataSupportPlugin::LinkDataSupportPlugin()
-: Plugin(tr("LinkData Support"), tr("LinkData Support"))
-{
+    : Plugin(tr("LinkData Support"), tr("LinkData Support")) {
     AppContext::getWorkflowScriptRegistry()->registerScriptFactory(new LinkDataScriptFactory());
 }
 
@@ -41,4 +41,4 @@ void LinkDataScriptFactory::createScript(WorkflowScriptEngine *engine) {
     LinkDataScriptLibrary::init(engine);
 }
 
-} //U2
+}    // namespace U2

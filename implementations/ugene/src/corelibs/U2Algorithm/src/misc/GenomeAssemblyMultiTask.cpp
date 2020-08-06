@@ -21,33 +21,31 @@
 
 #include "GenomeAssemblyMultiTask.h"
 
+#include <QMainWindow>
+#include <QMessageBox>
+
+#include <U2Algorithm/DnaAssemblyAlgRegistry.h>
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DocumentUtils.h>
 #include <U2Core/L10n.h>
 #include <U2Core/ProjectModel.h>
 #include <U2Core/U2SafePoints.h>
 
-#include <U2Algorithm/DnaAssemblyAlgRegistry.h>
-
-#include <U2Gui/OpenViewTask.h>
 #include <U2Gui/MainWindow.h>
-
-#include <QMainWindow>
-#include <QMessageBox>
+#include <U2Gui/OpenViewTask.h>
 
 namespace U2 {
 
-GenomeAssemblyMultiTask::GenomeAssemblyMultiTask( const GenomeAssemblyTaskSettings& s)
-: Task("GenomeAssemblyMultiTask", TaskFlags_NR_FOSE_COSC | TaskFlag_ReportingIsSupported | TaskFlag_ReportingIsEnabled), settings(s),
-assemblyTask(NULL)
-{
-
+GenomeAssemblyMultiTask::GenomeAssemblyMultiTask(const GenomeAssemblyTaskSettings &s)
+    : Task("GenomeAssemblyMultiTask", TaskFlags_NR_FOSE_COSC | TaskFlag_ReportingIsSupported | TaskFlag_ReportingIsEnabled), settings(s),
+      assemblyTask(NULL) {
 }
 
 void GenomeAssemblyMultiTask::prepare() {
     // perform assembly
     QString algName = settings.algName;
-    GenomeAssemblyAlgorithmEnv* env= AppContext::getGenomeAssemblyAlgRegistry()->getAlgorithm(algName);
+    GenomeAssemblyAlgorithmEnv *env = AppContext::getGenomeAssemblyAlgRegistry()->getAlgorithm(algName);
     assert(env);
     if (env == NULL) {
         setError(QString("Algorithm %1 is not found").arg(algName));
@@ -61,20 +59,20 @@ Task::ReportResult GenomeAssemblyMultiTask::report() {
     return ReportResult_Finished;
 }
 
-QList<Task*> GenomeAssemblyMultiTask::onSubTaskFinished( Task* subTask ) {
-    QList<Task*> subTasks;
+QList<Task *> GenomeAssemblyMultiTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> subTasks;
     if (subTask->hasError() || isCanceled()) {
         return subTasks;
     }
 
     if (subTask == assemblyTask) {
-        qint64 time=(subTask->getTimeInfo().finishTime - subTask->getTimeInfo().startTime);
-        taskLog.details(QString("Assembly task time: %1").arg((double)time/(1000*1000)));
+        qint64 time = (subTask->getTimeInfo().finishTime - subTask->getTimeInfo().startTime);
+        taskLog.details(QString("Assembly task time: %1").arg((double)time / (1000 * 1000)));
     }
 
-    if ( subTask == assemblyTask && settings.openView ) {
+    if (subTask == assemblyTask && settings.openView) {
         if (assemblyTask->hasResult()) {
-            Task* openTask = AppContext::getProjectLoader()->openWithProjectTask(assemblyTask->getResultUrl());
+            Task *openTask = AppContext::getProjectLoader()->openWithProjectTask(assemblyTask->getResultUrl());
             if (openTask != NULL) {
                 subTasks << openTask;
             }
@@ -90,8 +88,7 @@ QList<Task*> GenomeAssemblyMultiTask::onSubTaskFinished( Task* subTask ) {
     return subTasks;
 }
 
-
-U2::GenomeAssemblyTask* GenomeAssemblyMultiTask::getAssemblyTask() const {
+U2::GenomeAssemblyTask *GenomeAssemblyMultiTask::getAssemblyTask() const {
     return assemblyTask;
 }
 
@@ -111,10 +108,10 @@ QString GenomeAssemblyMultiTask::generateReport() const {
 }
 
 QString GenomeAssemblyMultiTask::getResultUrl() const {
-    if(assemblyTask && assemblyTask->isFinished() && !assemblyTask->hasError()){
+    if (assemblyTask && assemblyTask->isFinished() && !assemblyTask->hasError()) {
         return assemblyTask->getResultUrl();
     }
     return "";
 }
 
-} // namespace
+}    // namespace U2

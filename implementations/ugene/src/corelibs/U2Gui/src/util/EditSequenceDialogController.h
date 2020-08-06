@@ -24,12 +24,12 @@
 
 #include <QDialog>
 
-#include <U2Core/U2Region.h>
-#include <U2Core/U1AnnotationUtils.h>
 #include <U2Core/GUrl.h>
+#include <U2Core/U1AnnotationUtils.h>
+#include <U2Core/U2Region.h>
 
-#include <U2Gui/SeqPasterWidgetController.h>
 #include <U2Gui/DialogUtils.h>
+#include <U2Gui/SeqPasterWidgetController.h>
 
 class Ui_EditSequenceDialog;
 
@@ -46,25 +46,24 @@ enum EditSequenceDialogMode {
  * A workaround to listen to enter in the pattern field and
  * make a correct (almost) tab order.
  */
-class U2GUI_EXPORT SeqPasterEventFilter : public QObject
-{
+class U2GUI_EXPORT SeqPasterEventFilter : public QObject {
     Q_OBJECT
 public:
-    SeqPasterEventFilter(QObject* parent);
+    SeqPasterEventFilter(QObject *parent);
 
 signals:
     void si_enterPressed();
 
 protected:
-    bool eventFilter(QObject* obj, QEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event);
 };
 
 struct U2GUI_EXPORT EditSequencDialogConfig {
     EditSequenceDialogMode mode;
     U2Region source;
-    const DNAAlphabet* alphabet;
+    const DNAAlphabet *alphabet;
     QByteArray initialText;
-    QVector<U2Region> selectionRegions; 
+    QVector<U2Region> selectionRegions;
     int position;
 };
 
@@ -102,12 +101,11 @@ private:
     SeqPasterWidgetController *w;
     SaveDocumentController *saveController;
     EditSequencDialogConfig config;
-    Ui_EditSequenceDialog* ui;
+    Ui_EditSequenceDialog *ui;
 
     int seqEndPos;
 };
 
-}//ns
+}    // namespace U2
 
 #endif
-

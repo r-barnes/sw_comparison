@@ -22,28 +22,30 @@
 #ifndef _DIST_MATRIX_MODEL_WIDGET_H_
 #define _DIST_MATRIX_MODEL_WIDGET_H_
 
-#include "ui_GenomeAlignerSettings.h"
 #include "U2View/DnaAssemblyGUIExtension.h"
 
-namespace U2{
+#include "ui_GenomeAlignerSettings.h"
+
+namespace U2 {
 
 class GenomeAlignerSettingsWidget : public DnaAssemblyAlgorithmMainWidget, Ui_GenomeAlignerSettings {
     Q_OBJECT
 public:
-    GenomeAlignerSettingsWidget(QWidget* parent);
-    virtual QMap<QString,QVariant> getDnaAssemblyCustomSettings() const;
+    GenomeAlignerSettingsWidget(QWidget *parent);
+    virtual QMap<QString, QVariant> getDnaAssemblyCustomSettings() const;
     virtual bool isParametersOk(QString &error) const;
-    virtual bool buildIndexUrl(const GUrl& url, bool prebuiltIndex, QString &error) const;
+    virtual bool buildIndexUrl(const GUrl &url, bool prebuiltIndex, QString &error) const;
     virtual bool isIndexOk(const GUrl &url, QString &error) const;
 
 private slots:
     void sl_onSetIndexDirButtonClicked();
     void sl_onPartSliderChanged(int value);
     void sl_onReadSliderChanged(int value);
+
 private:
     int systemSize;
 };
 
-}
+}    // namespace U2
 
 #endif

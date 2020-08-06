@@ -22,9 +22,9 @@
 #ifndef _U2_SEARCH_BOX_H_
 #define _U2_SEARCH_BOX_H_
 
-#include <U2Core/global.h>
-
 #include <QLineEdit>
+
+#include <U2Core/global.h>
 
 class QLabel;
 class QMovie;
@@ -60,5 +60,5 @@ private:
     QToolButton *clearButton;
 };
 
-} // namespace U2
-#endif // _U2_SEARCH_BOX_H_
+}    // namespace U2
+#endif    // _U2_SEARCH_BOX_H_

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "Metaphlan2Worker.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/FailTask.h>
@@ -32,10 +34,9 @@
 #include <U2Lang/WorkflowMonitor.h>
 #include <U2Lang/WorkflowUtils.h>
 
-#include "Metaphlan2Support.h"
-#include "Metaphlan2Worker.h"
-#include "Metaphlan2WorkerFactory.h"
 #include "../ngs_reads_classification/src/NgsReadsClassificationUtils.h"
+#include "Metaphlan2Support.h"
+#include "Metaphlan2WorkerFactory.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -46,25 +47,25 @@ const QString Metaphlan2Worker::BOWTIE2OUT_SUFFIX = "bowtie2out";
 const QString Metaphlan2Worker::PROFILE_DIR = "profiles";
 const QString Metaphlan2Worker::PROFILE_SUFFIX = "profile";
 
-Metaphlan2Worker::Metaphlan2Worker(Actor* actor) :
-                  BaseWorker(actor),
-                  input(nullptr) {}
+Metaphlan2Worker::Metaphlan2Worker(Actor *actor)
+    : BaseWorker(actor),
+      input(nullptr) {
+}
 
 void Metaphlan2Worker::init() {
     input = ports.value(Metaphlan2WorkerFactory::INPUT_PORT_ID);
-    SAFE_POINT(nullptr != input, QString("Port with id '%1' is nullptr")
-                              .arg(Metaphlan2WorkerFactory::INPUT_PORT_ID), );
+    SAFE_POINT(nullptr != input, QString("Port with id '%1' is nullptr").arg(Metaphlan2WorkerFactory::INPUT_PORT_ID), );
 }
 
-Task* Metaphlan2Worker::tick() {
+Task *Metaphlan2Worker::tick() {
     if (isReadyToRun()) {
         U2OpStatus2Log os;
         Metaphlan2TaskSettings settings = getSettings(os);
         CHECK(!os.hasError(), new FailTask(os.getError()));
 
-        Metaphlan2ClassifyTask* task = new Metaphlan2ClassifyTask(settings);
+        Metaphlan2ClassifyTask *task = new Metaphlan2ClassifyTask(settings);
         task->addListeners(createLogListeners());
-        connect(new TaskSignalMapper(task), SIGNAL(si_taskFinished(Task*)), SLOT(sl_taskFinished(Task*)));
+        connect(new TaskSignalMapper(task), SIGNAL(si_taskFinished(Task *)), SLOT(sl_taskFinished(Task *)));
         return task;
     }
 
@@ -76,11 +77,10 @@ Task* Metaphlan2Worker::tick() {
 }
 
 void Metaphlan2Worker::cleanup() {
-
 }
 
-void Metaphlan2Worker::sl_taskFinished(Task* task) {
-    Metaphlan2ClassifyTask* metaphlan2Task = qobject_cast<Metaphlan2ClassifyTask*>(task);
+void Metaphlan2Worker::sl_taskFinished(Task *task) {
+    Metaphlan2ClassifyTask *metaphlan2Task = qobject_cast<Metaphlan2ClassifyTask *>(task);
     if (!metaphlan2Task->isFinished() || metaphlan2Task->hasError() || metaphlan2Task->isCanceled()) {
         return;
     }
@@ -154,7 +154,7 @@ QString Metaphlan2Worker::getDefaultOutputDir() const {
     return GUrlUtils::rollFileName(defaultOutputDirectory, "_");
 }
 
-QString Metaphlan2Worker::createOutputToolDirectory(const QString& outputDirectory, const Message& message, const bool isPairedEnd, const Output out) const {
+QString Metaphlan2Worker::createOutputToolDirectory(const QString &outputDirectory, const Message &message, const bool isPairedEnd, const Output out) const {
     QStringList suffix;
     QString folder;
     switch (out) {
@@ -176,13 +176,13 @@ QString Metaphlan2Worker::createOutputToolDirectory(const QString& outputDirecto
     return result;
 }
 
-void Metaphlan2Worker::createDirectory(QString& dir) const {
+void Metaphlan2Worker::createDirectory(QString &dir) const {
     dir = GUrlUtils::rollFileName(dir, "_");
     QDir outDir(dir);
     outDir.mkpath(dir);
 }
 
-void Metaphlan2Worker::addOutputToDashboard(const QString& outputUrl, const QString& outputName) const {
+void Metaphlan2Worker::addOutputToDashboard(const QString &outputUrl, const QString &outputName) const {
     if (QFileInfo::exists(outputUrl)) {
         context->getMonitor()->addOutputFile(outputUrl, getActor()->getId());
     } else {
@@ -190,5 +190,5 @@ void Metaphlan2Worker::addOutputToDashboard(const QString& outputUrl, const QStr
     }
 }
 
-}
-}
+}    // namespace LocalWorkflow
+}    // namespace U2

@@ -22,27 +22,26 @@
 #ifndef _U2_NGS_READS_CLASSIFICATION_UTILS_H_
 #define _U2_NGS_READS_CLASSIFICATION_UTILS_H_
 
-#include "TaxonomySupport.h"
-
 #include "NgsReadsClassificationPlugin.h"
+#include "TaxonomySupport.h"
 
 namespace U2 {
 
 class U2NGS_READS_CLASSIFICATION_EXPORT NgsReadsClassificationUtils {
 public:
     static QString getBaseFileNameWithSuffixes(const QString &sourceFileUrl,
-                                           const QStringList &suffixes,
-                                           const QString &extension,
-                                           bool truncate);
+                                               const QStringList &suffixes,
+                                               const QString &extension,
+                                               bool truncate);
     static QString getBaseFileNameWithPrefixes(const QString &sourceFileUrl,
-                                           const QStringList &prefixes,
-                                           const QString &extension,
-                                           bool truncate);
+                                               const QStringList &prefixes,
+                                               const QString &extension,
+                                               bool truncate);
     static int countClassified(const LocalWorkflow::TaxonomyClassificationResult &classification);
 
     static const QString CLASSIFICATION_SUFFIX;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_NGS_READS_CLASSIFICATION_UTILS_H_
+#endif    // _U2_NGS_READS_CLASSIFICATION_UTILS_H_

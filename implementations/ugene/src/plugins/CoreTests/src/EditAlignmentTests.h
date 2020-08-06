@@ -22,15 +22,15 @@
 #ifndef _U2_EDIT_ALIGNMENT_TESTS_H_
 #define _U2_EDIT_ALIGNMENT_TESTS_H_
 
-#include <U2Core/MultipleSequenceAlignment.h>
-#include <U2Core/GUrl.h>
-
-#include <U2Test/GTest.h>
-#include <U2Test/XMLTestUtils.h>
-
 #include <QDomElement>
 
 #include <U2Algorithm/CreateSubalignmentTask.h>
+
+#include <U2Core/GUrl.h>
+#include <U2Core/MultipleSequenceAlignment.h>
+
+#include <U2Test/GTest.h>
+#include <U2Test/XMLTestUtils.h>
 
 namespace U2 {
 
@@ -69,7 +69,6 @@ private:
     int startBase, startSeq, width, height;
 };
 
-
 class GTest_AddSequenceToAlignment : public XmlTest {
     Q_OBJECT
 public:
@@ -85,22 +84,21 @@ private:
     QString seqFileName;
 };
 
-
 class GTest_RemoveColumnsOfGaps : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_RemoveColumnsOfGaps, "remove-columns-of-gaps");
     void prepare();
+
 private:
     QString inputDocCtxName;
 };
 
 class CreateSubalignimentTests {
 public:
-    static QList< XMLTestFactory* > createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
+}    // namespace U2
 
-}
-
-#endif //_U2_EDIT_ALIGNMENT_TESTS_H_
+#endif    //_U2_EDIT_ALIGNMENT_TESTS_H_

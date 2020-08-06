@@ -37,58 +37,58 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="151"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="147"/>
         <source>START SmithWatermanAlgorithmOPENCL::launch</source>
         <translation>START SmithWatermanAlgorithmOPENCL::launch</translation>
     </message>
     <message>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="308"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="307"/>
         <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="312"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="316"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="320"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="324"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="328"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="333"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="317"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="322"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="327"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="332"/>
         <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="337"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="341"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="345"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="349"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="354"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="358"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="362"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="366"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="370"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="374"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="379"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="384"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="342"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="347"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="352"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="357"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="363"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="368"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="373"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="378"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="383"/>
         <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="388"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="392"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="396"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="394"/>
         <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="400"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="404"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="408"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="412"/>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="416"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="405"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="410"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="415"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="420"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="425"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="430"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="435"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="440"/>
         <source>Kernel::setArg(%1) failed</source>
         <translation>Kernel::setArg(%1) failed</translation>
     </message>
     <message>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="423"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="452"/>
         <source>OPENCL: Running CL program</source>
         <translation>OPENCL: Running CL program</translation>
     </message>
     <message>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="605"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="651"/>
         <source>FINISH SmithWatermanAlgorithmOPENCL::launch</source>
         <translation>FINISH SmithWatermanAlgorithmOPENCL::launch</translation>
     </message>
     <message>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="609"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="655"/>
         <source>Starting cleanup OpenCL resources</source>
         <translation>Starting cleanup OpenCL resources</translation>
     </message>
     <message>
-        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="678"/>
+        <location filename="../src/SmithWatermanAlgorithmOPENCL.cpp" line="724"/>
         <source>Finish cleanup OpenCL resources</source>
         <translation>Finish cleanup OpenCL resources</translation>
     </message>
@@ -96,17 +96,17 @@
 <context>
     <name>U2::GTest_SmithWatermnan</name>
     <message>
-        <location filename="../src/SmithWatermanTests.cpp" line="223"/>
+        <location filename="../src/SmithWatermanTests.cpp" line="216"/>
         <source>**</source>
         <translation>**</translation>
     </message>
     <message>
-        <location filename="../src/SmithWatermanTests.cpp" line="226"/>
+        <location filename="../src/SmithWatermanTests.cpp" line="219"/>
         <source>,</source>
         <translation>,</translation>
     </message>
     <message>
-        <location filename="../src/SmithWatermanTests.cpp" line="233"/>
+        <location filename="../src/SmithWatermanTests.cpp" line="226"/>
         <source>..</source>
         <translation>..</translation>
     </message>
@@ -114,17 +114,17 @@
 <context>
     <name>U2::LocalWorkflow::SWPrompter</name>
     <message>
-        <location filename="../src/SWWorker.cpp" line="270"/>
+        <location filename="../src/SWWorker.cpp" line="276"/>
         <source>unset</source>
         <translation>не указан</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="299"/>
+        <location filename="../src/SWWorker.cpp" line="305"/>
         <source>translated</source>
         <translation>транслированной</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="309"/>
+        <location filename="../src/SWWorker.cpp" line="315"/>
         <source>Searches regions in each sequence from &lt;u&gt;%1&lt;/u&gt; similar to all pattern(s) taken from &lt;u&gt;%2&lt;/u&gt;. &lt;br/&gt;Percent similarity between a sequence and a pattern is %3. &lt;br/&gt;Seaches in %4 of a %5 sequence. &lt;br/&gt;Outputs the regions found annotated as %6.</source>
         <translation>В каждой последовательности, полученной от &lt;u&gt;%1&lt;/u&gt; ищет регионы, похожие на паттерн(ы) &lt;u&gt;%2&lt;/u&gt;. &lt;br/&gt;Совпадение между регионом последовательности и паттерном должно быть как минимум &lt;u&gt;%3%&lt;/u&gt;. Поиск ведется в &lt;u&gt;%4&lt;/u&gt; %5последовательности.&lt;br/&gt;Возвращает найденные регионы как &lt;u&gt;%6&lt;/u&gt; аннотации.</translation>
     </message>
@@ -257,64 +257,64 @@
         <translation>Поиск подпоследовательностей, похожих на указанный паттерн, в каждой входной последовательности (нуклеотидной или протеиновой), с учётом выбранной матрицы весов. &lt;p&gt;Используется реализация широко известного алгоритма Смита-Ватермана для локального выравнивания пар последовательностей.</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="223"/>
+        <location filename="../src/SWWorker.cpp" line="229"/>
         <source>Auto</source>
         <translation>Авто</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="285"/>
+        <location filename="../src/SWWorker.cpp" line="291"/>
         <source>both strands</source>
         <translation>в обеих цепях</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="288"/>
+        <location filename="../src/SWWorker.cpp" line="294"/>
         <source>direct strand</source>
         <translation>прямой цепи</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="291"/>
+        <location filename="../src/SWWorker.cpp" line="297"/>
         <source>complementary strand</source>
         <translation>комплементарной цепи</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="389"/>
+        <location filename="../src/SWWorker.cpp" line="396"/>
         <source>Null sequence supplied to Smith-Waterman: %1</source>
         <translation>Null sequence supplied to Smith-Waterman: %1</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="486"/>
+        <location filename="../src/SWWorker.cpp" line="492"/>
         <source>Incorrect value: pattern alphabet doesn&apos;t match sequence alphabet </source>
         <translation>Incorrect value: pattern alphabet doesn&apos;t match sequence alphabet </translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="487"/>
+        <location filename="../src/SWWorker.cpp" line="493"/>
         <source>Pattern symbols not matching to alphabet</source>
         <translation>Pattern symbols not matching to alphabet</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="426"/>
-        <location filename="../src/SWWorker.cpp" line="427"/>
+        <location filename="../src/SWWorker.cpp" line="433"/>
+        <location filename="../src/SWWorker.cpp" line="434"/>
         <source>Incorrect value: score value must lay between 0 and 100</source>
         <translation>Incorrect value: score value must lay between 0 and 100</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="437"/>
+        <location filename="../src/SWWorker.cpp" line="444"/>
         <source>Incorrect value:  filter name incorrect, default value used</source>
         <translation>Incorrect value:  filter name incorrect, default value used</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="444"/>
+        <location filename="../src/SWWorker.cpp" line="451"/>
         <source>Incorrect value: result name is empty, default value used</source>
         <translation>Incorrect value: result name is empty, default value used</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="459"/>
+        <location filename="../src/SWWorker.cpp" line="465"/>
         <source>Could not find complement translation for %1, searching only direct strand</source>
         <translation>Could not find complement translation for %1, searching only direct strand</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="398"/>
-        <location filename="../src/SWWorker.cpp" line="399"/>
+        <location filename="../src/SWWorker.cpp" line="405"/>
+        <location filename="../src/SWWorker.cpp" line="406"/>
         <source>Invalid value: weight matrix with given name not exists</source>
         <translation>Invalid value: weight matrix with given name not exists</translation>
     </message>
@@ -334,48 +334,48 @@
         <translation>Входная последовательность для поиска в ней.</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="361"/>
+        <location filename="../src/SWWorker.cpp" line="368"/>
         <source>Null pattern supplied to Smith-Waterman: %1</source>
         <translation>Null pattern supplied to Smith-Waterman: %1</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="409"/>
+        <location filename="../src/SWWorker.cpp" line="416"/>
         <source>Can&apos;t find weight matrix name: &apos;%1&apos;!</source>
         <translation>Can&apos;t find weight matrix name: &apos;%1&apos;!</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="409"/>
+        <location filename="../src/SWWorker.cpp" line="416"/>
         <source>&lt;empty&gt;</source>
         <translation>&lt;empty&gt;</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="416"/>
+        <location filename="../src/SWWorker.cpp" line="423"/>
         <source>Wrong matrix selected. Alphabets do not match</source>
         <translation>Wrong matrix selected. Alphabets do not match</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="475"/>
+        <location filename="../src/SWWorker.cpp" line="481"/>
         <source>SmithWaterman algorithm not found: %1</source>
         <translation>SmithWaterman algorithm not found: %1</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="480"/>
-        <location filename="../src/SWWorker.cpp" line="481"/>
+        <location filename="../src/SWWorker.cpp" line="486"/>
+        <location filename="../src/SWWorker.cpp" line="487"/>
         <source>Incorrect value: search pattern, pattern is empty</source>
         <translation>Incorrect value: search pattern, pattern is empty</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="502"/>
+        <location filename="../src/SWWorker.cpp" line="509"/>
         <source>smith_waterman_task</source>
         <translation>Smith waterman task</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="509"/>
+        <location filename="../src/SWWorker.cpp" line="516"/>
         <source>Smith waterman subtasks</source>
         <translation>Smith waterman subtasks</translation>
     </message>
     <message>
-        <location filename="../src/SWWorker.cpp" line="552"/>
+        <location filename="../src/SWWorker.cpp" line="559"/>
         <source>Found %1 matches of pattern &apos;%2&apos;</source>
         <translation>Found %1 matches of pattern &apos;%2&apos;</translation>
     </message>
@@ -383,27 +383,27 @@
 <context>
     <name>U2::PairwiseAlignmentSmithWatermanTask</name>
     <message>
-        <location filename="../src/SWAlgorithmTask.cpp" line="561"/>
+        <location filename="../src/SWAlgorithmTask.cpp" line="556"/>
         <source>Substitution matrix is empty</source>
         <translation>Substitution matrix is empty</translation>
     </message>
     <message>
-        <location filename="../src/SWAlgorithmTask.cpp" line="774"/>
+        <location filename="../src/SWAlgorithmTask.cpp" line="765"/>
         <source>Smith Waterman2 SequenceWalker</source>
         <translation>Smith Waterman2 SequenceWalker</translation>
     </message>
     <message>
-        <location filename="../src/SWAlgorithmTask.cpp" line="803"/>
+        <location filename="../src/SWAlgorithmTask.cpp" line="796"/>
         <source>Not enough memory on CUDA-enabled device. The space required is %1 bytes, but only %2 bytes are available. Device id: %3, device name: %4</source>
         <translation>Not enough memory on CUDA-enabled device. The space required is %1 bytes, but only %2 bytes are available. Device id: %3, device name: %4</translation>
     </message>
     <message>
-        <location filename="../src/SWAlgorithmTask.cpp" line="809"/>
+        <location filename="../src/SWAlgorithmTask.cpp" line="801"/>
         <source>The Smith-Waterman search allocates ~%1 bytes (%2 Mb) on CUDA device</source>
         <translation>The Smith-Waterman search allocates ~%1 bytes (%2 Mb) on CUDA device</translation>
     </message>
     <message>
-        <location filename="../src/SWAlgorithmTask.cpp" line="866"/>
+        <location filename="../src/SWAlgorithmTask.cpp" line="856"/>
         <source>%1 results found</source>
         <translation>%1 results found</translation>
     </message>
@@ -411,157 +411,157 @@
 <context>
     <name>U2::QDSWActor</name>
     <message>
-        <location filename="../src/SWQuery.cpp" line="92"/>
+        <location filename="../src/SWQuery.cpp" line="93"/>
         <source>matches with &lt;u&gt;at least %1 score&lt;/u&gt;</source>
         <translation>с оценкой не менее %1</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="92"/>
+        <location filename="../src/SWQuery.cpp" line="94"/>
         <source>exact matches</source>
         <translation>точным совпадением</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="96"/>
+        <location filename="../src/SWQuery.cpp" line="99"/>
         <source>both strands</source>
         <translation>все</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="97"/>
+        <location filename="../src/SWQuery.cpp" line="102"/>
         <source>direct strand</source>
         <translation>только прямые</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="98"/>
+        <location filename="../src/SWQuery.cpp" line="105"/>
         <source>complement strand</source>
         <translation>только комплементарные</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="102"/>
+        <location filename="../src/SWQuery.cpp" line="111"/>
         <source>Finds pattern &lt;u&gt;%1&lt;/u&gt;.&lt;br&gt;Looks for &lt;u&gt;%2&lt;/u&gt; in &lt;u&gt;%3&lt;/u&gt;.</source>
         <translation>Искать паттерн &lt;u&gt;%1&lt;/u&gt;.&lt;br&gt;Искать совпадения &lt;u&gt;%2&lt;/u&gt; в &lt;u&gt;%3&lt;/u&gt;.</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="130"/>
+        <location filename="../src/SWQuery.cpp" line="139"/>
         <source>%1: percent of score out of bounds.</source>
         <translation>%1: percent of score out of bounds.</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="140"/>
+        <location filename="../src/SWQuery.cpp" line="149"/>
         <source>%1: incorrect result filter.</source>
         <translation>%1: incorrect result filter.</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="145"/>
+        <location filename="../src/SWQuery.cpp" line="154"/>
         <source>%1: pattern is empty.</source>
         <translation>%1: pattern is empty.</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="151"/>
+        <location filename="../src/SWQuery.cpp" line="160"/>
         <source>%1: can not find %2.</source>
         <translation>%1: can not find %2.</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="195"/>
+        <location filename="../src/SWQuery.cpp" line="203"/>
         <source>SSearch</source>
         <translation>SSearch</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="203"/>
+        <location filename="../src/SWQuery.cpp" line="215"/>
         <source>smith_waterman_task</source>
         <translation>Поиск Смита-Ватермана</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="233"/>
+        <location filename="../src/SWQuery.cpp" line="245"/>
         <source>Smith-Waterman</source>
         <translation>Поиск Смита-Ватермана</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="234"/>
+        <location filename="../src/SWQuery.cpp" line="246"/>
         <source>Finds regions of similarity to the specified pattern in each input sequence (nucleotide or protein one). &lt;p&gt;Under the hood is the well-known Smith-Waterman algorithm for performing local sequence alignment.</source>
         <translation> Поиск подпоследовательностей, похожих на указанный паттерн, в каждой входной последовательности (нуклеотидной или протеиновой), с учётом выбранной матрицы весов. Используется реализация широко известного алгоритма Смита-Ватермана для локального выравнивания пар последовательностей.</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="243"/>
+        <location filename="../src/SWQuery.cpp" line="255"/>
         <source>Pattern</source>
         <translation>Паттерн</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="243"/>
+        <location filename="../src/SWQuery.cpp" line="255"/>
         <source>A subsequence pattern to look for.</source>
         <translation>Паттерн для поиска интересующих подпоследовательностей.</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="244"/>
+        <location filename="../src/SWQuery.cpp" line="256"/>
         <source>Min score</source>
         <translation>Мин оценка</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="244"/>
+        <location filename="../src/SWQuery.cpp" line="256"/>
         <source>The search stringency.</source>
         <translation>Строгость поиска.</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="245"/>
+        <location filename="../src/SWQuery.cpp" line="257"/>
         <source>Algorithm</source>
         <translation>Алгоритм</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="245"/>
+        <location filename="../src/SWQuery.cpp" line="257"/>
         <source>Algorithm version.</source>
         <translation>Выбор версии алгоритма.</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="246"/>
+        <location filename="../src/SWQuery.cpp" line="258"/>
         <source>Search in translation</source>
         <translation>Искать в трансляции</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="246"/>
+        <location filename="../src/SWQuery.cpp" line="258"/>
         <source>Translate a supplied nucleotide sequence to protein then search in the translated sequence.</source>
         <translation>Транслировать входную нуклеотидную последовательность в протеиновую, искать указанный паттерн в последней.</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="247"/>
+        <location filename="../src/SWQuery.cpp" line="259"/>
         <source>Scoring matrix</source>
         <translation>Матрица</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="247"/>
+        <location filename="../src/SWQuery.cpp" line="259"/>
         <source>The scoring matrix.</source>
         <translation> Матрица весов для алгоритма.</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="248"/>
+        <location filename="../src/SWQuery.cpp" line="260"/>
         <source>Filter results</source>
         <translation>Фильтр результатов</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="248"/>
+        <location filename="../src/SWQuery.cpp" line="260"/>
         <source>Result filtering strategy.</source>
         <translation> Дополнительная фильтрация результатов.</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="249"/>
+        <location filename="../src/SWQuery.cpp" line="261"/>
         <source>Gap open score</source>
         <translation>Вес открытия пробела</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="249"/>
+        <location filename="../src/SWQuery.cpp" line="261"/>
         <source>Gap open score.</source>
         <translation>Вес открытия пробела.</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="250"/>
+        <location filename="../src/SWQuery.cpp" line="262"/>
         <source>Gap ext score</source>
         <translation>Вес продления пробела</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="250"/>
+        <location filename="../src/SWQuery.cpp" line="262"/>
         <source>Gap extension score.</source>
         <translation>Вес продления пробела.</translation>
     </message>
     <message>
-        <location filename="../src/SWQuery.cpp" line="281"/>
+        <location filename="../src/SWQuery.cpp" line="299"/>
         <source>Auto</source>
         <translation>Авто</translation>
     </message>
@@ -569,7 +569,7 @@
 <context>
     <name>U2::SWAlgorithmADVContext</name>
     <message>
-        <location filename="../src/SWAlgorithmPlugin.cpp" line="165"/>
+        <location filename="../src/SWAlgorithmPlugin.cpp" line="155"/>
         <source>Find pattern [Smith-Waterman]...</source>
         <translation>Поиск подстроки (алгоритм Смита-Ватермана)...</translation>
     </message>
@@ -577,12 +577,12 @@
 <context>
     <name>U2::SWAlgorithmPlugin</name>
     <message>
-        <location filename="../src/SWAlgorithmPlugin.cpp" line="77"/>
+        <location filename="../src/SWAlgorithmPlugin.cpp" line="75"/>
         <source>Optimized Smith-Waterman </source>
         <translation>Оптимизированный алгроитм Смита-Ватермана</translation>
     </message>
     <message>
-        <location filename="../src/SWAlgorithmPlugin.cpp" line="77"/>
+        <location filename="../src/SWAlgorithmPlugin.cpp" line="75"/>
         <source>Various implementations of Smith-Waterman algorithm</source>
         <translation>Различные реализации алгоритма Смита-Ватермана</translation>
     </message>
@@ -590,22 +590,22 @@
 <context>
     <name>U2::SWAlgorithmTask</name>
     <message>
-        <location filename="../src/SWAlgorithmTask.cpp" line="198"/>
+        <location filename="../src/SWAlgorithmTask.cpp" line="204"/>
         <source>Smith Waterman2 SequenceWalker</source>
         <translation>Smith Waterman2 SequenceWalker</translation>
     </message>
     <message>
-        <location filename="../src/SWAlgorithmTask.cpp" line="212"/>
+        <location filename="../src/SWAlgorithmTask.cpp" line="218"/>
         <source>Not enough memory on CUDA-enabled device. The space required is %1 bytes, but only %2 bytes are available. Device id: %3, device name: %4</source>
         <translation>Not enough memory on CUDA-enabled device. The space required is %1 bytes, but only %2 bytes are available. Device id: %3, device name: %4</translation>
     </message>
     <message>
-        <location filename="../src/SWAlgorithmTask.cpp" line="218"/>
+        <location filename="../src/SWAlgorithmTask.cpp" line="223"/>
         <source>The Smith-Waterman search allocates ~%1 bytes (%2 Mb) on CUDA device</source>
         <translation>The Smith-Waterman search allocates ~%1 bytes (%2 Mb) on CUDA device</translation>
     </message>
     <message>
-        <location filename="../src/SWAlgorithmTask.cpp" line="424"/>
+        <location filename="../src/SWAlgorithmTask.cpp" line="420"/>
         <source>%1 results found</source>
         <translation>%1 results found</translation>
     </message>

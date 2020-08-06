@@ -20,6 +20,7 @@
  */
 
 #include <QApplication>
+#include <QMessageBox>
 
 #include <U2Algorithm/OpenCLGpuRegistry.h>
 
@@ -49,20 +50,29 @@
 using namespace U2;
 
 static void registerCoreServices() {
-    ServiceRegistry* sr = AppContext::getServiceRegistry();
-    TaskScheduler* ts = AppContext::getTaskScheduler();
-    Q_UNUSED(sr); Q_UNUSED(ts);
+    ServiceRegistry *sr = AppContext::getServiceRegistry();
+    TaskScheduler *ts = AppContext::getTaskScheduler();
+    Q_UNUSED(sr);
+    Q_UNUSED(ts);
     // unlike ugene's UI Main.cpp we don't create PluginViewerImpl, ProjectViewImpl
-//    ts->registerTopLevelTask(sr->registerServiceTask(new ScriptRegistryService()));
+    //    ts->registerTopLevelTask(sr->registerServiceTask(new ScriptRegistryService()));
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
+    bool useGui = true;
+#if defined(Q_OS_UNIX)
+    useGui = (getenv("DISPLAY") != 0);
+    if (!useGui && argc==1) {
+        printf("Use \"ugeneui\" to start Unipro UGENE graphical interface or \"ugenecl\" to use the command-line interface.");
+        return 1;
+    }
+#endif
+
     CrashHandler::setupHandler();
     CrashHandler::setSendCrashReports(false);
 
-    const char* build = QT_VERSION_STR, *runtime = qVersion();
-    if (strcmp(build, runtime) > 0){
+    const char *build = QT_VERSION_STR, *runtime = qVersion();
+    if (strcmp(build, runtime) > 0) {
         printf("Installed Qt version must be %s or greater \r\n", QT_VERSION_STR);
         return -1;
     }
@@ -71,30 +81,43 @@ int main(int argc, char **argv)
 
     QApplication app(argc, argv);
 
-    AppContextImpl* appContext = AppContextImpl::getApplicationContext();
+    // User lauches the program manually
+    if (argc == 1) {
+        if (useGui) {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Information");
+            msgBox.setText("Use \"ugeneui\" to start Unipro UGENE graphical interface \nor \"ugenecl\" to use the command-line interface.");
+            msgBox.exec();
+        } else {
+            printf("Use \"ugeneui\" to start Unipro UGENE graphical interface or \"ugenecl\" to use the command-line interface.");
+        }
+        return 1;
+    }
+
+    AppContextImpl *appContext = AppContextImpl::getApplicationContext();
     appContext->setWorkingDirectoryPath(QCoreApplication::applicationDirPath());
 
     appContext->setGUIMode(true);
 
     QCoreApplication::addLibraryPath(AppContext::getWorkingDirectoryPath());
-    QString devPluginsPath = QDir(AppContext::getWorkingDirectoryPath()+"/../../installer/windows").absolutePath();
-    QCoreApplication::addLibraryPath(devPluginsPath); //dev version
+    QString devPluginsPath = QDir(AppContext::getWorkingDirectoryPath() + "/../../installer/windows").absolutePath();
+    QCoreApplication::addLibraryPath(devPluginsPath);    //dev version
 
     // parse all cmdline arguments
-    CMDLineRegistry* cmdLineRegistry = new CMDLineRegistry(app.arguments());
+    CMDLineRegistry *cmdLineRegistry = new CMDLineRegistry(app.arguments());
     appContext->setCMDLineRegistry(cmdLineRegistry);
 
     //1 create settings
-    SettingsImpl* globalSettings = new SettingsImpl(QSettings::SystemScope);
+    SettingsImpl *globalSettings = new SettingsImpl(QSettings::SystemScope);
     appContext->setGlobalSettings(globalSettings);
 
-    SettingsImpl * settings = new SettingsImpl( QSettings::UserScope );
-    appContext->setSettings( settings );
+    SettingsImpl *settings = new SettingsImpl(QSettings::UserScope);
+    appContext->setSettings(settings);
 
-    AppSettings* appSettings = new AppSettingsImpl();
+    AppSettings *appSettings = new AppSettingsImpl();
     appContext->setAppSettings(appSettings);
 
-    UserAppsSettings* userAppSettings = AppContext::getAppSettings()->getUserAppsSettings();
+    UserAppsSettings *userAppSettings = AppContext::getAppSettings()->getUserAppsSettings();
 
     if (cmdLineRegistry->hasParameter(CMDLineCoreOptions::DOWNLOAD_DIR)) {
         userAppSettings->setDownloadDirPath(FileAndDirectoryUtils::getAbsolutePath(cmdLineRegistry->getParameterValue(CMDLineCoreOptions::DOWNLOAD_DIR)));
@@ -113,21 +136,21 @@ int main(int argc, char **argv)
     }
     // 2 create functional components of ugene
 
-    ResourceTracker* resTrack = new ResourceTracker();
+    ResourceTracker *resTrack = new ResourceTracker();
     appContext->setResourceTracker(resTrack);
 
-    TaskSchedulerImpl* ts = new TaskSchedulerImpl(appSettings->getAppResourcePool());
+    TaskSchedulerImpl *ts = new TaskSchedulerImpl(appSettings->getAppResourcePool());
     appContext->setTaskScheduler(ts);
 
-    PluginSupportImpl* psp = new PluginSupportImpl();
+    PluginSupportImpl *psp = new PluginSupportImpl();
     appContext->setPluginSupport(psp);
 
-    ServiceRegistryImpl* sreg = new ServiceRegistryImpl() ;
+    ServiceRegistryImpl *sreg = new ServiceRegistryImpl();
     appContext->setServiceRegistry(sreg);
 
 #ifdef OPENCL_SUPPORT
-    OpenCLGpuRegistry * oclgr = new OpenCLGpuRegistry();
-    appContext->setOpenCLGpuRegistry( oclgr );
+    OpenCLGpuRegistry *oclgr = new OpenCLGpuRegistry();
+    appContext->setOpenCLGpuRegistry(oclgr);
 #endif
 
     registerCoreServices();

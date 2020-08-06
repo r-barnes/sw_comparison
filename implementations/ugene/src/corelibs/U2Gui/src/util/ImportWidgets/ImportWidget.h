@@ -26,7 +26,7 @@
 
 namespace U2 {
 
-#define ImportHint_FormatId  "import-hint-format-id"
+#define ImportHint_FormatId "import-hint-format-id"
 #define ImportHint_DestinationUrl "import-hint-destination-url"
 
 class SaveDocumentController;
@@ -42,6 +42,6 @@ protected:
     SaveDocumentController *saveController;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_IMPORT_WIDGET_H_
+#endif    // _U2_IMPORT_WIDGET_H_

@@ -19,18 +19,19 @@
  * MA 02110-1301, USA.
  */
 
-#include <QDir>
-
-#include "SnpEffSupport.h"
 #include "SnpEffTask.h"
+
+#include <QDir>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
-#include <U2Core/UserApplicationsSettings.h>
-#include <U2Core/U2SafePoints.h>
 #include <U2Core/ExternalToolRegistry.h>
-#include <U2Core/GUrlUtils.h>
 #include <U2Core/ExternalToolRunTask.h>
+#include <U2Core/GUrlUtils.h>
+#include <U2Core/U2SafePoints.h>
+#include <U2Core/UserApplicationsSettings.h>
+
+#include "SnpEffSupport.h"
 
 namespace U2 {
 
@@ -46,13 +47,12 @@ const QStringList SnpEffParser::stringsToIgnore = SnpEffParser::initStringsToIgn
 SnpEffParser::SnpEffParser(const QString &genome)
     : ExternalToolLogParser(),
       genome(genome) {
-
 }
 
-void SnpEffParser::parseOutput( const QString& partOfLog ) {
+void SnpEffParser::parseOutput(const QString &partOfLog) {
     lastPartOfLog = partOfLog.split(QRegExp("(\n|\r)"));
 
-    foreach(const QString &buf, lastPartOfLog) {
+    foreach (const QString &buf, lastPartOfLog) {
         if (buf.contains("Could not reserve enough space for object heap", Qt::CaseInsensitive) ||
             buf.contains("Invalid maximum heap size", Qt::CaseInsensitive) ||
             buf.contains("Unable to allocate", Qt::CaseInsensitive) ||
@@ -62,9 +62,9 @@ void SnpEffParser::parseOutput( const QString& partOfLog ) {
     }
 }
 
-void SnpEffParser::parseErrOutput( const QString& partOfLog ) {
+void SnpEffParser::parseErrOutput(const QString &partOfLog) {
     lastPartOfLog = partOfLog.split(QRegExp("(\n|\r)"));
-    lastPartOfLog.first() = lastErrLine+lastPartOfLog.first();
+    lastPartOfLog.first() = lastErrLine + lastPartOfLog.first();
     lastErrLine = lastPartOfLog.takeLast();
 
     foreach (const QString &buf, lastPartOfLog) {
@@ -118,55 +118,50 @@ QStringList SnpEffParser::initStringsToIgnore() {
     return result;
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 //SnpEffTask
 SnpEffTask::SnpEffTask(const SnpEffSetting &settings)
-:ExternalToolSupportTask(QString("snpEff for %1").arg(settings.inputUrl), TaskFlags_FOSE_COSC)
-,settings(settings)
-{
-
+    : ExternalToolSupportTask(QString("snpEff for %1").arg(settings.inputUrl), TaskFlags_FOSE_COSC), settings(settings) {
 }
 
-void SnpEffTask::prepare(){
-
-    if (settings.inputUrl.isEmpty()){
+void SnpEffTask::prepare() {
+    if (settings.inputUrl.isEmpty()) {
         setError("No input URL");
-        return ;
+        return;
     }
 
     const QDir outDir = QFileInfo(settings.outDir).absoluteDir();
     if (!outDir.exists()) {
         setError("Folder does not exist: " + outDir.absolutePath());
-        return ;
+        return;
     }
 
-    if(settings.genome.isEmpty()){
+    if (settings.genome.isEmpty()) {
         setError("No path to genome lengths");
-        return ;
+        return;
     }
 
     const QStringList args = getParameters(stateInfo);
     CHECK_OP(stateInfo, );
 
-    ExternalToolRunTask* etTask = new ExternalToolRunTask(SnpEffSupport::ET_SNPEFF_ID, args, new SnpEffParser(settings.genome), settings.outDir, QStringList(), QString(), true);
+    ExternalToolRunTask *etTask = new ExternalToolRunTask(SnpEffSupport::ET_SNPEFF_ID, args, new SnpEffParser(settings.genome), settings.outDir, QStringList(), QString(), true);
     setListenerForTask(etTask);
-    etTask->setStandartOutputFile( getResFileUrl() );
+    etTask->setStandartOutputFile(getResFileUrl());
     addSubTask(etTask);
 }
 
-void SnpEffTask::run(){
+void SnpEffTask::run() {
     CHECK_OP(stateInfo, );
 
     const QFileInfo resFile(getResFileUrl());
     if (!resFile.exists()) {
         setError("Result file does not exist: " + resFile.absoluteFilePath());
-        return ;
+        return;
     }
     resultUrl = getResFileUrl();
 }
 
-QString SnpEffTask::getSummaryUrl(){
+QString SnpEffTask::getSummaryUrl() {
     QString res = "";
     const QFileInfo resFile = QFileInfo(settings.outDir + "/" + SUMMARY_FILE);
     if (!resFile.exists()) {
@@ -176,13 +171,13 @@ QString SnpEffTask::getSummaryUrl(){
     return res;
 }
 
-QString SnpEffTask::getResFileUrl(){
+QString SnpEffTask::getResFileUrl() {
     QString res = "";
     res = settings.outDir + "/" + RES_FILE_BASE + "." + settings.outFormat;
     return res;
 }
 
-QString SnpEffTask::getDataPath() const{
+QString SnpEffTask::getDataPath() const {
     CHECK(NULL != AppContext::getAppSettings(), QString());
     CHECK(NULL != AppContext::getAppSettings()->getUserAppsSettings(), QString());
     CHECK(NULL != AppContext::getExternalToolRegistry(), QString());
@@ -197,7 +192,7 @@ QString SnpEffTask::getDataPath() const{
     return AppContext::getAppSettings()->getUserAppsSettings()->getDownloadDirPath() + "/" + "snpeff_data_" + AppContext::getExternalToolRegistry()->getById(SnpEffSupport::ET_SNPEFF_ID)->getVersion();
 }
 
-QStringList SnpEffTask::getParameters(U2OpStatus & os) const{
+QStringList SnpEffTask::getParameters(U2OpStatus &os) const {
     QStringList res;
 
     res << QString("-dataDir");
@@ -206,10 +201,10 @@ QStringList SnpEffTask::getParameters(U2OpStatus & os) const{
 #ifdef Q_OS_WIN
     additionalSlash = "/";
 #endif
-    QString dataPath=getDataPath();
-    if (dataPath.isEmpty()){
+    QString dataPath = getDataPath();
+    if (dataPath.isEmpty()) {
         os.setError(tr("SNPEff dataDir is not initialized."));
-    }else{
+    } else {
         res << additionalSlash + dataPath;
     }
 
@@ -222,19 +217,19 @@ QStringList SnpEffTask::getParameters(U2OpStatus & os) const{
     res << QString("-upDownStreamLen");
     res << settings.updownLength;
 
-    if(settings.canon){
+    if (settings.canon) {
         res << QString("-canon");
     }
 
-    if(settings.hgvs){
+    if (settings.hgvs) {
         res << QString("-hgvs");
     }
 
-    if(settings.lof){
+    if (settings.lof) {
         res << QString("-lof");
     }
 
-    if(settings.motif){
+    if (settings.motif) {
         res << QString("-motif");
     }
 
@@ -247,5 +242,4 @@ QStringList SnpEffTask::getParameters(U2OpStatus & os) const{
     return res;
 }
 
-} //namespace U2
-
+}    //namespace U2

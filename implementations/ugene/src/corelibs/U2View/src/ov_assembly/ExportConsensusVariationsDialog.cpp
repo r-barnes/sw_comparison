@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportConsensusVariationsDialog.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 
@@ -32,16 +34,13 @@
 #include <U2Gui/RegionSelector.h>
 #include <U2Gui/SaveDocumentController.h>
 
-#include "ExportConsensusVariationsDialog.h"
-
 namespace U2 {
 
-ExportConsensusVariationsDialog::ExportConsensusVariationsDialog(QWidget *p, const ExportConsensusVariationsTaskSettings &settings_, const U2Region & visibleRegion)
-    : QDialog(p), settings(settings_)
-{
+ExportConsensusVariationsDialog::ExportConsensusVariationsDialog(QWidget *p, const ExportConsensusVariationsTaskSettings &settings_, const U2Region &visibleRegion)
+    : QDialog(p), settings(settings_) {
     setupUi(this);
     setWindowTitle(tr("Export Consensus Variations"));
-    new HelpButton(this, buttonBox, "24742516");
+    new HelpButton(this, buttonBox, "46500195");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Export"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
     //hide for this dialog
@@ -89,32 +88,32 @@ void ExportConsensusVariationsDialog::accept() {
     settings.keepGaps = keepGapsCheckBox->isChecked();
 
     QString algoId = algorithmComboBox->currentText();
-    if(algoId != settings.consensusAlgorithm->getId()) {
-        AssemblyConsensusAlgorithmFactory * f = AppContext::getAssemblyConsensusAlgorithmRegistry()->getAlgorithmFactory(algoId);
-        SAFE_POINT(f != NULL, QString("ExportConsensusDialog: consensus algorithm factory %1 not found").arg(algoId),);
+    if (algoId != settings.consensusAlgorithm->getId()) {
+        AssemblyConsensusAlgorithmFactory *f = AppContext::getAssemblyConsensusAlgorithmRegistry()->getAlgorithmFactory(algoId);
+        SAFE_POINT(f != NULL, QString("ExportConsensusDialog: consensus algorithm factory %1 not found").arg(algoId), );
         settings.consensusAlgorithm = QSharedPointer<AssemblyConsensusAlgorithm>(f->createAlgorithm());
     }
 
     int modeIdx = variationModeComboBox->currentIndex();
-    if (modeIdx == -1){
+    if (modeIdx == -1) {
         QMessageBox::critical(this, tr("Error!"), tr("Select consensus variation mode"));
         variationModeComboBox->setFocus(Qt::OtherFocusReason);
         return;
     }
     settings.mode = static_cast<CallVariationsMode>(variationModeComboBox->itemData(modeIdx).toInt());
 
-    if(!isRegionOk){
+    if (!isRegionOk) {
         regionSelector->showErrorMessage();
         regionSelector->setFocus(Qt::OtherFocusReason);
         return;
     }
     // TODO: check if exists
-    if(settings.fileName.isEmpty()) {
+    if (settings.fileName.isEmpty()) {
         QMessageBox::critical(this, tr("Error!"), tr("Select destination file"));
         filepathLineEdit->setFocus(Qt::OtherFocusReason);
         return;
     }
-    if(settings.seqObjName.isEmpty()) {
+    if (settings.seqObjName.isEmpty()) {
         QMessageBox::critical(this, tr("Error!"), tr("Sequence name cannot be empty"));
         sequenceNameLineEdit->setFocus(Qt::OtherFocusReason);
         return;
@@ -145,4 +144,4 @@ void ExportConsensusVariationsDialog::initSaveController() {
     saveController = new SaveDocumentController(config, formatConstraints, this);
 }
 
-} // namespace
+}    // namespace U2

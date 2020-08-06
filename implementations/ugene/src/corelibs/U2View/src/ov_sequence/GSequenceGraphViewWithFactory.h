@@ -22,57 +22,55 @@
 #ifndef _U2_GSEQUENCE_GRAPH_VIEW_WITH_FACTORY_H_
 #define _U2_GSEQUENCE_GRAPH_VIEW_WITH_FACTORY_H_
 
-
 #include <U2Gui/ObjectViewModel.h>
 
 #include <U2View/ADVGraphModel.h>
-#include <U2View/GSequenceGraphView.h>
 #include <U2View/ADVSingleSequenceWidget.h>
-
+#include <U2View/GSequenceGraphView.h>
 
 namespace U2 {
-
 
 /**
  * Factory that can be used to draw a graph
  */
-class U2VIEW_EXPORT GSequenceGraphFactory : public QObject
-{
+class U2VIEW_EXPORT GSequenceGraphFactory : public QObject {
 public:
-    GSequenceGraphFactory(const QString& _name, QObject* p)
-        : QObject(p), graphName(_name){}
+    GSequenceGraphFactory(const QString &_name, QObject *p)
+        : QObject(p), graphName(_name) {
+    }
 
-    virtual QList<QSharedPointer<GSequenceGraphData> > createGraphs(GSequenceGraphView* v) = 0;
+    virtual QList<QSharedPointer<GSequenceGraphData>> createGraphs(GSequenceGraphView *v) = 0;
 
-    virtual GSequenceGraphDrawer* getDrawer(GSequenceGraphView* v);
+    virtual GSequenceGraphDrawer *getDrawer(GSequenceGraphView *v);
 
-    virtual bool isEnabled(const U2SequenceObject* o) const  = 0;
+    virtual bool isEnabled(const U2SequenceObject *o) const = 0;
 
-    const QString& getGraphName() const {return graphName;}
+    const QString &getGraphName() const {
+        return graphName;
+    }
 
 protected:
     QString graphName;
 };
 
-
 /**
  * Graph view for a sequence with the access to the graph factory
  * NOTE: The access to factory would be required for saving cutoffs as annotations
  */
-class U2VIEW_EXPORT GSequenceGraphViewWithFactory : public GSequenceGraphView
-{
+class U2VIEW_EXPORT GSequenceGraphViewWithFactory : public GSequenceGraphView {
 public:
-    GSequenceGraphViewWithFactory(ADVSingleSequenceWidget*, GSequenceGraphFactory*);
-    GSequenceGraphFactory* getFactory() const {return factory;}
+    GSequenceGraphViewWithFactory(ADVSingleSequenceWidget *, GSequenceGraphFactory *);
+    GSequenceGraphFactory *getFactory() const {
+        return factory;
+    }
 
 protected:
-    virtual void addActionsToGraphMenu(QMenu* graphMenu);
+    virtual void addActionsToGraphMenu(QMenu *graphMenu);
 
 private:
-    GSequenceGraphFactory* factory;
+    GSequenceGraphFactory *factory;
 };
 
-} // namespace
-
+}    // namespace U2
 
 #endif

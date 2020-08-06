@@ -35,8 +35,8 @@ public:
         x32,
         x64
     };
-    JavaSupport(const QString& id, const QString &name, const QString &path = "");
-    void extractAdditionalParameters(const QString& output);
+    JavaSupport(const QString &id, const QString &name, const QString &path = "");
+    void extractAdditionalParameters(const QString &output);
     Architecture getArchitecture() const;
 
     static const QString ET_JAVA;
@@ -52,6 +52,6 @@ private:
     static const QStringList RUN_PARAMETERS;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_JAVASUPPORT_H_
+#endif    // _U2_JAVASUPPORT_H_

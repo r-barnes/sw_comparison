@@ -22,11 +22,12 @@
 #ifndef _U2_MSAEditor_TREE_VIEWER_H_
 #define _U2_MSAEditor_TREE_VIEWER_H_
 
-#include "U2View/TreeViewer.h"
 #include <QGraphicsLineItem>
-
 #include <QMap>
+
 #include <U2Algorithm/CreatePhyTreeSettings.h>
+
+#include "U2View/TreeViewer.h"
 
 namespace U2 {
 
@@ -40,7 +41,10 @@ public:
     ColorGenerator(int countOfColors, qreal lightness);
     void setCountOfColors(int counts);
     QColor getColor(int index);
-    int getCountOfColors() {return countOfColors;}
+    int getCountOfColors() {
+        return countOfColors;
+    }
+
 private:
     void generateColors();
     int countOfColors;
@@ -56,60 +60,70 @@ enum SynchronizationMode {
     WithoutSynchronization
 };
 
-class MSAEditorTreeViewer: public TreeViewer {
+class MSAEditorTreeViewer : public TreeViewer {
     Q_OBJECT
 public:
-    MSAEditorTreeViewer(const QString& viewName, GObject* obj, GraphicsRectangularBranchItem* root, qreal scale);
+    MSAEditorTreeViewer(const QString &viewName, GObject *obj, GraphicsRectangularBranchItem *root, qreal scale);
 
-    const CreatePhyTreeSettings& getCreatePhyTreeSettings() {return buildSettings;}
-    const QString& getParentAlignmentName() {return alignmentName;}
-    virtual OptionsPanel* getOptionsPanel(){return 0;}
+    const CreatePhyTreeSettings &getCreatePhyTreeSettings() {
+        return buildSettings;
+    }
+    const QString &getParentAlignmentName() {
+        return alignmentName;
+    }
+    virtual OptionsPanel *getOptionsPanel() {
+        return 0;
+    }
 
-    void setCreatePhyTreeSettings(const CreatePhyTreeSettings& _buildSettings);
-    void setParentAignmentName(const QString& _alignmentName) {alignmentName = _alignmentName;}
+    void setCreatePhyTreeSettings(const CreatePhyTreeSettings &_buildSettings);
+    void setParentAignmentName(const QString &_alignmentName) {
+        alignmentName = _alignmentName;
+    }
 
-    QAction* getSortSeqsAction() const {return sortSeqAction;}
+    QAction *getSortSeqsAction() const {
+        return sortSeqAction;
+    }
 
     bool sync();
     void desync();
     bool isSynchronized() const;
 
     void setMSAEditor(MSAEditor *_msa);
-    MSAEditor * getMsaEditor() const;
+    MSAEditor *getMsaEditor() const;
 
 protected:
-    virtual QWidget* createWidget();
+    virtual QWidget *createWidget();
 
 private slots:
     void sl_refreshTree();
 
     void sl_stopTracking();
     void sl_startTracking(bool changed);
-    void sl_alignmentChanged(const MultipleAlignment &ma, const MaModificationInfo& modInfo);
+    void sl_alignmentChanged(const MultipleAlignment &ma, const MaModificationInfo &modInfo);
 
 signals:
-    void si_refreshTree(MSAEditorTreeViewer* treeViewer);
+    void si_refreshTree(MSAEditorTreeViewer *treeViewer);
 
 private:
     void connectSignals();
     void disconnectSignals();
 
-    QAction*              refreshTreeAction;
-    QAction*              sortSeqAction;
-    QString               alignmentName;
+    QAction *refreshTreeAction;
+    QAction *sortSeqAction;
+    QString alignmentName;
     CreatePhyTreeSettings buildSettings;
-    MSAEditor*            msa;
-    SynchronizationMode   syncMode;
-    bool                  slotsAreConnected;
-    MaModificationInfo     cachedModification;
+    MSAEditor *msa;
+    SynchronizationMode syncMode;
+    bool slotsAreConnected;
+    MaModificationInfo cachedModification;
 };
 
-class U2VIEW_EXPORT MSAEditorTreeViewerUI: public TreeViewerUI {
+class U2VIEW_EXPORT MSAEditorTreeViewerUI : public TreeViewerUI {
     Q_OBJECT
 
 public:
-    MSAEditorTreeViewerUI(MSAEditorTreeViewer* treeViewer);
-    virtual ~MSAEditorTreeViewerUI(){
+    MSAEditorTreeViewerUI(MSAEditorTreeViewer *treeViewer);
+    virtual ~MSAEditorTreeViewerUI() {
         //Clear groups highlighting in the MSAEditor
         emit si_groupColorsChanged(GroupColorSchema());
     }
@@ -118,7 +132,7 @@ public:
 
     U2Region getTreeSize();
 
-    bool canSynchronizeWithMSA(MSAEditor* msa);
+    bool canSynchronizeWithMSA(MSAEditor *msa);
 
     void setSynchronizeMode(SynchronizationMode syncMode);
     bool isCurTreeViewerSynchronized() const;
@@ -132,15 +146,15 @@ protected:
     virtual void mouseReleaseEvent(QMouseEvent *e);
     virtual void resizeEvent(QResizeEvent *e);
 
-    virtual void onLayoutChanged(const TreeLayout& layout);
-    void onSettingsChanged(TreeViewOption option, const QVariant& newValue);
+    virtual void onLayoutChanged(const TreeLayout &layout);
+    void onSettingsChanged(TreeViewOption option, const QVariant &newValue);
     virtual void updateTreeSettings(bool setDefaultZoom = true);
     virtual void setTreeLayout(TreeLayout newLayout);
 
 signals:
-    void si_collapseModelChangedInTree(const QList<QStringList>&);
-    void si_seqOrderChanged(const QStringList& order);
-    void si_groupColorsChanged(const GroupColorSchema& schema);
+    void si_collapseModelChangedInTree(const QList<QStringList> &);
+    void si_seqOrderChanged(const QStringList &order);
+    void si_groupColorsChanged(const GroupColorSchema &schema);
     void si_zoomIn();
     void si_zoomOut();
     void si_resetZooming();
@@ -154,25 +168,25 @@ protected slots:
     void sl_zoomOut();
 
 private slots:
-    void sl_selectionChanged(const QStringList& selection);
+    void sl_selectionChanged(const QStringList &selection);
     void sl_sequenceNameChanged(QString prevName, QString newName);
     void sl_onReferenceSeqChanged(qint64);
-    void sl_onSceneRectChanged(const QRectF&);
+    void sl_onSceneRectChanged(const QRectF &);
     virtual void sl_rectLayoutRecomputed();
     void sl_onVisibleRangeChanged(QStringList visibleSeqs, int height);
-    virtual void sl_onBranchCollapsed(GraphicsRectangularBranchItem* branch);
+    virtual void sl_onBranchCollapsed(GraphicsRectangularBranchItem *branch);
 
 private:
-    QList<GraphicsBranchItem*> getListNodesOfTree();
+    QList<GraphicsBranchItem *> getListNodesOfTree();
 
-    QGraphicsLineItem* subgroupSelector;
-    qreal              subgroupSelectorPos;
-    bool               subgroupSelectionMode;
-    ColorGenerator        groupColors;
+    QGraphicsLineItem *subgroupSelector;
+    qreal subgroupSelectorPos;
+    bool subgroupSelectionMode;
+    ColorGenerator groupColors;
 
     bool curLayoutIsRectangular;
 
-    MSAEditorTreeViewer* curMSATreeViewer;
+    MSAEditorTreeViewer *curMSATreeViewer;
     SynchronizationMode syncMode;
 
     QTransform rectangularTransform;
@@ -183,11 +197,12 @@ private:
 
 class MSAEditorTreeViewerUtils {
 public:
-    static QList<QStringList> getCollapsedGroups(const GraphicsBranchItem* root);
+    static QList<QStringList> getCollapsedGroups(const GraphicsBranchItem *root);
+
 private:
     MSAEditorTreeViewerUtils();
-    static QStringList getSeqsNamesInBranch(const GraphicsBranchItem* branch);
+    static QStringList getSeqsNamesInBranch(const GraphicsBranchItem *branch);
 };
 
-}//namespace
+}    // namespace U2
 #endif

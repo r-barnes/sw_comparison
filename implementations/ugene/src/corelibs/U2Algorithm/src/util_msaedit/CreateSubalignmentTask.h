@@ -22,58 +22,62 @@
 #ifndef _U2_CREATE_SUBALIGNMENT_TASK_H_
 #define _U2_CREATE_SUBALIGNMENT_TASK_H_
 
-#include <U2Core/Task.h>
-#include <U2Core/GUrl.h>
-#include <U2Core/U2Region.h>
-#include <U2Core/MultipleSequenceAlignmentObject.h>
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentProviderTask.h>
+#include <U2Core/GUrl.h>
+#include <U2Core/MultipleSequenceAlignmentObject.h>
+#include <U2Core/Task.h>
+#include <U2Core/U2Region.h>
 
-namespace U2{
+namespace U2 {
 
 class U2ALGORITHM_EXPORT CreateSubalignmentSettings {
 public:
-    CreateSubalignmentSettings(){}
+    CreateSubalignmentSettings() {
+    }
 
-    CreateSubalignmentSettings(const U2Region& w, const QStringList& sNames, const GUrl& path, bool save, bool add, DocumentFormatId formatId)
-        : window(w), sequenceNames(sNames), url(path), saveImmediately(save), addToProject(add), formatIdToSave(formatId) {}
+    CreateSubalignmentSettings(const U2Region &w, const QStringList &sNames, const GUrl &path, bool save, bool add, DocumentFormatId formatId)
+        : window(w), sequenceNames(sNames), url(path), saveImmediately(save), addToProject(add), formatIdToSave(formatId) {
+    }
 
-    CreateSubalignmentSettings(const U2Region& w, const QList<qint64>& rIds, const GUrl& path, bool save, bool add, DocumentFormatId formatId)
-        : window(w), rowIds(rIds), url(path), saveImmediately(save), addToProject(add), formatIdToSave(formatId) {}
+    CreateSubalignmentSettings(const U2Region &w, const QList<qint64> &rIds, const GUrl &path, bool save, bool add, DocumentFormatId formatId)
+        : window(w), rowIds(rIds), url(path), saveImmediately(save), addToProject(add), formatIdToSave(formatId) {
+    }
 
-    U2Region         window;
+    U2Region window;
 
     // Row ids to export
-    QList<qint64>    rowIds;
+    QList<qint64> rowIds;
 
     // Sequence names to export. Ignored if rowIds is not empty!
     // This field may be removed after all code is migrated to row ids.
-    QStringList      sequenceNames;
+    QStringList sequenceNames;
 
-    GUrl             url;
-    bool             saveImmediately;
-    bool             addToProject;
+    GUrl url;
+    bool saveImmediately;
+    bool addToProject;
     DocumentFormatId formatIdToSave;
 };
-
 
 class U2ALGORITHM_EXPORT CreateSubalignmentTask : public DocumentProviderTask {
     Q_OBJECT
 public:
-    CreateSubalignmentTask(MultipleSequenceAlignmentObject* _maObj, const CreateSubalignmentSettings& settings);
+    CreateSubalignmentTask(MultipleSequenceAlignmentObject *_maObj, const CreateSubalignmentSettings &settings);
 
     virtual void prepare();
-    const CreateSubalignmentSettings& getSettings() { return cfg; }
+    const CreateSubalignmentSettings &getSettings() {
+        return cfg;
+    }
 
 private:
-    Document*                   origDoc;
-    MultipleSequenceAlignmentObject*           origMAObj;
-    MultipleSequenceAlignmentObject*           resultMAObj;
+    Document *origDoc;
+    MultipleSequenceAlignmentObject *origMAObj;
+    MultipleSequenceAlignmentObject *resultMAObj;
 
-    CreateSubalignmentSettings  cfg;
-    bool                        createCopy;
+    CreateSubalignmentSettings cfg;
+    bool createCopy;
 };
 
-}
+}    // namespace U2
 
 #endif

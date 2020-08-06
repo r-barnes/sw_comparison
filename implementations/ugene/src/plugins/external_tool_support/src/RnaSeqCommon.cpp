@@ -23,44 +23,36 @@
 
 #include <U2Core/U2SafePoints.h>
 
-
 namespace U2 {
 
 const QString RnaSeqLibraryType::frUnstranded = "fr-unstranded";
 const QString RnaSeqLibraryType::frFirstStrand = "fr-firststrand";
 const QString RnaSeqLibraryType::frSecondStrand = "fr-secondstrand";
 
-
-RnaSeqLibraryType::RnaSeqLibraryType()
-{
+RnaSeqLibraryType::RnaSeqLibraryType() {
     libraryType = 0;
 }
 
-
-bool RnaSeqLibraryType::setLibraryType(int val)
-{
+bool RnaSeqLibraryType::setLibraryType(int val) {
     if (val < 0 || val > 2) {
         return false;
-    }
-    else {
+    } else {
         libraryType = val;
         return true;
     }
 }
 
-
-QString RnaSeqLibraryType::getLibraryTypeAsStr()
-{
-    switch(libraryType) {
-        case 0:
-            return frUnstranded;
-        case 1:
-            return frFirstStrand;
-        case 2:
-            return frSecondStrand;
-        default:
-            FAIL(QObject::tr("Unexpected value '%1' of the library type").arg(libraryType), frUnstranded);
+QString RnaSeqLibraryType::getLibraryTypeAsStr() {
+    switch (libraryType) {
+    case 0:
+        return frUnstranded;
+    case 1:
+        return frFirstStrand;
+    case 2:
+        return frSecondStrand;
+    default:
+        FAIL(QObject::tr("Unexpected value '%1' of the library type").arg(libraryType), frUnstranded);
     }
 }
 
-} // namespace
+}    // namespace U2

@@ -21,23 +21,21 @@
 
 #include "ConsoleShutdownTask.h"
 
-#include <U2Core/Log.h>
-#include <U2Core/ServiceModel.h>
-#include <U2Core/PluginModel.h>
 #include <U2Core/AppContext.h>
+#include <U2Core/Log.h>
+#include <U2Core/PluginModel.h>
 #include <U2Core/ProjectModel.h>
+#include <U2Core/ServiceModel.h>
 
 namespace U2 {
 
-ConsoleShutdownTask::ConsoleShutdownTask(QCoreApplication* app)
-: Task(tr("Shutdown"), TaskFlags_NR_FOSCOE | TaskFlag_NoAutoDelete), app(app)
-{
-    connect(AppContext::getTaskScheduler(), SIGNAL(si_topLevelTaskUnregistered(Task*)), SLOT(startShutdown()));
+ConsoleShutdownTask::ConsoleShutdownTask(QCoreApplication *app)
+    : Task(tr("Shutdown"), TaskFlags_NR_FOSCOE | TaskFlag_NoAutoDelete), app(app) {
+    connect(AppContext::getTaskScheduler(), SIGNAL(si_topLevelTaskUnregistered(Task *)), SLOT(startShutdown()));
     connect(app, SIGNAL(aboutToQuit()), SLOT(startShutdown()));
 }
 
 void ConsoleShutdownTask::startShutdown() {
-
     if (sender() == app) {
         coreLog.info("Shutdown initiated by user");
     } else {
@@ -51,11 +49,11 @@ void ConsoleShutdownTask::startShutdown() {
     AppContext::getTaskScheduler()->registerTopLevelTask(this);
 }
 
-static bool isReadyToBeDisabled(Service* s, ServiceRegistry* sr) {
+static bool isReadyToBeDisabled(Service *s, ServiceRegistry *sr) {
     ServiceType st = s->getType();
     int nServicesOfTheSameType = sr->findServices(st).size();
     assert(nServicesOfTheSameType >= 1);
-    foreach(Service* child, sr->getServices()) {
+    foreach (Service *child, sr->getServices()) {
         if (!child->getParentServiceTypes().contains(st) || !child->isEnabled()) {
             continue;
         }
@@ -66,10 +64,10 @@ static bool isReadyToBeDisabled(Service* s, ServiceRegistry* sr) {
     return true;
 }
 
-static Service* findServiceToDisable(ServiceRegistry* sr) {
+static Service *findServiceToDisable(ServiceRegistry *sr) {
     int nEnabled = 0;
-    foreach(Service* s, sr->getServices()) {
-        nEnabled+= s->isEnabled() ? 1 : 0;
+    foreach (Service *s, sr->getServices()) {
+        nEnabled += s->isEnabled() ? 1 : 0;
         if (s->isEnabled() && isReadyToBeDisabled(s, sr)) {
             return s;
         }
@@ -80,19 +78,21 @@ static Service* findServiceToDisable(ServiceRegistry* sr) {
 
 class CancelAllTask : public Task {
 public:
-    CancelAllTask() : Task(ConsoleShutdownTask::tr("Cancel active tasks"), TaskFlag_NoRun) {}
+    CancelAllTask()
+        : Task(ConsoleShutdownTask::tr("Cancel active tasks"), TaskFlag_NoRun) {
+    }
     void prepare() {
         // cancel all tasks but ShutdownTask
-        QList<Task*> activeTopTasks = AppContext::getTaskScheduler()->getTopLevelTasks();
+        QList<Task *> activeTopTasks = AppContext::getTaskScheduler()->getTopLevelTasks();
         activeTopTasks.removeOne(getTopLevelParentTask());
-        foreach(Task* t, activeTopTasks) {
+        foreach (Task *t, activeTopTasks) {
             coreLog.trace(QString("Canceling: %1").arg(t->getTaskName()));
             t->cancel();
         }
     }
 
     ReportResult report() {
-        foreach(Task* t, AppContext::getTaskScheduler()->getTopLevelTasks()) {
+        foreach (Task *t, AppContext::getTaskScheduler()->getTopLevelTasks()) {
             if (t->isCanceled() && !t->isFinished()) {
                 return ReportResult_CallMeAgain;
             }
@@ -101,23 +101,22 @@ public:
     }
 };
 
-
 void ConsoleShutdownTask::prepare() {
     coreLog.info(tr("Starting shutdown process..."));
 
     addSubTask(new CancelAllTask());
 }
 
-QList<Task*> ConsoleShutdownTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> res;
+QList<Task *> ConsoleShutdownTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> res;
 
     if (isCanceled() || subTask->hasError()) {
-        return res; //stop shutdown process
+        return res;    //stop shutdown process
     }
 
-    ServiceRegistry* sr = AppContext::getServiceRegistry();
-    Service* s = findServiceToDisable(sr);
-    if (s!=NULL) {
+    ServiceRegistry *sr = AppContext::getServiceRegistry();
+    Service *s = findServiceToDisable(sr);
+    if (s != NULL) {
         res.append(sr->disableServiceTask(s));
     }
     return res;
@@ -134,8 +133,8 @@ Task::ReportResult ConsoleShutdownTask::report() {
     }
 
 #ifdef _DEBUG
-    const QList<Service*>& services = AppContext::getServiceRegistry()->getServices();
-    foreach(Service* s, services) {
+    const QList<Service *> &services = AppContext::getServiceRegistry()->getServices();
+    foreach (Service *s, services) {
         assert(s->isDisabled());
     }
 #endif
@@ -143,4 +142,4 @@ Task::ReportResult ConsoleShutdownTask::report() {
     return Task::ReportResult_Finished;
 }
 
-}//namespace
+}    // namespace U2

@@ -62,23 +62,23 @@ private:
 class U2LANG_EXPORT CandidatesSplitterRegistry {
 public:
     ~CandidatesSplitterRegistry();
-    static CandidatesSplitterRegistry * instance();
+    static CandidatesSplitterRegistry *instance();
 
-    CandidatesSplitter * findSplitter(const Descriptor &toDesc, DataTypePtr toDatatype);
-    CandidatesSplitter * findSplitter(const QString &id);
+    CandidatesSplitter *findSplitter(const Descriptor &toDesc, DataTypePtr toDatatype);
+    CandidatesSplitter *findSplitter(const QString &id);
 
     void registerSplitter(CandidatesSplitter *splitter);
     void unregisterSplitter(const QString &id);
 
 private:
     static CandidatesSplitterRegistry *_instance;
-    QList<CandidatesSplitter*> splitters;
+    QList<CandidatesSplitter *> splitters;
 
 private:
     CandidatesSplitterRegistry();
 };
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2
 
-#endif // _U2_INTEGRAL_BUS_UTILS_H_
+#endif    // _U2_INTEGRAL_BUS_UTILS_H_

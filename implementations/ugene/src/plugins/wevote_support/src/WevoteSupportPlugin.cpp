@@ -19,11 +19,12 @@
  * MA 02110-1301, USA.
  */
 
+#include "WevoteSupportPlugin.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/ExternalToolRegistry.h>
 
 #include "WevoteSupport.h"
-#include "WevoteSupportPlugin.h"
 #include "WevoteWorkerFactory.h"
 
 namespace U2 {
@@ -32,14 +33,13 @@ const QString WevoteSupportPlugin::PLUGIN_NAME = QObject::tr("WEVOTE external to
 const QString WevoteSupportPlugin::PLUGIN_DESCRIPRION = QObject::tr("The plugin supports WEVOTE (WEighted VOting Taxonomic idEntification) - a tool that "
                                                                     "implements an algorithm to improve the reads classification. (https://github.com/aametwally/WEVOTE)");
 
-extern "C" Q_DECL_EXPORT Plugin* U2_PLUGIN_INIT_FUNC() {
+extern "C" Q_DECL_EXPORT Plugin *U2_PLUGIN_INIT_FUNC() {
     WevoteSupportPlugin *plugin = new WevoteSupportPlugin();
     return plugin;
 }
 
 WevoteSupportPlugin::WevoteSupportPlugin()
-    : Plugin(PLUGIN_NAME, PLUGIN_DESCRIPRION)
-{
+    : Plugin(PLUGIN_NAME, PLUGIN_DESCRIPRION) {
     ExternalToolRegistry *etRegistry = AppContext::getExternalToolRegistry();
     CHECK(NULL != etRegistry, );
 
@@ -54,4 +54,4 @@ WevoteSupportPlugin::~WevoteSupportPlugin() {
     etRegistry->unregisterEntry(WevoteSupport::TOOL_ID);
 }
 
-}   // namespace U2
+}    // namespace U2

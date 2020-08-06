@@ -26,14 +26,12 @@
 
 #include <U2Gui/RegionSelector.h>
 
-
 namespace U2 {
 
-SequenceExportSettingsWidget::SequenceExportSettingsWidget(U2SequenceObject* seqObject,
+SequenceExportSettingsWidget::SequenceExportSettingsWidget(U2SequenceObject *seqObject,
                                                            QSharedPointer<CustomExportSettings> s,
-                                                           DNASequenceSelection* selection)
-    : seqObject(seqObject)
-{
+                                                           DNASequenceSelection *selection)
+    : seqObject(seqObject) {
     setupUi(this);
     settings = qSharedPointerCast<SequenceExportSettings>(s);
     SAFE_POINT(settings != NULL, tr("Cannot cast CustomExportSettings to SequenceExportSettings"), );
@@ -41,7 +39,7 @@ SequenceExportSettingsWidget::SequenceExportSettingsWidget(U2SequenceObject* seq
 
     regionSelector = new RegionSelector(this, seqObject->getSequenceLength(), true, selection);
     regionLayout->addWidget(regionSelector);
-    regionSelector->setVisible( !currentViewButton->isChecked() );
+    regionSelector->setVisible(!currentViewButton->isChecked());
 
     connect(buttonGroup, SIGNAL(buttonClicked(int)), SLOT(sl_areaChanged()));
     connect(regionSelector, SIGNAL(si_regionChanged(U2Region)), SLOT(sl_regionChanged(U2Region)));
@@ -58,13 +56,13 @@ SequenceExportType SequenceExportSettingsWidget::getExportType() const {
 }
 
 void SequenceExportSettingsWidget::sl_areaChanged() {
-    regionSelector->setVisible( !currentViewButton->isChecked() );
-    settings->setType( getExportType() );
-    settings->setRegion( regionSelector->getRegion() );
+    regionSelector->setVisible(!currentViewButton->isChecked());
+    settings->setType(getExportType());
+    settings->setRegion(regionSelector->getRegion());
 }
 
-void SequenceExportSettingsWidget::sl_regionChanged(const U2Region& r) {
+void SequenceExportSettingsWidget::sl_regionChanged(const U2Region &r) {
     settings->setRegion(r);
 }
 
-} // namespace
+}    // namespace U2

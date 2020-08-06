@@ -27,10 +27,9 @@ using namespace HI;
 
 #define GT_CLASS_NAME "TrimmomaticDialogFiller"
 
-TrimmomaticDialogFiller::TrimmomaticDialogFiller(HI::GUITestOpStatus &os, CustomScenario *customScenario) :
-                                                Filler(os, "TrimmomaticPropertyDialog", customScenario) {}
-
-
+TrimmomaticDialogFiller::TrimmomaticDialogFiller(HI::GUITestOpStatus &os, CustomScenario *customScenario)
+    : Filler(os, "TrimmomaticPropertyDialog", customScenario) {
+}
 
 #undef GT_CLASS_NAME
-}
+}    // namespace U2

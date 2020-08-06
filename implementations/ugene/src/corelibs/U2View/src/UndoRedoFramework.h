@@ -22,10 +22,10 @@
 #ifndef _U2_UNDO_REDO_FRAMEWORK_H_
 #define _U2_UNDO_REDO_FRAMEWORK_H_
 
-#include <U2Core/MultipleSequenceAlignmentObject.h>
-
-#include <QObject>
 #include <QAction>
+#include <QObject>
+
+#include <U2Core/MultipleSequenceAlignmentObject.h>
 
 namespace U2 {
 
@@ -34,10 +34,14 @@ class MultipleAlignmentObject;
 class MsaUndoRedoFramework : public QObject {
     Q_OBJECT
 public:
-    MsaUndoRedoFramework(QObject *p, MultipleAlignmentObject* _maObj);
+    MsaUndoRedoFramework(QObject *p, MultipleAlignmentObject *_maObj);
 
-    QAction* getUndoAction() const { return undoAction; }
-    QAction* getRedoAction() const { return redoAction; }
+    QAction *getUndoAction() const {
+        return undoAction;
+    }
+    QAction *getRedoAction() const {
+        return redoAction;
+    }
 
 private slots:
     void sl_updateUndoRedoState();
@@ -49,16 +53,16 @@ private slots:
 private:
     void checkUndoRedoEnabled();
 
-    MultipleAlignmentObject*   maObj;
-    bool                stateComplete;
+    MultipleAlignmentObject *maObj;
+    bool stateComplete;
 
-    QAction*   undoAction;
-    QAction*   redoAction;
+    QAction *undoAction;
+    QAction *redoAction;
 
-    qint64     undoStepsAvailable;
-    qint64     redoStepsAvailable;
+    qint64 undoStepsAvailable;
+    qint64 redoStepsAvailable;
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

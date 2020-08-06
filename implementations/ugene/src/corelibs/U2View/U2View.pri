@@ -5,12 +5,6 @@ include( ../../ugene_lib_common.pri )
 
 QT += xml svg widgets printsupport
 
-useWebKit() {
-    QT += webkitwidgets
-} else {
-    QT += webengine webenginewidgets
-}
-
 DEFINES+= QT_FATAL_ASSERT BUILDING_U2VIEW_DLL
 LIBS += -L../../$$out_dir()
 LIBS += -lU2Core$$D -lU2Algorithm$$D -lU2Formats$$D -lU2Lang$$D -lU2Gui$$D

@@ -20,15 +20,14 @@
  */
 
 #include "DNAFlexGraph.h"
-#include "DNAFlexGraphAlgorithm.h"
-#include "DNAFlexTask.h"
 
 #include <U2Core/AppContext.h>
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/TextUtils.h>
 
-
+#include "DNAFlexGraphAlgorithm.h"
+#include "DNAFlexTask.h"
 
 namespace U2 {
 
@@ -41,35 +40,29 @@ const int DNAFlexGraphFactory::DEFAULT_WINDOW_STEP = 1;
  */
 static QString nameByType() {
     return DNAFlexGraphFactory::tr("DNA Flexibility");
-
 }
-
 
 /**
  * Constructor of the DNA Flexibility graph
  */
-DNAFlexGraphFactory::DNAFlexGraphFactory(QObject* parent)
-    : GSequenceGraphFactory(nameByType(), parent)
-{
+DNAFlexGraphFactory::DNAFlexGraphFactory(QObject *parent)
+    : GSequenceGraphFactory(nameByType(), parent) {
 }
-
 
 /**
  * Verifies that the sequence alphabet is standard DNA alphabet
  */
-bool DNAFlexGraphFactory::isEnabled(const U2SequenceObject* sequenceObject) const {
-    const DNAAlphabet* alphabet = sequenceObject->getAlphabet();
+bool DNAFlexGraphFactory::isEnabled(const U2SequenceObject *sequenceObject) const {
+    const DNAAlphabet *alphabet = sequenceObject->getAlphabet();
     return alphabet->getId() == BaseDNAAlphabetIds::NUCL_DNA_DEFAULT();
 }
-
 
 /**
  * Initializes graph data
  */
-QList<QSharedPointer<GSequenceGraphData> > DNAFlexGraphFactory::createGraphs(GSequenceGraphView* view)
-{
+QList<QSharedPointer<GSequenceGraphData>> DNAFlexGraphFactory::createGraphs(GSequenceGraphView *view) {
     Q_UNUSED(view);
-    QList<QSharedPointer<GSequenceGraphData> > res;
+    QList<QSharedPointer<GSequenceGraphData>> res;
     assert(isEnabled(view->getSequenceObject()));
     QSharedPointer<GSequenceGraphData> data = QSharedPointer<GSequenceGraphData>(new GSequenceGraphData(getGraphName()));
     data->ga = new DNAFlexGraphAlgorithm();
@@ -77,15 +70,12 @@ QList<QSharedPointer<GSequenceGraphData> > DNAFlexGraphFactory::createGraphs(GSe
     return res;
 }
 
-
 /**
  * Initializes the graph drawer
  */
-GSequenceGraphDrawer* DNAFlexGraphFactory::getDrawer(GSequenceGraphView* view)
-{
+GSequenceGraphDrawer *DNAFlexGraphFactory::getDrawer(GSequenceGraphView *view) {
     GSequenceGraphWindowData wd(DEFAULT_WINDOW_STEP, qMin(DEFAULT_WINDOW_SIZE, view->getSequenceLength()));
     return new GSequenceGraphDrawer(view, wd);
 }
 
-
-} // namespace
+}    // namespace U2

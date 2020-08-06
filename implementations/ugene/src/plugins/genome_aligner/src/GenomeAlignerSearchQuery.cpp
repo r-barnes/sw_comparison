@@ -20,8 +20,9 @@
  */
 
 #include "GenomeAlignerSearchQuery.h"
-#include <U2Core/Log.h>
 #include <limits.h>
+
+#include <U2Core/Log.h>
 
 namespace U2 {
 
@@ -31,8 +32,8 @@ SearchQuery::SearchQuery(const DNASequence *shortRead, SearchQuery *revCompl) {
     this->revCompl = revCompl;
     seqLength = shortRead->length();
     nameLength = shortRead->getName().length();
-    seq = new char[seqLength+1];
-    name = new char[nameLength+1];
+    seq = new char[seqLength + 1];
+    name = new char[nameLength + 1];
     qstrcpy(seq, shortRead->constData());
     qstrcpy(name, shortRead->getName().toLatin1().constData());
     if (shortRead->hasQualityScores()) {
@@ -49,8 +50,8 @@ SearchQuery::SearchQuery(const DNASequence *shortRead, SearchQuery *revCompl) {
 qint64 SearchQuery::memoryHint() const {
     qint64 m = sizeof(*this);
 
-    m += seqLength+1; // seq
-    m += nameLength+1; // name
+    m += seqLength + 1;    // seq
+    m += nameLength + 1;    // name
 
     m += results.capacity() * sizeof(SAType);
     m += overlapResults.capacity() * sizeof(SAType);
@@ -58,7 +59,7 @@ qint64 SearchQuery::memoryHint() const {
 
     m += quality ? quality->memoryHint() : 0;
 
-    return m*2; // overhead due to many new calls of small regions
+    return m * 2;    // overhead due to many new calls of small regions
 }
 
 SearchQuery::SearchQuery(const U2AssemblyRead &, SearchQuery *revCompl) {
@@ -183,7 +184,7 @@ bool SearchQuery::contains(SAType result) const {
     return (results.contains(result) || overlapResults.contains(result));
 }
 
-const QVector<SAType>& SearchQuery::getResults() const {
+const QVector<SAType> &SearchQuery::getResults() const {
     return results;
 }
 
@@ -202,7 +203,7 @@ SearchQueryContainer::~SearchQueryContainer() {
 
 void SearchQueryContainer::append(SearchQuery *qu) {
     if (length == allocated) {
-         void *reallocRetValue = realloc(queries, (allocated + reallocSize)*sizeof(SearchQuery*));
+        void *reallocRetValue = realloc(queries, (allocated + reallocSize) * sizeof(SearchQuery *));
         if (reallocRetValue == NULL) {
             delete[] queries;
             queries = NULL;
@@ -219,7 +220,6 @@ void SearchQueryContainer::append(SearchQuery *qu) {
 }
 
 void SearchQueryContainer::clear() {
-
 }
 
 quint64 SearchQueryContainer::size() const {
@@ -231,4 +231,4 @@ SearchQuery *SearchQueryContainer::at(quint64 pos) {
     return queries[pos];
 }
 
-} //U2
+}    // namespace U2

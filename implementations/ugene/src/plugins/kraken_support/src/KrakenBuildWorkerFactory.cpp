@@ -35,13 +35,13 @@
 #include <U2Lang/URLAttribute.h>
 #include <U2Lang/WorkflowEnv.h>
 
+#include "../../ngs_reads_classification/src/GenomicLibraryDelegate.h"
+#include "../../ngs_reads_classification/src/NgsReadsClassificationPlugin.h"
 #include "KrakenBuildPrompter.h"
 #include "KrakenBuildValidator.h"
 #include "KrakenBuildWorker.h"
 #include "KrakenBuildWorkerFactory.h"
 #include "KrakenSupport.h"
-#include "../../ngs_reads_classification/src/GenomicLibraryDelegate.h"
-#include "../../ngs_reads_classification/src/NgsReadsClassificationPlugin.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -65,8 +65,7 @@ const QString KrakenBuildWorkerFactory::JELLYFISH_HASH_SIZE_ATTR_ID = "jellyfish
 const QString KrakenBuildWorkerFactory::THREADS_NUMBER_ATTR_ID = "threads";
 
 KrakenBuildWorkerFactory::KrakenBuildWorkerFactory()
-    : DomainFactory(ACTOR_ID)
-{
+    : DomainFactory(ACTOR_ID) {
 }
 
 Worker *KrakenBuildWorkerFactory::createWorker(Actor *actor) {
@@ -87,53 +86,40 @@ void KrakenBuildWorkerFactory::init() {
 
     QList<Attribute *> attributes;
     {
-        Descriptor modeDesc(MODE_ATTR_ID, KrakenBuildPrompter::tr("Mode"),
-                                  KrakenBuildPrompter::tr("Select \"Build\" to create a new database from a genomic library (--build).<br><br>"
-                                                          "Select \"Shrink\" to shrink an existing database to have only specified number of k-mers (--shrink)."));
+        Descriptor modeDesc(MODE_ATTR_ID, KrakenBuildPrompter::tr("Mode"), KrakenBuildPrompter::tr("Select \"Build\" to create a new database from a genomic library (--build).<br><br>"
+                                                                                                   "Select \"Shrink\" to shrink an existing database to have only specified number of k-mers (--shrink)."));
 
-        Descriptor inputDatabaseNameDesc(INPUT_DATABASE_NAME_ATTR_ID, KrakenBuildPrompter::tr("Input database"),
-                                               KrakenBuildPrompter::tr("Name of the input database that should be shrunk (corresponds to --db that is used with --shrink)."));
+        Descriptor inputDatabaseNameDesc(INPUT_DATABASE_NAME_ATTR_ID, KrakenBuildPrompter::tr("Input database"), KrakenBuildPrompter::tr("Name of the input database that should be shrunk (corresponds to --db that is used with --shrink)."));
 
-        Descriptor newDatabaseNameDesc(NEW_DATABASE_NAME_ATTR_ID, KrakenBuildPrompter::tr("Database"),
-                                             KrakenBuildPrompter::tr("Name of the output Kraken database (corresponds to --db that is used with --build, and to --new-db that is used with --shrink)."));
+        Descriptor newDatabaseNameDesc(NEW_DATABASE_NAME_ATTR_ID, KrakenBuildPrompter::tr("Database"), KrakenBuildPrompter::tr("Name of the output Kraken database (corresponds to --db that is used with --build, and to --new-db that is used with --shrink)."));
 
-        Descriptor genomicLibraryDesc(GENOMIC_LIBRARY_ATTR_ID, KrakenBuildPrompter::tr("Genomic library"),
-                                            KrakenBuildPrompter::tr("Genomes that should be used to build the database.<br><br>"
-                                                                    "The genomes should be specified in FASTA format. The sequence IDs must contain either a GI number or a taxonomy ID (see documentation for details)."));
+        Descriptor genomicLibraryDesc(GENOMIC_LIBRARY_ATTR_ID, KrakenBuildPrompter::tr("Genomic library"), KrakenBuildPrompter::tr("Genomes that should be used to build the database.<br><br>"
+                                                                                                                                   "The genomes should be specified in FASTA format. The sequence IDs must contain either a GI number or a taxonomy ID (see documentation for details)."));
 
-        Descriptor numberOfKmersDesc(NUMBER_OF_K_MERS_ATTR_ID, KrakenBuildPrompter::tr("Number of k-mers"),
-                                           KrakenBuildPrompter::tr("The new database will contain the specified number of k-mers selected from across the input database."));
+        Descriptor numberOfKmersDesc(NUMBER_OF_K_MERS_ATTR_ID, KrakenBuildPrompter::tr("Number of k-mers"), KrakenBuildPrompter::tr("The new database will contain the specified number of k-mers selected from across the input database."));
 
-        Descriptor kMerLengthDesc(K_MER_LENGTH_ATTR_ID, KrakenBuildPrompter::tr("K-mer length"),
-                                        KrakenBuildPrompter::tr("K-mer length in bp (--kmer-len)."));
+        Descriptor kMerLengthDesc(K_MER_LENGTH_ATTR_ID, KrakenBuildPrompter::tr("K-mer length"), KrakenBuildPrompter::tr("K-mer length in bp (--kmer-len)."));
 
-        Descriptor minimizerLengthDesc(MINIMIZER_LENGTH_ATTR_ID, KrakenBuildPrompter::tr("Minimizer length"),
-                                             KrakenBuildPrompter::tr("Minimizer length in bp (--minimizer-len).<br><br>"
-                                                                     "The minimizers serve to keep k-mers that are adjacent in query sequences close to each other in the database, which allows Kraken to exploit the CPU cache.<br><br>"
-                                                                     "Changing the value of the parameter can significantly affect the speed of Kraken, and neither increasing nor decreasing of the value will guarantee faster or slower speed."));
+        Descriptor minimizerLengthDesc(MINIMIZER_LENGTH_ATTR_ID, KrakenBuildPrompter::tr("Minimizer length"), KrakenBuildPrompter::tr("Minimizer length in bp (--minimizer-len).<br><br>"
+                                                                                                                                      "The minimizers serve to keep k-mers that are adjacent in query sequences close to each other in the database, which allows Kraken to exploit the CPU cache.<br><br>"
+                                                                                                                                      "Changing the value of the parameter can significantly affect the speed of Kraken, and neither increasing nor decreasing of the value will guarantee faster or slower speed."));
 
-        Descriptor maximumDatabaseSizeDesc(MAXIMUM_DATABASE_SIZE_ATTR_ID, KrakenBuildPrompter::tr("Maximum database size"),
-                                                 KrakenBuildPrompter::tr("By default, a full database build is done.<br><br>"
-                                                                         "To shrink the database before the full build, input the size of the database in Mb "
-                                                                         "(this corresponds to the --max-db-size parameter, but Mb is used instead of Gb). "
-                                                                         "The size is specified together for the database and the index."));
+        Descriptor maximumDatabaseSizeDesc(MAXIMUM_DATABASE_SIZE_ATTR_ID, KrakenBuildPrompter::tr("Maximum database size"), KrakenBuildPrompter::tr("By default, a full database build is done.<br><br>"
+                                                                                                                                                    "To shrink the database before the full build, input the size of the database in Mb "
+                                                                                                                                                    "(this corresponds to the --max-db-size parameter, but Mb is used instead of Gb). "
+                                                                                                                                                    "The size is specified together for the database and the index."));
 
-        Descriptor shrinkBlockOffsetDesc(SHRINK_BLOCK_OFFSET_ATTR_ID, KrakenBuildPrompter::tr("Shrink block offset"),
-                                               KrakenBuildPrompter::tr("When shrinking, select the k-mer that is NUM positions from the end of a block of k-mers (--shrink-block-offset)."));
+        Descriptor shrinkBlockOffsetDesc(SHRINK_BLOCK_OFFSET_ATTR_ID, KrakenBuildPrompter::tr("Shrink block offset"), KrakenBuildPrompter::tr("When shrinking, select the k-mer that is NUM positions from the end of a block of k-mers (--shrink-block-offset)."));
 
-        Descriptor cleanDesc(CLEAN_ATTR_ID, KrakenBuildPrompter::tr("Clean"),
-                                   KrakenBuildPrompter::tr("Remove unneeded files from a built database to reduce the disk usage (--clean)."));
+        Descriptor cleanDesc(CLEAN_ATTR_ID, KrakenBuildPrompter::tr("Clean"), KrakenBuildPrompter::tr("Remove unneeded files from a built database to reduce the disk usage (--clean)."));
 
-        Descriptor workOnDiskDesc(WORK_ON_DISK_ATTR_ID, KrakenBuildPrompter::tr("Work on disk"),
-                                        KrakenBuildPrompter::tr("Perform most operations on disk rather than in RAM (this will slow down build in most cases)."));
+        Descriptor workOnDiskDesc(WORK_ON_DISK_ATTR_ID, KrakenBuildPrompter::tr("Work on disk"), KrakenBuildPrompter::tr("Perform most operations on disk rather than in RAM (this will slow down build in most cases)."));
 
-        Descriptor jellyfishHashSizeDesc(JELLYFISH_HASH_SIZE_ATTR_ID, KrakenBuildPrompter::tr("Jellyfish hash size"),
-                                               KrakenBuildPrompter::tr("The \"kraken-build\" tool uses the \"jellyfish\" tool. This parameter specifies the hash size for Jellyfish.<br><br>"
-                                                                       "Supply a smaller hash size to Jellyfish, if you encounter problems with allocating enough memory during the build process (--jellyfish-hash-size).<br><br>"
-                                                                       "By default, the parameter is not used."));
+        Descriptor jellyfishHashSizeDesc(JELLYFISH_HASH_SIZE_ATTR_ID, KrakenBuildPrompter::tr("Jellyfish hash size"), KrakenBuildPrompter::tr("The \"kraken-build\" tool uses the \"jellyfish\" tool. This parameter specifies the hash size for Jellyfish.<br><br>"
+                                                                                                                                              "Supply a smaller hash size to Jellyfish, if you encounter problems with allocating enough memory during the build process (--jellyfish-hash-size).<br><br>"
+                                                                                                                                              "By default, the parameter is not used."));
 
-        Descriptor threadNumberDesc(THREADS_NUMBER_ATTR_ID, KrakenBuildPrompter::tr("Number of threads"),
-                                          KrakenBuildPrompter::tr("Use multiple threads (--threads)."));
+        Descriptor threadNumberDesc(THREADS_NUMBER_ATTR_ID, KrakenBuildPrompter::tr("Number of threads"), KrakenBuildPrompter::tr("Use multiple threads (--threads)."));
 
         Attribute *modeAttribute = new Attribute(modeDesc, BaseTypes::STRING_TYPE(), false, KrakenBuildTaskSettings::BUILD);
         Attribute *inputDatabaseNameAttribute = new Attribute(inputDatabaseNameDesc, BaseTypes::STRING_TYPE(), true);
@@ -141,7 +127,8 @@ void KrakenBuildWorkerFactory::init() {
         Attribute *genomicLibraryAttribute = new Attribute(genomicLibraryDesc, BaseTypes::URL_DATASETS_TYPE(), true);
         Attribute *numberOfKmersAttribute = new Attribute(numberOfKmersDesc, BaseTypes::NUM_TYPE(), true, 10000);
         Attribute *kMerLengthAttribute = new Attribute(kMerLengthDesc, BaseTypes::NUM_TYPE(), false, 31);
-        Attribute *minimizerLengthAttribute = new Attribute(minimizerLengthDesc, BaseTypes::NUM_TYPE(), false, 15);;
+        Attribute *minimizerLengthAttribute = new Attribute(minimizerLengthDesc, BaseTypes::NUM_TYPE(), false, 15);
+        ;
         Attribute *maximumDatabaseSizeAttribute = new Attribute(maximumDatabaseSizeDesc, BaseTypes::NUM_TYPE(), false, 0);
         Attribute *shrinkBlockOffsetAttribute = new Attribute(shrinkBlockOffsetDesc, BaseTypes::NUM_TYPE(), false, 1);
         Attribute *cleanAttribute = new Attribute(cleanDesc, BaseTypes::BOOL_TYPE(), false, true);
@@ -231,8 +218,7 @@ void KrakenBuildWorkerFactory::init() {
         delegates[THREADS_NUMBER_ATTR_ID] = new SpinBoxDelegate(threadsNumberProperties);
     }
 
-    Descriptor desc(ACTOR_ID, KrakenBuildPrompter::tr("Build Kraken Database"),
-                          KrakenBuildPrompter::tr("Build a Kraken database from a genomic library or shrink a Kraken database."));
+    Descriptor desc(ACTOR_ID, KrakenBuildPrompter::tr("Build Kraken Database"), KrakenBuildPrompter::tr("Build a Kraken database from a genomic library or shrink a Kraken database."));
 
     ActorPrototype *proto = new IntegralBusActorPrototype(desc, ports, attributes);
     proto->setEditor(new DelegateEditor(delegates));
@@ -252,5 +238,5 @@ void KrakenBuildWorkerFactory::cleanup() {
     delete localDomain->unregisterEntry(ACTOR_ID);
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

@@ -22,13 +22,14 @@
 #ifndef _TREE_SETTIHS_DIALOG_
 #define _TREE_SETTIHS_DIALOG_
 
-#include "BaseSettingsDialog.h"
 #include <ui_TreeSettingsDialog.h>
+
+#include "BaseSettingsDialog.h"
 #include "ov_phyltree/TreeSettings.h"
 
 namespace U2 {
 
-class TreeSettingsDialog : public BaseSettingsDialog, public Ui_TreeSettingsDialog{
+class TreeSettingsDialog : public BaseSettingsDialog, public Ui_TreeSettingsDialog {
     Q_OBJECT
 public:
     TreeSettingsDialog(QWidget *parent, const OptionsMap &settings, bool isRectLayout);
@@ -42,5 +43,5 @@ private slots:
     void sl_treeTypeChanged(int);
 };
 
-} //namespace
+}    // namespace U2
 #endif

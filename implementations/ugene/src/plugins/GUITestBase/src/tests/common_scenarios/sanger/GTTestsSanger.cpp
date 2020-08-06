@@ -19,22 +19,21 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-#include <QCheckBox>
-#include <QFileInfo>
-#include <QLineEdit>
-#include <QSpinBox>
-
-#include <drivers/GTKeyboardDriver.h>
-
 #include <base_dialogs/GTFileDialog.h>
 #include <base_dialogs/MessageBoxFiller.h>
+#include <drivers/GTKeyboardDriver.h>
 #include <primitives/GTCheckBox.h>
 #include <primitives/GTComboBox.h>
 #include <primitives/GTLineEdit.h>
 #include <primitives/GTMenu.h>
 #include <primitives/GTSpinBox.h>
 #include <primitives/GTWidget.h>
+
+#include <QApplication>
+#include <QCheckBox>
+#include <QFileInfo>
+#include <QLineEdit>
+#include <QSpinBox>
 
 #include "GTTestsSanger.h"
 #include "GTUtilsDashboard.h"
@@ -64,7 +63,9 @@ GUI_TEST_CLASS_DEFINITION(test_0001) {
     settings.outAlignment = QFileInfo(sandBoxDir + "sanger_test_0001").absoluteFilePath();
 
     GTUtilsDialog::waitForDialog(os, new AlignToReferenceBlastDialogFiller(settings, os));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "Sanger data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "Sanger data analysis"
+                                                << "Map reads to reference...");
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
@@ -74,28 +75,28 @@ GUI_TEST_CLASS_DEFINITION(test_0001) {
 GUI_TEST_CLASS_DEFINITION(test_0002) {
     class CheckerFiller : public Filler {
     public:
-        CheckerFiller(HI::GUITestOpStatus &os, const AlignToReferenceBlastDialogFiller::Settings& settings)
+        CheckerFiller(HI::GUITestOpStatus &os, const AlignToReferenceBlastDialogFiller::Settings &settings)
             : Filler(os, "AlignToReferenceBlastDialog"),
-              settings(settings)
-        {}
+              settings(settings) {
+        }
 
         virtual void run() {
-            QWidget* dialog = QApplication::activeModalWidget();
+            QWidget *dialog = QApplication::activeModalWidget();
             CHECK_SET_ERR(dialog, "activeModalWidget is NULL");
 
             GTUtilsDialog::waitForDialog(os, new MessageBoxDialogFiller(os, QMessageBox::Ok));
             GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
 
-            QLineEdit* reference = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "referenceLineEdit", dialog));
+            QLineEdit *reference = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "referenceLineEdit", dialog));
             CHECK_SET_ERR(reference, "referenceLineEdit is NULL");
             GTLineEdit::setText(os, reference, settings.referenceUrl);
 
             GTUtilsDialog::waitForDialog(os, new MessageBoxDialogFiller(os, QMessageBox::Ok));
             GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
 
-            QWidget* addReadButton = GTWidget::findWidget(os, "addReadButton");
+            QWidget *addReadButton = GTWidget::findWidget(os, "addReadButton");
             CHECK_SET_ERR(addReadButton, "addReadButton is NULL");
-            foreach (const QString& read, settings.readUrls) {
+            foreach (const QString &read, settings.readUrls) {
                 GTUtilsDialog::waitForDialog(os, new GTFileDialogUtils(os, read));
                 GTWidget::click(os, addReadButton);
                 GTGlobals::sleep();
@@ -103,6 +104,7 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
 
             GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Cancel);
         }
+
     private:
         AlignToReferenceBlastDialogFiller::Settings settings;
     };
@@ -114,7 +116,9 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
     settings.readUrls << testDir + "_common_data/sanger/sanger_05.ab1";
 
     GTUtilsDialog::waitForDialog(os, new CheckerFiller(os, settings));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "Sanger data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "Sanger data analysis"
+                                                << "Map reads to reference...");
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
@@ -132,7 +136,9 @@ GUI_TEST_CLASS_DEFINITION(test_0003) {
     settings.outAlignment = QFileInfo(sandBoxDir + "sanger_test_0003").absoluteFilePath();
 
     GTUtilsDialog::waitForDialog(os, new AlignToReferenceBlastDialogFiller(settings, os));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "Sanger data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "Sanger data analysis"
+                                                << "Map reads to reference...");
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTUtilsLog::checkContainsError(os, l, "No read satisfy minimum similarity criteria");
@@ -141,7 +147,9 @@ GUI_TEST_CLASS_DEFINITION(test_0003) {
     settings.minIdentity = 30;
 
     GTUtilsDialog::waitForDialog(os, new AlignToReferenceBlastDialogFiller(settings, os));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "Sanger data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "Sanger data analysis"
+                                                << "Map reads to reference...");
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTUtilsProjectTreeView::checkItem(os, "sanger_test_0003");
@@ -159,7 +167,9 @@ GUI_TEST_CLASS_DEFINITION(test_0004) {
     settings.addResultToProject = false;
 
     GTUtilsDialog::waitForDialog(os, new AlignToReferenceBlastDialogFiller(settings, os));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "Sanger data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "Sanger data analysis"
+                                                << "Map reads to reference...");
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTUtilsProject::checkProject(os, GTUtilsProject::NotExists);
@@ -168,7 +178,9 @@ GUI_TEST_CLASS_DEFINITION(test_0004) {
     settings.outAlignment = QFileInfo(sandBoxDir + "sanger_test_0004_1").absoluteFilePath();
 
     GTUtilsDialog::waitForDialog(os, new AlignToReferenceBlastDialogFiller(settings, os));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "Sanger data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "Sanger data analysis"
+                                                << "Map reads to reference...");
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTUtilsProjectTreeView::checkItem(os, "sanger_test_0004_4");
@@ -177,8 +189,8 @@ GUI_TEST_CLASS_DEFINITION(test_0004) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0005_1) {
-//    // Check 'Sequence name from file' value of the 'Read name in result alignment' parameter in the 'Map Sanger Reads to Reference' dialog.
-//    1. Click "Tools" -> "Sanger data analysis" -> "Map reads to reference..." in the main menu.
+    //    // Check 'Sequence name from file' value of the 'Read name in result alignment' parameter in the 'Map Sanger Reads to Reference' dialog.
+    //    1. Click "Tools" -> "Sanger data analysis" -> "Map reads to reference..." in the main menu.
 
     class Scenario : public CustomScenario {
     public:
@@ -186,14 +198,15 @@ GUI_TEST_CLASS_DEFINITION(test_0005_1) {
             QWidget *dialog = QApplication::activeModalWidget();
             CHECK_SET_ERR(NULL != dialog, "active modal widget is NULL");
 
-//    Expected state: 'Sequence name from file' value is set by default.
+            //    Expected state: 'Sequence name from file' value is set by default.
             const QString expectedRowNamingPolicy = "Sequence name from file";
             const QString currentRowNamingPolicy = GTComboBox::getCurrentText(os, "cbRowNaming", dialog);
             CHECK_SET_ERR(expectedRowNamingPolicy == currentRowNamingPolicy,
                           QString("An incorrect default value of the 'Read name in result alignment' parameter: expected '%1', got '%2'")
-                          .arg(expectedRowNamingPolicy).arg(currentRowNamingPolicy));
+                              .arg(expectedRowNamingPolicy)
+                              .arg(currentRowNamingPolicy));
 
-//    2. Set input data from "_common_data/sanger/" directory and the output file.
+            //    2. Set input data from "_common_data/sanger/" directory and the output file.
             AlignToReferenceBlastDialogFiller::setReference(os, testDir + "_common_data/sanger/reference.gb", dialog);
 
             QStringList readsUrls;
@@ -204,15 +217,17 @@ GUI_TEST_CLASS_DEFINITION(test_0005_1) {
 
             AlignToReferenceBlastDialogFiller::setDestination(os, sandBoxDir + "sanger_test_0005_1.ugenedb", dialog);
 
-//    3. Click the 'Map' button.
+            //    3. Click the 'Map' button.
             GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
         }
     };
 
     GTUtilsDialog::waitForDialog(os, new AlignToReferenceBlastDialogFiller(os, new Scenario()));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "Sanger data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "Sanger data analysis"
+                                                << "Map reads to reference...");
 
-//    Expected state: the result alignment rows are named like "SZYD_Cas9_*".
+    //    Expected state: the result alignment rows are named like "SZYD_Cas9_*".
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     const QStringList expectedReadsnames = QStringList() << "SZYD_Cas9_5B70"
@@ -236,8 +251,8 @@ GUI_TEST_CLASS_DEFINITION(test_0005_1) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0005_2) {
-//    // Check 'Sequence name from file' value of the 'Read name in result alignment' parameter in the 'Map Sanger Reads to Reference' dialog.
-//    1. Click "Tools" -> "Sanger data analysis" -> "Map reads to reference..." in the main menu.
+    //    // Check 'Sequence name from file' value of the 'Read name in result alignment' parameter in the 'Map Sanger Reads to Reference' dialog.
+    //    1. Click "Tools" -> "Sanger data analysis" -> "Map reads to reference..." in the main menu.
 
     class Scenario : public CustomScenario {
     public:
@@ -245,14 +260,15 @@ GUI_TEST_CLASS_DEFINITION(test_0005_2) {
             QWidget *dialog = QApplication::activeModalWidget();
             CHECK_SET_ERR(NULL != dialog, "active modal widget is NULL");
 
-//    Expected state: 'Sequence name from file' value is set by default.
+            //    Expected state: 'Sequence name from file' value is set by default.
             const QString expectedRowNamingPolicy = "Sequence name from file";
             const QString currentRowNamingPolicy = GTComboBox::getCurrentText(os, "cbRowNaming", dialog);
             CHECK_SET_ERR(expectedRowNamingPolicy == currentRowNamingPolicy,
                           QString("An incorrect default value of the 'Read name in result alignment' parameter: expected '%1', got '%2'")
-                          .arg(expectedRowNamingPolicy).arg(currentRowNamingPolicy));
+                              .arg(expectedRowNamingPolicy)
+                              .arg(currentRowNamingPolicy));
 
-//    2. Set input data from "_common_data/sanger/" directory and the output file.
+            //    2. Set input data from "_common_data/sanger/" directory and the output file.
             AlignToReferenceBlastDialogFiller::setReference(os, testDir + "_common_data/sanger/reference.gb", dialog);
 
             QStringList readsUrls;
@@ -263,18 +279,20 @@ GUI_TEST_CLASS_DEFINITION(test_0005_2) {
 
             AlignToReferenceBlastDialogFiller::setDestination(os, sandBoxDir + "sanger_test_0005_2.ugenedb", dialog);
 
-//    3. Set 'Read name in result alignment' to 'File name'.
+            //    3. Set 'Read name in result alignment' to 'File name'.
             GTComboBox::setIndexWithText(os, "cbRowNaming", dialog, "File name");
 
-//    4. Click the 'Map' button.
+            //    4. Click the 'Map' button.
             GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
         }
     };
 
     GTUtilsDialog::waitForDialog(os, new AlignToReferenceBlastDialogFiller(os, new Scenario()));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "Sanger data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "Sanger data analysis"
+                                                << "Map reads to reference...");
 
-//    Expected state: the result alignment rows are named like "sanger_*".
+    //    Expected state: the result alignment rows are named like "sanger_*".
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     const QStringList expectedReadsnames = QStringList() << "sanger_01"
@@ -298,20 +316,19 @@ GUI_TEST_CLASS_DEFINITION(test_0005_2) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0005_3) {
-//    // Check 'Sequence name from file' value of the 'Read name in result alignment' parameter of the 'Map to Reference' workflow element.
-//    1. Open 'Trim and map Sanger reads' workflow sample.
+    //    // Check 'Sequence name from file' value of the 'Read name in result alignment' parameter of the 'Map to Reference' workflow element.
+    //    1. Open 'Trim and map Sanger reads' workflow sample.
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
 
     class Scenario : public CustomScenario {
     public:
         void run(HI::GUITestOpStatus &os) {
-
-//    Expected state: wizard has appeared.
+            //    Expected state: wizard has appeared.
             QWidget *wizard = QApplication::activeModalWidget();
             CHECK_SET_ERR(NULL != wizard, "active modal widget is NULL");
             GTWidget::clickWindowTitle(os, wizard);
 
-//    2. Fill it with any valid data until the 'Mapping settings' page.
+            //    2. Fill it with any valid data until the 'Mapping settings' page.
             GTUtilsWizard::setParameter(os, "Reference", QFileInfo(testDir + "_common_data/sanger/reference.gb").absoluteFilePath());
             GTUtilsWizard::clickButton(os, GTUtilsWizard::Next);
 
@@ -322,14 +339,15 @@ GUI_TEST_CLASS_DEFINITION(test_0005_3) {
             GTUtilsWizard::setInputFiles(os, QList<QStringList>() << readsUrls);
             GTUtilsWizard::clickButton(os, GTUtilsWizard::Next);
 
-//    Expected state: 'Sequence name from file' value is set by default for the 'Read name in result alignment' parameter.
+            //    Expected state: 'Sequence name from file' value is set by default for the 'Read name in result alignment' parameter.
             const QString expectedRowNamingPolicy = "Sequence name from file";
             const QString currentRowNamingPolicy = GTUtilsWizard::getParameter(os, "Read name in result alignment").toString();
             CHECK_SET_ERR(expectedRowNamingPolicy == currentRowNamingPolicy,
                           QString("An incorrect default value of the 'Read name in result alignment' parameter: expected '%1', got '%2'")
-                          .arg(expectedRowNamingPolicy).arg(currentRowNamingPolicy));
+                              .arg(expectedRowNamingPolicy)
+                              .arg(currentRowNamingPolicy));
 
-//    3. Fill the wizard till the end. Run the workflow.
+            //    3. Fill the wizard till the end. Run the workflow.
             GTUtilsWizard::clickButton(os, GTUtilsWizard::Next);
             GTUtilsWizard::setParameter(os, "Mapped reads file", QFileInfo(sandBoxDir + "sanger_test_0005_3.ugenedb").absoluteFilePath());
             GTKeyboardDriver::keyClick(Qt::Key_Enter);
@@ -341,7 +359,7 @@ GUI_TEST_CLASS_DEFINITION(test_0005_3) {
     GTUtilsDialog::waitForDialog(os, new WizardFiller(os, "Map Sanger Reads to Reference", new Scenario));
     GTUtilsWorkflowDesigner::addSample(os, "Trim and map Sanger reads");
 
-//    Expected state: the result alignment rows are named like "SZYD_Cas9_*".
+    //    Expected state: the result alignment rows are named like "SZYD_Cas9_*".
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     GTUtilsDashboard::clickOutputFile(os, "sanger_test_0005_3.ugenedb");
@@ -368,20 +386,19 @@ GUI_TEST_CLASS_DEFINITION(test_0005_3) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0005_4) {
-//    // Check 'Sequence name from file' value of the 'Read name in result alignment' parameter of the 'Map to Reference' workflow element.
-//    1. Open 'Trim and map Sanger reads' workflow sample.GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
+    //    // Check 'Sequence name from file' value of the 'Read name in result alignment' parameter of the 'Map to Reference' workflow element.
+    //    1. Open 'Trim and map Sanger reads' workflow sample.GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
 
     class Scenario : public CustomScenario {
     public:
         void run(HI::GUITestOpStatus &os) {
+            //    Expected state: wizard has appeared.
+            QWidget *wizard = QApplication::activeModalWidget();
+            CHECK_SET_ERR(NULL != wizard, "active modal widget is NULL");
+            GTWidget::clickWindowTitle(os, wizard);
 
-//    Expected state: wizard has appeared.
-             QWidget *wizard = QApplication::activeModalWidget();
-             CHECK_SET_ERR(NULL != wizard, "active modal widget is NULL");
-             GTWidget::clickWindowTitle(os, wizard);
-
-//    2. Fill it with any valid data until the 'Mapping settings' page.
+            //    2. Fill it with any valid data until the 'Mapping settings' page.
             GTUtilsWizard::setParameter(os, "Reference", QFileInfo(testDir + "_common_data/sanger/reference.gb").absoluteFilePath());
             GTUtilsWizard::clickButton(os, GTUtilsWizard::Next);
 
@@ -392,18 +409,18 @@ GUI_TEST_CLASS_DEFINITION(test_0005_4) {
             GTUtilsWizard::setInputFiles(os, QList<QStringList>() << readsUrls);
             GTUtilsWizard::clickButton(os, GTUtilsWizard::Next);
 
-//    Expected state: 'Sequence name from file' value is set by default for the 'Read name in result alignment' parameter.
+            //    Expected state: 'Sequence name from file' value is set by default for the 'Read name in result alignment' parameter.
             const QString expectedRowNamingPolicy = "Sequence name from file";
             const QString currentRowNamingPolicy = GTUtilsWizard::getParameter(os, "Read name in result alignment").toString();
             CHECK_SET_ERR(expectedRowNamingPolicy == currentRowNamingPolicy,
                           QString("An incorrect default value of the 'Read name in result alignment' parameter: expected '%1', got '%2'")
-                          .arg(expectedRowNamingPolicy).arg(currentRowNamingPolicy));
+                              .arg(expectedRowNamingPolicy)
+                              .arg(currentRowNamingPolicy));
 
-
-//    3. Set the 'Read name in result alignment' to 'File name'.
+            //    3. Set the 'Read name in result alignment' to 'File name'.
             GTUtilsWizard::setParameter(os, "Read name in result alignment", "File name");
 
-//    4. Fill the wizard till the end. Run the workflow.
+            //    4. Fill the wizard till the end. Run the workflow.
             GTUtilsWizard::clickButton(os, GTUtilsWizard::Next);
             GTUtilsWizard::setParameter(os, "Mapped reads file", QFileInfo(sandBoxDir + "sanger_test_0005_4.ugenedb").absoluteFilePath());
             GTKeyboardDriver::keyClick(Qt::Key_Enter);
@@ -415,7 +432,7 @@ GUI_TEST_CLASS_DEFINITION(test_0005_4) {
     GTUtilsDialog::waitForDialog(os, new WizardFiller(os, "Map Sanger Reads to Reference", new Scenario));
     GTUtilsWorkflowDesigner::addSample(os, "Trim and map Sanger reads");
 
-//    Expected state: the result alignment rows are named like "sanger_*".
+    //    Expected state: the result alignment rows are named like "sanger_*".
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     GTUtilsDashboard::clickOutputFile(os, "sanger_test_0005_4.ugenedb");
@@ -442,8 +459,8 @@ GUI_TEST_CLASS_DEFINITION(test_0005_4) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0006) {
-//    // Check that reads that consists of gaps and N only are skipped
-//    1. Select "Tools" -> "Sanger data analysis" -> "Map reads to reference..." item in the main menu.
+    //    // Check that reads that consists of gaps and N only are skipped
+    //    1. Select "Tools" -> "Sanger data analysis" -> "Map reads to reference..." item in the main menu.
 
     class Scenario : public CustomScenario {
     public:
@@ -451,13 +468,13 @@ GUI_TEST_CLASS_DEFINITION(test_0006) {
             QWidget *dialog = QApplication::activeModalWidget();
             CHECK_SET_ERR(NULL != dialog, "Active modal widget is NULL");
 
-//    2. Set '_common_data/sanger/dataset3/reference.gb' as reference and the next files as reads:
-//        '_common_data/sanger/dataset3/gaps.ab1'
-//        '_common_data/sanger/dataset3/N.ab1'
-//        '_common_data/sanger/dataset3/N_and_gaps.ab1'
-//        '_common_data/sanger/dataset3/pFB7-CDK5RAP2_P1713799_009.ab1'
-//        Set 'Read name in result alignment' option to 'File name'.
-//        Accept the dialog.
+            //    2. Set '_common_data/sanger/dataset3/reference.gb' as reference and the next files as reads:
+            //        '_common_data/sanger/dataset3/gaps.ab1'
+            //        '_common_data/sanger/dataset3/N.ab1'
+            //        '_common_data/sanger/dataset3/N_and_gaps.ab1'
+            //        '_common_data/sanger/dataset3/pFB7-CDK5RAP2_P1713799_009.ab1'
+            //        Set 'Read name in result alignment' option to 'File name'.
+            //        Accept the dialog.
             AlignToReferenceBlastDialogFiller::setReference(os, QFileInfo(testDir + "_common_data/sanger/dataset3/reference.gb").absoluteFilePath(), dialog);
 
             const QStringList reads = QStringList() << testDir + "_common_data/sanger/dataset3/gaps.ab1"
@@ -472,11 +489,13 @@ GUI_TEST_CLASS_DEFINITION(test_0006) {
     };
 
     GTUtilsDialog::waitForDialog(os, new AlignToReferenceBlastDialogFiller(os, new Scenario()));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "Sanger data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "Sanger data analysis"
+                                                << "Map reads to reference...");
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
-//    Expected state: the report contains information about 3 filtered reads, their similarity is 0%. The result alignment contains one mapped read with the name 'pFB7-CDK5RAP2_P1713799_009'.
+    //    Expected state: the report contains information about 3 filtered reads, their similarity is 0%. The result alignment contains one mapped read with the name 'pFB7-CDK5RAP2_P1713799_009'.
     // It is too hard to check the report, because we change it too often. Just check the rows count.
     const int rowsCount = GTUtilsMcaEditor::getReadsCount(os);
     CHECK_SET_ERR(1 == rowsCount, QString("Unexpected rows count: expect 1, got %1").arg(rowsCount));
@@ -491,17 +510,21 @@ GUI_TEST_CLASS_DEFINITION(test_0007) {
     settings.outAlignment = QFileInfo(sandBoxDir + "sanger_test_0007").absoluteFilePath();
 
     GTUtilsDialog::waitForDialog(os, new AlignToReferenceBlastDialogFiller(settings, os));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "Sanger data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "Sanger data analysis"
+                                                << "Map reads to reference...");
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTGlobals::sleep();
 
-    CHECK_SET_ERR(l.hasError(), "Alignment should fail");
+    CHECK_SET_ERR(l.hasErrors(), "Expected to have errors in the log, but no errors found");
 
     settings.minIdentity = 70;
 
     GTUtilsDialog::waitForDialog(os, new AlignToReferenceBlastDialogFiller(settings, os));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "Sanger data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "Sanger data analysis"
+                                                << "Map reads to reference...");
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
@@ -532,12 +555,13 @@ GUI_TEST_CLASS_DEFINITION(test_0008) {
     settings.outAlignment = QFileInfo(sandBoxDir + "sanger_test_0008").absoluteFilePath();
 
     GTUtilsDialog::waitForDialog(os, new AlignToReferenceBlastDialogFiller(settings, os));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "Sanger data analysis" << "Map reads to reference...");
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "Sanger data analysis"
+                                                << "Map reads to reference...");
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
     CHECK_SET_ERR(l.checkMessage("trimming was skipped"), "Could not find the message about skipped trimming");
 }
 
-
-}   // namespace GUITest_common_scenarios_sanger
-}   // namespace U2
+}    // namespace GUITest_common_scenarios_sanger
+}    // namespace U2

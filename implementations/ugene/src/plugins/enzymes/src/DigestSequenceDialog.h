@@ -45,7 +45,7 @@ class CreateAnnotationWidgetController;
 class DigestSequenceDialog : public QDialog, public Ui_DigestSequenceDialog {
     Q_OBJECT
 public:
-    DigestSequenceDialog(ADVSequenceObjectContext* ctx, QWidget* parent);
+    DigestSequenceDialog(ADVSequenceObjectContext *ctx, QWidget *parent);
     virtual void accept();
 
 private slots:
@@ -61,30 +61,30 @@ private slots:
 
 private:
     void addAnnotationWidget();
-    void searchForAnnotatedEnzymes(ADVSequenceObjectContext* ctx);
+    void searchForAnnotatedEnzymes(ADVSequenceObjectContext *ctx);
     void updateAvailableEnzymeWidget();
     void updateSelectedEnzymeWidget();
     void setUiEnabled(bool enabled);
     bool loadEnzymesFile();
-    QList<SEnzymeData> findEnzymeDataById(const QString& id);
-    QDialog* createSelectAnnotationsDialog();
+    QList<SEnzymeData> findEnzymeDataById(const QString &id);
+    QDialog *createSelectAnnotationsDialog();
 
-    ADVSequenceObjectContext*           seqCtx;
-    U2SequenceObject*                  dnaObj;
-    AnnotationTableObject *               sourceObj;
-    EnzymesSelectorDialogHandler        enzymesSelectorHandler;
-    CreateAnnotationWidgetController*   ac;
-    QTimer*                             timer;
-    QSet<QString>                       availableEnzymes;
-    QSet<QString>                       selectedEnzymes;
-    QMap<QString,U2Region>              annotatedEnzymes;
-    QList<SEnzymeData>                  enzymesBase;
-    int                                 animationCounter;
-    static const QString                WAIT_MESSAGE;
-    static const QString                HINT_MESSAGE;
-    QPushButton* okButton;
+    ADVSequenceObjectContext *seqCtx;
+    U2SequenceObject *dnaObj;
+    AnnotationTableObject *sourceObj;
+    EnzymesSelectorDialogHandler enzymesSelectorHandler;
+    CreateAnnotationWidgetController *ac;
+    QTimer *timer;
+    QSet<QString> availableEnzymes;
+    QSet<QString> selectedEnzymes;
+    QMap<QString, U2Region> annotatedEnzymes;
+    QList<SEnzymeData> enzymesBase;
+    int animationCounter;
+    static const QString WAIT_MESSAGE;
+    static const QString HINT_MESSAGE;
+    QPushButton *okButton;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

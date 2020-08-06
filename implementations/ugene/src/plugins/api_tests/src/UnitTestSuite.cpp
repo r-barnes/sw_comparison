@@ -19,13 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "UnitTestSuite.h"
+
 #include <QDomElement>
 #include <QTextStream>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 
-#include "UnitTestSuite.h"
 #include "core/datatype/udr/RawDataUdrSchemaUnitTests.h"
 #include "core/dbi/assembly/AssemblyDbiUnitTests.h"
 #include "core/dbi/attribute/AttributeDbiUnitTests.h"
@@ -42,7 +43,7 @@ namespace U2 {
 
 class GTestBuilder {
 public:
-    bool addTestCase(const QString& testCase) {
+    bool addTestCase(const QString &testCase) {
         if (testCase.isEmpty() || tests.keys().contains(testCase)) {
             return false;
         }
@@ -50,23 +51,23 @@ public:
         return true;
     }
 
-    bool addTest(const QString& testCase, const QString& test) {
+    bool addTest(const QString &testCase, const QString &test) {
         if (!tests.keys().contains(testCase)) {
             return false;
         }
-        tests[testCase].append(test); 
+        tests[testCase].append(test);
         return true;
     }
 
     QMap<QString, QStringList> getTests() {
         return tests;
     }
+
 private:
     QMap<QString, QStringList> tests;
 };
 
-
-void UnitTestSuite::init(XMLTestFormat *tf, const QDomElement& el) {
+void UnitTestSuite::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
     GTestBuilder builder;
 
@@ -81,7 +82,7 @@ void UnitTestSuite::init(XMLTestFormat *tf, const QDomElement& el) {
     while (!line.isNull()) {
         line = line.trimmed();
         if (line.startsWith('+')) {
-            line.remove(0,1);
+            line.remove(0, 1);
             line = line.trimmed();
             builder.addTest(testCase, line);
         } else if (!line.startsWith('-') && !line.startsWith('#')) {
@@ -100,12 +101,12 @@ void UnitTestSuite::prepare() {
     AppContext::getAppSettings()->getTestRunnerSettings()->setVar("COMMON_DATA_DIR", dataDir);
     tests_run();
 }
-void UnitTestSuite::test_run(const QString& testName) {
-    UnitTest* t = (UnitTest*)QMetaType::create(QMetaType::type(testName.toStdString().c_str()));
+void UnitTestSuite::test_run(const QString &testName) {
+    UnitTest *t = (UnitTest *)QMetaType::create(QMetaType::type(testName.toStdString().c_str()));
     if (t != NULL) {
         t->SetUp();
         t->Test();
-        if (!t->GetError().isEmpty()){
+        if (!t->GetError().isEmpty()) {
             taskLog.error(testName + ": " + t->GetError());
             failed++;
         } else {
@@ -118,11 +119,10 @@ void UnitTestSuite::test_run(const QString& testName) {
     }
 }
 
-void UnitTestSuite::tests_run(){
-
-    foreach(const QString& suite, tests.keys()) {
+void UnitTestSuite::tests_run() {
+    foreach (const QString &suite, tests.keys()) {
         QStringList testList = tests.value(suite);
-        foreach(const QString& testName, testList) {
+        foreach (const QString &testName, testList) {
             test_run(suite + "_" + testName);
         }
     }
@@ -143,13 +143,13 @@ void UnitTestSuite::cleanup() {
     TextObjectTestData::shutdown();
     UdrTestData::shutdown();
 
-    if (passed){
+    if (passed) {
         taskLog.info("Test passed: " + QString::number(passed));
     }
-    if (ignored){
+    if (ignored) {
         taskLog.info("Test ignored: " + QString::number(ignored));
     }
-    if (failed){
+    if (failed) {
         taskLog.info("Test failed: " + QString::number(failed));
         setError("Test failed");
     }
@@ -157,4 +157,4 @@ void UnitTestSuite::cleanup() {
     XmlTest::cleanup();
 }
 
-} //namespace
+}    // namespace U2

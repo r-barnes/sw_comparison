@@ -45,6 +45,6 @@ private:
     CustomExternalTool *registeredTool;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_REGISTER_CUSTOM_TOOL_TASK_H_
+#endif    // _U2_REGISTER_CUSTOM_TOOL_TASK_H_

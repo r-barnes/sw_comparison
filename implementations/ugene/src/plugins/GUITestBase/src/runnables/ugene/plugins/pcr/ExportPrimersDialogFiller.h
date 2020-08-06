@@ -29,7 +29,8 @@ using namespace HI;
 
 class ExportPrimersDialogFiller : public Filler {
 public:
-    enum ExportTarget {LocalFile, SharedDb};
+    enum ExportTarget { LocalFile,
+                        SharedDb };
 
     ExportPrimersDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario = NULL);
 
@@ -43,6 +44,6 @@ public:
     static void setFolder(HI::GUITestOpStatus &os, const QString &folder);
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_EXPORT_PRIMERS_DIALOG_FILLER_H_
+#endif    // _U2_EXPORT_PRIMERS_DIALOG_FILLER_H_

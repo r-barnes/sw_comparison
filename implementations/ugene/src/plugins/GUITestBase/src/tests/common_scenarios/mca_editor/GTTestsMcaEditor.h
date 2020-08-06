@@ -88,8 +88,8 @@ GUI_TEST_CLASS_DECLARATION(test_0040_3)
 GUI_TEST_CLASS_DECLARATION(test_0041)
 
 #undef GUI_TEST_SUITE
-}//namespace U2
+}    // namespace GUITest_common_scenarios_mca_editor
 
-}//namespace
+}    // namespace U2
 
-#endif // GTTESTSMCAEDITOR_H
+#endif    // GTTESTSMCAEDITOR_H

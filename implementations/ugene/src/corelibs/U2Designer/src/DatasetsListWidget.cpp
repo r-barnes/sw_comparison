@@ -19,6 +19,8 @@
 * MA 02110-1301, USA.
 */
 
+#include "DatasetsListWidget.h"
+
 #include <QInputDialog>
 #include <QMenu>
 #include <QMessageBox>
@@ -32,13 +34,10 @@
 
 #include <U2Designer/DatasetsController.h>
 
-#include "DatasetsListWidget.h"
-
 namespace U2 {
 
 DatasetsListWidget::DatasetsListWidget(DatasetsController *_ctrl)
-: QWidget(), ctrl(_ctrl)
-{
+    : QWidget(), ctrl(_ctrl) {
     QVBoxLayout *l = new QVBoxLayout(this);
     l->setMargin(0);
     tabs = new DatasetsTabWidget(this);
@@ -76,7 +75,7 @@ void DatasetsListWidget::sl_deleteDataset(int idx) {
 
 QString DatasetsListWidget::getTip() const {
     QStringList names;
-    for (int i=0; i<tabs->count(); i++) {
+    for (int i = 0; i < tabs->count(); i++) {
         names << tabs->tabText(i);
     }
     int idx = names.count();
@@ -96,10 +95,11 @@ void DatasetsListWidget::sl_newDataset() {
     do {
         bool ok = false;
         text = QInputDialog::getText(this,
-            tr("Enter Dataset Name"),
-            tr("New dataset name:"),
-            QLineEdit::Normal,
-            text, &ok);
+                                     tr("Enter Dataset Name"),
+                                     tr("New dataset name:"),
+                                     QLineEdit::Normal,
+                                     text,
+                                     &ok);
         if (!ok) {
             return;
         }
@@ -117,7 +117,7 @@ void DatasetsListWidget::sl_newDataset() {
 
 void DatasetsListWidget::sl_renameDataset() {
     GCOUNTER(cvar, tvar, "WD::Dataset::Rename Dataset");
-    QAction *a = dynamic_cast<QAction*>(sender());
+    QAction *a = dynamic_cast<QAction *>(sender());
     CHECK(NULL != a, );
 
     int idx = a->property("idx").toInt();
@@ -128,10 +128,11 @@ void DatasetsListWidget::sl_renameDataset() {
     do {
         bool ok = false;
         text = QInputDialog::getText(this,
-            tr("Rename Dataset"),
-            tr("New dataset name:"),
-            QLineEdit::Normal,
-            text, &ok);
+                                     tr("Rename Dataset"),
+                                     tr("New dataset name:"),
+                                     QLineEdit::Normal,
+                                     text,
+                                     &ok);
         if (!ok) {
             return;
         }
@@ -159,8 +160,7 @@ void DatasetsListWidget::sl_contextMenu(const QPoint &p, int idx) {
 /* DatasetsTabWidget */
 /************************************************************************/
 DatasetsTabWidget::DatasetsTabWidget(QWidget *parent)
-: QTabWidget(parent)
-{
+    : QTabWidget(parent) {
     setObjectName("DatasetsTabWidget");
     setUsesScrollButtons(true);
     setTabsClosable(true);
@@ -209,4 +209,4 @@ void DatasetsTabWidget::sl_contextMenu(const QPoint &p) {
     }
 }
 
-} // U2
+}    // namespace U2

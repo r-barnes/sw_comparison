@@ -27,18 +27,20 @@
 namespace U2 {
 using namespace HI;
 
-class ConfigurationWizardFiller: public Filler
-{
+class ConfigurationWizardFiller : public Filler {
 public:
-    ConfigurationWizardFiller(HI::GUITestOpStatus &os, QString name, QStringList _radioNames):
-        Filler(os, name), radioNames(_radioNames){}
-    ConfigurationWizardFiller(HI::GUITestOpStatus &os, QString name, CustomScenario* c):
-        Filler(os, name, c){}
+    ConfigurationWizardFiller(HI::GUITestOpStatus &os, QString name, QStringList _radioNames)
+        : Filler(os, name), radioNames(_radioNames) {
+    }
+    ConfigurationWizardFiller(HI::GUITestOpStatus &os, QString name, CustomScenario *c)
+        : Filler(os, name, c) {
+    }
     virtual void commonScenario();
+
 private:
-QStringList radioNames;
+    QStringList radioNames;
 };
 
-}
+}    // namespace U2
 
-#endif // CONFIGURATIONWIZARDFILLER_H
+#endif    // CONFIGURATIONWIZARDFILLER_H

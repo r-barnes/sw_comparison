@@ -22,25 +22,23 @@
 #ifndef _U2_GT_RUNNABLES_SMITH_WATERMAN_DIALOG_BASE_FILLER_H_
 #define _U2_GT_RUNNABLES_SMITH_WATERMAN_DIALOG_BASE_FILLER_H_
 
-#include "utils/GTUtilsDialog.h"
-#include "api/GTRegionSelector.h"
 #include <U2Algorithm/SmithWatermanSettings.h>
+
+#include "api/GTRegionSelector.h"
+#include "utils/GTUtilsDialog.h"
 
 namespace U2 {
 using namespace HI;
 
 class SmithWatermanDialogFiller : public Filler {
 public:
-    enum Button {Search, Cancel};
-    enum SwRealization {CLASSIC, SSE2};
-    SmithWatermanDialogFiller(HI::GUITestOpStatus &_os, const QString& _pattern = "",
-        const GTRegionSelector::RegionSelectorSettings& _s
-        = GTRegionSelector::RegionSelectorSettings(), SwRealization _realization = CLASSIC);
+    enum Button { Search,
+                  Cancel };
+    enum SwRealization { CLASSIC,
+                         SSE2 };
+    SmithWatermanDialogFiller(HI::GUITestOpStatus &_os, const QString &_pattern = "", const GTRegionSelector::RegionSelectorSettings &_s = GTRegionSelector::RegionSelectorSettings(), SwRealization _realization = CLASSIC);
 
-    SmithWatermanDialogFiller(HI::GUITestOpStatus &_os, SwRealization _realization,
-        const SmithWatermanSettings::SWResultView _resultView, const QString & _resultFilesPath,
-        const QString& _pattern = "", const GTRegionSelector::RegionSelectorSettings& _s
-        = GTRegionSelector::RegionSelectorSettings());
+    SmithWatermanDialogFiller(HI::GUITestOpStatus &_os, SwRealization _realization, const SmithWatermanSettings::SWResultView _resultView, const QString &_resultFilesPath, const QString &_pattern = "", const GTRegionSelector::RegionSelectorSettings &_s = GTRegionSelector::RegionSelectorSettings());
 
     SmithWatermanDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario);
 
@@ -56,6 +54,6 @@ private:
     SwRealization realization;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_GT_RUNNABLES_SMITH_WATERMAN_DIALOG_BASE_FILLER_H_
+#endif    // _U2_GT_RUNNABLES_SMITH_WATERMAN_DIALOG_BASE_FILLER_H_

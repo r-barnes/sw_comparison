@@ -23,7 +23,7 @@
 
 #include <QScopedArrayPointer>
 
-#if defined (Q_OS_WIN)
+#if defined(Q_OS_WIN)
 
 bool DetectWindowsVersion::isWindows10() {
     OSVERSIONINFO osver;
@@ -45,9 +45,9 @@ void DetectWindowsVersion::detectWinVersion(OSVERSIONINFO *osver) {
 
 // Determine Windows versions >= 8 by querying the version of kernel32.dll.
 bool DetectWindowsVersion::determineWinOsVersionPost8(OSVERSIONINFO *result) {
-    typedef WORD(WINAPI* PtrGetFileVersionInfoSizeW)(LPCWSTR, LPDWORD);
-    typedef BOOL(WINAPI* PtrVerQueryValueW)(LPCVOID, LPCWSTR, LPVOID, PUINT);
-    typedef BOOL(WINAPI* PtrGetFileVersionInfoW)(LPCWSTR, DWORD, DWORD, LPVOID);
+    typedef WORD(WINAPI * PtrGetFileVersionInfoSizeW)(LPCWSTR, LPDWORD);
+    typedef BOOL(WINAPI * PtrVerQueryValueW)(LPCVOID, LPCWSTR, LPVOID, PUINT);
+    typedef BOOL(WINAPI * PtrGetFileVersionInfoW)(LPCWSTR, DWORD, DWORD, LPVOID);
 
     QSystemLibrary versionLib(QStringLiteral("version"));
     if (!versionLib.load())
@@ -86,8 +86,7 @@ void DetectWindowsVersion::determineWinOsVersionFallbackPost8(OSVERSIONINFO *res
     DWORDLONG conditionMask = 0;
     VER_SET_CONDITION(conditionMask, VER_MAJORVERSION, VER_GREATER_EQUAL);
     VER_SET_CONDITION(conditionMask, VER_PLATFORMID, VER_EQUAL);
-    OSVERSIONINFOEX checkVersion = { sizeof(OSVERSIONINFOEX), result->dwMajorVersion, 0,
-        result->dwBuildNumber, result->dwPlatformId, { '\0' }, 0, 0, 0, 0, 0 };
+    OSVERSIONINFOEX checkVersion = {sizeof(OSVERSIONINFOEX), result->dwMajorVersion, 0, result->dwBuildNumber, result->dwPlatformId, {'\0'}, 0, 0, 0, 0, 0};
     for (; VerifyVersionInfo(&checkVersion, VER_MAJORVERSION | VER_PLATFORMID, conditionMask); ++checkVersion.dwMajorVersion)
         result->dwMajorVersion = checkVersion.dwMajorVersion;
     conditionMask = 0;

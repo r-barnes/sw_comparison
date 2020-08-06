@@ -30,8 +30,7 @@ CEASSettings::CEASSettings() {
 }
 
 CEASSettings::CEASSettings(const QString &_bedFile, const QString &_wigFile, const QString &_gdbFile)
-: bedFile(_bedFile), wigFile(_wigFile), gdbFile(_gdbFile)
-{
+    : bedFile(_bedFile), wigFile(_wigFile), gdbFile(_gdbFile) {
     initializeDefaults();
 }
 
@@ -144,13 +143,13 @@ void CEASSettings::setDump(bool value) {
 
 QStringList CEASSettings::getArgumentList() const {
     QStringList result;
-    if (!bedFile.isEmpty()){
+    if (!bedFile.isEmpty()) {
         result << "--bed=" + getCorrectArgValue(bedFile);
     }
-    if (!wigFile.isEmpty()){
+    if (!wigFile.isEmpty()) {
         result << "--wig=" + getCorrectArgValue(wigFile);
     }
-    if (!gdbFile.isEmpty()){
+    if (!gdbFile.isEmpty()) {
         result << "--gt=" + getCorrectArgValue(gdbFile);
     }
 
@@ -190,14 +189,14 @@ QStringList CEASSettings::getArgumentList() const {
     }
     if (!geneGroups.isEmpty()) {
         QString geneArgValue = geneGroups[0];
-        for (int i=0; i<geneGroups.size(); i++) {
+        for (int i = 0; i < geneGroups.size(); i++) {
             geneArgValue += "," + geneGroups[i];
         }
         result << "--gn-groups=" + getCorrectArgValue(geneArgValue);
     }
     if (!geneNames.isEmpty()) {
         QString nameArgValue = geneNames[0];
-        for (int i=0; i<geneGroups.size(); i++) {
+        for (int i = 0; i < geneGroups.size(); i++) {
             nameArgValue += "," + geneNames[i];
         }
         result << "--gn-group-names=" + getCorrectArgValue(nameArgValue);
@@ -222,16 +221,16 @@ QString CEASSettings::getCorrectArgValue(const QString &value) const {
     return value;
 }
 
-const QString & CEASSettings::getImageFilePath() const {
+const QString &CEASSettings::getImageFilePath() const {
     return imageFile;
 }
 
-const QString & CEASSettings::getImageFileFormat() const {
+const QString &CEASSettings::getImageFileFormat() const {
     return imageFormat;
 }
 
-const QString & CEASSettings::getAnnsFilePath() const {
+const QString &CEASSettings::getAnnsFilePath() const {
     return annsFile;
 }
 
-} // U2
+}    // namespace U2

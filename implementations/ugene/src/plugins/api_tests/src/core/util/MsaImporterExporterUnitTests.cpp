@@ -23,46 +23,44 @@
 
 #include <U2Core/AppContext.h>
 #include <U2Core/DNAAlphabet.h>
-#include <U2Core/MultipleSequenceAlignmentImporter.h>
 #include <U2Core/MultipleSequenceAlignmentExporter.h>
+#include <U2Core/MultipleSequenceAlignmentImporter.h>
 #include <U2Core/MultipleSequenceAlignmentObject.h>
 #include <U2Core/U2OpStatusUtils.h>
 
 #include <U2Formats/SQLiteDbi.h>
 
-
 namespace U2 {
 
 TestDbiProvider MsaImporterExporterTestData::dbiProvider = TestDbiProvider();
-const QString& MsaImporterExporterTestData::IMP_EXP_DB_URL("imp-exp-dbi.ugenedb");
+const QString &MsaImporterExporterTestData::IMP_EXP_DB_URL("imp-exp-dbi.ugenedb");
 U2DbiRef MsaImporterExporterTestData::dbiRef = U2DbiRef();
 
 void MsaImporterExporterTestData::init() {
     bool ok = dbiProvider.init(IMP_EXP_DB_URL, false);
-    SAFE_POINT(ok, "Dbi provider failed to initialize in MsaTestData::init()!",);
+    SAFE_POINT(ok, "Dbi provider failed to initialize in MsaTestData::init()!", );
 
-    U2Dbi* dbi = dbiProvider.getDbi();
+    U2Dbi *dbi = dbiProvider.getDbi();
     dbiRef = dbi->getDbiRef();
     dbiProvider.close();
 }
 
-const U2DbiRef& MsaImporterExporterTestData::getDbiRef() {
+const U2DbiRef &MsaImporterExporterTestData::getDbiRef() {
     if (dbiRef == U2DbiRef()) {
         init();
     }
     return dbiRef;
 }
 
-
 IMPLEMENT_TEST(MsaImporterExporterUnitTests, importExportAlignment) {
-    const U2DbiRef& dbiRef = MsaImporterExporterTestData::getDbiRef();
+    const U2DbiRef &dbiRef = MsaImporterExporterTestData::getDbiRef();
 
     U2OpStatusImpl os;
 
     // Init an alignment
     QString alignmentName = "Test alignment";
-    DNAAlphabetRegistry* alphabetRegistry = AppContext::getDNAAlphabetRegistry();
-    const DNAAlphabet* alphabet = alphabetRegistry->findById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
+    DNAAlphabetRegistry *alphabetRegistry = AppContext::getDNAAlphabetRegistry();
+    const DNAAlphabet *alphabet = alphabetRegistry->findById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
 
     QByteArray firstSequence("---AG-T");
     QByteArray secondSequence("AG-CT-TAA");
@@ -86,5 +84,4 @@ IMPLEMENT_TEST(MsaImporterExporterUnitTests, importExportAlignment) {
     CHECK_EQUAL(alignmentName, alActual->getName(), "alignment name");
 }
 
-
-}
+}    // namespace U2

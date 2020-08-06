@@ -19,9 +19,10 @@
  * MA 02110-1301, USA.
  */
 
+#include "KrakenClassifyPrompter.h"
+
 #include <U2Lang/BaseSlots.h>
 
-#include "KrakenClassifyPrompter.h"
 #include "KrakenClassifyTask.h"
 #include "KrakenClassifyWorkerFactory.h"
 
@@ -29,9 +30,7 @@ namespace U2 {
 namespace LocalWorkflow {
 
 KrakenClassifyPrompter::KrakenClassifyPrompter(Actor *actor)
-    : PrompterBase<KrakenClassifyPrompter>(actor)
-{
-
+    : PrompterBase<KrakenClassifyPrompter>(actor) {
 }
 
 QString KrakenClassifyPrompter::composeRichDoc() {
@@ -41,11 +40,11 @@ QString KrakenClassifyPrompter::composeRichDoc() {
     if (KrakenClassifyTaskSettings::SINGLE_END == getParameter(KrakenClassifyWorkerFactory::INPUT_DATA_ATTR_ID).toString()) {
         return tr("Classify sequences from <u>%1</u> with Kraken, use %2 database.").arg(readsProducerName).arg(databaseUrl);
     } else {
-//        const QString pairedReadsProducerName = getProducersOrUnset(KrakenClassifyWorkerFactory::INPUT_PAIRED_PORT_ID, BaseSlots::URL_SLOT().getId());
+        //        const QString pairedReadsProducerName = getProducersOrUnset(KrakenClassifyWorkerFactory::INPUT_PAIRED_PORT_ID, BaseSlots::URL_SLOT().getId());
         return tr("Classify paired-end reads from <u>%1</u> with Kraken, use %2 database.")
-                .arg(readsProducerName)/*.arg(pairedReadsProducerName)*/.arg(databaseUrl);
+            .arg(readsProducerName) /*.arg(pairedReadsProducerName)*/.arg(databaseUrl);
     }
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

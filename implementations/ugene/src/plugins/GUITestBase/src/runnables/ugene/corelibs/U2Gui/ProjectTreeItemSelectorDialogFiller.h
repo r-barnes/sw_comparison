@@ -22,21 +22,21 @@
 #ifndef _U2_GT_RUNNABLES_PROJECT_TREE_ITEM_SELECTOR_DIALOG_FILLER_H_
 #define _U2_GT_RUNNABLES_PROJECT_TREE_ITEM_SELECTOR_DIALOG_FILLER_H_
 
-#include "utils/GTUtilsDialog.h"
 #include "GTUtilsProjectTreeView.h"
+#include "utils/GTUtilsDialog.h"
 
 namespace U2 {
 
-class ProjectTreeItemSelectorDialogFiller : public Filler{
+class ProjectTreeItemSelectorDialogFiller : public Filler {
 public:
     enum SelectionMode {
-        Single, Separate, Continuous
+        Single,
+        Separate,
+        Continuous
     };
 
-    ProjectTreeItemSelectorDialogFiller(HI::GUITestOpStatus &os, const QString &documentName, const QString &objectName,
-        const QSet<GObjectType> &acceptableTypes = QSet<GObjectType>(), SelectionMode mode = Single, int expectedDocCount = -1);
-    ProjectTreeItemSelectorDialogFiller(HI::GUITestOpStatus &os, const QMap<QString, QStringList> &itemsToSelect,
-        const QSet<GObjectType> &acceptableTypes = QSet<GObjectType>(), SelectionMode mode = Single, int expectedDocCount = -1);
+    ProjectTreeItemSelectorDialogFiller(HI::GUITestOpStatus &os, const QString &documentName, const QString &objectName, const QSet<GObjectType> &acceptableTypes = QSet<GObjectType>(), SelectionMode mode = Single, int expectedDocCount = -1);
+    ProjectTreeItemSelectorDialogFiller(HI::GUITestOpStatus &os, const QMap<QString, QStringList> &itemsToSelect, const QSet<GObjectType> &acceptableTypes = QSet<GObjectType>(), SelectionMode mode = Single, int expectedDocCount = -1);
     ProjectTreeItemSelectorDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario);
 
     virtual void commonScenario();
@@ -48,6 +48,6 @@ private:
     const int expectedDocCount;
 };
 
-}
+}    // namespace U2
 
 #endif

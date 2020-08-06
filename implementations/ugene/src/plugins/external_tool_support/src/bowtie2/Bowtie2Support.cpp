@@ -38,9 +38,8 @@ const QString Bowtie2Support::ET_BOWTIE2_BUILD_ID = "USUPP_BOWTIE2_BUILD";
 const QString Bowtie2Support::ET_BOWTIE2_INSPECT = "Bowtie 2 index inspector";
 const QString Bowtie2Support::ET_BOWTIE2_INSPECT_ID = "USUPP_BOWTIE2_INSPECT";
 
-Bowtie2Support::Bowtie2Support(const QString& id, const QString& name, const QString& path /* = */ )
-    : ExternalTool(id, name, path)
-{
+Bowtie2Support::Bowtie2Support(const QString &id, const QString &name, const QString &path /* = */)
+    : ExternalTool(id, name, path) {
     if (AppContext::getMainWindow()) {
         icon = QIcon(":external_tool_support/images/cmdline.png");
         grayIcon = QIcon(":external_tool_support/images/cmdline_gray.png");
@@ -50,7 +49,7 @@ Bowtie2Support::Bowtie2Support(const QString& id, const QString& name, const QSt
     toolKitName = "Bowtie2";
     versionRegExp = QRegExp("version (\\d+\\.\\d+\\.\\d+[.]{0,1}[\\d+]{0,1})");
 
-    if (id == ET_BOWTIE2_ALIGN_ID) { // Bowtie2-align
+    if (id == ET_BOWTIE2_ALIGN_ID) {    // Bowtie2-align
         toolRunnerProgram = PerlSupport::ET_PERL_ID;
         dependencies << PerlSupport::ET_PERL_ID;
         executableFileName = "bowtie2";
@@ -58,7 +57,7 @@ Bowtie2Support::Bowtie2Support(const QString& id, const QString& name, const QSt
         validMessage = "bowtie2";
         description = tr("<i>Bowtie 2 aligner</i> takes a Bowtie 2 index"
                          " and a set of sequencing read files and outputs a set of alignments.");
-    } else if (id == ET_BOWTIE2_BUILD_ID) { // Bowtie2-build
+    } else if (id == ET_BOWTIE2_BUILD_ID) {    // Bowtie2-build
         toolRunnerProgram = PythonSupport::ET_PYTHON_ID;
         dependencies << PythonSupport::ET_PYTHON_ID;
         executableFileName = "bowtie2-build";
@@ -71,7 +70,7 @@ Bowtie2Support::Bowtie2Support(const QString& id, const QString& name, const QSt
                          " they are all that is needed to align reads to that reference."
                          " The original sequence files are no longer used by <i>Bowtie 2</i>"
                          " once the index is built.");
-    } else if (id == ET_BOWTIE2_INSPECT_ID) { // Bowtie2-inspect
+    } else if (id == ET_BOWTIE2_INSPECT_ID) {    // Bowtie2-inspect
         toolRunnerProgram = PythonSupport::ET_PYTHON_ID;
         dependencies << PythonSupport::ET_PYTHON_ID;
         executableFileName = "bowtie2-inspect";
@@ -83,4 +82,4 @@ Bowtie2Support::Bowtie2Support(const QString& id, const QString& name, const QSt
     }
 }
 
-} // namespace
+}    // namespace U2

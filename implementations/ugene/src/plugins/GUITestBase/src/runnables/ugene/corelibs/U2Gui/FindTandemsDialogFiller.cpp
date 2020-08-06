@@ -20,37 +20,35 @@
  */
 
 #include "FindTandemsDialogFiller.h"
-#include <primitives/GTWidget.h>
-#include <primitives/GTTabWidget.h>
 #include <primitives/GTLineEdit.h>
+#include <primitives/GTTabWidget.h>
+#include <primitives/GTWidget.h>
 
-#include <QApplication>
 #include <QAbstractButton>
+#include <QApplication>
 #include <QDialogButtonBox>
 #include <QPushButton>
 
 namespace U2 {
 
-FindTandemsDialogFiller::FindTandemsDialogFiller( HI::GUITestOpStatus &_os, const QString & _resultFilesPath)
-    : Filler(_os, "FindTandemsDialog"), button(Start), resultAnnotationFilesPath(_resultFilesPath){
+FindTandemsDialogFiller::FindTandemsDialogFiller(HI::GUITestOpStatus &_os, const QString &_resultFilesPath)
+    : Filler(_os, "FindTandemsDialog"), button(Start), resultAnnotationFilesPath(_resultFilesPath) {
 }
 
 #define GT_CLASS_NAME "GTUtilsDialog::FindTandemsDialogFiller"
 #define GT_METHOD_NAME "run"
 
-FindTandemsDialogFiller::FindTandemsDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario) :
-    Filler(os, "FindTandemsDialog", scenario),
-    button(Start)
-{
-
+FindTandemsDialogFiller::FindTandemsDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario)
+    : Filler(os, "FindTandemsDialog", scenario),
+      button(Start) {
 }
 
-void FindTandemsDialogFiller::commonScenario(){
-    QWidget* dialog = QApplication::activeModalWidget();
+void FindTandemsDialogFiller::commonScenario() {
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
     if (button == Cancel) {
-        QAbstractButton *cancelButton = qobject_cast<QAbstractButton*>(GTWidget::findWidget(os, "cancelButton", dialog));
+        QAbstractButton *cancelButton = qobject_cast<QAbstractButton *>(GTWidget::findWidget(os, "cancelButton", dialog));
         GTWidget::click(os, cancelButton);
         return;
     }
@@ -68,4 +66,4 @@ void FindTandemsDialogFiller::commonScenario(){
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

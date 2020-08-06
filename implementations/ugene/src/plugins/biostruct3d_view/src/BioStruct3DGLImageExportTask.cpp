@@ -20,16 +20,17 @@
  */
 
 #include "BioStruct3DGLImageExportTask.h"
-#include "BioStruct3DGLWidget.h"
-#include "gl2ps/gl2ps.h"
+
 #include <U2Core/U2SafePoints.h>
 
+#include "BioStruct3DGLWidget.h"
+#include "gl2ps/gl2ps.h"
 
 namespace U2 {
 
 void BioStruct3DImageExportToSVGTask::run() {
-    SAFE_POINT_EXT( settings.isSVGFormat(),
-                    setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("BioStruct3DImageExportToSVGTask")), );
+    SAFE_POINT_EXT(settings.isSVGFormat(),
+                   setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("BioStruct3DImageExportToSVGTask")), );
 
     int opt = GL2PS_NONE;
     glWidget->writeImage2DToFile(GL2PS_SVG, opt, 2, qPrintable(settings.fileName));
@@ -37,31 +38,31 @@ void BioStruct3DImageExportToSVGTask::run() {
 }
 
 void BioStruct3DImageExportToPDFTask::run() {
-    SAFE_POINT_EXT( settings.isPDFFormat(),
-                    setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("BioStruct3DImageExportToPDFTask")), );
+    SAFE_POINT_EXT(settings.isPDFFormat(),
+                   setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("BioStruct3DImageExportToPDFTask")), );
 
     int opt = GL2PS_NONE;
 
-    if (settings.format == "ps"){
+    if (settings.format == "ps") {
         glWidget->writeImage2DToFile(GL2PS_PS, opt, 2, qPrintable(settings.fileName));
-        return; //TODO: need check on error
-    } else if (settings.format == "pdf"){
+        return;    //TODO: need check on error
+    } else if (settings.format == "pdf") {
         glWidget->writeImage2DToFile(GL2PS_PDF, opt, 2, qPrintable(settings.fileName));
-        return; //TODO: need check on error
+        return;    //TODO: need check on error
     }
     setError(EXPORT_FAIL_MESSAGE.arg(settings.fileName));
 }
 
 void BioStruct3DImageExportToBitmapTask::run() {
-    SAFE_POINT_EXT( settings.isBitmapFormat(),
-                    setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("BioStruct3DImageExportToBitmapTask")), );
+    SAFE_POINT_EXT(settings.isBitmapFormat(),
+                   setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("BioStruct3DImageExportToBitmapTask")), );
 
     glWidget->setImageRenderingMode(true);
-    QPixmap image = glWidget->grab().scaled( settings.imageSize, Qt::KeepAspectRatio);
+    QPixmap image = glWidget->grab().scaled(settings.imageSize, Qt::KeepAspectRatio);
     glWidget->setImageRenderingMode(false);
 
-    CHECK_EXT( image.save(settings.fileName, qPrintable(settings.format), settings.imageQuality),
-               setError(EXPORT_FAIL_MESSAGE.arg(settings.fileName)), );
+    CHECK_EXT(image.save(settings.fileName, qPrintable(settings.format), settings.imageQuality),
+              setError(EXPORT_FAIL_MESSAGE.arg(settings.fileName)), );
 }
 
 int BioStruct3DImageExportController::getImageWidth() const {
@@ -72,5 +73,4 @@ int BioStruct3DImageExportController::getImageHeight() const {
     return glWidget->height();
 }
 
-} // namespace
-
+}    // namespace U2

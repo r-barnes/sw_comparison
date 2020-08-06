@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DiamondBuildWorker.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DataPathRegistry.h>
 #include <U2Core/FailTask.h>
@@ -32,9 +34,8 @@
 #include <U2Lang/URLContainer.h>
 #include <U2Lang/WorkflowMonitor.h>
 
-#include "DiamondBuildWorker.h"
-#include "DiamondBuildWorkerFactory.h"
 #include "../ngs_reads_classification/src/NgsReadsClassificationUtils.h"
+#include "DiamondBuildWorkerFactory.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -43,9 +44,7 @@ const QString DiamondBuildWorker::DIAMOND_BUILD_DIR = "diamond_build";
 
 DiamondBuildWorker::DiamondBuildWorker(Actor *actor)
     : BaseWorker(actor, false),
-      output(NULL)
-{
-
+      output(NULL) {
 }
 
 void DiamondBuildWorker::init() {
@@ -65,7 +64,6 @@ Task *DiamondBuildWorker::tick() {
 }
 
 void DiamondBuildWorker::cleanup() {
-
 }
 
 void DiamondBuildWorker::sl_taskFinished(Task *task) {
@@ -94,7 +92,7 @@ DiamondBuildTaskSettings DiamondBuildWorker::getSettings(U2OpStatus &os) {
     settings.databaseUrl = GUrlUtils::ensureFileExt(settings.databaseUrl, QStringList("dmnd")).getURLString();
     settings.databaseUrl = GUrlUtils::rollFileName(settings.databaseUrl, "_");
 
-    const QList<Dataset> datasets = getValue<QList<Dataset> >(DiamondBuildWorkerFactory::GENOMIC_LIBRARY_ATTR_ID);
+    const QList<Dataset> datasets = getValue<QList<Dataset>>(DiamondBuildWorkerFactory::GENOMIC_LIBRARY_ATTR_ID);
     if (!datasets.isEmpty()) {
         foreach (URLContainer *urlContainer, datasets.first().getUrls()) {
             FilesIterator *iterator = urlContainer->getFileUrls();
@@ -105,7 +103,7 @@ DiamondBuildTaskSettings DiamondBuildWorker::getSettings(U2OpStatus &os) {
     }
 
     settings.workingDir = FileAndDirectoryUtils::createWorkingDir(context->workingDir(), FileAndDirectoryUtils::WORKFLOW_INTERNAL, "", context->workingDir());
-    settings.workingDir = GUrlUtils::createDirectory(settings.workingDir + DIAMOND_BUILD_DIR , "_", os);
+    settings.workingDir = GUrlUtils::createDirectory(settings.workingDir + DIAMOND_BUILD_DIR, "_", os);
     CHECK_OP(os, settings);
 
     U2DataPathRegistry *dataPathRegistry = AppContext::getDataPathRegistry();
@@ -119,5 +117,5 @@ DiamondBuildTaskSettings DiamondBuildWorker::getSettings(U2OpStatus &os) {
     return settings;
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

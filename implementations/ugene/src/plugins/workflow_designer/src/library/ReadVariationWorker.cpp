@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ReadVariationWorker.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/AppResources.h>
 #include <U2Core/DocumentUtils.h>
@@ -42,8 +44,6 @@
 
 #include "DocActors.h"
 
-#include "ReadVariationWorker.h"
-
 namespace U2 {
 namespace LocalWorkflow {
 
@@ -53,30 +53,27 @@ const QString ReadVariationWorkerFactory::ACTOR_ID("read-variations");
 /* Worker */
 /************************************************************************/
 ReadVariationWorker::ReadVariationWorker(Actor *p)
-: GenericDocReader(p)
-,splitMode(ReadVariationProto::NOSPLIT)
-{
-
+    : GenericDocReader(p), splitMode(ReadVariationProto::NOSPLIT) {
 }
 
 void ReadVariationWorker::init() {
     GenericDocReader::init();
     splitMode = ReadVariationProto::SplitAlleles(getValue<int>(ReadVariationProto::SPLIT_ATTR));
-    IntegralBus *outBus = dynamic_cast<IntegralBus*>(ch);
+    IntegralBus *outBus = dynamic_cast<IntegralBus *>(ch);
     assert(outBus);
     mtype = outBus->getBusType();
 }
 
-Task * ReadVariationWorker::createReadTask(const QString &url, const QString &datasetName) {
+Task *ReadVariationWorker::createReadTask(const QString &url, const QString &datasetName) {
     bool splitAlleles = (splitMode == ReadVariationProto::SPLIT);
     return new ReadVariationTask(url, datasetName, context->getDataStorage(), splitAlleles);
 }
 
 void ReadVariationWorker::onTaskFinished(Task *task) {
-    ReadVariationTask *t = qobject_cast<ReadVariationTask*>(task);
+    ReadVariationTask *t = qobject_cast<ReadVariationTask *>(task);
     MessageMetadata metadata(t->getUrl(), t->getDatasetName());
     context->getMetadataStorage().put(metadata);
-    foreach(const QVariantMap &m, t->takeResults()) {
+    foreach (const QVariantMap &m, t->takeResults()) {
         cache.append(Message(mtype, m, metadata.getId()));
     }
 }
@@ -92,20 +89,18 @@ QString ReadVariationWorker::addReadDbObjectToData(const QString &objUrl, QVaria
 /* Task */
 /************************************************************************/
 ReadVariationTask::ReadVariationTask(const QString &url, const QString &_datasetName, DbiDataStorage *storage, bool _splitAlleles)
-: Task(tr("Read variations from %1").arg(url), TaskFlag_None), url(url), datasetName(_datasetName), storage(storage), splitAlleles(_splitAlleles)
-{
-
+    : Task(tr("Read variations from %1").arg(url), TaskFlag_None), url(url), datasetName(_datasetName), storage(storage), splitAlleles(_splitAlleles) {
 }
 
 ReadVariationTask::~ReadVariationTask() {
     results.clear();
 }
 
-const QString & ReadVariationTask::getUrl() const {
+const QString &ReadVariationTask::getUrl() const {
     return url;
 }
 
-const QString & ReadVariationTask::getDatasetName() const {
+const QString &ReadVariationTask::getDatasetName() const {
     return datasetName;
 }
 
@@ -118,10 +113,10 @@ QList<QVariantMap> ReadVariationTask::takeResults() {
 void ReadVariationTask::prepare() {
     int memUseMB = 0;
     QFileInfo file(url);
-    memUseMB = file.size() / (1024*1024);
+    memUseMB = file.size() / (1024 * 1024);
     IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
     if (iof->getAdapterId() == BaseIOAdapters::GZIPPED_LOCAL_FILE || iof->getAdapterId() == BaseIOAdapters::GZIPPED_HTTP_FILE) {
-        memUseMB *= 2.5; //Need to calculate compress level
+        memUseMB *= 2.5;    //Need to calculate compress level
     }
     coreLog.trace(QString("load document:Memory resource %1").arg(memUseMB));
 
@@ -132,11 +127,11 @@ void ReadVariationTask::prepare() {
 
 void ReadVariationTask::run() {
     QFileInfo fi(url);
-    if(!fi.exists()){
+    if (!fi.exists()) {
         stateInfo.setError(tr("File '%1' not exists").arg(url));
         return;
     }
-    QList<DocumentFormat*> fs = DocumentUtils::toFormats(DocumentUtils::detectFormat(url));
+    QList<DocumentFormat *> fs = DocumentUtils::toFormats(DocumentUtils::detectFormat(url));
     DocumentFormat *format = NULL;
 
     foreach (DocumentFormat *f, fs) {
@@ -152,9 +147,9 @@ void ReadVariationTask::run() {
         return;
     }
     ioLog.info(tr("Reading variations from %1 [%2]").arg(url).arg(format->getFormatName()));
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
     QVariantMap hints;
-    if (splitAlleles){
+    if (splitAlleles) {
         hints[DocumentReadingMode_SplitVariationAlleles] = true;
     }
     hints.insert(DocumentFormat::DBI_REF_HINT, qVariantFromValue(storage->getDbiRef()));
@@ -162,8 +157,8 @@ void ReadVariationTask::run() {
     CHECK_OP(stateInfo, );
     doc->setDocumentOwnsDbiResources(false);
 
-    foreach(GObject* go, doc->findGObjectByType(GObjectTypes::VARIANT_TRACK)) {
-        VariantTrackObject *trackObj = dynamic_cast<VariantTrackObject*>(go);
+    foreach (GObject *go, doc->findGObjectByType(GObjectTypes::VARIANT_TRACK)) {
+        VariantTrackObject *trackObj = dynamic_cast<VariantTrackObject *>(go);
         CHECK_EXT(NULL != trackObj, taskLog.error(tr("Incorrect track object in %1").arg(url)), )
 
         QVariantMap m;
@@ -180,8 +175,7 @@ void ReadVariationTask::run() {
 /************************************************************************/
 const QString ReadVariationProto::SPLIT_ATTR("split-mode");
 ReadVariationProto::ReadVariationProto()
-: GenericReadDocProto(ReadVariationWorkerFactory::ACTOR_ID)
-{
+    : GenericReadDocProto(ReadVariationWorkerFactory::ACTOR_ID) {
     setCompatibleDbObjectTypes(QSet<GObjectType>() << GObjectTypes::VARIANT_TRACK);
 
     setDisplayName(ReadVariationWorker::tr("Read Variants"));
@@ -195,19 +189,18 @@ ReadVariationProto::ReadVariationProto()
         DataTypePtr outTypeSet(new MapDataType(BasePorts::OUT_VARIATION_TRACK_PORT_ID(), outTypeMap));
 
         Descriptor outDesc(BasePorts::OUT_VARIATION_TRACK_PORT_ID(),
-            ReadVariationWorker::tr("Variation track"),
-            ReadVariationWorker::tr("Variation track"));
+                           ReadVariationWorker::tr("Variation track"),
+                           ReadVariationWorker::tr("Variation track"));
 
         ports << new PortDescriptor(outDesc, outTypeSet, false, true);
     }
 
-    Descriptor md(ReadVariationProto::SPLIT_ATTR, ReadVariationWorker::tr("Split Alleles"),
-        ReadVariationWorker::tr("If the file contains variations with multiple alleles (chr1 100 C G,A), <i>No split</i> mode sends them \"as is\" to the output, "
-        "while <i>Split</i> splits them into two variations (chr1 100 C G and chr1 100 C A)."));
+    Descriptor md(ReadVariationProto::SPLIT_ATTR, ReadVariationWorker::tr("Split Alleles"), ReadVariationWorker::tr("If the file contains variations with multiple alleles (chr1 100 C G,A), <i>No split</i> mode sends them \"as is\" to the output, "
+                                                                                                                    "while <i>Split</i> splits them into two variations (chr1 100 C G and chr1 100 C A)."));
 
     attrs << new Attribute(md, BaseTypes::NUM_TYPE(), true, NOSPLIT);
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
         QVariantMap modeMap;
         QString splitStr = ReadVariationWorker::tr("Split");
@@ -233,5 +226,5 @@ Worker *ReadVariationWorkerFactory::createWorker(Actor *a) {
     return new ReadVariationWorker(a);
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

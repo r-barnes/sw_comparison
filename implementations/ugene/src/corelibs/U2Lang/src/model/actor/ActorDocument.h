@@ -22,9 +22,9 @@
 #ifndef _U2_ACTORDOCUMENT_H_
 #define _U2_ACTORDOCUMENT_H_
 
-#include <U2Lang/Actor.h>
-
 #include <QTextDocument>
+
+#include <U2Lang/Actor.h>
 
 namespace U2 {
 namespace Workflow {
@@ -34,32 +34,34 @@ namespace Workflow {
  */
 class U2LANG_EXPORT ActorDocument : public QTextDocument {
 public:
-    ActorDocument(Actor* a)
-        : QTextDocument(a), target(a) {}
-    virtual ~ActorDocument() {}
+    ActorDocument(Actor *a)
+        : QTextDocument(a), target(a) {
+    }
+    virtual ~ActorDocument() {
+    }
 
     // actor's description is changed when attribute value changes
     // e.g. "read sequence from '1.fa'"
     // see realization in PrompterBaseImpl
-    virtual void update(const QVariantMap& ) = 0;
+    virtual void update(const QVariantMap &) = 0;
 
 protected:
     // document's target
-    Actor* target;
+    Actor *target;
 
-}; // ActorDocument
-
+};    // ActorDocument
 
 /**
  * base class for factory of Actor's documents
  */
 class U2LANG_EXPORT Prompter {
 public:
-    virtual ActorDocument * createDescription(Actor *) = 0;
-    virtual ~Prompter() {}
-}; // Prompter
+    virtual ActorDocument *createDescription(Actor *) = 0;
+    virtual ~Prompter() {
+    }
+};    // Prompter
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2
 
-#endif // _U2_ACTORDOCUMENT_H_
+#endif    // _U2_ACTORDOCUMENT_H_

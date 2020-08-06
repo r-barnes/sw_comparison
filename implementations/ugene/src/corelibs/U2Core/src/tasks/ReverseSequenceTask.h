@@ -22,8 +22,8 @@
 #ifndef _U2_REVERSE_SEQUENCE_TASK_H_
 #define _U2_REVERSE_SEQUENCE_TASK_H_
 
-#include <U2Core/Task.h>
 #include <U2Core/DocumentModel.h>
+#include <U2Core/Task.h>
 
 namespace U2 {
 
@@ -32,56 +32,51 @@ class AnnotationTableObject;
 class DNATranslation;
 class DNASequenceSelection;
 
-class U2CORE_EXPORT ReverseComplementSequenceTask : public Task
-{
+class U2CORE_EXPORT ReverseComplementSequenceTask : public Task {
     Q_OBJECT
 public:
-    ReverseComplementSequenceTask( U2SequenceObject *dnaObj,
-                                   const QList<AnnotationTableObject *> &annotations,
-                                   DNASequenceSelection *selection,
-                                   DNATranslation *complTT );
-private:
-    U2SequenceObject *              seqObj;
-    QList<AnnotationTableObject *>    aObjs;
-    DNASequenceSelection *          selection;
-    DNATranslation *                complTT;
+    ReverseComplementSequenceTask(U2SequenceObject *dnaObj,
+                                  const QList<AnnotationTableObject *> &annotations,
+                                  DNASequenceSelection *selection,
+                                  DNATranslation *complTT);
 
+private:
+    U2SequenceObject *seqObj;
+    QList<AnnotationTableObject *> aObjs;
+    DNASequenceSelection *selection;
+    DNATranslation *complTT;
 };
 
-class U2CORE_EXPORT ReverseSequenceTask : public Task
-{
+class U2CORE_EXPORT ReverseSequenceTask : public Task {
     Q_OBJECT
 public:
-    ReverseSequenceTask( U2SequenceObject *seqObj,
-                         const QList< AnnotationTableObject* > &annotations,
-                         DNASequenceSelection *selection);
-    ReportResult                    report( );
+    ReverseSequenceTask(U2SequenceObject *seqObj,
+                        const QList<AnnotationTableObject *> &annotations,
+                        DNASequenceSelection *selection);
+    ReportResult report();
 
 private:
-    U2SequenceObject*               seqObj;
-    QList< AnnotationTableObject* > aObjs;
-    DNASequenceSelection*           selection;
+    U2SequenceObject *seqObj;
+    QList<AnnotationTableObject *> aObjs;
+    DNASequenceSelection *selection;
 };
 
-class U2CORE_EXPORT ComplementSequenceTask : public Task
-{
+class U2CORE_EXPORT ComplementSequenceTask : public Task {
     Q_OBJECT
 public:
-    ComplementSequenceTask( U2SequenceObject *seqObj,
-                            const QList< AnnotationTableObject* > &annotations,
-                            DNASequenceSelection *selection,
-                            DNATranslation *complTT);
-    ReportResult                    report( );
+    ComplementSequenceTask(U2SequenceObject *seqObj,
+                           const QList<AnnotationTableObject *> &annotations,
+                           DNASequenceSelection *selection,
+                           DNATranslation *complTT);
+    ReportResult report();
 
 private:
-    U2SequenceObject*               seqObj;
-    QList< AnnotationTableObject* > aObjs;
-    DNASequenceSelection*           selection;
-    DNATranslation*                 complTT;
+    U2SequenceObject *seqObj;
+    QList<AnnotationTableObject *> aObjs;
+    DNASequenceSelection *selection;
+    DNATranslation *complTT;
 };
 
+}    // namespace U2
 
-} // namespace U2
-
-#endif // _U2_REVERSE_SEQUENCE_TASK_H_
-
+#endif    // _U2_REVERSE_SEQUENCE_TASK_H_

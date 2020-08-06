@@ -22,8 +22,8 @@
 #ifndef _U2_LENGTH_SETTINGS_WIDGET_H_
 #define _U2_LENGTH_SETTINGS_WIDGET_H_
 
-#include "ui_LengthSettingsWidget.h"
 #include "trimmomatic/TrimmomaticStep.h"
+#include "ui_LengthSettingsWidget.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -45,7 +45,7 @@ public:
     static const QString LENGTH;
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_LENGTH_SETTINGS_WIDGET_H_
+#endif    // _U2_LENGTH_SETTINGS_WIDGET_H_

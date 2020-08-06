@@ -19,85 +19,83 @@
  * MA 02110-1301, USA.
  */
 
+#include "CMDLineCoreOptions.h"
 
 #include <U2Core/AppContext.h>
-#include <U2Core/CMDLineRegistry.h>
 #include <U2Core/CMDLineHelpProvider.h>
-
-#include "CMDLineCoreOptions.h"
+#include <U2Core/CMDLineRegistry.h>
 
 namespace U2 {
 
-const QString CMDLineCoreOptions::INI_FILE                      = "ini-file";
-const QString CMDLineCoreOptions::SUITE_URLS                    = "test-suite";
-const QString CMDLineCoreOptions::API_TEST_URLS                 = "api-test-suite";
-const QString CMDLineCoreOptions::TEST_REPORT                   = "test-report";
-const QString CMDLineCoreOptions::HELP                          = "help";
-const QString CMDLineCoreOptions::HELP_SHORT                    = "h";
-const QString CMDLineCoreOptions::TRANSLATION                   = "lang";
-const QString CMDLineCoreOptions::TEST_THREADS                  = "test-threads";
-const QString CMDLineCoreOptions::TEAMCITY_OUTPUT               = "log-teamcity-out";
-const QString CMDLineCoreOptions::LOG_FORMAT                    = "log-format";
-const QString CMDLineCoreOptions::LOG_LEVEL                     = "log-level";
-const QString CMDLineCoreOptions::CREATE_GUI_TEST               = "create-gui-test";
-const QString CMDLineCoreOptions::LAUNCH_GUI_TEST               = "gui-test";
-const QString CMDLineCoreOptions::LAUNCH_GUI_TEST_NO_IGNORED    = "gui-test-no-ignored";
-const QString CMDLineCoreOptions::LAUNCH_GUI_TEST_BATCH         = "gui-test-batch";
-const QString CMDLineCoreOptions::LAUNCH_GUI_TEST_SUITE         = "gui-test-suite";
-const QString CMDLineCoreOptions::LAUNCH_GUI_TEST_CRAZY_USER    = "gui-test-crazy-user";
-const QString CMDLineCoreOptions::USAGE                         = "usage";
-const QString CMDLineCoreOptions::DOWNLOAD_DIR                  = "download-dir";
-const QString CMDLineCoreOptions::CUSTOM_TOOLS_CONFIG_DIR       = "custom-external-tool-config-dir";
-const QString CMDLineCoreOptions::TMP_DIR                       = "tmp-dir";
-const QString CMDLineCoreOptions::DEFAULT_DATA_DIR              = "default-data-dir";
-const QString CMDLineCoreOptions::FILE_STORAGE_DIR              = "file-storage-dir";
-const QString CMDLineCoreOptions::SESSION_DB                    = "session-db";
-const QString CMDLineCoreOptions::USE_SAME_INI_FOR_TESTS        = "use-same-ini-for-tests";
-
+const QString CMDLineCoreOptions::INI_FILE = "ini-file";
+const QString CMDLineCoreOptions::SUITE_URLS = "test-suite";
+const QString CMDLineCoreOptions::API_TEST_URLS = "api-test-suite";
+const QString CMDLineCoreOptions::TEST_REPORT = "test-report";
+const QString CMDLineCoreOptions::HELP = "help";
+const QString CMDLineCoreOptions::HELP_SHORT = "h";
+const QString CMDLineCoreOptions::TRANSLATION = "lang";
+const QString CMDLineCoreOptions::TEST_THREADS = "test-threads";
+const QString CMDLineCoreOptions::TEAMCITY_OUTPUT = "log-teamcity-out";
+const QString CMDLineCoreOptions::LOG_FORMAT = "log-format";
+const QString CMDLineCoreOptions::LOG_LEVEL = "log-level";
+const QString CMDLineCoreOptions::CREATE_GUI_TEST = "create-gui-test";
+const QString CMDLineCoreOptions::LAUNCH_GUI_TEST = "gui-test";
+const QString CMDLineCoreOptions::LAUNCH_GUI_TEST_NO_IGNORED = "gui-test-no-ignored";
+const QString CMDLineCoreOptions::LAUNCH_GUI_TEST_BATCH = "gui-test-batch";
+const QString CMDLineCoreOptions::LAUNCH_GUI_TEST_SUITE = "gui-test-suite";
+const QString CMDLineCoreOptions::LAUNCH_GUI_TEST_CRAZY_USER = "gui-test-crazy-user";
+const QString CMDLineCoreOptions::USAGE = "usage";
+const QString CMDLineCoreOptions::DOWNLOAD_DIR = "download-dir";
+const QString CMDLineCoreOptions::CUSTOM_TOOLS_CONFIG_DIR = "custom-external-tool-config-dir";
+const QString CMDLineCoreOptions::TMP_DIR = "tmp-dir";
+const QString CMDLineCoreOptions::DEFAULT_DATA_DIR = "default-data-dir";
+const QString CMDLineCoreOptions::FILE_STORAGE_DIR = "file-storage-dir";
+const QString CMDLineCoreOptions::SESSION_DB = "session-db";
+const QString CMDLineCoreOptions::USE_SAME_INI_FOR_TESTS = "use-same-ini-for-tests";
 
 void CMDLineCoreOptions::initHelp() {
-    CMDLineRegistry * cmdLineRegistry = AppContext::getCMDLineRegistry();
-    assert( NULL != cmdLineRegistry );
+    CMDLineRegistry *cmdLineRegistry = AppContext::getCMDLineRegistry();
+    assert(NULL != cmdLineRegistry);
 
-    CMDLineHelpProvider * helpSection = new CMDLineHelpProvider(
+    CMDLineHelpProvider *helpSection = new CMDLineHelpProvider(
         HELP,
-        tr( "Shows help information." ),
-        "",         // No full description
-        "",         // No arguments
+        tr("Shows help information."),
+        "",    // No full description
+        "",    // No arguments
         HELP_SHORT);
 
-    CMDLineHelpProvider * loadSettingsFileSection = new CMDLineHelpProvider(
+    CMDLineHelpProvider *loadSettingsFileSection = new CMDLineHelpProvider(
         INI_FILE,
-        tr( "Loads UGENE configuration." ),
-        tr( "Loads configuration from the specified .ini file. By default the UGENE.ini file is used." ),
-        tr( "<path_to_file>" ));
+        tr("Loads UGENE configuration."),
+        tr("Loads configuration from the specified .ini file. By default the UGENE.ini file is used."),
+        tr("<path_to_file>"));
 
-    CMDLineHelpProvider * translSection = new CMDLineHelpProvider(
+    CMDLineHelpProvider *translSection = new CMDLineHelpProvider(
         TRANSLATION,
-        tr( "Specifies the language to use." ),
-        tr( "Specifies the language to use. The following values are available: CS, EN, RU, ZH." ),
-        tr( "<language_code>" ));
+        tr("Specifies the language to use."),
+        tr("Specifies the language to use. The following values are available: CS, EN, RU, ZH."),
+        tr("<language_code>"));
 
-    CMDLineHelpProvider * tmpDirSection = new CMDLineHelpProvider(
+    CMDLineHelpProvider *tmpDirSection = new CMDLineHelpProvider(
         TMP_DIR,
         "Path to temporary folder",
         "",
-        tr( "<path_to_file>" ));
+        tr("<path_to_file>"));
 
-    CMDLineHelpProvider * sessionDatabaseSection = new CMDLineHelpProvider(
+    CMDLineHelpProvider *sessionDatabaseSection = new CMDLineHelpProvider(
         SESSION_DB,
         tr("Path to the session database file"),
         tr("Session database is stored in the temporary file that is created for every UGENE run.\n"
-        "But it can be supplied with the command line argument.\n"
-        "If the supplied file does not exist it will be created.\n"
-        "The session database file is removed after closing of UGENE."),
-        tr( "<path_to_file>" ));
+           "But it can be supplied with the command line argument.\n"
+           "If the supplied file does not exist it will be created.\n"
+           "The session database file is removed after closing of UGENE."),
+        tr("<path_to_file>"));
 
-    cmdLineRegistry->registerCMDLineHelpProvider( helpSection );
-    cmdLineRegistry->registerCMDLineHelpProvider( loadSettingsFileSection );
-    cmdLineRegistry->registerCMDLineHelpProvider( translSection );
-    cmdLineRegistry->registerCMDLineHelpProvider( tmpDirSection );
-    cmdLineRegistry->registerCMDLineHelpProvider( sessionDatabaseSection);
+    cmdLineRegistry->registerCMDLineHelpProvider(helpSection);
+    cmdLineRegistry->registerCMDLineHelpProvider(loadSettingsFileSection);
+    cmdLineRegistry->registerCMDLineHelpProvider(translSection);
+    cmdLineRegistry->registerCMDLineHelpProvider(tmpDirSection);
+    cmdLineRegistry->registerCMDLineHelpProvider(sessionDatabaseSection);
 }
 
-} // U2
+}    // namespace U2

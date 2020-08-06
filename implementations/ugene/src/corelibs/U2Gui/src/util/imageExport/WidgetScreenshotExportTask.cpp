@@ -21,14 +21,14 @@
 
 #include "WidgetScreenshotExportTask.h"
 
-#include <U2Core/U2SafePoints.h>
-
+#include <QDomDocument>
 #include <QFile>
 #include <QPainter>
-#include <QSvgGenerator>
-#include <QDomDocument>
-#include <QWidget>
 #include <QPrinter>
+#include <QSvgGenerator>
+#include <QWidget>
+
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
@@ -36,7 +36,7 @@ void WidgetScreenshotExportToSvgTask::run() {
     SAFE_POINT_EXT(settings.isSVGFormat(),
                    setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("WidgetScreenshotExportToSVGTask")), );
 
-    bool result=false;
+    bool result = false;
     QPainter painter;
     QSvgGenerator generator;
     generator.setResolution(settings.imageDpi);
@@ -49,32 +49,32 @@ void WidgetScreenshotExportToSvgTask::run() {
     painter.begin(&generator);
     widget->render(&painter);
     result = painter.end();
-    CHECK_EXT( result, setError(tr("Painter is still active")), );
+    CHECK_EXT(result, setError(tr("Painter is still active")), );
 
     QDomDocument doc("svg");
     QFile file(settings.fileName);
 
     bool ok = file.open(QIODevice::ReadOnly);
-    CHECK_EXT( ok, setError(tr("Can not open the file: %1").arg(file.fileName())), );
+    CHECK_EXT(ok, setError(tr("Can not open the file: %1").arg(file.fileName())), );
 
     ok = doc.setContent(&file);
-    CHECK_EXT( ok, setError(tr("Can not open the file: %1").arg(file.fileName())), );
+    CHECK_EXT(ok, setError(tr("Can not open the file: %1").arg(file.fileName())), );
 
     file.close();
-    QDomNodeList radialGradients=doc.elementsByTagName("radialGradient");
-    for (int i = 0;i < static_cast<int>(radialGradients.length()); i++) {
+    QDomNodeList radialGradients = doc.elementsByTagName("radialGradient");
+    for (int i = 0; i < static_cast<int>(radialGradients.length()); i++) {
         if (radialGradients.at(i).isElement()) {
             QDomElement tag = radialGradients.at(i).toElement();
             if (tag.hasAttribute("xml:id")) {
                 QString id = tag.attribute("xml:id");
                 tag.removeAttribute("xml:id");
-                tag.setAttribute("id",id);
+                tag.setAttribute("id", id);
             }
         }
     }
     file.open(QIODevice::WriteOnly);
     ok = file.write(doc.toByteArray());
-    CHECK_EXT( ok, setError(EXPORT_FAIL_MESSAGE.arg(settings.fileName)), );
+    CHECK_EXT(ok, setError(EXPORT_FAIL_MESSAGE.arg(settings.fileName)), );
 }
 
 void WidgetScreenshotExportToPdfTask::run() {
@@ -87,25 +87,24 @@ void WidgetScreenshotExportToPdfTask::run() {
     painter.setRenderHint(QPainter::Antialiasing);
     painter.begin(&printer);
     widget->render(&painter);
-    CHECK_OPERATION( painter.end(), setError(EXPORT_FAIL_MESSAGE.arg(settings.fileName)));
+    CHECK_OPERATION(painter.end(), setError(EXPORT_FAIL_MESSAGE.arg(settings.fileName)));
 }
 
 void WidgetScreenshotExportToBitmapTask::run() {
-    SAFE_POINT_EXT( settings.isBitmapFormat(),
-                    setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("WidgetScreenshotExportToBitmapTask")), );
+    SAFE_POINT_EXT(settings.isBitmapFormat(),
+                   setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("WidgetScreenshotExportToBitmapTask")), );
 
     QImage image = QPixmap::grabWidget(widget, widget->rect()).toImage();
 
     image = image.scaled(settings.imageSize, Qt::KeepAspectRatio);
 
-    CHECK_OPERATION( image.save(settings.fileName, qPrintable(settings.format), settings.imageQuality),
-                     setError(EXPORT_FAIL_MESSAGE.arg(settings.fileName)));
+    CHECK_OPERATION(image.save(settings.fileName, qPrintable(settings.format), settings.imageQuality),
+                    setError(EXPORT_FAIL_MESSAGE.arg(settings.fileName)));
 }
 
 WidgetScreenshotImageExportController::WidgetScreenshotImageExportController(QWidget *widget)
     : ImageExportController(ExportImageFormatPolicy_SupportAll),
-      widget(widget)
-{
+      widget(widget) {
     shortDescription = tr("Screenshot");
 }
 
@@ -117,14 +116,14 @@ int WidgetScreenshotImageExportController::getImageHeight() const {
     return widget->height();
 }
 
-Task* WidgetScreenshotImageExportController::getExportToSvgTask(const ImageExportTaskSettings &settings) const {
+Task *WidgetScreenshotImageExportController::getExportToSvgTask(const ImageExportTaskSettings &settings) const {
     return new WidgetScreenshotExportToSvgTask(widget, settings);
 }
-Task* WidgetScreenshotImageExportController::getExportToPdfTask(const ImageExportTaskSettings &settings) const {
+Task *WidgetScreenshotImageExportController::getExportToPdfTask(const ImageExportTaskSettings &settings) const {
     return new WidgetScreenshotExportToPdfTask(widget, settings);
 }
-Task* WidgetScreenshotImageExportController::getExportToBitmapTask(const ImageExportTaskSettings &settings) const {
+Task *WidgetScreenshotImageExportController::getExportToBitmapTask(const ImageExportTaskSettings &settings) const {
     return new WidgetScreenshotExportToBitmapTask(widget, settings);
 }
 
-} // namespace
+}    // namespace U2

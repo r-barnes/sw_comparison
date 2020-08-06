@@ -30,19 +30,22 @@ class GroupOptionsWidget;
 /**
  * Provides representation of a group.
  */
-class OptionsPanelGroup
-{
+class OptionsPanelGroup {
 public:
-    OptionsPanelGroup(GroupHeaderImageWidget*, GroupOptionsWidget*);
+    OptionsPanelGroup(GroupHeaderImageWidget *, GroupOptionsWidget *);
 
-    inline GroupHeaderImageWidget* getHeaderImageWidget() const { return headerImageWidget; }
-    inline GroupOptionsWidget* getOptionsWidget() const { return optionsWidget; }
+    inline GroupHeaderImageWidget *getHeaderImageWidget() const {
+        return headerImageWidget;
+    }
+    inline GroupOptionsWidget *getOptionsWidget() const {
+        return optionsWidget;
+    }
 
 private:
-    GroupHeaderImageWidget*     headerImageWidget;
-    GroupOptionsWidget*         optionsWidget;
+    GroupHeaderImageWidget *headerImageWidget;
+    GroupOptionsWidget *optionsWidget;
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

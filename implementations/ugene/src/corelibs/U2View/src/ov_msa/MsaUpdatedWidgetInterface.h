@@ -23,6 +23,7 @@
 #define _U2_MSA_UPDATED_WIDGET_INTERFACE_H_
 
 #include <U2Core/MultipleSequenceAlignmentObject.h>
+
 #include "MSAEditor.h"
 
 namespace U2 {
@@ -30,10 +31,11 @@ namespace U2 {
 class UpdatedWidgetSettings {
 public:
     UpdatedWidgetSettings()
-        : ma(NULL), ui(NULL), autoUpdate(true) {}
-    const MultipleSequenceAlignmentObject* ma;
-    MsaEditorWgt*            ui;
-    bool                    autoUpdate;
+        : ma(NULL), ui(NULL), autoUpdate(true) {
+    }
+    const MultipleSequenceAlignmentObject *ma;
+    MsaEditorWgt *ui;
+    bool autoUpdate;
 };
 
 enum DataState {
@@ -42,19 +44,19 @@ enum DataState {
     DataIsBeingUpdated
 };
 
-class UpdatedWidgetInterface{
+class UpdatedWidgetInterface {
 public:
-    virtual ~UpdatedWidgetInterface() {}
-    virtual void onAlignmentChanged(const MultipleSequenceAlignment& maBefore, const MaModificationInfo& modInfo) = 0;
-    virtual void setSettings(const UpdatedWidgetSettings* settings) = 0;
+    virtual ~UpdatedWidgetInterface() {
+    }
+    virtual void onAlignmentChanged(const MultipleSequenceAlignment &maBefore, const MaModificationInfo &modInfo) = 0;
+    virtual void setSettings(const UpdatedWidgetSettings *settings) = 0;
     virtual void cancelPendingTasks() = 0;
-    virtual QWidget* getWidget() = 0;
-    virtual const UpdatedWidgetSettings& getSettings() const = 0;
+    virtual QWidget *getWidget() = 0;
+    virtual const UpdatedWidgetSettings &getSettings() const = 0;
     virtual void updateWidget() = 0;
     virtual QString getHeaderText() const = 0;
 };
 
-} //namespace
-
+}    // namespace U2
 
 #endif

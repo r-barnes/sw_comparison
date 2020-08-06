@@ -46,20 +46,20 @@ public:
     static bool unpackGapDetails(const QByteArray &modDetails, qint64 &rowId, U2DataId &relatedObjectId, QList<U2MsaGap> &oldGaps, QList<U2MsaGap> &newGaps);
 
     /** Row order */
-    static QByteArray packRowOrder(const QList<qint64>& rowIds);
-    static bool unpackRowOrder(const QByteArray& str, QList<qint64>& rowsIds);
+    static QByteArray packRowOrder(const QList<qint64> &rowIds);
+    static bool unpackRowOrder(const QByteArray &str, QList<qint64> &rowsIds);
 
     /** Row order details */
-    static QByteArray packRowOrderDetails(const QList<qint64>& oldOrder, const QList<qint64>& newOrder);
-    static bool unpackRowOrderDetails(const QByteArray &modDetails, QList<qint64>& oldOrder, QList<qint64>& newOrder);
+    static QByteArray packRowOrderDetails(const QList<qint64> &oldOrder, const QList<qint64> &newOrder);
+    static bool unpackRowOrderDetails(const QByteArray &modDetails, QList<qint64> &oldOrder, QList<qint64> &newOrder);
 
     /** Row name details */
     static QByteArray packRowNameDetails(qint64 rowId, const QString &oldName, const QString &newName);
     static bool unpackRowNameDetails(const QByteArray &modDetails, qint64 &rowId, QString &oldName, QString &newName);
 
     /** Row */
-    static QByteArray packRow(qint64 posInMsa, const U2MsaRow& row);
-    static bool unpackRow(const QByteArray &modDetails, qint64& posInMsa, U2MsaRow& row);
+    static QByteArray packRow(qint64 posInMsa, const U2MsaRow &row);
+    static bool unpackRow(const QByteArray &modDetails, qint64 &posInMsa, U2MsaRow &row);
 
     static QByteArray packRow(qint64 posInMca, const U2McaRow &row);
     static bool unpackRow(const QByteArray &modDetails, qint64 &posInMca, U2McaRow &row);
@@ -73,10 +73,10 @@ public:
 
     /** Row info */
     static QByteArray packRowInfo(const U2MsaRow &row);
-    static bool unpackRowInfo(const QByteArray &str, U2MsaRow& row);
+    static bool unpackRowInfo(const QByteArray &str, U2MsaRow &row);
 
     static QByteArray packRowInfo(const U2McaRow &row);
-    static bool unpackRowInfo(const QByteArray &str, U2McaRow& row);
+    static bool unpackRowInfo(const QByteArray &str, U2McaRow &row);
 
     /** Rows */
     static QByteArray packRows(const QList<qint64> &posInMsa, const QList<U2MsaRow> &rows);
@@ -94,10 +94,8 @@ public:
     static bool unpackObjectNameDetails(const QByteArray &modDetails, QString &oldName, QString &newName);
 
     /** Sequence data details */
-    static QByteArray packSequenceDataDetails(const U2Region &replacedRegion, const QByteArray &oldData,
-                                              const QByteArray &newData, const QVariantMap &hints);
-    static bool unpackSequenceDataDetails(const QByteArray &modDetails, U2Region &replacedRegion,
-                                          QByteArray &oldData, QByteArray &newData, QVariantMap& hints);
+    static QByteArray packSequenceDataDetails(const U2Region &replacedRegion, const QByteArray &oldData, const QByteArray &newData, const QVariantMap &hints);
+    static bool unpackSequenceDataDetails(const QByteArray &modDetails, U2Region &replacedRegion, QByteArray &oldData, QByteArray &newData, QVariantMap &hints);
 
     /** Chromatogram */
     static QByteArray packChromatogramData(const DNAChromatogram &chromatogram);
@@ -115,14 +113,14 @@ public:
     static QByteArray packAlignmentLength(const qint64 oldLen, const qint64 newLen);
     static bool unpackAlignmentLength(const QByteArray &modDetails, qint64 &oldLen, qint64 &newLen);
 
-    static QByteArray packUdr(const QByteArray& oldData, const QByteArray& newData);
-    static bool unpackUdr(const QByteArray& modDetails, QByteArray& oldData, QByteArray& newData);
+    static QByteArray packUdr(const QByteArray &oldData, const QByteArray &newData);
+    static bool unpackUdr(const QByteArray &modDetails, QByteArray &oldData, QByteArray &newData);
 
 private:
     static const char SEP;
     static const char SECOND_SEP;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_DBI_PACK_UTILS_H_
+#endif    // _U2_DBI_PACK_UTILS_H_

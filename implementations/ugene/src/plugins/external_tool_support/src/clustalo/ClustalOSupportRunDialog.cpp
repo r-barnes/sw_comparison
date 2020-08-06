@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ClustalOSupportRunDialog.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 #include <QToolButton>
@@ -36,16 +38,13 @@
 #include <U2Gui/SaveDocumentController.h>
 #include <U2Gui/U2FileDialog.h>
 
-#include "ClustalOSupportRunDialog.h"
-
 namespace U2 {
 ////////////////////////////////////////
 //ClustalOSupportRunDialog
-ClustalOSupportRunDialog::ClustalOSupportRunDialog(const MultipleSequenceAlignment& _ma, ClustalOSupportTaskSettings& _settings, QWidget* _parent) :
-        QDialog(_parent), ma(_ma->getCopy()), settings(_settings)
-{
+ClustalOSupportRunDialog::ClustalOSupportRunDialog(const MultipleSequenceAlignment &_ma, ClustalOSupportTaskSettings &_settings, QWidget *_parent)
+    : QDialog(_parent), ma(_ma->getCopy()), settings(_settings) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742634");
+    new HelpButton(this, buttonBox, "46501279");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Align"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -56,14 +55,14 @@ ClustalOSupportRunDialog::ClustalOSupportRunDialog(const MultipleSequenceAlignme
     numberOfCPUSpinBox->setValue(AppContext::getAppSettings()->getAppResourcePool()->getIdealThreadCount());
 }
 
-void ClustalOSupportRunDialog::accept(){
-    if(iterationNumberCheckBox->isChecked()){
+void ClustalOSupportRunDialog::accept() {
+    if (iterationNumberCheckBox->isChecked()) {
         settings.numIterations = iterationNumberSpinBox->value();
     }
-    if(maxGTIterationsCheckBox->isChecked()){
+    if (maxGTIterationsCheckBox->isChecked()) {
         settings.maxGuidetreeIterations = maxGTIterationsSpinBox->value();
     }
-    if(maxHMMIterationsCheckBox->isChecked()){
+    if (maxHMMIterationsCheckBox->isChecked()) {
         settings.maxHMMIterations = maxHMMIterationsSpinBox->value();
     }
     settings.setAutoOptions = setAutoCheckBox->isChecked();
@@ -73,13 +72,12 @@ void ClustalOSupportRunDialog::accept(){
 
 ////////////////////////////////////////
 //ClustalOWithExtFileSpecifySupportRunDialog
-ClustalOWithExtFileSpecifySupportRunDialog::ClustalOWithExtFileSpecifySupportRunDialog(ClustalOSupportTaskSettings& _settings, QWidget* _parent) :
-    QDialog(_parent),
-    settings(_settings),
-    saveController(NULL)
-{
+ClustalOWithExtFileSpecifySupportRunDialog::ClustalOWithExtFileSpecifySupportRunDialog(ClustalOSupportTaskSettings &_settings, QWidget *_parent)
+    : QDialog(_parent),
+      settings(_settings),
+      saveController(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742348");
+    new HelpButton(this, buttonBox, "46499710");
 
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Align"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -93,8 +91,7 @@ ClustalOWithExtFileSpecifySupportRunDialog::ClustalOWithExtFileSpecifySupportRun
 }
 void ClustalOWithExtFileSpecifySupportRunDialog::sl_inputPathButtonClicked() {
     LastUsedDirHelper lod;
-    lod.url = U2FileDialog::getOpenFileName(this, tr("Open an alignment file"), lod.dir,
-        DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT, true));
+    lod.url = U2FileDialog::getOpenFileName(this, tr("Open an alignment file"), lod.dir, DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT, true));
     if (lod.url.isEmpty()) {
         return;
     }
@@ -116,15 +113,15 @@ void ClustalOWithExtFileSpecifySupportRunDialog::initSaveController() {
 }
 
 void ClustalOWithExtFileSpecifySupportRunDialog::accept() {
-    if(iterationNumberCheckBox->isChecked()){
+    if (iterationNumberCheckBox->isChecked()) {
         settings.numIterations = iterationNumberSpinBox->value();
     }
 
-    if(maxGTIterationsCheckBox->isChecked()){
+    if (maxGTIterationsCheckBox->isChecked()) {
         settings.maxGuidetreeIterations = maxGTIterationsSpinBox->value();
     }
 
-    if(maxHMMIterationsCheckBox->isChecked()){
+    if (maxHMMIterationsCheckBox->isChecked()) {
         settings.maxHMMIterations = maxHMMIterationsSpinBox->value();
     }
 
@@ -132,11 +129,9 @@ void ClustalOWithExtFileSpecifySupportRunDialog::accept() {
     settings.numberOfProcessors = numberOfCPUSpinBox->value();
 
     if (inputFileLineEdit->text().isEmpty()) {
-        QMessageBox::information(this, tr("Kalign with Align"),
-                                 tr("Input file is not set!") );
+        QMessageBox::information(this, tr("Kalign with Align"), tr("Input file is not set!"));
     } else if (saveController->getSaveFileName().isEmpty()) {
-        QMessageBox::information(this, tr("Kalign with Align"),
-                                 tr("Output file is not set!") );
+        QMessageBox::information(this, tr("Kalign with Align"), tr("Output file is not set!"));
     } else {
         settings.outputFilePath = saveController->getSaveFileName();
         settings.inputFilePath = inputFileLineEdit->text();
@@ -144,4 +139,4 @@ void ClustalOWithExtFileSpecifySupportRunDialog::accept() {
     }
 }
 
-}//namespace
+}    // namespace U2

@@ -20,28 +20,30 @@
  */
 
 #include "DNAFlexDialog.h"
-#include "DNAFlexTask.h"
+
+#include <QMessageBox>
+#include <QPushButton>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/DNASequenceObject.h>
+#include <U2Core/L10n.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
-#include <U2Core/L10n.h>
 
 #include <U2Gui/CreateAnnotationWidgetController.h>
 #include <U2Gui/HelpButton.h>
+
 #include <U2View/ADVSequenceObjectContext.h>
 #include <U2View/AnnotatedDNAView.h>
-#include <QPushButton>
-#include <QMessageBox>
+
+#include "DNAFlexTask.h"
 
 namespace U2 {
 
-DNAFlexDialog::DNAFlexDialog(ADVSequenceObjectContext* _ctx)
-  : QDialog(_ctx->getAnnotatedDNAView()->getWidget())
-{
+DNAFlexDialog::DNAFlexDialog(ADVSequenceObjectContext *_ctx)
+    : QDialog(_ctx->getAnnotatedDNAView()->getWidget()) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742548");
+    new HelpButton(this, buttonBox, "46501041");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Search"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -53,14 +55,14 @@ DNAFlexDialog::DNAFlexDialog(ADVSequenceObjectContext* _ctx)
     // Creating and initializing the annotation model
     CreateAnnotationModel annotModel;
     annotModel.hideAnnotationType = true;
-    annotModel.hideLocation = true;  // hides location field and does not check it in validate()
+    annotModel.hideLocation = true;    // hides location field and does not check it in validate()
     annotModel.data->name = "dna_flex";
     annotModel.sequenceObjectRef = ctx->getSequenceObject();
     annotModel.sequenceLen = sequenceLength;
 
     // Initializing and adding the annotations widget
     annotController = new CreateAnnotationWidgetController(annotModel, this);
-    QWidget* annotWidget = annotController->getWidget();
+    QWidget *annotWidget = annotController->getWidget();
     tabOutput->layout()->addWidget(annotWidget);
 
     // Setting the dialog icon to the standard UGENE icon
@@ -68,10 +70,10 @@ DNAFlexDialog::DNAFlexDialog(ADVSequenceObjectContext* _ctx)
 
     // Setting the bounds for the parameters
     spinBoxWindowSize->setMaximum(sequenceLength);
-    spinBoxWindowStep->setMaximum(sequenceLength - 2); // Approximate value. In real life the step should be 1 or small enough.
+    spinBoxWindowStep->setMaximum(sequenceLength - 2);    // Approximate value. In real life the step should be 1 or small enough.
 
     // "-2" is added as the first window should be at least 2 nucleotides.
-    if(settings.windowSize >  sequenceLength){
+    if (settings.windowSize > sequenceLength) {
         settings.windowSize = sequenceLength;
     }
 
@@ -84,13 +86,12 @@ DNAFlexDialog::DNAFlexDialog(ADVSequenceObjectContext* _ctx)
     connect(doubleSpinBoxThreshold, SIGNAL(valueChanged(double)), SLOT(sl_spinThresholdChanged(double)));
     connect(btnRemember, SIGNAL(clicked()), SLOT(sl_rememberSettings()));
     connect(btnDefaults, SIGNAL(clicked()), SLOT(sl_defaultSettings()));
-    connect(tabWidget,SIGNAL(currentChanged(int)),this, SLOT(sl_updateSizes(int)));
+    connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(sl_updateSizes(int)));
 
     sl_updateSizes(0);
 }
 
-void DNAFlexDialog::accept()
-{
+void DNAFlexDialog::accept() {
     // Verifying and passing the settings
     // TODO
 
@@ -101,15 +102,15 @@ void DNAFlexDialog::accept()
         return;
     }
     bool objectPrepared = annotController->prepareAnnotationObject();
-    if (!objectPrepared){
+    if (!objectPrepared) {
         QMessageBox::warning(this, tr("Error"), tr("Cannot create an annotation object. Please check settings"));
         return;
     }
-    const CreateAnnotationModel& annotModel = annotController->getModel();
+    const CreateAnnotationModel &annotModel = annotController->getModel();
     QString annotName = annotModel.data->name;
     QString annotGroup = annotModel.groupName;
 
-    if(ctx != NULL){
+    if (ctx != NULL) {
         ctx->getAnnotatedDNAView()->tryAddObject(annotModel.getAnnotationObject());
     }
 
@@ -117,7 +118,7 @@ void DNAFlexDialog::accept()
     U2OpStatusImpl os;
     QByteArray seqData = ctx->getSequenceObject()->getWholeSequenceData(os);
     CHECK_OP_EXT(os, QMessageBox::critical(this, L10N::errorTitle(), os.getError()), );
-    DNAFlexTask* task = new DNAFlexTask(
+    DNAFlexTask *task = new DNAFlexTask(
         settings,
         annotModel.getAnnotationObject(),
         annotName,
@@ -132,34 +133,28 @@ void DNAFlexDialog::accept()
     QDialog::accept();
 }
 
-void DNAFlexDialog::sl_spinWindowSizeChanged(int newValue)
-{
+void DNAFlexDialog::sl_spinWindowSizeChanged(int newValue) {
     settings.windowSize = newValue;
 }
 
-void DNAFlexDialog::sl_spinWindowStepChanged(int newValue)
-{
+void DNAFlexDialog::sl_spinWindowStepChanged(int newValue) {
     settings.windowStep = newValue;
 }
 
-void DNAFlexDialog::sl_spinThresholdChanged(double newValue)
-{
+void DNAFlexDialog::sl_spinThresholdChanged(double newValue) {
     settings.threshold = newValue;
 }
 
-void DNAFlexDialog::sl_rememberSettings()
-{
+void DNAFlexDialog::sl_rememberSettings() {
     settings.rememberSettings();
 }
 
-void DNAFlexDialog::sl_defaultSettings()
-{
+void DNAFlexDialog::sl_defaultSettings() {
     settings.restoreDefaults();
     updateHighFlexValues();
 }
 
-void DNAFlexDialog::updateHighFlexValues()
-{
+void DNAFlexDialog::updateHighFlexValues() {
     spinBoxWindowSize->setValue(settings.windowSize);
     spinBoxWindowStep->setValue(settings.windowStep);
     doubleSpinBoxThreshold->setValue(settings.threshold);
@@ -168,7 +163,7 @@ void DNAFlexDialog::updateHighFlexValues()
 void DNAFlexDialog::sl_updateSizes(int index) {
     Q_UNUSED(index);
 
-    for (int i=0; i < tabWidget->count(); i++) {
+    for (int i = 0; i < tabWidget->count(); i++) {
         tabWidget->widget(i)->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     }
     QWidget *widget = tabWidget->currentWidget();
@@ -179,5 +174,4 @@ void DNAFlexDialog::sl_updateSizes(int index) {
     tabWidget->adjustSize();
 }
 
-} // namespace
-
+}    // namespace U2

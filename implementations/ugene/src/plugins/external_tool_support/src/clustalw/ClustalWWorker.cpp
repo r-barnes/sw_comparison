@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ClustalWWorker.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/ExternalToolRegistry.h>
@@ -40,7 +42,6 @@
 #include <U2Lang/WorkflowEnv.h>
 
 #include "ClustalWSupport.h"
-#include "ClustalWWorker.h"
 #include "TaskLocalStorage.h"
 
 namespace U2 {
@@ -63,10 +64,10 @@ const QString EXT_TOOL_PATH("path");
 const QString TMP_DIR_PATH("temp-dir");
 
 void ClustalWWorkerFactory::init() {
-    QList<PortDescriptor*> p; QList<Attribute*> a;
+    QList<PortDescriptor *> p;
+    QList<Attribute *> a;
     Descriptor ind(BasePorts::IN_MSA_PORT_ID(), ClustalWWorker::tr("Input MSA"), ClustalWWorker::tr("Input MSA to process."));
-    Descriptor oud(BasePorts::OUT_MSA_PORT_ID(), ClustalWWorker::tr("ClustalW result MSA"),
-        ClustalWWorker::tr("The result of the ClustalW alignment."));
+    Descriptor oud(BasePorts::OUT_MSA_PORT_ID(), ClustalWWorker::tr("ClustalW result MSA"), ClustalWWorker::tr("The result of the ClustalW alignment."));
 
     QMap<Descriptor, DataTypePtr> inM;
     inM[BaseSlots::MULTIPLE_ALIGNMENT_SLOT()] = BaseTypes::MULTIPLE_ALIGNMENT_TYPE();
@@ -75,29 +76,20 @@ void ClustalWWorkerFactory::init() {
     outM[BaseSlots::MULTIPLE_ALIGNMENT_SLOT()] = BaseTypes::MULTIPLE_ALIGNMENT_TYPE();
     p << new PortDescriptor(oud, DataTypePtr(new MapDataType("clustal.out.msa", outM)), false /*input*/, true /*multi*/);
 
-    Descriptor gop(GAP_OPEN_PENALTY, ClustalWWorker::tr("Gap open penalty"),
-                    ClustalWWorker::tr("The penalty for opening a gap."));
-    Descriptor gep(GAP_EXT_PENALTY, ClustalWWorker::tr("Gap extension penalty"),
-                    ClustalWWorker::tr("The penalty for extending a gap."));
-    Descriptor gd(GAP_DIST, ClustalWWorker::tr("Gap distance"),
-                    ClustalWWorker::tr("The gap separation penalty. Tries to decrease the chances of gaps being too close to each other."));
-    Descriptor eg(END_GAPS, ClustalWWorker::tr("End gaps"),
-                    ClustalWWorker::tr("The penalty for closing a gap."));
-    Descriptor npg(NO_PGAPS, ClustalWWorker::tr("Residue-specific gaps off"),
-                    ClustalWWorker::tr("Residue-specific penalties are amino specific gap penalties that reduce or increase the gap opening penalties at each position in the alignment."));
-    Descriptor nhg(NO_HGAPS, ClustalWWorker::tr("Hydrophilic gaps off"),
-                    ClustalWWorker::tr("Hydrophilic gap penalties are used to increase the chances of a gap within a run (5 or more residues) of hydrophilic amino acids."));
-    Descriptor iter(ITERATION, ClustalWWorker::tr("Iteration type"),
-                    ClustalWWorker::tr("Alignment improvement iteration type. Can take values: <p> \
+    Descriptor gop(GAP_OPEN_PENALTY, ClustalWWorker::tr("Gap open penalty"), ClustalWWorker::tr("The penalty for opening a gap."));
+    Descriptor gep(GAP_EXT_PENALTY, ClustalWWorker::tr("Gap extension penalty"), ClustalWWorker::tr("The penalty for extending a gap."));
+    Descriptor gd(GAP_DIST, ClustalWWorker::tr("Gap distance"), ClustalWWorker::tr("The gap separation penalty. Tries to decrease the chances of gaps being too close to each other."));
+    Descriptor eg(END_GAPS, ClustalWWorker::tr("End gaps"), ClustalWWorker::tr("The penalty for closing a gap."));
+    Descriptor npg(NO_PGAPS, ClustalWWorker::tr("Residue-specific gaps off"), ClustalWWorker::tr("Residue-specific penalties are amino specific gap penalties that reduce or increase the gap opening penalties at each position in the alignment."));
+    Descriptor nhg(NO_HGAPS, ClustalWWorker::tr("Hydrophilic gaps off"), ClustalWWorker::tr("Hydrophilic gap penalties are used to increase the chances of a gap within a run (5 or more residues) of hydrophilic amino acids."));
+    Descriptor iter(ITERATION, ClustalWWorker::tr("Iteration type"), ClustalWWorker::tr("Alignment improvement iteration type. Can take values: <p> \
                            <ul> \
                            <li>None - No iteration;</li> \
                            <li>Tree - Iteration at each step of alignment process;</li> \
                            <li>Alignment - Iteration only on final alignment.</li> \
                            </ul>"));
-    Descriptor ni(NUM_ITERATIONS, ClustalWWorker::tr("Number of iterations"),
-                    ClustalWWorker::tr("The maximum number of iterations to perform."));
-    Descriptor matrix(MATRIX, ClustalWWorker::tr("Weight matrix"),
-                    ClustalWWorker::tr("For proteins it is a scoring table which describes the similarity of each amino acid to each other and can take values: <p> \
+    Descriptor ni(NUM_ITERATIONS, ClustalWWorker::tr("Number of iterations"), ClustalWWorker::tr("The maximum number of iterations to perform."));
+    Descriptor matrix(MATRIX, ClustalWWorker::tr("Weight matrix"), ClustalWWorker::tr("For proteins it is a scoring table which describes the similarity of each amino acid to each other and can take values: <p> \
                            <ul> \
                            <li>BLOSUM - Appear to be the best available for carrying out database similarity (homology searches). \
                            <li>PAM - Have been extremely widely used since the late '70s. \
@@ -110,12 +102,10 @@ void ClustalWWorkerFactory::init() {
                            <li>IUB - The default scoring matrix used by BESTFIT for the comparison of nucleic acid sequences. All matches score 1.9; all mismatches for IUB symbols score 0.\
                            <li>ClustalW - The previous system used by Clustal W, in which matches score 1.0 and mismatches score 0. All matches for IUB symbols also score 0. \
                            </ul>"));
-    Descriptor etp(EXT_TOOL_PATH, ClustalWWorker::tr("Tool path"),
-                    ClustalWWorker::tr("Path to the ClustalW tool."
-                        "<p>The default path can be set in the UGENE application settings."));
+    Descriptor etp(EXT_TOOL_PATH, ClustalWWorker::tr("Tool path"), ClustalWWorker::tr("Path to the ClustalW tool."
+                                                                                      "<p>The default path can be set in the UGENE application settings."));
 
-    Descriptor tdp(TMP_DIR_PATH, ClustalWWorker::tr("Temporary folder"),
-                    ClustalWWorker::tr("Folder to store temporary files."));
+    Descriptor tdp(TMP_DIR_PATH, ClustalWWorker::tr("Temporary folder"), ClustalWWorker::tr("Folder to store temporary files."));
 
     a << new Attribute(gop, BaseTypes::NUM_TYPE(), false, QVariant(53.90));
     a << new Attribute(gep, BaseTypes::NUM_TYPE(), false, QVariant(8.52));
@@ -129,24 +119,32 @@ void ClustalWWorkerFactory::init() {
     a << new Attribute(etp, BaseTypes::STRING_TYPE(), true, QVariant("Default"));
     a << new Attribute(tdp, BaseTypes::STRING_TYPE(), true, QVariant("Default"));
 
-    Descriptor desc(ACTOR_ID, ClustalWWorker::tr("Align with ClustalW"),
-        ClustalWWorker::tr("Aligns multiple sequence alignments (MSAs) supplied with ClustalW."
-        "<p>ClustalW is a general purpose multiple sequence alignment program for DNA or proteins."
-        "Visit <a href=\"http://www.clustal.org/\">http://www.clustal.org/</a> to learn more about it."));
+    Descriptor desc(ACTOR_ID, ClustalWWorker::tr("Align with ClustalW"), ClustalWWorker::tr("Aligns multiple sequence alignments (MSAs) supplied with ClustalW."
+                                                                                            "<p>ClustalW is a general purpose multiple sequence alignment program for DNA or proteins."
+                                                                                            "Visit <a href=\"http://www.clustal.org/\">http://www.clustal.org/</a> to learn more about it."));
 
-    ActorPrototype* proto = new IntegralBusActorPrototype(desc, p, a);
+    ActorPrototype *proto = new IntegralBusActorPrototype(desc, p, a);
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
-        QVariantMap m; m["minimum"] = double(.00); m["maximum"] = double(100.00); m["decimals"] = 2;
+        QVariantMap m;
+        m["minimum"] = double(.00);
+        m["maximum"] = double(100.00);
+        m["decimals"] = 2;
         delegates[GAP_OPEN_PENALTY] = new DoubleSpinBoxDelegate(m);
     }
     {
-        QVariantMap m; m["minimum"] = double(.00); m["maximum"] = double(10.00); m["decimals"] = 2;
+        QVariantMap m;
+        m["minimum"] = double(.00);
+        m["maximum"] = double(10.00);
+        m["decimals"] = 2;
         delegates[GAP_EXT_PENALTY] = new DoubleSpinBoxDelegate(m);
     }
     {
-        QVariantMap m; m["minimum"] = double(.00); m["maximum"] = double(10.00); m["decimals"] = 2;
+        QVariantMap m;
+        m["minimum"] = double(.00);
+        m["maximum"] = double(10.00);
+        m["decimals"] = 2;
         delegates[GAP_DIST] = new DoubleSpinBoxDelegate(m);
     }
     {
@@ -176,28 +174,30 @@ void ClustalWWorkerFactory::init() {
     proto->addExternalTool(ClustalWSupport::ET_CLUSTAL_ID, EXT_TOOL_PATH);
     WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_ALIGNMENT(), proto);
 
-    DomainFactory* localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
+    DomainFactory *localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
     localDomain->registerEntry(new ClustalWWorkerFactory());
 }
 
 /****************************
 * ClustalWPrompter
 ****************************/
-ClustalWPrompter::ClustalWPrompter(Actor* p) : PrompterBase<ClustalWPrompter>(p) {
+ClustalWPrompter::ClustalWPrompter(Actor *p)
+    : PrompterBase<ClustalWPrompter>(p) {
 }
 QString ClustalWPrompter::composeRichDoc() {
-    IntegralBusPort* input = qobject_cast<IntegralBusPort*>(target->getPort(BasePorts::IN_MSA_PORT_ID()));
-    Actor* producer = input->getProducer(BasePorts::IN_MSA_PORT_ID());
+    IntegralBusPort *input = qobject_cast<IntegralBusPort *>(target->getPort(BasePorts::IN_MSA_PORT_ID()));
+    Actor *producer = input->getProducer(BasePorts::IN_MSA_PORT_ID());
     QString producerName = producer ? tr(" from %1").arg(producer->getLabel()) : "";
     QString doc = tr("Aligns each MSA supplied <u>%1</u> with \"<u>ClustalW</u>\".")
-        .arg(producerName);
+                      .arg(producerName);
 
     return doc;
 }
 /****************************
 * ClustalWWorker
 ****************************/
-ClustalWWorker::ClustalWWorker(Actor* a) : BaseWorker(a), input(NULL), output(NULL) {
+ClustalWWorker::ClustalWWorker(Actor *a)
+    : BaseWorker(a), input(NULL), output(NULL) {
 }
 
 void ClustalWWorker::init() {
@@ -205,51 +205,51 @@ void ClustalWWorker::init() {
     output = ports.value(BasePorts::OUT_MSA_PORT_ID());
 }
 
-Task* ClustalWWorker::tick() {
+Task *ClustalWWorker::tick() {
     if (input->hasMessage()) {
         Message inputMessage = getMessageAndSetupScriptValues(input);
         if (inputMessage.isEmpty()) {
             output->transit();
             return NULL;
         }
-        cfg.gapOpenPenalty=actor->getParameter(GAP_OPEN_PENALTY)->getAttributeValue<float>(context);
-        cfg.gapExtenstionPenalty=actor->getParameter(GAP_EXT_PENALTY)->getAttributeValue<float>(context);
-        cfg.gapDist=actor->getParameter(GAP_DIST)->getAttributeValue<float>(context);
-        cfg.endGaps=actor->getParameter(END_GAPS)->getAttributeValue<bool>(context);
-        cfg.noHGaps=actor->getParameter(NO_HGAPS)->getAttributeValue<bool>(context);
-        cfg.noPGaps=actor->getParameter(NO_PGAPS)->getAttributeValue<bool>(context);
-        if(actor->getParameter(ITERATION)->getAttributeValue<int>(context) != 0){
-            if(actor->getParameter(ITERATION)->getAttributeValue<int>(context) == 1){
-                cfg.iterationType="TREE";
-            }else if(actor->getParameter(ITERATION)->getAttributeValue<int>(context) == 2){
-                cfg.iterationType="ALIGNMENT";
+        cfg.gapOpenPenalty = actor->getParameter(GAP_OPEN_PENALTY)->getAttributeValue<float>(context);
+        cfg.gapExtenstionPenalty = actor->getParameter(GAP_EXT_PENALTY)->getAttributeValue<float>(context);
+        cfg.gapDist = actor->getParameter(GAP_DIST)->getAttributeValue<float>(context);
+        cfg.endGaps = actor->getParameter(END_GAPS)->getAttributeValue<bool>(context);
+        cfg.noHGaps = actor->getParameter(NO_HGAPS)->getAttributeValue<bool>(context);
+        cfg.noPGaps = actor->getParameter(NO_PGAPS)->getAttributeValue<bool>(context);
+        if (actor->getParameter(ITERATION)->getAttributeValue<int>(context) != 0) {
+            if (actor->getParameter(ITERATION)->getAttributeValue<int>(context) == 1) {
+                cfg.iterationType = "TREE";
+            } else if (actor->getParameter(ITERATION)->getAttributeValue<int>(context) == 2) {
+                cfg.iterationType = "ALIGNMENT";
             }
-            if(actor->getParameter(NUM_ITERATIONS)->getAttributeValue<int>(context) != 3){
-                cfg.numIterations=actor->getParameter(NUM_ITERATIONS)->getAttributeValue<int>(context);
+            if (actor->getParameter(NUM_ITERATIONS)->getAttributeValue<int>(context) != 3) {
+                cfg.numIterations = actor->getParameter(NUM_ITERATIONS)->getAttributeValue<int>(context);
             }
         }
-        if(actor->getParameter(MATRIX)->getAttributeValue<int>(context) == -1){
-            if(actor->getParameter(MATRIX)->getAttributeValue<int>(context) == 0){
-                cfg.matrix="IUB";
-            }else if(actor->getParameter(MATRIX)->getAttributeValue<int>(context) == 1){
-                cfg.matrix="CLUSTALW";
-            }else if(actor->getParameter(MATRIX)->getAttributeValue<int>(context) == 2){
-                cfg.matrix="BLOSUM";
-            }else if(actor->getParameter(MATRIX)->getAttributeValue<int>(context) == 3){
-                cfg.matrix="PAM";
-            }else if(actor->getParameter(MATRIX)->getAttributeValue<int>(context) == 4){
-                cfg.matrix="GONNET";
-            }else if(actor->getParameter(MATRIX)->getAttributeValue<int>(context) == 5){
-                cfg.matrix="ID";
+        if (actor->getParameter(MATRIX)->getAttributeValue<int>(context) == -1) {
+            if (actor->getParameter(MATRIX)->getAttributeValue<int>(context) == 0) {
+                cfg.matrix = "IUB";
+            } else if (actor->getParameter(MATRIX)->getAttributeValue<int>(context) == 1) {
+                cfg.matrix = "CLUSTALW";
+            } else if (actor->getParameter(MATRIX)->getAttributeValue<int>(context) == 2) {
+                cfg.matrix = "BLOSUM";
+            } else if (actor->getParameter(MATRIX)->getAttributeValue<int>(context) == 3) {
+                cfg.matrix = "PAM";
+            } else if (actor->getParameter(MATRIX)->getAttributeValue<int>(context) == 4) {
+                cfg.matrix = "GONNET";
+            } else if (actor->getParameter(MATRIX)->getAttributeValue<int>(context) == 5) {
+                cfg.matrix = "ID";
             }
         }
 
-        QString path=actor->getParameter(EXT_TOOL_PATH)->getAttributeValue<QString>(context);
-        if(QString::compare(path, "default", Qt::CaseInsensitive) != 0){
+        QString path = actor->getParameter(EXT_TOOL_PATH)->getAttributeValue<QString>(context);
+        if (QString::compare(path, "default", Qt::CaseInsensitive) != 0) {
             AppContext::getExternalToolRegistry()->getById(ClustalWSupport::ET_CLUSTAL_ID)->setPath(path);
         }
-        path=actor->getParameter(TMP_DIR_PATH)->getAttributeValue<QString>(context);
-        if(QString::compare(path, "default", Qt::CaseInsensitive) != 0){
+        path = actor->getParameter(TMP_DIR_PATH)->getAttributeValue<QString>(context);
+        if (QString::compare(path, "default", Qt::CaseInsensitive) != 0) {
             AppContext::getAppSettings()->getUserAppsSettings()->setUserTemporaryDirPath(path);
         }
 
@@ -263,7 +263,7 @@ Task* ClustalWWorker::tick() {
             algoLog.error(tr("An empty MSA '%1' has been supplied to ClustalW.").arg(msa->getName()));
             return NULL;
         }
-        ClustalWSupportTask* supportTask = new ClustalWSupportTask(msa, GObjectReference(), cfg);
+        ClustalWSupportTask *supportTask = new ClustalWSupportTask(msa, GObjectReference(), cfg);
         supportTask->addListeners(createLogListeners());
         Task *t = new NoFailTaskWrapper(supportTask);
         connect(t, SIGNAL(si_stateChanged()), SLOT(sl_taskFinished()));
@@ -276,10 +276,10 @@ Task* ClustalWWorker::tick() {
 }
 
 void ClustalWWorker::sl_taskFinished() {
-    NoFailTaskWrapper *wrapper = qobject_cast<NoFailTaskWrapper*>(sender());
+    NoFailTaskWrapper *wrapper = qobject_cast<NoFailTaskWrapper *>(sender());
     CHECK(wrapper->isFinished(), );
-    ClustalWSupportTask* t = qobject_cast<ClustalWSupportTask*>(wrapper->originalTask());
-    if (t->isCanceled()){
+    ClustalWSupportTask *t = qobject_cast<ClustalWSupportTask *>(wrapper->originalTask());
+    if (t->isCanceled()) {
         return;
     }
     if (t->hasError()) {
@@ -303,5 +303,5 @@ void ClustalWWorker::send(const MultipleSequenceAlignment &msa) {
     output->put(Message(BaseTypes::MULTIPLE_ALIGNMENT_TYPE(), m));
 }
 
-} //namespace LocalWorkflow
-} //namespace U2
+}    //namespace LocalWorkflow
+}    //namespace U2

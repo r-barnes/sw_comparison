@@ -43,13 +43,15 @@ public:
     PropertyWizardController(WizardController *wc, AttributeWidget *widget);
     virtual ~PropertyWizardController();
 
-    virtual QWidget * createGUI(U2OpStatus &os) = 0;
+    virtual QWidget *createGUI(U2OpStatus &os) = 0;
 
     void updateGUI(const QVariant &newValue);
     void updateVisibility(bool);
 
-    DelegateTags * tags() const;
-    AttributeWidget* attributeWidget() const {return widget;}
+    DelegateTags *tags() const;
+    AttributeWidget *attributeWidget() const {
+        return widget;
+    }
 
 signals:
     void si_updateGUI(const QVariant &newValue);
@@ -61,7 +63,7 @@ protected:
     DelegateTags *_tags;
 
 protected:
-    Attribute * attribute();
+    Attribute *attribute();
 
 protected slots:
     void sl_valueChanged(const QVariant &newValue);
@@ -76,7 +78,7 @@ public:
     InUrlDatasetsController(WizardController *wc, AttributeWidget *widget);
     virtual ~InUrlDatasetsController();
 
-    virtual QWidget * createGUI(U2OpStatus &os);
+    virtual QWidget *createGUI(U2OpStatus &os);
 
 private:
     AttributeDatasetsController *dsc;
@@ -93,7 +95,7 @@ public:
     DefaultPropertyController(WizardController *wc, AttributeWidget *widget, int labelSize);
     virtual ~DefaultPropertyController();
 
-    virtual QWidget * createGUI(U2OpStatus & os);
+    virtual QWidget *createGUI(U2OpStatus &os);
     void setNoDelegate(bool value);
 
 private:
@@ -101,9 +103,9 @@ private:
     bool noDelegate;
 
 private:
-    PropertyWidget * createPropertyWidget(U2OpStatus &os);
+    PropertyWidget *createPropertyWidget(U2OpStatus &os);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_PROPERTYWIZARDCONTROLLER_H_
+#endif    // _U2_PROPERTYWIZARDCONTROLLER_H_

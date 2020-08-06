@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "MysqlUpgraderFrom_1_14_To_1_15.h"
+
 #include <QCryptographicHash>
 
 #include <U2Core/Folder.h>
@@ -27,15 +29,13 @@
 
 #include <U2Gui/ProjectUtils.h>
 
-#include "MysqlUpgraderFrom_1_14_To_1_15.h"
 #include "mysql_dbi/MysqlDbi.h"
 #include "mysql_dbi/util/MysqlHelpers.h"
 
 namespace U2 {
 
-MysqlUpgraderFrom_1_14_To_1_15::MysqlUpgraderFrom_1_14_To_1_15(MysqlDbi *dbi) :
-    MysqlUpgrader(Version::parseVersion("1.14.0"), Version::parseVersion("1.15.0"), dbi)
-{
+MysqlUpgraderFrom_1_14_To_1_15::MysqlUpgraderFrom_1_14_To_1_15(MysqlDbi *dbi)
+    : MysqlUpgrader(Version::parseVersion("1.14.0"), Version::parseVersion("1.15.0"), dbi) {
 }
 
 void MysqlUpgraderFrom_1_14_To_1_15::upgrade(U2OpStatus &os) const {
@@ -50,9 +50,12 @@ void MysqlUpgraderFrom_1_14_To_1_15::upgrade(U2OpStatus &os) const {
 
 void MysqlUpgraderFrom_1_14_To_1_15::upgradeObjectDbi(U2OpStatus &os, MysqlDbRef *dbRef) const {
     const bool previousPathFieldExist = (1 == U2SqlQuery(QString("SELECT count(*) FROM information_schema.COLUMNS WHERE "
-                                                         "TABLE_SCHEMA = '%1' AND TABLE_NAME = 'Folder' "
-                                                         "AND COLUMN_NAME = 'previousPath'").
-                                                         arg(dbRef->handle.databaseName()), dbRef, os).selectInt64());
+                                                                 "TABLE_SCHEMA = '%1' AND TABLE_NAME = 'Folder' "
+                                                                 "AND COLUMN_NAME = 'previousPath'")
+                                                             .arg(dbRef->handle.databaseName()),
+                                                         dbRef,
+                                                         os)
+                                                  .selectInt64());
     CHECK_OP(os, );
 
     if (!previousPathFieldExist) {
@@ -117,4 +120,4 @@ void MysqlUpgraderFrom_1_14_To_1_15::rollNewFolderPath(QString &originalPath, co
     originalPath = resultPath;
 }
 
-}   // namespace U2
+}    // namespace U2

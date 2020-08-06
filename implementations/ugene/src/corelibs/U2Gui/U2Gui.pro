@@ -127,21 +127,7 @@ HEADERS += src/AppSettingsGUI.h \
            src/util/shared_db/ImportOptionsWidget.h \
            src/util/shared_db/ImportToDatabaseDialog.h \
            src/util/shared_db/ItemToImportEditDialog.h \
-           src/util/shared_db/SharedConnectionsDialog.h \
-           src/util/webview/JavaScriptAgent.h \
-           src/util/webview/SimpleWebViewBasedWidgetController.h \
-           src/util/webview/U2WebView.h \
-           src/util/webview/WebViewController.h \
-           src/util/webview/WebViewControllerPrivate.h
-
-useWebKit() {
-    HEADERS += src/util/webview/webkit/WebViewWebKitControllerPrivate.h
-} else {
-    HEADERS += src/util/webview/qtwebengine/WebViewQtWebEngineControllerPrivate.h \
-               src/util/webview/qtwebengine/webchannel/U2WebChannel.h \
-               src/util/webview/qtwebengine/webchannel/WebSocketClientWrapper.h \
-               src/util/webview/qtwebengine/webchannel/WebSocketTransport.h
-}
+           src/util/shared_db/SharedConnectionsDialog.h
 
 FORMS += src/util/AddNewDocumentDialog.ui \
          src/util/AuthenticationDialog.ui \
@@ -298,20 +284,6 @@ SOURCES += src/MainWindow.cpp \
            src/util/shared_db/ImportToDatabaseDialog.cpp \
            src/util/shared_db/ItemToImportEditDialog.cpp \
            src/util/shared_db/SharedConnectionsDialog.cpp \
-           src/util/webview/JavaScriptAgent.cpp \
-           src/util/webview/SimpleWebViewBasedWidgetController.cpp \
-           src/util/webview/WebViewController.cpp \
-           src/util/webview/WebViewControllerPrivate.cpp
-
-useWebKit() {
-    SOURCES += src/util/webview/webkit/WebViewWebKitControllerPrivate.cpp
-} else {
-    SOURCES += src/util/webview/qtwebengine/WebViewQtWebEngineControllerPrivate.cpp \
-               src/util/webview/qtwebengine/webchannel/U2WebChannel.cpp \
-               src/util/webview/qtwebengine/webchannel/WebSocketClientWrapper.cpp \
-               src/util/webview/qtwebengine/webchannel/WebSocketTransport.cpp
-
-}
 
 RESOURCES += U2Gui.qrc
 TRANSLATIONS += transl/russian.ts

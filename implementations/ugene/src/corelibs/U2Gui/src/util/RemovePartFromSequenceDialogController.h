@@ -24,8 +24,8 @@
 
 #include <QDialog>
 
-#include <U2Core/U2Region.h>
 #include <U2Core/U1AnnotationUtils.h>
+#include <U2Core/U2Region.h>
 
 class Ui_RemovePartFromSequenceDialog;
 
@@ -36,7 +36,7 @@ class SaveDocumentController;
 class U2GUI_EXPORT RemovePartFromSequenceDialogController : public QDialog {
     Q_OBJECT
 public:
-    RemovePartFromSequenceDialogController(U2Region _toDelete, U2Region _source, const QString & docUrl, QWidget *p = NULL);
+    RemovePartFromSequenceDialogController(U2Region _toDelete, U2Region _source, const QString &docUrl, QWidget *p = NULL);
     ~RemovePartFromSequenceDialogController();
     void accept();
 
@@ -57,11 +57,10 @@ private:
     QString filter;
     U2Region toDelete;
     U2Region source;
-    Ui_RemovePartFromSequenceDialog* ui;
+    Ui_RemovePartFromSequenceDialog *ui;
     SaveDocumentController *saveController;
 };
 
-}//ns
+}    // namespace U2
 
 #endif
-

@@ -22,37 +22,35 @@
 #include <qglobal.h>
 #if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
 
-#include <execinfo.h>
+#    include <execinfo.h>
 
-#include <QDir>
+#    include <QDir>
 
-#include <U2Core/AppContext.h>
-#include <U2Core/U2SafePoints.h>
+#    include <U2Core/AppContext.h>
+#    include <U2Core/U2SafePoints.h>
 
-#include "CrashHandler.h"
-#include "CrashHandlerPrivateUnixNotMac.h"
+#    include "CrashHandler.h"
+#    include "CrashHandlerPrivateUnixNotMac.h"
 
 namespace U2 {
 
 const QString CrashHandlerPrivateUnixNotMac::STACKTRACE_FILE_PATH = "/tmp/UGENEstacktrace.txt";
 
-CrashHandlerPrivateUnixNotMac::CrashHandlerPrivateUnixNotMac() :
-    CrashHandlerPrivate(),
-    stacktraceFileWasSucessfullyRemoved(true),
-    stacktraceFileSucessfullyCreated(true),
-    stacktraceFileWasSucessfullyClosed(true),
-    crashDirWasSucessfullyCreated(true),
-    dumpWasSuccessfullySaved(true)
-{
-
+CrashHandlerPrivateUnixNotMac::CrashHandlerPrivateUnixNotMac()
+    : CrashHandlerPrivate(),
+      stacktraceFileWasSucessfullyRemoved(true),
+      stacktraceFileSucessfullyCreated(true),
+      stacktraceFileWasSucessfullyClosed(true),
+      crashDirWasSucessfullyCreated(true),
+      dumpWasSuccessfullySaved(true) {
 }
 
-CrashHandlerPrivateUnixNotMac::~CrashHandlerPrivateUnixNotMac()  {
+CrashHandlerPrivateUnixNotMac::~CrashHandlerPrivateUnixNotMac() {
     shutdown();
 }
 
 void CrashHandlerPrivateUnixNotMac::setupHandler() {
-#ifndef _DEBUG
+#    ifndef _DEBUG
     if (QFile::exists(STACKTRACE_FILE_PATH)) {
         stacktraceFileWasSucessfullyRemoved = QFile(STACKTRACE_FILE_PATH).remove();
     }
@@ -66,7 +64,7 @@ void CrashHandlerPrivateUnixNotMac::setupHandler() {
     breakpadHandler = new google_breakpad::ExceptionHandler(destDirDescriptor, NULL, breakpadCallback, this, true, -1);
 
     breakpadHandler->set_crash_handler(crashContextCallback);
-#endif
+#    endif
 }
 
 void CrashHandlerPrivateUnixNotMac::shutdown() {
@@ -80,10 +78,10 @@ void CrashHandlerPrivateUnixNotMac::storeStackTrace() {
     char pid_buf[30];
     sprintf(pid_buf, "%d", getpid());
     char name_buf[512];
-    name_buf[readlink(path.toLatin1().data(), name_buf, 511)]=0;
+    name_buf[readlink(path.toLatin1().data(), name_buf, 511)] = 0;
     FILE *fp = fopen(STACKTRACE_FILE_PATH.toLocal8Bit().constData(), "w+");
     stacktraceFileSucessfullyCreated = (NULL != fp);
-    void * stackTrace[1024];
+    void *stackTrace[1024];
     int frames = backtrace(stackTrace, 1024);
     backtrace_symbols_fd(stackTrace, frames, fileno(fp));
     const int closed = fclose(fp);
@@ -133,8 +131,8 @@ bool CrashHandlerPrivateUnixNotMac::breakpadCallback(const google_breakpad::Mini
 }
 
 bool CrashHandlerPrivateUnixNotMac::crashContextCallback(const void *crash_context,
-                                                        size_t /*crash_context_size*/,
-                                                        void *context) {
+                                                         size_t /*crash_context_size*/,
+                                                         void *context) {
     CrashHandlerPrivateUnixNotMac *privateHandler = static_cast<CrashHandlerPrivateUnixNotMac *>(context);
     const google_breakpad::ExceptionHandler::CrashContext *crashContext = static_cast<const google_breakpad::ExceptionHandler::CrashContext *>(crash_context);
     privateHandler->lastExceptionText = getExceptionText(crashContext);
@@ -145,7 +143,7 @@ QString CrashHandlerPrivateUnixNotMac::getExceptionText(const google_breakpad::E
     QString exceptionText = "Unhandled exception";
     CHECK(NULL != crashContext, "C++ exception|" + exceptionText);
 
-    switch(crashContext->siginfo.si_signo) {
+    switch (crashContext->siginfo.si_signo) {
     case SIGBUS:
         exceptionText = "Access to undefined portion of memory object";
         switch (crashContext->siginfo.si_code) {
@@ -249,13 +247,12 @@ QString CrashHandlerPrivateUnixNotMac::getExceptionText(const google_breakpad::E
         exceptionText = "Program has been aborted";
         break;
 
-    default:
-        ; // Do nothing
+    default:;    // Do nothing
     }
 
     return "C++ exception|" + exceptionText;
 }
 
-}   // namespace U2
+}    // namespace U2
 
 #endif

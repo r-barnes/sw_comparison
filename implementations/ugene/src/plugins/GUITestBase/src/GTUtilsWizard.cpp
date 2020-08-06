@@ -19,14 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-#include <QDir>
-#include <QFileInfo>
-#include <QLabel>
-#include <QScrollArea>
-#include <QToolButton>
-#include <QWizard>
-
 #include <base_dialogs/GTFileDialog.h>
 #include <primitives/GTComboBox.h>
 #include <primitives/GTDoubleSpinBox.h>
@@ -35,34 +27,42 @@
 #include <primitives/GTTabWidget.h>
 #include <primitives/GTWidget.h>
 
+#include <QApplication>
+#include <QDir>
+#include <QFileInfo>
+#include <QLabel>
+#include <QScrollArea>
+#include <QToolButton>
+#include <QWizard>
+
 #include "GTUtilsWizard.h"
 
 namespace U2 {
 using namespace HI;
 
-QMap<QString, GTUtilsWizard::WizardButton> GTUtilsWizard::initButtonMap(){
-   QMap<QString, WizardButton> result;
-   result.insert("&Next >", Next);
-   result.insert("< &Back", Back);
-   result.insert("Apply", Apply);
-   result.insert("Run", Run);
-   result.insert("Cancel", Cancel);
-   result.insert("Defaults", Defaults);
-   result.insert("Setup", Setup);
-   result.insert("Finish", Finish);
-   return result;
+QMap<QString, GTUtilsWizard::WizardButton> GTUtilsWizard::initButtonMap() {
+    QMap<QString, WizardButton> result;
+    result.insert("&Next >", Next);
+    result.insert("< &Back", Back);
+    result.insert("Apply", Apply);
+    result.insert("Run", Run);
+    result.insert("Cancel", Cancel);
+    result.insert("Defaults", Defaults);
+    result.insert("Setup", Setup);
+    result.insert("Finish", Finish);
+    return result;
 }
 const QMap<QString, GTUtilsWizard::WizardButton> GTUtilsWizard::buttonMap = GTUtilsWizard::initButtonMap();
 
 #define GT_CLASS_NAME "GTUtilsWizard"
 
 #define GT_METHOD_NAME "setInputFiles"
-void GTUtilsWizard::setInputFiles(HI::GUITestOpStatus &os, const QList<QStringList> &inputFiles){
-    QWidget* dialog = QApplication::activeModalWidget();
+void GTUtilsWizard::setInputFiles(HI::GUITestOpStatus &os, const QList<QStringList> &inputFiles) {
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "wizard not found");
     int i = 0;
     foreach (const QStringList &datasetFiles, inputFiles) {
-        QTabWidget* tabWidget = dialog->findChild<QTabWidget*>();
+        QTabWidget *tabWidget = dialog->findChild<QTabWidget *>();
         GT_CHECK(tabWidget != NULL, "tabWidget not found");
         GTTabWidget::setCurrentIndex(os, tabWidget, i);
 
@@ -74,8 +74,8 @@ void GTUtilsWizard::setInputFiles(HI::GUITestOpStatus &os, const QList<QStringLi
 
         foreach (const QString &dir, dir2files.keys()) {
             GTUtilsDialog::waitForDialog(os, new GTFileDialogUtils_list(os, dir, dir2files[dir]));
-            QList<QWidget*> adds = dialog->findChildren<QWidget *>("addFileButton");
-            foreach (QWidget* add, adds) {
+            QList<QWidget *> adds = dialog->findChildren<QWidget *>("addFileButton");
+            foreach (QWidget *add, adds) {
                 if (add->isVisible()) {
                     GTWidget::click(os, add);
                     break;
@@ -89,60 +89,59 @@ void GTUtilsWizard::setInputFiles(HI::GUITestOpStatus &os, const QList<QStringLi
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "setAllParameters"
-void GTUtilsWizard::setAllParameters(HI::GUITestOpStatus &os, QMap<QString, QVariant> map){
-    QWidget* dialog = QApplication::activeModalWidget();
+void GTUtilsWizard::setAllParameters(HI::GUITestOpStatus &os, QMap<QString, QVariant> map) {
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
-    QWizard* wizard = qobject_cast<QWizard*>(dialog);
+    QWizard *wizard = qobject_cast<QWizard *>(dialog);
     GT_CHECK(wizard, "activeModalWidget is not wizard");
 
-    QWidget* nextButton = GTWidget::findButtonByText(os, "&Next >", wizard);
+    QWidget *nextButton = GTWidget::findButtonByText(os, "&Next >", wizard);
 
-    do{
+    do {
         QMap<QString, QVariant>::iterator iter = map.begin();
-        while(iter != map.end()){
+        while (iter != map.end()) {
             QString k = iter.key();
-            QWidget* w = GTWidget::findWidget(os, iter.key() + " widget", wizard->currentPage(), GTGlobals::FindOptions(false));
-            if(w != NULL){
-                QToolButton* showHide = GTWidget::findExactWidget<QToolButton*>(os, "showHideButton", dialog, GTGlobals::FindOptions(false));
-                if(showHide != NULL && showHide->text() == "+"){
+            QWidget *w = GTWidget::findWidget(os, iter.key() + " widget", wizard->currentPage(), GTGlobals::FindOptions(false));
+            if (w != NULL) {
+                QToolButton *showHide = GTWidget::findExactWidget<QToolButton *>(os, "showHideButton", dialog, GTGlobals::FindOptions(false));
+                if (showHide != NULL && showHide->text() == "+") {
                     GTWidget::click(os, showHide);
                 }
-                QScrollArea* area = wizard->currentPage()->findChild<QScrollArea*>();
-                if(area != NULL){
+                QScrollArea *area = wizard->currentPage()->findChild<QScrollArea *>();
+                if (area != NULL) {
                     area->ensureWidgetVisible(w);
                 }
                 setValue(os, w, iter.value());
                 iter = map.erase(iter);
 
-            }else{
+            } else {
                 ++iter;
             }
         }
         nextButton = GTWidget::findButtonByText(os, "&Next >", wizard, GTGlobals::FindOptions(false));
-        if(nextButton != NULL && nextButton->isVisible()){
+        if (nextButton != NULL && nextButton->isVisible()) {
             GTWidget::click(os, nextButton);
         }
-    }while(nextButton != NULL && nextButton->isVisible());
-
+    } while (nextButton != NULL && nextButton->isVisible());
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "setParameter"
-void GTUtilsWizard::setParameter(HI::GUITestOpStatus &os, QString parName, QVariant parValue){
-    QWidget* dialog = QApplication::activeModalWidget();
+void GTUtilsWizard::setParameter(HI::GUITestOpStatus &os, QString parName, QVariant parValue) {
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
-    QWizard* wizard = qobject_cast<QWizard*>(dialog);
+    QWizard *wizard = qobject_cast<QWizard *>(dialog);
     GT_CHECK(wizard, "activeModalWidget is not wizard");
 
-    QToolButton* showHide = GTWidget::findExactWidget<QToolButton*>(os, "showHideButton", dialog, GTGlobals::FindOptions(false));
-    if(showHide != NULL && showHide->text() == "+"){
+    QToolButton *showHide = GTWidget::findExactWidget<QToolButton *>(os, "showHideButton", dialog, GTGlobals::FindOptions(false));
+    if (showHide != NULL && showHide->text() == "+") {
         GTWidget::click(os, showHide);
     }
 
-    QWidget* w = GTWidget::findWidget(os, parName + " widget", dialog);
+    QWidget *w = GTWidget::findWidget(os, parName + " widget", dialog);
 
-    QScrollArea* area = wizard->currentPage()->findChild<QScrollArea*>();
-    if(area != NULL){
+    QScrollArea *area = wizard->currentPage()->findChild<QScrollArea *>();
+    if (area != NULL) {
         area->ensureWidgetVisible(w);
     }
 
@@ -151,65 +150,64 @@ void GTUtilsWizard::setParameter(HI::GUITestOpStatus &os, QString parName, QVari
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "setParameter"
-QVariant GTUtilsWizard::getParameter(HI::GUITestOpStatus &os, QString parName){
-    QWidget* dialog = QApplication::activeModalWidget();
+QVariant GTUtilsWizard::getParameter(HI::GUITestOpStatus &os, QString parName) {
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK_RESULT(dialog, "activeModalWidget is NULL", QVariant());
-    QWizard* wizard = qobject_cast<QWizard*>(dialog);
+    QWizard *wizard = qobject_cast<QWizard *>(dialog);
     GT_CHECK_RESULT(wizard, "activeModalWidget is not wizard", QVariant());
 
-    QToolButton* showHide = GTWidget::findExactWidget<QToolButton*>(os, "showHideButton", dialog, GTGlobals::FindOptions(false));
-    if(showHide != NULL && showHide->text() == "+"){
+    QToolButton *showHide = GTWidget::findExactWidget<QToolButton *>(os, "showHideButton", dialog, GTGlobals::FindOptions(false));
+    if (showHide != NULL && showHide->text() == "+") {
         GTWidget::click(os, showHide);
     }
 
-    QWidget* w = GTWidget::findWidget(os, parName + " widget", dialog);
+    QWidget *w = GTWidget::findWidget(os, parName + " widget", dialog);
 
-    QComboBox* combo = qobject_cast<QComboBox*>(w);
-    if(combo != NULL){
+    QComboBox *combo = qobject_cast<QComboBox *>(w);
+    if (combo != NULL) {
         return QVariant(combo->currentText());
     }
-    QSpinBox* spin = qobject_cast<QSpinBox*>(w);
-    if(spin != NULL){
+    QSpinBox *spin = qobject_cast<QSpinBox *>(w);
+    if (spin != NULL) {
         return QVariant(spin->value());
     }
-    QDoubleSpinBox* doubleSpin = qobject_cast<QDoubleSpinBox*>(w);
-    if(doubleSpin != NULL){
+    QDoubleSpinBox *doubleSpin = qobject_cast<QDoubleSpinBox *>(w);
+    if (doubleSpin != NULL) {
         return QVariant(doubleSpin->value());
     }
-    QLineEdit* line = qobject_cast<QLineEdit*>(w);
-    if(line != NULL){
+    QLineEdit *line = qobject_cast<QLineEdit *>(w);
+    if (line != NULL) {
         return QVariant(line->text());
     }
     GT_CHECK_RESULT(false, QString("unsupported widget class: %1").arg(w->metaObject()->className()), QVariant());
 }
 #undef GT_METHOD_NAME
 
-
 #define GT_METHOD_NAME "setValue"
-void GTUtilsWizard::setValue(HI::GUITestOpStatus &os, QWidget *w, QVariant value){
-    QComboBox* combo = qobject_cast<QComboBox*>(w);
-    if(combo != NULL){
+void GTUtilsWizard::setValue(HI::GUITestOpStatus &os, QWidget *w, QVariant value) {
+    QComboBox *combo = qobject_cast<QComboBox *>(w);
+    if (combo != NULL) {
         GTComboBox::setIndexWithText(os, combo, value.toString());
         return;
     }
-    QSpinBox* spin = qobject_cast<QSpinBox*>(w);
-    if(spin != NULL){
+    QSpinBox *spin = qobject_cast<QSpinBox *>(w);
+    if (spin != NULL) {
         bool ok;
         int val = value.toInt(&ok);
         GT_CHECK(ok, "spin box needs int value");
         GTSpinBox::setValue(os, spin, val, GTGlobals::UseKeyBoard);
         return;
     }
-    QDoubleSpinBox* doubleSpin = qobject_cast<QDoubleSpinBox*>(w);
-    if(doubleSpin != NULL){
+    QDoubleSpinBox *doubleSpin = qobject_cast<QDoubleSpinBox *>(w);
+    if (doubleSpin != NULL) {
         bool ok;
         int val = value.toDouble(&ok);
         GT_CHECK(ok, "double spin box needs double value");
         GTDoubleSpinbox::setValue(os, doubleSpin, val, GTGlobals::UseKeyBoard);
         return;
     }
-    QLineEdit* line = qobject_cast<QLineEdit*>(w);
-    if(line != NULL){
+    QLineEdit *line = qobject_cast<QLineEdit *>(w);
+    if (line != NULL) {
         GTLineEdit::setText(os, line, value.toString());
         return;
     }
@@ -218,29 +216,28 @@ void GTUtilsWizard::setValue(HI::GUITestOpStatus &os, QWidget *w, QVariant value
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "clickButton"
-void GTUtilsWizard::clickButton(HI::GUITestOpStatus &os, WizardButton button){
-    QWidget* dialog = QApplication::activeModalWidget();
-    GT_CHECK(dialog!=NULL, "activeModalWidget is NULL");
+void GTUtilsWizard::clickButton(HI::GUITestOpStatus &os, WizardButton button) {
+    QWidget *dialog = QApplication::activeModalWidget();
+    GT_CHECK(dialog != NULL, "activeModalWidget is NULL");
 
-    QWidget* w = GTWidget::findButtonByText(os, buttonMap.key(button), dialog);
+    QWidget *w = GTWidget::findButtonByText(os, buttonMap.key(button), dialog);
     GTGlobals::sleep(500);
     GTWidget::click(os, w);
-
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getPageTitle"
-QString GTUtilsWizard::getPageTitle(HI::GUITestOpStatus &os){
-    QWidget* dialog = QApplication::activeModalWidget();
-    GT_CHECK_RESULT(dialog!=NULL, "activeModalWidget is NULL", QString());
-    QWizard* wizard = qobject_cast<QWizard*>(dialog);
+QString GTUtilsWizard::getPageTitle(HI::GUITestOpStatus &os) {
+    QWidget *dialog = QApplication::activeModalWidget();
+    GT_CHECK_RESULT(dialog != NULL, "activeModalWidget is NULL", QString());
+    QWizard *wizard = qobject_cast<QWizard *>(dialog);
     GT_CHECK_RESULT(wizard, "activeModalWidget is not wizard", QString());
 
-    QLabel* pageTitle = GTWidget::findExactWidget<QLabel*>(os, "pageTitle", wizard->currentPage());
+    QLabel *pageTitle = GTWidget::findExactWidget<QLabel *>(os, "pageTitle", wizard->currentPage());
     return pageTitle->text();
 }
 #undef GT_METHOD_NAME
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

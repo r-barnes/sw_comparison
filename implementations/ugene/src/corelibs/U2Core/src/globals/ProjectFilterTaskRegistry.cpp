@@ -19,13 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "ProjectFilterTaskRegistry.h"
+
 #include <QMutexLocker>
 
 #include <U2Core/AbstractProjectFilterTask.h>
 #include <U2Core/L10n.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "ProjectFilterTaskRegistry.h"
 
 namespace U2 {
 
@@ -35,8 +35,7 @@ ProjectFilterTaskRegistry::~ProjectFilterTaskRegistry() {
 }
 
 QList<AbstractProjectFilterTask *> ProjectFilterTaskRegistry::createFilterTasks(const ProjectTreeControllerModeSettings &settings,
-    const QList<QPointer<Document> > &docs)
-{
+                                                                                const QList<QPointer<Document>> &docs) {
     QMutexLocker guard(&lock);
 
     QList<AbstractProjectFilterTask *> result;
@@ -54,4 +53,4 @@ void ProjectFilterTaskRegistry::registerTaskFactory(ProjectFilterTaskFactory *fa
     factories.append(factory);
 }
 
-} // namespace U2
+}    // namespace U2

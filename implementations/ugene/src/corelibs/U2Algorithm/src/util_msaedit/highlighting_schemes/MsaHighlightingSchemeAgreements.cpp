@@ -19,16 +19,14 @@
  * MA 02110-1301, USA.
  */
 
-#include <QColor>
-
 #include "MsaHighlightingSchemeAgreements.h"
+
+#include <QColor>
 
 namespace U2 {
 
 MsaHighlightingSchemeAgreements::MsaHighlightingSchemeAgreements(QObject *parent, const MsaHighlightingSchemeFactory *factory, MultipleAlignmentObject *maObj)
-    : MsaHighlightingScheme(parent, factory, maObj)
-{
-
+    : MsaHighlightingScheme(parent, factory, maObj) {
 }
 
 void MsaHighlightingSchemeAgreements::process(const char refChar, char &seqChar, QColor &color, bool &highlight, int refCharColumn, int refCharRow) const {
@@ -43,8 +41,8 @@ MsaHighlightingSchemeAgreementsFactory::MsaHighlightingSchemeAgreementsFactory(Q
     : MsaHighlightingSchemeFactory(parent, id, name, supportedAlphabets) {
 }
 
-MsaHighlightingScheme * MsaHighlightingSchemeAgreementsFactory::create(QObject *parent, MultipleAlignmentObject *maObj ) const {
+MsaHighlightingScheme *MsaHighlightingSchemeAgreementsFactory::create(QObject *parent, MultipleAlignmentObject *maObj) const {
     return new MsaHighlightingSchemeAgreements(parent, this, maObj);
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -38,5 +38,5 @@ private:
     bool recalculateQuals;
 };
 
-}
+}    // namespace U2
 #endif

@@ -41,7 +41,7 @@ class NextPieceLabel;
 class AboutDialogController : public QDialog, public Ui_AboutDialog {
     Q_OBJECT
 public:
-    AboutDialogController(QAction* visitWeb, QWidget *p);
+    AboutDialogController(QAction *visitWeb, QWidget *p);
 
 private slots:
     void sl_scoreChanged(int);
@@ -55,13 +55,14 @@ signals:
 protected:
     void keyPressEvent(QKeyEvent *event);
     void mousePressEvent(QMouseEvent *event);
+
 private:
     void switchPages();
     void installAWidget();
     void installTWidget();
     void updateTitle();
 
-    TBoard*     tWidget;
+    TBoard *tWidget;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -73,29 +74,29 @@ public:
     AWidget();
 
 protected:
-    void timerEvent(QTimerEvent* e);
-    void paintEvent(QPaintEvent* e);
-    void mouseMoveEvent(QMouseEvent* e);
-  
+    void timerEvent(QTimerEvent *e);
+    void paintEvent(QPaintEvent *e);
+    void mouseMoveEvent(QMouseEvent *e);
+
 private:
     void calcWater(int npage, int density);
 
     void addBlob(int x, int y, int radius, int height);
 
-    void drawWater(QRgb* srcImage, QRgb* dstImage);
+    void drawWater(QRgb *srcImage, QRgb *dstImage);
 
-    static QRgb shiftColor(QRgb color,int shift) {
-        return qRgb(qBound(0, qRed(color) - shift,  255),
-            qBound(0, qGreen(color) - shift,255),
-            qBound(0, qBlue(color) - shift, 255));
+    static QRgb shiftColor(QRgb color, int shift) {
+        return qRgb(qBound(0, qRed(color) - shift, 255),
+                    qBound(0, qGreen(color) - shift, 255),
+                    qBound(0, qBlue(color) - shift, 255));
     }
 
-    int			    page;
-    int			    density;
-    QVector<int>    heightField1;
-    QVector<int>    heightField2;
-    QImage          image1;
-    QImage          image2;
+    int page;
+    int density;
+    QVector<int> heightField1;
+    QVector<int> heightField2;
+    QImage image1;
+    QImage image2;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -103,16 +104,31 @@ private:
 
 class TPiece {
 public:
-    enum Shape { NoShape, ZShape, SShape, LineShape, TShape, SquareShape, LShape, MirroredLShape };
+    enum Shape { NoShape,
+                 ZShape,
+                 SShape,
+                 LineShape,
+                 TShape,
+                 SquareShape,
+                 LShape,
+                 MirroredLShape };
 
-    TPiece() { setShape(NoShape); }
+    TPiece() {
+        setShape(NoShape);
+    }
 
     void setRandomShape();
     void setShape(Shape shape);
 
-    Shape shape() const { return pieceShape; }
-    int x(int index) const { return coords[index][0]; }
-    int y(int index) const { return coords[index][1]; }
+    Shape shape() const {
+        return pieceShape;
+    }
+    int x(int index) const {
+        return coords[index][0];
+    }
+    int y(int index) const {
+        return coords[index][1];
+    }
     int minX() const;
     int maxX() const;
     int minY() const;
@@ -121,8 +137,12 @@ public:
     TPiece rotatedRight() const;
 
 private:
-    void setX(int index, int x) { coords[index][0] = x; }
-    void setY(int index, int y) { coords[index][1] = y; }
+    void setX(int index, int x) {
+        coords[index][0] = x;
+    }
+    void setY(int index, int y) {
+        coords[index][1] = y;
+    }
 
     Shape pieceShape;
     int coords[4][2];
@@ -134,18 +154,30 @@ class TBoard : public QWidget {
 public:
     TBoard(QWidget *parent = 0);
     ~TBoard();
-    int heightForWidth ( int w ) const;
-    int getScore() const {return score;}
-    int getMaxScore() const {return qMax(maxScore, score);}
-    int getLevel() const {return level;}
-    void setNextPieceLabel(QLabel *label) {nextPieceLabel = label;}
-    int squareWidth() const { return  boardRect().width()  / BoardWidth; }
-    int squareHeight() const { return boardRect().height() / BoardHeight; }
+    int heightForWidth(int w) const;
+    int getScore() const {
+        return score;
+    }
+    int getMaxScore() const {
+        return qMax(maxScore, score);
+    }
+    int getLevel() const {
+        return level;
+    }
+    void setNextPieceLabel(QLabel *label) {
+        nextPieceLabel = label;
+    }
+    int squareWidth() const {
+        return boardRect().width() / BoardWidth;
+    }
+    int squareHeight() const {
+        return boardRect().height() / BoardHeight;
+    }
 
 public slots:
     void start();
     void pause();
-    
+
 signals:
     void scoreChanged(int score);
     void levelChanged(int level);
@@ -157,13 +189,21 @@ protected:
     void timerEvent(QTimerEvent *event);
 
 private:
+    enum { BoardWidth = 10,
+           BoardHeight = 22 };
 
-    enum { BoardWidth = 10, BoardHeight = 22 };
-
-    TPiece::Shape &shapeAt(int x, int y) { return board[(y * BoardWidth) + x]; }
-    int timeoutTime() const { return 1000 / (1 + level); }
-    QRect boardRect() const {return QRect(1, 1, width()-2, height()-2);}
-    QRect frameRect() const {return QRect(0, 0, width()-1, height()-1);}
+    TPiece::Shape &shapeAt(int x, int y) {
+        return board[(y * BoardWidth) + x];
+    }
+    int timeoutTime() const {
+        return 1000 / (1 + level);
+    }
+    QRect boardRect() const {
+        return QRect(1, 1, width() - 2, height() - 2);
+    }
+    QRect frameRect() const {
+        return QRect(0, 0, width() - 1, height() - 1);
+    }
     void clearBoard();
     void dropDown();
     void oneLineDown();
@@ -193,9 +233,9 @@ private:
 
 class NextPieceLabel : public QLabel {
 public:
-    NextPieceLabel(QWidget* parent = 0);
+    NextPieceLabel(QWidget *parent = 0);
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

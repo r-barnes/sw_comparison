@@ -19,9 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "WorkflowDesignerPlugin.h"
+
 #include <QDir>
-#include <QMessageBox>
 #include <QMenu>
+#include <QMessageBox>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/CMDLineHelpProvider.h>
@@ -49,7 +51,6 @@
 #include <U2Test/GTestFrameworkComponents.h>
 #include <U2Test/XMLTestFormat.h>
 
-#include "WorkflowDesignerPlugin.h"
 #include "WorkflowDocument.h"
 #include "WorkflowSamples.h"
 #include "WorkflowSettingsController.h"
@@ -64,23 +65,23 @@
 
 namespace U2 {
 
-extern "C" Q_DECL_EXPORT Plugin* U2_PLUGIN_INIT_FUNC() {
-    WorkflowDesignerPlugin * plug = new WorkflowDesignerPlugin();
+extern "C" Q_DECL_EXPORT Plugin *U2_PLUGIN_INIT_FUNC() {
+    WorkflowDesignerPlugin *plug = new WorkflowDesignerPlugin();
     return plug;
 }
 
 #define PLUGIN_SETTINGS QString("workflowview/")
 
-const QString WorkflowDesignerPlugin::RUN_WORKFLOW               = "task";
-const QString WorkflowDesignerPlugin::REMOTE_MACHINE             = "task-remote-machine";
-const QString WorkflowDesignerPlugin::PRINT                      = "print";
+const QString WorkflowDesignerPlugin::RUN_WORKFLOW = "task";
+const QString WorkflowDesignerPlugin::REMOTE_MACHINE = "task-remote-machine";
+const QString WorkflowDesignerPlugin::PRINT = "print";
 const QString WorkflowDesignerPlugin::CUSTOM_EL_WITH_SCRIPTS_DIR = "custom-element-script-dir";
-const QString WorkflowDesignerPlugin::CUSTOM_EXTERNAL_TOOL_DIR   = "custom-element-external-tool-dir";
-const QString WorkflowDesignerPlugin::INCLUDED_ELEMENTS_DIR      = "imported-workflow-element-dir";
-const QString WorkflowDesignerPlugin::WORKFLOW_OUTPUT_DIR        = "workfow-output-dir";
+const QString WorkflowDesignerPlugin::CUSTOM_EXTERNAL_TOOL_DIR = "custom-element-external-tool-dir";
+const QString WorkflowDesignerPlugin::INCLUDED_ELEMENTS_DIR = "imported-workflow-element-dir";
+const QString WorkflowDesignerPlugin::WORKFLOW_OUTPUT_DIR = "workfow-output-dir";
 
 WorkflowDesignerPlugin::WorkflowDesignerPlugin()
-: Plugin(tr("Workflow Designer"), tr("Workflow Designer allows one to create complex computational workflows.")){
+    : Plugin(tr("Workflow Designer"), tr("Workflow Designer allows one to create complex computational workflows.")) {
     if (AppContext::getMainWindow()) {
         services << new WorkflowDesignerService();
         AppContext::getAppSettingsGUI()->registerPage(new WorkflowSettingsPageController());
@@ -118,7 +119,7 @@ WorkflowDesignerPlugin::WorkflowDesignerPlugin()
 }
 
 void WorkflowDesignerPlugin::processCMDLineOptions() {
-    CMDLineRegistry * cmdlineReg = AppContext::getCMDLineRegistry();
+    CMDLineRegistry *cmdlineReg = AppContext::getCMDLineRegistry();
     assert(cmdlineReg != nullptr);
 
     if (cmdlineReg->hasParameter(CUSTOM_EL_WITH_SCRIPTS_DIR)) {
@@ -134,27 +135,27 @@ void WorkflowDesignerPlugin::processCMDLineOptions() {
         WorkflowSettings::setWorkflowOutputDirectory(FileAndDirectoryUtils::getAbsolutePath(cmdlineReg->getParameterValue(WORKFLOW_OUTPUT_DIR)));
     }
 
-    bool consoleMode = !AppContext::isGUIMode(); // only in console mode we run workflows by default. Otherwise we show them
-    if (cmdlineReg->hasParameter( RUN_WORKFLOW ) || (consoleMode && !CMDLineRegistryUtils::getPureValues().isEmpty()) ) {
-        Task * t = new WorkflowRunFromCMDLineTask();
+    bool consoleMode = !AppContext::isGUIMode();    // only in console mode we run workflows by default. Otherwise we show them
+    if (cmdlineReg->hasParameter(RUN_WORKFLOW) || (consoleMode && !CMDLineRegistryUtils::getPureValues().isEmpty())) {
+        Task *t = new WorkflowRunFromCMDLineTask();
         connect(AppContext::getTaskScheduler(), SIGNAL(si_ugeneIsReadyToWork()), new TaskStarter(t), SLOT(registerTask()));
     } else {
-        if( cmdlineReg->hasParameter(GalaxyConfigTask::GALAXY_CONFIG_OPTION) && consoleMode ) {
+        if (cmdlineReg->hasParameter(GalaxyConfigTask::GALAXY_CONFIG_OPTION) && consoleMode) {
             Task *t = nullptr;
-            const QString schemePath =  cmdlineReg->getParameterValue( GalaxyConfigTask::GALAXY_CONFIG_OPTION );
-            const QString ugenePath = cmdlineReg->getParameterValue( GalaxyConfigTask::UGENE_PATH_OPTION );
-            const QString galaxyPath = cmdlineReg->getParameterValue( GalaxyConfigTask::GALAXY_PATH_OPTION );
+            const QString schemePath = cmdlineReg->getParameterValue(GalaxyConfigTask::GALAXY_CONFIG_OPTION);
+            const QString ugenePath = cmdlineReg->getParameterValue(GalaxyConfigTask::UGENE_PATH_OPTION);
+            const QString galaxyPath = cmdlineReg->getParameterValue(GalaxyConfigTask::GALAXY_PATH_OPTION);
             const QString destinationPath = nullptr;
-            t = new GalaxyConfigTask( schemePath, ugenePath, galaxyPath, destinationPath );
+            t = new GalaxyConfigTask(schemePath, ugenePath, galaxyPath, destinationPath);
             connect(AppContext::getPluginSupport(), SIGNAL(si_allStartUpPluginsLoaded()), new TaskStarter(t), SLOT(registerTask()));
         }
     }
 }
 
 void WorkflowDesignerPlugin::sl_saveSchemaImageTaskFinished() {
-    ProduceSchemaImageLinkTask * saveImgTask = qobject_cast<ProduceSchemaImageLinkTask*>(sender());
+    ProduceSchemaImageLinkTask *saveImgTask = qobject_cast<ProduceSchemaImageLinkTask *>(sender());
     assert(saveImgTask != NULL);
-    if(saveImgTask->getState() != Task::State_Finished) {
+    if (saveImgTask->getState() != Task::State_Finished) {
         return;
     }
 
@@ -173,34 +174,34 @@ void WorkflowDesignerPlugin::registerWorkflowTasks() {
 }
 
 void WorkflowDesignerPlugin::registerCMDLineHelp() {
-    CMDLineRegistry * cmdLineRegistry = AppContext::getCMDLineRegistry();
-    assert( NULL != cmdLineRegistry );
+    CMDLineRegistry *cmdLineRegistry = AppContext::getCMDLineRegistry();
+    assert(NULL != cmdLineRegistry);
 
-    CMDLineHelpProvider * taskSection = new CMDLineHelpProvider(
+    CMDLineHelpProvider *taskSection = new CMDLineHelpProvider(
         RUN_WORKFLOW,
         tr("Runs the specified task."),
         tr("Runs the specified task. A path to a user-defined UGENE workflow"
            " be used as a task name."),
         tr("<task_name> [<task_parameter>=value ...]"));
 
-    cmdLineRegistry->registerCMDLineHelpProvider( taskSection );
+    cmdLineRegistry->registerCMDLineHelpProvider(taskSection);
 
-    CMDLineHelpProvider * printSection = new CMDLineHelpProvider(
+    CMDLineHelpProvider *printSection = new CMDLineHelpProvider(
         PRINT,
         tr("Prints the content of the specified slot."),
         tr("Prints the content of the specified slot. The incoming/outcoming content of"
-        " specified slot is printed to the standard output."),
+           " specified slot is printed to the standard output."),
         tr("<actor_name>.<port_name>.<slot_name>"));
     Q_UNUSED(printSection);
 
-    CMDLineHelpProvider * galaxyConfigSection = new CMDLineHelpProvider(
+    CMDLineHelpProvider *galaxyConfigSection = new CMDLineHelpProvider(
         GalaxyConfigTask::GALAXY_CONFIG_OPTION,
         tr("Creates new Galaxy tool config."),
         tr("Creates new Galaxy tool config from existing workflow. Paths to UGENE"
-        " and Galaxy can be set"),
+           " and Galaxy can be set"),
         tr("<uwl-file> [--ugene-path=value] [--galaxy-path=value]"));
 
-    cmdLineRegistry->registerCMDLineHelpProvider( galaxyConfigSection );
+    cmdLineRegistry->registerCMDLineHelpProvider(galaxyConfigSection);
 
     //CMDLineHelpProvider * remoteMachineSectionArguments = new CMDLineHelpProvider( REMOTE_MACHINE, "<path-to-machine-file>");
     //CMDLineHelpProvider * remoteMachineSection = new CMDLineHelpProvider( REMOTE_MACHINE, tr("run provided tasks on given remote machine") );
@@ -221,32 +222,32 @@ WorkflowDesignerPlugin::~WorkflowDesignerPlugin() {
 
 class CloseDesignerTask : public Task {
 public:
-    CloseDesignerTask(WorkflowDesignerService* s) :
-      Task(U2::WorkflowDesignerPlugin::tr("Close Designer"), TaskFlag_NoRun),
-          service(s) {}
+    CloseDesignerTask(WorkflowDesignerService *s)
+        : Task(U2::WorkflowDesignerPlugin::tr("Close Designer"), TaskFlag_NoRun),
+          service(s) {
+    }
     virtual void prepare();
+
 private:
-    WorkflowDesignerService* service;
+    WorkflowDesignerService *service;
 };
 
 void CloseDesignerTask::prepare() {
     if (!service->closeViews()) {
-        stateInfo.setError(  U2::WorkflowDesignerPlugin::tr("Close Designer canceled") );
+        stateInfo.setError(U2::WorkflowDesignerPlugin::tr("Close Designer canceled"));
     }
 }
 
-Task* WorkflowDesignerService::createServiceDisablingTask(){
+Task *WorkflowDesignerService::createServiceDisablingTask() {
     return new CloseDesignerTask(this);
 }
 
 WorkflowDesignerService::WorkflowDesignerService()
-: Service(Service_WorkflowDesigner, tr("Workflow Designer"), ""),
-designerAction(NULL), managerAction(NULL), newWorkflowAction(NULL)
-{
-
+    : Service(Service_WorkflowDesigner, tr("Workflow Designer"), ""),
+      designerAction(NULL), managerAction(NULL), newWorkflowAction(NULL) {
 }
 
-void WorkflowDesignerService::serviceStateChangedCallback(ServiceState , bool enabledStateChanged) {
+void WorkflowDesignerService::serviceStateChangedCallback(ServiceState, bool enabledStateChanged) {
     IdRegistry<WelcomePageAction> *welcomePageActions = AppContext::getWelcomePageActionRegistry();
     SAFE_POINT(NULL != welcomePageActions, L10N::nullPointerError("Welcome Page Actions"), );
 
@@ -257,8 +258,8 @@ void WorkflowDesignerService::serviceStateChangedCallback(ServiceState , bool en
         SAFE_POINT(NULL == designerAction, "Illegal WD service state", );
         SAFE_POINT(NULL == newWorkflowAction, "Illegal WD service state", );
 
-        if(!AppContext::getPluginSupport()->isAllPluginsLoaded()) {
-            connect( AppContext::getPluginSupport(), SIGNAL( si_allStartUpPluginsLoaded() ), SLOT(sl_startWorkflowPlugin()));
+        if (!AppContext::getPluginSupport()->isAllPluginsLoaded()) {
+            connect(AppContext::getPluginSupport(), SIGNAL(si_allStartUpPluginsLoaded()), SLOT(sl_startWorkflowPlugin()));
         } else {
             sl_startWorkflowPlugin();
         }
@@ -280,7 +281,7 @@ void WorkflowDesignerService::sl_startWorkflowPlugin() {
 }
 
 void WorkflowDesignerService::initDesignerAction() {
-    designerAction = new QAction( QIcon(":/workflow_designer/images/wd.png"), tr("Workflow Designer..."), this);
+    designerAction = new QAction(QIcon(":/workflow_designer/images/wd.png"), tr("Workflow Designer..."), this);
     designerAction->setObjectName(ToolsMenu::WORKFLOW_DESIGNER);
 #ifdef _DEBUG
     designerAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_D));
@@ -306,10 +307,10 @@ void WorkflowDesignerService::initNewWorkflowAction() {
 }
 
 bool WorkflowDesignerService::closeViews() {
-    MWMDIManager* wm = AppContext::getMainWindow()->getMDIManager();
+    MWMDIManager *wm = AppContext::getMainWindow()->getMDIManager();
     assert(wm);
-    foreach(MWMDIWindow* w, wm->getWindows()) {
-        WorkflowView* view = qobject_cast<WorkflowView*>(w);
+    foreach (MWMDIWindow *w, wm->getWindows()) {
+        WorkflowView *view = qobject_cast<WorkflowView *>(w);
         if (view) {
             if (!AppContext::getMainWindow()->getMDIManager()->closeMDIWindow(view)) {
                 return false;
@@ -329,7 +330,7 @@ bool WorkflowDesignerService::checkServiceState() const {
 
 void WorkflowDesignerService::sl_showDesignerWindow() {
     CHECK(checkServiceState(), );
-    WorkflowView::openWD(NULL); //FIXME
+    WorkflowView::openWD(NULL);    //FIXME
 }
 
 void WorkflowDesignerService::sl_sampleActionClicked(const SampleAction &action) {
@@ -342,12 +343,10 @@ void WorkflowDesignerService::sl_sampleActionClicked(const SampleAction &action)
 }
 
 void WorkflowDesignerService::sl_showManagerWindow() {
-
 }
 
-Task* WorkflowDesignerService::createServiceEnablingTask()
-{
-    QString defaultDir = QDir::searchPaths( PATH_PREFIX_DATA ).first() + "/workflow_samples";
+Task *WorkflowDesignerService::createServiceEnablingTask() {
+    QString defaultDir = QDir::searchPaths(PATH_PREFIX_DATA).first() + "/workflow_samples";
 
     return SampleRegistry::init(QStringList(defaultDir));
 }
@@ -381,7 +380,11 @@ void WorkflowDesignerService::initSampleActions() {
     SampleAction ngsChip(ToolsMenu::NGS_CHIP, ToolsMenu::NGS_MENU, "NGS/cistrome.uwl", tr("ChIP-Seq data analysis..."));
     ngsChip.requiredPlugins << externalToolsPlugin;
     SampleAction ngsClassification(ToolsMenu::NGS_CLASSIFICATION, ToolsMenu::NGS_MENU, "NGS/from_tools_menu_only/ngs_classification.uwl", tr("Metagenomics classification..."));
-    ngsChip.requiredPlugins << externalToolsPlugin << "kraken_support" << "clark_support" << "diamond_support" << "wevote_support" << "ngs_reads_classification";
+    ngsChip.requiredPlugins << externalToolsPlugin << "kraken_support"
+                            << "clark_support"
+                            << "diamond_support"
+                            << "wevote_support"
+                            << "ngs_reads_classification";
     SampleAction ngsCoverage(ToolsMenu::NGS_COVERAGE, ToolsMenu::NGS_MENU, "NGS/extract_coverage.uwl", tr("Extract coverage from assemblies..."));
     ngsCoverage.requiredPlugins << externalToolsPlugin;
     SampleAction ngsConsensus(ToolsMenu::NGS_CONSENSUS, ToolsMenu::NGS_MENU, "NGS/consensus.uwl", tr("Extract consensus from assemblies..."));
@@ -411,9 +414,7 @@ void WorkflowDesignerService::initSampleActions() {
 /* WorkflowWelcomePageAction */
 /************************************************************************/
 WorkflowWelcomePageAction::WorkflowWelcomePageAction(WorkflowDesignerService *service)
-: WelcomePageAction(BaseWelcomePageActions::CREATE_WORKFLOW), service(service)
-{
-
+    : WelcomePageAction(BaseWelcomePageActions::CREATE_WORKFLOW), service(service) {
 }
 
 void WorkflowWelcomePageAction::perform() {
@@ -421,4 +422,4 @@ void WorkflowWelcomePageAction::perform() {
     service->sl_showDesignerWindow();
 }
 
-}//namespace
+}    // namespace U2

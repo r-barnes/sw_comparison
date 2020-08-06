@@ -29,7 +29,7 @@ namespace U2 {
 class MsaEditorNameList : public MaEditorNameList {
     Q_OBJECT
 public:
-    MsaEditorNameList(MaEditorWgt* ui, QScrollBar* nhBar);
+    MsaEditorNameList(MaEditorWgt *ui, QScrollBar *nhBar);
 
 private slots:
     void sl_buildStaticMenu(GObjectView *view, QMenu *menu);
@@ -38,9 +38,9 @@ private slots:
 private:
     void buildMenu(QMenu *menu);
 
-    MSAEditor* getEditor() const;
+    MSAEditor *getEditor() const;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MSA_EDITOR_NAME_LIST_H_
+#endif    // _U2_MSA_EDITOR_NAME_LIST_H_

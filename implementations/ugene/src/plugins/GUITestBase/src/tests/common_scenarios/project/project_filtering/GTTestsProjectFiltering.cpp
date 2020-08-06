@@ -19,24 +19,26 @@
  * MA 02110-1301, USA.
  */
 
+#include <base_dialogs/DefaultDialogFiller.h>
+#include <base_dialogs/GTFileDialog.h>
+#include <drivers/GTKeyboardDriver.h>
+#include <drivers/GTMouseDriver.h>
+#include <primitives/GTLineEdit.h>
+#include <primitives/GTWidget.h>
+
 #include <QTreeView>
 
 #include <U2Core/U2IdTypes.h>
-#include <base_dialogs/GTFileDialog.h>
-#include <drivers/GTKeyboardDriver.h>
-#include <primitives/GTLineEdit.h>
-#include <drivers/GTMouseDriver.h>
-#include <primitives/GTWidget.h>
-#include "runnables/ugene/ugeneui/DocumentFormatSelectorDialogFiller.h"
-#include <base_dialogs/DefaultDialogFiller.h>
-#include "runnables/qt/EscapeClicker.h"
-#include "primitives/PopupChooser.h"
+
+#include "GTTestsProjectFiltering.h"
 #include "GTUtilsMdi.h"
+#include "GTUtilsProject.h"
 #include "GTUtilsProjectTreeView.h"
 #include "GTUtilsSharedDatabaseDocument.h"
 #include "GTUtilsTaskTreeView.h"
-
-#include "GTTestsProjectFiltering.h"
+#include "primitives/PopupChooser.h"
+#include "runnables/qt/EscapeClicker.h"
+#include "runnables/ugene/ugeneui/DocumentFormatSelectorDialogFiller.h"
 
 namespace U2 {
 
@@ -60,16 +62,19 @@ GUI_TEST_CLASS_DEFINITION(test_0001) {
 
     // Expected: There are items under the "Object name" item. They contain both "human" in any case and either of document names "human_T1.fa"
     // or "ugene_gui_test" and don't contain "COI.aln"
-    GTUtilsProjectTreeView::checkFilteredGroup(os, "Object name", QStringList() << "human",
-        QStringList() << "human_T1.fa" << "ugene_gui_test", QStringList() << "COI.aln");
+    GTUtilsProjectTreeView::checkFilteredGroup(os, "Object name", QStringList() << "human", QStringList() << "human_T1.fa"
+                                                                                                          << "ugene_gui_test",
+                                               QStringList() << "COI.aln");
 
     // 5. Type to the project filter field "coi"
     GTUtilsProjectTreeView::filterProject(os, "coi");
+    GTGlobals::sleep();
 
     // Expected: There are items under the "Object name" item. They contain both "coi" in any case and either of document names "COI.aln"
     // or "ugene_gui_test" and don't contain "human_T1.fa"
-    GTUtilsProjectTreeView::checkFilteredGroup(os, "Object name", QStringList() << "coi",
-        QStringList() << "COI.aln" << "ugene_gui_test", QStringList() << "human_T1.fa");
+    GTUtilsProjectTreeView::checkFilteredGroup(os, "Object name", QStringList() << "coi", QStringList() << "COI.aln"
+                                                                                                        << "ugene_gui_test",
+                                               QStringList() << "human_T1.fa");
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0002) {
@@ -89,15 +94,16 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
 
     // Expected: There are items under the "Multiple alignment sequence name" item. They contain either "COI.aln"
     // or "ugene_gui_test" and don't contain "murine.gb"
-    GTUtilsProjectTreeView::checkFilteredGroup(os, "Multiple alignment sequence name", QStringList(),
-        QStringList() << "COI.aln" << "ugene_gui_test", QStringList() << "murine.gb");
+    GTUtilsProjectTreeView::checkFilteredGroup(os, "Multiple alignment sequence name", QStringList(), QStringList() << "COI.aln"
+                                                                                                                    << "ugene_gui_test",
+                                               QStringList() << "murine.gb");
 
     // 5. Type to the project filter field "bz162"
     GTUtilsProjectTreeView::filterProject(os, "bz162");
 
     // Expected : There are items under the "Multiple alignment sequence name" item. They contain "ugene_gui_test" and don't contain "COI.aln" or "murine.gb"
-    GTUtilsProjectTreeView::checkFilteredGroup(os, "Multiple alignment sequence name", QStringList() << "ugene_gui_test",
-        QStringList(), QStringList() << "COI.aln" << "murine.gb");
+    GTUtilsProjectTreeView::checkFilteredGroup(os, "Multiple alignment sequence name", QStringList() << "ugene_gui_test", QStringList(), QStringList() << "COI.aln"
+                                                                                                                                                       << "murine.gb");
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0003) {
@@ -117,15 +123,16 @@ GUI_TEST_CLASS_DEFINITION(test_0003) {
 
     // Expected: There are items under the "Sequence accession number" item. They contain "ugene_gui_test"
     // and don't contain "CVU55762.gb" or "COI.aln"
-    GTUtilsProjectTreeView::checkFilteredGroup(os, "Sequence accession number", QStringList() << "ugene_gui_test",
-        QStringList(), QStringList() << "CVU55762.gb" << "COI.aln");
+    GTUtilsProjectTreeView::checkFilteredGroup(os, "Sequence accession number", QStringList() << "ugene_gui_test", QStringList(), QStringList() << "CVU55762.gb"
+                                                                                                                                                << "COI.aln");
 
     // 5. Type to the project filter field "u55762"
     GTUtilsProjectTreeView::filterProject(os, "u55762");
 
     // Expected: There is a single item under the "Sequence accession number" item. It contains "CVU55762.gb".
-    GTUtilsProjectTreeView::checkFilteredGroup(os, "Sequence accession number", QStringList() << "CVU55762.gb",
-        QStringList(), QStringList() << "ugene_gui_test" << "COI.aln", QStringList() << "4113");
+    GTUtilsProjectTreeView::checkFilteredGroup(os, "Sequence accession number", QStringList() << "CVU55762.gb", QStringList(), QStringList() << "ugene_gui_test"
+                                                                                                                                             << "COI.aln",
+                                               QStringList() << "4113");
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0004) {
@@ -144,8 +151,9 @@ GUI_TEST_CLASS_DEFINITION(test_0004) {
     GTUtilsProjectTreeView::filterProject(os, "acacacacac");
 
     // Expected: There are items under the "Sequence content" item. They contain "human_T1.fa" or "ugene_gui_test" and don't contain "COI.aln"
-    GTUtilsProjectTreeView::checkFilteredGroup(os, "Sequence content", QStringList(),
-        QStringList() << "human_T1.fa" << "ugene_gui_test", QStringList() << "COI.aln");
+    GTUtilsProjectTreeView::checkFilteredGroup(os, "Sequence content", QStringList(), QStringList() << "human_T1.fa"
+                                                                                                    << "ugene_gui_test",
+                                               QStringList() << "COI.aln");
 
     // 5. Type to the project filter field "ggggggaaaaaaaaggggggg"
     GTUtilsProjectTreeView::filterProject(os, "ggggggaaaaaaaaggggggg");
@@ -171,21 +179,22 @@ GUI_TEST_CLASS_DEFINITION(test_0005) {
     GTUtilsProjectTreeView::filterProject(os, "atgggaccagagtctaaagccat");
 
     // Expected: There are items under the "Multiple alignment content" item. They contain "HIV-1.aln" or "ugene_gui_test" and don't contain "human_T1.fa"
-    GTUtilsProjectTreeView::checkFilteredGroup(os, "Multiple alignment content", QStringList(),
-        QStringList() << "HIV-1.aln" << "ugene_gui_test", QStringList() << "human_T1.fa");
+    GTUtilsProjectTreeView::checkFilteredGroup(os, "Multiple alignment content", QStringList(), QStringList() << "HIV-1.aln"
+                                                                                                              << "ugene_gui_test",
+                                               QStringList() << "human_T1.fa");
 
     // 5. Type to the project filter field "gtagcctagtagaaaatggtgctggtactggttgaacggtttaccctccttta"
     GTUtilsProjectTreeView::filterProject(os, "gtagcctagtagaaaatggtgctggtactggttgaacggtttaccctccttta");
 
     // Expected: There are items under the "Multiple alignment content" item. They contain "ugene_gui_test" and don't contain "human_T1.fa" or "HIV-1.aln"
-    GTUtilsProjectTreeView::checkFilteredGroup(os, "Multiple alignment content", QStringList() << "ugene_gui_test",
-        QStringList(), QStringList() << "human_T1.fa" << "HIV-1.aln");
+    GTUtilsProjectTreeView::checkFilteredGroup(os, "Multiple alignment content", QStringList() << "ugene_gui_test", QStringList(), QStringList() << "human_T1.fa"
+                                                                                                                                                 << "HIV-1.aln");
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0006) {
     // 1. Open "test/_common_data/text/text.txt"
     GTUtilsDialog::waitForDialog(os, new DocumentFormatSelectorDialogFiller(os, "Plain text"));
-    GTFileDialog::openFile(os, testDir + "_common_data/text/", "text.txt");
+    GTUtilsProject::openFile(os, testDir + "_common_data/text/text.txt");
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     // 2. Open "data/samples/CLUSTALW/HIV-1.aln"
@@ -199,8 +208,9 @@ GUI_TEST_CLASS_DEFINITION(test_0006) {
     GTUtilsProjectTreeView::filterProject(os, "reprehenderit");
 
     // Expected: There is a single top level item named "Text content" and its sub-item contains "text.txt", "ugene_gui_test" and don't contain "HIV-1.aln"
-    GTUtilsProjectTreeView::checkFilteredGroup(os, "Text content", QStringList(),
-        QStringList() << "text.txt" << "ugene_gui_test", QStringList() << "HIV-1.aln");
+    GTUtilsProjectTreeView::checkFilteredGroup(os, "Text content", QStringList(), QStringList() << "text.txt"
+                                                                                                << "ugene_gui_test",
+                                               QStringList() << "HIV-1.aln");
     CHECK_SET_ERR(GTUtilsProjectTreeView::findFilteredIndexes(os, "Text content").size() == 1, "Expected a single filter group in the project view");
 
     // 5. Type to the project filter field "build"
@@ -208,8 +218,8 @@ GUI_TEST_CLASS_DEFINITION(test_0006) {
 
     // Expected: There is a single top level item named "Text content" and its only sub-item contains "ugene_gui_test"
     // and don't contain "HIV-1.aln" or "text.txt"
-    GTUtilsProjectTreeView::checkFilteredGroup(os, "Text content", QStringList() << "ugene_gui_test",
-        QStringList(), QStringList() << "text.txt" << "HIV-1.aln");
+    GTUtilsProjectTreeView::checkFilteredGroup(os, "Text content", QStringList() << "ugene_gui_test", QStringList(), QStringList() << "text.txt"
+                                                                                                                                   << "HIV-1.aln");
     const QModelIndexList groupIndexes = GTUtilsProjectTreeView::findFilteredIndexes(os, "Text content");
     bool containsItem = GTUtilsProjectTreeView::checkItem(os, "object", groupIndexes.first(), GTGlobals::FindOptions(true, Qt::MatchStartsWith));
     CHECK_SET_ERR(containsItem, "\"object\' item is absent");
@@ -277,7 +287,8 @@ GUI_TEST_CLASS_DEFINITION(test_0008) {
     GTUtilsMdi::closeWindow(os, " [s] NC_001363");
 
     // 7. Call right click menu on the item and select { Open view -> Open new view: Sequence View }
-    GTUtilsDialog::waitForDialog(os, new PopupChooserByText(os, QStringList() << "Open view" << "Open new view: Sequence View"));
+    GTUtilsDialog::waitForDialog(os, new PopupChooserByText(os, QStringList() << "Open view"
+                                                                              << "Open new view: Sequence View"));
     GTMouseDriver::moveTo(GTUtilsProjectTreeView::getItemCenter(os, objectIndexes.first()));
     GTMouseDriver::click(Qt::RightButton);
 
@@ -312,7 +323,7 @@ void checkDeleteButton(HI::GUITestOpStatus &os, const QString &groupName, const 
 
     GTMouseDriver::moveTo(GTUtilsProjectTreeView::getItemCenter(os, objectIndexes.first()));
     GTMouseDriver::click();
-    GTKeyboardDriver::keyClick( Qt::Key_Delete);
+    GTKeyboardDriver::keyClick(Qt::Key_Delete);
     GTGlobals::sleep(200);
 
     groupIndexes = GTUtilsProjectTreeView::findFilteredIndexes(os, groupName);
@@ -329,7 +340,7 @@ void makeRightClick(HI::GUITestOpStatus &os, const QString &groupName) {
     GTMouseDriver::click(Qt::RightButton);
 }
 
-}
+}    // namespace
 
 GUI_TEST_CLASS_DEFINITION(test_0009) {
     // 1. Connect to the "ugene_gui_test" database
@@ -394,7 +405,8 @@ GUI_TEST_CLASS_DEFINITION(test_0011) {
     GTUtilsProjectTreeView::getTreeView(os)->scrollTo(objectIndex);
 
     GTUtilsDialog::waitForDialog(os, new DefaultDialogFiller(os, "U2__ExportMSA2SequencesDialog", QDialogButtonBox::Cancel));
-    GTUtilsDialog::waitForDialog(os, new PopupChooserByText(os, QStringList() << "Export/Import" << "Export alignment to sequence format..."));
+    GTUtilsDialog::waitForDialog(os, new PopupChooserByText(os, QStringList() << "Export/Import"
+                                                                              << "Export alignment to sequence format..."));
     GTMouseDriver::moveTo(GTUtilsProjectTreeView::getItemCenter(os, objectIndex));
     GTMouseDriver::click(Qt::RightButton);
 
@@ -415,7 +427,8 @@ GUI_TEST_CLASS_DEFINITION(test_0011) {
     GTUtilsProjectTreeView::getTreeView(os)->scrollTo(objectIndex);
 
     GTUtilsDialog::waitForDialog(os, new DefaultDialogFiller(os, "U2__ExportSequencesDialog", QDialogButtonBox::Cancel));
-    GTUtilsDialog::waitForDialog(os, new PopupChooserByText(os, QStringList() << "Export/Import" << "Export sequences..."));
+    GTUtilsDialog::waitForDialog(os, new PopupChooserByText(os, QStringList() << "Export/Import"
+                                                                              << "Export sequences..."));
     GTMouseDriver::moveTo(GTUtilsProjectTreeView::getItemCenter(os, objectIndex));
     GTMouseDriver::click(Qt::RightButton);
 }
@@ -462,9 +475,7 @@ GUI_TEST_CLASS_DEFINITION(test_0013) {
     // Expected : There are 3 top - level groups named "CDS", "Multiple alignment content" and "Sequence content".
     QTreeView *projectTreeView = GTUtilsProjectTreeView::getTreeView(os);
     QAbstractItemModel *filterModel = projectTreeView->model();
-    CHECK_SET_ERR(filterModel->rowCount() == 3 && "CDS" == filterModel->index(0, 0).data().toString()
-        && "Multiple alignment content" == filterModel->index(1, 0).data().toString()
-        && "Sequence content" == filterModel->index(2, 0).data().toString(), "Unexpected project filter groups");
+    CHECK_SET_ERR(filterModel->rowCount() == 3 && "CDS" == filterModel->index(0, 0).data().toString() && "Multiple alignment content" == filterModel->index(1, 0).data().toString() && "Sequence content" == filterModel->index(2, 0).data().toString(), "Unexpected project filter groups");
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0014) {
@@ -515,6 +526,6 @@ GUI_TEST_CLASS_DEFINITION(test_0014) {
     CHECK_SET_ERR(!clearButton->isVisible(), "Project filter clear button is unexpectedly visible");
 }
 
-} // GUITest_common_scenarios_project_filtering
+}    // namespace GUITest_common_scenarios_project_filtering
 
-} // U2
+}    // namespace U2

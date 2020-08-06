@@ -22,20 +22,23 @@
 #ifndef GTSEQUENCEREADINGMODEDIALOGUTILS_H
 #define GTSEQUENCEREADINGMODEDIALOGUTILS_H
 
-#include "utils/GTUtilsDialog.h"
-
 #include <QSpinBox>
+
+#include "utils/GTUtilsDialog.h"
 
 namespace U2 {
 using namespace HI;
 
 class GTSequenceReadingModeDialogUtils : public Filler {
 public:
-    enum sequenceMode {Separate, Merge};
-    enum Button {Ok, Cancel};
+    enum sequenceMode { Separate,
+                        Merge };
+    enum Button { Ok,
+                  Cancel };
 
     GTSequenceReadingModeDialogUtils(HI::GUITestOpStatus &os, CustomScenario *scenario = NULL);
     virtual void commonScenario();
+
 private:
     void selectMode();
     void setNumSymbolsParts();
@@ -43,11 +46,11 @@ private:
     void setNewDocumentName();
     void selectSaveDocument();
     void clickButton();
-    void changeSpinBoxValue(QSpinBox*, int);
+    void changeSpinBoxValue(QSpinBox *, int);
 
     QWidget *dialog;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // GTSEQUENCEREADINGMODEDIALOGUTILS_H
+#endif    // GTSEQUENCEREADINGMODEDIALOGUTILS_H

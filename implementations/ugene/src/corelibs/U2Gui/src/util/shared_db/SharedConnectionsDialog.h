@@ -45,10 +45,10 @@ public:
 
 signals:
     void si_connectionCompleted();
-    
+
 private slots:
     void sl_selectionChanged();
-    void sl_itemDoubleClicked(const QModelIndex& index);
+    void sl_itemDoubleClicked(const QModelIndex &index);
     void sl_connectClicked();
     void sl_disconnectClicked();
     void sl_editClicked();
@@ -65,7 +65,7 @@ private:
     void updateState();
     void updateButtonsState();
     void updateConnectionsState();
-    void updateItemIcon(QListWidgetItem* item, bool isConnected);
+    void updateItemIcon(QListWidgetItem *item, bool isConnected);
 
     void restoreRecentConnections();
     void removeRecentConnection(const QListWidgetItem *item) const;
@@ -75,11 +75,11 @@ private:
     bool checkDatabaseAvailability(const U2DbiRef &ref, bool &initializationRequired);
     bool isConnected(QListWidgetItem *item) const;
     void setUpgradedMark(QListWidgetItem *item, bool isUpgraded);
-    bool alreadyExists(const QString& dbiUrl, const QString &userName, QString &existingName) const;
-    QListWidgetItem* insertConnection(const QString& preferredName, const QString& fullDbiUrl);
-    QListWidgetItem* insertConnection(const QString& preferredName, const QString& dbiUrl, const QString &userName);
-    void cancelConnection(QListWidgetItem* item);
-    QString rollName(const QString& preferredName) const;
+    bool alreadyExists(const QString &dbiUrl, const QString &userName, QString &existingName) const;
+    QListWidgetItem *insertConnection(const QString &preferredName, const QString &fullDbiUrl);
+    QListWidgetItem *insertConnection(const QString &preferredName, const QString &dbiUrl, const QString &userName);
+    void cancelConnection(QListWidgetItem *item);
+    QString rollName(const QString &preferredName) const;
     void countConnectionsToPublicDatabase(const QString &dbiUrl);
     QString getCurrentFullDbiUrl() const;
     QString getFullDbiUrl(const QListWidgetItem *item) const;
@@ -92,16 +92,16 @@ private:
     void checkDbConnectionDuplicate(const QString &shortDbiUrl, const QString &userName, const QString &allowedDuplicateName = QString());
 
     Ui_SharedConnectionsDialog *ui;
-    QMap<QListWidgetItem*, Task*> connectionTasks;
-    QMap<QListWidgetItem*, Task*> upgradeTasks;
+    QMap<QListWidgetItem *, Task *> connectionTasks;
+    QMap<QListWidgetItem *, Task *> upgradeTasks;
 
-    static const QString SETTINGS_RECENT; // TODO: move this identifier to another class, since it is to be used
-                                          // not only within the dialog. After that search through the code,
-                                          // where its literal value is used and replace it with the identifier.
+    static const QString SETTINGS_RECENT;    // TODO: move this identifier to another class, since it is to be used
+        // not only within the dialog. After that search through the code,
+        // where its literal value is used and replace it with the identifier.
     static const int UrlRole = Qt::UserRole;
     static const int LoginRole = UrlRole + 1;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_SHARED_CONNECTIONS_DIALOG_H_
+#endif    // _U2_SHARED_CONNECTIONS_DIALOG_H_

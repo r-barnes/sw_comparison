@@ -26,7 +26,7 @@
 
 namespace U2 {
 
-class MsaHighlightingSchemeDisagreements : public MsaHighlightingScheme{
+class MsaHighlightingSchemeDisagreements : public MsaHighlightingScheme {
     Q_OBJECT
 public:
     MsaHighlightingSchemeDisagreements(QObject *parent, const MsaHighlightingSchemeFactory *factory, MultipleAlignmentObject *maObj);
@@ -38,9 +38,9 @@ class U2ALGORITHM_EXPORT MsaHighlightingSchemeDisagreementsFactory : public MsaH
 public:
     MsaHighlightingSchemeDisagreementsFactory(QObject *parent, const QString &id, const QString &name, const AlphabetFlags &supportedAlphabets);
 
-    MsaHighlightingScheme * create(QObject *parent, MultipleAlignmentObject *maObj) const;
+    MsaHighlightingScheme *create(QObject *parent, MultipleAlignmentObject *maObj) const;
 };
 
-}   // nmaespace U2
+}    // namespace U2
 
-#endif // _U2_MSA_HIGHLIGHTING_SCHEME_DISAGREEMENTS_H_
+#endif    // _U2_MSA_HIGHLIGHTING_SCHEME_DISAGREEMENTS_H_

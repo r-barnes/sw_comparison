@@ -32,13 +32,17 @@ namespace U2 {
  */
 class U2CORE_EXPORT U2RawData : public U2Object {
 public:
-    U2RawData() : U2Object() {}
-    U2RawData(const U2DbiRef &dbiRef) : U2Object(U2DataId(), dbiRef.dbiId, 0) {}
+    U2RawData()
+        : U2Object() {
+    }
+    U2RawData(const U2DbiRef &dbiRef)
+        : U2Object(U2DataId(), dbiRef.dbiId, 0) {
+    }
 
     /** The identifier of a serializer which the data is packed by */
     QString serializer;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_RAWDATA_H_
+#endif    // _U2_RAWDATA_H_

@@ -22,21 +22,22 @@
 #ifndef _U2_DOT_PLOT_CLASSES_H_
 #define _U2_DOT_PLOT_CLASSES_H_
 
-#include "DotPlotFilterDialog.h"
+#include <QMessageBox>
+#include <QMutex>
+#include <QPainter>
 
 #include <U2Algorithm/RepeatFinderSettings.h>
+
 #include <U2Core/U2Region.h>
 
-#include <QMessageBox>
-#include <QPainter>
-#include <QMutex>
+#include "DotPlotFilterDialog.h"
 
 namespace U2 {
 
 // mini map on the DotPlotWidget
 class DotPlotMiniMap {
 public:
-    DotPlotMiniMap (int bigMapW, int bigMapH, float ratio);
+    DotPlotMiniMap(int bigMapW, int bigMapH, float ratio);
     void draw(QPainter &p, int shiftX, int shiftY, const QPointF &zoom) const;
 
     QRectF getBoundary() const;
@@ -49,31 +50,34 @@ private:
     float ratio;
 };
 
-enum DotPlotErrors {ErrorOpen, ErrorNames, NoErrors};
+enum DotPlotErrors { ErrorOpen,
+                     ErrorNames,
+                     NoErrors };
 
 struct DotPlotResults {
     DotPlotResults()
         : x(0),
           y(0),
-          len(0) {}
+          len(0) {
+    }
     DotPlotResults(int _x, int _y, int _len)
         : x(_x),
           y(_y),
-          len(_len) {}
+          len(_len) {
+    }
 
     int x;
     int y;
     int len;
 
-    inline bool intersectRegion(const U2Region& r, const FilterIntersectionParameter& currentIntersParam){
-        qint64 sd = - r.startPos;
-        if(currentIntersParam == SequenceY){
+    inline bool intersectRegion(const U2Region &r, const FilterIntersectionParameter &currentIntersParam) {
+        qint64 sd = -r.startPos;
+        if (currentIntersParam == SequenceY) {
             sd += y;
-        }else{
+        } else {
             sd += x;
         }
         return (sd >= 0) ? (sd < r.length) : (-sd < len);
-
     }
 };
 
@@ -87,30 +91,31 @@ public:
 
     void setTask(Task *);
 
-    virtual void onResult(const RFResult& r);
-    virtual void onResults(const QVector<RFResult>& v);
+    virtual void onResult(const RFResult &r);
+    virtual void onResults(const QVector<RFResult> &v);
 
 private:
-    QSharedPointer< QList<DotPlotResults> > dotPlotList;
+    QSharedPointer<QList<DotPlotResults>> dotPlotList;
     QMutex mutex;
 
     bool stateOk;
 
-    static const int maxResults = 8*1024*1024;
+    static const int maxResults = 8 * 1024 * 1024;
     Task *rfTask;
 };
 
 // apply rev-compl transformation for X sequence results
 class DotPlotRevComplResultsListener : public DotPlotResultsListener {
 public:
-    DotPlotRevComplResultsListener() : xLen(0) {}
-    virtual void onResult(const RFResult& r);
-    virtual void onResults(const QVector<RFResult>& v);
+    DotPlotRevComplResultsListener()
+        : xLen(0) {
+    }
+    virtual void onResult(const RFResult &r);
+    virtual void onResults(const QVector<RFResult> &v);
 
     int xLen;
 };
 
+}    // namespace U2
 
-} // namespace
-
-#endif // _U2_DOT_PLOT_CLASSES_H_
+#endif    // _U2_DOT_PLOT_CLASSES_H_

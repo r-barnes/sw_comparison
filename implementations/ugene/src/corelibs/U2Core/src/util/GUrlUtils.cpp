@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "GUrlUtils.h"
+
 #include <QDir>
 
 #include <U2Core/AppContext.h>
@@ -30,11 +32,9 @@
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/UserApplicationsSettings.h>
 
-#include "GUrlUtils.h"
-
 namespace U2 {
 
-QString GUrlUtils::getUncompressedExtension(const GUrl& url) {
+QString GUrlUtils::getUncompressedExtension(const GUrl &url) {
     QString ext = url.lastFileSuffix();
     if (ext == "gz") {
         QString completeSuffix = url.completeFileSuffix();
@@ -52,7 +52,7 @@ QString GUrlUtils::getUncompressedCompleteBaseName(const GUrl &url) {
     return QFileInfo(filePath).completeBaseName();
 }
 
-GUrl GUrlUtils::ensureFileExt(const GUrl& url, const QStringList& typeExt) {
+GUrl GUrlUtils::ensureFileExt(const GUrl &url, const QStringList &typeExt) {
     SAFE_POINT(!typeExt.isEmpty(), "Type extension is empty!", GUrl());
 
     if (url.isVFSFile()) {
@@ -143,7 +143,7 @@ GUrl GUrlUtils::changeFileExt(const GUrl &url, const DocumentFormatId &newFormat
     return GUrl(dirPath + QDir::separator() + baseFileName + dotCompleteSuffix);
 }
 
-bool GUrlUtils::renameFileWithNameRoll(const QString& original, TaskStateInfo& ti, const QSet<QString>& excludeList, Logger* log) {
+bool GUrlUtils::renameFileWithNameRoll(const QString &original, TaskStateInfo &ti, const QSet<QString> &excludeList, Logger *log) {
     QString rolled = GUrlUtils::rollFileName(original, "_oldcopy", excludeList);
     if (rolled == original) {
         return true;
@@ -197,8 +197,8 @@ QString GUrlUtils::insertSuffix(const QString &originalUrl, const QString &suffi
     return pre + suffix + post;
 }
 
-QStringList GUrlUtils::getRolledFilesList(const QString& originalUrl, const QString& rolledSuffix) {
-    QString pre, post; //pre and post url parts. A number will be placed between
+QStringList GUrlUtils::getRolledFilesList(const QString &originalUrl, const QString &rolledSuffix) {
+    QString pre, post;    //pre and post url parts. A number will be placed between
     int i = 0;
     getPreNPost(originalUrl, pre, post, i, rolledSuffix);
 
@@ -211,8 +211,8 @@ QStringList GUrlUtils::getRolledFilesList(const QString& originalUrl, const QStr
     return urls;
 }
 
-QString GUrlUtils::rollFileName(const QString& originalUrl, const QString& rolledSuffix, const QSet<QString>& excludeList) {
-    QString pre, post; //pre and post url parts. A number will be placed between
+QString GUrlUtils::rollFileName(const QString &originalUrl, const QString &rolledSuffix, const QSet<QString> &excludeList) {
+    QString pre, post;    //pre and post url parts. A number will be placed between
     int i = 0;
     getPreNPost(originalUrl, pre, post, i, rolledSuffix);
 
@@ -223,7 +223,7 @@ QString GUrlUtils::rollFileName(const QString& originalUrl, const QString& rolle
     return resultUrl;
 }
 
-QUrl GUrlUtils::gUrl2qUrl(const GUrl& gurl) {
+QUrl GUrlUtils::gUrl2qUrl(const GUrl &gurl) {
     if (gurl.isVFSFile()) {
         return QUrl();
     }
@@ -236,37 +236,36 @@ QUrl GUrlUtils::gUrl2qUrl(const GUrl& gurl) {
     }
 }
 
-QList<QUrl> GUrlUtils::gUrls2qUrls(const QList<GUrl>& gurls) {
+QList<QUrl> GUrlUtils::gUrls2qUrls(const QList<GUrl> &gurls) {
     QList<QUrl> urls;
-    foreach(const GUrl& gurl, gurls) {
+    foreach (const GUrl &gurl, gurls) {
         urls << gUrl2qUrl(gurl);
     }
     return urls;
 }
 
-GUrl GUrlUtils::qUrl2gUrl(const QUrl& qurl) {
+GUrl GUrlUtils::qUrl2gUrl(const QUrl &qurl) {
     QString str = qurl.toString();
     return GUrl(str);
 }
 
-QList<GUrl> GUrlUtils::qUrls2gUrls(const QList<QUrl>& qurls) {
+QList<GUrl> GUrlUtils::qUrls2gUrls(const QList<QUrl> &qurls) {
     QList<GUrl> urls;
-    foreach(const QUrl& qurl, qurls) {
+    foreach (const QUrl &qurl, qurls) {
         urls << qUrl2gUrl(qurl);
     }
     return urls;
 }
 
-
-QString GUrlUtils::prepareFileName(const QString& url, int count, const QStringList& typeExt) {
+QString GUrlUtils::prepareFileName(const QString &url, int count, const QStringList &typeExt) {
     return prepareFileName(url, QString("%1").arg(count, 3, 10, QChar('0')), typeExt);
 }
 
-QString GUrlUtils::prepareFileName(const QString& url, const QString& baseSuffix, const QStringList& typeExt) {
+QString GUrlUtils::prepareFileName(const QString &url, const QString &baseSuffix, const QStringList &typeExt) {
     QFileInfo fi(url);
     QStringList suffixList = fi.completeSuffix().split(".");
     QString ext;
-    foreach(const QString& suffix, suffixList) {
+    foreach (const QString &suffix, suffixList) {
         if (typeExt.contains(suffix)) {
             ext = suffix;
             break;
@@ -294,7 +293,7 @@ QString GUrlUtils::prepareFileName(const QString& url, const QString& baseSuffix
 // checks that file path is valid: creates required folder if needed.
 // Returns canonical path to file. Does not create nor remove file, affects just folder
 // Sample usage: processing URLs in "save file" inputs
-QString GUrlUtils::prepareFileLocation(const QString& filePath, U2OpStatus& os) {
+QString GUrlUtils::prepareFileLocation(const QString &filePath, U2OpStatus &os) {
     QFileInfo fi(filePath);
     QString dirPath = fi.absoluteDir().absolutePath();
     QString canonicalDirPath = prepareDirLocation(dirPath, os);
@@ -308,7 +307,7 @@ QString GUrlUtils::prepareFileLocation(const QString& filePath, U2OpStatus& os) 
 // Returns absolute (without "." or ".." but with symlinks) folder path.
 // Does not affect folder if already exists.
 // Sample usage: processing URLs in "save dir" inputs
-QString GUrlUtils::prepareDirLocation(const QString& dirPath, U2OpStatus& os) {
+QString GUrlUtils::prepareDirLocation(const QString &dirPath, U2OpStatus &os) {
     CHECK_EXT(!dirPath.isEmpty(), os.setError(tr("Folder is not specified")), QString());
     QDir targetDir(dirPath);
     if (!targetDir.exists()) {
@@ -317,7 +316,7 @@ QString GUrlUtils::prepareDirLocation(const QString& dirPath, U2OpStatus& os) {
             os.setError(tr("Folder can't be created: %1").arg(absPath));
             return QString();
         }
-        targetDir = QDir(absPath); //It looks like QT caches results for QDir? Create new QDir instance in this case!
+        targetDir = QDir(absPath);    //It looks like QT caches results for QDir? Create new QDir instance in this case!
         if (!targetDir.isReadable()) {
             os.setError(tr("Folder can't be read: %1").arg(absPath));
             return QString();
@@ -327,8 +326,7 @@ QString GUrlUtils::prepareDirLocation(const QString& dirPath, U2OpStatus& os) {
     return result;
 }
 
-
-QString GUrlUtils::prepareTmpFileLocation(const QString& dir, const QString& prefix, const QString& ext, U2OpStatus& os) {
+QString GUrlUtils::prepareTmpFileLocation(const QString &dir, const QString &prefix, const QString &ext, U2OpStatus &os) {
     int i = 0;
     QString result;
     while (true) {
@@ -344,12 +342,11 @@ QString GUrlUtils::prepareTmpFileLocation(const QString& dir, const QString& pre
     return result;
 }
 
-
-void GUrlUtils::removeDir(const QString& dirPath, U2OpStatus& os) {
+void GUrlUtils::removeDir(const QString &dirPath, U2OpStatus &os) {
     QDir dir(dirPath);
     CHECK(dir.exists(), );
     QList<QFileInfo> entries = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden | QDir::AllDirs | QDir::Files, QDir::DirsFirst);
-    foreach(const QFileInfo& info, entries) {
+    foreach (const QFileInfo &info, entries) {
         if (info.isDir()) {
             removeDir(info.absoluteFilePath(), os);
         } else {
@@ -360,7 +357,7 @@ void GUrlUtils::removeDir(const QString& dirPath, U2OpStatus& os) {
     QDir().rmdir(dirPath);
 }
 
-void GUrlUtils::removeFile(const QString& filePath, U2OpStatus& os) {
+void GUrlUtils::removeFile(const QString &filePath, U2OpStatus &os) {
     CHECK_EXT(!filePath.isEmpty(), os.setError(tr("File path is not specified")), );
     QFileInfo info(filePath);
 
@@ -369,13 +366,12 @@ void GUrlUtils::removeFile(const QString& filePath, U2OpStatus& os) {
     if (info.exists()) {
         QFile::remove(info.absoluteFilePath());
     }
-
 }
 
 bool GUrlUtils::canWriteFile(const QString &path) {
     bool res = false;
 
-#ifdef Q_OS_WIN // a workaround of that files with a colon in names can be created but are not accessible on Windows
+#ifdef Q_OS_WIN    // a workaround of that files with a colon in names can be created but are not accessible on Windows
     if (QFileInfo(path).fileName().contains(':')) {
         return false;
     }
@@ -410,7 +406,7 @@ QString GUrlUtils::getDefaultDataPath() {
     return res;
 }
 
-QString GUrlUtils::getQuotedString(const QString& inString) {
+QString GUrlUtils::getQuotedString(const QString &inString) {
     if (inString.contains(QRegExp("\\s"))) {
         return "\"" + inString + "\"";
     }
@@ -440,7 +436,7 @@ QString getDotExtension(const DocumentFormatId &formatId) {
 
     return "." + results.first();
 }
-}
+}    // namespace
 
 void GUrlUtils::getLocalPathFromUrl(const GUrl &url, const QString &defaultBaseFileName, QString &dirPath, QString &baseFileName) {
     if (url.isLocalFile()) {
@@ -492,13 +488,17 @@ void GUrlUtils::validateLocalFileUrl(const GUrl &url, U2OpStatus &os, const QStr
 }
 
 QString GUrlUtils::getPairedFastqFilesBaseName(const QString &sourceFileUrl, bool truncate) {
-    static const QStringList pairedSuffixes = QStringList() << "-R1" << "-R2"
-        << "_1" << "_2"
-        << "_R1_001" << "_R2_001"
-        << "_R1" << "_R2";
+    static const QStringList pairedSuffixes = QStringList() << "-R1"
+                                                            << "-R2"
+                                                            << "_1"
+                                                            << "_2"
+                                                            << "_R1_001"
+                                                            << "_R2_001"
+                                                            << "_R1"
+                                                            << "_R2";
     QString baseName = QFileInfo(sourceFileUrl).completeBaseName();
     if (truncate) {
-        foreach(const QString &suffix, pairedSuffixes) {
+        foreach (const QString &suffix, pairedSuffixes) {
             if (baseName.endsWith(suffix)) {
                 baseName.chop(suffix.length());
                 break;
@@ -522,4 +522,4 @@ QString GUrlUtils::getSlashEndedPath(const QString &dirPath) {
     return dirPath.endsWith("/") ? dirPath : dirPath + "/";
 }
 
-}//namespace
+}    // namespace U2

@@ -19,12 +19,12 @@
  * MA 02110-1301, USA.
  */
 
+#include "BaseTypes.h"
+
 #include <U2Lang/Dataset.h>
 #include <U2Lang/URLContainer.h>
 #include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/WorkflowUtils.h>
-
-#include "BaseTypes.h"
 
 namespace U2 {
 
@@ -45,7 +45,7 @@ static const QString ANY_TYPE_ID("void");
 using namespace Workflow;
 
 DataTypePtr BaseTypes::DNA_SEQUENCE_TYPE() {
-    DataTypeRegistry* dtr = WorkflowEnv::getDataTypeRegistry();
+    DataTypeRegistry *dtr = WorkflowEnv::getDataTypeRegistry();
     assert(dtr);
     static bool startup = true;
     if (startup) {
@@ -56,7 +56,7 @@ DataTypePtr BaseTypes::DNA_SEQUENCE_TYPE() {
 }
 
 DataTypePtr BaseTypes::ANNOTATION_TABLE_TYPE() {
-    DataTypeRegistry* dtr = WorkflowEnv::getDataTypeRegistry();
+    DataTypeRegistry *dtr = WorkflowEnv::getDataTypeRegistry();
     assert(dtr);
     static bool startup = true;
     if (startup) {
@@ -67,7 +67,7 @@ DataTypePtr BaseTypes::ANNOTATION_TABLE_TYPE() {
 }
 
 DataTypePtr BaseTypes::ANNOTATION_TABLE_LIST_TYPE() {
-    DataTypeRegistry* dtr = WorkflowEnv::getDataTypeRegistry();
+    DataTypeRegistry *dtr = WorkflowEnv::getDataTypeRegistry();
     assert(dtr);
     static bool startup = true;
     if (startup) {
@@ -80,7 +80,7 @@ DataTypePtr BaseTypes::ANNOTATION_TABLE_LIST_TYPE() {
 }
 
 DataTypePtr BaseTypes::MULTIPLE_ALIGNMENT_TYPE() {
-    DataTypeRegistry* dtr = WorkflowEnv::getDataTypeRegistry();
+    DataTypeRegistry *dtr = WorkflowEnv::getDataTypeRegistry();
     assert(dtr);
     static bool startup = true;
     if (startup) {
@@ -91,7 +91,7 @@ DataTypePtr BaseTypes::MULTIPLE_ALIGNMENT_TYPE() {
 }
 
 DataTypePtr BaseTypes::VARIATION_TRACK_TYPE() {
-    DataTypeRegistry* dtr = WorkflowEnv::getDataTypeRegistry();
+    DataTypeRegistry *dtr = WorkflowEnv::getDataTypeRegistry();
     assert(dtr);
     static bool startup = true;
     if (startup) {
@@ -102,7 +102,7 @@ DataTypePtr BaseTypes::VARIATION_TRACK_TYPE() {
 }
 
 DataTypePtr BaseTypes::ASSEMBLY_TYPE() {
-    DataTypeRegistry* dtr = WorkflowEnv::getDataTypeRegistry();
+    DataTypeRegistry *dtr = WorkflowEnv::getDataTypeRegistry();
     assert(dtr);
     static bool startup = true;
     if (startup) {
@@ -113,11 +113,10 @@ DataTypePtr BaseTypes::ASSEMBLY_TYPE() {
 }
 
 DataTypePtr BaseTypes::STRING_TYPE() {
-    DataTypeRegistry* dtr = WorkflowEnv::getDataTypeRegistry();
+    DataTypeRegistry *dtr = WorkflowEnv::getDataTypeRegistry();
     assert(dtr);
     static bool startup = true;
-    if (startup)
-    {
+    if (startup) {
         dtr->registerEntry(DataTypePtr(new DataType(STRING_TYPE_ID, tr("String"), tr("A string of characters"))));
         startup = false;
     }
@@ -125,11 +124,10 @@ DataTypePtr BaseTypes::STRING_TYPE() {
 }
 
 DataTypePtr BaseTypes::STRING_LIST_TYPE() {
-    DataTypeRegistry* dtr = WorkflowEnv::getDataTypeRegistry();
+    DataTypeRegistry *dtr = WorkflowEnv::getDataTypeRegistry();
     assert(dtr);
     static bool startup = true;
-    if (startup)
-    {
+    if (startup) {
         dtr->registerEntry(DataTypePtr(new ListDataType(STRING_LIST_TYPE_ID, BaseTypes::STRING_TYPE())));
         startup = false;
     }
@@ -137,11 +135,10 @@ DataTypePtr BaseTypes::STRING_LIST_TYPE() {
 }
 
 DataTypePtr BaseTypes::BOOL_TYPE() {
-    DataTypeRegistry* dtr = WorkflowEnv::getDataTypeRegistry();
+    DataTypeRegistry *dtr = WorkflowEnv::getDataTypeRegistry();
     assert(dtr);
     static bool startup = true;
-    if (startup)
-    {
+    if (startup) {
         dtr->registerEntry(DataTypePtr(new DataType(BOOL_TYPE_ID, tr("Boolean"), tr("A boolean value (true/false)"))));
         startup = false;
     }
@@ -149,7 +146,7 @@ DataTypePtr BaseTypes::BOOL_TYPE() {
 }
 
 DataTypePtr BaseTypes::MAP_TYPE() {
-    DataTypeRegistry* dtr = WorkflowEnv::getDataTypeRegistry();
+    DataTypeRegistry *dtr = WorkflowEnv::getDataTypeRegistry();
     assert(dtr);
     static bool startup = true;
     if (startup) {
@@ -162,11 +159,10 @@ DataTypePtr BaseTypes::MAP_TYPE() {
 }
 
 DataTypePtr BaseTypes::NUM_TYPE() {
-    DataTypeRegistry* dtr = WorkflowEnv::getDataTypeRegistry();
+    DataTypeRegistry *dtr = WorkflowEnv::getDataTypeRegistry();
     assert(dtr);
     static bool startup = true;
-    if (startup)
-    {
+    if (startup) {
         dtr->registerEntry(DataTypePtr(new DataType(NUM_TYPE_ID, tr("Number"), tr("A number"))));
         startup = false;
     }
@@ -174,11 +170,10 @@ DataTypePtr BaseTypes::NUM_TYPE() {
 }
 
 DataTypePtr BaseTypes::ANY_TYPE() {
-    DataTypeRegistry* dtr = WorkflowEnv::getDataTypeRegistry();
+    DataTypeRegistry *dtr = WorkflowEnv::getDataTypeRegistry();
     assert(dtr);
     static bool startup = true;
-    if (startup)
-    {
+    if (startup) {
         dtr->registerEntry(DataTypePtr(new DataType(ANY_TYPE_ID, tr("Undefined"), tr("A void type"))));
         startup = false;
     }
@@ -186,11 +181,10 @@ DataTypePtr BaseTypes::ANY_TYPE() {
 }
 
 DataTypePtr BaseTypes::URL_DATASETS_TYPE() {
-    DataTypeRegistry* dtr = WorkflowEnv::getDataTypeRegistry();
+    DataTypeRegistry *dtr = WorkflowEnv::getDataTypeRegistry();
     assert(dtr);
     static bool startup = true;
-    if (startup)
-    {
+    if (startup) {
         dtr->registerEntry(DataTypePtr(new DataType(URL_DATASETS_TYPE_ID, tr("Url datasets"), tr("A list of urls grouped into datasets"))));
         startup = false;
     }
@@ -217,25 +211,25 @@ U2DataType BaseTypes::toDataType(const QString &typeId) {
 
 QString BaseTypes::toTypeId(const U2DataType &dataType) {
     switch (dataType) {
-    case U2Type::Sequence :
+    case U2Type::Sequence:
         return DNA_SEQUENCE_TYPE()->getId();
-    case U2Type::AnnotationTable :
+    case U2Type::AnnotationTable:
         return ANNOTATION_TABLE_TYPE()->getId();
-    case U2Type::Msa :
+    case U2Type::Msa:
         return MULTIPLE_ALIGNMENT_TYPE()->getId();
-    case U2Type::VariantTrack :
+    case U2Type::VariantTrack:
         return VARIATION_TRACK_TYPE()->getId();
-    case U2Type::Assembly :
+    case U2Type::Assembly:
         return ASSEMBLY_TYPE()->getId();
-    case U2Type::Text :
+    case U2Type::Text:
         return STRING_TYPE()->getId();
     default:
         return ANY_TYPE()->getId();
     }
 }
 
-static void setIfNotNull( bool * to, bool val ) {
-    if( to != NULL ) {
+static void setIfNotNull(bool *to, bool val) {
+    if (to != NULL) {
         *to = val;
     }
 }
@@ -243,9 +237,9 @@ static void setIfNotNull( bool * to, bool val ) {
 /****************************************
 * StringTypeValueFactory
 ****************************************/
-QVariant StringTypeValueFactory::getValueFromString( const QString & str, bool * ok ) const {
-    setIfNotNull( ok, true );
-    return qVariantFromValue( str );
+QVariant StringTypeValueFactory::getValueFromString(const QString &str, bool *ok) const {
+    setIfNotNull(ok, true);
+    return qVariantFromValue(str);
 }
 
 /****************************************
@@ -263,7 +257,7 @@ QVariant MapTypeValueFactory::getValueFromString(const QString &str, bool *ok) c
     setIfNotNull(ok, true);
     StrStrMap map = StrPackUtils::unpackMap(str, StrPackUtils::SingleQuotes);
     QVariantMap variantMap;
-    foreach (const QString& key, map.keys()) {
+    foreach (const QString &key, map.keys()) {
         variantMap.insert(key, map.value(key));
     }
     return variantMap;
@@ -272,47 +266,47 @@ QVariant MapTypeValueFactory::getValueFromString(const QString &str, bool *ok) c
 /****************************************
 * BoolTypeValueFactory
 ****************************************/
-const QString BoolTypeValueFactory::TRUE_STR    = "true";
-const QString BoolTypeValueFactory::FALSE_STR   = "false";
-const QString BoolTypeValueFactory::YES_STR     = "yes";
-const QString BoolTypeValueFactory::NO_STR      = "no";
-const QString BoolTypeValueFactory::ONE_STR     = "1";
-const QString BoolTypeValueFactory::NIL_STR     = "0";
+const QString BoolTypeValueFactory::TRUE_STR = "true";
+const QString BoolTypeValueFactory::FALSE_STR = "false";
+const QString BoolTypeValueFactory::YES_STR = "yes";
+const QString BoolTypeValueFactory::NO_STR = "no";
+const QString BoolTypeValueFactory::ONE_STR = "1";
+const QString BoolTypeValueFactory::NIL_STR = "0";
 
-QVariant BoolTypeValueFactory::getValueFromString( const QString & s, bool * ok ) const {
+QVariant BoolTypeValueFactory::getValueFromString(const QString &s, bool *ok) const {
     QString str = s.toLower();
-    if( str == TRUE_STR || str == YES_STR || str == ONE_STR ) {
-        setIfNotNull( ok, true );
-        return qVariantFromValue( true );
+    if (str == TRUE_STR || str == YES_STR || str == ONE_STR) {
+        setIfNotNull(ok, true);
+        return qVariantFromValue(true);
     }
-    if( str == FALSE_STR || str == NO_STR || str == NIL_STR ) {
-        setIfNotNull( ok, true );
-        return qVariantFromValue( false );
+    if (str == FALSE_STR || str == NO_STR || str == NIL_STR) {
+        setIfNotNull(ok, true);
+        return qVariantFromValue(false);
     }
-    setIfNotNull( ok, false );
+    setIfNotNull(ok, false);
     return QVariant();
 }
 
 /****************************************
 * NumTypeValueFactory
 ****************************************/
-QVariant NumTypeValueFactory::getValueFromString( const QString & str, bool * okArg ) const {
+QVariant NumTypeValueFactory::getValueFromString(const QString &str, bool *okArg) const {
     bool ok = false;
 
     qint64 longIntCandidate = str.toLongLong(&ok);
-    if(ok) {
+    if (ok) {
         setIfNotNull(okArg, true);
         return qVariantFromValue(longIntCandidate);
     }
 
     int intCandidate = str.toInt(&ok);
-    if(ok) {
+    if (ok) {
         setIfNotNull(okArg, true);
         return qVariantFromValue(intCandidate);
     }
 
     double doubleCandidate = str.toDouble(&ok);
-    if(ok) {
+    if (ok) {
         setIfNotNull(okArg, true);
         return qVariantFromValue(doubleCandidate);
     }
@@ -326,7 +320,7 @@ QVariant NumTypeValueFactory::getValueFromString( const QString & str, bool * ok
 /************************************************************************/
 QVariant UrlTypeValueFactory::getValueFromString(const QString &str, bool *ok) const {
     const QString splitter = WorkflowUtils::getDatasetSplitter(str);
-    QStringList datasetStrs = str.split(splitter+splitter, QString::SkipEmptyParts);
+    QStringList datasetStrs = str.split(splitter + splitter, QString::SkipEmptyParts);
     QList<Dataset> sets;
     int count = 0;
     foreach (const QString &datasetStr, datasetStrs) {
@@ -339,11 +333,11 @@ QVariant UrlTypeValueFactory::getValueFromString(const QString &str, bool *ok) c
         sets << dSet;
     }
     *ok = true;
-    return qVariantFromValue< QList<Dataset> >(sets);
+    return qVariantFromValue<QList<Dataset>>(sets);
 }
 
 QString UrlTypeValueFactory::getId() const {
     return BaseTypes::URL_DATASETS_TYPE()->getId();
 }
 
-} // U2
+}    // namespace U2

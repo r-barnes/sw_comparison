@@ -19,19 +19,17 @@
 * MA 02110-1301, USA.
 */
 
+#include "BaseDatasetWorker.h"
+
 #include <U2Core/L10n.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "BaseDatasetWorker.h"
 
 namespace U2 {
 namespace LocalWorkflow {
 
 BaseDatasetWorker::BaseDatasetWorker(Actor *a, const QString &inPortId, const QString &outPortId)
-: BaseOneOneWorker(a, /* autoTransitBus= */false, inPortId, outPortId), datasetInited(false)
-{
-
+    : BaseOneOneWorker(a, /* autoTransitBus= */ false, inPortId, outPortId), datasetInited(false) {
 }
 
 void BaseDatasetWorker::init() {
@@ -43,7 +41,7 @@ void BaseDatasetWorker::cleanup() {
     datasetMessages.clear();
 }
 
-Task * BaseDatasetWorker::processNextInputMessage() {
+Task *BaseDatasetWorker::processNextInputMessage() {
     if (datasetChanged(input->lookMessage())) {
         return onDatasetChanged();
     }
@@ -51,7 +49,7 @@ Task * BaseDatasetWorker::processNextInputMessage() {
     return NULL;
 }
 
-Task * BaseDatasetWorker::onInputEnded() {
+Task *BaseDatasetWorker::onInputEnded() {
     if (!datasetMessages.isEmpty()) {
         return onDatasetChanged();
     }
@@ -95,12 +93,12 @@ void BaseDatasetWorker::takeMessage() {
     SAFE_POINT(!datasetChanged(message), L10N::internalError("Unexpected method call"), );
 }
 
-Task * BaseDatasetWorker::onDatasetChanged() {
+Task *BaseDatasetWorker::onDatasetChanged() {
     datasetInited = false;
     Task *task = createTask(datasetMessages);
     datasetMessages.clear();
     return task;
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

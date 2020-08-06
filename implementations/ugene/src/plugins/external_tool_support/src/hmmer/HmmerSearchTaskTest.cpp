@@ -19,6 +19,8 @@
 * MA 02110-1301, USA.
 */
 
+#include "HmmerSearchTaskTest.h"
+
 #include <QDebug>
 #include <QDomElement>
 #include <QFile>
@@ -29,12 +31,10 @@
 #include <U2Core/TextUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "HmmerSearchTaskTest.h"
 #include "HmmerSearchTask.h"
 #include "utils/OutputCollector.h"
 
 namespace U2 {
-
 
 /*******************************
 * GTest_GeneralUHMM3Search
@@ -67,7 +67,7 @@ const QString GTest_UHMM3Search::NONULL2_OPTION_TAG = "nonull2";
 const QString GTest_UHMM3Search::SEED_OPTION_TAG = "seed";
 const QString GTest_UHMM3Search::REMOTE_MACHINE_VAR = "MACHINE";
 
-static void setDoubleOption(double& num, const QDomElement& el, const QString& optionName, TaskStateInfo& si) {
+static void setDoubleOption(double &num, const QDomElement &el, const QString &optionName, TaskStateInfo &si) {
     if (si.hasError()) {
         return;
     }
@@ -85,7 +85,7 @@ static void setDoubleOption(double& num, const QDomElement& el, const QString& o
     num = ret;
 }
 
-static void setUseBitCutoffsOption(HmmerSearchSettings::BitCutoffs& ret, const QDomElement& el, const QString& opName, TaskStateInfo& si) {
+static void setUseBitCutoffsOption(HmmerSearchSettings::BitCutoffs &ret, const QDomElement &el, const QString &opName, TaskStateInfo &si) {
     if (si.hasError()) {
         return;
     }
@@ -102,20 +102,20 @@ static void setUseBitCutoffsOption(HmmerSearchSettings::BitCutoffs& ret, const Q
     }
 }
 
-static void setBooleanOption(bool& ret, const QDomElement& el, const QString& opName, TaskStateInfo& si) {
+static void setBooleanOption(bool &ret, const QDomElement &el, const QString &opName, TaskStateInfo &si) {
     if (si.hasError()) {
         return;
     }
     QString str = el.attribute(opName).toLower();
 
     if (!str.isEmpty() && "n" != str && "no" != str) {
-        ret = true;//TRUE;
+        ret = true;    //TRUE;
     } else {
-        ret = false;//FALSE;
+        ret = false;    //FALSE;
     }
 }
 
-static void setIntegerOption(int& num, const QDomElement& el, const QString& optionName, TaskStateInfo& si) {
+static void setIntegerOption(int &num, const QDomElement &el, const QString &optionName, TaskStateInfo &si) {
     if (si.hasError()) {
         return;
     }
@@ -133,7 +133,7 @@ static void setIntegerOption(int& num, const QDomElement& el, const QString& opt
     num = ret;
 }
 
-void GTest_UHMM3Search::setSearchTaskSettings(HmmerSearchSettings& settings, const QDomElement& el, TaskStateInfo& si) {
+void GTest_UHMM3Search::setSearchTaskSettings(HmmerSearchSettings &settings, const QDomElement &el, TaskStateInfo &si) {
     setDoubleOption(settings.e, el, GTest_UHMM3Search::SEQ_E_OPTION_TAG, si);
     setDoubleOption(settings.t, el, GTest_UHMM3Search::SEQ_T_OPTION_TAG, si);
     setDoubleOption(settings.z, el, GTest_UHMM3Search::Z_OPTION_TAG, si);
@@ -153,7 +153,7 @@ void GTest_UHMM3Search::setSearchTaskSettings(HmmerSearchSettings& settings, con
     setUseBitCutoffsOption(settings.useBitCutoffs, el, GTest_UHMM3Search::USE_BIT_CUTOFFS_OPTION_TAG, si);
 }
 
-void GTest_UHMM3Search::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_UHMM3Search::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     hmmFilename = el.attribute(HMM_FILENAME_TAG);
@@ -190,7 +190,7 @@ void GTest_UHMM3Search::setAndCheckArgs() {
 
     outputDir = env->getVar("TEMP_DATA_DIR") + "/" + outputDir;
 
-    Document* seqDoc = getContext<Document>(this, seqDocCtxName);
+    Document *seqDoc = getContext<Document>(this, seqDocCtxName);
     if (NULL == seqDoc) {
         stateInfo.setError(QString("context %1 not found").arg(seqDocCtxName));
         return;
@@ -208,17 +208,17 @@ void GTest_UHMM3Search::prepare() {
 
     searchTask = new HmmerSearchTask(settings);
     //TODO: make collector as 'fancy' pointer
-    searchTask->addListeners(QList<ExternalToolListener*>() << new OutputCollector());
+    searchTask->addListeners(QList<ExternalToolListener *>() << new OutputCollector());
     addSubTask(searchTask);
 }
 
-QList< Task* > GTest_UHMM3Search::onSubTaskFinished(Task * sub) {
+QList<Task *> GTest_UHMM3Search::onSubTaskFinished(Task *sub) {
     assert(NULL != sub);
-    QList< Task* > res;
+    QList<Task *> res;
     if (searchTask != sub) {
         return res;
     }
-    OutputCollector *collector = dynamic_cast<OutputCollector*>(searchTask->getListener(0));
+    OutputCollector *collector = dynamic_cast<OutputCollector *>(searchTask->getListener(0));
     if (collector != NULL) {
         QString hmmSearchLog = collector->getLog();
         //TODO: check non empty log and file existence after writing
@@ -238,10 +238,10 @@ Task::ReportResult GTest_UHMM3Search::report() {
 const QString GTest_UHMM3SearchCompare::ACTUAL_OUT_FILE_TAG = "actualOut";
 const QString GTest_UHMM3SearchCompare::TRUE_OUT_FILE_TAG = "trueOut";
 
-const int   BUF_SZ = 2048;
-const char  TERM_SYM = '\0';
+const int BUF_SZ = 2048;
+const char TERM_SYM = '\0';
 
-static bool getSignificance(const QByteArray& str) {
+static bool getSignificance(const QByteArray &str) {
     if ("!" == str) {
         return true;
     } else if ("?" == str) {
@@ -250,7 +250,7 @@ static bool getSignificance(const QByteArray& str) {
     throw QString(GTest_UHMM3SearchCompare::tr("Can't parse significance:%1").arg(QString(str)));
 }
 
-static double getDouble(const QByteArray& numStr) {
+static double getDouble(const QByteArray &numStr) {
     bool ok = false;
     double ret = numStr.toDouble(&ok);
     if (ok) {
@@ -259,18 +259,18 @@ static double getDouble(const QByteArray& numStr) {
     throw QString(GTest_UHMM3SearchCompare::tr("Internal error (cannot parse float number from string '%1')").arg(QString(numStr)));
 }
 
-static float getFloat(const QByteArray& numStr) {
+static float getFloat(const QByteArray &numStr) {
     return (float)getDouble(numStr);
 }
 
-static QByteArray getNextToken(QStringList& tokens) {
+static QByteArray getNextToken(QStringList &tokens) {
     if (tokens.isEmpty()) {
         throw QString("unexpected_end_of_line:token_is_missing");
     }
     return tokens.takeFirst().toLatin1();
 }
 
-static UHMM3SearchSeqDomainResult getDomainRes(QStringList& tokens) {
+static UHMM3SearchSeqDomainResult getDomainRes(QStringList &tokens) {
     UHMM3SearchSeqDomainResult res;
 
     getNextToken(tokens);
@@ -299,7 +299,7 @@ static UHMM3SearchSeqDomainResult getDomainRes(QStringList& tokens) {
     return res;
 }
 
-static void readLine(IOAdapter* io, QByteArray& to, QStringList* tokens = NULL) {
+static void readLine(IOAdapter *io, QByteArray &to, QStringList *tokens = NULL) {
     assert(NULL != io);
     to.clear();
     QByteArray buf(BUF_SZ, TERM_SYM);
@@ -326,7 +326,7 @@ static void readLine(IOAdapter* io, QByteArray& to, QStringList* tokens = NULL) 
     }
 }
 
-const double COMPARE_PERCENT_BORDER = 0.1; // 10 percent
+const double COMPARE_PERCENT_BORDER = 0.1;    // 10 percent
 
 template<class T>
 static bool compareNumbers(T f1, T f2) {
@@ -344,7 +344,7 @@ static bool compareNumbers(T f1, T f2) {
     return ret;
 }
 
-void GTest_UHMM3SearchCompare::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_UHMM3SearchCompare::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     trueOutFilename = el.attribute(TRUE_OUT_FILE_TAG);
@@ -367,11 +367,11 @@ void GTest_UHMM3SearchCompare::setAndCheckArgs() {
     actualOutFilename = env->getVar("TEMP_DATA_DIR") + "/" + actualOutFilename;
 }
 
-UHMM3SearchResult GTest_UHMM3SearchCompare::getSearchResultFromOutput(const QString & filename) {
+UHMM3SearchResult GTest_UHMM3SearchCompare::getSearchResultFromOutput(const QString &filename) {
     assert(!filename.isEmpty());
 
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(filename));
-    QScopedPointer< IOAdapter > io(iof->createIOAdapter());
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(filename));
+    QScopedPointer<IOAdapter> io(iof->createIOAdapter());
     if (io.isNull()) {
         throw QString("cannot_create_io_adapter_for_'%1'_file").arg(filename);
     }
@@ -398,7 +398,7 @@ UHMM3SearchResult GTest_UHMM3SearchCompare::getSearchResultFromOutput(const QStr
             if (!wasHeader) {
                 throw QString("hmmer_output_header_is_missing");
             }
-            UHMM3SearchCompleteSeqResult& fullSeqRes = res.fullSeqResult;
+            UHMM3SearchCompleteSeqResult &fullSeqRes = res.fullSeqResult;
             readLine(io.data(), buf);
             readLine(io.data(), buf);
             readLine(io.data(), buf);
@@ -410,11 +410,13 @@ UHMM3SearchResult GTest_UHMM3SearchCompare::getSearchResultFromOutput(const QStr
                 fullSeqRes.isReported = false;
                 break;
             } else {
-                fullSeqRes.eval = getDouble(getNextToken(tokens));
+                fullSeqRes.eval = U2::getDouble(getNextToken(tokens));
                 fullSeqRes.score = getFloat(getNextToken(tokens));
                 fullSeqRes.bias = getFloat(getNextToken(tokens));
                 /* skip best domain res. we will check it later */
-                getNextToken(tokens);getNextToken(tokens);getNextToken(tokens);
+                getNextToken(tokens);
+                getNextToken(tokens);
+                getNextToken(tokens);
                 fullSeqRes.expectedDomainsNum = getFloat(getNextToken(tokens));
                 fullSeqRes.reportedDomainsNum = (int)getFloat(getNextToken(tokens));
                 fullSeqRes.isReported = true;
@@ -429,7 +431,7 @@ UHMM3SearchResult GTest_UHMM3SearchCompare::getSearchResultFromOutput(const QStr
             readLine(io.data(), buf);
             readLine(io.data(), buf);
             readLine(io.data(), buf);
-            QList< UHMM3SearchSeqDomainResult >& domainResList = res.domainResList;
+            QList<UHMM3SearchSeqDomainResult> &domainResList = res.domainResList;
             assert(domainResList.isEmpty());
 
             int nDomains = res.fullSeqResult.reportedDomainsNum;
@@ -444,9 +446,9 @@ UHMM3SearchResult GTest_UHMM3SearchCompare::getSearchResultFromOutput(const QStr
     return res;
 }
 
-void GTest_UHMM3SearchCompare::generalCompareResults(const UHMM3SearchResult& myRes, const UHMM3SearchResult& trueRes, TaskStateInfo& ti) {
-    const UHMM3SearchCompleteSeqResult& myFull = myRes.fullSeqResult;
-    const UHMM3SearchCompleteSeqResult& trueFull = trueRes.fullSeqResult;
+void GTest_UHMM3SearchCompare::generalCompareResults(const UHMM3SearchResult &myRes, const UHMM3SearchResult &trueRes, TaskStateInfo &ti) {
+    const UHMM3SearchCompleteSeqResult &myFull = myRes.fullSeqResult;
+    const UHMM3SearchCompleteSeqResult &trueFull = trueRes.fullSeqResult;
 
     if (myFull.isReported != trueFull.isReported) {
         ti.setError(QString("reported_flag_not_matched: %1 and %2").arg(myFull.isReported).arg(trueFull.isReported));
@@ -455,13 +457,16 @@ void GTest_UHMM3SearchCompare::generalCompareResults(const UHMM3SearchResult& my
 
     if (myFull.isReported) {
         if (!compareNumbers<float>(myFull.bias, trueFull.bias)) {
-            ti.setError(QString("full_seq_bias_not_matched: %1 and %2").arg(myFull.bias).arg(trueFull.bias));  return;
+            ti.setError(QString("full_seq_bias_not_matched: %1 and %2").arg(myFull.bias).arg(trueFull.bias));
+            return;
         }
         if (!compareNumbers<double>(myFull.eval, trueFull.eval)) {
-            ti.setError(QString("full_seq_eval_not_matched: %1 and %2").arg(myFull.eval).arg(trueFull.eval));  return;
+            ti.setError(QString("full_seq_eval_not_matched: %1 and %2").arg(myFull.eval).arg(trueFull.eval));
+            return;
         }
         if (!compareNumbers<float>(myFull.score, trueFull.score)) {
-            ti.setError(QString("full_seq_score_not_matched: %1 and %2").arg(myFull.score).arg(trueFull.score)); return;
+            ti.setError(QString("full_seq_score_not_matched: %1 and %2").arg(myFull.score).arg(trueFull.score));
+            return;
         }
         if (!compareNumbers<float>(myFull.expectedDomainsNum, trueFull.expectedDomainsNum)) {
             ti.setError(QString("full_seq_exp_not_matched: %1 and %2").arg(myFull.expectedDomainsNum).arg(trueFull.expectedDomainsNum));
@@ -473,8 +478,8 @@ void GTest_UHMM3SearchCompare::generalCompareResults(const UHMM3SearchResult& my
         }
     }
 
-    const QList< UHMM3SearchSeqDomainResult >& myDoms = myRes.domainResList;
-    const QList< UHMM3SearchSeqDomainResult >& trueDoms = trueRes.domainResList;
+    const QList<UHMM3SearchSeqDomainResult> &myDoms = myRes.domainResList;
+    const QList<UHMM3SearchSeqDomainResult> &trueDoms = trueRes.domainResList;
     if (myDoms.size() != trueDoms.size()) {
         ti.setError(QString("domain_res_number_not_matched: %1 and %2").arg(myDoms.size()).arg(trueDoms.size()));
         return;
@@ -483,34 +488,36 @@ void GTest_UHMM3SearchCompare::generalCompareResults(const UHMM3SearchResult& my
         UHMM3SearchSeqDomainResult myCurDom = myDoms.at(i);
         UHMM3SearchSeqDomainResult trueCurDom = trueDoms.at(i);
         if (!compareNumbers<double>(myCurDom.acc, trueCurDom.acc)) {
-            ti.setError(QString("dom_acc_not_matched: %1 and %2").arg(myCurDom.acc).arg(trueCurDom.acc));   return;
+            ti.setError(QString("dom_acc_not_matched: %1 and %2").arg(myCurDom.acc).arg(trueCurDom.acc));
+            return;
         }
         if (!compareNumbers<float>(myCurDom.bias, trueCurDom.bias)) {
-            ti.setError(QString("dom_bias_not_matched: %1 and %2").arg(myCurDom.bias).arg(trueCurDom.bias));  return;
+            ti.setError(QString("dom_bias_not_matched: %1 and %2").arg(myCurDom.bias).arg(trueCurDom.bias));
+            return;
         }
         if (!compareNumbers<double>(myCurDom.cval, trueCurDom.cval)) {
-            ti.setError(QString("dom_cval_not_matched: %1 and %2").arg(myCurDom.cval).arg(trueCurDom.cval));  return;
+            ti.setError(QString("dom_cval_not_matched: %1 and %2").arg(myCurDom.cval).arg(trueCurDom.cval));
+            return;
         }
         if (!compareNumbers<double>(myCurDom.ival, trueCurDom.ival)) {
-            ti.setError(QString("dom_ival_not_matched: %1 and %2").arg(myCurDom.ival).arg(trueCurDom.ival));  return;
+            ti.setError(QString("dom_ival_not_matched: %1 and %2").arg(myCurDom.ival).arg(trueCurDom.ival));
+            return;
         }
         if (!compareNumbers<float>(myCurDom.score, trueCurDom.score)) {
-            ti.setError(QString("dom_score_not_matched: %1 and %2").arg(myCurDom.score).arg(trueCurDom.score)); return;
+            ti.setError(QString("dom_score_not_matched: %1 and %2").arg(myCurDom.score).arg(trueCurDom.score));
+            return;
         }
         if (myCurDom.envRegion != trueCurDom.envRegion) {
-            ti.setError(QString("dom_env_region_not_matched: %1---%2 and %3---%4").
-                arg(myCurDom.envRegion.startPos).arg(myCurDom.envRegion.length).arg(trueCurDom.envRegion.startPos).
-                arg(trueCurDom.envRegion.length)); return;
+            ti.setError(QString("dom_env_region_not_matched: %1---%2 and %3---%4").arg(myCurDom.envRegion.startPos).arg(myCurDom.envRegion.length).arg(trueCurDom.envRegion.startPos).arg(trueCurDom.envRegion.length));
+            return;
         }
         if (myCurDom.queryRegion != trueCurDom.queryRegion) {
-            ti.setError(QString("dom_hmm_region_not_matched: %1---%2 and %3---%4").
-                arg(myCurDom.queryRegion.startPos).arg(myCurDom.queryRegion.length).arg(trueCurDom.queryRegion.startPos).
-                arg(trueCurDom.queryRegion.length)); return;
+            ti.setError(QString("dom_hmm_region_not_matched: %1---%2 and %3---%4").arg(myCurDom.queryRegion.startPos).arg(myCurDom.queryRegion.length).arg(trueCurDom.queryRegion.startPos).arg(trueCurDom.queryRegion.length));
+            return;
         }
         if (myCurDom.seqRegion != trueCurDom.seqRegion) {
-            ti.setError(QString("dom_seq_region_not_matched: %1---%2 and %3---%4").
-                arg(myCurDom.seqRegion.startPos).arg(myCurDom.seqRegion.length).arg(trueCurDom.seqRegion.startPos).
-                arg(trueCurDom.seqRegion.length)); return;
+            ti.setError(QString("dom_seq_region_not_matched: %1---%2 and %3---%4").arg(myCurDom.seqRegion.startPos).arg(myCurDom.seqRegion.length).arg(trueCurDom.seqRegion.startPos).arg(trueCurDom.seqRegion.length));
+            return;
         }
         if (myCurDom.isSignificant != trueCurDom.isSignificant) {
             ti.setError(QString("dom_sign_not_matched: %1 and %2").arg(myCurDom.isSignificant).arg(trueCurDom.isSignificant));
@@ -531,7 +538,7 @@ Task::ReportResult GTest_UHMM3SearchCompare::report() {
     try {
         trueRes = getSearchResultFromOutput(trueOutFilename);
         actualRes = getSearchResultFromOutput(actualOutFilename);
-    } catch (const QString& ex) {
+    } catch (const QString &ex) {
         stateInfo.setError(ex);
     } catch (...) {
         stateInfo.setError("undefined_error_occurred");
@@ -546,4 +553,4 @@ Task::ReportResult GTest_UHMM3SearchCompare::report() {
     return ReportResult_Finished;
 }
 
-}
+}    // namespace U2

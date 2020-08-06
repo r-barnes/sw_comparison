@@ -55,18 +55,18 @@ function showLoadButton(showHint) {
 
     if (showHint === true) {
         var hintDef =
-                "<div id='load-btn-hint-container'>" +
-                "<div id='load-btn-hint' class='popover fade bottom in' style='display: block'>" +
-                "<div class='arrow' style='left: 91%'></div>" +
-                "<div class='popover-content'>" +
-                "<span lang=\"en\" class=\"translatable\">You can always open the original workflow for your results by clicking on this button.</span>" +
-                "<span lang=\"ru\" class=\"translatable\">Вы всегда можете открыть исходную вычислительную схему для ваших результатов, нажав на эту кнопку.</span>" +
-                "<div style='text-align: center;'>" +
-                "<button class='btn' onclick='agent.hideLoadButtonHint()' style='margin-bottom: 4px; margin-top: 6px;'><span lang=\"en\" class=\"translatable\">OK, got it!</span><span lang=\"ru\" class=\"translatable\">Хорошо!</span></button>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>";
+            "<div id='load-btn-hint-container'>" +
+            "<div id='load-btn-hint' class='popover fade bottom in' style='display: block'>" +
+            "<div class='arrow' style='left: 91%'></div>" +
+            "<div class='popover-content'>" +
+            "<span lang=\"en\" class=\"translatable\">You can always open the original workflow for your results by clicking on this button.</span>" +
+            "<span lang=\"ru\" class=\"translatable\">Вы всегда можете открыть исходную вычислительную схему для ваших результатов, нажав на эту кнопку.</span>" +
+            "<div style='text-align: center;'>" +
+            "<button class='btn' onclick='agent.hideLoadButtonHint()' style='margin-bottom: 4px; margin-top: 6px;'><span lang=\"en\" class=\"translatable\">OK, got it!</span><span lang=\"ru\" class=\"translatable\">Хорошо!</span></button>" +
+            "</div>" +
+            "</div>" +
+            "</div>" +
+            "</div>";
         menuLine.insertAdjacentHTML('beforeend', hintDef);
     }
 }
@@ -85,35 +85,35 @@ function showFileButton(url, disabled, notOpenedByUgene) {
     var button;
     if (notOpenedByUgene) {
         button =
-                '<div class="file-button-ctn">' +
-                '<div class="btn-group full-width file-btn-group">' +
-                '<button class="btn full-width long-text" onclick="agent.openByOS(\'' + path + fileName + '\')"' +
-                disabled + '>' + fileName +
-                '</button>' +
-                '<button class="btn dropdown-toggle" data-toggle="dropdown">' +
-                '<span class="caret"></span>' +
-                '</button>' +
-                '<ul class="dropdown-menu full-width">' +
-                '<li><a style="white-space: normal;" onclick="agent.openByOS(\'' + path + '\')"><span lang=\"en\" class=\"translatable\">Open containing folder</span><span lang=\"ru\" class=\"translatable\">Открыть директорию, содержащую файл</span></a></li>' +
-                '</ul>' +
-                '</div>' +
-                '</div>';
+            '<div class="file-button-ctn">' +
+            '<div class="btn-group full-width file-btn-group">' +
+            '<button class="btn full-width long-text" onclick="agent.openByOS(\'' + path + fileName + '\')"' +
+            disabled + '>' + fileName +
+            '</button>' +
+            '<button class="btn dropdown-toggle" data-toggle="dropdown">' +
+            '<span class="caret"></span>' +
+            '</button>' +
+            '<ul class="dropdown-menu full-width">' +
+            '<li><a style="white-space: normal;" onclick="agent.openByOS(\'' + path + '\')"><span lang=\"en\" class=\"translatable\">Open containing folder</span><span lang=\"ru\" class=\"translatable\">Открыть директорию, содержащую файл</span></a></li>' +
+            '</ul>' +
+            '</div>' +
+            '</div>';
     } else {
         button =
-                '<div class="file-button-ctn">' +
-                '<div class="btn-group full-width file-btn-group">' +
-                '<button class="btn full-width long-text" onclick="agent.openUrl(\'' + url + '\')"' +
-                disabled + '>' + fileName +
-                '</button>' +
-                '<button class="btn dropdown-toggle" data-toggle="dropdown">' +
-                '<span class="caret"></span>' +
-                '</button>' +
-                '<ul class="dropdown-menu full-width">' +
-                '<li><a style="white-space: normal;" onclick="agent.openByOS(\'' + path + '\')"><span lang=\"en\" class=\"translatable\">Open containing folder</span><span lang=\"ru\" class=\"translatable\">Открыть директорию, содержащую файл</span></a></li>' +
-                '<li><a style="white-space: normal;" onclick="agent.openByOS(\'' + path + fileName + '\')"><span lang=\"en\" class=\"translatable\">Open by operating system</span><span lang=\"ru\" class=\"translatable\">Открыть при помощи операционной системы</span></a></li>' +
-                '</ul>' +
-                '</div>' +
-                '</div>';
+            '<div class="file-button-ctn">' +
+            '<div class="btn-group full-width file-btn-group">' +
+            '<button class="btn full-width long-text" onclick="agent.openUrl(\'' + url + '\')"' +
+            disabled + '>' + fileName +
+            '</button>' +
+            '<button class="btn dropdown-toggle" data-toggle="dropdown">' +
+            '<span class="caret"></span>' +
+            '</button>' +
+            '<ul class="dropdown-menu full-width">' +
+            '<li><a style="white-space: normal;" onclick="agent.openByOS(\'' + path + '\')"><span lang=\"en\" class=\"translatable\">Open containing folder</span><span lang=\"ru\" class=\"translatable\">Открыть директорию, содержащую файл</span></a></li>' +
+            '<li><a style="white-space: normal;" onclick="agent.openByOS(\'' + path + fileName + '\')"><span lang=\"en\" class=\"translatable\">Open by operating system</span><span lang=\"ru\" class=\"translatable\">Открыть при помощи операционной системы</span></a></li>' +
+            '</ul>' +
+            '</div>' +
+            '</div>';
     }
     return button;
 }
@@ -124,12 +124,12 @@ function showFileMenu(url) {
     var fileName = url.slice(url.lastIndexOf('/') + 1, url.length);
     var path = url.slice(0, url.lastIndexOf('/') + 1);
     var li =
-            '<li class="file-sub-menu dropdown-submenu left-align">' +
-            '<a tabindex="-1" href="#" onclick="agent.openUrl(\'' + url + '\')" title="' + url + '">' + wrapLongText25Symbols(fileName) + '</a>' +
-            '<ul class="dropdown-menu ">' +
-            '<li><a href="#" onclick="agent.openByOS(\'' + path + '\')"><span lang=\"en\" class=\"translatable\">Open containing folder</span><span lang=\"ru\" class=\"translatable\">Открыть директорию, содержащую файл</span></a></li>' +
-            '<li><a href="#" onclick="agent.openByOS(\'' + path + fileName + '\')"><span lang=\"en\" class=\"translatable\">Open by operating system</span><span lang=\"ru\" class=\"translatable\">Открыть при помощи операционной системы</span></a></li>' +
-            '</ul></li>';
+        '<li class="file-sub-menu dropdown-submenu left-align">' +
+        '<a tabindex="-1" href="#" onclick="agent.openUrl(\'' + url + '\')" title="' + url + '">' + wrapLongText25Symbols(fileName) + '</a>' +
+        '<ul class="dropdown-menu ">' +
+        '<li><a href="#" onclick="agent.openByOS(\'' + path + '\')"><span lang=\"en\" class=\"translatable\">Open containing folder</span><span lang=\"ru\" class=\"translatable\">Открыть директорию, содержащую файл</span></a></li>' +
+        '<li><a href="#" onclick="agent.openByOS(\'' + path + fileName + '\')"><span lang=\"en\" class=\"translatable\">Open by operating system</span><span lang=\"ru\" class=\"translatable\">Открыть при помощи операционной системы</span></a></li>' +
+        '</ul></li>';
     return li;
 }
 
@@ -170,16 +170,16 @@ function addWidget(title, dashTab, cntNum, id) {
             return;
         }
         mainContainer = elements[0];
-        mainContainer.innerHTML = mainContainer.innerHTML +"<div class=\"widget\">" +
-                "<div class=\"title\"><div class=\"title-content\">" + title + "</div></div>" +
-                "<div class=\"widget-content\" id=\"" + id + "\"></div>" +
-                "</div>";
+        mainContainer.innerHTML = mainContainer.innerHTML + "<div class=\"widget\">" +
+            "<div class=\"title\"><div class=\"title-content\">" + title + "</div></div>" +
+            "<div class=\"widget-content\" id=\"" + id + "\"></div>" +
+            "</div>";
     }
 }
 
 function showOnlyLang(lang) {
     var elements = document.getElementsByClassName("translatable");
-    for (var i = 0; i<elements.length; i++) {
+    for (var i = 0; i < elements.length; i++) {
         var attr = elements[i].getAttribute("lang");
         if (attr !== lang) {
             elements[i].style.display = "none";
@@ -215,15 +215,15 @@ function createWidgets() {
 
 function connect() {
     try {
-        agent.si_progressChanged.connect(function(progress) {
+        agent.si_progressChanged.connect(function (progress) {
             statusWidget.sl_progressChanged(progress);
         });
 
-        window.agent.si_taskStateChanged.connect(function(state) {
+        window.agent.si_taskStateChanged.connect(function (state) {
             statusWidget.sl_taskStateChanged(state);
         });
 
-        window.agent.si_newProblem.connect(function(problem) {
+        window.agent.si_newProblem.connect(function (problem) {
             problem = JSON.parse(problem);
             if (document.getElementById("problemsWidget") === null) {
                 problemWidget = new ProblemsWidget("problemsWidget");
@@ -231,22 +231,22 @@ function connect() {
             problemWidget.sl_newProblem(problem, problem.count);
         });
 
-        window.agent.si_workerStatsInfoChanged.connect(function(info) {
+        window.agent.si_workerStatsInfoChanged.connect(function (info) {
             info = JSON.parse(info);
             statisticsWidget.sl_workerStatsInfoChanged(info);
         });
 
-        window.agent.si_workerStatsUpdate.connect(function(workersStatisticsInfo) {
+        window.agent.si_workerStatsUpdate.connect(function (workersStatisticsInfo) {
             workersStatisticsInfo = JSON.parse(workersStatisticsInfo);
             statisticsWidget.sl_workerStatsUpdate(workersStatisticsInfo);
         });
 
-        window.agent.si_newOutputFile.connect(function(fileInfo) {
+        window.agent.si_newOutputFile.connect(function (fileInfo) {
             fileInfo = JSON.parse(fileInfo);
             window.outputWidget.sl_newOutputFile(fileInfo);
         });
 
-        window.agent.si_onLogChanged.connect(function(logEntry) {
+        window.agent.si_onLogChanged.connect(function (logEntry) {
             logEntry = JSON.parse(logEntry);
             if (externalToolsWidget === null) {
                 externalToolsWidget = new ExternalToolsWidget("externalToolsWidget");
@@ -264,11 +264,16 @@ function initializeWebkitPage() {
         connect();
     }
 
+    $(".dash-menu-line").hide();
+    window.agent.si_switchTab.connect(function (tabId) {
+        $("a[href=#" + tabId + "]").click();
+    });
+
     showOnlyLang(agent.lang);
     agent.sl_pageInitialized();
 }
 
-var createAgent = function(channel) {
+var createAgent = function (channel) {
     window.agent = channel.objects.agent;
     if (needCreateWidgets) {
         createWidgets();
@@ -285,25 +290,25 @@ function installWebChannel(onSockets, port) {
         var baseUrl = "ws://127.0.0.1:" + port;
         var socket = new WebSocket(baseUrl);
 
-        socket.onclose = function() {
+        socket.onclose = function () {
             console.error("web channel closed");
         };
 
-        socket.onerror = function(error) {
+        socket.onerror = function (error) {
             console.error("web channel error: " + error);
         };
 
-        socket.onopen = function() {
+        socket.onopen = function () {
             loadScript("qrc:///qtwebchannel/qwebchannel.js",
-                       function() {
-                           new QWebChannel(socket, createAgent);
-                       });
+                function () {
+                    new QWebChannel(socket, createAgent);
+                });
         }
     } else {
         loadScript("qrc:///qtwebchannel/qwebchannel.js",
-                   function() {
-                       new QWebChannel(qt.webChannelTransport, createAgent);
-                   });
+            function () {
+                new QWebChannel(qt.webChannelTransport, createAgent);
+            });
     }
 }
 

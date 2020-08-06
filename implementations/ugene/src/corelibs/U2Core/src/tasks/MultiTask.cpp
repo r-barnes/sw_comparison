@@ -19,11 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "MultiTask.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/ProjectModel.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "MultiTask.h"
 
 namespace U2 {
 
@@ -32,7 +32,7 @@ MultiTask::MultiTask(const QString &name, const QList<Task *> &taskz, bool withL
     setMaxParallelSubtasks(1);
     SAFE_POINT(!taskz.empty(), "No tasks provided to multitask", );
 
-    foreach( Task * t, taskz ) {
+    foreach (Task *t, taskz) {
         addSubTask(t);
     }
     if (withLock) {
@@ -53,7 +53,7 @@ Task::ReportResult MultiTask::report() {
         delete l;
         l = nullptr;
     }
-    foreach(Task* t, tasks) {
+    foreach (Task *t, tasks) {
         CHECK_CONTINUE(t->isConcatenateChildrenErrors());
 
         setReportingSupported(true);
@@ -79,8 +79,7 @@ QString MultiTask::generateReport() const {
 //SequentialMultiTask
 
 SequentialMultiTask::SequentialMultiTask(const QString &name, const QList<Task *> &taskz, TaskFlags f)
-    : Task(name, f), tasks(taskz)
-{
+    : Task(name, f), tasks(taskz) {
     setMaxParallelSubtasks(1);
 }
 
@@ -89,7 +88,6 @@ void SequentialMultiTask::prepare() {
     if (tasks.size() > 0) {
         addSubTask(tasks.first());
     }
-
 }
 
 QList<Task *> SequentialMultiTask::onSubTaskFinished(Task *subTask) {
@@ -97,7 +95,7 @@ QList<Task *> SequentialMultiTask::onSubTaskFinished(Task *subTask) {
 
     int idx = tasks.indexOf(subTask);
     if ((idx != -1) && (idx + 1 < tasks.size())) {
-        res.append(tasks.at(idx+1));
+        res.append(tasks.at(idx + 1));
     }
 
     return res;
@@ -107,4 +105,4 @@ QList<Task *> SequentialMultiTask::getTasks() const {
     return tasks;
 }
 
-} //namespace
+}    // namespace U2

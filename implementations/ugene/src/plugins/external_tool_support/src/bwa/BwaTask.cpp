@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "BwaTask.h"
+
 #include <QDir>
 
 #include <U2Core/AppContext.h>
@@ -34,25 +36,23 @@
 #include <U2Formats/MergeBamTask.h>
 
 #include "BwaSupport.h"
-#include "BwaTask.h"
 
 namespace U2 {
 
 // BwaBuildIndexTask
 
-BwaBuildIndexTask::BwaBuildIndexTask(const QString &referencePath, const QString &indexPath, const DnaAssemblyToRefTaskSettings &settings):
-    ExternalToolSupportTask("Build Bwa index", TaskFlags_NR_FOSCOE),
-    referencePath(referencePath),
-    indexPath(indexPath),
-    settings(settings)
-{
+BwaBuildIndexTask::BwaBuildIndexTask(const QString &referencePath, const QString &indexPath, const DnaAssemblyToRefTaskSettings &settings)
+    : ExternalToolSupportTask("Build Bwa index", TaskFlags_NR_FOSCOE),
+      referencePath(referencePath),
+      indexPath(indexPath),
+      settings(settings) {
 }
 
 void BwaBuildIndexTask::prepare() {
     QStringList arguments;
     arguments.append("index");
     QString indexAlg = settings.getCustomValue(BwaTask::OPTION_INDEX_ALGORITHM, "autodetect").toString();
-    if(indexAlg != "autodetect") {
+    if (indexAlg != "autodetect") {
         arguments.append("-a");
         arguments.append(indexAlg);
     }
@@ -79,7 +79,7 @@ void BwaBuildIndexTask::LogParser::parseErrOutput(const QString &partOfLog) {
 // BwaAlignTask
 
 void cleanupTempDir(const QStringList &tempDirFiles) {
-    foreach(const QString& url, tempDirFiles) {
+    foreach (const QString &url, tempDirFiles) {
         QFile toDelete(url);
         if (toDelete.exists(url)) {
             toDelete.remove();
@@ -87,7 +87,7 @@ void cleanupTempDir(const QStringList &tempDirFiles) {
     }
 }
 
-BwaAlignTask::BwaAlignTask(const QString &indexPath, const QList<ShortReadSet>& shortReadSets, const QString &resultPath, const DnaAssemblyToRefTaskSettings &settings)
+BwaAlignTask::BwaAlignTask(const QString &indexPath, const QList<ShortReadSet> &shortReadSets, const QString &resultPath, const DnaAssemblyToRefTaskSettings &settings)
     : ExternalToolSupportTask("Bwa reads assembly", TaskFlags_NR_FOSCOE),
       samMultiTask(NULL),
       alignMultiTask(NULL),
@@ -95,15 +95,12 @@ BwaAlignTask::BwaAlignTask(const QString &indexPath, const QList<ShortReadSet>& 
       indexPath(indexPath),
       readSets(shortReadSets),
       resultPath(resultPath),
-      settings(settings)
-{
-
+      settings(settings) {
 }
 
-QString BwaAlignTask::getSAIPath(const QString& shortReadsUrl) {
+QString BwaAlignTask::getSAIPath(const QString &shortReadsUrl) {
     return QFileInfo(resultPath).absoluteDir().absolutePath() + "/" + QFileInfo(shortReadsUrl).fileName() + ".sai";
 }
-
 
 void BwaAlignTask::prepare() {
     if (readSets.size() == 0) {
@@ -113,11 +110,11 @@ void BwaAlignTask::prepare() {
 
     settings.pairedReads = readSets.at(0).type == ShortReadSet::PairedEndReads;
 
-    const ShortReadSet& readSet = settings.shortReadSets.at(0);
+    const ShortReadSet &readSet = settings.shortReadSets.at(0);
     settings.pairedReads = readSet.type == ShortReadSet::PairedEndReads;
 
     if (settings.pairedReads) {
-        foreach(const ShortReadSet& srSet, settings.shortReadSets) {
+        foreach (const ShortReadSet &srSet, settings.shortReadSets) {
             if (srSet.order == ShortReadSet::DownstreamMate) {
                 downStreamList.append(srSet);
             } else {
@@ -129,10 +126,10 @@ void BwaAlignTask::prepare() {
         }
     }
 
-    QList<Task*> alignTasks;
+    QList<Task *> alignTasks;
     for (int resultPartsCounter = 0; resultPartsCounter < settings.shortReadSets.size(); resultPartsCounter++) {
         QStringList arguments;
-        const ShortReadSet& currentReadSet = settings.shortReadSets[resultPartsCounter];
+        const ShortReadSet &currentReadSet = settings.shortReadSets[resultPartsCounter];
 
         arguments.append("aln");
 
@@ -181,19 +178,19 @@ void BwaAlignTask::prepare() {
         arguments.append("-B");
         arguments.append(settings.getCustomValue(BwaTask::OPTION_BARCODE_LENGTH, 0).toString());
 
-        if(settings.getCustomValue(BwaTask::OPTION_LONG_SCALED_GAP_PENALTY_FOR_LONG_DELETIONS, false).toBool()) {
+        if (settings.getCustomValue(BwaTask::OPTION_LONG_SCALED_GAP_PENALTY_FOR_LONG_DELETIONS, false).toBool()) {
             arguments.append("-L");
         }
 
-        if(settings.getCustomValue(BwaTask::OPTION_NON_ITERATIVE_MODE, false).toBool()) {
+        if (settings.getCustomValue(BwaTask::OPTION_NON_ITERATIVE_MODE, false).toBool()) {
             arguments.append("-N");
         }
 
         arguments.append("-f");
-        arguments.append( getSAIPath(currentReadSet.url.getURLString()));
+        arguments.append(getSAIPath(currentReadSet.url.getURLString()));
         arguments.append(indexPath);
         arguments.append(currentReadSet.url.getURLString());
-        ExternalToolRunTask* alignTask = new ExternalToolRunTask(BwaSupport::ET_BWA_ID, arguments, new LogParser(), NULL);
+        ExternalToolRunTask *alignTask = new ExternalToolRunTask(BwaSupport::ET_BWA_ID, arguments, new LogParser(), NULL);
         setListenerForTask(alignTask);
         alignTasks.append(alignTask);
     }
@@ -202,10 +199,10 @@ void BwaAlignTask::prepare() {
 }
 
 QList<Task *> BwaAlignTask::onSubTaskFinished(Task *subTask) {
-    QList<Task*> result;
+    QList<Task *> result;
     QFileInfo resultPathFileInfo(resultPath);
     if (alignMultiTask == subTask) {
-        QList<Task*> samTasks;
+        QList<Task *> samTasks;
         QList<ShortReadSet> &containerToIterate = settings.pairedReads ? downStreamList : settings.shortReadSets;
         for (int resultPartsCounter = 0; resultPartsCounter < containerToIterate.size(); resultPartsCounter++) {
             QStringList arguments;
@@ -248,7 +245,7 @@ QList<Task *> BwaAlignTask::onSubTaskFinished(Task *subTask) {
         //converting SAM -> BAM
         QStringList bamUrlstoMerge;
         int i = 0;
-        foreach(const QString &url, urlsToMerge) {
+        foreach (const QString &url, urlsToMerge) {
             QFileInfo urlToConvertFileInfo(url);
             QString convertedBamUrl = settings.tmpDirPath + "/" + resultPathFileInfo.baseName() + "_" + QString::number(i) + ".bam";
             BAMUtils::ConvertOption options(true);
@@ -274,7 +271,6 @@ QList<Task *> BwaAlignTask::onSubTaskFinished(Task *subTask) {
     return result;
 }
 
-
 // BwaAlignTask::LogParser
 BwaAlignTask::LogParser::LogParser() {
 }
@@ -287,8 +283,8 @@ void BwaAlignTask::LogParser::parseErrOutput(const QString &partOfLog) {
     ExternalToolLogParser::parseErrOutput(partOfLog);
     QStringList log = lastPartOfLog;
     QStringList::iterator i = log.begin();
-    for (; i!=log.end(); i++) {
-        if(i->contains("This application has requested the Runtime to terminate")) {
+    for (; i != log.end(); i++) {
+        if (i->contains("This application has requested the Runtime to terminate")) {
             QStringList errors;
             for (int strings = 0; strings < 2; i++, strings++) {
                 SAFE_POINT(i != log.end(), tr("Log is incomplete"), );
@@ -304,7 +300,6 @@ void BwaAlignTask::LogParser::parseErrOutput(const QString &partOfLog) {
     }
 }
 
-
 // BwaMemAlignTask
 
 BwaMemAlignTask::BwaMemAlignTask(const QString &indexPath, const DnaAssemblyToRefTaskSettings &settings)
@@ -313,9 +308,7 @@ BwaMemAlignTask::BwaMemAlignTask(const QString &indexPath, const DnaAssemblyToRe
       mergeTask(NULL),
       indexPath(indexPath),
       resultPath(settings.resultFileName.getURLString()),
-      settings(settings)
-{
-
+      settings(settings) {
 }
 
 void BwaMemAlignTask::prepare() {
@@ -327,11 +320,11 @@ void BwaMemAlignTask::prepare() {
     QList<ShortReadSet> downStreamList;
     QList<ShortReadSet> upStreamList;
 
-    const ShortReadSet& readSet = settings.shortReadSets.at(0);
+    const ShortReadSet &readSet = settings.shortReadSets.at(0);
     settings.pairedReads = readSet.type == ShortReadSet::PairedEndReads;
 
     if (settings.pairedReads) {
-        foreach(const ShortReadSet& srSet, settings.shortReadSets) {
+        foreach (const ShortReadSet &srSet, settings.shortReadSets) {
             if (srSet.order == ShortReadSet::DownstreamMate) {
                 downStreamList.append(srSet);
             } else {
@@ -344,7 +337,7 @@ void BwaMemAlignTask::prepare() {
     }
 
     QFileInfo resultFileInfo(settings.resultFileName.getURLString());
-    QList<Task*> alignTasks;
+    QList<Task *> alignTasks;
     for (int resultPartsCounter = 0, pairedReadsCounter = 0; resultPartsCounter < settings.shortReadSets.size(); resultPartsCounter++) {
         QStringList arguments;
         const ShortReadSet &currentReadSet = settings.shortReadSets[resultPartsCounter];
@@ -405,27 +398,27 @@ void BwaMemAlignTask::prepare() {
             }
             arguments.append(upStreamList[pairedReadsCounter].url.getURLString());
             arguments.append(downStreamList[pairedReadsCounter].url.getURLString());
-            ExternalToolRunTask* alignTask = new ExternalToolRunTask(BwaSupport::ET_BWA_ID, arguments, new BwaAlignTask::LogParser(), NULL);
+            ExternalToolRunTask *alignTask = new ExternalToolRunTask(BwaSupport::ET_BWA_ID, arguments, new BwaAlignTask::LogParser(), NULL);
             if (upStreamList.size() == 1) {
                 alignTask->setStandartOutputFile(settings.resultFileName.getURLString());
             } else {
                 QString resultFilePathWithpartNumber = settings.tmpDirPath + "/" + resultFileInfo.baseName() + "_" +
-                    QString::number(pairedReadsCounter++) + "." + resultFileInfo.completeSuffix();
+                                                       QString::number(pairedReadsCounter++) + "." + resultFileInfo.completeSuffix();
                 alignTask->setStandartOutputFile(resultFilePathWithpartNumber);
             }
             setListenerForTask(alignTask);
             alignTasks.append(alignTask);
         } else if (settings.shortReadSets.size() > 1) {
             arguments.append(currentReadSet.url.getURLString());
-            ExternalToolRunTask* alignTask = new ExternalToolRunTask(BwaSupport::ET_BWA_ID, arguments, new BwaAlignTask::LogParser(), NULL);
+            ExternalToolRunTask *alignTask = new ExternalToolRunTask(BwaSupport::ET_BWA_ID, arguments, new BwaAlignTask::LogParser(), NULL);
             QString resultFilePathWithpartNumber = settings.tmpDirPath + "/" + resultFileInfo.baseName() + "_" +
-                QString::number(resultPartsCounter) + "." + resultFileInfo.completeSuffix();
+                                                   QString::number(resultPartsCounter) + "." + resultFileInfo.completeSuffix();
             alignTask->setStandartOutputFile(resultFilePathWithpartNumber);
             setListenerForTask(alignTask);
             alignTasks.append(alignTask);
         } else {
             arguments.append(currentReadSet.url.getURLString());
-            ExternalToolRunTask* alignTask = new ExternalToolRunTask(BwaSupport::ET_BWA_ID, arguments, new BwaAlignTask::LogParser(), NULL);
+            ExternalToolRunTask *alignTask = new ExternalToolRunTask(BwaSupport::ET_BWA_ID, arguments, new BwaAlignTask::LogParser(), NULL);
             alignTask->setStandartOutputFile(settings.resultFileName.getURLString());
             setListenerForTask(alignTask);
             alignTasks.append(alignTask);
@@ -446,7 +439,7 @@ QList<Task *> BwaMemAlignTask::onSubTaskFinished(Task *subTask) {
         int partsCounter = settings.pairedReads ? settings.shortReadSets.size() / 2 : settings.shortReadSets.size();
         for (int i = 0; i < partsCounter; i++) {
             QString resultFilePathWithpartNumber = settings.tmpDirPath + "/" + resultFileInfo.baseName() + "_" +
-                QString::number(i) + "." + resultFileInfo.completeSuffix();
+                                                   QString::number(i) + "." + resultFileInfo.completeSuffix();
             QString bamFilePath = settings.tmpDirPath + "/" + resultFileInfo.baseName() + "_" + QString::number(i) + ".bam";
             BAMUtils::ConvertOption options(true);
             BAMUtils::convertToSamOrBam(resultFilePathWithpartNumber, bamFilePath, options, stateInfo);
@@ -473,11 +466,10 @@ QList<Task *> BwaMemAlignTask::onSubTaskFinished(Task *subTask) {
 
 // BwaSwAlignTask
 
-BwaSwAlignTask::BwaSwAlignTask(const QString &indexPath, const DnaAssemblyToRefTaskSettings &settings):
-    ExternalToolSupportTask("BWA SW reads assembly", TaskFlags_NR_FOSCOE),
-    indexPath(indexPath),
-    settings(settings)
-{
+BwaSwAlignTask::BwaSwAlignTask(const QString &indexPath, const DnaAssemblyToRefTaskSettings &settings)
+    : ExternalToolSupportTask("BWA SW reads assembly", TaskFlags_NR_FOSCOE),
+      indexPath(indexPath),
+      settings(settings) {
 }
 
 void BwaSwAlignTask::prepare() {
@@ -486,12 +478,11 @@ void BwaSwAlignTask::prepare() {
         return;
     }
 
-    const ShortReadSet& readSet = settings.shortReadSets.at(0);
-
+    const ShortReadSet &readSet = settings.shortReadSets.at(0);
 
     settings.pairedReads = readSet.type == ShortReadSet::PairedEndReads;
 
-    if (settings.pairedReads ) {
+    if (settings.pairedReads) {
         setError(tr("BWA SW can not align paired reads"));
         return;
     }
@@ -501,7 +492,7 @@ void BwaSwAlignTask::prepare() {
     arguments.append("bwasw");
 
     arguments.append("-f");
-    arguments.append( settings.resultFileName.getURLString() );
+    arguments.append(settings.resultFileName.getURLString());
 
     arguments.append("-a");
     arguments.append(settings.getCustomValue(BwaTask::OPTION_MATCH_SCORE, 1).toString());
@@ -540,15 +531,12 @@ void BwaSwAlignTask::prepare() {
         arguments.append("-H");
     }
 
-    arguments.append( indexPath );
-    arguments.append( readSet.url.getURLString() );
+    arguments.append(indexPath);
+    arguments.append(readSet.url.getURLString());
 
-
-    Task* alignTask = new ExternalToolRunTask(BwaSupport::ET_BWA_ID, arguments, new BwaAlignTask::LogParser(), NULL);
+    Task *alignTask = new ExternalToolRunTask(BwaSupport::ET_BWA_ID, arguments, new BwaAlignTask::LogParser(), NULL);
     addSubTask(alignTask);
-
 }
-
 
 // BwaTask
 
@@ -598,13 +586,16 @@ const QString BwaTask::ALGORITHM_BWA_SW = "BWA-SW";
 const QString BwaTask::ALGORITHM_BWA_ALN = "BWA";
 const QString BwaTask::ALGORITHM_BWA_MEM = "BWA-MEM";
 
-const QStringList BwaTask::indexSuffixes = QStringList() << ".amb" << ".ann" << ".bwt" << ".pac" << ".sa";
+const QStringList BwaTask::indexSuffixes = QStringList() << ".amb"
+                                                         << ".ann"
+                                                         << ".bwt"
+                                                         << ".pac"
+                                                         << ".sa";
 
-BwaTask::BwaTask(const DnaAssemblyToRefTaskSettings &settings, bool justBuildIndex):
-    DnaAssemblyToReferenceTask(settings, TaskFlags_NR_FOSCOE, justBuildIndex),
-    buildIndexTask(NULL),
-    alignTask(NULL)
-{
+BwaTask::BwaTask(const DnaAssemblyToRefTaskSettings &settings, bool justBuildIndex)
+    : DnaAssemblyToReferenceTask(settings, TaskFlags_NR_FOSCOE, justBuildIndex),
+      buildIndexTask(NULL),
+      alignTask(NULL) {
     GCOUNTER(cvar, tvar, "NGS:BWATask");
 }
 
@@ -619,57 +610,52 @@ void BwaTask::prepare() {
 
     if (!settings.prebuiltIndex) {
         buildIndexTask = new BwaBuildIndexTask(settings.refSeqUrl.getURLString(), indexFileName, settings);
-        buildIndexTask->addListeners(QList <ExternalToolListener*>() << getListener(0));
+        buildIndexTask->addListeners(QList<ExternalToolListener *>() << getListener(0));
     }
 
     int upStreamCount = 0;
     int downStreamCount = 0;
-    foreach(const ShortReadSet& srSet, settings.shortReadSets) {
+    foreach (const ShortReadSet &srSet, settings.shortReadSets) {
         if (srSet.order == ShortReadSet::DownstreamMate) {
             downStreamCount++;
-        }
-        else {
+        } else {
             upStreamCount++;
         }
     }
 
-    if(!justBuildIndex) {
+    if (!justBuildIndex) {
         if (settings.getCustomValue(OPTION_SW_ALIGNMENT, false) == true) {
-            if(settings.shortReadSets.size() > 1) {
+            if (settings.shortReadSets.size() > 1) {
                 setError(tr("Multiple read files are not supported by bwa-sw. Please combine your reads into single FASTA file."));
                 return;
             }
             alignTask = new BwaSwAlignTask(indexFileName, settings);
-            alignTask->addListeners(QList <ExternalToolListener*>() << getListener(1));
-        }
-        else  if (settings.getCustomValue(OPTION_MEM_ALIGNMENT, false) == true) {
+            alignTask->addListeners(QList<ExternalToolListener *>() << getListener(1));
+        } else if (settings.getCustomValue(OPTION_MEM_ALIGNMENT, false) == true) {
             if (downStreamCount != upStreamCount && settings.pairedReads) {
                 setError(tr("Please, provide same number of files with downstream and upstream reads."));
                 return;
             }
 
             alignTask = new BwaMemAlignTask(indexFileName, settings);
-            alignTask->addListeners(QList <ExternalToolListener*>() << getListener(1));
-        }
-        else{
+            alignTask->addListeners(QList<ExternalToolListener *>() << getListener(1));
+        } else {
             alignTask = new BwaAlignTask(indexFileName, settings.shortReadSets, settings.resultFileName.getURLString(), settings);
-            alignTask->addListeners(QList <ExternalToolListener*>() << getListener(1));
+            alignTask->addListeners(QList<ExternalToolListener *>() << getListener(1));
         }
     }
 
     if (!settings.prebuiltIndex) {
         addSubTask(buildIndexTask);
-    }
-    else if(!justBuildIndex) {
+    } else if (!justBuildIndex) {
         addSubTask(alignTask);
-    }
-    else {
+    } else {
         assert(false);
     }
 }
 
 Task::ReportResult BwaTask::report() {
-    if(!justBuildIndex) {
+    if (!justBuildIndex) {
         hasResults = true;
     }
     return ReportResult_Finished;
@@ -677,7 +663,7 @@ Task::ReportResult BwaTask::report() {
 
 QList<Task *> BwaTask::onSubTaskFinished(Task *subTask) {
     QList<Task *> result;
-    if((subTask == buildIndexTask) && !justBuildIndex) {
+    if ((subTask == buildIndexTask) && !justBuildIndex) {
         result.append(alignTask);
     }
     return result;
@@ -688,4 +674,4 @@ QList<Task *> BwaTask::onSubTaskFinished(Task *subTask) {
 DnaAssemblyToReferenceTask *BwaTaskFactory::createTaskInstance(const DnaAssemblyToRefTaskSettings &settings, bool justBuildIndex) {
     return new BwaTask(settings, justBuildIndex);
 }
-} // namespace U2
+}    // namespace U2

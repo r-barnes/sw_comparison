@@ -41,49 +41,64 @@ class CircularAnnotationRegionItem;
 
 class CircularAnnotationItem : public QGraphicsItem {
     Q_DISABLE_COPY(CircularAnnotationItem)
-friend class CircularAnnotationRegionItem;
-friend class CircularAnnotationLabel;
+    friend class CircularAnnotationRegionItem;
+    friend class CircularAnnotationLabel;
+
 public:
-    CircularAnnotationItem(Annotation *ann, CircularAnnotationRegionItem* region, CircularViewRenderArea* _ra);
-    CircularAnnotationItem(Annotation *ann, QList<CircularAnnotationRegionItem*>& regions, CircularViewRenderArea* _ra);
+    CircularAnnotationItem(Annotation *ann, CircularAnnotationRegionItem *region, CircularViewRenderArea *_ra);
+    CircularAnnotationItem(Annotation *ann, QList<CircularAnnotationRegionItem *> &regions, CircularViewRenderArea *_ra);
     ~CircularAnnotationItem();
-    virtual void paint(QPainter *p,const QStyleOptionGraphicsItem *item,QWidget *widget);
-    Annotation * getAnnotation() const;
+    virtual void paint(QPainter *p, const QStyleOptionGraphicsItem *item, QWidget *widget);
+    Annotation *getAnnotation() const;
     virtual QRectF boundingRect() const;
     virtual bool contains(const QPointF &point) const;
     int containsRegion(const QPointF &point);
-    CircularAnnotationRegionItem* getContainingRegion(const QPointF & point);
+    CircularAnnotationRegionItem *getContainingRegion(const QPointF &point);
 
     void setSelected(bool isSelected);
-    const QList<CircularAnnotationRegionItem*>& getRegions();
+    const QList<CircularAnnotationRegionItem *> &getRegions();
+
 protected:
     bool isSelected;
     QColor color;
     Annotation *annotation;
-    QList<CircularAnnotationRegionItem*> regions;
+    QList<CircularAnnotationRegionItem *> regions;
     QRectF _boundingRect;
-    CircularViewRenderArea* ra;
+    CircularViewRenderArea *ra;
 };
 
 /************************************************************************/
 /* CircularAnnotationRegionItem                                        */
 /************************************************************************/
-class CircularAnnotationRegionItem : public QGraphicsPathItem{
-friend class CircularAnnotationItem;
+class CircularAnnotationRegionItem : public QGraphicsPathItem {
+    friend class CircularAnnotationItem;
+
 public:
-    CircularAnnotationRegionItem(const QPainterPath& path, bool isShort, int number );
+    CircularAnnotationRegionItem(const QPainterPath &path, bool isShort, int number);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget /* = 0 */);
-    CircularAnnotationLabel* getLabel() const;
-    void setLabel(CircularAnnotationLabel* label);
+    CircularAnnotationLabel *getLabel() const;
+    void setLabel(CircularAnnotationLabel *label);
 
-    void setArrowCenterPercentage(qreal arrowCenter) { arrowCenterPercentage = arrowCenter; }
-    qreal getArrowCenterPercentage() const { return arrowCenterPercentage; }
+    void setArrowCenterPercentage(qreal arrowCenter) {
+        arrowCenterPercentage = arrowCenter;
+    }
+    qreal getArrowCenterPercentage() const {
+        return arrowCenterPercentage;
+    }
 
-    int getNumber() const { return number; }
+    int getNumber() const {
+        return number;
+    }
 
-    bool hasJoinedRegion() const { return !joinedRegion.isEmpty(); }
-    void setJoinedRegion(const U2Region& reg) { joinedRegion = reg; }
-    const U2Region& getJoinedRegion() const { return joinedRegion; }
+    bool hasJoinedRegion() const {
+        return !joinedRegion.isEmpty();
+    }
+    void setJoinedRegion(const U2Region &reg) {
+        joinedRegion = reg;
+    }
+    const U2Region &getJoinedRegion() const {
+        return joinedRegion;
+    }
 
 protected:
     CircularAnnotationItem *parent;
@@ -99,28 +114,27 @@ protected:
 /************************************************************************/
 class CircularAnnotationLabel : public QGraphicsItem {
 public:
-    CircularAnnotationLabel(Annotation *ann, const QVector<U2Region> &annLocation, bool isAutoAnnotation, int _region, int sequenceLength,
-        const QFont& font, CircularViewRenderArea* renderArea);
+    CircularAnnotationLabel(Annotation *ann, const QVector<U2Region> &annLocation, bool isAutoAnnotation, int _region, int sequenceLength, const QFont &font, CircularViewRenderArea *renderArea);
 
-    void paint(QPainter *p,const QStyleOptionGraphicsItem *item,QWidget *widget);
-    Annotation * getAnnotation() const;
+    void paint(QPainter *p, const QStyleOptionGraphicsItem *item, QWidget *widget);
+    Annotation *getAnnotation() const;
     QRectF boundingRect() const;
     bool contains(const QPointF &point) const;
     int getRegion() const;
     void setLabelPosition();
     static void setLabelsVisible(QList<CircularAnnotationLabel *> &labelItems);
 
-    void setAnnRegion(CircularAnnotationRegionItem* region);
+    void setAnnRegion(CircularAnnotationRegionItem *region);
     bool canFitToTheRegion() const;
 
     void drawLabelInsideRegion(QPainter *p, bool canFit);
-    void drawLabelOutsideRegion(QPainter *p, QPen& pen);
+    void drawLabelOutsideRegion(QPainter *p, QPen &pen);
 
     bool tryPushCounterclockwise();
     bool tryPushClockwise();
 
-    const QPoint & getConnectionStart() const;
-    const QPoint & getConnectionEnd() const;
+    const QPoint &getConnectionStart() const;
+    const QPoint &getConnectionEnd() const;
 
 private:
     int findClosestPoint(const QVector<QRect> &rects);
@@ -148,12 +162,12 @@ private:
     QVector<int> suitableLabelPositionIndexes;
     QPoint connectionEnd;
     QPoint connectionStart;
-    CircularViewRenderArea* ra;
+    CircularViewRenderArea *ra;
     CircularAnnotationRegionItem *regionItem;
     bool hasPosition;
     QString labelText;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _CIRCULAR_ITEMS_H_
+#endif    // _CIRCULAR_ITEMS_H_

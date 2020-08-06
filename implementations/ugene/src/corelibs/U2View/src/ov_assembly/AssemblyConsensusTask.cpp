@@ -23,26 +23,25 @@
 
 #include <U2Core/Log.h>
 #include <U2Core/Timer.h>
-#include <U2Core/U2SafePoints.h>
 #include <U2Core/U2OpStatusUtils.h>
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
 AssemblyConsensusTask::AssemblyConsensusTask(const AssemblyConsensusTaskSettings &settings_)
-    : BackgroundTask<ConsensusInfo>(tr("Calculate assembly consensus"), TaskFlag_None), settings(settings_)
-{
+    : BackgroundTask<ConsensusInfo>(tr("Calculate assembly consensus"), TaskFlag_None), settings(settings_) {
     tpm = Progress_Manual;
 }
 
-static void doCalculation(const AssemblyConsensusTaskSettings & settings, U2OpStatus & os, ConsensusInfo & result) {
-    CHECK_EXT(!settings.consensusAlgorithm.isNull(), os.setError(AssemblyConsensusTask::tr("No consensus algorithm given")),);
+static void doCalculation(const AssemblyConsensusTaskSettings &settings, U2OpStatus &os, ConsensusInfo &result) {
+    CHECK_EXT(!settings.consensusAlgorithm.isNull(), os.setError(AssemblyConsensusTask::tr("No consensus algorithm given")), );
 
-    QScopedPointer< U2DbiIterator<U2AssemblyRead> > reads(settings.model->getReads(settings.region, os));
+    QScopedPointer<U2DbiIterator<U2AssemblyRead>> reads(settings.model->getReads(settings.region, os));
     QByteArray referenceFragment;
-    if(settings.model->hasReference()) {
+    if (settings.model->hasReference()) {
         referenceFragment = settings.model->getReferenceRegion(settings.region, os);
     }
-    CHECK_OP(os,);
+    CHECK_OP(os, );
 
     result.region = settings.region;
     result.algorithmId = settings.consensusAlgorithm->getId();
@@ -57,15 +56,14 @@ void AssemblyConsensusTask::run() {
 
     doCalculation(settings, stateInfo, result);
 
-    CHECK_OP(stateInfo,);
+    CHECK_OP(stateInfo, );
     perfLog.trace(QString("Assembly: '%1' consensus calculation time: %2 seconds")
-                  .arg(settings.consensusAlgorithm->getName())
-                  .arg((GTimer::currentTimeMicros() - t0) / float(1000*1000)));
+                      .arg(settings.consensusAlgorithm->getName())
+                      .arg((GTimer::currentTimeMicros() - t0) / float(1000 * 1000)));
 }
 
 AssemblyConsensusWorker::AssemblyConsensusWorker(ConsensusSettingsQueue *settingsQueue_)
-    : Task(tr("Assembly consensus worker"), TaskFlag_None), settingsQueue(settingsQueue_)
-{
+    : Task(tr("Assembly consensus worker"), TaskFlag_None), settingsQueue(settingsQueue_) {
     tpm = Progress_Manual;
 }
 
@@ -74,16 +72,16 @@ void AssemblyConsensusWorker::run() {
     quint64 t0 = GTimer::currentTimeMicros();
 
     int count = settingsQueue->count();
-    int mappingLength = 100/count;
+    int mappingLength = 100 / count;
     ConsensusInfo result;
 
     int completed = 0;
-    while(settingsQueue->hasNext()) {
+    while (settingsQueue->hasNext()) {
         AssemblyConsensusTaskSettings settings = settingsQueue->getNextSettings();
 
-        U2OpStatusChildImpl os(&stateInfo, U2OpStatusMapping(completed*100/count, mappingLength));
+        U2OpStatusChildImpl os(&stateInfo, U2OpStatusMapping(completed * 100 / count, mappingLength));
         doCalculation(settings, os, result);
-        CHECK_OP(stateInfo,);
+        CHECK_OP(stateInfo, );
         settingsQueue->reportResult(result);
 
         ++completed;
@@ -91,8 +89,8 @@ void AssemblyConsensusWorker::run() {
     stateInfo.setProgress(100);
 
     perfLog.trace(QString("Assembly: '%1' consensus export time: %2 seconds")
-                  .arg(result.algorithmId)
-                  .arg((GTimer::currentTimeMicros() - t0) / float(1000*1000)));
+                      .arg(result.algorithmId)
+                      .arg((GTimer::currentTimeMicros() - t0) / float(1000 * 1000)));
 }
 
-} //namespace
+}    // namespace U2

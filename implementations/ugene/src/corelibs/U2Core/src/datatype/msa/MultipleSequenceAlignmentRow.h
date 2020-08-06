@@ -48,13 +48,13 @@ public:
     MultipleSequenceAlignmentRow(const U2MsaRow &rowInDb, const QString &rowName, const QByteArray &rawData, MultipleSequenceAlignmentData *msaData);
     MultipleSequenceAlignmentRow(const MultipleSequenceAlignmentRow &row, MultipleSequenceAlignmentData *msaData);
 
-    MultipleSequenceAlignmentRowData * data() const;
+    MultipleSequenceAlignmentRowData *data() const;
 
-    MultipleSequenceAlignmentRowData & operator*();
-    const MultipleSequenceAlignmentRowData & operator*() const;
+    MultipleSequenceAlignmentRowData &operator*();
+    const MultipleSequenceAlignmentRowData &operator*() const;
 
-    MultipleSequenceAlignmentRowData * operator->();
-    const MultipleSequenceAlignmentRowData * operator->() const;
+    MultipleSequenceAlignmentRowData *operator->();
+    const MultipleSequenceAlignmentRowData *operator->() const;
 
     MultipleSequenceAlignmentRow clone() const;
 
@@ -87,16 +87,16 @@ public:
 
     /** Name of the row (equals to the sequence name), can be empty */
     QString getName() const;
-    void setName(const QString& name);
+    void setName(const QString &name);
 
     /** Returns the list of gaps for the row */
-    inline const U2MsaRowGapModel & getGapModel() const;
+    inline const U2MsaRowGapModel &getGapModel() const;
 
     /** Careful, the new gap model is not validated! */
     void setGapModel(const QList<U2MsaGap> &newGapModel);
 
     /** Returns the row sequence (without gaps) */
-    inline const DNASequence & getSequence() const;
+    inline const DNASequence &getSequence() const;
 
     /** Returns ID of the row in the database. */
     qint64 getRowId() const;
@@ -165,7 +165,7 @@ public:
      * If position is bigger than the row length, does nothing.
      * Returns incorrect status if 'pos' or 'count' is negative.
      */
-    virtual void removeChars(int pos, int count, U2OpStatus& os);
+    virtual void removeChars(int pos, int count, U2OpStatus &os);
 
     /**
      * Returns a character in row at the specified position.
@@ -185,6 +185,8 @@ public:
      */
     virtual bool isRowContentEqual(const MultipleSequenceAlignmentRow &row) const;
     virtual bool isRowContentEqual(const MultipleSequenceAlignmentRowData &rowData) const;
+
+    bool isDefault() const override;
 
     /** Compares 2 rows. Rows are equal if their contents and names are equal. */
     bool operator!=(const MultipleSequenceAlignmentRowData &msaRowData) const;
@@ -261,11 +263,11 @@ private:
     U2MsaRow initialRowInDb;
 };
 
-inline const U2MsaRowGapModel & MultipleSequenceAlignmentRowData::getGapModel() const {
+inline const U2MsaRowGapModel &MultipleSequenceAlignmentRowData::getGapModel() const {
     return gaps;
 }
 
-inline const DNASequence & MultipleSequenceAlignmentRowData::getSequence() const {
+inline const DNASequence &MultipleSequenceAlignmentRowData::getSequence() const {
     return sequence;
 }
 
@@ -289,13 +291,25 @@ inline int MultipleSequenceAlignmentRowData::getGapsLength() const {
     return MsaRowUtils::getGapsLength(gaps);
 }
 
-inline bool	operator!=(const MultipleSequenceAlignmentRow &ptr1, const MultipleSequenceAlignmentRow &ptr2) { return *ptr1 != *ptr2; }
-inline bool	operator!=(const MultipleSequenceAlignmentRow &ptr1, const MultipleSequenceAlignmentRowData *ptr2) { return *ptr1 != *ptr2; }
-inline bool	operator!=(const MultipleSequenceAlignmentRowData *ptr1, const MultipleSequenceAlignmentRow &ptr2) { return *ptr1 != *ptr2; }
-inline bool	operator==(const MultipleSequenceAlignmentRow &ptr1, const MultipleSequenceAlignmentRow &ptr2) { return *ptr1 == *ptr2; }
-inline bool	operator==(const MultipleSequenceAlignmentRow &ptr1, const MultipleSequenceAlignmentRowData *ptr2) { return *ptr1 == *ptr2; }
-inline bool	operator==(const MultipleSequenceAlignmentRowData *ptr1, const MultipleSequenceAlignmentRow &ptr2) { return *ptr1 == *ptr2; }
+inline bool operator==(const MultipleSequenceAlignmentRow &ptr1, const MultipleSequenceAlignmentRow &ptr2) {
+    return *ptr1 == *ptr2;
+}
+inline bool operator==(const MultipleSequenceAlignmentRow &ptr1, const MultipleSequenceAlignmentRowData *ptr2) {
+    return nullptr == ptr2 ? ptr1->isDefault() : (*ptr1 == *ptr2);
+}
+inline bool operator==(const MultipleSequenceAlignmentRowData *ptr1, const MultipleSequenceAlignmentRow &ptr2) {
+    return nullptr == ptr1 ? ptr2->isDefault() : (*ptr1 == *ptr2);
+}
+inline bool operator!=(const MultipleSequenceAlignmentRow &ptr1, const MultipleSequenceAlignmentRow &ptr2) {
+    return !(ptr1 == ptr2);
+}
+inline bool operator!=(const MultipleSequenceAlignmentRow &ptr1, const MultipleSequenceAlignmentRowData *ptr2) {
+    return !(ptr1 == ptr2);
+}
+inline bool operator!=(const MultipleSequenceAlignmentRowData *ptr1, const MultipleSequenceAlignmentRow &ptr2) {
+    return !(ptr1 == ptr2);
+}
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MULTIPLE_SEQUENCE_ALIGNMENT_ROW_H_
+#endif    // _U2_MULTIPLE_SEQUENCE_ALIGNMENT_ROW_H_

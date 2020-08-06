@@ -22,25 +22,26 @@
 #ifndef _U2_GOBJECT_TYPES_H_
 #define _U2_GOBJECT_TYPES_H_
 
-#include <U2Core/global.h>
-
 #include <QIcon>
+
+#include <U2Core/global.h>
 
 namespace U2 {
 
 class U2CORE_EXPORT GObjectTypeInfo {
 public:
-    GObjectTypeInfo(){}
-    GObjectTypeInfo(const GObjectType& _type, const QString& _name, const QString& _pluralName, const QString& treeSign, const QString iconURL, const QString& lockedIconUrl);
+    GObjectTypeInfo() {
+    }
+    GObjectTypeInfo(const GObjectType &_type, const QString &_name, const QString &_pluralName, const QString &treeSign, const QString iconURL, const QString &lockedIconUrl);
 
     GObjectType type;
-    QString     name;
-    QString     pluralName;
-    QString     treeSign;
-    QString     iconURL;
-    QString     lockedIconUrl;
-    QIcon       icon;
-    QIcon       lockedIcon;
+    QString name;
+    QString pluralName;
+    QString treeSign;
+    QString iconURL;
+    QString lockedIconUrl;
+    QIcon icon;
+    QIcon lockedIcon;
 };
 
 class U2CORE_EXPORT GObjectTypes {
@@ -59,18 +60,16 @@ public:
     static const GObjectType UINDEX;
     static const GObjectType ASSEMBLY;
 
-    static GObjectType registerTypeInfo(const GObjectTypeInfo& ti);
+    static GObjectType registerTypeInfo(const GObjectTypeInfo &ti);
 
     //Returns reference to the type by type.
     //WARN: Caching return value by reference is not safe -> it can be relocated if new type is registered
-    static const GObjectTypeInfo& getTypeInfo(const GObjectType& type);
+    static const GObjectTypeInfo &getTypeInfo(const GObjectType &type);
 
-    static void initTypeTranslations(); //must be called only once after all translations are loaded
+    static void initTypeTranslations();    //must be called only once after all translations are loaded
     static void initTypeIcons();
-
 };
 
-}//namespace
-
+}    // namespace U2
 
 #endif

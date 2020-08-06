@@ -22,10 +22,10 @@
 #ifndef _U2_CLIPBOARD_CONTROLLER_H_
 #define _U2_CLIPBOARD_CONTROLLER_H_
 
+#include <QClipboard>
+
 #include <U2Core/DocumentUtils.h>
 #include <U2Core/Task.h>
-
-#include <QClipboard>
 
 namespace U2 {
 
@@ -35,9 +35,10 @@ public:
     PasteTask();
 
     virtual QList<GUrl> getUrls() const = 0;
-    virtual QList<Document*> getDocuments() const = 0;
+    virtual QList<Document *> getDocuments() const = 0;
+
 protected:
-    virtual void processDocument(Document* doc);
+    virtual void processDocument(Document *doc);
 };
 
 class U2CORE_EXPORT PasteFactory : public QObject {
@@ -45,16 +46,15 @@ class U2CORE_EXPORT PasteFactory : public QObject {
 public:
     PasteFactory(QObject *parent = 0);
 
-    virtual PasteTask* pasteTask(bool useInSequenceWidget) = 0;
+    virtual PasteTask *pasteTask(bool useInSequenceWidget) = 0;
 };
 
 class U2CORE_EXPORT PasteUtils : public QObject {
     Q_OBJECT
 public:
-    static QList<DNASequence> getSequences(const QList<Document*>& docs, U2OpStatus& os);
+    static QList<DNASequence> getSequences(const QList<Document *> &docs, U2OpStatus &os);
 };
 
+}    // namespace U2
 
-} // U2
-
-#endif // _U2_CLIPBOARD_CONTROLLER_H_
+#endif    // _U2_CLIPBOARD_CONTROLLER_H_

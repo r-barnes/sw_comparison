@@ -19,11 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "JavaSupport.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/ScriptingToolRegistry.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "JavaSupport.h"
 
 namespace U2 {
 
@@ -33,12 +33,10 @@ const QString JavaSupport::ET_JAVA_ID = "USUPP_JAVA";
 const QString JavaSupport::ARCHITECTURE = "architecture";
 const QString JavaSupport::ARCHITECTURE_X32 = "x32";
 const QString JavaSupport::ARCHITECTURE_X64 = "x64";
-const QStringList JavaSupport::RUN_PARAMETERS = { "-jar" };
+const QStringList JavaSupport::RUN_PARAMETERS = {"-jar"};
 
-
-JavaSupport::JavaSupport(const QString& id, const QString &name, const QString &path)
-    : RunnerTool(RUN_PARAMETERS, id, name, path)
-{
+JavaSupport::JavaSupport(const QString &id, const QString &name, const QString &path)
+    : RunnerTool(RUN_PARAMETERS, id, name, path) {
     if (AppContext::getMainWindow()) {
         icon = QIcon(":external_tool_support/images/cmdline.png");
         grayIcon = QIcon(":external_tool_support/images/cmdline_gray.png");
@@ -57,12 +55,12 @@ JavaSupport::JavaSupport(const QString& id, const QString &name, const QString &
     description += tr("Java Platform lets you develop and deploy Java applications on desktops and servers.<br><i>(Requires Java 1.7 or higher)</i>.<br>"
                       "Java can be freely downloaded on the official web-site: https://www.java.com/en/download/");
     versionRegExp = QRegExp("(\\d+.\\d+.\\d+(_\\d+)?)");
-    toolKitName="Java";
+    toolKitName = "Java";
 
     muted = true;
 }
 
-void JavaSupport::extractAdditionalParameters(const QString& output) {
+void JavaSupport::extractAdditionalParameters(const QString &output) {
     Architecture architecture = x32;
     if (output.contains("64-Bit")) {
         architecture = x64;
@@ -95,4 +93,4 @@ JavaSupport::Architecture JavaSupport::string2architecture(const QString &string
     }
 }
 
-} // U2
+}    // namespace U2

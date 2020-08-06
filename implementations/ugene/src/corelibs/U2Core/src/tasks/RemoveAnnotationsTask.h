@@ -32,15 +32,15 @@ class U2CORE_EXPORT RemoveAnnotationsTask : public Task {
 public:
     // Removes annotations of specified group, handles multiple annotations ( > 10 000).
     // Also handles situations with locked objects.
-                                    RemoveAnnotationsTask(AnnotationTableObject *ao, const QString &groupName);
+    RemoveAnnotationsTask(AnnotationTableObject *ao, const QString &groupName);
 
-    ReportResult                    report();
+    ReportResult report();
 
 private:
-    QPointer<AnnotationTableObject>   aobj;
-    QString                           groupName;
+    QPointer<AnnotationTableObject> aobj;
+    QString groupName;
 };
 
-}//namespace
+}    // namespace U2
 
-#endif // _U2_REMOVE_ANNOTATIONS_TASK_H_
+#endif    // _U2_REMOVE_ANNOTATIONS_TASK_H_

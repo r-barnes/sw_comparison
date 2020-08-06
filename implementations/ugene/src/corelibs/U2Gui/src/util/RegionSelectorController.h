@@ -22,13 +22,11 @@
 #ifndef _U2_REGION_SELECTOR_CONTROLLER_H_
 #define _U2_REGION_SELECTOR_CONTROLLER_H_
 
-#include <U2Core/global.h>
+#include <QComboBox>
+#include <QLineEdit>
 
 #include <U2Core/U2Region.h>
-
-#include <QLineEdit>
-#include <QComboBox>
-
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -39,27 +37,31 @@ struct RegionSelectorGui {
     RegionSelectorGui()
         : startLineEdit(NULL),
           endLineEdit(NULL),
-          presetsComboBox(NULL) {}
+          presetsComboBox(NULL) {
+    }
 
-    RegionSelectorGui(QLineEdit* start, QLineEdit* end, QComboBox* presets = NULL)
+    RegionSelectorGui(QLineEdit *start, QLineEdit *end, QComboBox *presets = NULL)
         : startLineEdit(start),
           endLineEdit(end),
-          presetsComboBox(presets) {}
+          presetsComboBox(presets) {
+    }
 
-    QLineEdit* startLineEdit;
-    QLineEdit* endLineEdit;
-    QComboBox* presetsComboBox;
+    QLineEdit *startLineEdit;
+    QLineEdit *endLineEdit;
+    QComboBox *presetsComboBox;
 };
 
 struct RegionPreset {
-    RegionPreset() {}
+    RegionPreset() {
+    }
     RegionPreset(const QString &text, const U2Region &region)
         : text(text),
-          region(region) {}
+          region(region) {
+    }
     QString text;
     U2Region region;
 
-    bool operator ==(const RegionPreset& other) const {
+    bool operator==(const RegionPreset &other) const {
         return (text == other.text);
     }
 };
@@ -71,16 +73,16 @@ struct RegionSelectorSettings {
 
     RegionSelectorSettings(qint64 maxLen,
                            bool circular = false,
-                           DNASequenceSelection* selection = NULL,
+                           DNASequenceSelection *selection = NULL,
                            QList<RegionPreset> presetRegions = QList<RegionPreset>(),
                            QString defaultPreset = SELECTED_REGION);
 
-    qint64                  maxLen;
-    DNASequenceSelection*   selection;
-    bool                    circular;
+    qint64 maxLen;
+    DNASequenceSelection *selection;
+    bool circular;
 
-    QList<RegionPreset>     presetRegions;
-    QString                 defaultPreset;
+    QList<RegionPreset> presetRegions;
+    QString defaultPreset;
 
     // Returns circular region or the first selected. If none is selected, returns full sequence range.
     U2Region getOneRegionFromSelection() const;
@@ -91,14 +93,14 @@ class RegionSelectorController : public QObject {
 public:
     RegionSelectorController(RegionSelectorGui gui,
                              RegionSelectorSettings settings,
-                             QObject* parent);
+                             QObject *parent);
 
     U2Region getRegion(bool *ok = NULL) const;
-    void setRegion(const U2Region& region);
+    void setRegion(const U2Region &region);
 
     QString getPresetName() const;
-    void setPreset(const QString& preset);
-    void removePreset(const QString& preset);
+    void setPreset(const QString &preset);
+    void removePreset(const QString &preset);
 
     void reset();
 
@@ -106,14 +108,14 @@ public:
     QString getErrorMessage() const;
 
 signals:
-    void si_regionChanged(const U2Region& newRegion);
+    void si_regionChanged(const U2Region &newRegion);
 
 private slots:
     //! rename
     void sl_regionChanged();
     void sl_onPresetChanged(int index);
     void sl_onRegionChanged();
-    void sl_onSelectionChanged(GSelection* selection);
+    void sl_onSelectionChanged(GSelection *selection);
     void sl_onValueEdited();
 
 private:
@@ -122,10 +124,10 @@ private:
     void connectSlots();
 
 private:
-    RegionSelectorGui       gui;
-    RegionSelectorSettings  settings;
+    RegionSelectorGui gui;
+    RegionSelectorSettings settings;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_REGION_SELECTOR_CONTROLLER_H_
+#endif    // _U2_REGION_SELECTOR_CONTROLLER_H_

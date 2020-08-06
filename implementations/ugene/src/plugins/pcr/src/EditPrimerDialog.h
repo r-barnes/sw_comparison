@@ -25,7 +25,6 @@
 #include <QDialog>
 
 #include "Primer.h"
-
 #include "ui_EditPrimerDialog.h"
 
 namespace U2 {
@@ -47,6 +46,6 @@ private:
     void validate(bool isValid);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_EDIT_PRIMER_DIALOG_H_
+#endif    // _U2_EDIT_PRIMER_DIALOG_H_

@@ -19,22 +19,23 @@
  * MA 02110-1301, USA.
  */
 
+#include "AuthenticationDialog.h"
+
 #include <QMessageBox>
 
 #include <U2Gui/HelpButton.h>
-#include "AuthenticationDialog.h"
+
 #include "AuthenticationWidget.h"
 #include "ui_AuthenticationDialog.h"
 
 namespace U2 {
 
-AuthenticationDialog::AuthenticationDialog(const QString &text, QWidget* parent) :
-    QDialog(parent),
-    ui(new Ui_AuthenticationDialog),
-    authenticationWidget(new AuthenticationWidget)
-{
+AuthenticationDialog::AuthenticationDialog(const QString &text, QWidget *parent)
+    : QDialog(parent),
+      ui(new Ui_AuthenticationDialog),
+      authenticationWidget(new AuthenticationWidget) {
     ui->setupUi(this);
-    new HelpButton(this, ui->buttonBox, "24742692");
+    new HelpButton(this, ui->buttonBox, "46501288");
     ui->mainLayout->insertWidget(1, authenticationWidget);
 
     if (text.isEmpty()) {
@@ -50,11 +51,11 @@ AuthenticationDialog::~AuthenticationDialog() {
     delete ui;
 }
 
-void AuthenticationDialog::setLogin(const QString& login) {
+void AuthenticationDialog::setLogin(const QString &login) {
     authenticationWidget->setLogin(login);
 }
 
-void AuthenticationDialog::setPassword(const QString& password) {
+void AuthenticationDialog::setPassword(const QString &password) {
     authenticationWidget->setPassword(password);
 }
 
@@ -87,4 +88,4 @@ void AuthenticationDialog::accept() {
     QDialog::accept();
 }
 
-} // namespace
+}    // namespace U2

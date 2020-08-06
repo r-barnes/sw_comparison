@@ -22,12 +22,13 @@
 #ifndef _U2_DIRECTORIES_SETTINGS_GUI_CONTROLLER_H_
 #define _U2_DIRECTORIES_SETTINGS_GUI_CONTROLLER_H_
 
-#include "ui_DirectoriesSettingsWidget.h"
+#include <QUrl>
 
 #include <U2Core/NetworkConfiguration.h>
+
 #include <U2Gui/AppSettingsGUI.h>
 
-#include <QUrl>
+#include "ui_DirectoriesSettingsWidget.h"
 
 namespace U2 {
 
@@ -40,20 +41,21 @@ public:
 class DirectoriesSettingsPageController : public AppSettingsGUIPageController {
     Q_OBJECT
 public:
-    DirectoriesSettingsPageController(QObject* p = NULL);
+    DirectoriesSettingsPageController(QObject *p = NULL);
 
-    virtual AppSettingsGUIPageState* getSavedState();
+    virtual AppSettingsGUIPageState *getSavedState();
 
-    virtual void saveState(AppSettingsGUIPageState* s);
+    virtual void saveState(AppSettingsGUIPageState *s);
 
-    virtual AppSettingsGUIPageWidget* createWidget(AppSettingsGUIPageState* data);
-    
-    const QString& getHelpPageId() const {return helpPageId;};
+    virtual AppSettingsGUIPageWidget *createWidget(AppSettingsGUIPageState *data);
+
+    const QString &getHelpPageId() const {
+        return helpPageId;
+    };
 
 private:
     static const QString helpPageId;
 };
-
 
 class DirectoriesSettingsPageState : public AppSettingsGUIPageState {
     Q_OBJECT
@@ -66,15 +68,14 @@ public:
     QString indexDirectory;
 };
 
-
-class DirectoriesSettingsPageWidget: public AppSettingsGUIPageWidget, public Ui_DirectoriesSettingsWidget {
+class DirectoriesSettingsPageWidget : public AppSettingsGUIPageWidget, public Ui_DirectoriesSettingsWidget {
     Q_OBJECT
 public:
-    DirectoriesSettingsPageWidget(DirectoriesSettingsPageController* ctrl);
+    DirectoriesSettingsPageWidget(DirectoriesSettingsPageController *ctrl);
 
-    virtual void setState(AppSettingsGUIPageState* state);
+    virtual void setState(AppSettingsGUIPageState *state);
 
-    virtual AppSettingsGUIPageState* getState(QString& err) const;
+    virtual AppSettingsGUIPageState *getState(QString &err) const;
 
 private slots:
     void sl_browseDownloadsDirButtonClicked();
@@ -83,9 +84,8 @@ private slots:
     void sl_browseFileStorageButtonClicked();
     void sl_cleanupStorage();
     void sl_onIndexDirButton();
-    
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

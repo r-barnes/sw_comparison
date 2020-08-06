@@ -25,9 +25,7 @@ namespace U2 {
 namespace Workflow {
 
 RequiredSlotsValidator::RequiredSlotsValidator(const QList<Descriptor> &_requiredSlots)
-: requiredSlots(_requiredSlots)
-{
-
+    : requiredSlots(_requiredSlots) {
 }
 
 bool RequiredSlotsValidator::validate(const IntegralBusPort *port, NotificationsList &notificationList) const {
@@ -41,5 +39,5 @@ bool RequiredSlotsValidator::validate(const IntegralBusPort *port, Notifications
     return noErrors;
 }
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

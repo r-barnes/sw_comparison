@@ -22,13 +22,13 @@
 #ifndef _U2_EXTERNAL_TOOL_SUPPORT_SETTINGS_H_
 #define _U2_EXTERNAL_TOOL_SUPPORT_SETTINGS_H_
 
-#include <QString>
-#include <QObject>
+#include <QDirIterator>
 #include <QFont>
+#include <QObject>
+#include <QQueue>
+#include <QString>
 
 #include <U2Core/global.h>
-#include <QDirIterator>
-#include <QQueue>
 
 namespace U2 {
 
@@ -51,15 +51,16 @@ public:
     static void loadExternalTools();
     static void setExternalTools();
 
-    static void checkTemporaryDir(U2OpStatus& os);
+    static void checkTemporaryDir(U2OpStatus &os);
 
-    static Watcher * const watcher;
+    static Watcher *const watcher;
+
 private:
     static int prevNumberExternalTools;
 };
 
 /**Helper class that iterates through subfolders up to given deep level*/
-class LimitedDirIterator{
+class LimitedDirIterator {
 public:
     //deepLevel = 0 - returns only the root dir
     //deepLevel = 1 - returns the root dir and its subdirs
@@ -79,13 +80,11 @@ private:
 private:
     int deepLevel;
 
-    QQueue< QPair<QString, int> > data;
+    QQueue<QPair<QString, int>> data;
 
     QString curPath;
-
 };
 
-
-}//namespace
+}    // namespace U2
 
 #endif

@@ -22,9 +22,9 @@
 #ifndef _U2_SCRIPT_EDITOR_DIALOG_H_
 #define _U2_SCRIPT_EDITOR_DIALOG_H_
 
-#include <U2Core/global.h>
-
 #include <QDialog>
+
+#include <U2Core/global.h>
 
 class Ui_ScriptEditorDialog;
 
@@ -35,12 +35,12 @@ class ScriptEditorWidget;
 class U2GUI_EXPORT ScriptEditorDialog : public QDialog {
     Q_OBJECT
 public:
-    ScriptEditorDialog(QWidget* p, const QString& roHeaderText, const QString & text = QString());
+    ScriptEditorDialog(QWidget *p, const QString &roHeaderText, const QString &text = QString());
     ~ScriptEditorDialog();
 
-    void setScriptText(const QString& text);
+    void setScriptText(const QString &text);
 
-    void setScriptPath(const QString& path);
+    void setScriptPath(const QString &path);
 
     QString getScriptText() const;
 
@@ -63,6 +63,6 @@ private:
     Ui_ScriptEditorDialog *ui;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

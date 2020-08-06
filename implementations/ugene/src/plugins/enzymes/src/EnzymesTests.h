@@ -22,13 +22,14 @@
 #ifndef _U2_ENZYMES_TESTS_H_
 #define _U2_ENZYMES_TESTS_H_
 
+#include <QDomElement>
+#include <QMultiMap>
+
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/GObject.h>
 #include <U2Core/U2Region.h>
-#include <U2Test/XMLTestUtils.h>
 
-#include <QMultiMap>
-#include <QDomElement>
+#include <U2Test/XMLTestUtils.h>
 
 #include "DNAFragment.h"
 
@@ -43,22 +44,22 @@ class GTest_FindEnzymes : public XmlTest {
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_FindEnzymes, "find-enzymes");
 
     void prepare();
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
     ReportResult report();
     void cleanup();
 
 private:
     int minHits;
     int maxHits;
-    QString                 enzymesUrl;
-    QString                 seqObjCtx;
-    QString                 aObjName;
-    U2SequenceObject*       seqObj;
-    QVector<U2Region>       excludedRegions;
-    QStringList             enzymeNames;
-    AnnotationTableObject*    aObj;
-    LoadEnzymeFileTask*     loadTask;
-    bool                    contextIsAdded;
+    QString enzymesUrl;
+    QString seqObjCtx;
+    QString aObjName;
+    U2SequenceObject *seqObj;
+    QVector<U2Region> excludedRegions;
+    QStringList enzymeNames;
+    AnnotationTableObject *aObj;
+    LoadEnzymeFileTask *loadTask;
+    bool contextIsAdded;
     QMultiMap<QString, U2Region> resultsPerEnzyme;
 };
 
@@ -68,18 +69,18 @@ class GTest_DigestIntoFragments : public XmlTest {
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DigestIntoFragments, "digest-into-fragments");
 
     void prepare();
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
 private:
-    QString                 seqObjCtx;
-    QString                 aObjCtx;
-    QString                 enzymesUrl;
-    QStringList             enzymeNames;
-    bool                    searchForEnzymes;
-    bool                    isCircular;
-    AnnotationTableObject*  aObj;
-    U2SequenceObject*       seqObj;
-    LoadEnzymeFileTask*     loadTask;
+    QString seqObjCtx;
+    QString aObjCtx;
+    QString enzymesUrl;
+    QStringList enzymeNames;
+    bool searchForEnzymes;
+    bool isCircular;
+    AnnotationTableObject *aObj;
+    U2SequenceObject *seqObj;
+    LoadEnzymeFileTask *loadTask;
 };
 
 class LigateFragmentsTask;
@@ -95,24 +96,23 @@ class GTest_LigateFragments : public XmlTest {
     void prepareFragmentsList();
 
 private:
-    QStringList             seqObjNames;
-    QStringList             annObjNames;
-    QStringList             fragmentNames;
-    QString                 resultDocName;
-    QList<GObject*>         sObjs, aObjs;
-    QList<DNAFragment>      targetFragments;
-    bool                    makeCircular;
-    bool                    checkOverhangs;
-    bool                    contextAdded;
-    LigateFragmentsTask*    ligateTask;
+    QStringList seqObjNames;
+    QStringList annObjNames;
+    QStringList fragmentNames;
+    QString resultDocName;
+    QList<GObject *> sObjs, aObjs;
+    QList<DNAFragment> targetFragments;
+    bool makeCircular;
+    bool checkOverhangs;
+    bool contextAdded;
+    LigateFragmentsTask *ligateTask;
 };
-
 
 class EnzymeTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

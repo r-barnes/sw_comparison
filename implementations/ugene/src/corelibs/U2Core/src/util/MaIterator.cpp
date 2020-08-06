@@ -19,11 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "MaIterator.h"
+
 #include <QPoint>
 
 #include <U2Core/U2SafePoints.h>
-
-#include "MaIterator.h"
 
 namespace U2 {
 
@@ -36,8 +36,7 @@ MaIterator::MaIterator(const MultipleAlignment &ma, NavigationDirection directio
       isCircular(false),
       coreRegionsOnly(false),
       position(-1),
-      maSquare(static_cast<qint64>(ma->getLength()) * rowsIndexes.size())
-{
+      maSquare(static_cast<qint64>(ma->getLength()) * rowsIndexes.size()) {
     if (rowsIndexes.isEmpty()) {
         for (int index = 0; index < ma->getNumRows(); index++) {
             rowsIndexes << index;
@@ -53,25 +52,27 @@ bool MaIterator::hasNext() const {
 
 char MaIterator::next() {
     SAFE_POINT(hasNext(), "Out of boundaries", U2Msa::INVALID_CHAR);
-    return *(operator ++());
+    return *(operator++());
 }
 
-MaIterator &MaIterator::operator ++() {
+MaIterator &MaIterator::operator++() {
     SAFE_POINT(hasNext(), "Out of boundaries", *this);
     position = getNextPosition();
     SAFE_POINT(isInRange(position), "Out of boundaries", *this);
     return *this;
 }
 
-char MaIterator::operator *() {
+char MaIterator::operator*() {
     SAFE_POINT(isInRange(position), "Out of boundaries", U2Msa::INVALID_CHAR);
     const QPoint maPoint = getMaPoint();
     SAFE_POINT(0 <= maPoint.x() && maPoint.x() < ma->getLength() &&
-               0 <= maPoint.y() && maPoint.y() < ma->getNumRows(), "Out of boundaries", U2Msa::INVALID_CHAR);
+                   0 <= maPoint.y() && maPoint.y() < ma->getNumRows(),
+               "Out of boundaries",
+               U2Msa::INVALID_CHAR);
     return ma->charAt(maPoint.y(), maPoint.x());
 }
 
-bool MaIterator::operator ==(const MaIterator &other) const {
+bool MaIterator::operator==(const MaIterator &other) const {
     return ma == other.ma && position == other.position;
 }
 
@@ -151,4 +152,4 @@ int MaIterator::getColumnNumber(qint64 position) const {
     return static_cast<int>(position % ma->getLength());
 }
 
-}   // namespace U2
+}    // namespace U2

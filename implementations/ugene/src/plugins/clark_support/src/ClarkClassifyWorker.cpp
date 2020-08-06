@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ClarkClassifyWorker.h"
+
 #include <QFileInfo>
 
 #include <U2Core/AppContext.h>
@@ -57,10 +59,9 @@
 #include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/WorkflowMonitor.h>
 
-#include "ClarkClassifyWorker.h"
-#include "ClarkSupport.h"
 #include "../ngs_reads_classification/src/DatabaseDelegate.h"
 #include "../ngs_reads_classification/src/NgsReadsClassificationUtils.h"
+#include "ClarkSupport.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -77,7 +78,8 @@ QString ClarkClassifyPrompter::composeRichDoc() {
     } else {
         const QString pairedReadsProducerName = getProducersOrUnset(ClarkClassifyWorkerFactory::INPUT_PORT, ClarkClassifyWorkerFactory::PAIRED_INPUT_SLOT);
         return tr("Classify paired-end reads from <u>%1</u> with CLARK, use %2 database.")
-                .arg(pairedReadsProducerName).arg(databaseUrl);
+            .arg(pairedReadsProducerName)
+            .arg(databaseUrl);
     }
 }
 
@@ -99,7 +101,9 @@ bool ClarkClassifyValidator::validateDatabase(const Actor *actor, NotificationsL
                   notificationList.append(WorkflowNotification(tr("The database folder doesn't exist: %1.").arg(databaseUrl), actor->getId())),
                   false);
 
-        const QStringList files = QStringList() << "targets.txt" << ".custom.fileToAccssnTaxID" << ".custom.fileToTaxIDs";
+        const QStringList files = QStringList() << "targets.txt"
+                                                << ".custom.fileToAccssnTaxID"
+                                                << ".custom.fileToTaxIDs";
 
         QStringList missedFiles;
         foreach (const QString &file, files) {
@@ -162,12 +166,12 @@ bool ClarkClassifyValidator::isDatabaseAlreadyBuilt(const Actor *actor) const {
     QStringList nameFilters;
     if (ClarkClassifySettings::TOOL_LIGHT == actor->getParameter(ClarkClassifyWorkerFactory::TOOL_VARIANT)->getAttributeValueWithoutScript<QString>().toLower()) {
         nameFilters << QString("*_m%1_light_%2.tsk.*")
-                       .arg(actor->getParameter(ClarkClassifyWorkerFactory::K_MIN_FREQ)->getAttributeValueWithoutScript<int>())
-                       .arg(actor->getParameter(ClarkClassifyWorkerFactory::GAP)->getAttributeValueWithoutScript<int>());
-    } else  {
+                           .arg(actor->getParameter(ClarkClassifyWorkerFactory::K_MIN_FREQ)->getAttributeValueWithoutScript<int>())
+                           .arg(actor->getParameter(ClarkClassifyWorkerFactory::GAP)->getAttributeValueWithoutScript<int>());
+    } else {
         nameFilters << QString("*_k%1_t*_s*_m%2.tsk.*")
-                       .arg(actor->getParameter(ClarkClassifyWorkerFactory::K_LENGTH)->getAttributeValueWithoutScript<int>())
-                       .arg(actor->getParameter(ClarkClassifyWorkerFactory::K_MIN_FREQ)->getAttributeValueWithoutScript<int>());
+                           .arg(actor->getParameter(ClarkClassifyWorkerFactory::K_LENGTH)->getAttributeValueWithoutScript<int>())
+                           .arg(actor->getParameter(ClarkClassifyWorkerFactory::K_MIN_FREQ)->getAttributeValueWithoutScript<int>());
     }
 
     QFileInfoList files = QDir(databaseUrl).entryInfoList(nameFilters);
@@ -212,13 +216,11 @@ const QString ClarkClassifyWorkerFactory::PAIRED_END = "paired-end";
 const QString ClarkClassifyWorkerFactory::WORKFLOW_CLASSIFY_TOOL_CLARK = "CLARK";
 
 void ClarkClassifyWorkerFactory::init() {
+    Descriptor desc(ACTOR_ID, ClarkClassifyWorker::tr("Classify Sequences with CLARK"), ClarkClassifyWorker::tr("CLARK (CLAssifier based on Reduced K-mers) is a tool for supervised sequence "
+                                                                                                                "classification based on discriminative k-mers. UGENE provides the GUI for CLARK and CLARK-l "
+                                                                                                                "variants of the CLARK framework for solving the problem of the assignment of metagenomic reads to known genomes."));
 
-    Descriptor desc( ACTOR_ID, ClarkClassifyWorker::tr("Classify Sequences with CLARK"),
-        ClarkClassifyWorker::tr("CLARK (CLAssifier based on Reduced K-mers) is a tool for supervised sequence "
-                                "classification based on discriminative k-mers. UGENE provides the GUI for CLARK and CLARK-l "
-                                "variants of the CLARK framework for solving the problem of the assignment of metagenomic reads to known genomes.") );
-
-    QList<PortDescriptor*> p;
+    QList<PortDescriptor *> p;
     {
         Descriptor inD(INPUT_PORT, ClarkClassifyWorker::tr("Input sequences"), ClarkClassifyWorker::tr("URL(s) to FASTQ or FASTA file(s) should be provided.\n\n"
                                                                                                        "In case of SE reads or contigs use the \"Input URL 1\" slot only.\n\n"
@@ -239,64 +241,50 @@ void ClarkClassifyWorkerFactory::init() {
         p << new PortDescriptor(outD, DataTypePtr(new MapDataType("clark.output", outM)), false, true);
     }
 
-    QList<Attribute*> a;
+    QList<Attribute *> a;
     {
-        Descriptor tool(TOOL_VARIANT, ClarkClassifyWorker::tr("Classification tool"),
-            ClarkClassifyWorker::tr("Use CLARK-l on workstations with limited memory (i.e., \"l\" for light), this software tool provides precise classification on small metagenomes. It works with a sparse or ''light'' database (up to 4 GB of RAM) while still performing ultra accurate and fast results.<br><br>"
-                                    "Use CLARK on powerful workstations, it requires a significant amount of RAM to run with large database (e.g. all bacterial genomes from NCBI/RefSeq)."));
+        Descriptor tool(TOOL_VARIANT, ClarkClassifyWorker::tr("Classification tool"), ClarkClassifyWorker::tr("Use CLARK-l on workstations with limited memory (i.e., \"l\" for light), this software tool provides precise classification on small metagenomes. It works with a sparse or ''light'' database (up to 4 GB of RAM) while still performing ultra accurate and fast results.<br><br>"
+                                                                                                              "Use CLARK on powerful workstations, it requires a significant amount of RAM to run with large database (e.g. all bacterial genomes from NCBI/RefSeq)."));
 
-        Descriptor dbUrl(DB_URL, ClarkClassifyWorker::tr("Database"),
-            ClarkClassifyWorker::tr("A path to the folder with the CLARK database files (-D).<br><br>"
-                                    "It is assumed that \"targets.txt\" file is located in this folder (the file is passed to the \"classify_metagenome.sh\" script from the CLARK package via parameter -T)."));
+        Descriptor dbUrl(DB_URL, ClarkClassifyWorker::tr("Database"), ClarkClassifyWorker::tr("A path to the folder with the CLARK database files (-D).<br><br>"
+                                                                                              "It is assumed that \"targets.txt\" file is located in this folder (the file is passed to the \"classify_metagenome.sh\" script from the CLARK package via parameter -T)."));
 
-        Descriptor outputUrl(OUTPUT_URL, ClarkClassifyWorker::tr("Output file"),
-                         ClarkClassifyWorker::tr("Specify the output file name."));
+        Descriptor outputUrl(OUTPUT_URL, ClarkClassifyWorker::tr("Output file"), ClarkClassifyWorker::tr("Specify the output file name."));
 
+        Descriptor kLength(K_LENGTH, ClarkClassifyWorker::tr("K-mer length"), ClarkClassifyWorker::tr("Set the k-mer length (-k).<br><br>"
+                                                                                                      "This value is critical for the classification accuracy and speed.<br><br>"
+                                                                                                      "For high sensitivity, it is recommended to set this value to 20 or 21 (along with the \"Full\" mode).<br><br>"
+                                                                                                      "However, if the precision and the speed are the main concern, use any value between 26 and 32.<br><br>"
+                                                                                                      "Note that the higher the value, the higher is the RAM usage. So, as a good tradeoff between speed, precision, and RAM usage, it is recommended to set this value to 31 (along with the \"Default\" or \"Express\" mode)."));
 
-        Descriptor kLength(K_LENGTH, ClarkClassifyWorker::tr("K-mer length"),
-            ClarkClassifyWorker::tr("Set the k-mer length (-k).<br><br>"
-                                    "This value is critical for the classification accuracy and speed.<br><br>"
-                                    "For high sensitivity, it is recommended to set this value to 20 or 21 (along with the \"Full\" mode).<br><br>"
-                                    "However, if the precision and the speed are the main concern, use any value between 26 and 32.<br><br>"
-                                    "Note that the higher the value, the higher is the RAM usage. So, as a good tradeoff between speed, precision, and RAM usage, it is recommended to set this value to 31 (along with the \"Default\" or \"Express\" mode)."));
+        Descriptor kMinFreq(K_MIN_FREQ, ClarkClassifyWorker::tr("Minimum k-mer frequency"), ClarkClassifyWorker::tr("Minimum of k-mer frequency/occurrence for the discriminative k-mers (-t).<br><br>"
+                                                                                                                    "For example, for 1 (or, 2), the program will discard any discriminative k-mer that appear only once (or, less than twice)."));
 
+        Descriptor mode(MODE, ClarkClassifyWorker::tr("Mode"), ClarkClassifyWorker::tr("Set the mode of the execution (-m):<ul>"
+                                                                                       "<li>\"Full\" to get detailed results, confidence scores and other statistics."
+                                                                                       "<li>\"Default\" to get results summary and perform best trade-off between classification speed, accuracy and RAM usage."
+                                                                                       "<li>\"Express\" to get results summary with the highest speed possible."
+                                                                                       "</ul>"));
 
-        Descriptor kMinFreq(K_MIN_FREQ, ClarkClassifyWorker::tr("Minimum k-mer frequency"),
-            ClarkClassifyWorker::tr("Minimum of k-mer frequency/occurrence for the discriminative k-mers (-t).<br><br>"
-                                    "For example, for 1 (or, 2), the program will discard any discriminative k-mer that appear only once (or, less than twice)."));
+        Descriptor factor(FACTOR, ClarkClassifyWorker::tr("Sampling factor value"), ClarkClassifyWorker::tr("Sample factor value (-s).<br><br>"
+                                                                                                            "To load in memory half the discriminative k-mers set this value to 2. To load a third of these k-mers set it to 3.<br><br>"
+                                                                                                            "The higher the factor is, the lower the RAM usage is and the higher the classification speed/precision is. However, the sensitivity can be quickly degraded, especially for values higher than 3."));
 
-        Descriptor mode(MODE, ClarkClassifyWorker::tr("Mode"),
-            ClarkClassifyWorker::tr("Set the mode of the execution (-m):<ul>"
-                                    "<li>\"Full\" to get detailed results, confidence scores and other statistics."
-                                    "<li>\"Default\" to get results summary and perform best trade-off between classification speed, accuracy and RAM usage."
-                                    "<li>\"Express\" to get results summary with the highest speed possible."
-                                    "</ul>"));
+        Descriptor gap(GAP, ClarkClassifyWorker::tr("Gap"), ClarkClassifyWorker::tr("\"Gap\" or number of non-overlapping k-mers to pass when creating the database (-п).<br><br>"
+                                                                                    "Increase the value if it is required to reduce the RAM usage. Note that this will degrade the sensitivity."));
 
-        Descriptor factor(FACTOR, ClarkClassifyWorker::tr("Sampling factor value"),
-            ClarkClassifyWorker::tr("Sample factor value (-s).<br><br>"
-                                    "To load in memory half the discriminative k-mers set this value to 2. To load a third of these k-mers set it to 3.<br><br>"
-                                    "The higher the factor is, the lower the RAM usage is and the higher the classification speed/precision is. However, the sensitivity can be quickly degraded, especially for values higher than 3."));
+        Descriptor extendedOutput(EXTEND_OUT, ClarkClassifyWorker::tr("Extended output"), ClarkClassifyWorker::tr("Request an extended output for the result file (--extended)."));
 
-        Descriptor gap(GAP, ClarkClassifyWorker::tr("Gap"),
-            ClarkClassifyWorker::tr("\"Gap\" or number of non-overlapping k-mers to pass when creating the database (-п).<br><br>"
-                                    "Increase the value if it is required to reduce the RAM usage. Note that this will degrade the sensitivity."));
+        Descriptor db2ram(DB_TO_RAM, ClarkClassifyWorker::tr("Load database into memory"), ClarkClassifyWorker::tr("Request the loading of database file by memory mapped-file (--ldm).<br><br>"
+                                                                                                                   "This option accelerates the loading time but it will require an additional amount of RAM significant. "
+                                                                                                                   "This option also allows one to load the database in multithreaded-task (see also the \"Number of threads\" parameter)."));
 
-        Descriptor extendedOutput(EXTEND_OUT, ClarkClassifyWorker::tr("Extended output"),
-            ClarkClassifyWorker::tr("Request an extended output for the result file (--extended)."));
+        Descriptor numThreads(NUM_THREADS, ClarkClassifyWorker::tr("Number of threads"), ClarkClassifyWorker::tr("Use multiple threads for the classification and, with the \"Load database into memory\" option enabled, for the loading of the database into RAM (-n)."));
 
-        Descriptor db2ram(DB_TO_RAM, ClarkClassifyWorker::tr("Load database into memory"),
-            ClarkClassifyWorker::tr("Request the loading of database file by memory mapped-file (--ldm).<br><br>"
-                                    "This option accelerates the loading time but it will require an additional amount of RAM significant. "
-                                    "This option also allows one to load the database in multithreaded-task (see also the \"Number of threads\" parameter)."));
-
-        Descriptor numThreads(NUM_THREADS, ClarkClassifyWorker::tr("Number of threads"),
-            ClarkClassifyWorker::tr("Use multiple threads for the classification and, with the \"Load database into memory\" option enabled, for the loading of the database into RAM (-n)."));
-
-        Descriptor sequencingReadsDesc(SEQUENCING_READS, ClarkClassifyWorker::tr("Input data"),
-                                             ClarkClassifyWorker::tr("To classify single-end (SE) reads or contigs, received by reads de novo assembly, set this parameter to \"SE reads or contigs\".<br><br>"
-                                                                     "To classify paired-end (PE) reads, set the value to \"PE reads\".<br><br>"
-                                                                     "One or two slots of the input port are used depending on the value of the parameter. Pass URL(s) to data to these slots.<br><br>"
-                                                                     "The input files should be in FASTA or FASTQ formats."));
+        Descriptor sequencingReadsDesc(SEQUENCING_READS, ClarkClassifyWorker::tr("Input data"), ClarkClassifyWorker::tr("To classify single-end (SE) reads or contigs, received by reads de novo assembly, set this parameter to \"SE reads or contigs\".<br><br>"
+                                                                                                                        "To classify paired-end (PE) reads, set the value to \"PE reads\".<br><br>"
+                                                                                                                        "One or two slots of the input port are used depending on the value of the parameter. Pass URL(s) to data to these slots.<br><br>"
+                                                                                                                        "The input files should be in FASTA or FASTQ formats."));
 
         const Descriptor classifyToolDesc(NgsReadsClassificationPlugin::WORKFLOW_CLASSIFY_TOOL_ID,
                                           WORKFLOW_CLASSIFY_TOOL_CLARK,
@@ -342,12 +330,10 @@ void ClarkClassifyWorkerFactory::init() {
         a << new Attribute(numThreads, BaseTypes::NUM_TYPE(), Attribute::None, AppContext::getAppSettings()->getAppResourcePool()->getIdealThreadCount());
         a << new Attribute(outputUrl, BaseTypes::STRING_TYPE(), Attribute::Required | Attribute::NeedValidateEncoding | Attribute::CanBeEmpty);
 
-        a << new Attribute(classifyToolDesc, BaseTypes::STRING_TYPE(),
-                           static_cast<Attribute::Flags>(Attribute::Hidden),
-                           WORKFLOW_CLASSIFY_TOOL_CLARK);
+        a << new Attribute(classifyToolDesc, BaseTypes::STRING_TYPE(), static_cast<Attribute::Flags>(Attribute::Hidden), WORKFLOW_CLASSIFY_TOOL_CLARK);
     }
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
         QVariantMap sequencingReadsMap;
         sequencingReadsMap[ClarkClassifyWorker::tr("SE reads or contigs")] = SINGLE_END;
@@ -401,7 +387,7 @@ void ClarkClassifyWorkerFactory::init() {
         delegates[DB_URL] = new DatabaseDelegate(ACTOR_ID, DB_URL, dataPathItems, "clark/database", true);
     }
 
-    ActorPrototype* proto = new IntegralBusActorPrototype(desc, p, a);
+    ActorPrototype *proto = new IntegralBusActorPrototype(desc, p, a);
     proto->setEditor(new DelegateEditor(delegates));
     proto->setPrompter(new ClarkClassifyPrompter());
     proto->setValidator(new ClarkClassifyValidator());
@@ -424,8 +410,7 @@ void ClarkClassifyWorkerFactory::cleanup() {
 /* ClarkClassifyWorker */
 /************************************************************************/
 ClarkClassifyWorker::ClarkClassifyWorker(Actor *a)
-:BaseWorker(a, false), input(NULL), output(NULL), paired(false)
-{
+    : BaseWorker(a, false), input(NULL), output(NULL), paired(false) {
 }
 
 void ClarkClassifyWorker::init() {
@@ -454,12 +439,12 @@ void ClarkClassifyWorker::init() {
     cfg.extOut = getValue<bool>(ClarkClassifyWorkerFactory::EXTEND_OUT);
 
     cfg.mode = (U2::LocalWorkflow::ClarkClassifySettings::Mode)getValue<int>(ClarkClassifyWorkerFactory::MODE);
-    if (!(cfg.mode >=ClarkClassifySettings::Full && cfg.mode <= ClarkClassifySettings::Spectrum)) {
+    if (!(cfg.mode >= ClarkClassifySettings::Full && cfg.mode <= ClarkClassifySettings::Spectrum)) {
         reportError(tr("Unrecognized mode of execution, expected any of: 0 (full), 1 (default), 2 (express) or 3 (spectrum)"));
     }
 }
 
-Task * ClarkClassifyWorker::tick() {
+Task *ClarkClassifyWorker::tick() {
     if (input->hasMessage()) {
         const Message message = getMessageAndSetupScriptValues(input);
 
@@ -478,8 +463,8 @@ Task * ClarkClassifyWorker::tick() {
             reportUrl = tmpDir +
                         "/" +
                         (fileUrl.isEmpty() ? QString("CLARK_%1.txt")
-                                                     .arg(NgsReadsClassificationUtils::CLASSIFICATION_SUFFIX)
-                                           : NgsReadsClassificationUtils::getBaseFileNameWithSuffixes(fileUrl,
+                                                 .arg(NgsReadsClassificationUtils::CLASSIFICATION_SUFFIX) :
+                                             NgsReadsClassificationUtils::getBaseFileNameWithSuffixes(fileUrl,
                                                                                                       QStringList() << "CLARK"
                                                                                                                     << NgsReadsClassificationUtils::CLASSIFICATION_SUFFIX,
                                                                                                       "csv",
@@ -500,7 +485,7 @@ Task * ClarkClassifyWorker::tick() {
         return task;
     }
 
-    if (input->isEnded()/* || (paired && pairedInput->isEnded())*/) {
+    if (input->isEnded() /* || (paired && pairedInput->isEnded())*/) {
         setDone();
         algoLog.info("CLARK worker is done as input has ended");
         output->setEnded();
@@ -527,17 +512,17 @@ void ClarkClassifyWorker::sl_taskFinished(Task *t) {
 
     LocalWorkflow::TaxonomyClassificationResult::const_iterator it;
     int classifiedCount = NgsReadsClassificationUtils::countClassified(classificationResult);
-    context->getMonitor()->addInfo(tr("There were %1 input reads, %2 reads were classified.").arg(QString::number(classificationResult.size())).arg(QString::number(classifiedCount))
-        , getActor()->getId(), WorkflowNotification::U2_INFO);
+    context->getMonitor()->addInfo(tr("There were %1 input reads, %2 reads were classified.").arg(QString::number(classificationResult.size())).arg(QString::number(classifiedCount)), getActor()->getId(), WorkflowNotification::U2_INFO);
 }
 
 void ClarkClassifyWorker::cleanup() {
-
 }
 
 const QMap<QString, QString> ClarkLogParser::wellKnownErrors = ClarkLogParser::initWellKnownErrors();
 
-ClarkLogParser::ClarkLogParser() : ExternalToolLogParser() {}
+ClarkLogParser::ClarkLogParser()
+    : ExternalToolLogParser() {
+}
 
 bool ClarkLogParser::isError(const QString &line) const {
     foreach (const QString &wellKnownError, wellKnownErrors.keys()) {
@@ -550,7 +535,7 @@ bool ClarkLogParser::isError(const QString &line) const {
 
 void ClarkLogParser::setLastError(const QString &errorKey) {
     QString errorValue = errorKey;
-    foreach(const QString& wellKnownErrorKey, wellKnownErrors.keys()) {
+    foreach (const QString &wellKnownErrorKey, wellKnownErrors.keys()) {
         CHECK_CONTINUE(errorKey.contains(wellKnownErrorKey));
 
         errorValue = wellKnownErrors.value(wellKnownErrorKey, errorKey);
@@ -560,8 +545,8 @@ void ClarkLogParser::setLastError(const QString &errorKey) {
 
 QMap<QString, QString> ClarkLogParser::initWellKnownErrors() {
     QMap<QString, QString> result;
-    result.insert("std::bad_alloc", tr("There is not enough memory (RAM) to execute CLARK."));
-    result.insert("Process crashed", tr("CLARK process crashed. It might happened because there is not enough memory (RAM) to complete the CLARK execution."));
+    result.insert("std::bad_alloc", "There is not enough memory (RAM) to execute CLARK.");
+    result.insert("Process crashed", "CLARK process crashed. It might happened because there is not enough memory (RAM) to complete the CLARK execution.");
 
     return result;
 }
@@ -571,19 +556,17 @@ static const QByteArray EXTENDED_REPORT_SUFFIX(",Length,Gamma,1st_assignment,sco
 
 ClarkClassifyTask::ClarkClassifyTask(const ClarkClassifySettings &settings, const QString &readsUrl, const QString &pairedReadsUrl, const QString &reportUrl)
     : ExternalToolSupportTask(tr("Classify reads with Clark"), TaskFlags_FOSE_COSC),
-      cfg(settings), readsUrl(readsUrl), pairedReadsUrl(pairedReadsUrl), reportUrl(reportUrl)
-{
+      cfg(settings), readsUrl(readsUrl), pairedReadsUrl(pairedReadsUrl), reportUrl(reportUrl) {
     GCOUNTER(cvar, tvar, "ClarkClassifyTask");
 
     SAFE_POINT_EXT(!readsUrl.isEmpty(), setError("Reads URL is empty"), );
     SAFE_POINT_EXT(!reportUrl.isEmpty(), setError("Classification report URL is empty"), );
     SAFE_POINT_EXT(!settings.databaseUrl.isEmpty(), setError("Clark database URL is empty"), );
-
 }
 
 void ClarkClassifyTask::prepare() {
     QString toolId = ClarkSupport::ET_CLARK_L_ID;
-    if ( QString::compare(cfg.tool, ClarkClassifySettings::TOOL_DEFAULT, Qt::CaseInsensitive) == 0) {
+    if (QString::compare(cfg.tool, ClarkClassifySettings::TOOL_DEFAULT, Qt::CaseInsensitive) == 0) {
         toolId = ClarkSupport::ET_CLARK_ID;
     } else if (QString::compare(cfg.tool, ClarkClassifySettings::TOOL_LIGHT, Qt::CaseInsensitive) != 0) {
         stateInfo.setError(tr("Unsupported CLARK variant. Only default and light variants are supported."));
@@ -597,7 +580,6 @@ void ClarkClassifyTask::prepare() {
 }
 
 QStringList ClarkClassifyTask::getArguments() {
-
     QStringList arguments;
 
     arguments << "-D" << cfg.databaseUrl;
@@ -611,8 +593,7 @@ QStringList ClarkClassifyTask::getArguments() {
 
     if (!pairedReadsUrl.isEmpty()) {
         arguments << "-P" << readsUrl << pairedReadsUrl;
-    }
-    else {
+    } else {
         arguments << "-O" << readsUrl;
     }
 
@@ -637,7 +618,7 @@ QStringList ClarkClassifyTask::getArguments() {
     return arguments;
 }
 
-const TaxonomyClassificationResult & ClarkClassifyTask::getParsedReport() const {
+const TaxonomyClassificationResult &ClarkClassifyTask::getParsedReport() const {
     return parsedReport;
 }
 
@@ -683,12 +664,11 @@ void ClarkClassifyTask::run() {
 
 ClarkClassifySettings::ClarkClassifySettings()
     : tool(ClarkClassifySettings::TOOL_LIGHT), gap(4), factor(2), minFreqTarget(0), kmerSize(31), numberOfThreads(1),
-      extOut(false), preloadDatabase(false), mode(ClarkClassifySettings::Default)
-{
+      extOut(false), preloadDatabase(false), mode(ClarkClassifySettings::Default) {
 }
 
 const QString ClarkClassifySettings::TOOL_DEFAULT("default");
 const QString ClarkClassifySettings::TOOL_LIGHT("light");
 
-} //LocalWorkflow
-} //U2
+}    // namespace LocalWorkflow
+}    // namespace U2

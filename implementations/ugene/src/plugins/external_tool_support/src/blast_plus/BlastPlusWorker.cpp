@@ -20,32 +20,35 @@
  */
 
 #include "BlastPlusWorker.h"
-#include "TaskLocalStorage.h"
-#include "BlastPlusSupport.h"
+
+#include <U2Core/AppContext.h>
+#include <U2Core/AppSettings.h>
+#include <U2Core/DNASequenceObject.h>
+#include <U2Core/ExternalToolRegistry.h>
+#include <U2Core/FailTask.h>
+#include <U2Core/Log.h>
+#include <U2Core/U2AlphabetUtils.h>
+#include <U2Core/U2OpStatusUtils.h>
+#include <U2Core/UserApplicationsSettings.h>
+
+#include <U2Designer/DelegateEditors.h>
+
+#include <U2Lang/ActorPrototypeRegistry.h>
+#include <U2Lang/BaseActorCategories.h>
+#include <U2Lang/BasePorts.h>
+#include <U2Lang/BaseSlots.h>
+#include <U2Lang/BaseTypes.h>
+#include <U2Lang/CoreLibConstants.h>
+#include <U2Lang/IntegralBusModel.h>
+#include <U2Lang/WorkflowEnv.h>
+
 #include "BlastNPlusSupportTask.h"
 #include "BlastPPlusSupportTask.h"
+#include "BlastPlusSupport.h"
 #include "BlastXPlusSupportTask.h"
 #include "TBlastNPlusSupportTask.h"
 #include "TBlastXPlusSupportTask.h"
-
-#include <U2Lang/IntegralBusModel.h>
-#include <U2Lang/WorkflowEnv.h>
-#include <U2Lang/ActorPrototypeRegistry.h>
-#include <U2Lang/BaseTypes.h>
-#include <U2Lang/BaseSlots.h>
-#include <U2Lang/BasePorts.h>
-#include <U2Lang/BaseActorCategories.h>
-#include <U2Designer/DelegateEditors.h>
-#include <U2Lang/CoreLibConstants.h>
-#include <U2Core/AppContext.h>
-#include <U2Core/AppSettings.h>
-#include <U2Core/UserApplicationsSettings.h>
-#include <U2Core/ExternalToolRegistry.h>
-#include <U2Core/Log.h>
-#include <U2Core/FailTask.h>
-#include <U2Core/U2AlphabetUtils.h>
-#include <U2Core/DNASequenceObject.h>
-#include <U2Core/U2OpStatusUtils.h>
+#include "TaskLocalStorage.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -63,27 +66,27 @@ QString BlastPlusWorkerFactory::getHitsDescription() {
     return BlastPlusWorker::tr("If the query range of a hit is enveloped by that of at least this many higher-scoring hits, delete the hit");
 }
 
-#define BLASTPLUS_PROGRAM_NAME  "blast-type"
+#define BLASTPLUS_PROGRAM_NAME "blast-type"
 #define BLASTPLUS_DATABASE_PATH "db-path"
 #define BLASTPLUS_DATABASE_NAME "db-name"
-#define BLASTPLUS_EXPECT_VALUE  "e-val"
+#define BLASTPLUS_EXPECT_VALUE "e-val"
 #define BLASTPLUS_COMP_STATS "comp-based-stats"
 #define BLASTPLUS_MAX_HITS "max-hits"
-#define BLASTPLUS_GROUP_NAME    "result-name"
+#define BLASTPLUS_GROUP_NAME "result-name"
 #define BLASTPLUS_EXT_TOOL_PATH "tool-path"
-#define BLASTPLUS_TMP_DIR_PATH  "temp-dir"
-#define BLASTPLUS_GAP_COSTS_VALUE       "gap-costs"
-#define BLASTPLUS_MATCH_SCORES_VALUE    "match-scores"
+#define BLASTPLUS_TMP_DIR_PATH "temp-dir"
+#define BLASTPLUS_GAP_COSTS_VALUE "gap-costs"
+#define BLASTPLUS_MATCH_SCORES_VALUE "match-scores"
 
 //Additional options
-#define BLASTPLUS_ORIGINAL_OUT  "blast-output"  //path for output file
-#define BLASTPLUS_OUT_TYPE      "type-output"   //original option -m 0-11
-#define BLASTPLUS_GAPPED_ALN    "gapped-aln"    //Perform gapped alignment (not available with tblastx)
+#define BLASTPLUS_ORIGINAL_OUT "blast-output"    //path for output file
+#define BLASTPLUS_OUT_TYPE "type-output"    //original option -m 0-11
+#define BLASTPLUS_GAPPED_ALN "gapped-aln"    //Perform gapped alignment (not available with tblastx)
 
 void BlastPlusWorkerFactory::init() {
-    QList<PortDescriptor*> p; QList<Attribute*> a;
-    Descriptor ind(BasePorts::IN_SEQ_PORT_ID(), BlastPlusWorker::tr("Input sequence"),
-        BlastPlusWorker::tr("Sequence for which annotations is searched."));
+    QList<PortDescriptor *> p;
+    QList<Attribute *> a;
+    Descriptor ind(BasePorts::IN_SEQ_PORT_ID(), BlastPlusWorker::tr("Input sequence"), BlastPlusWorker::tr("Sequence for which annotations is searched."));
     Descriptor oud(BasePorts::OUT_ANNOTATIONS_PORT_ID(), BlastPlusWorker::tr("Annotations"), BlastPlusWorker::tr("Found annotations."));
 
     QMap<Descriptor, DataTypePtr> inM;
@@ -93,33 +96,21 @@ void BlastPlusWorkerFactory::init() {
     outM[BaseSlots::ANNOTATION_TABLE_SLOT()] = BaseTypes::ANNOTATION_TABLE_TYPE();
     p << new PortDescriptor(oud, DataTypePtr(new MapDataType("blast.plus.annotations", outM)), false /*input*/, true /*multi*/);
 
-    Descriptor pn(BLASTPLUS_PROGRAM_NAME, BlastPlusWorker::tr("Search type"),
-                   BlastPlusWorker::tr("Select type of BLAST+ searches."));
-    Descriptor dp(BLASTPLUS_DATABASE_PATH, BlastPlusWorker::tr("Database Path"),
-                   BlastPlusWorker::tr("Path with database files."));
-    Descriptor dn(BLASTPLUS_DATABASE_NAME, BlastPlusWorker::tr("Database Name"),
-                   BlastPlusWorker::tr("Base name for BLAST+ DB files."));
-    Descriptor ev(BLASTPLUS_EXPECT_VALUE, BlastPlusWorker::tr("Expected value"),
-                   BlastPlusWorker::tr("This setting specifies the statistical significance threshold for reporting matches against database sequences."));
+    Descriptor pn(BLASTPLUS_PROGRAM_NAME, BlastPlusWorker::tr("Search type"), BlastPlusWorker::tr("Select type of BLAST+ searches."));
+    Descriptor dp(BLASTPLUS_DATABASE_PATH, BlastPlusWorker::tr("Database Path"), BlastPlusWorker::tr("Path with database files."));
+    Descriptor dn(BLASTPLUS_DATABASE_NAME, BlastPlusWorker::tr("Database Name"), BlastPlusWorker::tr("Base name for BLAST+ DB files."));
+    Descriptor ev(BLASTPLUS_EXPECT_VALUE, BlastPlusWorker::tr("Expected value"), BlastPlusWorker::tr("This setting specifies the statistical significance threshold for reporting matches against database sequences."));
     Descriptor cbs(BLASTPLUS_COMP_STATS, BlastPlusWorker::tr("Composition-based statistics"), BlastPlusWorker::tr("Composition-based statistics."));
     Descriptor mh(BLASTPLUS_MAX_HITS, getHitsName(), getHitsDescription());
-    Descriptor gn(BLASTPLUS_GROUP_NAME, BlastPlusWorker::tr("Annotate as"),
-                   BlastPlusWorker::tr("Name for annotations."));
-    Descriptor etp(BLASTPLUS_EXT_TOOL_PATH, BlastPlusWorker::tr("Tool Path"),
-                   BlastPlusWorker::tr("External tool path."));
-    Descriptor tdp(BLASTPLUS_TMP_DIR_PATH, BlastPlusWorker::tr("Temporary folder"),
-                   BlastPlusWorker::tr("Folder for temporary files."));
-    Descriptor output(BLASTPLUS_ORIGINAL_OUT, BlastPlusWorker::tr("BLAST output"),
-                   BlastPlusWorker::tr("Location of BLAST output file."));
-    Descriptor outtype(BLASTPLUS_OUT_TYPE, BlastPlusWorker::tr("BLAST output type"),
-                   BlastPlusWorker::tr("Type of BLAST output file."));
-    Descriptor ga(BLASTPLUS_GAPPED_ALN, BlastPlusWorker::tr("Gapped alignment"),
-                   BlastPlusWorker::tr("Perform gapped alignment."));
+    Descriptor gn(BLASTPLUS_GROUP_NAME, BlastPlusWorker::tr("Annotate as"), BlastPlusWorker::tr("Name for annotations."));
+    Descriptor etp(BLASTPLUS_EXT_TOOL_PATH, BlastPlusWorker::tr("Tool Path"), BlastPlusWorker::tr("External tool path."));
+    Descriptor tdp(BLASTPLUS_TMP_DIR_PATH, BlastPlusWorker::tr("Temporary folder"), BlastPlusWorker::tr("Folder for temporary files."));
+    Descriptor output(BLASTPLUS_ORIGINAL_OUT, BlastPlusWorker::tr("BLAST output"), BlastPlusWorker::tr("Location of BLAST output file."));
+    Descriptor outtype(BLASTPLUS_OUT_TYPE, BlastPlusWorker::tr("BLAST output type"), BlastPlusWorker::tr("Type of BLAST output file."));
+    Descriptor ga(BLASTPLUS_GAPPED_ALN, BlastPlusWorker::tr("Gapped alignment"), BlastPlusWorker::tr("Perform gapped alignment."));
 
-    Descriptor gc(BLASTPLUS_GAP_COSTS_VALUE, BlastPlusWorker::tr("Gap costs"),
-                   BlastPlusWorker::tr("Cost to create and extend a gap in an alignment."));
-    Descriptor ms(BLASTPLUS_MATCH_SCORES_VALUE, BlastPlusWorker::tr("Match scores"),
-                   BlastPlusWorker::tr("Reward and penalty for matching and mismatching bases."));
+    Descriptor gc(BLASTPLUS_GAP_COSTS_VALUE, BlastPlusWorker::tr("Gap costs"), BlastPlusWorker::tr("Cost to create and extend a gap in an alignment."));
+    Descriptor ms(BLASTPLUS_MATCH_SCORES_VALUE, BlastPlusWorker::tr("Match scores"), BlastPlusWorker::tr("Reward and penalty for matching and mismatching bases."));
 
     a << new Attribute(pn, BaseTypes::STRING_TYPE(), true, QVariant("blastn"));
     a << new Attribute(dp, BaseTypes::STRING_TYPE(), true, QVariant(""));
@@ -129,21 +120,26 @@ void BlastPlusWorkerFactory::init() {
     a << new Attribute(ev, BaseTypes::NUM_TYPE(), false, QVariant(10.00));
     Attribute *cbsAttr = new Attribute(cbs, BaseTypes::STRING_TYPE(), false, "D");
     QVariantList cbsVisibilitylist;
-    cbsVisibilitylist << "blastp" << "blastx" << "tblastn";
+    cbsVisibilitylist << "blastp"
+                      << "blastx"
+                      << "tblastn";
     cbsAttr->addRelation(new VisibilityRelation(BLASTPLUS_PROGRAM_NAME, cbsVisibilitylist));
     a << cbsAttr;
     a << new Attribute(mh, BaseTypes::NUM_TYPE(), false, QVariant(0));
     a << new Attribute(gn, BaseTypes::STRING_TYPE(), false, QVariant("blast_result"));
 
-    Attribute* gaAttr= new Attribute(ga, BaseTypes::BOOL_TYPE(), false, QVariant(true));
+    Attribute *gaAttr = new Attribute(ga, BaseTypes::BOOL_TYPE(), false, QVariant(true));
     QVariantList gaVisibilitylist;
-    gaVisibilitylist << "blastn" << "blastp" << "blastx" << "tblastn";
+    gaVisibilitylist << "blastn"
+                     << "blastp"
+                     << "blastx"
+                     << "tblastn";
     gaAttr->addRelation(new VisibilityRelation(BLASTPLUS_PROGRAM_NAME, gaVisibilitylist));
     a << gaAttr;
 
     a << new Attribute(gc, BaseTypes::STRING_TYPE(), false, "2 2");
 
-    Attribute* msAttr = new Attribute(ms, BaseTypes::STRING_TYPE(), false, "1 -3");
+    Attribute *msAttr = new Attribute(ms, BaseTypes::STRING_TYPE(), false, "1 -3");
     QVariantMap scoresGapDependency = ExternalToolSupportUtils::getScoresGapDependencyMap();
     msAttr->addRelation(new ValuesRelation(BLASTPLUS_GAP_COSTS_VALUE, scoresGapDependency));
     a << msAttr;
@@ -151,10 +147,9 @@ void BlastPlusWorkerFactory::init() {
     a << new Attribute(output, BaseTypes::STRING_TYPE(), false, QVariant(""));
     a << new Attribute(outtype, BaseTypes::STRING_TYPE(), false, QVariant("5"));
 
-    Descriptor desc(ACTOR_ID, BlastPlusWorker::tr("Local BLAST+ Search"),
-        BlastPlusWorker::tr("Finds annotations for DNA sequence in local database."));
-    ActorPrototype* proto = new IntegralBusActorPrototype(desc, p, a);
-    QMap<QString, PropertyDelegate*> delegates;
+    Descriptor desc(ACTOR_ID, BlastPlusWorker::tr("Local BLAST+ Search"), BlastPlusWorker::tr("Finds annotations for DNA sequence in local database."));
+    ActorPrototype *proto = new IntegralBusActorPrototype(desc, p, a);
+    QMap<QString, PropertyDelegate *> delegates;
 
     {
         QVariantMap m;
@@ -198,23 +193,23 @@ void BlastPlusWorkerFactory::init() {
     {
         QVariantMap m;
         m["traditional pairwise (-outfmt 0)"] = 0;
-//        m["query-anchored showing identities"] = 1;
-//        m["query-anchored no identities"] = 2;
-//        m["flat query-anchored, show identities"] = 3;
-//        m["flat query-anchored, no identities"] = 4;
+        //        m["query-anchored showing identities"] = 1;
+        //        m["query-anchored no identities"] = 2;
+        //        m["flat query-anchored, show identities"] = 3;
+        //        m["flat query-anchored, no identities"] = 4;
         m["XML (-outfmt 5)"] = 5;
         m["tabular (-outfmt 6)"] = 6;
-//        m["tabular with comment lines"] = 7;
-//        m["Text ASN.1"] = 8;
-//        m["Binary ASN.1"] = 9;
-//        m["Comma-separated values"] = 10;
-//        m["BLAST archive format (ASN.1)"] = 11;
+        //        m["tabular with comment lines"] = 7;
+        //        m["Text ASN.1"] = 8;
+        //        m["Binary ASN.1"] = 9;
+        //        m["Comma-separated values"] = 10;
+        //        m["BLAST archive format (ASN.1)"] = 11;
         delegates[BLASTPLUS_OUT_TYPE] = new ComboBoxDelegate(m);
     }
 
     {
         QVariantMap m;
-        const QList <QString> matchValues = scoresGapDependency.keys();
+        const QList<QString> matchValues = scoresGapDependency.keys();
         for (int i = 0; i < matchValues.size(); i++) {
             m[matchValues.at(i)] = matchValues.at(i);
         }
@@ -237,29 +232,32 @@ void BlastPlusWorkerFactory::init() {
     proto->setValidator(new ToolsValidator());
     WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_BASIC(), proto);
 
-    DomainFactory* localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
+    DomainFactory *localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
     localDomain->registerEntry(new BlastPlusWorkerFactory());
 }
 
 /****************************
 * BlastPlusPrompter
 ****************************/
-BlastPlusPrompter::BlastPlusPrompter(Actor* p) : PrompterBase<BlastPlusPrompter>(p) {
+BlastPlusPrompter::BlastPlusPrompter(Actor *p)
+    : PrompterBase<BlastPlusPrompter>(p) {
 }
 QString BlastPlusPrompter::composeRichDoc() {
-    IntegralBusPort* input = qobject_cast<IntegralBusPort*>(target->getPort(BasePorts::IN_SEQ_PORT_ID()));
-    Actor* producer = input->getProducer(BaseSlots::DNA_SEQUENCE_SLOT().getId());
-    QString unsetStr = "<font color='red'>"+tr("unset")+"</font>";
+    IntegralBusPort *input = qobject_cast<IntegralBusPort *>(target->getPort(BasePorts::IN_SEQ_PORT_ID()));
+    Actor *producer = input->getProducer(BaseSlots::DNA_SEQUENCE_SLOT().getId());
+    QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
     QString producerName = tr(" from <u>%1</u>").arg(producer ? producer->getLabel() : unsetStr);
     QString doc = tr("For sequence <u>%1</u> find annotations in database <u>%2</u>.")
-        .arg(producerName).arg(getHyperlink(BLASTPLUS_DATABASE_NAME, getRequiredParam(BLASTPLUS_DATABASE_NAME)));
+                      .arg(producerName)
+                      .arg(getHyperlink(BLASTPLUS_DATABASE_NAME, getRequiredParam(BLASTPLUS_DATABASE_NAME)));
 
     return doc;
 }
 /****************************
 * BlastPlusWorker
 ****************************/
-BlastPlusWorker::BlastPlusWorker(Actor* a) : BaseWorker(a), input(NULL), output(NULL) {
+BlastPlusWorker::BlastPlusWorker(Actor *a)
+    : BaseWorker(a), input(NULL), output(NULL) {
 }
 
 void BlastPlusWorker::init() {
@@ -267,7 +265,7 @@ void BlastPlusWorker::init() {
     output = ports.value(BasePorts::OUT_ANNOTATIONS_PORT_ID());
 }
 
-Task* BlastPlusWorker::tick() {
+Task *BlastPlusWorker::tick() {
     if (input->hasMessage()) {
         Message inputMessage = getMessageAndSetupScriptValues(input);
         if (inputMessage.isEmpty()) {
@@ -275,7 +273,7 @@ Task* BlastPlusWorker::tick() {
             return NULL;
         }
         cfg.programName = getValue<QString>(BLASTPLUS_PROGRAM_NAME);
-        cfg.databaseNameAndPath = getValue<QString>(BLASTPLUS_DATABASE_PATH) + "/"+ getValue<QString>(BLASTPLUS_DATABASE_NAME);
+        cfg.databaseNameAndPath = getValue<QString>(BLASTPLUS_DATABASE_PATH) + "/" + getValue<QString>(BLASTPLUS_DATABASE_NAME);
         cfg.isDefaultCosts = true;
         cfg.isDefaultMatrix = true;
         cfg.isDefautScores = true;
@@ -285,28 +283,28 @@ Task* BlastPlusWorker::tick() {
         }
         cfg.numberOfHits = getValue<int>(BLASTPLUS_MAX_HITS);
         cfg.groupName = getValue<QString>(BLASTPLUS_GROUP_NAME);
-        if(cfg.groupName.isEmpty()){
-            cfg.groupName="blast result";
+        if (cfg.groupName.isEmpty()) {
+            cfg.groupName = "blast result";
         }
-        cfg.wordSize=0;
+        cfg.wordSize = 0;
         cfg.isGappedAlignment = getValue<bool>(BLASTPLUS_GAPPED_ALN);
 
         QString path = actor->getParameter(BLASTPLUS_EXT_TOOL_PATH)->getAttributeValue<QString>(context);
-        if(QString::compare(path, "default", Qt::CaseInsensitive) != 0){
-            if(cfg.programName == "blastn"){
+        if (QString::compare(path, "default", Qt::CaseInsensitive) != 0) {
+            if (cfg.programName == "blastn") {
                 AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_TBLASTN_ID)->setPath(path);
-            }else if(cfg.programName == "blastp"){
+            } else if (cfg.programName == "blastp") {
                 AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_BLASTP_ID)->setPath(path);
-            }else if(cfg.programName == "blastx"){
+            } else if (cfg.programName == "blastx") {
                 AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_BLASTX_ID)->setPath(path);
-            }else if(cfg.programName == "tblastn"){
+            } else if (cfg.programName == "tblastn") {
                 AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_TBLASTN_ID)->setPath(path);
-            }else if(cfg.programName == "tblastx"){
+            } else if (cfg.programName == "tblastx") {
                 AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_TBLASTX)->setPath(path);
             }
         }
         path = actor->getParameter(BLASTPLUS_TMP_DIR_PATH)->getAttributeValue<QString>(context);
-        if(QString::compare(path, "default", Qt::CaseInsensitive) != 0){
+        if (QString::compare(path, "default", Qt::CaseInsensitive) != 0) {
             AppContext::getAppSettings()->getUserAppsSettings()->setUserTemporaryDirPath(path);
         }
 
@@ -319,51 +317,50 @@ Task* BlastPlusWorker::tick() {
         DNASequence seq = seqObj->getWholeSequence(os);
         CHECK_OP(os, new FailTask(os.getError()));
 
-        if(seq.length() < 1) {
+        if (seq.length() < 1) {
             return new FailTask(tr("Empty sequence supplied to BLAST"));
         }
-        cfg.querySequence=seq.seq;
+        cfg.querySequence = seq.seq;
         cfg.isSequenceCircular = seq.circular;
 
         const DNAAlphabet *alp = U2AlphabetUtils::findBestAlphabet(seq.seq);
-        cfg.alphabet=alp;
+        cfg.alphabet = alp;
         //TO DO: Check alphabet
-        if(seq.alphabet->isAmino()) {
-            if(cfg.programName == "blastn" || cfg.programName == "blastx" || cfg.programName == "tblastx") {
+        if (seq.alphabet->isAmino()) {
+            if (cfg.programName == "blastn" || cfg.programName == "blastx" || cfg.programName == "tblastx") {
                 return new FailTask(tr("Selected BLAST search with nucleotide input sequence"));
             }
-        }
-        else {
-            if(cfg.programName == "blastp" || cfg.programName == "tblastn") {
+        } else {
+            if (cfg.programName == "blastp" || cfg.programName == "tblastn") {
                 return new FailTask(tr("Selected BLAST search with amino acid input sequence"));
             }
         }
         cfg.needCreateAnnotations = false;
         cfg.outputType = getValue<int>(BLASTPLUS_OUT_TYPE);
         cfg.outputOriginalFile = getValue<QString>(BLASTPLUS_ORIGINAL_OUT);
-        if(cfg.outputType != 5 && cfg.outputOriginalFile.isEmpty()){
+        if (cfg.outputType != 5 && cfg.outputOriginalFile.isEmpty()) {
             return new FailTask(tr("Not selected BLAST output file"));
         }
 
-        if(cfg.programName == "blastn"){
+        if (cfg.programName == "blastn") {
             cfg.megablast = true;
             cfg.wordSize = 28;
             cfg.windowSize = 0;
-        }else{
+        } else {
             cfg.megablast = false;
             cfg.wordSize = 3;
-            cfg.windowSize  = 40;
+            cfg.windowSize = 40;
         }
         //set X dropoff values
-        if(cfg.programName == "blastn"){
+        if (cfg.programName == "blastn") {
             cfg.xDropoffFGA = 100;
             cfg.xDropoffGA = 20;
             cfg.xDropoffUnGA = 10;
-        }else if (cfg.programName == "tblastx"){
+        } else if (cfg.programName == "tblastx") {
             cfg.xDropoffFGA = 0;
             cfg.xDropoffGA = 0;
             cfg.xDropoffUnGA = 7;
-        }else{
+        } else {
             cfg.xDropoffFGA = 25;
             cfg.xDropoffGA = 15;
             cfg.xDropoffUnGA = 7;
@@ -420,30 +417,33 @@ void BlastPlusWorker::sl_taskFinished() {
 }
 
 void BlastPlusWorker::cleanup() {
-
 }
 
 /************************************************************************/
 /* Validator */
 /************************************************************************/
-bool ToolsValidator::validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &/*options*/) const {
+bool ToolsValidator::validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> & /*options*/) const {
     ExternalTool *tool = getTool(getValue<QString>(actor, BLASTPLUS_PROGRAM_NAME));
-    SAFE_POINT(NULL != tool, "NULL blast plus tool", false);
+    SAFE_POINT(tool != nullptr, "NULL blast plus tool", false);
 
     Attribute *attr = actor->getParameter(BLASTPLUS_EXT_TOOL_PATH);
-    SAFE_POINT(NULL != attr, "NULL blastplus path attribute", false);
+    SAFE_POINT(attr != nullptr, "NULL blastplus path attribute", false);
 
-    bool valid = attr->isDefaultValue() ? !tool->getPath().isEmpty() : !attr->isEmpty();
-    if (!valid) {
+    bool isValid = attr->isDefaultValue() ? !tool->getPath().isEmpty() : !attr->isEmpty();
+    if (!isValid) {
         notificationList << WorkflowNotification(WorkflowUtils::externalToolError(tool->getName()));
+    } else if (attr->isDefaultValue() && !tool->isValid()) {
+        notificationList << WorkflowNotification(WorkflowUtils::externalToolInvalidError(tool->getName()),
+                                                 actor->getProto()->getId(),
+                                                 WorkflowNotification::U2_WARNING);
     }
-    return valid;
+    return isValid;
 }
 
-ExternalTool * ToolsValidator::getTool(const QString &program) const {
+ExternalTool *ToolsValidator::getTool(const QString &program) const {
     QString toolId = BlastPlusSupportCommonTask::toolIdByProgram(program);
     return AppContext::getExternalToolRegistry()->getById(toolId);
 }
 
-} //namespace LocalWorkflow
-} //namespace U2
+}    //namespace LocalWorkflow
+}    //namespace U2

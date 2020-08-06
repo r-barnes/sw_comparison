@@ -19,19 +19,19 @@
  * MA 02110-1301, USA.
  */
 
+#include "MysqlAttributeDbi.h"
+
 #include <U2Core/U2SafePoints.h>
 
-#include "MysqlAttributeDbi.h"
 #include "util/MysqlHelpers.h"
 
 namespace U2 {
 
-MysqlAttributeDbi::MysqlAttributeDbi( MysqlDbi *dbi )
-    : U2AttributeDbi( dbi ), MysqlChildDbiCommon( dbi )
-{
+MysqlAttributeDbi::MysqlAttributeDbi(MysqlDbi *dbi)
+    : U2AttributeDbi(dbi), MysqlChildDbiCommon(dbi) {
 }
 
-void MysqlAttributeDbi::initSqlSchema( U2OpStatus &os ) {
+void MysqlAttributeDbi::initSqlSchema(U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -42,39 +42,54 @@ void MysqlAttributeDbi::initSqlSchema( U2OpStatus &os ) {
     // oextra, cextra -> object and child db extra
     // version -> object version is attribute is valid for
     // name -> name of the attribute
-    U2SqlQuery( "CREATE TABLE Attribute (id BIGINT PRIMARY KEY AUTO_INCREMENT, type INTEGER NOT NULL, "
-        "object BIGINT, child BIGINT, otype INTEGER NOT NULL, ctype INTEGER, oextra LONGBLOB NOT NULL, "
-        "cextra LONGBLOB, version BIGINT NOT NULL, name LONGTEXT NOT NULL, "
-        "FOREIGN KEY(object) REFERENCES Object(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8", db, os).execute();
+    U2SqlQuery("CREATE TABLE Attribute (id BIGINT PRIMARY KEY AUTO_INCREMENT, type INTEGER NOT NULL, "
+               "object BIGINT, child BIGINT, otype INTEGER NOT NULL, ctype INTEGER, oextra LONGBLOB NOT NULL, "
+               "cextra LONGBLOB, version BIGINT NOT NULL, name LONGTEXT NOT NULL, "
+               "FOREIGN KEY(object) REFERENCES Object(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8",
+               db,
+               os)
+        .execute();
 
     //TODO: check if index is efficient for getting attribute for specific object
-    U2SqlQuery("CREATE INDEX Attribute_object on Attribute(object)" , db, os).execute();
+    U2SqlQuery("CREATE INDEX Attribute_object on Attribute(object)", db, os).execute();
 
     U2SqlQuery("CREATE TABLE IntegerAttribute (attribute BIGINT, value BIGINT NOT NULL, "
-        " FOREIGN KEY(attribute) REFERENCES Attribute(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8" , db, os).execute();
+               " FOREIGN KEY(attribute) REFERENCES Attribute(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8",
+               db,
+               os)
+        .execute();
     U2SqlQuery("CREATE INDEX IntegerAttribute_attribute on IntegerAttribute(attribute)", db, os).execute();
 
     U2SqlQuery("CREATE TABLE RealAttribute (attribute BIGINT, value DOUBLE NOT NULL, "
-        " FOREIGN KEY(attribute) REFERENCES Attribute(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8", db, os).execute();
-    U2SqlQuery("CREATE INDEX RealAttribute_attribute on RealAttribute(attribute)" , db, os).execute();
+               " FOREIGN KEY(attribute) REFERENCES Attribute(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8",
+               db,
+               os)
+        .execute();
+    U2SqlQuery("CREATE INDEX RealAttribute_attribute on RealAttribute(attribute)", db, os).execute();
 
     U2SqlQuery("CREATE TABLE StringAttribute (attribute BIGINT, value LONGTEXT NOT NULL, "
-        " FOREIGN KEY(attribute) REFERENCES Attribute(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8" , db, os).execute();
-    U2SqlQuery("CREATE INDEX StringAttribute_attribute on StringAttribute(attribute)" , db, os).execute();
+               " FOREIGN KEY(attribute) REFERENCES Attribute(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8",
+               db,
+               os)
+        .execute();
+    U2SqlQuery("CREATE INDEX StringAttribute_attribute on StringAttribute(attribute)", db, os).execute();
 
     U2SqlQuery("CREATE TABLE ByteArrayAttribute (attribute BIGINT, value LONGBLOB NOT NULL, "
-        " FOREIGN KEY(attribute) REFERENCES Attribute(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8" , db, os).execute();
-    U2SqlQuery("CREATE INDEX ByteArrayAttribute_attribute on ByteArrayAttribute(attribute)" , db, os).execute();
+               " FOREIGN KEY(attribute) REFERENCES Attribute(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8",
+               db,
+               os)
+        .execute();
+    U2SqlQuery("CREATE INDEX ByteArrayAttribute_attribute on ByteArrayAttribute(attribute)", db, os).execute();
 }
 
 /** Returns all attribute names available in the database */
-QStringList MysqlAttributeDbi::getAvailableAttributeNames(U2OpStatus& os) {
+QStringList MysqlAttributeDbi::getAvailableAttributeNames(U2OpStatus &os) {
     static const QString queryString = "SELECT DISTINCT name FROM Attribute";
     return U2SqlQuery(queryString, db, os).selectStrings();
 }
 
 /** Returns all attribute ids for the given object */
-QList<U2DataId> MysqlAttributeDbi::getObjectAttributes(const U2DataId& objectId, const QString& name, U2OpStatus& os) {
+QList<U2DataId> MysqlAttributeDbi::getObjectAttributes(const U2DataId &objectId, const QString &name, U2OpStatus &os) {
     if (name.isEmpty()) {
         static const QString queryString("SELECT id, type, '' FROM Attribute WHERE object = :object ORDER BY id");
         U2SqlQuery q(queryString, db, os);
@@ -90,7 +105,7 @@ QList<U2DataId> MysqlAttributeDbi::getObjectAttributes(const U2DataId& objectId,
 }
 
 /** Returns all attribute ids for the given object */
-QList<U2DataId> MysqlAttributeDbi::getObjectPairAttributes(const U2DataId& objectId, const U2DataId& childId, const QString& name, U2OpStatus& os) {
+QList<U2DataId> MysqlAttributeDbi::getObjectPairAttributes(const U2DataId &objectId, const U2DataId &childId, const QString &name, U2OpStatus &os) {
     if (name.isEmpty()) {
         static const QString queryString("SELECT id, type, '' FROM Attribute WHERE object = :object AND child = :child ORDER BY id");
         U2SqlQuery q(queryString, db, os);
@@ -108,7 +123,7 @@ QList<U2DataId> MysqlAttributeDbi::getObjectPairAttributes(const U2DataId& objec
 }
 
 /** Loads int64 attribute by id */
-U2IntegerAttribute MysqlAttributeDbi::getIntegerAttribute(const U2DataId& attributeId, U2OpStatus& os) {
+U2IntegerAttribute MysqlAttributeDbi::getIntegerAttribute(const U2DataId &attributeId, U2OpStatus &os) {
     static const QString queryString(buildSelectAttributeQuery("IntegerAttribute"));
     U2SqlQuery q(queryString, db, os);
     q.bindDataId(":id", attributeId);
@@ -123,7 +138,7 @@ U2IntegerAttribute MysqlAttributeDbi::getIntegerAttribute(const U2DataId& attrib
 }
 
 /** Loads real64 attribute by id */
-U2RealAttribute MysqlAttributeDbi::getRealAttribute(const U2DataId& attributeId, U2OpStatus& os) {
+U2RealAttribute MysqlAttributeDbi::getRealAttribute(const U2DataId &attributeId, U2OpStatus &os) {
     static const QString queryString(buildSelectAttributeQuery("RealAttribute"));
     U2SqlQuery q(queryString, db, os);
     q.bindDataId(":id", attributeId);
@@ -138,7 +153,7 @@ U2RealAttribute MysqlAttributeDbi::getRealAttribute(const U2DataId& attributeId,
 }
 
 /** Loads String attribute by id */
-U2StringAttribute MysqlAttributeDbi::getStringAttribute(const U2DataId& attributeId, U2OpStatus& os) {
+U2StringAttribute MysqlAttributeDbi::getStringAttribute(const U2DataId &attributeId, U2OpStatus &os) {
     static const QString queryString(buildSelectAttributeQuery("StringAttribute"));
     U2SqlQuery q(queryString, db, os);
     q.bindDataId(":id", attributeId);
@@ -153,7 +168,7 @@ U2StringAttribute MysqlAttributeDbi::getStringAttribute(const U2DataId& attribut
 }
 
 /** Loads byte attribute by id */
-U2ByteArrayAttribute MysqlAttributeDbi::getByteArrayAttribute(const U2DataId& attributeId, U2OpStatus& os) {
+U2ByteArrayAttribute MysqlAttributeDbi::getByteArrayAttribute(const U2DataId &attributeId, U2OpStatus &os) {
     static const QString queryString(buildSelectAttributeQuery("ByteArrayAttribute"));
     U2SqlQuery q(queryString, db, os);
     q.bindDataId(":id", attributeId);
@@ -168,7 +183,7 @@ U2ByteArrayAttribute MysqlAttributeDbi::getByteArrayAttribute(const U2DataId& at
 }
 
 /** Sorts all objects in database according to U2DbiSortConfig provided  */
-QList<U2DataId> MysqlAttributeDbi::sort(const U2DbiSortConfig& , qint64 , qint64 , U2OpStatus& os) {
+QList<U2DataId> MysqlAttributeDbi::sort(const U2DbiSortConfig &, qint64, qint64, U2OpStatus &os) {
     os.setError("not implemented");
     return QList<U2DataId>();
 }
@@ -177,7 +192,7 @@ QList<U2DataId> MysqlAttributeDbi::sort(const U2DbiSortConfig& , qint64 , qint64
 Removes attribute from database
 Requires U2DbiFeature_WriteAttribute feature support
 */
-void MysqlAttributeDbi::removeAttributes(const QList<U2DataId>& attributeIds, U2OpStatus& os) {
+void MysqlAttributeDbi::removeAttributes(const QList<U2DataId> &attributeIds, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -190,24 +205,24 @@ void MysqlAttributeDbi::removeAttributes(const QList<U2DataId>& attributeIds, U2
     static const QString bytearrayAttrString = "ByteArrayAttribute";
 
     QString tableName;
-    foreach (const U2DataId& id, attributeIds) {
+    foreach (const U2DataId &id, attributeIds) {
         U2DataType type = U2DbiUtils::toType(id);
         switch (type) {
-            case U2Type::AttributeInteger:
-                tableName = intergerAttrString;
-                break;
-            case U2Type::AttributeReal:
-                tableName = realAttrString;
-                break;
-            case U2Type::AttributeString:
-                tableName = stringAttrString;
-                break;
-            case U2Type::AttributeByteArray:
-                tableName = bytearrayAttrString;
-                break;
-            default:
-                os.setError(U2DbiL10n::tr("Unsupported attribute type: %1").arg(type));
-                break;
+        case U2Type::AttributeInteger:
+            tableName = intergerAttrString;
+            break;
+        case U2Type::AttributeReal:
+            tableName = realAttrString;
+            break;
+        case U2Type::AttributeString:
+            tableName = stringAttrString;
+            break;
+        case U2Type::AttributeByteArray:
+            tableName = bytearrayAttrString;
+            break;
+        default:
+            os.setError(U2DbiL10n::tr("Unsupported attribute type: %1").arg(type));
+            break;
         }
 
         U2SqlQuery removeAttrDetails(secQueryStr.arg(tableName), db, os);
@@ -222,7 +237,7 @@ void MysqlAttributeDbi::removeAttributes(const QList<U2DataId>& attributeIds, U2
     }
 }
 
-void MysqlAttributeDbi::removeObjectAttributes(const U2DataId& objectId, U2OpStatus& os) {
+void MysqlAttributeDbi::removeObjectAttributes(const U2DataId &objectId, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -237,7 +252,7 @@ void MysqlAttributeDbi::removeObjectAttributes(const U2DataId& objectId, U2OpSta
  * Creates int64 attribute in database. ObjectId must be already set in attribute and present in the same database
  * Requires U2DbiFeature_WriteAttribute feature support
  */
-void MysqlAttributeDbi::createIntegerAttribute(U2IntegerAttribute& a, U2OpStatus& os) {
+void MysqlAttributeDbi::createIntegerAttribute(U2IntegerAttribute &a, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -256,7 +271,7 @@ void MysqlAttributeDbi::createIntegerAttribute(U2IntegerAttribute& a, U2OpStatus
 Creates real64 attribute in database. ObjectId must be already set in attribute and present in the same database
 Requires U2DbiFeature_WriteAttribute feature support
 */
-void MysqlAttributeDbi::createRealAttribute(U2RealAttribute& a, U2OpStatus& os) {
+void MysqlAttributeDbi::createRealAttribute(U2RealAttribute &a, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -275,7 +290,7 @@ void MysqlAttributeDbi::createRealAttribute(U2RealAttribute& a, U2OpStatus& os) 
 Creates String attribute in database. ObjectId must be already set in attribute and present in the same database
 Requires U2DbiFeature_WriteAttribute feature support
 */
-void MysqlAttributeDbi::createStringAttribute(U2StringAttribute& a, U2OpStatus& os) {
+void MysqlAttributeDbi::createStringAttribute(U2StringAttribute &a, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -294,7 +309,7 @@ void MysqlAttributeDbi::createStringAttribute(U2StringAttribute& a, U2OpStatus& 
 Creates Byte attribute in database. ObjectId must be already set in attribute and present in the same database
 Requires U2DbiFeature_WriteAttribute feature support
 */
-void MysqlAttributeDbi::createByteArrayAttribute(U2ByteArrayAttribute& a, U2OpStatus& os) {
+void MysqlAttributeDbi::createByteArrayAttribute(U2ByteArrayAttribute &a, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -305,16 +320,16 @@ void MysqlAttributeDbi::createByteArrayAttribute(U2ByteArrayAttribute& a, U2OpSt
     static const QString queryString("INSERT INTO ByteArrayAttribute(attribute, value) VALUES(:attribute, :value)");
     U2SqlQuery q(queryString, db, os);
     q.bindInt64(":attribute", id);
-    q.bindBlob(":value", a.value.isNull() ? "" : a.value); // not null field
+    q.bindBlob(":value", a.value.isNull() ? "" : a.value);    // not null field
     q.execute();
 }
 
-qint64 MysqlAttributeDbi::createAttribute(U2Attribute& attr, U2DataType type, U2OpStatus& os) {
+qint64 MysqlAttributeDbi::createAttribute(U2Attribute &attr, U2DataType type, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
     static const QString queryString("INSERT INTO Attribute(type, object, child, otype, ctype, oextra, cextra, version, name) "
-        " VALUES(:type, :object, :child, :otype, :ctype, :oextra, :cextra, :version, :name)");
+                                     " VALUES(:type, :object, :child, :otype, :ctype, :oextra, :cextra, :version, :name)");
     U2SqlQuery q(queryString, db, os);
 
     q.bindType(":type", type);
@@ -330,12 +345,13 @@ qint64 MysqlAttributeDbi::createAttribute(U2Attribute& attr, U2DataType type, U2
     return q.insert();
 }
 
-QString MysqlAttributeDbi::buildSelectAttributeQuery(const QString& attributeTable) {
+QString MysqlAttributeDbi::buildSelectAttributeQuery(const QString &attributeTable) {
     return "SELECT t.value, a.id, a.type, '', a.object, a.otype, a.oextra, a.child, a.ctype, a.cextra, a.version, a.name "
-            " FROM Attribute AS a, " + attributeTable + " AS t WHERE a.id = :id AND t.attribute = a.id";
+           " FROM Attribute AS a, " +
+           attributeTable + " AS t WHERE a.id = :id AND t.attribute = a.id";
 }
 
-void MysqlAttributeDbi::readAttribute(U2SqlQuery &q, U2Attribute& attr) {
+void MysqlAttributeDbi::readAttribute(U2SqlQuery &q, U2Attribute &attr) {
     if (!q.step()) {
         if (!q.hasError()) {
             q.setError(U2DbiL10n::tr("Required attribute is not found"));
@@ -350,4 +366,4 @@ void MysqlAttributeDbi::readAttribute(U2SqlQuery &q, U2Attribute& attr) {
     attr.name = q.getString(11);
 }
 
-}   // namespace U2
+}    // namespace U2

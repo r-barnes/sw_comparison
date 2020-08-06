@@ -20,6 +20,7 @@
  */
 
 #include "StringTieTask.h"
+
 #include "StringTieSupport.h"
 
 namespace U2 {
@@ -46,10 +47,9 @@ StringTieTaskSettings::StringTieTaskSettings() {
     ballgownOutput = false;
 }
 
-StringTieTask::StringTieTask(const StringTieTaskSettings& settings)
+StringTieTask::StringTieTask(const StringTieTaskSettings &settings)
     : ExternalToolSupportTask(tr("Assemble Transcripts with StringTie task"), TaskFlags_NR_FOSE_COSC),
-      settings(settings){
-
+      settings(settings) {
 }
 
 void StringTieTask::prepare() {
@@ -58,7 +58,7 @@ void StringTieTask::prepare() {
     addSubTask(stringTieTask);
 }
 
-const StringTieTaskSettings& StringTieTask::getSettings() const {
+const StringTieTaskSettings &StringTieTask::getSettings() const {
     return settings;
 }
 
@@ -109,4 +109,4 @@ QStringList StringTieTask::getArguments() const {
     return arguments;
 }
 
-} // namespace
+}    // namespace U2

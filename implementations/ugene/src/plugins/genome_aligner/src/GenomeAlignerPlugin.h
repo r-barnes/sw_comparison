@@ -23,15 +23,17 @@
 #define _U2_GENOME_ALIGNER_PLUGIN_H_
 
 #include <U2Core/PluginModel.h>
+
 #include <U2Lang/Datatype.h>
 
 namespace U2 {
 
-class GenomeAlignerPlugin : public Plugin  {
+class GenomeAlignerPlugin : public Plugin {
     Q_OBJECT
 private:
     void registerCMDLineHelp();
     void processCMDLineOptions();
+
 public:
     GenomeAlignerPlugin();
     ~GenomeAlignerPlugin();
@@ -41,6 +43,6 @@ public:
     static DataTypePtr GENOME_ALIGNER_INDEX_TYPE();
 };
 
-} //namespace
+}    // namespace U2
 
-#endif // _U2_GENOME_ALIGNER_PLUGIN_H_
+#endif    // _U2_GENOME_ALIGNER_PLUGIN_H_

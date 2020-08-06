@@ -23,7 +23,6 @@
 #define _U2_GENOME_ALIGNER_FIND_TASK_H_
 
 #include <QMutex>
-#include <QMutex>
 #include <QSemaphore>
 #include <QVector>
 
@@ -33,9 +32,9 @@
 #include <U2Core/U2Region.h>
 #include <U2Core/U2SafePoints.h>
 
+#include "DataBunch.h"
 #include "GenomeAlignerSearchQuery.h"
 #include "GenomeAlignerWriteTask.h"
-#include "DataBunch.h"
 
 #define BinarySearchResult qint64
 
@@ -46,13 +45,14 @@ class GenomeAlignerIndex;
 #define CHECK_LOG(a, b) CHECK_EXT(a, algoLog.trace("Check failed " #a), b)
 
 struct ShortReadData {
-    ShortReadData(DataBunch* dataBunch, int i): valid(false) {
-        CHECK_LOG(dataBunch,);
+    ShortReadData(DataBunch *dataBunch, int i)
+        : valid(false) {
+        CHECK_LOG(dataBunch, );
         int length = dataBunch->bitValuesV.size();
-        CHECK_LOG(i>=0 && i<length,);
+        CHECK_LOG(i >= 0 && i < length, );
 
         currentW = dataBunch->windowSizes.at(i);
-        CHECK_LOG(0 != currentW,);
+        CHECK_LOG(0 != currentW, );
         currentBitFilter = ((quint64)0 - 1) << (62 - currentW * 2);
 
         bv = dataBunch->bitValuesV.at(i);
@@ -61,7 +61,7 @@ struct ShortReadData {
         nextRn = i < length - 1 ? dataBunch->readNumbersV.at(i + 1) : 0;
 
         shortRead = dataBunch->queries.at(rn);
-        CHECK_LOG(shortRead,);
+        CHECK_LOG(shortRead, );
         revCompl = shortRead->getRevCompl();
 
         valid = true;
@@ -83,12 +83,13 @@ struct ShortReadData {
     SearchQuery *revCompl;
 };
 
-
 class AlignContext {
 public:
-    AlignContext(): w(-1), ptMismatches(0), nMismatches(0), absMismatches(0), bestMode(false),
-        openCL(false), minReadLength(-1), maxReadLength(-1), isReadingFinished(false), isReadingStarted(false),
-        needIndex(true), indexLoaded(-1) {}
+    AlignContext()
+        : w(-1), ptMismatches(0), nMismatches(0), absMismatches(0), bestMode(false),
+          openCL(false), minReadLength(-1), maxReadLength(-1), isReadingFinished(false), isReadingStarted(false),
+          needIndex(true), indexLoaded(-1) {
+    }
     ~AlignContext() {
         cleanVectors();
     }
@@ -101,7 +102,7 @@ public:
     int minReadLength;
     int maxReadLength;
 
-    QList<DataBunch*> data;
+    QList<DataBunch *> data;
 
     bool isReadingFinished;
     bool isReadingStarted;
@@ -122,12 +123,15 @@ class GenomeAlignerFindTask : public Task {
     Q_OBJECT
     friend class ShortReadAlignerCPU;
     friend class ShortReadAlignerOpenCL;
+
 public:
     GenomeAlignerFindTask(GenomeAlignerIndex *i, AlignContext *s, GenomeAlignerWriteTask *writeTask);
     virtual void run();
     virtual void prepare();
 
-    qint64 getIndexLoadTime() const {return indexLoadTime;}
+    qint64 getIndexLoadTime() const {
+        return indexLoadTime;
+    }
 
 protected:
     void requirePartForAligning(int part);
@@ -153,22 +157,24 @@ class LoadIndexTask : public Task {
     Q_OBJECT
 public:
     LoadIndexTask(GenomeAlignerIndex *_index, AlignContext *_alignContext)
-        : Task("LoadIndexTask", TaskFlag_None), index(_index), alignContext(_alignContext), part(0) {}
+        : Task("LoadIndexTask", TaskFlag_None), index(_index), alignContext(_alignContext), part(0) {
+    }
     virtual void run();
+
 private:
     GenomeAlignerIndex *index;
     AlignContext *alignContext;
     int part;
 };
 
-
-typedef QVector<SearchQuery*>::iterator QueryIter;
+typedef QVector<SearchQuery *>::iterator QueryIter;
 
 class ShortReadAlignerCPU : public Task {
     Q_OBJECT
 public:
     ShortReadAlignerCPU(int taskNo, GenomeAlignerIndex *index, AlignContext *alignContext, GenomeAlignerWriteTask *writeTask);
     virtual void run();
+
 private:
     int taskNo;
     GenomeAlignerIndex *index;
@@ -181,6 +187,7 @@ class ShortReadAlignerOpenCL : public Task {
 public:
     ShortReadAlignerOpenCL(int taskNo, GenomeAlignerIndex *index, AlignContext *alignContext, GenomeAlignerWriteTask *writeTask);
     virtual void run();
+
 private:
     int taskNo;
     GenomeAlignerIndex *index;
@@ -188,6 +195,6 @@ private:
     GenomeAlignerWriteTask *writeTask;
 };
 
-} //U2
+}    // namespace U2
 
-#endif // _U2_GENOME_ALIGNER_FIND_TASK_H_
+#endif    // _U2_GENOME_ALIGNER_FIND_TASK_H_

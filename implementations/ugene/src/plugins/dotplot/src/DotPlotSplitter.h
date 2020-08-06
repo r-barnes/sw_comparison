@@ -22,10 +22,9 @@
 #ifndef _U2_DOT_PLOT_SPLITTER_H_
 #define _U2_DOT_PLOT_SPLITTER_H_
 
+#include <QIcon>
 
 #include <U2View/ADVSplitWidget.h>
-
-#include <QIcon>
 
 class QMenu;
 class QToolButton;
@@ -40,14 +39,19 @@ class DotPlotSplitter : public ADVSplitWidget {
     Q_OBJECT
 
 public:
-    DotPlotSplitter(AnnotatedDNAView*);
+    DotPlotSplitter(AnnotatedDNAView *);
 
-    virtual bool acceptsGObject(GObject* objects) {Q_UNUSED(objects);return false;}
-    virtual void updateState(const QVariantMap&){}
-    virtual void saveState(QVariantMap&){}
+    virtual bool acceptsGObject(GObject *objects) {
+        Q_UNUSED(objects);
+        return false;
+    }
+    virtual void updateState(const QVariantMap &) {
+    }
+    virtual void saveState(QVariantMap &) {
+    }
 
-    void addView(DotPlotWidget*);
-    void removeView(DotPlotWidget*);
+    void addView(DotPlotWidget *);
+    void removeView(DotPlotWidget *);
     bool isEmpty() const;
     void buildPopupMenu(QMenu *);
 
@@ -55,21 +59,21 @@ protected:
     virtual bool onCloseEvent();
 
 private:
-    QAction *createAction(const QString& iconPath, const QString& toolTip, const char *slot, bool checkable = true);
-    QAction *createAction(const QIcon& ic, const QString& toolTip, const char *slot, bool checkable = true);
+    QAction *createAction(const QString &iconPath, const QString &toolTip, const char *slot, bool checkable = true);
+    QAction *createAction(const QIcon &ic, const QString &toolTip, const char *slot, bool checkable = true);
 
     QSplitter *splitter;
-    QList<DotPlotWidget*> dotPlotList;
+    QList<DotPlotWidget *> dotPlotList;
 
     bool locked;
-    QAction*    syncLockAction;
-    QAction*    filterAction;
-    QAction*    zoomInAction;
-    QAction*    zoomOutAction;
-    QAction*    resetZoomingAction;
-    QAction*    zoomToAction;
-    QAction*    handAction;
-    QAction*    selAction;
+    QAction *syncLockAction;
+    QAction *filterAction;
+    QAction *zoomInAction;
+    QAction *zoomOutAction;
+    QAction *resetZoomingAction;
+    QAction *zoomToAction;
+    QAction *handAction;
+    QAction *selAction;
 
     void updateButtonState();
     void checkLockButtonState();
@@ -84,10 +88,10 @@ private slots:
     void sl_toggleZoomOut();
     void sl_toggleZoomReset();
 
-    void sl_dotPlotChanged(ADVSequenceObjectContext*, ADVSequenceObjectContext*, float, float, QPointF);
+    void sl_dotPlotChanged(ADVSequenceObjectContext *, ADVSequenceObjectContext *, float, float, QPointF);
     void sl_dotPlotSelecting();
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_DOT_PLOT_SPLITTER_H_
+#endif    // _U2_DOT_PLOT_SPLITTER_H_

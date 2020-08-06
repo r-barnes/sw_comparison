@@ -21,38 +21,34 @@
 
 #include "MSAConsensusAlgorithmStrict.h"
 
-#include <U2Core/MultipleSequenceAlignment.h>
-#include "MSAConsensusUtils.h"
-
 #include <QVector>
+
+#include <U2Core/MultipleSequenceAlignment.h>
+
+#include "MSAConsensusUtils.h"
 
 namespace U2 {
 
-
-MSAConsensusAlgorithmFactoryStrict::MSAConsensusAlgorithmFactoryStrict(QObject* p)
-: MSAConsensusAlgorithmFactory(BuiltInConsensusAlgorithms::STRICT_ALGO, ConsensusAlgorithmFlags_AllAlphabets
-                               | ConsensusAlgorithmFlag_SupportThreshold
-                               | ConsensusAlgorithmFlag_AvailableForChromatogram, p)
-{
+MSAConsensusAlgorithmFactoryStrict::MSAConsensusAlgorithmFactoryStrict(QObject *p)
+    : MSAConsensusAlgorithmFactory(BuiltInConsensusAlgorithms::STRICT_ALGO, ConsensusAlgorithmFlags_AllAlphabets | ConsensusAlgorithmFlag_SupportThreshold | ConsensusAlgorithmFlag_AvailableForChromatogram, p) {
 }
 
-
-QString MSAConsensusAlgorithmFactoryStrict::getDescription() const  {
+QString MSAConsensusAlgorithmFactoryStrict::getDescription() const {
     return tr("The algorithm returns gap character ('-') if symbol frequency in a column is lower than threshold specified.");
 }
 
-QString MSAConsensusAlgorithmFactoryStrict::getName() const  {
+QString MSAConsensusAlgorithmFactoryStrict::getName() const {
     return tr("Strict");
 }
 
-MSAConsensusAlgorithm* MSAConsensusAlgorithmFactoryStrict::createAlgorithm(const MultipleAlignment&, bool ignoreTrailingLeadingGaps, QObject* p) {
+MSAConsensusAlgorithm *MSAConsensusAlgorithmFactoryStrict::createAlgorithm(const MultipleAlignment &, bool ignoreTrailingLeadingGaps, QObject *p) {
     return new MSAConsensusAlgorithmStrict(this, ignoreTrailingLeadingGaps, p);
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Algorithm
 
-char MSAConsensusAlgorithmStrict::getConsensusChar(const MultipleAlignment& ma, int column, QVector<int> seqIdx) const {
+char MSAConsensusAlgorithmStrict::getConsensusChar(const MultipleAlignment &ma, int column, QVector<int> seqIdx) const {
     CHECK(filterIdx(seqIdx, ma, column), INVALID_CONS_CHAR);
 
     QVector<int> freqsByChar(256, 0);
@@ -60,7 +56,7 @@ char MSAConsensusAlgorithmStrict::getConsensusChar(const MultipleAlignment& ma, 
     uchar topChar = MSAConsensusUtils::getColumnFreqs(ma, column, freqsByChar, nonGaps, seqIdx);
 
     //use gap is top char frequency is lower than threshold
-    int nSeq =( seqIdx.isEmpty() ? ma->getNumRows() : seqIdx.size());
+    int nSeq = (seqIdx.isEmpty() ? ma->getNumRows() : seqIdx.size());
     int currentThreshold = getThreshold();
     int cntToUseGap = int(currentThreshold / 100.0 * nSeq);
     int topFreq = freqsByChar[topChar];
@@ -68,8 +64,8 @@ char MSAConsensusAlgorithmStrict::getConsensusChar(const MultipleAlignment& ma, 
     return res;
 }
 
-MSAConsensusAlgorithmStrict* MSAConsensusAlgorithmStrict::clone() const {
+MSAConsensusAlgorithmStrict *MSAConsensusAlgorithmStrict::clone() const {
     return new MSAConsensusAlgorithmStrict(*this);
 }
 
-} //namespace
+}    // namespace U2

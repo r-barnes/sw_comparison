@@ -33,7 +33,7 @@ public:
     virtual ~WelcomePageAction();
     virtual void perform() = 0;
 
-    const QString & getId() const;
+    const QString &getId() const;
 
 private:
     QString id;
@@ -47,6 +47,6 @@ public:
     static const QString QUICK_START;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_WELCOME_PAGE_ACTION_H_
+#endif    // _U2_WELCOME_PAGE_ACTION_H_

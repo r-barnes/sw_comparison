@@ -37,22 +37,21 @@ namespace BAM {
 
 QT_FORWARD_DECLARE_CLASS(BAMInfo)
 
-class ConvertToSQLiteDialog : public QDialog
-{
+class ConvertToSQLiteDialog : public QDialog {
     Q_OBJECT
 public:
-    ConvertToSQLiteDialog(const GUrl& sourceUrl, BAMInfo& bamInfo, bool sam);
+    ConvertToSQLiteDialog(const GUrl &sourceUrl, BAMInfo &bamInfo, bool sam);
 
-    const GUrl &getDestinationUrl()const;
-    QString getReferenceUrl()const;
-    bool        addToProject() const;
-    void        hideAddToProjectOption();
+    const GUrl &getDestinationUrl() const;
+    QString getReferenceUrl() const;
+    bool addToProject() const;
+    void hideAddToProjectOption();
 
 public slots:
     virtual void accept();
 
 private slots:
-    void sl_assemblyCheckChanged(QTableWidgetItem * item);
+    void sl_assemblyCheckChanged(QTableWidgetItem *item);
     void sl_bamInfoButtonClicked();
     void sl_refUrlButtonClicked();
     void sl_selectAll();
@@ -75,7 +74,7 @@ private:
     BAMInfo &bamInfo;
 };
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2
 
-#endif // _U2_BAM_CONVERT_TO_SQLITE_DIALOG_H_
+#endif    // _U2_BAM_CONVERT_TO_SQLITE_DIALOG_H_

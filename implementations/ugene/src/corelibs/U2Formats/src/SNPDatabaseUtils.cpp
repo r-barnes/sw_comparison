@@ -21,20 +21,19 @@
 
 #include "SNPDatabaseUtils.h"
 
-#include <U2Core/U2OpStatusUtils.h>
-#include <U2Core/U2SafePoints.h>
-
 #include <QFile>
 
+#include <U2Core/U2OpStatusUtils.h>
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
 #define S3_DATABASE_KEY "s3-database"
 
-Database* SNPDatabaseUtils::openDatabase( const QString& path ){
-    Database* res = NULL;
+Database *SNPDatabaseUtils::openDatabase(const QString &path) {
+    Database *res = NULL;
 
-    if (QFile::exists(path)){
+    if (QFile::exists(path)) {
         U2OpStatusImpl os;
         res = Database::loadDatabase(path, os);
         CHECK_OP(os, res);
@@ -43,20 +42,19 @@ Database* SNPDatabaseUtils::openDatabase( const QString& path ){
     return res;
 }
 
-U2DataId SNPDatabaseUtils::getSequenceId( const QString& sequenceName, U2ObjectDbi* objectDbi ){
+U2DataId SNPDatabaseUtils::getSequenceId(const QString &sequenceName, U2ObjectDbi *objectDbi) {
     U2DataId seqId;
-    if (sequenceName.isEmpty()){
+    if (sequenceName.isEmpty()) {
         return seqId;
     }
     SAFE_POINT(objectDbi != NULL, "object Dbi is NULL", seqId);
 
     U2OpStatusImpl os;
-    QScopedPointer< U2DbiIterator<U2DataId> > it(objectDbi->getObjectsByVisualName(sequenceName, U2Type::Sequence, os));
-    SAFE_POINT(it->hasNext(), "no sequence found", seqId );
+    QScopedPointer<U2DbiIterator<U2DataId>> it(objectDbi->getObjectsByVisualName(sequenceName, U2Type::Sequence, os));
+    SAFE_POINT(it->hasNext(), "no sequence found", seqId);
     seqId = it->next();
 
     return seqId;
-
 }
 
-} // U2
+}    // namespace U2

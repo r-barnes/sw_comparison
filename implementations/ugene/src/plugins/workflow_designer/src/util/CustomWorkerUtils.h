@@ -24,8 +24,9 @@
 
 #include <QObject>
 
-#include <U2Lang/ExternalToolCfg.h>
 #include "U2Core/ExternalToolRegistry.h"
+
+#include <U2Lang/ExternalToolCfg.h>
 
 namespace U2 {
 namespace Workflow {
@@ -33,7 +34,6 @@ namespace Workflow {
 #define CMDTOOL_SPECIAL_REGEX "((?<!(\\\\))(\\\\\\\\)*|^)"
 
 class CustomWorkerUtils {
-
 public:
     static const QString TOOL_PATH_VAR_NAME;
 
@@ -41,16 +41,15 @@ public:
 
     static bool commandContainsSpecialTool(const QString &cmd, const ExternalTool *tool);
     static bool commandContainsSpecialTool(const QString &cmd, const QString toolId);
-    static bool commandContainsVarName(const QString& cmd, const QString& varName);
-    static QStringList getToolIdsFromCommand(const QString& cmd);
+    static bool commandContainsVarName(const QString &cmd, const QString &varName);
+    static QStringList getToolIdsFromCommand(const QString &cmd);
 
     static bool commandReplaceSpecialByUgenePath(QString &cmd, const ExternalTool *tool);
     static bool commandReplaceSpecialByUgenePath(QString &cmd, const QString varName, const QString path);
     static void commandReplaceAllSpecialByUgenePath(QString &cmd, ExternalProcessConfig *cfg);
-
 };
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2
 
-#endif // _U2_CUSTOM_WORKER_UTILS_H_
+#endif    // _U2_CUSTOM_WORKER_UTILS_H_

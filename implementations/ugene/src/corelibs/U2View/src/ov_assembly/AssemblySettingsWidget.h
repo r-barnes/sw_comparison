@@ -34,11 +34,10 @@ namespace U2 {
 
 class AssemblyBrowserUi;
 
-class AssemblySettingsWidget : public QWidget
-{
+class AssemblySettingsWidget : public QWidget {
     Q_OBJECT
 public:
-    AssemblySettingsWidget(AssemblyBrowserUi * ui);
+    AssemblySettingsWidget(AssemblyBrowserUi *ui);
 
 private slots:
     void sl_cellRendererChanged();
@@ -46,12 +45,13 @@ private slots:
 
     void sl_consensusAlgorithmChanged();
     void sl_changeConsensusAlgorithm(int newIndex);
-private:
-    QWidget * createReadsSettings();
-    QWidget * createRulerSettings();
-    QWidget * createConsensusSettings();
 
-    AssemblyBrowserUi * ui;
+private:
+    QWidget *createReadsSettings();
+    QWidget *createRulerSettings();
+    QWidget *createConsensusSettings();
+
+    AssemblyBrowserUi *ui;
 
     // Reads
     QComboBox *readsHighlightCombo;
@@ -62,17 +62,16 @@ private:
     U2SavableWidget savableTab;
 };
 
-
-class U2VIEW_EXPORT AssemblySettingsWidgetFactory : public OPWidgetFactory
-{
+class U2VIEW_EXPORT AssemblySettingsWidgetFactory : public OPWidgetFactory {
     Q_OBJECT
 public:
     AssemblySettingsWidgetFactory();
-    virtual ~AssemblySettingsWidgetFactory(){}
+    virtual ~AssemblySettingsWidgetFactory() {
+    }
 
-    virtual QWidget* createWidget(GObjectView* objView);
+    QWidget *createWidget(GObjectView *objView, const QVariantMap &options) override;
 
-    virtual OPGroupParameters getOPGroupParameters();
+    OPGroupParameters getOPGroupParameters() override;
 
 private:
     static const QString GROUP_ID;
@@ -80,6 +79,6 @@ private:
     static const QString GROUP_DOC_PAGE;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // #ifndef __ASSEMBLY_SETTINGS_WIDGET_H__
+#endif    // #ifndef __ASSEMBLY_SETTINGS_WIDGET_H__

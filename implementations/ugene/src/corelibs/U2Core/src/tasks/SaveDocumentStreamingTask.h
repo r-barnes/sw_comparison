@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-
 #ifndef _U2_SAVE_DOCUMENT_STREAMING_TASK_H_
 #define _U2_SAVE_DOCUMENT_STREAMING_TASK_H_
 
@@ -35,7 +34,7 @@ class U2CORE_EXPORT SaveDocumentStreamingTask : public Task {
     Q_OBJECT
 public:
     // io - opened io adapter
-    SaveDocumentStreamingTask( Document* doc, IOAdapter* io );
+    SaveDocumentStreamingTask(Document *doc, IOAdapter *io);
     ~SaveDocumentStreamingTask();
 
     virtual void prepare();
@@ -44,15 +43,15 @@ public:
 
     ReportResult report();
 
-    Document* getDocument() const;
+    Document *getDocument() const;
 
 private:
-    StateLock*  lock;
-    Document*   doc;
-    IOAdapter*  io;
+    StateLock *lock;
+    Document *doc;
+    IOAdapter *io;
 
-}; // SaveDocumentStreamingTask
+};    // SaveDocumentStreamingTask
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_SAVE_DOCUMENT_STREAMING_TASK_H_
+#endif    // _U2_SAVE_DOCUMENT_STREAMING_TASK_H_

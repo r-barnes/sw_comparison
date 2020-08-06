@@ -22,13 +22,13 @@
 #ifndef _U2_AVD_GRAPH_MODEL_H_
 #define _U2_AVD_GRAPH_MODEL_H_
 
-#include <U2Core/global.h>
-#include <U2Core/U2Region.h>
-#include <U2Core/BackgroundTaskRunner.h>
-
-#include <QVector>
 #include <QPixmap>
 #include <QPointer>
+#include <QVector>
+
+#include <U2Core/BackgroundTaskRunner.h>
+#include <U2Core/U2Region.h>
+#include <U2Core/global.h>
 
 #include "GraphLabelModel.h"
 
@@ -46,13 +46,12 @@ class U2VIEW_EXPORT GSequenceGraphAlgorithm {
 public:
     virtual ~GSequenceGraphAlgorithm();
 
-    virtual void calculate(QVector<float> &res, U2SequenceObject *o, const U2Region &r,
-        const GSequenceGraphWindowData *d, U2OpStatus &os) = 0;
+    virtual void calculate(QVector<float> &res, U2SequenceObject *o, const U2Region &r, const GSequenceGraphWindowData *d, U2OpStatus &os) = 0;
 
 protected:
     GSequenceGraphAlgorithm();
 
-    const QByteArray & getSequenceData(U2SequenceObject* seqObj, U2OpStatus &os);
+    const QByteArray &getSequenceData(U2SequenceObject *seqObj, U2OpStatus &os);
 
 private:
     U2SequenceObject *lastSeqObj;
@@ -61,10 +60,15 @@ private:
 
 class U2VIEW_EXPORT GSequenceGraphWindowData {
 public:
-    GSequenceGraphWindowData() :  step(0), window(0){}
-    GSequenceGraphWindowData(qint64 _step, qint64 w) :  step(_step), window(w){}
+    GSequenceGraphWindowData()
+        : step(0), window(0) {
+    }
+    GSequenceGraphWindowData(qint64 _step, qint64 w)
+        : step(_step), window(w) {
+    }
 
-    virtual ~GSequenceGraphWindowData(){}
+    virtual ~GSequenceGraphWindowData() {
+    }
 
     qint64 step;
     qint64 window;
@@ -72,10 +76,15 @@ public:
 
 class U2VIEW_EXPORT GSequenceGraphMinMaxCutOffData {
 public:
-    GSequenceGraphMinMaxCutOffData() : minEdge(0.0), maxEdge(0.0), enableCuttoff(false) {}
-    GSequenceGraphMinMaxCutOffData(double _min, double _max, bool _enableCuttoff) : minEdge(_min), maxEdge(_max), enableCuttoff(_enableCuttoff){}
+    GSequenceGraphMinMaxCutOffData()
+        : minEdge(0.0), maxEdge(0.0), enableCuttoff(false) {
+    }
+    GSequenceGraphMinMaxCutOffData(double _min, double _max, bool _enableCuttoff)
+        : minEdge(_min), maxEdge(_max), enableCuttoff(_enableCuttoff) {
+    }
 
-    virtual ~GSequenceGraphMinMaxCutOffData(){}
+    virtual ~GSequenceGraphMinMaxCutOffData() {
+    }
 
     double minEdge;
     double maxEdge;
@@ -84,39 +93,52 @@ public:
 
 struct PairVector {
     PairVector();
-    QVector<float>  firstPoints;  //max if use both
-    QVector<float>  secondPoints;
-    QVector<float>  cutoffPoints;
-    QVector<float>  allCutoffPoints;
+    QVector<float> firstPoints;    //max if use both
+    QVector<float> secondPoints;
+    QVector<float> cutoffPoints;
+    QVector<float> allCutoffPoints;
     bool useIntervals;
 
     bool isEmpty() const;
 };
 
-typedef QMap<QString,QColor> ColorMap;
+typedef QMap<QString, QColor> ColorMap;
 
-class U2VIEW_EXPORT GSequenceGraphDrawer : public QObject{
+class U2VIEW_EXPORT GSequenceGraphDrawer : public QObject {
     Q_OBJECT
 public:
-    GSequenceGraphDrawer(GSequenceGraphView* v, const GSequenceGraphWindowData& wd,
-        ColorMap colorMap = ColorMap());
+    GSequenceGraphDrawer(GSequenceGraphView *v, const GSequenceGraphWindowData &wd, ColorMap colorMap = ColorMap());
     virtual ~GSequenceGraphDrawer();
 
-    virtual void draw(QPainter& p, const QList<QSharedPointer<GSequenceGraphData> >& graphs, const QRect& rect);
+    virtual void draw(QPainter &p, const QList<QSharedPointer<GSequenceGraphData>> &graphs, const QRect &rect);
 
     virtual void showSettingsDialog();
 
-    float getGlobalMin(){return globalMin;}
-    float getGlobalMax(){return globalMax;}
+    float getGlobalMin() {
+        return globalMin;
+    }
+    float getGlobalMax() {
+        return globalMax;
+    }
 
-    void selectExtremumPoints(const QSharedPointer<GSequenceGraphData>& graph, const QRect& graphRect, int windowSize, const U2Region &visibleRange);
+    void selectExtremumPoints(const QSharedPointer<GSequenceGraphData> &graph, const QRect &graphRect, int windowSize, const U2Region &visibleRange);
 
-    const GSequenceGraphWindowData& getWindowData() {return wdata;}
-    const GSequenceGraphMinMaxCutOffData& getCutOffData() {return commdata;}
-    const ColorMap& getColors() {return lineColors;}
-    void setColors(const ColorMap& colorMap) {lineColors = colorMap;}
+    const GSequenceGraphWindowData &getWindowData() {
+        return wdata;
+    }
+    const GSequenceGraphMinMaxCutOffData &getCutOffData() {
+        return commdata;
+    }
+    const ColorMap &getColors() {
+        return lineColors;
+    }
+    void setColors(const ColorMap &colorMap) {
+        lineColors = colorMap;
+    }
 
-    static bool isUnknownValue(float value) {return qFuzzyCompare(value, UNKNOWN_VAL);}
+    static bool isUnknownValue(float value) {
+        return qFuzzyCompare(value, UNKNOWN_VAL);
+    }
 
     static const float UNKNOWN_VAL;
 
@@ -125,72 +147,67 @@ signals:
     void si_graphRenderError();
 
 protected:
-    void drawGraph(QPainter& p, const QSharedPointer<GSequenceGraphData>& graph, const QRect& rect);
+    void drawGraph(QPainter &p, const QSharedPointer<GSequenceGraphData> &graph, const QRect &rect);
 
-    void calculatePoints(const QSharedPointer<GSequenceGraphData>& d, PairVector& points, float& min, float& max, int numPoints);
+    void calculatePoints(const QSharedPointer<GSequenceGraphData> &d, PairVector &points, float &min, float &max, int numPoints);
 
-    bool calculateLabelData(const QRect& rect, const PairVector& points, GraphLabel* label);
+    bool calculateLabelData(const QRect &rect, const PairVector &points, GraphLabel *label);
     void calculatePositionOfLabel(GraphLabel *label, int nPoints);
     float calculateLabelValue(int nPoints, const PairVector &points, GraphLabel *label, int xcoordInRect);
     float calculatePointValue(const PairVector &points, int xcoordInRect);
-    bool updateStaticLabels(const QSharedPointer<GSequenceGraphData>& graph, GraphLabel* label, const QRect& rect);
-    void updateMovingLabels(const QSharedPointer<GSequenceGraphData>& graph, GraphLabel* label, const QRect& rect);
-    void updateStaticLabels(MultiLabel& multiLabel, const QRect& rect);
-    QPair<float, float> getMinAndMaxInRange(const PairVector& points, const U2Region& region);
+    bool updateStaticLabels(const QSharedPointer<GSequenceGraphData> &graph, GraphLabel *label, const QRect &rect);
+    void updateMovingLabels(const QSharedPointer<GSequenceGraphData> &graph, GraphLabel *label, const QRect &rect);
+    void updateStaticLabels(MultiLabel &multiLabel, const QRect &rect);
+    QPair<float, float> getMinAndMaxInRange(const PairVector &points, const U2Region &region);
 
 protected slots:
-    void sl_labelAdded(const QSharedPointer<GSequenceGraphData>&, GraphLabel*, const QRect&);
-    void sl_labelMoved(const QSharedPointer<GSequenceGraphData>&, GraphLabel*, const QRect&);
-    void sl_labelsColorChange(const QSharedPointer<GSequenceGraphData>&);
+    void sl_labelAdded(const QSharedPointer<GSequenceGraphData> &, GraphLabel *, const QRect &);
+    void sl_labelMoved(const QSharedPointer<GSequenceGraphData> &, GraphLabel *, const QRect &);
+    void sl_labelsColorChange(const QSharedPointer<GSequenceGraphData> &);
     void sl_calculationTaskFinished();
 
 protected:
-    GSequenceGraphView*             view;
-    QFont*                          defFont;
-    ColorMap                        lineColors;
-    float                           globalMin, globalMax;
+    GSequenceGraphView *view;
+    QFont *defFont;
+    ColorMap lineColors;
+    float globalMin, globalMax;
 
-    GSequenceGraphWindowData        wdata;
-    GSequenceGraphMinMaxCutOffData  commdata;
+    GSequenceGraphWindowData wdata;
+    GSequenceGraphMinMaxCutOffData commdata;
     BackgroundTaskRunner<PairVector> calculationTaskRunner;
 
 private:
     QString DEFAULT_COLOR;
 };
 
-
 class U2VIEW_EXPORT GSequenceGraphData {
 public:
-    GSequenceGraphData(const QString& _graphName);
+    GSequenceGraphData(const QString &_graphName);
     virtual ~GSequenceGraphData();
 
-    QString                     graphName;
-    GSequenceGraphAlgorithm*    ga;
+    QString graphName;
+    GSequenceGraphAlgorithm *ga;
 
-    int                         cachedFrom, cachedLen, cachedW, cachedS;
-    int                         alignedFC, alignedLC;
-    PairVector                  cachedData;
+    int cachedFrom, cachedLen, cachedW, cachedS;
+    int alignedFC, alignedLC;
+    PairVector cachedData;
 
-    MultiLabel                  graphLabels;
+    MultiLabel graphLabels;
 };
-
 
 class U2VIEW_EXPORT GSequenceGraphUtils {
 public:
-    static int getNumSteps(const U2Region& range, int w, int s);
+    static int getNumSteps(const U2Region &range, int w, int s);
 
-    static void fitToScreen(const QVector<float>& data, int dataStartBase, int dataEndBase,
-                            QVector<float>& results,  int resultStartBase, int resultEndBase,
-                            int screenWidth, float unknownVal);
+    static void fitToScreen(const QVector<float> &data, int dataStartBase, int dataEndBase, QVector<float> &results, int resultStartBase, int resultEndBase, int screenWidth, float unknownVal);
 
-    static float calculateAverage(const QVector<float>& data, float start, float range);
-    static void calculateMinMax(const QVector<float>& data, float& min, float& max, U2OpStatus &os);
-
+    static float calculateAverage(const QVector<float> &data, float start, float range);
+    static void calculateMinMax(const QVector<float> &data, float &min, float &max, U2OpStatus &os);
 };
 
 class GraphPointsUpdater {
 public:
-    GraphPointsUpdater(const QSharedPointer<GSequenceGraphData>& d, int numPoints, int alignedFirst, int alignedLast, bool expandMode, const GSequenceGraphWindowData &wdata, U2SequenceObject* o, const U2Region &visibleRange, U2OpStatus& os);
+    GraphPointsUpdater(const QSharedPointer<GSequenceGraphData> &d, int numPoints, int alignedFirst, int alignedLast, bool expandMode, const GSequenceGraphWindowData &wdata, U2SequenceObject *o, const U2Region &visibleRange, U2OpStatus &os);
 
     void recalculateGraphData();
 
@@ -216,18 +233,19 @@ private:
     const GSequenceGraphWindowData wdata;
     QPointer<U2SequenceObject> o;
     const U2Region visibleRange;
-    U2OpStatus& os;
+    U2OpStatus &os;
 };
 
 class CalculatePointsTask : public BackgroundTask<PairVector> {
     Q_OBJECT
 public:
-    CalculatePointsTask(const QSharedPointer<GSequenceGraphData>& d, int numPoints, int alignedFirst, int alignedLast, bool expandMode, const GSequenceGraphWindowData &wdata, U2SequenceObject* o, const U2Region &visibleRange);
+    CalculatePointsTask(const QSharedPointer<GSequenceGraphData> &d, int numPoints, int alignedFirst, int alignedLast, bool expandMode, const GSequenceGraphWindowData &wdata, U2SequenceObject *o, const U2Region &visibleRange);
     virtual void run();
+
 private:
     GraphPointsUpdater graphUpdater;
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

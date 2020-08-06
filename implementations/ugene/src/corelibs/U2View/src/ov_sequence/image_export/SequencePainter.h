@@ -19,11 +19,11 @@
  * MA 02110-1301, USA.
  */
 
-
 #ifndef _U2_SEQUENCE_PAINTER_H_
 #define _U2_SEQUENCE_PAINTER_H_
 
 #include <QPainter>
+
 #include <U2Core/U2Region.h>
 
 #include "ExportImagePainter.h"
@@ -47,19 +47,19 @@ class SequenceExportSettings : public CustomExportSettings {
 public:
     SequenceExportSettings(qint64 seqLen, SequenceExportType type)
         : region(U2Region(0, seqLen)),
-          type(type) {}
+          type(type) {
+    }
 
-    U2Region            getRegion() const;
-    SequenceExportType  getType() const;
+    U2Region getRegion() const;
+    SequenceExportType getType() const;
 
-    void setRegion(const U2Region& r);
+    void setRegion(const U2Region &r);
     void setType(SequenceExportType t);
 
 private:
-    U2Region            region;
-    SequenceExportType  type;
+    U2Region region;
+    SequenceExportType type;
 };
-
 
 /************************************************************************/
 /* CurrentViewPainter */
@@ -67,16 +67,17 @@ private:
 class CurrentViewPainter : public ExportImagePainter {
     Q_OBJECT
 public:
-    CurrentViewPainter(ADVSingleSequenceWidget* seqWidget)
+    CurrentViewPainter(ADVSingleSequenceWidget *seqWidget)
         : ExportImagePainter(),
-          seqWidget(seqWidget) {}
+          seqWidget(seqWidget) {
+    }
 
-    void    paint(QPainter &p, CustomExportSettings* settings) const;
-    QSize   getImageSize(CustomExportSettings* settings) const;
-    bool    canPaintSvg(CustomExportSettings* settings, U2OpStatus &os) const;
+    void paint(QPainter &p, CustomExportSettings *settings) const;
+    QSize getImageSize(CustomExportSettings *settings) const;
+    bool canPaintSvg(CustomExportSettings *settings, U2OpStatus &os) const;
 
 private:
-    ADVSingleSequenceWidget*    seqWidget;
+    ADVSingleSequenceWidget *seqWidget;
 };
 
 /************************************************************************/
@@ -84,15 +85,15 @@ private:
 /************************************************************************/
 class ZoomedViewPainter : public ExportImagePainter {
 public:
-    ZoomedViewPainter(PanView* panView);
+    ZoomedViewPainter(PanView *panView);
 
-    void    paint(QPainter &p, CustomExportSettings* settings) const;
-    QSize   getImageSize(CustomExportSettings* settings) const;
-    bool    canPaintSvg(CustomExportSettings* settings, U2OpStatus &os) const;
+    void paint(QPainter &p, CustomExportSettings *settings) const;
+    QSize getImageSize(CustomExportSettings *settings) const;
+    bool canPaintSvg(CustomExportSettings *settings, U2OpStatus &os) const;
 
 private:
-    PanView*    panView;
-    PanViewRenderer*    panViewRenderer;
+    PanView *panView;
+    PanViewRenderer *panViewRenderer;
 };
 
 /************************************************************************/
@@ -100,14 +101,16 @@ private:
 /************************************************************************/
 class DetailsViewPainter : public ExportImagePainter {
 public:
-    DetailsViewPainter(DetView* detView);
+    DetailsViewPainter(DetView *detView);
 
-    void    paint(QPainter &p, CustomExportSettings* settings) const;
-    QSize   getImageSize(CustomExportSettings* settings) const;
-    bool    canPaintSvg(CustomExportSettings* /*settings*/, U2OpStatus &/*os*/) const { return true; }
+    void paint(QPainter &p, CustomExportSettings *settings) const;
+    QSize getImageSize(CustomExportSettings *settings) const;
+    bool canPaintSvg(CustomExportSettings * /*settings*/, U2OpStatus & /*os*/) const {
+        return true;
+    }
 
 private:
-    DetViewRenderer*    detViewRenderer;
+    DetViewRenderer *detViewRenderer;
 };
 
 /************************************************************************/
@@ -115,9 +118,9 @@ private:
 /************************************************************************/
 class SequencePainterFactory {
 public:
-    static QSharedPointer<ExportImagePainter> createPainter(ADVSingleSequenceWidget* seqWidget, SequenceExportType exportType);
+    static QSharedPointer<ExportImagePainter> createPainter(ADVSingleSequenceWidget *seqWidget, SequenceExportType exportType);
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_SEQUENCE_PAINTER_H_
+#endif    // _U2_SEQUENCE_PAINTER_H_

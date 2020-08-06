@@ -20,15 +20,15 @@
  */
 
 #include "McaEditorOverviewArea.h"
+
 #include "Overview/MaSangerOverview.h"
 
 namespace U2 {
 
-const QString McaEditorOverviewArea::OVERVIEW_AREA_OBJECT_NAME  = "mca_overview_area";
+const QString McaEditorOverviewArea::OVERVIEW_AREA_OBJECT_NAME = "mca_overview_area";
 
 McaEditorOverviewArea::McaEditorOverviewArea(MaEditorWgt *ui)
-    : MaEditorOverviewArea(ui, OVERVIEW_AREA_OBJECT_NAME)
-{
+    : MaEditorOverviewArea(ui, OVERVIEW_AREA_OBJECT_NAME) {
     isWidgetResizable = true;
 
     sangerOverview = new MaSangerOverview(ui);
@@ -37,4 +37,4 @@ McaEditorOverviewArea::McaEditorOverviewArea(MaEditorWgt *ui)
     addOverview(sangerOverview);
 }
 
-}   // namespace U2
+}    // namespace U2

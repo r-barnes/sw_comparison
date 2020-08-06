@@ -24,8 +24,9 @@
 namespace U2 {
 namespace Workflow {
 
-PairedReadsPortValidator::PairedReadsPortValidator(const QString& inputId, const QString& inputPairedId)
-    : PortValidator(), inputSlotId(inputId), pairedInputSlotId(inputPairedId) {}
+PairedReadsPortValidator::PairedReadsPortValidator(const QString &inputId, const QString &inputPairedId)
+    : PortValidator(), inputSlotId(inputId), pairedInputSlotId(inputPairedId) {
+}
 
 bool PairedReadsPortValidator::validate(const IntegralBusPort *port, NotificationsList &notificationList) const {
     bool res = true;
@@ -49,5 +50,5 @@ bool PairedReadsPortValidator::validate(const IntegralBusPort *port, Notificatio
     return res;
 }
 
-}   // namesapce Workflow
-}   // namespace U2
+}    // namespace Workflow
+}    // namespace U2

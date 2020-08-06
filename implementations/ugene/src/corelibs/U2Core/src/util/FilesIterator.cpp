@@ -23,12 +23,11 @@
 
 namespace U2 {
 
-FilesIterator * FilesIteratorFactory::createDirectoryScanner(const QStringList &dirs, const QString &includeFilter,
-    const QString &excludeFilter, bool recursive) {
+FilesIterator *FilesIteratorFactory::createDirectoryScanner(const QStringList &dirs, const QString &includeFilter, const QString &excludeFilter, bool recursive) {
     return new DirectoryScanner(dirs, includeFilter, excludeFilter, recursive);
 }
 
-FilesIterator * FilesIteratorFactory::createFileList(const QStringList &files) {
+FilesIterator *FilesIteratorFactory::createFileList(const QStringList &files) {
     return new FileList(files);
 }
 
@@ -36,9 +35,8 @@ FilesIterator * FilesIteratorFactory::createFileList(const QStringList &files) {
 /* DirectoryScanner */
 /************************************************************************/
 DirectoryScanner::DirectoryScanner(const QStringList &dirs, const QString &_includeFilter, const QString &_excludeFilter, bool _recursive)
-: FilesIterator(), includeFilter(_includeFilter), excludeFilter(_excludeFilter), recursive(_recursive),
-incRx(includeFilter), excRx(excludeFilter)
-{
+    : FilesIterator(), includeFilter(_includeFilter), excludeFilter(_excludeFilter), recursive(_recursive),
+      incRx(includeFilter), excRx(excludeFilter) {
     foreach (const QString &dirPath, dirs) {
         unusedDirs << QFileInfo(dirPath);
     }
@@ -125,9 +123,7 @@ QFileInfoList DirectoryScanner::scanDirectory(const QDir &dir) {
 /* FileList */
 /************************************************************************/
 FileList::FileList(const QStringList &_files)
-: FilesIterator(), files(_files)
-{
-
+    : FilesIterator(), files(_files) {
 }
 
 QString FileList::getNextFile() {
@@ -141,4 +137,4 @@ bool FileList::hasNext() {
     return !files.isEmpty();
 }
 
-} // U2
+}    // namespace U2

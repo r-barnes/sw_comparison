@@ -19,42 +19,40 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportObjectUtils.h"
+
 #include <QApplication>
 #include <QMessageBox>
 
 #include <U2Core/AnnotationTableObject.h>
-#include <U2Core/DNASequenceObject.h>
 #include <U2Core/AppContext.h>
+#include <U2Core/DNASequenceObject.h>
 #include <U2Core/DocumentUtils.h>
+#include <U2Core/GObjectUtils.h>
 #include <U2Core/GUrlUtils.h>
 #include <U2Core/IOAdapterUtils.h>
+#include <U2Core/L10n.h>
 #include <U2Core/ProjectModel.h>
 #include <U2Core/SaveDocumentTask.h>
 #include <U2Core/U2DbiRegistry.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
-#include <U2Core/L10n.h>
-#include <U2Core/GObjectUtils.h>
 
 #include <U2Gui/ExportAnnotations2CSVTask.h>
 #include <U2Gui/ExportAnnotationsDialog.h>
 #include <U2Gui/ExportDocumentDialogController.h>
 #include <U2Gui/LastUsedDirHelper.h>
 
-#include "ExportObjectUtils.h"
-
 namespace U2 {
 
 void ExportObjectUtils::exportAnnotations(const AnnotationTableObject *aObj, const GUrl &dstUrl) {
-    QList<Annotation *> annotations = aObj->getAnnotations(); // copy for further modification
+    QList<Annotation *> annotations = aObj->getAnnotations();    // copy for further modification
     if (annotations.isEmpty()) {
-        QMessageBox::warning(QApplication::activeWindow(), QObject::tr("Export annotations..."),
-            QObject::tr("Selected object doesn't have annotations"));
+        QMessageBox::warning(QApplication::activeWindow(), QObject::tr("Export annotations..."), QObject::tr("Selected object doesn't have annotations"));
         return;
     }
 
-    QString fileName = GUrlUtils::rollFileName(dstUrl.dirPath() + "/" + dstUrl.baseFileName()
-        + "_annotations.csv", DocumentUtils::getNewDocFileNameExcludesHint());
+    QString fileName = GUrlUtils::rollFileName(dstUrl.dirPath() + "/" + dstUrl.baseFileName() + "_annotations.csv", DocumentUtils::getNewDocFileNameExcludesHint());
 
     QObjectScopedPointer<ExportAnnotationsDialog> d = new ExportAnnotationsDialog(fileName, QApplication::activeWindow());
 
@@ -70,21 +68,21 @@ void ExportObjectUtils::exportAnnotations(const AnnotationTableObject *aObj, con
     qStableSort(annotations.begin(), annotations.end(), Annotation::annotationLessThan);
 
     // run task
-    Task * t = NULL;
+    Task *t = NULL;
     if (ExportAnnotationsDialog::CSV_FORMAT_ID == d->fileFormat()) {
         QString seqName;
         QByteArray seqData;
-        Project* project = AppContext::getProject();
+        Project *project = AppContext::getProject();
         if (project != NULL) {
             QList<GObjectRelation> rels = aObj->findRelatedObjectsByRole(ObjectRole_Sequence);
             if (!rels.isEmpty()) {
-                const GObjectRelation& rel = rels.first();
+                const GObjectRelation &rel = rels.first();
                 seqName = rel.ref.objName;
-                Document* seqDoc = project->findDocumentByURL(rel.ref.docUrl);
+                Document *seqDoc = project->findDocumentByURL(rel.ref.docUrl);
                 if (seqDoc != NULL && seqDoc->isLoaded()) {
-                    GObject* obj = seqDoc->findGObjectByName(rel.ref.objName);
+                    GObject *obj = seqDoc->findGObjectByName(rel.ref.objName);
                     if (obj != NULL && obj->getGObjectType() == GObjectTypes::SEQUENCE) {
-                        U2SequenceObject* seqObj = qobject_cast<U2SequenceObject*>(obj);
+                        U2SequenceObject *seqObj = qobject_cast<U2SequenceObject *>(obj);
                         U2OpStatusImpl os;
                         seqData = seqObj->getWholeSequenceData(os);
                         CHECK_OP_EXT(os, QMessageBox::critical(QApplication::activeWindow(), L10N::errorTitle(), os.getError()), );
@@ -96,14 +94,12 @@ void ExportObjectUtils::exportAnnotations(const AnnotationTableObject *aObj, con
     } else {
         t = saveAnnotationsTask(d->filePath(), d->fileFormat(), annotations, d->addToProject());
     }
-    SAFE_POINT(NULL != t, "Invalid task detected!",);
+    SAFE_POINT(NULL != t, "Invalid task detected!", );
 
     AppContext::getTaskScheduler()->registerTopLevelTask(t);
 }
 
-void ExportObjectUtils::exportObject2Document(GObject *object, const QString &url,
-    bool tracePath)
-{
+void ExportObjectUtils::exportObject2Document(GObject *object, const QString &url, bool tracePath) {
     if (NULL == object || object->isUnloaded()) {
         return;
     }
@@ -130,23 +126,22 @@ void ExportObjectUtils::export2Document(const QObjectScopedPointer<ExportDocumen
 
     Project *project = AppContext::getProject();
     if (NULL != project && project->findDocumentByURL(dstUrl)) {
-        QMessageBox::critical(QApplication::activeWindow(), QObject::tr("Error"),
-            QObject::tr("Document with the same URL is added to the project.\n"
-            "Remove it from the project first."));
+        QMessageBox::critical(QApplication::activeWindow(), QObject::tr("Error"), QObject::tr("Document with the same URL is added to the project.\n"
+                                                                                              "Remove it from the project first."));
         return;
     }
     bool addToProject = dialog->getAddToProjectFlag();
 
     IOAdapterRegistry *ioar = AppContext::getIOAdapterRegistry();
-    SAFE_POINT(NULL != ioar, "Invalid I/O environment!",);
+    SAFE_POINT(NULL != ioar, "Invalid I/O environment!", );
     IOAdapterFactory *iof = ioar->getIOAdapterFactoryById(IOAdapterUtils::url2io(dstUrl));
     CHECK_EXT(NULL != iof,
-        coreLog.error(QObject::tr("Unable to create I/O factory for ") + dstUrl),);
-    DocumentFormatRegistry *dfr =  AppContext::getDocumentFormatRegistry();
+              coreLog.error(QObject::tr("Unable to create I/O factory for ") + dstUrl), );
+    DocumentFormatRegistry *dfr = AppContext::getDocumentFormatRegistry();
     DocumentFormatId formatId = dialog->getDocumentFormatId();
     DocumentFormat *df = dfr->getFormatById(formatId);
     CHECK_EXT(NULL != df,
-        coreLog.error(QObject::tr("Unknown document format I/O factory: ") + formatId),);
+              coreLog.error(QObject::tr("Unknown document format I/O factory: ") + formatId), );
 
     U2OpStatusImpl os;
     Document *srcDoc = dialog->getSourceDoc();
@@ -166,7 +161,7 @@ void ExportObjectUtils::export2Document(const QObjectScopedPointer<ExportDocumen
     AppContext::getTaskScheduler()->registerTopLevelTask(t);
 }
 
-Task * ExportObjectUtils::saveAnnotationsTask(const QString &filepath, const DocumentFormatId &format, const QList<Annotation *> &annList, bool addToProject) {
+Task *ExportObjectUtils::saveAnnotationsTask(const QString &filepath, const DocumentFormatId &format, const QList<Annotation *> &annList, bool addToProject) {
     SaveDocFlags fl(SaveDoc_Roll);
     if (addToProject) {
         fl |= SaveDoc_OpenAfter;
@@ -176,10 +171,12 @@ Task * ExportObjectUtils::saveAnnotationsTask(const QString &filepath, const Doc
     IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(
         IOAdapterUtils::url2io(filepath));
     CHECK_EXT(NULL != iof,
-        coreLog.error(QObject::tr("Unable to create I/O factory for ") + filepath), NULL);
+              coreLog.error(QObject::tr("Unable to create I/O factory for ") + filepath),
+              NULL);
     DocumentFormat *df = AppContext::getDocumentFormatRegistry()->getFormatById(format);
     CHECK_EXT(NULL != df,
-        coreLog.error(QObject::tr("Unknown document format I/O factory: ") + format), NULL);
+              coreLog.error(QObject::tr("Unknown document format I/O factory: ") + format),
+              NULL);
     U2OpStatus2Log os;
     QVariantMap hints;
     hints.insert(DocumentReadingMode_DontMakeUniqueNames, QVariant(true));
@@ -188,7 +185,7 @@ Task * ExportObjectUtils::saveAnnotationsTask(const QString &filepath, const Doc
 
     // object and annotations will be deleted when savedoc task will delete doc
     QMap<U2DataId, AnnotationTableObject *> annTables;
-    QMap<AnnotationTableObject *, QMap<QString, QList<SharedAnnotationData> > > annTable2Anns;
+    QMap<AnnotationTableObject *, QMap<QString, QList<SharedAnnotationData>>> annTable2Anns;
 
     foreach (Annotation *a, annList) {
         const AnnotationTableObject *parentObject = a->getGObject();
@@ -224,4 +221,4 @@ Task * ExportObjectUtils::saveAnnotationsTask(const QString &filepath, const Doc
     return new SaveDocumentTask(doc, fl, DocumentUtils::getNewDocFileNameExcludesHint());
 }
 
-} // namespace U2
+}    // namespace U2

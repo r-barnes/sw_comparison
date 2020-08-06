@@ -36,8 +36,8 @@ public:
         Settings()
             : minIdentity(80),
               qualityThreshold(30),
-              addResultToProject(true)
-        {}
+              addResultToProject(true) {
+        }
         QString referenceUrl;
         QStringList readUrls;
         int minIdentity;
@@ -47,7 +47,7 @@ public:
     };
 
     AlignToReferenceBlastDialogFiller(const Settings &settings, HI::GUITestOpStatus &os);
-    AlignToReferenceBlastDialogFiller(HI::GUITestOpStatus &os, CustomScenario* c);
+    AlignToReferenceBlastDialogFiller(HI::GUITestOpStatus &os, CustomScenario *c);
 
     void commonScenario();
 
@@ -59,7 +59,6 @@ private:
     Settings settings;
 };
 
-}
+}    // namespace U2
 
-#endif // _U2_ALIGN_TO_REFERENCE_BLAST_DIALOG_FILLER_
-
+#endif    // _U2_ALIGN_TO_REFERENCE_BLAST_DIALOG_FILLER_

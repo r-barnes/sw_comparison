@@ -22,10 +22,11 @@
 #ifndef _U2_MAFFT_SUPPORT_RUN_DIALOG_H
 #define _U2_MAFFT_SUPPORT_RUN_DIALOG_H
 
+#include <ui_MAFFTSupportRunDialog.h>
+
 #include <QDialog>
 
 #include <U2Gui/DialogUtils.h>
-#include <ui_MAFFTSupportRunDialog.h>
 
 #include "MAFFTSupportTask.h"
 
@@ -36,19 +37,19 @@ class SaveDocumentController;
 class MAFFTSupportRunDialog : public QDialog, public Ui_MAFFTSupportRunDialog {
     Q_OBJECT
 public:
-    MAFFTSupportRunDialog(MAFFTSupportTaskSettings& settings, QWidget* parent);
+    MAFFTSupportRunDialog(MAFFTSupportTaskSettings &settings, QWidget *parent);
 
 private slots:
     void accept();
 
 private:
-    MAFFTSupportTaskSettings&        settings;
+    MAFFTSupportTaskSettings &settings;
 };
 
 class MAFFTWithExtFileSpecifySupportRunDialog : public QDialog, public Ui_MAFFTSupportRunDialog {
     Q_OBJECT
 public:
-    MAFFTWithExtFileSpecifySupportRunDialog(MAFFTSupportTaskSettings& settings, QWidget* parent);
+    MAFFTWithExtFileSpecifySupportRunDialog(MAFFTSupportTaskSettings &settings, QWidget *parent);
 
 private slots:
     void accept();
@@ -57,9 +58,9 @@ private slots:
 private:
     void initSaveController();
 
-    MAFFTSupportTaskSettings&     settings;
-    SaveDocumentController *      saveController;
+    MAFFTSupportTaskSettings &settings;
+    SaveDocumentController *saveController;
 };
 
-}//namespace
-#endif // _U2_MAFFT_SUPPORT_RUN_DIALOG_H
+}    // namespace U2
+#endif    // _U2_MAFFT_SUPPORT_RUN_DIALOG_H

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "PWMBuildDialogController.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 
@@ -50,21 +52,20 @@
 #include <U2Gui/SaveDocumentController.h>
 #include <U2Gui/U2FileDialog.h>
 
-#include "PWMBuildDialogController.h"
 #include "WeightMatrixIO.h"
 #include "WeightMatrixPlugin.h"
 
-#define SETTINGS_ROOT   QString("plugin_weight_matrix/")
+#define SETTINGS_ROOT QString("plugin_weight_matrix/")
 
 namespace U2 {
 
-PWMBuildDialogController::PWMBuildDialogController(QWidget* w)
+PWMBuildDialogController::PWMBuildDialogController(QWidget *w)
     : QDialog(w),
       saveController(NULL),
       logoArea(NULL) {
     task = NULL;
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742613");
+    new HelpButton(this, buttonBox, "46501261");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Start"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -82,16 +83,12 @@ PWMBuildDialogController::PWMBuildDialogController(QWidget* w)
     connect(weightButton, SIGNAL(toggled(bool)), SLOT(sl_matrixTypeChanged(bool)));
 }
 
-
 void PWMBuildDialogController::sl_inFileButtonClicked() {
     LastUsedDirHelper lod;
-    lod.url = U2FileDialog::getOpenFileName(this, tr("Select file with alignment"), lod,
-        DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT, true).append("\n").append(
-        DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::SEQUENCE, false)));
+    lod.url = U2FileDialog::getOpenFileName(this, tr("Select file with alignment"), lod, DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT, true).append("\n").append(DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::SEQUENCE, false)));
     if (lod.url.isEmpty()) {
         return;
     }
-
 
     QString inFile = QFileInfo(lod.url).absoluteFilePath();
     QList<FormatDetectionResult> formats = DocumentUtils::detectFormat(inFile);
@@ -100,8 +97,8 @@ void PWMBuildDialogController::sl_inFileButtonClicked() {
         return;
     }
 
-    DocumentFormat* format = NULL;
-    foreach(const FormatDetectionResult& i, formats) {
+    DocumentFormat *format = NULL;
+    foreach (const FormatDetectionResult &i, formats) {
         if (i.format->getSupportedObjectTypes().contains(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT)) {
             format = i.format;
             break;
@@ -109,7 +106,7 @@ void PWMBuildDialogController::sl_inFileButtonClicked() {
     }
 
     if (format == NULL) {
-        foreach(const FormatDetectionResult& i, formats) {
+        foreach (const FormatDetectionResult &i, formats) {
             if (i.format->getSupportedObjectTypes().contains(GObjectTypes::SEQUENCE)) {
                 format = i.format;
                 break;
@@ -117,21 +114,21 @@ void PWMBuildDialogController::sl_inFileButtonClicked() {
         }
     }
 
-    if(format == NULL){
+    if (format == NULL) {
         reportError(tr("Could not detect the format of the file. Files must be in supported multiple alignment or sequence formats."));
         return;
     }
     inputEdit->setText(inFile);
 
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(inFile));
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(inFile));
     TaskStateInfo ti;
     QVariantMap hints;
     Document *doc = format->loadDocument(iof, inFile, hints, ti);
     CHECK_OP_EXT(ti, reportError(ti.getError()), );
 
-    QList<GObject*> mobjs = doc->findGObjectByType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT);
+    QList<GObject *> mobjs = doc->findGObjectByType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT);
     if (!mobjs.isEmpty()) {
-        MultipleSequenceAlignmentObject* mobj =  qobject_cast<MultipleSequenceAlignmentObject*>(mobjs.first());
+        MultipleSequenceAlignmentObject *mobj = qobject_cast<MultipleSequenceAlignmentObject *>(mobjs.first());
         replaceLogo(mobj->getMultipleAlignment());
     } else {
         mobjs = doc->findGObjectByType(GObjectTypes::SEQUENCE);
@@ -139,12 +136,12 @@ void PWMBuildDialogController::sl_inFileButtonClicked() {
             reportError(tr("There are no sequences in the file."));
             return;
         }
-        U2SequenceObject* dnaObj = qobject_cast<U2SequenceObject*>(mobjs.first());
+        U2SequenceObject *dnaObj = qobject_cast<U2SequenceObject *>(mobjs.first());
         MultipleSequenceAlignment ma(dnaObj->getSequenceName(), dnaObj->getAlphabet());
-        foreach (GObject* obj, mobjs) {
-            U2SequenceObject* dnaObj = qobject_cast<U2SequenceObject*>(obj);
+        foreach (GObject *obj, mobjs) {
+            U2SequenceObject *dnaObj = qobject_cast<U2SequenceObject *>(obj);
             if (dnaObj->getAlphabet()->getType() != DNAAlphabet_NUCL) {
-                ti.setError(  tr("Wrong sequence alphabet") );
+                ti.setError(tr("Wrong sequence alphabet"));
             }
             U2OpStatus2Log os;
             QByteArray seqData = dnaObj->getWholeSequenceData(os);
@@ -167,7 +164,7 @@ void PWMBuildDialogController::reportError(const QString &message) {
     QMessageBox::warning(this, L10N::errorTitle(), message);
 }
 
-void PWMBuildDialogController::replaceLogo(const MultipleSequenceAlignment& ma) {
+void PWMBuildDialogController::replaceLogo(const MultipleSequenceAlignment &ma) {
     if (ma->getLength() < 50) {
         static const int LOGO_HEIGHT = 150;
         AlignmentLogoSettings logoSettings(ma);
@@ -195,7 +192,7 @@ void PWMBuildDialogController::sl_matrixTypeChanged(bool matrixType) {
 
 void PWMBuildDialogController::sl_okButtonClicked() {
     if (task != NULL) {
-        accept(); //go to background
+        accept();    //go to background
         return;
     }
 
@@ -250,13 +247,13 @@ void PWMBuildDialogController::sl_okButtonClicked() {
 }
 
 void PWMBuildDialogController::sl_onStateChanged() {
-    Task* t = qobject_cast<Task*>(sender());
-    assert(task!=NULL);
+    Task *t = qobject_cast<Task *>(sender());
+    assert(task != NULL);
     if (task != t || t->getState() != Task::State_Finished) {
         return;
     }
     task->disconnect(this);
-    const TaskStateInfo& si = task->getStateInfo();
+    const TaskStateInfo &si = task->getStateInfo();
     if (si.hasError()) {
         statusLabel->setText(tr("Build finished with errors: %1").arg(si.getError()));
         lastURL = "";
@@ -273,7 +270,7 @@ void PWMBuildDialogController::sl_onStateChanged() {
 }
 
 void PWMBuildDialogController::sl_onProgressChanged() {
-    assert(task==sender());
+    assert(task == sender());
     statusLabel->setText(tr("Running state %1 progress %2%").arg(task->getStateInfo().getDescription()).arg(task->getProgress()));
 }
 
@@ -314,7 +311,7 @@ void PWMBuildDialogController::initWeightSaveController() {
 }
 
 void PWMBuildDialogController::reject() {
-    if (task!=NULL) {
+    if (task != NULL) {
         task->cancel();
     }
     if (lastURL != "") {
@@ -324,46 +321,43 @@ void PWMBuildDialogController::reject() {
     }
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 // tasks
 
-PFMatrixBuildTask::PFMatrixBuildTask(const PMBuildSettings& s, const MultipleSequenceAlignment& ma)
-: Task (tr("Build Frequency Matrix"), TaskFlag_None), settings(s), ma(ma->getCopy())
-{
-    GCOUNTER( cvar, tvar, "PFMatrixBuildTask" );
+PFMatrixBuildTask::PFMatrixBuildTask(const PMBuildSettings &s, const MultipleSequenceAlignment &ma)
+    : Task(tr("Build Frequency Matrix"), TaskFlag_None), settings(s), ma(ma->getCopy()) {
+    GCOUNTER(cvar, tvar, "PFMatrixBuildTask");
     tpm = Task::Progress_Manual;
 }
 
 void PFMatrixBuildTask::run() {
     if (!ma->hasEqualLength()) {
-        stateInfo.setError(  tr("Sequences in alignment have various lengths") );
+        stateInfo.setError(tr("Sequences in alignment have various lengths"));
         return;
     }
     if (ma->isEmpty()) {
-        stateInfo.setError(  tr("Alignment is empty") );
+        stateInfo.setError(tr("Alignment is empty"));
         return;
     }
     if (!ma->getAlphabet()->isNucleic()) {
-        stateInfo.setError(  tr("Alignment is not nucleic") );
+        stateInfo.setError(tr("Alignment is not nucleic"));
         return;
     }
-    stateInfo.setDescription( tr("Calculating frequencies of nucleotids") );
+    stateInfo.setDescription(tr("Calculating frequencies of nucleotids"));
     if (settings.type == PM_MONONUCLEOTIDE) {
         m = PFMatrix(ma, PFM_MONONUCLEOTIDE);
     } else {
         m = PFMatrix(ma, PFM_DINUCLEOTIDE);
     }
-    stateInfo.progress+=50;
+    stateInfo.progress += 50;
     if (stateInfo.hasError() || isCanceled()) {
         return;
     }
     return;
 }
 
-PFMatrixBuildToFileTask::PFMatrixBuildToFileTask(const QString& inFile, const QString& _outFile, const PMBuildSettings& s)
-: Task (tr("Build Weight Matrix"), TaskFlag_NoRun), loadTask(NULL), buildTask(NULL), outFile(_outFile), settings(s)
-{
+PFMatrixBuildToFileTask::PFMatrixBuildToFileTask(const QString &inFile, const QString &_outFile, const PMBuildSettings &s)
+    : Task(tr("Build Weight Matrix"), TaskFlag_NoRun), loadTask(NULL), buildTask(NULL), outFile(_outFile), settings(s) {
     tpm = Task::Progress_SubTasksBased;
 
     DocumentFormatConstraints c;
@@ -373,19 +367,19 @@ PFMatrixBuildToFileTask::PFMatrixBuildToFileTask(const QString& inFile, const QS
     c.rawData = IOAdapterUtils::readFileHeader(inFile);
     QList<FormatDetectionResult> formats = DocumentUtils::detectFormat(inFile);
     if (formats.isEmpty()) {
-        stateInfo.setError(  tr("Input format error") );
+        stateInfo.setError(tr("Input format error"));
         return;
     }
 
     DocumentFormatId format = "";
-    foreach(const FormatDetectionResult& i, formats) {
+    foreach (const FormatDetectionResult &i, formats) {
         if (i.format->getSupportedObjectTypes().contains(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT)) {
             format = i.format->getFormatId();
             break;
         }
     }
-    if(format.isEmpty()) {
-        foreach(const FormatDetectionResult& i, formats) {
+    if (format.isEmpty()) {
+        foreach (const FormatDetectionResult &i, formats) {
             if (i.format->getSupportedObjectTypes().contains(GObjectTypes::SEQUENCE)) {
                 format = i.format->getFormatId();
                 break;
@@ -394,7 +388,7 @@ PFMatrixBuildToFileTask::PFMatrixBuildToFileTask(const QString& inFile, const QS
     }
 
     //DocumentFormatId format = formats.first()->getFormatId();
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(inFile));
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(inFile));
     loadTask = new LoadDocumentTask(format, inFile, iof);
     loadTask->setSubtaskProgressWeight(0.03F);
     stateInfo.progress = 0;
@@ -402,34 +396,34 @@ PFMatrixBuildToFileTask::PFMatrixBuildToFileTask(const QString& inFile, const QS
     addSubTask(loadTask);
 }
 
-QList<Task*> PFMatrixBuildToFileTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> res;
+QList<Task *> PFMatrixBuildToFileTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> res;
     if (isCanceled()) {
         return res;
     }
     if (subTask->getStateInfo().hasError()) {
-        stateInfo.setError(  subTask->getStateInfo().getError() );
+        stateInfo.setError(subTask->getStateInfo().getError());
         return res;
     }
     if (subTask == loadTask) {
         setUseDescriptionFromSubtask(true);
-        Document* d = loadTask->getDocument();
+        Document *d = loadTask->getDocument();
         assert(d != NULL);
-        QList<GObject*> mobjs = d->findGObjectByType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT);
+        QList<GObject *> mobjs = d->findGObjectByType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT);
         if (!mobjs.isEmpty()) {
-            MultipleSequenceAlignmentObject* mobj =  qobject_cast<MultipleSequenceAlignmentObject*>(mobjs.first());
+            MultipleSequenceAlignmentObject *mobj = qobject_cast<MultipleSequenceAlignmentObject *>(mobjs.first());
             buildTask = new PFMatrixBuildTask(settings, mobj->getMultipleAlignment());
             res.append(buildTask);
         } else {
             mobjs = d->findGObjectByType(GObjectTypes::SEQUENCE);
             if (!mobjs.isEmpty()) {
-                U2SequenceObject* dnaObj = qobject_cast<U2SequenceObject*>(mobjs.first());
+                U2SequenceObject *dnaObj = qobject_cast<U2SequenceObject *>(mobjs.first());
                 QString baseName = d->getURL().baseFileName();
                 MultipleSequenceAlignment ma(baseName, dnaObj->getAlphabet());
-                foreach (GObject* obj, mobjs) {
-                    U2SequenceObject* dnaObj = qobject_cast<U2SequenceObject*>(obj);
+                foreach (GObject *obj, mobjs) {
+                    U2SequenceObject *dnaObj = qobject_cast<U2SequenceObject *>(obj);
                     if (dnaObj->getAlphabet()->getType() != DNAAlphabet_NUCL) {
-                        stateInfo.setError(  tr("Wrong sequence alphabet") );
+                        stateInfo.setError(tr("Wrong sequence alphabet"));
                     }
                     QByteArray seqData = dnaObj->getWholeSequenceData(stateInfo);
                     CHECK_OP(stateInfo, res);
@@ -438,55 +432,53 @@ QList<Task*> PFMatrixBuildToFileTask::onSubTaskFinished(Task* subTask) {
                 buildTask = new PFMatrixBuildTask(settings, ma);
                 res.append(buildTask);
             } else {
-                stateInfo.setError(  tr("No alignments or sequences found") );
+                stateInfo.setError(tr("No alignments or sequences found"));
             }
         }
     } else if (subTask == buildTask) {
-        Task* t = new PFMatrixWriteTask(outFile, buildTask->getResult());
+        Task *t = new PFMatrixWriteTask(outFile, buildTask->getResult());
         t->setSubtaskProgressWeight(0);
         res.append(t);
     }
     return res;
 }
 
-PWMatrixBuildTask::PWMatrixBuildTask(const PMBuildSettings& s, const MultipleSequenceAlignment& ma)
-: Task (tr("Build Weight Matrix"), TaskFlag_None), settings(s), ma(ma->getCopy())
-{
-    GCOUNTER( cvar, tvar, "PWMatrixBuildTask" );
+PWMatrixBuildTask::PWMatrixBuildTask(const PMBuildSettings &s, const MultipleSequenceAlignment &ma)
+    : Task(tr("Build Weight Matrix"), TaskFlag_None), settings(s), ma(ma->getCopy()) {
+    GCOUNTER(cvar, tvar, "PWMatrixBuildTask");
     tpm = Task::Progress_Manual;
 }
 
-PWMatrixBuildTask::PWMatrixBuildTask(const PMBuildSettings& s, const PFMatrix& ma)
-: Task (tr("Build Weight Matrix"), TaskFlag_None), settings(s), tempMatrix(ma)
-{
-    GCOUNTER( cvar, tvar, "PWMatrixBuildTask" );
+PWMatrixBuildTask::PWMatrixBuildTask(const PMBuildSettings &s, const PFMatrix &ma)
+    : Task(tr("Build Weight Matrix"), TaskFlag_None), settings(s), tempMatrix(ma) {
+    GCOUNTER(cvar, tvar, "PWMatrixBuildTask");
     tpm = Task::Progress_Manual;
 }
 
 void PWMatrixBuildTask::run() {
     if (tempMatrix.getLength() > 0) {
         if (settings.type == PM_DINUCLEOTIDE && tempMatrix.getType() == PFM_MONONUCLEOTIDE) {
-            stateInfo.setError( tr("Can't convert mononucleotide matrix to dinucleotide one"));
+            stateInfo.setError(tr("Can't convert mononucleotide matrix to dinucleotide one"));
             return;
         }
         if (settings.type == PM_MONONUCLEOTIDE && tempMatrix.getType() == PFM_DINUCLEOTIDE) {
             tempMatrix = PFMatrix::convertDi2Mono(tempMatrix);
         }
-        stateInfo.progress+=40;
+        stateInfo.progress += 40;
         if (stateInfo.hasError() || isCanceled()) {
             return;
         }
     } else {
         if (!ma->hasEqualLength()) {
-            stateInfo.setError(  tr("Sequences in alignment have various lengths") );
+            stateInfo.setError(tr("Sequences in alignment have various lengths"));
             return;
         }
         if (ma->isEmpty()) {
-            stateInfo.setError(  tr("Alignment is empty") );
+            stateInfo.setError(tr("Alignment is empty"));
             return;
         }
         if (!ma->getAlphabet()->isNucleic()) {
-            stateInfo.setError(  tr("Alignment is not nucleic") );
+            stateInfo.setError(tr("Alignment is not nucleic"));
             return;
         }
 
@@ -495,22 +487,21 @@ void PWMatrixBuildTask::run() {
         } else {
             tempMatrix = PFMatrix(ma, PFM_DINUCLEOTIDE);
         }
-        stateInfo.progress+=40;
+        stateInfo.progress += 40;
         if (stateInfo.hasError() || isCanceled()) {
             return;
         }
     }
-    PWMConversionAlgorithmFactory* factory = AppContext::getPWMConversionAlgorithmRegistry()->getAlgorithmFactory(settings.algo);
-    PWMConversionAlgorithm* algo = factory->createAlgorithm();
+    PWMConversionAlgorithmFactory *factory = AppContext::getPWMConversionAlgorithmRegistry()->getAlgorithmFactory(settings.algo);
+    PWMConversionAlgorithm *algo = factory->createAlgorithm();
 
     m = algo->convert(tempMatrix);
-    stateInfo.progress+=40;
+    stateInfo.progress += 40;
     return;
 }
 
-PWMatrixBuildToFileTask::PWMatrixBuildToFileTask(const QString& inFile, const QString& _outFile, const PMBuildSettings& s)
-: Task (tr("Build Weight Matrix"), TaskFlag_NoRun), loadTask(NULL), buildTask(NULL), outFile(_outFile), settings(s)
-{
+PWMatrixBuildToFileTask::PWMatrixBuildToFileTask(const QString &inFile, const QString &_outFile, const PMBuildSettings &s)
+    : Task(tr("Build Weight Matrix"), TaskFlag_NoRun), loadTask(NULL), buildTask(NULL), outFile(_outFile), settings(s) {
     tpm = Task::Progress_SubTasksBased;
 
     DocumentFormatConstraints c;
@@ -520,11 +511,11 @@ PWMatrixBuildToFileTask::PWMatrixBuildToFileTask(const QString& inFile, const QS
     c.rawData = IOAdapterUtils::readFileHeader(inFile);
     QList<FormatDetectionResult> formats = DocumentUtils::detectFormat(inFile);
     if (formats.isEmpty()) {
-        stateInfo.setError(  tr("Input format error") );
+        stateInfo.setError(tr("Input format error"));
         return;
     }
     DocumentFormatId format = formats.first().format->getFormatId();
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(inFile));
+    IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(inFile));
     loadTask = new LoadDocumentTask(format, inFile, iof);
     loadTask->setSubtaskProgressWeight(0.03F);
     stateInfo.progress = 0;
@@ -532,34 +523,34 @@ PWMatrixBuildToFileTask::PWMatrixBuildToFileTask(const QString& inFile, const QS
     addSubTask(loadTask);
 }
 
-QList<Task*> PWMatrixBuildToFileTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> res;
+QList<Task *> PWMatrixBuildToFileTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> res;
     if (isCanceled()) {
         return res;
     }
     if (subTask->getStateInfo().hasError()) {
-        stateInfo.setError(  subTask->getStateInfo().getError() );
+        stateInfo.setError(subTask->getStateInfo().getError());
         return res;
     }
     if (subTask == loadTask) {
         setUseDescriptionFromSubtask(true);
-        Document* d = loadTask->getDocument();
+        Document *d = loadTask->getDocument();
         assert(d != NULL);
-        QList<GObject*> mobjs = d->findGObjectByType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT);
+        QList<GObject *> mobjs = d->findGObjectByType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT);
         if (!mobjs.isEmpty()) {
-            MultipleSequenceAlignmentObject* mobj =  qobject_cast<MultipleSequenceAlignmentObject*>(mobjs.first());
+            MultipleSequenceAlignmentObject *mobj = qobject_cast<MultipleSequenceAlignmentObject *>(mobjs.first());
             buildTask = new PWMatrixBuildTask(settings, mobj->getMultipleAlignment());
             res.append(buildTask);
         } else {
             mobjs = d->findGObjectByType(GObjectTypes::SEQUENCE);
             if (!mobjs.isEmpty()) {
-                U2SequenceObject* dnaObj = qobject_cast<U2SequenceObject*>(mobjs.first());
+                U2SequenceObject *dnaObj = qobject_cast<U2SequenceObject *>(mobjs.first());
                 QString baseName = d->getURL().baseFileName();
                 MultipleSequenceAlignment ma(baseName, dnaObj->getAlphabet());
-                foreach (GObject* obj, mobjs) {
-                    U2SequenceObject* dnaObj = qobject_cast<U2SequenceObject*>(obj);
+                foreach (GObject *obj, mobjs) {
+                    U2SequenceObject *dnaObj = qobject_cast<U2SequenceObject *>(obj);
                     if (dnaObj->getAlphabet()->getType() != DNAAlphabet_NUCL) {
-                        stateInfo.setError(  tr("Wrong sequence alphabet") );
+                        stateInfo.setError(tr("Wrong sequence alphabet"));
                     }
                     QByteArray seqData = dnaObj->getWholeSequenceData(stateInfo);
                     CHECK_OP(stateInfo, res);
@@ -569,15 +560,15 @@ QList<Task*> PWMatrixBuildToFileTask::onSubTaskFinished(Task* subTask) {
                 buildTask = new PWMatrixBuildTask(settings, ma);
                 res.append(buildTask);
             } else {
-                stateInfo.setError(  tr("No alignments or sequences found") );
+                stateInfo.setError(tr("No alignments or sequences found"));
             }
         }
     } else if (subTask == buildTask) {
-        Task* t = new PWMatrixWriteTask(outFile, buildTask->getResult());
+        Task *t = new PWMatrixWriteTask(outFile, buildTask->getResult());
         t->setSubtaskProgressWeight(0);
         res.append(t);
     }
     return res;
 }
 
-}//namespace
+}    // namespace U2

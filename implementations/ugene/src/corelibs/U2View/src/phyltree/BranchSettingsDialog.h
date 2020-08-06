@@ -31,7 +31,7 @@ namespace U2 {
 class BranchSettingsDialog : public BaseSettingsDialog, public Ui_BranchSettingsDialog {
     Q_OBJECT
 public:
-    BranchSettingsDialog(QWidget *parent, const OptionsMap& settings);
+    BranchSettingsDialog(QWidget *parent, const OptionsMap &settings);
 
     virtual void accept();
 
@@ -42,6 +42,6 @@ private:
     void updateColorButton();
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportCoverageDialog.h"
+
 #include <QDir>
 #include <QFileInfo>
 #include <QMessageBox>
@@ -31,15 +33,12 @@
 #include <U2Gui/LastUsedDirHelper.h>
 #include <U2Gui/SaveDocumentController.h>
 
-#include "ExportCoverageDialog.h"
-
 namespace U2 {
 
 const QString ExportCoverageDialog::DIR_HELPER_NAME = "export_assembly_coverage";
 
-ExportCoverageDialog::ExportCoverageDialog(const QString &assemblyName, QWidget *parent) :
-    QDialog(parent)
-{
+ExportCoverageDialog::ExportCoverageDialog(const QString &assemblyName, QWidget *parent)
+    : QDialog(parent) {
     setupUi(this);
     initLayout();
     init(assemblyName);
@@ -97,7 +96,7 @@ void ExportCoverageDialog::sl_formatChanged(const QString &format) {
 
 void ExportCoverageDialog::initLayout() {
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Export"));
-    new HelpButton(this, buttonBox, "24742517");
+    new HelpButton(this, buttonBox, "46500191");
     gbAdditionalOptions->hide();
     setMaximumHeight(layout()->minimumSize().height());
     adjustSize();
@@ -122,7 +121,7 @@ void ExportCoverageDialog::init(QString assemblyName) {
     LastUsedDirHelper dirHelper(DIR_HELPER_NAME, GUrlUtils::getDefaultDataPath());
     assemblyName.replace(QRegExp("[^0-9a-zA-Z._\\-]"), "_").replace(QRegExp("_+"), "_");
     conf.defaultFileName = dirHelper.dir + "/" + assemblyName + "_coverage" +
-            cbFormat->itemData(cbFormat->currentIndex()).toString() + (chbCompress->isChecked() ? ExportCoverageSettings::COMPRESSED_EXTENSION : "");
+                           cbFormat->itemData(cbFormat->currentIndex()).toString() + (chbCompress->isChecked() ? ExportCoverageSettings::COMPRESSED_EXTENSION : "");
 
     saveController = new SaveDocumentController(conf, formats, this);
 }
@@ -140,4 +139,4 @@ bool ExportCoverageDialog::checkPermissions() const {
     return (isFileExist && isFileWritable) || isDirWritable;
 }
 
-}   // namespace U2
+}    // namespace U2

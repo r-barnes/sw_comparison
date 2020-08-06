@@ -23,6 +23,7 @@
 #define _U2_GUITEST_DNA_ASSEMBLY_CONVERSIONS_H_
 
 #include <U2Core/global.h>
+
 #include <U2Test/UGUITestBase.h>
 
 namespace U2 {
@@ -36,7 +37,7 @@ GUI_TEST_CLASS_DECLARATION(test_0003)
 GUI_TEST_CLASS_DECLARATION(test_0004)
 
 #undef GUI_TEST_SUITE
-} // GUITest_dna_assembly_conversions
-} // U2
+}    // namespace GUITest_dna_assembly_conversions
+}    // namespace U2
 
-#endif // _U2_GUITEST_DNA_ASSEMBLY_CONVERSIONS_H_
+#endif    // _U2_GUITEST_DNA_ASSEMBLY_CONVERSIONS_H_

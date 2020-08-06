@@ -20,36 +20,35 @@
  */
 
 #include "SQLiteDbi.h"
-#include "SQLiteObjectDbi.h"
-#include "SQLiteObjectRelationsDbi.h"
-#include "SQLiteSequenceDbi.h"
-#include "SQLiteMsaDbi.h"
-#include "SQLiteAssemblyDbi.h"
-#include "SQLiteAttributeDbi.h"
-#include "SQLiteVariantDbi.h"
-#include "SQLiteFeatureDbi.h"
-#include "SQLiteModDbi.h"
-#include "SQLiteUdrDbi.h"
-#include "util/SqliteUpgraderFrom_0_To_1_13.h"
-#include "util/SqliteUpgraderFrom_1_13_To_1_25.h"
-
-#include <U2Core/U2SafePoints.h>
-#include <U2Core/U2SqlHelpers.h>
-#include <U2Core/Log.h>
-#include <U2Core/Version.h>
-#include <U2Core/GUrl.h>
+#include <3rdparty/sqlite3/sqlite3.h>
 
 #include <QFile>
 
-#include <3rdparty/sqlite3/sqlite3.h>
+#include <U2Core/GUrl.h>
+#include <U2Core/Log.h>
+#include <U2Core/U2SafePoints.h>
+#include <U2Core/U2SqlHelpers.h>
+#include <U2Core/Version.h>
+
+#include "SQLiteAssemblyDbi.h"
+#include "SQLiteAttributeDbi.h"
+#include "SQLiteFeatureDbi.h"
+#include "SQLiteModDbi.h"
+#include "SQLiteMsaDbi.h"
+#include "SQLiteObjectDbi.h"
+#include "SQLiteObjectRelationsDbi.h"
+#include "SQLiteSequenceDbi.h"
+#include "SQLiteUdrDbi.h"
+#include "SQLiteVariantDbi.h"
+#include "util/SqliteUpgraderFrom_0_To_1_13.h"
+#include "util/SqliteUpgraderFrom_1_13_To_1_25.h"
 
 namespace U2 {
 
 const int SQLiteDbi::BIND_PARAMETERS_LIMIT = 999;
 
 SQLiteDbi::SQLiteDbi()
-    : U2AbstractDbi (SQLiteDbiFactory::ID)
-{
+    : U2AbstractDbi(SQLiteDbiFactory::ID) {
     db = new DbRef();
     objectDbi = new SQLiteObjectDbi(this);
     objectRelationsDbi = new SQLiteObjectRelationsDbi(this);
@@ -68,7 +67,7 @@ SQLiteDbi::SQLiteDbi()
 }
 
 SQLiteDbi::~SQLiteDbi() {
-    SAFE_POINT( NULL == db->handle, "Invalid DB handle detected!", );
+    SAFE_POINT(NULL == db->handle, "Invalid DB handle detected!", );
 
     delete udrDbi;
     delete objectDbi;
@@ -84,51 +83,51 @@ SQLiteDbi::~SQLiteDbi() {
     delete db;
 }
 
-U2ObjectDbi* SQLiteDbi::getObjectDbi()  {
+U2ObjectDbi *SQLiteDbi::getObjectDbi() {
     return objectDbi;
 }
 
-U2ObjectRelationsDbi* SQLiteDbi::getObjectRelationsDbi() {
+U2ObjectRelationsDbi *SQLiteDbi::getObjectRelationsDbi() {
     return objectRelationsDbi;
 }
 
-U2SequenceDbi* SQLiteDbi::getSequenceDbi()  {
+U2SequenceDbi *SQLiteDbi::getSequenceDbi() {
     return sequenceDbi;
 }
 
-U2MsaDbi* SQLiteDbi::getMsaDbi() {
+U2MsaDbi *SQLiteDbi::getMsaDbi() {
     return msaDbi;
 }
 
-U2AssemblyDbi* SQLiteDbi::getAssemblyDbi()  {
+U2AssemblyDbi *SQLiteDbi::getAssemblyDbi() {
     return assemblyDbi;
 }
 
-U2CrossDatabaseReferenceDbi* SQLiteDbi::getCrossDatabaseReferenceDbi()  {
+U2CrossDatabaseReferenceDbi *SQLiteDbi::getCrossDatabaseReferenceDbi() {
     return crossDbi;
 }
 
-U2AttributeDbi* SQLiteDbi::getAttributeDbi() {
+U2AttributeDbi *SQLiteDbi::getAttributeDbi() {
     return attributeDbi;
 }
 
-U2VariantDbi* SQLiteDbi::getVariantDbi() {
+U2VariantDbi *SQLiteDbi::getVariantDbi() {
     return variantDbi;
 }
 
-U2FeatureDbi * SQLiteDbi::getFeatureDbi( ) {
+U2FeatureDbi *SQLiteDbi::getFeatureDbi() {
     return featureDbi;
 }
 
-U2ModDbi* SQLiteDbi::getModDbi() {
+U2ModDbi *SQLiteDbi::getModDbi() {
     return modDbi;
 }
 
-UdrDbi* SQLiteDbi::getUdrDbi() {
+UdrDbi *SQLiteDbi::getUdrDbi() {
     return udrDbi;
 }
 
-SQLiteObjectDbi* SQLiteDbi::getSQLiteObjectDbi() const {
+SQLiteObjectDbi *SQLiteDbi::getSQLiteObjectDbi() const {
     return objectDbi;
 }
 
@@ -136,27 +135,27 @@ SQLiteObjectRelationsDbi *SQLiteDbi::getSQLiteObjectRelationsDbi() const {
     return objectRelationsDbi;
 }
 
-SQLiteMsaDbi* SQLiteDbi::getSQLiteMsaDbi() const {
+SQLiteMsaDbi *SQLiteDbi::getSQLiteMsaDbi() const {
     return msaDbi;
 }
 
-SQLiteSequenceDbi* SQLiteDbi::getSQLiteSequenceDbi() const {
+SQLiteSequenceDbi *SQLiteDbi::getSQLiteSequenceDbi() const {
     return sequenceDbi;
 }
 
-SQLiteModDbi* SQLiteDbi::getSQLiteModDbi() const {
+SQLiteModDbi *SQLiteDbi::getSQLiteModDbi() const {
     return modDbi;
 }
 
-SQLiteUdrDbi* SQLiteDbi::getSQLiteUdrDbi() const {
+SQLiteUdrDbi *SQLiteDbi::getSQLiteUdrDbi() const {
     return udrDbi;
 }
 
-SQLiteFeatureDbi* SQLiteDbi::getSQLiteFeatureDbi() const {
+SQLiteFeatureDbi *SQLiteDbi::getSQLiteFeatureDbi() const {
     return featureDbi;
 }
 
-QString SQLiteDbi::getProperty(const QString& name, const QString& defaultValue, U2OpStatus& os) {
+QString SQLiteDbi::getProperty(const QString &name, const QString &defaultValue, U2OpStatus &os) {
     SQLiteReadQuery q("SELECT value FROM Meta WHERE name = ?1", db, os);
     q.bindString(1, name);
     bool found = q.step();
@@ -169,7 +168,7 @@ QString SQLiteDbi::getProperty(const QString& name, const QString& defaultValue,
     return defaultValue;
 }
 
-void SQLiteDbi::setProperty(const QString& name, const QString& value, U2OpStatus& os) {
+void SQLiteDbi::setProperty(const QString &name, const QString &value, U2OpStatus &os) {
     if (os.hasError()) {
         return;
     }
@@ -188,7 +187,7 @@ void SQLiteDbi::startOperationsBlock(U2OpStatus &os) {
     operationsBlockTransactions.push(new SQLiteTransaction(this->db, os));
 }
 
-void SQLiteDbi::stopOperationBlock(U2OpStatus& os) {
+void SQLiteDbi::stopOperationBlock(U2OpStatus &os) {
     SAFE_POINT_EXT(!operationsBlockTransactions.isEmpty(), os.setError("There is no transaction to delete"), );
     delete operationsBlockTransactions.pop();
 
@@ -197,7 +196,7 @@ void SQLiteDbi::stopOperationBlock(U2OpStatus& os) {
     }
 }
 
-QMutex * SQLiteDbi::getDbMutex( ) const {
+QMutex *SQLiteDbi::getDbMutex() const {
     return &db->lock;
 }
 
@@ -210,7 +209,7 @@ bool SQLiteDbi::isTransactionActive() const {
 }
 
 static int isEmptyCallback(void *o, int argc, char ** /*argv*/, char ** /*column*/) {
-    int* res = (int*)o;
+    int *res = (int *)o;
     *res = argc;
     return 0;
 }
@@ -218,7 +217,7 @@ static int isEmptyCallback(void *o, int argc, char ** /*argv*/, char ** /*column
 bool SQLiteDbi::isInitialized(U2OpStatus &os) {
     QByteArray showTablesQuery = "SELECT * FROM sqlite_master WHERE type='table';";
     int nTables = 0;
-    char* err;
+    char *err;
     int rc = sqlite3_exec(db->handle, showTablesQuery.constData(), isEmptyCallback, &nTables, &err);
     if (rc != SQLITE_OK) {
         os.setError(U2DbiL10n::tr("Error checking SQLite database: %1!").arg(err));
@@ -229,18 +228,18 @@ bool SQLiteDbi::isInitialized(U2OpStatus &os) {
 }
 
 #define CT(table, fields) \
-{ \
-    char* err = NULL; \
-    QByteArray query = QByteArray("CREATE TABLE ") + table + " (" + fields + ");";\
-    int rc = sqlite3_exec(db->handle, query, NULL, NULL, &err); \
-    if (rc != SQLITE_OK) { \
-        os.setError(U2DbiL10n::tr("Error creating table: %1, error: %2").arg(table).arg(err)); \
-        sqlite3_free(err); \
-        return; \
-    } \
-}
+    { \
+        char *err = NULL; \
+        QByteArray query = QByteArray("CREATE TABLE ") + table + " (" + fields + ");"; \
+        int rc = sqlite3_exec(db->handle, query, NULL, NULL, &err); \
+        if (rc != SQLITE_OK) { \
+            os.setError(U2DbiL10n::tr("Error creating table: %1, error: %2").arg(table).arg(err)); \
+            sqlite3_free(err); \
+            return; \
+        } \
+    }
 
-void SQLiteDbi::populateDefaultSchema(U2OpStatus& os) {
+void SQLiteDbi::populateDefaultSchema(U2OpStatus &os) {
     // meta table, stores general db info
     SQLiteWriteQuery("CREATE TABLE Meta(name TEXT NOT NULL, value TEXT NOT NULL)", db, os).execute();
 
@@ -259,26 +258,27 @@ void SQLiteDbi::populateDefaultSchema(U2OpStatus& os) {
     setVersionProperties(Version::minVersionForSQLite(), os);
 }
 
-void SQLiteDbi::internalInit(const QHash<QString, QString>& props, U2OpStatus& os) {
+void SQLiteDbi::internalInit(const QHash<QString, QString> &props, U2OpStatus &os) {
     if (isInitialized(os)) {
         const QString appVersionText = getProperty(U2DbiOptions::APP_MIN_COMPATIBLE_VERSION, "", os);
         CHECK_OP(os, );
 
         if (appVersionText.isEmpty()) {
             // Not an error since other databases might be opened with this interface
-            coreLog.info(U2DbiL10n::tr("Not a %1 SQLite database: %2").arg(U2_PRODUCT_NAME)
-                .arg(url));
+            coreLog.info(U2DbiL10n::tr("Not a %1 SQLite database: %2").arg(U2_PRODUCT_NAME).arg(url));
         } else {
             Version dbAppVersion = Version::parseVersion(appVersionText);
             Version currentVersion = Version::appVersion();
             if (dbAppVersion > currentVersion) {
                 coreLog.info(U2DbiL10n::tr("Warning! The database was created with a newer %1 version: "
-                    "%2. Not all database features may be supported! Current %1 version: %3.")
-                    .arg(U2_PRODUCT_NAME).arg(dbAppVersion.text).arg(currentVersion.text));
+                                           "%2. Not all database features may be supported! Current %1 version: %3.")
+                                 .arg(U2_PRODUCT_NAME)
+                                 .arg(dbAppVersion.text)
+                                 .arg(currentVersion.text));
             }
         }
 
-        foreach (const QString& key, props.keys()) {
+        foreach (const QString &key, props.keys()) {
             if (key.startsWith("sqlite-")) {
                 setProperty(key, props.value(key), os);
             }
@@ -321,7 +321,7 @@ QString SQLiteDbi::getLastErrorMessage(int rc) {
     return err;
 }
 
-void SQLiteDbi::init(const QHash<QString, QString>& props, const QVariantMap&, U2OpStatus& os) {
+void SQLiteDbi::init(const QHash<QString, QString> &props, const QVariantMap &, U2OpStatus &os) {
     if (db->handle != NULL) {
         os.setError(U2DbiL10n::tr("Database is already opened!"));
         return;
@@ -397,7 +397,7 @@ void SQLiteDbi::init(const QHash<QString, QString>& props, const QVariantMap&, U
     setState(U2DbiState_Ready);
 }
 
-QVariantMap SQLiteDbi::shutdown(U2OpStatus& os) {
+QVariantMap SQLiteDbi::shutdown(U2OpStatus &os) {
     if (db == NULL) {
         os.setError(U2DbiL10n::tr("Database is already closed!"));
         return QVariantMap();
@@ -441,7 +441,7 @@ QVariantMap SQLiteDbi::shutdown(U2OpStatus& os) {
     return QVariantMap();
 }
 
-bool SQLiteDbi::flush(U2OpStatus& ) {
+bool SQLiteDbi::flush(U2OpStatus &) {
     return true;
 }
 
@@ -449,33 +449,32 @@ QString SQLiteDbi::getDbiId() const {
     return url;
 }
 
-QHash<QString, QString> SQLiteDbi::getDbiMetaInfo(U2OpStatus& ) {
+QHash<QString, QString> SQLiteDbi::getDbiMetaInfo(U2OpStatus &) {
     QHash<QString, QString> res;
     res["url"] = url;
     return res;
-
 }
 
-U2DataType SQLiteDbi::getEntityTypeById(const U2DataId& id) const {
+U2DataType SQLiteDbi::getEntityTypeById(const U2DataId &id) const {
     return U2DbiUtils::toType(id);
 }
 
 // SQLiteDbiFactory
 
-SQLiteDbiFactory::SQLiteDbiFactory() : U2DbiFactory()
-{
+SQLiteDbiFactory::SQLiteDbiFactory()
+    : U2DbiFactory() {
 }
 
 U2Dbi *SQLiteDbiFactory::createDbi() {
     return new SQLiteDbi();
 }
 
-U2DbiFactoryId SQLiteDbiFactory::getId()const {
+U2DbiFactoryId SQLiteDbiFactory::getId() const {
     return ID;
 }
 
-FormatCheckResult SQLiteDbiFactory::isValidDbi(const QHash<QString, QString>& properties, const QByteArray& rawData, U2OpStatus& ) const {
-    QString surl  = properties.value(U2DbiOptions::U2_DBI_OPTION_URL);
+FormatCheckResult SQLiteDbiFactory::isValidDbi(const QHash<QString, QString> &properties, const QByteArray &rawData, U2OpStatus &) const {
+    QString surl = properties.value(U2DbiOptions::U2_DBI_OPTION_URL);
     GUrl url(surl);
     if (!url.isLocalFile()) {
         return FormatDetection_NotMatched;
@@ -486,10 +485,10 @@ FormatCheckResult SQLiteDbiFactory::isValidDbi(const QHash<QString, QString>& pr
     return FormatDetection_NotMatched;
 }
 
-bool SQLiteDbiFactory::isDbiExists(const U2DbiId& id) const {
+bool SQLiteDbiFactory::isDbiExists(const U2DbiId &id) const {
     return QFile::exists(id);
 }
 
 const U2DbiFactoryId SQLiteDbiFactory::ID = SQLITE_DBI_ID;
 
-}//namespace
+}    // namespace U2

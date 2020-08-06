@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "PhmmerSearchTask.h"
+
 #include <QCoreApplication>
 #include <QDir>
 
@@ -34,12 +36,10 @@
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/UserApplicationsSettings.h>
 
+#include "HmmerBuildTask.h"
 #include "HmmerParseSearchResultsTask.h"
 #include "HmmerSupport.h"
-#include "PhmmerSearchTask.h"
 #include "utils/ExportTasks.h"
-
-#include "HmmerBuildTask.h"
 
 namespace U2 {
 
@@ -52,8 +52,7 @@ PhmmerSearchTask::PhmmerSearchTask(const PhmmerSearchSettings &settings)
       saveSequenceTask(NULL),
       phmmerTask(NULL),
       parseTask(NULL),
-      removeWorkingDir(false)
-{
+      removeWorkingDir(false) {
     GCOUNTER(cvar, tvar, "HMMER Search");
     SAFE_POINT_EXT(settings.validate(), setError("Settings are invalid"), );
 }
@@ -127,12 +126,12 @@ const QString PHMMER_TEMP_DIR = "phmmer";
 
 QString getTaskTempDirName(const QString &prefix, Task *task) {
     return prefix + QString::number(task->getTaskId()) + "_" +
-            QDate::currentDate().toString("dd.MM.yyyy") + "_" +
-            QTime::currentTime().toString("hh.mm.ss.zzz") + "_" +
-            QString::number(QCoreApplication::applicationPid());
+           QDate::currentDate().toString("dd.MM.yyyy") + "_" +
+           QTime::currentTime().toString("hh.mm.ss.zzz") + "_" +
+           QString::number(QCoreApplication::applicationPid());
 }
 
-}
+}    // namespace
 
 void PhmmerSearchTask::prepareWorkingDir() {
     if (settings.workingDir.isEmpty()) {
@@ -233,4 +232,4 @@ void PhmmerSearchTask::preparePhmmerTask() {
     phmmerTask->setSubtaskProgressWeight(85);
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "MaSimpleOverview.h"
+
 #include <QMouseEvent>
 #include <QPainter>
 
@@ -33,7 +35,6 @@
 #include <U2View/MSAEditorSequenceArea.h>
 
 #include "MaGraphCalculationTask.h"
-#include "MaSimpleOverview.h"
 #include "ov_msa/helpers/BaseWidthController.h"
 #include "ov_msa/helpers/RowHeightController.h"
 #include "ov_msa/helpers/ScrollController.h"
@@ -43,8 +44,7 @@ namespace U2 {
 MaSimpleOverview::MaSimpleOverview(MaEditorWgt *_ui)
     : MaOverview(_ui),
       redrawMsaOverview(true),
-      redrawSelection(true)
-{
+      redrawSelection(true) {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setFixedHeight(FIXED_HEIGTH);
 
@@ -57,7 +57,6 @@ bool MaSimpleOverview::isValid() const {
     }
     return true;
 }
-
 
 QPixmap MaSimpleOverview::getView() {
     resize(ui->width(), FIXED_HEIGTH);
@@ -144,7 +143,7 @@ void MaSimpleOverview::drawOverview(QPainter &p) {
 
     QString highlightingSchemeId = sequenceArea->getCurrentHighlightingScheme()->getFactory()->getId();
 
-    MultipleAlignmentObject* mAlignmentObj = editor->getMaObject();
+    MultipleAlignmentObject *mAlignmentObj = editor->getMaObject();
     SAFE_POINT(NULL != mAlignmentObj, tr("Incorrect multiple alignment object!"), );
     const MultipleAlignment ma = mAlignmentObj->getMultipleAlignment();
 
@@ -166,18 +165,20 @@ void MaSimpleOverview::drawOverview(QPainter &p) {
             }
 
             bool drawColor = true;
-            int refPos = -1;;
+            int refPos = -1;
+            ;
             qint64 refId = editor->getReferenceRowId();
             if (refId != U2MsaRow::INVALID_ROW_ID) {
                 refPos = ma->getRowIndexByRowId(refId, os);
                 SAFE_POINT_OP(os, );
             }
             drawColor = MaHighlightingOverviewCalculationTask::isCellHighlighted(
-                        ma,
-                        sequenceArea->getCurrentHighlightingScheme(),
-                        sequenceArea->getCurrentColorScheme(),
-                        seq, pos,
-                        refPos);
+                ma,
+                sequenceArea->getCurrentHighlightingScheme(),
+                sequenceArea->getCurrentColorScheme(),
+                seq,
+                pos,
+                refPos);
 
             if (color.isValid() && drawColor) {
                 p.fillRect(rect, color);
@@ -185,7 +186,7 @@ void MaSimpleOverview::drawOverview(QPainter &p) {
         }
     }
     p.setPen(Qt::gray);
-    p.drawRect( rect().adjusted(0, 0, -1, -1) );
+    p.drawRect(rect().adjusted(0, 0, -1, -1));
 }
 
 void MaSimpleOverview::drawVisibleRange(QPainter &p) {
@@ -215,8 +216,8 @@ void MaSimpleOverview::drawSelection(QPainter &p) {
 
 void MaSimpleOverview::moveVisibleRange(QPoint _pos) {
     QRect newVisibleRange(cachedVisibleRange);
-    const int newPosX = qBound((cachedVisibleRange.width()) / 2, _pos.x(), width() - (cachedVisibleRange.width() - 1 ) / 2);
-    const int newPosY = qBound((cachedVisibleRange.height()) / 2, _pos.y(), height() - (cachedVisibleRange.height() - 1 ) / 2);
+    const int newPosX = qBound((cachedVisibleRange.width()) / 2, _pos.x(), width() - (cachedVisibleRange.width() - 1) / 2);
+    const int newPosY = qBound((cachedVisibleRange.height()) / 2, _pos.y(), height() - (cachedVisibleRange.height() - 1) / 2);
     const QPoint newPos(newPosX, newPosY);
     newVisibleRange.moveCenter(newPos);
 
@@ -229,7 +230,7 @@ void MaSimpleOverview::moveVisibleRange(QPoint _pos) {
 void MaSimpleOverview::recalculateSelection() {
     recalculateScale();
 
-    const MaEditorSelection& selection = sequenceArea->getSelection();
+    const MaEditorSelection &selection = sequenceArea->getSelection();
 
     const U2Region selectionBasesRegion = ui->getBaseWidthController()->getBasesGlobalRange(selection.x(), selection.width());
     const U2Region selectionRowsRegion = ui->getRowHeightController()->getGlobalYRegionByViewRowsRegion(selection.getYRegion());
@@ -242,4 +243,4 @@ void MaSimpleOverview::recalculateSelection() {
     cachedSelection.setHeight(qRound((selectionRowsRegion.startPos + selectionRowsRegion.length) / stepY) - qRound(selectionRowsRegion.startPos / stepY));
 }
 
-} // namespace
+}    // namespace U2

@@ -19,13 +19,13 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-#include <QDir>
-
 #include <drivers/GTKeyboardDriver.h>
 #include <drivers/GTMouseDriver.h>
 #include <primitives/GTLineEdit.h>
 #include <utils/GTUtilsDialog.h>
+
+#include <QApplication>
+#include <QDir>
 
 #include "GTDatabaseConfig.h"
 #include "GTTestsPrimerLibrary.h"
@@ -84,7 +84,7 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
     public:
         void run(HI::GUITestOpStatus &os) {
             //3. Set the focus at the primer line edit and write "Q%1" (not ACGT).
-            QLineEdit *primerEdit = dynamic_cast<QLineEdit*>(GTWidget::findWidget(os, "primerEdit"));
+            QLineEdit *primerEdit = dynamic_cast<QLineEdit *>(GTWidget::findWidget(os, "primerEdit"));
             GTLineEdit::setText(os, primerEdit, "Q%1", true);
 
             //Expected: the line edit is empty.
@@ -97,11 +97,11 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
             CHECK_SET_ERR(primerEdit->text() == "ATCG", "No upper-case");
 
             //5. Remove the primer name.
-            QLineEdit *nameEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "nameEdit"));
+            QLineEdit *nameEdit = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "nameEdit"));
             GTLineEdit::setText(os, nameEdit, "");
 
             //Expected: The OK button is disabled.
-            QWidget *dialog = QApplication::activeModalWidget();
+            QWidget *dialog = GTWidget::getActiveModalWidget(os);
             QPushButton *okButton = GTUtilsDialog::buttonBox(os, dialog)->button(QDialogButtonBox::Ok);
             CHECK_SET_ERR(!okButton->isEnabled(), "The OK button is enabled");
 
@@ -165,7 +165,7 @@ GUI_TEST_CLASS_DEFINITION(test_0004) {
     //    Add a primer from the library
     //    Double click
 
-    { // Pre-test
+    {    // Pre-test
         GTUtilsPrimerLibrary::openLibrary(os);
         AddPrimerDialogFiller::Parameters parameters;
         parameters.primer = "AAAAAAAAAAAAAA";
@@ -190,7 +190,7 @@ GUI_TEST_CLASS_DEFINITION(test_0004) {
     GTWidget::click(os, GTUtilsPcr::browseButton(os, U2Strand::Direct));
 
     //Expected: the dialog is closed, the chosen primer sequence is in the forward primer line edit.
-    QLineEdit *primerEdit = GTWidget::findExactWidget<QLineEdit*>(os, "primerEdit", GTUtilsPcr::primerBox(os, U2Strand::Direct));
+    QLineEdit *primerEdit = GTWidget::findExactWidget<QLineEdit *>(os, "primerEdit", GTUtilsPcr::primerBox(os, U2Strand::Direct));
     CHECK_SET_ERR(primerEdit->text() == "AAAAAAAAAAAAAA", "Wrong primer");
 }
 
@@ -202,7 +202,7 @@ GUI_TEST_CLASS_DEFINITION(test_0005) {
     GTUtilsPrimerLibrary::openLibrary(os);
 
     //2. Add a new primer if the library is empty.
-    for (int i=0; i<3; i++) {
+    for (int i = 0; i < 3; i++) {
         AddPrimerDialogFiller::Parameters parameters;
         parameters.primer = "AAAAAAAAAAAAAA";
         GTUtilsDialog::waitForDialog(os, new AddPrimerDialogFiller(os, parameters));
@@ -252,9 +252,9 @@ GUI_TEST_CLASS_DEFINITION(test_0005) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0006) {
-//    Export whole library to the fasta file
+    //    Export whole library to the fasta file
 
-//    1. Open the library, clear it, add sequences "AAAA", "CCCC", "GGGG", "TTTT".
+    //    1. Open the library, clear it, add sequences "AAAA", "CCCC", "GGGG", "TTTT".
     GTUtilsPrimerLibrary::openLibrary(os);
     GTUtilsPrimerLibrary::clearLibrary(os);
 
@@ -263,15 +263,15 @@ GUI_TEST_CLASS_DEFINITION(test_0006) {
     GTUtilsPrimerLibrary::addPrimer(os, "primer3", "GGGG");
     GTUtilsPrimerLibrary::addPrimer(os, "primer4", "TTTT");
 
-//    2. Select all sequences.
+    //    2. Select all sequences.
     GTUtilsPrimerLibrary::selectAll(os);
 
-//    3. Click "Export".
-//    4. Fill the dialog:
-//        Export to: "Local file";
-//        Format: "fasta";
-//        File path: any valid path;
-//    and accept the dialog.
+    //    3. Click "Export".
+    //    4. Fill the dialog:
+    //        Export to: "Local file";
+    //        Format: "fasta";
+    //        File path: any valid path;
+    //    and accept the dialog.
     class ExportToFastaScenario : public CustomScenario {
         void run(HI::GUITestOpStatus &os) {
             QWidget *dialog = QApplication::activeModalWidget();
@@ -287,11 +287,14 @@ GUI_TEST_CLASS_DEFINITION(test_0006) {
     GTUtilsDialog::waitForDialog(os, new ExportPrimersDialogFiller(os, new ExportToFastaScenario));
     GTUtilsPrimerLibrary::clickButton(os, GTUtilsPrimerLibrary::Export);
 
-//    5. Open the exported file.
-//    Expected state: there are the same sequences in the file as in the library.
+    //    5. Open the exported file.
+    //    Expected state: there are the same sequences in the file as in the library.
     GTUtilsTaskTreeView::waitTaskFinished(os);
-    const QStringList names = QStringList() << "primer1" << "primer2" << "primer3" << "primer4";
-    GTUtilsProject::openFileExpectSequences(os, sandBoxDir + "pcrlib/test_0006", "primers.fa", names);
+    const QStringList names = QStringList() << "primer1"
+                                            << "primer2"
+                                            << "primer3"
+                                            << "primer4";
+    GTUtilsProject::openFileExpectSequences(os, sandBoxDir + "pcrlib/test_0006/", "primers.fa", names);
 
     const QString firstSeq = GTUtilsSequenceView::getSequenceAsString(os, 0);
     CHECK_SET_ERR("AAAA" == firstSeq, QString("Incorrect sequence data: expect '%1', got '%2'").arg("AAAA").arg(firstSeq));
@@ -307,9 +310,9 @@ GUI_TEST_CLASS_DEFINITION(test_0006) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0007) {
-//    Export several primers from library to the genbank file
+    //    Export several primers from library to the genbank file
 
-//    1. Open the library, clear it, add sequences "AAAA", "CCCC", "GGGG", "TTTT".
+    //    1. Open the library, clear it, add sequences "AAAA", "CCCC", "GGGG", "TTTT".
     GTUtilsPrimerLibrary::openLibrary(os);
     GTUtilsPrimerLibrary::clearLibrary(os);
 
@@ -318,15 +321,15 @@ GUI_TEST_CLASS_DEFINITION(test_0007) {
     GTUtilsPrimerLibrary::addPrimer(os, "primer3", "GGGG");
     GTUtilsPrimerLibrary::addPrimer(os, "primer4", "TTTT");
 
-//    2. Select the second and the third sequences.
+    //    2. Select the second and the third sequences.
     GTUtilsPrimerLibrary::selectPrimers(os, QList<int>() << 0 << 2);
 
-//    3. Click "Export".
-//    4. Fill the dialog:
-//        Export to: "Local file";
-//        Format: "GenBank";
-//        File path: any valid path;
-//    and accept the dialog.
+    //    3. Click "Export".
+    //    4. Fill the dialog:
+    //        Export to: "Local file";
+    //        Format: "GenBank";
+    //        File path: any valid path;
+    //    and accept the dialog.
     class ExportToGenbankScenario : public CustomScenario {
         void run(HI::GUITestOpStatus &os) {
             QWidget *dialog = QApplication::activeModalWidget();
@@ -342,11 +345,12 @@ GUI_TEST_CLASS_DEFINITION(test_0007) {
     GTUtilsDialog::waitForDialog(os, new ExportPrimersDialogFiller(os, new ExportToGenbankScenario));
     GTUtilsPrimerLibrary::clickButton(os, GTUtilsPrimerLibrary::Export);
 
-//    5. Open the exported file.
-//    Expected state: there are two sequences (primer1: AAAA, primer3: GGGG) with annotations, that contains qualifiers with primer's parameters.
+    //    5. Open the exported file.
+    //    Expected state: there are two sequences (primer1: AAAA, primer3: GGGG) with annotations, that contains qualifiers with primer's parameters.
     GTUtilsTaskTreeView::waitTaskFinished(os);
-    const QStringList names = QStringList() << "primer1" << "primer3";
-    GTUtilsProject::openFileExpectSequences(os, sandBoxDir + "pcrlib/test_0007", "primers.gb", names);
+    const QStringList names = QStringList() << "primer1"
+                                            << "primer3";
+    GTUtilsProject::openFileExpectSequences(os, sandBoxDir + "pcrlib/test_0007/", "primers.gb", names);
 
     const QString firstSeq = GTUtilsSequenceView::getSequenceAsString(os, 0);
     CHECK_SET_ERR("AAAA" == firstSeq, QString("Incorrect sequence data: expect '%1', got '%2'").arg("AAAA").arg(firstSeq));
@@ -357,6 +361,7 @@ GUI_TEST_CLASS_DEFINITION(test_0007) {
     const QList<QTreeWidgetItem *> items = GTUtilsAnnotationsTreeView::findItems(os, "primer_bind");
     CHECK_SET_ERR(items.size() == 2, QString("Unexpected annotations count: epxect %1, got %2").arg(2).arg(items.size()));
 
+    GTUtilsAnnotationsTreeView::selectItems(os, QStringList() << "primer_bind");
     const QString sequenceQualifier = GTUtilsAnnotationsTreeView::getQualifierValue(os, "sequence", "primer_bind");
     const QString gcQualifier = GTUtilsAnnotationsTreeView::getQualifierValue(os, "gc%", "primer_bind");
     const QString tmQualifier = GTUtilsAnnotationsTreeView::getQualifierValue(os, "tm", "primer_bind");
@@ -367,9 +372,9 @@ GUI_TEST_CLASS_DEFINITION(test_0007) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0008) {
-//    Export whole library to a shared database
+    //    Export whole library to a shared database
 
-//    1. Open the library, clear it, add sequences "AAAA", "CCCC", "GGGG", "TTTT".
+    //    1. Open the library, clear it, add sequences "AAAA", "CCCC", "GGGG", "TTTT".
     GTDatabaseConfig::initTestConnectionInfo("ugene_gui_test");
     GTUtilsPrimerLibrary::openLibrary(os);
     GTUtilsPrimerLibrary::clearLibrary(os);
@@ -379,15 +384,15 @@ GUI_TEST_CLASS_DEFINITION(test_0008) {
     GTUtilsPrimerLibrary::addPrimer(os, "primer3", "GGGG");
     GTUtilsPrimerLibrary::addPrimer(os, "primer4", "TTTT");
 
-//    2. Select all sequences.
+    //    2. Select all sequences.
     GTUtilsPrimerLibrary::selectAll(os);
 
-//    3. Click "Export".
-//    4. Fill the dialog:
-//        Export to: "Shared database";
-//        Database: connect to the "ugene_gui_test" database;
-//        Folder: any valid path;
-//    and accept the dialog.
+    //    3. Click "Export".
+    //    4. Fill the dialog:
+    //        Export to: "Shared database";
+    //        Database: connect to the "ugene_gui_test" database;
+    //        Folder: any valid path;
+    //    and accept the dialog.
     class ExportToSharedDbScenario : public CustomScenario {
         void run(HI::GUITestOpStatus &os) {
             QWidget *dialog = QApplication::activeModalWidget();
@@ -402,8 +407,8 @@ GUI_TEST_CLASS_DEFINITION(test_0008) {
     GTUtilsDialog::waitForDialog(os, new ExportPrimersDialogFiller(os, new ExportToSharedDbScenario));
     GTUtilsPrimerLibrary::clickButton(os, GTUtilsPrimerLibrary::Export);
 
-//    5. Check the database.
-//    Expected state: there are four sequence objects and four annotation table object with relations between them.
+    //    5. Check the database.
+    //    Expected state: there are four sequence objects and four annotation table object with relations between them.
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTGlobals::sleep(10000);
     Document *databaseConnection = GTUtilsSharedDatabaseDocument::getDatabaseDocumentByName(os, "ugene_gui_test");
@@ -424,21 +429,21 @@ GUI_TEST_CLASS_DEFINITION(test_0008) {
                                                 << "/pcrlib/test_0008/primer2 features"
                                                 << "/pcrlib/test_0008/primer3 features"
                                                 << "/pcrlib/test_0008/primer4 features";
-    GTUtilsSharedDatabaseDocument::ensureThereAreNoItemsExceptListed(os, databaseConnection, "/pcrlib/test_0008/", itemPaths);
+    GTUtilsSharedDatabaseDocument::checkThereAreNoItemsExceptListed(os, databaseConnection, "/pcrlib/test_0008/", itemPaths);
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0009) {
-//    Import primers from multifasta
+    //    Import primers from multifasta
 
-//    1. Open the library, clear it.
+    //    1. Open the library, clear it.
     GTUtilsPrimerLibrary::openLibrary(os);
     GTUtilsPrimerLibrary::clearLibrary(os);
 
-//    2. Click "Import".
-//    3. Fill the dialog:
-//        Import from: "Local file(s)";
-//        Files: "_common_data/fasta/random_primers.fa"
-//    and accept the dialog.
+    //    2. Click "Import".
+    //    3. Fill the dialog:
+    //        Import from: "Local file(s)";
+    //        Files: "_common_data/fasta/random_primers.fa"
+    //    and accept the dialog.
     class ImportFromMultifasta : public CustomScenario {
         void run(HI::GUITestOpStatus &os) {
             QWidget *dialog = QApplication::activeModalWidget();
@@ -452,8 +457,8 @@ GUI_TEST_CLASS_DEFINITION(test_0009) {
     GTUtilsDialog::waitForDialog(os, new ImportPrimersDialogFiller(os, new ImportFromMultifasta));
     GTUtilsPrimerLibrary::clickButton(os, GTUtilsPrimerLibrary::Import);
 
-//    4. Check the library.
-//    Expected state: the library contains four primers.
+    //    4. Check the library.
+    //    Expected state: the library contains four primers.
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     const int librarySize = GTUtilsPrimerLibrary::librarySize(os);
@@ -472,20 +477,19 @@ GUI_TEST_CLASS_DEFINITION(test_0009) {
     CHECK_SET_ERR("TTTAGGAGGAATCACACACCCACC" == fourthData, QString("An unexpected primer '%1' data: expect %2, got %3").arg("primer4").arg("TTTAGGAGGAATCACACACCCACC").arg(fourthData));
 }
 
-
 GUI_TEST_CLASS_DEFINITION(test_0010) {
-//    Import primers from several files
+    //    Import primers from several files
 
-//    1. Open the library, clear it.
+    //    1. Open the library, clear it.
     GTUtilsPrimerLibrary::openLibrary(os);
     GTUtilsPrimerLibrary::clearLibrary(os);
 
-//    2. Click "Import".
-//    3. Fill the dialog:
-//        Import from: "Local file(s)";
-//        Files: "_common_data/fasta/random_primers.fa",
-//               "_common_data/fasta/random_primers.fa2"
-//    and accept the dialog.
+    //    2. Click "Import".
+    //    3. Fill the dialog:
+    //        Import from: "Local file(s)";
+    //        Files: "_common_data/fasta/random_primers.fa",
+    //               "_common_data/fasta/random_primers.fa2"
+    //    and accept the dialog.
     class ImportFromSeveralFiles : public CustomScenario {
         void run(HI::GUITestOpStatus &os) {
             QWidget *dialog = QApplication::activeModalWidget();
@@ -500,8 +504,8 @@ GUI_TEST_CLASS_DEFINITION(test_0010) {
     GTUtilsDialog::waitForDialog(os, new ImportPrimersDialogFiller(os, new ImportFromSeveralFiles));
     GTUtilsPrimerLibrary::clickButton(os, GTUtilsPrimerLibrary::Import);
 
-//    4. Check the library.
-//    Expected state: the library contains six primers.
+    //    4. Check the library.
+    //    Expected state: the library contains six primers.
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     const int librarySize = GTUtilsPrimerLibrary::librarySize(os);
@@ -527,21 +531,21 @@ GUI_TEST_CLASS_DEFINITION(test_0010) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0011) {
-//    Import primers from shared database objects
+    //    Import primers from shared database objects
 
-//    1. Open the library, clear it.
+    //    1. Open the library, clear it.
     GTDatabaseConfig::initTestConnectionInfo("ugene_gui_test");
     GTUtilsPrimerLibrary::openLibrary(os);
     GTUtilsPrimerLibrary::clearLibrary(os);
 
-//    2. Click "Import".
-//    3. Fill the dialog:
-//        Import from: "Shared database";
-//        Objects: "/pcrlib/test_0011/primer1",
-//                 "/pcrlib/test_0011/primer2",
-//                 "/pcrlib/test_0011/primer3",
-//                 "/pcrlib/test_0011/primer4",
-//    and accept the dialog.
+    //    2. Click "Import".
+    //    3. Fill the dialog:
+    //        Import from: "Shared database";
+    //        Objects: "/pcrlib/test_0011/primer1",
+    //                 "/pcrlib/test_0011/primer2",
+    //                 "/pcrlib/test_0011/primer3",
+    //                 "/pcrlib/test_0011/primer4",
+    //    and accept the dialog.
     class ImportFromSharedDatabaseObjects : public CustomScenario {
         void run(HI::GUITestOpStatus &os) {
             QWidget *dialog = QApplication::activeModalWidget();
@@ -559,8 +563,8 @@ GUI_TEST_CLASS_DEFINITION(test_0011) {
     GTUtilsDialog::waitForDialog(os, new ImportPrimersDialogFiller(os, new ImportFromSharedDatabaseObjects));
     GTUtilsPrimerLibrary::clickButton(os, GTUtilsPrimerLibrary::Import);
 
-//    4. Check the library.
-//    Expected state: the library contains four primers.
+    //    4. Check the library.
+    //    Expected state: the library contains four primers.
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     const int librarySize = GTUtilsPrimerLibrary::librarySize(os);
@@ -580,18 +584,18 @@ GUI_TEST_CLASS_DEFINITION(test_0011) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0012) {
-//    Import primers from shared database folder
+    //    Import primers from shared database folder
 
-//    1. Open the library, clear it.
+    //    1. Open the library, clear it.
     GTDatabaseConfig::initTestConnectionInfo("ugene_gui_test");
     GTUtilsPrimerLibrary::openLibrary(os);
     GTUtilsPrimerLibrary::clearLibrary(os);
 
-//    2. Click "Import".
-//    3. Fill the dialog:
-//        Import from: "Shared database";
-//        Objects: "/pcrlib/test_0012/"
-//    and accept the dialog.
+    //    2. Click "Import".
+    //    3. Fill the dialog:
+    //        Import from: "Shared database";
+    //        Objects: "/pcrlib/test_0012/"
+    //    and accept the dialog.
     class ImportFromSharedDatabaseFolder : public CustomScenario {
         void run(HI::GUITestOpStatus &os) {
             QWidget *dialog = QApplication::activeModalWidget();
@@ -607,8 +611,8 @@ GUI_TEST_CLASS_DEFINITION(test_0012) {
     GTUtilsDialog::waitForDialog(os, new ImportPrimersDialogFiller(os, new ImportFromSharedDatabaseFolder));
     GTUtilsPrimerLibrary::clickButton(os, GTUtilsPrimerLibrary::Import);
 
-//    4. Check the library.
-//    Expected state: the library contains two primers.
+    //    4. Check the library.
+    //    Expected state: the library contains two primers.
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     const int librarySize = GTUtilsPrimerLibrary::librarySize(os);
@@ -619,26 +623,26 @@ GUI_TEST_CLASS_DEFINITION(test_0012) {
 
     const QString secondData = GTUtilsPrimerLibrary::getPrimerSequence(os, "primerToImport6");
     CHECK_SET_ERR("GGTATATTAATTATTATTA" == secondData, QString("An unexpected primer '%1' data: expect %2, got %3").arg("primerToImport2").arg("GGTATATTAATTATTATTA").arg(secondData));
-    CHECK_SET_ERR(!l.hasError(), "There is error in the log");
+    CHECK_SET_ERR(!l.hasErrors(), "Errors in log: " + l.getJoinedErrorString());
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0013) {
-//    Import primers from different shared databases
+    //    Import primers from different shared databases
 
-//    1. Open the library, clear it.
+    //    1. Open the library, clear it.
     GTDatabaseConfig::initTestConnectionInfo("ugene_gui_test");
     GTDatabaseConfig::initTestConnectionInfo("ugene_gui_test_ro", GTDatabaseConfig::database(), true, true);
     GTUtilsPrimerLibrary::openLibrary(os);
     GTUtilsPrimerLibrary::clearLibrary(os);
 
-//    2. Click "Import".
-//    3. Fill the dialog:
-//        Import from: "Shared database";
-//        Objects: "user1@ugene_gui_test/pcrlib/test_0013/folderToImport1/",
-//                 "user1@ugene_gui_test/pcrlib/test_0013/primerToImport7",
-//                 "user2@ugene_gui_test/pcrlib/test_0013/folderToImport2/",
-//                 "user2@ugene_gui_test/pcrlib/test_0013/primerToImport9"
-//    and accept the dialog.
+    //    2. Click "Import".
+    //    3. Fill the dialog:
+    //        Import from: "Shared database";
+    //        Objects: "user1@ugene_gui_test/pcrlib/test_0013/folderToImport1/",
+    //                 "user1@ugene_gui_test/pcrlib/test_0013/primerToImport7",
+    //                 "user2@ugene_gui_test/pcrlib/test_0013/folderToImport2/",
+    //                 "user2@ugene_gui_test/pcrlib/test_0013/primerToImport9"
+    //    and accept the dialog.
     class ImportFromTwoSharedDatabases : public CustomScenario {
         void run(HI::GUITestOpStatus &os) {
             QWidget *dialog = QApplication::activeModalWidget();
@@ -647,8 +651,10 @@ GUI_TEST_CLASS_DEFINITION(test_0013) {
             ImportPrimersDialogFiller::connectDatabase(os, "ugene_gui_test");
             ImportPrimersDialogFiller::connectDatabase(os, "ugene_gui_test_ro");
             QMap<QString, QStringList> itemsToImport;
-            itemsToImport["ugene_gui_test"] << "folderToImport1" << "primerToImport7";
-            itemsToImport["ugene_gui_test_ro"] << "folderToImport2" << "primerToImport9";
+            itemsToImport["ugene_gui_test"] << "folderToImport1"
+                                            << "primerToImport7";
+            itemsToImport["ugene_gui_test_ro"] << "folderToImport2"
+                                               << "primerToImport9";
             ImportPrimersDialogFiller::addObjects(os, itemsToImport);
             GTUtilsDialog::clickButtonBox(os, QDialogButtonBox::Ok);
         }
@@ -720,30 +726,28 @@ GUI_TEST_CLASS_DEFINITION(test_0015) {
     // 5. Set the primers from the library
     GTUtilsOptionPanelSequenceView::openTab(os, GTUtilsOptionPanelSequenceView::InSilicoPcr);
     GTUtilsTaskTreeView::waitTaskFinished(os);
-    GTGlobals::sleep();
 
     GTUtilsDialog::waitForDialog(os, new PrimerLibrarySelectorFiller(os, 0, true));
     GTWidget::click(os, GTUtilsPcr::browseButton(os, U2Strand::Direct));
-    GTGlobals::sleep();
 
     GTUtilsDialog::waitForDialog(os, new PrimerLibrarySelectorFiller(os, 1, true));
     GTWidget::click(os, GTUtilsPcr::browseButton(os, U2Strand::Complementary));
-    GTGlobals::sleep();
 
     // 4. Find the product
     GTWidget::click(os, GTWidget::findWidget(os, "findProductButton"));
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     // Expected: 2 results were found
-    CHECK_SET_ERR(2 == GTUtilsPcr::productsCount(os), "Wrong results count");
+    int productsCount = GTUtilsPcr::productsCount(os);
+    CHECK_SET_ERR(productsCount == 2, "Wrong results count. Expected 2, got " + QString::number(productsCount));
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0016) {
     //    Import primers with degenerated symbols
 
     //    1. Open the library, clear it.
-        GTUtilsPrimerLibrary::openLibrary(os);
-        GTUtilsPrimerLibrary::clearLibrary(os);
+    GTUtilsPrimerLibrary::openLibrary(os);
+    GTUtilsPrimerLibrary::clearLibrary(os);
 
     //    2. Click "Import".
     //    3. Fill the dialog:
@@ -751,23 +755,23 @@ GUI_TEST_CLASS_DEFINITION(test_0016) {
     //        Files: "_common_data/cmdline/primers/primer_degenerated_1.fasta",
     //               "_common_data/cmdline/primers/primer_degenerated_2.fasta"
     //    and accept the dialog.
-        class ImportFromSeveralFiles : public CustomScenario {
-            void run(HI::GUITestOpStatus &os) {
-                QWidget *dialog = QApplication::activeModalWidget();
-                CHECK_SET_ERR(NULL != dialog, "Active modal widget is NULL");
-                ImportPrimersDialogFiller::setImportTarget(os, ImportPrimersDialogFiller::LocalFiles);
-                ImportPrimersDialogFiller::addFile(os, testDir + "_common_data/cmdline/primers/primer_degenerated_1.fasta");
-                ImportPrimersDialogFiller::addFile(os, testDir + "_common_data/cmdline/primers/primer_degenerated_2.fasta");
-                GTUtilsDialog::clickButtonBox(os, QDialogButtonBox::Ok);
-            }
-        };
+    class ImportFromSeveralFiles : public CustomScenario {
+        void run(HI::GUITestOpStatus &os) {
+            QWidget *dialog = QApplication::activeModalWidget();
+            CHECK_SET_ERR(NULL != dialog, "Active modal widget is NULL");
+            ImportPrimersDialogFiller::setImportTarget(os, ImportPrimersDialogFiller::LocalFiles);
+            ImportPrimersDialogFiller::addFile(os, testDir + "_common_data/cmdline/primers/primer_degenerated_1.fasta");
+            ImportPrimersDialogFiller::addFile(os, testDir + "_common_data/cmdline/primers/primer_degenerated_2.fasta");
+            GTUtilsDialog::clickButtonBox(os, QDialogButtonBox::Ok);
+        }
+    };
 
-        GTUtilsDialog::waitForDialog(os, new ImportPrimersDialogFiller(os, new ImportFromSeveralFiles));
-        GTUtilsPrimerLibrary::clickButton(os, GTUtilsPrimerLibrary::Import);
+    GTUtilsDialog::waitForDialog(os, new ImportPrimersDialogFiller(os, new ImportFromSeveralFiles));
+    GTUtilsPrimerLibrary::clickButton(os, GTUtilsPrimerLibrary::Import);
 
-        const int librarySize = GTUtilsPrimerLibrary::librarySize(os);
-        CHECK_SET_ERR(2 == librarySize, QString("An unexpected library size: expect %1, got %2").arg(2).arg(librarySize));
+    const int librarySize = GTUtilsPrimerLibrary::librarySize(os);
+    CHECK_SET_ERR(2 == librarySize, QString("An unexpected library size: expect %1, got %2").arg(2).arg(librarySize));
 }
 
-} // GUITest_common_scenarios_primer_library
-} // U2
+}    // namespace GUITest_common_scenarios_primer_library
+}    // namespace U2

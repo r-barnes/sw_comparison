@@ -19,8 +19,10 @@
  * MA 02110-1301, USA.
  */
 
-#include <QLineEdit>
+#include "SettingsController.h"
+
 #include <QHBoxLayout>
+#include <QLineEdit>
 #include <QVBoxLayout>
 
 #include <U2Core/AppContext.h>
@@ -28,23 +30,18 @@
 
 #include <U2Gui/U2FileDialog.h>
 
-#include "SettingsController.h"
-
 namespace U2 {
 
 const QString SettingsController::TYPE_URL = "url";
 
 SettingsController::SettingsController(WizardController *wc, SettingsWidget *_sw)
-    : WidgetController(wc), sw(_sw), lineEdit(NULL)
-{
-
+    : WidgetController(wc), sw(_sw), lineEdit(NULL) {
 }
 
 SettingsController::~SettingsController() {
-
 }
 
-QWidget * SettingsController::createGUI(U2OpStatus &os) {
+QWidget *SettingsController::createGUI(U2OpStatus &os) {
     QWidget *result = NULL;
 
     if (sw->type() == TYPE_URL) {
@@ -70,7 +67,7 @@ void SettingsController::sl_fileSelect() {
     }
 }
 
-QWidget* SettingsController::createUrlSettingsWidget(U2OpStatus &/*os*/) {
+QWidget *SettingsController::createUrlSettingsWidget(U2OpStatus & /*os*/) {
     QWidget *result = new QWidget;
     QHBoxLayout *mainLayout = new QHBoxLayout(result);
     mainLayout->setMargin(0);
@@ -89,7 +86,7 @@ QWidget* SettingsController::createUrlSettingsWidget(U2OpStatus &/*os*/) {
     connect(lineEdit, SIGNAL(editingFinished()), SLOT(sl_valueChanged()));
     mainLayout->addWidget(lineEdit);
 
-    QToolButton* toolButton = new QToolButton;
+    QToolButton *toolButton = new QToolButton;
     toolButton->setText("...");
     connect(toolButton, SIGNAL(clicked()), SLOT(sl_fileSelect()));
     mainLayout->addWidget(toolButton);
@@ -103,4 +100,4 @@ QString SettingsController::getSettingValue() {
     return QString();
 }
 
-} // U2
+}    // namespace U2

@@ -19,17 +19,18 @@
  * MA 02110-1301, USA.
  */
 
+#include "CredentialsAskerGui.h"
+
 #include <QMainWindow>
 
 #include <U2Core/AppContext.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/MainWindow.h>
-#include <U2Core/QObjectScopedPointer.h>
 
 #include "AuthenticationDialog.h"
-#include "CredentialsAskerGui.h"
 
 namespace U2 {
 
@@ -81,4 +82,4 @@ bool CredentialsAskerGui::askWithModifiableLogin(QString &resourceUrl) const {
     return true;
 }
 
-} // namespace U2
+}    // namespace U2

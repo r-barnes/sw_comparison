@@ -22,11 +22,13 @@
 #ifndef _U2_WORKFLOW_SETTINGS_H_
 #define _U2_WORKFLOW_SETTINGS_H_
 
-#include <QString>
-#include <QObject>
 #include <QFont>
+#include <QObject>
+#include <QString>
 
 #include <U2Core/global.h>
+
+//#define SETTINGS QString("workflowview/")
 
 namespace U2 {
 
@@ -36,8 +38,6 @@ signals:
     void changed();
     friend class WorkflowSettings;
 };
-
-#define SETTINGS QString("workflowview/")
 
 class U2LANG_EXPORT WorkflowSettings : public QObject {
     Q_OBJECT
@@ -55,10 +55,10 @@ public:
     static void setDebuggerEnabled(bool v);
 
     static QString defaultStyle();
-    static void setDefaultStyle(const QString&);
+    static void setDefaultStyle(const QString &);
 
     static QFont defaultFont();
-    static void setDefaultFont(const QFont&);
+    static void setDefaultFont(const QFont &);
 
     static const QString getUserDirectory();
     static void setUserDirectory(const QString &dir);
@@ -88,9 +88,9 @@ public:
     static bool isShowLoadButtonHint();
     static void setShowLoadButtonHint(bool value);
 
-    static Watcher * const watcher;
+    static Watcher *const watcher;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

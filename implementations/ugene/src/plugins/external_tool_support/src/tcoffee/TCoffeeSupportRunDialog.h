@@ -22,10 +22,12 @@
 #ifndef _U2_TCOFFEE_SUPPORT_RUN_DIALOG_H
 #define _U2_TCOFFEE_SUPPORT_RUN_DIALOG_H
 
+#include <ui_TCoffeeSupportRunDialog.h>
+
 #include <QDialog>
 
 #include <U2Gui/DialogUtils.h>
-#include <ui_TCoffeeSupportRunDialog.h>
+
 #include "TCoffeeSupportTask.h"
 
 namespace U2 {
@@ -35,19 +37,19 @@ class SaveDocumentController;
 class TCoffeeSupportRunDialog : public QDialog, public Ui_TCoffeeSupportRunDialog {
     Q_OBJECT
 public:
-    TCoffeeSupportRunDialog(TCoffeeSupportTaskSettings& settings, QWidget* parent);
+    TCoffeeSupportRunDialog(TCoffeeSupportTaskSettings &settings, QWidget *parent);
 
 private slots:
     void accept();
 
 private:
-    TCoffeeSupportTaskSettings&        settings;
+    TCoffeeSupportTaskSettings &settings;
 };
 
-class TCoffeeWithExtFileSpecifySupportRunDialog : public QDialog, public Ui_TCoffeeSupportRunDialog{
+class TCoffeeWithExtFileSpecifySupportRunDialog : public QDialog, public Ui_TCoffeeSupportRunDialog {
     Q_OBJECT
 public:
-    TCoffeeWithExtFileSpecifySupportRunDialog(TCoffeeSupportTaskSettings& settings, QWidget* parent);
+    TCoffeeWithExtFileSpecifySupportRunDialog(TCoffeeSupportTaskSettings &settings, QWidget *parent);
 
 private slots:
     void accept();
@@ -56,9 +58,9 @@ private slots:
 private:
     void initSaveController();
 
-    TCoffeeSupportTaskSettings&     settings;
-    SaveDocumentController *        saveController;
+    TCoffeeSupportTaskSettings &settings;
+    SaveDocumentController *saveController;
 };
 
-}//namespace
-#endif // _U2_TCOFFEE_SUPPORT_RUN_DIALOG_H
+}    // namespace U2
+#endif    // _U2_TCOFFEE_SUPPORT_RUN_DIALOG_H

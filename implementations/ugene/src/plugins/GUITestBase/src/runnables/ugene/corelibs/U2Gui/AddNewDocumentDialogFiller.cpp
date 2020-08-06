@@ -19,30 +19,26 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-
 #include "AddNewDocumentDialogFiller.h"
 #include <primitives/GTComboBox.h>
 #include <primitives/GTLineEdit.h>
 #include <primitives/GTWidget.h>
+
+#include <QApplication>
 
 namespace U2 {
 using namespace HI;
 
 #define GT_CLASS_NAME "GTUtilsDialog::AlignShortReadsFiller"
 
-AddNewDocumentDialogFiller::AddNewDocumentDialogFiller(HI::GUITestOpStatus &os, const QString &format, const QString &path) :
-    Filler(os, "AddNewDocumentDialog"),
-    format(format),
-    path(path)
-{
-
+AddNewDocumentDialogFiller::AddNewDocumentDialogFiller(HI::GUITestOpStatus &os, const QString &format, const QString &path)
+    : Filler(os, "AddNewDocumentDialog"),
+      format(format),
+      path(path) {
 }
 
-AddNewDocumentDialogFiller::AddNewDocumentDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario) :
-    Filler(os, "AddNewDocumentDialog", scenario)
-{
-
+AddNewDocumentDialogFiller::AddNewDocumentDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario)
+    : Filler(os, "AddNewDocumentDialog", scenario) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
@@ -59,4 +55,4 @@ void AddNewDocumentDialogFiller::commonScenario() {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

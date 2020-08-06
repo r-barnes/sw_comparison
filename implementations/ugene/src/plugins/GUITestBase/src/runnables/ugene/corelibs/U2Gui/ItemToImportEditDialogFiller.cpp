@@ -19,30 +19,30 @@
  * MA 02110-1301, USA.
  */
 
+#include "ItemToImportEditDialogFiller.h"
+#include <primitives/GTWidget.h>
+
 #include <QApplication>
 
 #include <U2Gui/ImportOptionsWidget.h>
 
 #include "ImportOptionsWidgetFiller.h"
-#include "ItemToImportEditDialogFiller.h"
-#include <primitives/GTWidget.h>
 
 namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::ItemToImportEditDialogFiller"
 
-ItemToImportEditDialogFiller::ItemToImportEditDialogFiller(HI::GUITestOpStatus& os, const QVariantMap& data) :
-    Filler(os, "ItemToImportEditDialog"),
-    data(data)
-{
+ItemToImportEditDialogFiller::ItemToImportEditDialogFiller(HI::GUITestOpStatus &os, const QVariantMap &data)
+    : Filler(os, "ItemToImportEditDialog"),
+      data(data) {
 }
 
 #define GT_METHOD_NAME "commonScenario"
 void ItemToImportEditDialogFiller::commonScenario() {
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(NULL != dialog, "activeModalWidget is NULL");
 
-    ImportOptionsWidget* optionsWidget = qobject_cast<ImportOptionsWidget*>(GTWidget::findWidget(os, "optionsWidget", dialog));
+    ImportOptionsWidget *optionsWidget = qobject_cast<ImportOptionsWidget *>(GTWidget::findWidget(os, "optionsWidget", dialog));
     GT_CHECK(NULL != optionsWidget, "optionsWidget is NULL");
 
     ImportOptionsWidgetFiller::fill(os, optionsWidget, data);
@@ -51,4 +51,4 @@ void ItemToImportEditDialogFiller::commonScenario() {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

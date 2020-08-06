@@ -32,7 +32,8 @@
 
 namespace U2 {
 
-BlastDBSelectorWidgetController::BlastDBSelectorWidgetController(QWidget *parent) : QWidget(parent), isNuclDB(false), inputDataValid(false) {
+BlastDBSelectorWidgetController::BlastDBSelectorWidgetController(QWidget *parent)
+    : QWidget(parent), isNuclDB(false), inputDataValid(false) {
     setupUi(this);
     connect(selectDatabasePushButton, SIGNAL(clicked()), SLOT(sl_onBrowseDatabasePath()));
     connect(databasePathLineEdit, SIGNAL(textChanged(QString)), SLOT(sl_lineEditChanged()));
@@ -65,7 +66,7 @@ bool BlastDBSelectorWidgetController::isInputDataValid() const {
     return inputDataValid;
 }
 
-QString BlastDBSelectorWidgetController::getDatabasePath()const {
+QString BlastDBSelectorWidgetController::getDatabasePath() const {
     return databasePathLineEdit->text() + "/" + baseNameLineEdit->text();
 }
 
@@ -89,9 +90,11 @@ void BlastDBSelectorWidgetController::sl_onBrowseDatabasePath() {
 bool BlastDBSelectorWidgetController::validateDatabaseDir() {
     QStringList extList;
     if (isNuclDB) {
-        extList << "nal" << "nin";
+        extList << "nal"
+                << "nin";
     } else {
-        extList << "pal" << "pin";
+        extList << "pal"
+                << "pin";
     }
     QDirIterator dirIt(databasePathLineEdit->text(), QDirIterator::Subdirectories);
     while (dirIt.hasNext()) {
@@ -109,4 +112,4 @@ bool BlastDBSelectorWidgetController::validateDatabaseDir() {
     return false;
 }
 
-}
+}    // namespace U2

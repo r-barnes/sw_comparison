@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ReadAssemblyTask.h"
+
 #include <QFileInfo>
 
 #include <U2Core/AppContext.h>
@@ -39,8 +41,6 @@
 #include <U2Lang/BaseSlots.h>
 #include <U2Lang/WorkflowContext.h>
 
-#include "ReadAssemblyTask.h"
-
 namespace U2 {
 namespace Workflow {
 
@@ -48,9 +48,7 @@ namespace Workflow {
 /* Factory */
 /************************************************************************/
 ReadAssemblyTaskFactory::ReadAssemblyTaskFactory()
-: ReadDocumentTaskFactory(ReadFactories::READ_ASSEMBLY)
-{
-
+    : ReadDocumentTaskFactory(ReadFactories::READ_ASSEMBLY) {
 }
 
 ReadDocumentTask *ReadAssemblyTaskFactory::createTask(const QString &url, const QVariantMap &hints, WorkflowContext *ctx) {
@@ -62,9 +60,7 @@ ReadDocumentTask *ReadAssemblyTaskFactory::createTask(const QString &url, const 
 /* Task */
 /************************************************************************/
 ConvertToIndexedBamTask::ConvertToIndexedBamTask(const DocumentFormatId &_formatId, const GUrl &_url, WorkflowContext *_ctx)
-: Task("Convert assembly file to sorted BAM", TaskFlag_None), formatId(_formatId), url(_url), ctx(_ctx)
-{
-
+    : Task("Convert assembly file to sorted BAM", TaskFlag_None), formatId(_formatId), url(_url), ctx(_ctx) {
 }
 
 void ConvertToIndexedBamTask::run() {
@@ -108,7 +104,7 @@ void ConvertToIndexedBamTask::run() {
         } else {
             baseName = dir + "/" + bamUrl.fileName();
         }
-        baseName +=  ".sorted";
+        baseName += ".sorted";
         sortedBamUrl = BAMUtils::sortBam(bamUrl, baseName, stateInfo);
         CHECK_OP(stateInfo, );
         addConvertedFile(sortedBamUrl);
@@ -123,7 +119,7 @@ void ConvertToIndexedBamTask::run() {
     // if the file was sorted then it is needed to be saved in the file storage
     if (!sorted) {
         FileStorageUtils::addSortedBamUrl(bamUrl.getURLString(), sortedBamUrl.getURLString(), ctx->getWorkflowProcess());
-        if (bamUrl != url) { // add "SAM file - SORTED_BAM - sorted BAM file"
+        if (bamUrl != url) {    // add "SAM file - SORTED_BAM - sorted BAM file"
             FileStorageUtils::addSortedBamUrl(url.getURLString(), sortedBamUrl.getURLString(), ctx->getWorkflowProcess());
         }
     }
@@ -134,7 +130,7 @@ GUrl ConvertToIndexedBamTask::getResultUrl() const {
     return result;
 }
 
-const QStringList & ConvertToIndexedBamTask::getConvertedFiles() const {
+const QStringList &ConvertToIndexedBamTask::getConvertedFiles() const {
     return convertedFiles;
 }
 
@@ -146,10 +142,8 @@ void ConvertToIndexedBamTask::addConvertedFile(const GUrl &url) {
 /* ReadAssemblyTask */
 /************************************************************************/
 ReadAssemblyTask::ReadAssemblyTask(const QString &url, const QString &datasetName, WorkflowContext *_ctx)
-: ReadDocumentTask(url, tr("Read assembly from %1").arg(url), datasetName, TaskFlags_FOSE_COSC | TaskFlag_CollectChildrenWarnings),
-ctx(_ctx), format(NULL), doc(NULL), convertTask(NULL), importTask(NULL)
-{
-
+    : ReadDocumentTask(url, tr("Read assembly from %1").arg(url), datasetName, TaskFlags_FOSE_COSC | TaskFlag_CollectChildrenWarnings),
+      ctx(_ctx), format(NULL), doc(NULL), convertTask(NULL), importTask(NULL) {
 }
 
 static bool isConvertingFormat(const DocumentFormatId &formatId) {
@@ -158,7 +152,7 @@ static bool isConvertingFormat(const DocumentFormatId &formatId) {
 
 void ReadAssemblyTask::prepare() {
     QFileInfo fi(url);
-    if(!fi.exists()){
+    if (!fi.exists()) {
         stateInfo.setError(tr("File '%1' does not exist").arg(url));
         return;
     }
@@ -200,8 +194,8 @@ void ReadAssemblyTask::prepare() {
     }
 }
 
-QList<Task*> ReadAssemblyTask::onSubTaskFinished(Task *subTask) {
-    QList<Task*> result;
+QList<Task *> ReadAssemblyTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> result;
     CHECK(NULL != subTask, result);
     if (subTask->hasError()) {
         if (convertTask == subTask) {
@@ -231,7 +225,7 @@ void ReadAssemblyTask::run() {
     if (NULL == doc) {
         useGC = false;
         ioLog.info(tr("Reading assembly from %1 [%2]").arg(url).arg(format->getFormatName()));
-        IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
+        IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
         QVariantMap hints;
         {
             // TODO: fix this hardcoded DBI id recognition
@@ -263,13 +257,13 @@ void ReadAssemblyTask::run() {
     CHECK(!docPtr.isNull(), );
     docPtr->setDocumentOwnsDbiResources(false);
 
-    QList<GObject*> assemblies = docPtr->findGObjectByType(GObjectTypes::ASSEMBLY);
+    QList<GObject *> assemblies = docPtr->findGObjectByType(GObjectTypes::ASSEMBLY);
     if (assemblies.isEmpty()) {
         setError(tr("No assemblies in the file: %1").arg(getUrl()));
         return;
     }
-    foreach(GObject* go, assemblies) {
-        AssemblyObject *assemblyObj = dynamic_cast<AssemblyObject*>(go);
+    foreach (GObject *go, assemblies) {
+        AssemblyObject *assemblyObj = dynamic_cast<AssemblyObject *>(go);
         CHECK_EXT(NULL != assemblyObj, taskLog.error(tr("Incorrect assembly object in %1").arg(url)), );
 
         SharedDbiDataHandler handler = ctx->getDataStorage()->getDataHandler(assemblyObj->getEntityRef(), useGC);
@@ -277,5 +271,5 @@ void ReadAssemblyTask::run() {
     }
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

@@ -33,6 +33,6 @@ public:
     static const QString ALIGN_SEQUENCES_TO_ALIGNMENT_BY_MAFFT;
 };
 
-}   //namespace
+}    // namespace U2
 
-#endif // _U2_BASE_ALIGNMENT_ALGORITHM_IDS_H_
+#endif    // _U2_BASE_ALIGNMENT_ALGORITHM_IDS_H_

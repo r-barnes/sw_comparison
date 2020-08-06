@@ -20,40 +20,39 @@
  */
 
 #include "BuildDotPlotDialogFiller.h"
-#include <primitives/GTWidget.h>
-#include <primitives/GTSpinBox.h>
 #include <primitives/GTCheckBox.h>
 #include <primitives/GTLineEdit.h>
-
-#include "GTUtilsTaskTreeView.h"
+#include <primitives/GTSpinBox.h>
+#include <primitives/GTWidget.h>
 
 #include <QApplication>
-#include <QPushButton>
 #include <QDialogButtonBox>
+#include <QPushButton>
+
+#include "GTUtilsTaskTreeView.h"
 
 namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::DotPlotFiller"
 #define GT_METHOD_NAME "commonScenario"
 void BuildDotPlotFiller::commonScenario() {
-
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
-    GTCheckBox::setChecked(os, dialog->findChild<QCheckBox*>("oneSequenceCheckBox"), oneSequenceBoxChecked);
-    GTLineEdit::setText(os, dialog->findChild<QLineEdit*>("firstFileEdit"), firstFileEdit);
+    GTCheckBox::setChecked(os, dialog->findChild<QCheckBox *>("oneSequenceCheckBox"), oneSequenceBoxChecked);
+    GTLineEdit::setText(os, dialog->findChild<QLineEdit *>("firstFileEdit"), firstFileEdit);
 
-    GTCheckBox::setChecked(os, dialog->findChild<QCheckBox*>("mergeFirstCheckBox"), mergeFirstBoxChecked);
-    if (mergeFirstBoxChecked){
-        GTSpinBox::setValue(os, dialog->findChild<QSpinBox*>("gapFirst"), gapFirstVal);
+    GTCheckBox::setChecked(os, dialog->findChild<QCheckBox *>("mergeFirstCheckBox"), mergeFirstBoxChecked);
+    if (mergeFirstBoxChecked) {
+        GTSpinBox::setValue(os, dialog->findChild<QSpinBox *>("gapFirst"), gapFirstVal);
     }
 
     if (!oneSequenceBoxChecked) {
-        GTLineEdit::setText(os, dialog->findChild<QLineEdit*>("secondFileEdit"), secondFileEdit);
+        GTLineEdit::setText(os, dialog->findChild<QLineEdit *>("secondFileEdit"), secondFileEdit);
 
-        GTCheckBox::setChecked(os, dialog->findChild<QCheckBox*>("mergeSecondCheckBox"), mergeSecondBoxChecked);
-        if(mergeSecondBoxChecked){
-            GTSpinBox::setValue(os, dialog->findChild<QSpinBox*>("gapSecond"), gapSecondVal);
+        GTCheckBox::setChecked(os, dialog->findChild<QCheckBox *>("mergeSecondCheckBox"), mergeSecondBoxChecked);
+        if (mergeSecondBoxChecked) {
+            GTSpinBox::setValue(os, dialog->findChild<QSpinBox *>("gapSecond"), gapSecondVal);
         }
     }
 
@@ -67,4 +66,4 @@ void BuildDotPlotFiller::commonScenario() {
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

@@ -19,14 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "PrimerLibraryMdiWindow.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/Counter.h>
 #include <U2Core/L10n.h>
 #include <U2Core/U2SafePoints.h>
 
 #include "PrimerLibraryWidget.h"
-
-#include "PrimerLibraryMdiWindow.h"
 
 namespace U2 {
 
@@ -47,8 +47,7 @@ void PrimerLibraryMdiWindow::showLibrary() {
 }
 
 PrimerLibraryMdiWindow::PrimerLibraryMdiWindow(const QString &title)
-: MWMDIWindow(title)
-{
+    : MWMDIWindow(title) {
     QVBoxLayout *l = new QVBoxLayout(this);
     l->setMargin(0);
 
@@ -64,4 +63,4 @@ void PrimerLibraryMdiWindow::sl_closeWindow() {
     mdiManager->closeMDIWindow(this);
 }
 
-} // U2
+}    // namespace U2

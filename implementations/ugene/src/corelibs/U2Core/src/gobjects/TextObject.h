@@ -39,23 +39,20 @@ public:
 class U2CORE_EXPORT TextObject : public GObject {
     Q_OBJECT
 public:
-    static TextObject * createInstance(const QString &text, const QString &objectName,
-        const U2DbiRef &dbiRef, U2OpStatus &os, const QVariantMap &hintsMap = QVariantMap());
+    static TextObject *createInstance(const QString &text, const QString &objectName, const U2DbiRef &dbiRef, U2OpStatus &os, const QVariantMap &hintsMap = QVariantMap());
 
-    TextObject(const QString &objectName, const U2EntityRef &textRef,
-        const QVariantMap &hintsMap = QVariantMap());
+    TextObject(const QString &objectName, const U2EntityRef &textRef, const QVariantMap &hintsMap = QVariantMap());
 
     QString getText() const;
 
     void setText(const QString &newText);
 
-    GObject * clone(const U2DbiRef &dstDbiRef, U2OpStatus &os, const QVariantMap &hints = QVariantMap()) const;
+    GObject *clone(const U2DbiRef &dstDbiRef, U2OpStatus &os, const QVariantMap &hints = QVariantMap()) const;
 
 private:
     void commitTextToDB(const QString &newText);
 };
 
-}//namespace
-
+}    // namespace U2
 
 #endif

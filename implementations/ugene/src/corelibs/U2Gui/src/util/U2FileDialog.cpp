@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "U2FileDialog.h"
+
 #include <QApplication>
 #include <QMainWindow>
 
@@ -26,8 +28,6 @@
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/MainWindow.h>
-
-#include "U2FileDialog.h"
 
 namespace U2 {
 
@@ -80,12 +80,11 @@ void U2FileDialog::activateWindow() {
         MainWindow *mainWindow = AppContext::getMainWindow();
         CHECK(NULL != mainWindow, );
         QMainWindow *qMainWindow = mainWindow->getQMainWindow();
-        target = qobject_cast<QWidget*>(qMainWindow);
+        target = qobject_cast<QWidget *>(qMainWindow);
     }
     CHECK(NULL != target, );
     target->activateWindow();
 #endif
 }
 
-
-}   // namespace U2
+}    // namespace U2

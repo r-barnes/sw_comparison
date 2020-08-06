@@ -25,14 +25,12 @@ namespace U2 {
 namespace LocalWorkflow {
 
 TrimmomaticPrompter::TrimmomaticPrompter(Actor *actor)
-    : PrompterBase<TrimmomaticPrompter>(actor)
-{
-
+    : PrompterBase<TrimmomaticPrompter>(actor) {
 }
 
 QString TrimmomaticPrompter::composeRichDoc() {
     return tr("Trim, crop and/or remove adapters for input Illumina FASTQ data.");
 }
 
-} // namespace LocalWorkflow
-} // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

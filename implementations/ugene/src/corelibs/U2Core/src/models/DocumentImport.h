@@ -22,9 +22,9 @@
 #ifndef _U2_DOCUMENT_IMPORT_H_
 #define _U2_DOCUMENT_IMPORT_H_
 
-#include <U2Core/DocumentModel.h>
-
 #include <QDialog>
+
+#include <U2Core/DocumentModel.h>
 
 namespace U2 {
 
@@ -36,15 +36,21 @@ class ImportWidget;
 class U2CORE_EXPORT ImportDialog : public QDialog {
     Q_OBJECT
 public:
-    ImportDialog(const QVariantMap& _settings) : settings(_settings) {}
+    ImportDialog(const QVariantMap &_settings)
+        : settings(_settings) {
+    }
 
-    const QVariantMap& getSettings() const { return settings; }
+    const QVariantMap &getSettings() const {
+        return settings;
+    }
 
 public slots:
     virtual void accept();
 
 protected:
-    virtual bool isValid() { return true; }     // it is not const method: derived class can do something non-const
+    virtual bool isValid() {
+        return true;
+    }    // it is not const method: derived class can do something non-const
     virtual void applySettings() = 0;
 
     QVariantMap settings;
@@ -52,59 +58,77 @@ protected:
 
 class ImportWidgetFactory {
 public:
-    virtual ~ImportWidgetFactory() {}
+    virtual ~ImportWidgetFactory() {
+    }
 
-    virtual ImportWidget* getWidget(const GUrl& url, const QVariantMap& settings) const = 0;
+    virtual ImportWidget *getWidget(const GUrl &url, const QVariantMap &settings) const = 0;
 };
 
 /** Registry for all DocumentImportHandlers */
-class U2CORE_EXPORT DocumentImportersRegistry: public QObject {
+class U2CORE_EXPORT DocumentImportersRegistry : public QObject {
     Q_OBJECT
     Q_DISABLE_COPY(DocumentImportersRegistry)
 public:
-    DocumentImportersRegistry(QObject* p = NULL) : QObject(p) {}
+    DocumentImportersRegistry(QObject *p = NULL)
+        : QObject(p) {
+    }
     ~DocumentImportersRegistry();
 
     /** returns handler by its id */
-    DocumentImporter* getDocumentImporter(const QString& importerId) const;
+    DocumentImporter *getDocumentImporter(const QString &importerId) const;
 
     /** registers new document import handler */
-    void addDocumentImporter(DocumentImporter* i);
+    void addDocumentImporter(DocumentImporter *i);
 
-    const QList<DocumentImporter*>& getImporters() const {return importers;}
+    const QList<DocumentImporter *> &getImporters() const {
+        return importers;
+    }
 
 private:
-    QList<DocumentImporter*> importers;
+    QList<DocumentImporter *> importers;
 };
-
 
 class U2CORE_EXPORT DocumentImporter : public QObject {
     Q_OBJECT
     Q_DISABLE_COPY(DocumentImporter)
 public:
-    DocumentImporter(const QString& _id, const QString& _name, QObject* o = NULL) : QObject(o), id(_id), name(_name), widgetFactory(NULL) {}
+    DocumentImporter(const QString &_id, const QString &_name, QObject *o = NULL)
+        : QObject(o), id(_id), name(_name), widgetFactory(NULL) {
+    }
 
-    virtual ~DocumentImporter() { delete widgetFactory; }
+    virtual ~DocumentImporter() {
+        delete widgetFactory;
+    }
 
-    virtual FormatCheckResult checkRawData(const QByteArray& rawData, const GUrl& url) = 0;
+    virtual FormatCheckResult checkRawData(const QByteArray &rawData, const GUrl &url) = 0;
 
-    virtual DocumentProviderTask* createImportTask(const FormatDetectionResult& res, bool showGui, const QVariantMap &hints) = 0;
+    virtual DocumentProviderTask *createImportTask(const FormatDetectionResult &res, bool showGui, const QVariantMap &hints) = 0;
 
     virtual QString getRadioButtonText() const;
 
-    virtual ImportWidget* createImportWidget(const GUrl& url, const QVariantMap& settings) const;
+    virtual ImportWidget *createImportWidget(const GUrl &url, const QVariantMap &settings) const;
 
-    virtual QString getImporterDescription() const {return importerDescription;}
+    virtual QString getImporterDescription() const {
+        return importerDescription;
+    }
 
-    const QString& getImporterName() const {return name;}
+    const QString &getImporterName() const {
+        return name;
+    }
 
-    const QString& getId() const {return id;}
+    const QString &getId() const {
+        return id;
+    }
 
-    const QStringList& getFormatIds() const {return formatIds;}
+    const QStringList &getFormatIds() const {
+        return formatIds;
+    }
 
-    const QList<QString>& getSupportedFileExtensions() const {return extensions;}
+    const QList<QString> &getSupportedFileExtensions() const {
+        return extensions;
+    }
 
-    void setWidgetFactory(ImportWidgetFactory* factory);
+    void setWidgetFactory(ImportWidgetFactory *factory);
 
     const QSet<GObjectType> &getSupportedObjectTypes() const;
 
@@ -112,15 +136,15 @@ public:
     static const QString LOAD_RESULT_DOCUMENT;
 
 protected:
-    QString                 id;
-    QString                 name;
-    QStringList             formatIds;
-    QList<QString>          extensions;
-    QString                 importerDescription;
-    ImportWidgetFactory*    widgetFactory;
-    QSet<GObjectType>       supportedObjectTypes;
+    QString id;
+    QString name;
+    QStringList formatIds;
+    QList<QString> extensions;
+    QString importerDescription;
+    ImportWidgetFactory *widgetFactory;
+    QSet<GObjectType> supportedObjectTypes;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

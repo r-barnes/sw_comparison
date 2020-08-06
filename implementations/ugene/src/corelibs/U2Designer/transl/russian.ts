@@ -57,14 +57,6 @@ this merge sequence slot:</source>
 <context>
     <name>CreateDirectoryDialog</name>
     <message>
-        <source>Create a folder</source>
-        <translation type="vanished">Создание папки</translation>
-    </message>
-    <message>
-        <source>Parent folder:</source>
-        <translation type="vanished">Родительская папка:</translation>
-    </message>
-    <message>
         <location filename="../src/CreateDirectoryDialog.ui" line="14"/>
         <source>Create a directory</source>
         <translation>Создать директорию</translation>
@@ -91,10 +83,6 @@ this merge sequence slot:</source>
         <location filename="../src/DatasetWidget.ui" line="40"/>
         <source>Add file(s)</source>
         <translation>Добавить файл(ы)</translation>
-    </message>
-    <message>
-        <source>Add folder</source>
-        <translation type="vanished">Добавить папку</translation>
     </message>
     <message>
         <location filename="../src/DatasetWidget.ui" line="62"/>
@@ -454,14 +442,6 @@ this merge sequence slot:</source>
 <context>
     <name>OutputFileDialog</name>
     <message>
-        <source>Save file/folder</source>
-        <translation type="vanished">Сохранить файл/папку</translation>
-    </message>
-    <message>
-        <source>Create folder</source>
-        <translation type="vanished">Создать папку</translation>
-    </message>
-    <message>
         <location filename="../src/OutputFileDialog.ui" line="14"/>
         <source>Save file/directory</source>
         <translation>Сохранить файл/директорию</translation>
@@ -483,10 +463,6 @@ this merge sequence slot:</source>
         <translation>Директория:</translation>
     </message>
     <message>
-        <source>Folder:</source>
-        <translation type="vanished">Папка:</translation>
-    </message>
-    <message>
         <location filename="../src/OutputFileDialog.ui" line="146"/>
         <source>File name:</source>
         <translation>Имя файла:</translation>
@@ -495,12 +471,12 @@ this merge sequence slot:</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/WorkflowGUIUtils.cpp" line="49"/>
+        <location filename="../src/WorkflowGUIUtils.cpp" line="47"/>
         <source>Select a sample to start</source>
         <translation>Выберите пример</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowGUIUtils.cpp" line="160"/>
+        <location filename="../src/WorkflowGUIUtils.cpp" line="155"/>
         <source>Double click to load the sample</source>
         <translation>Двойной щелчок загрузит пример</translation>
     </message>
@@ -545,61 +521,45 @@ this merge sequence slot:</source>
         <translation>Примерная оценка длительности выполнения схемы </translation>
     </message>
     <message>
-        <location filename="../src/OutputFileDialog.cpp" line="170"/>
-        <location filename="../src/OutputFileDialog.cpp" line="217"/>
+        <location filename="../src/OutputFileDialog.cpp" line="168"/>
+        <location filename="../src/OutputFileDialog.cpp" line="214"/>
         <source>Workflow-run output</source>
         <translation>Выходная папка схемы</translation>
     </message>
     <message>
-        <location filename="../src/wizard/SelectorActors.cpp" line="43"/>
-        <location filename="../src/wizard/WizardController.cpp" line="426"/>
+        <location filename="../src/wizard/SelectorActors.cpp" line="42"/>
+        <location filename="../src/wizard/WizardController.cpp" line="436"/>
         <source>Unknown actor id: %1</source>
         <translation>Неизвестный идентификатор: %1</translation>
     </message>
     <message>
-        <location filename="../src/wizard/WizardController.cpp" line="376"/>
-        <location filename="../src/wizard/WizardController.cpp" line="382"/>
-        <location filename="../src/wizard/WizardController.cpp" line="388"/>
-        <location filename="../src/wizard/WizardController.cpp" line="405"/>
-        <location filename="../src/wizard/WizardController.cpp" line="460"/>
+        <location filename="../src/wizard/WizardController.cpp" line="384"/>
+        <location filename="../src/wizard/WizardController.cpp" line="391"/>
+        <location filename="../src/wizard/WizardController.cpp" line="397"/>
+        <location filename="../src/wizard/WizardController.cpp" line="415"/>
+        <location filename="../src/wizard/WizardController.cpp" line="470"/>
         <source>Undefined variable: %1</source>
         <translation>Неопределенная переменная: %1</translation>
     </message>
     <message>
-        <location filename="../src/wizard/WizardController.cpp" line="413"/>
+        <location filename="../src/wizard/WizardController.cpp" line="423"/>
         <source>Actors selector is already defined: %1</source>
         <translation>Actors selector is already defined: %1</translation>
     </message>
     <message>
-        <location filename="../src/wizard/WizardController.cpp" line="423"/>
+        <location filename="../src/wizard/WizardController.cpp" line="433"/>
         <source>Unknown actors selector: %1</source>
         <translation>Unknown actors selector: %1</translation>
     </message>
     <message>
-        <location filename="../src/wizard/WizardController.cpp" line="428"/>
+        <location filename="../src/wizard/WizardController.cpp" line="438"/>
         <source>Unknown actors selector value id: %1</source>
         <translation>Unknown actors selector value id: %1</translation>
     </message>
     <message>
-        <location filename="../src/wizard/WizardPageController.cpp" line="86"/>
+        <location filename="../src/wizard/WizardPageController.cpp" line="83"/>
         <source>The page is broken. Please, close the wizard and report us the error: ugene@unipro.ru</source>
         <translation>Произошла ошибка. Пожалуйста закройте визард и сообщите об ошибке по адресу: ugene@unipro.ru</translation>
-    </message>
-    <message>
-        <source>The Workflow Output Folder is a common folder that is used to store all output files in the Workflow Designer. A separate subfolder of the folder is created for each run of a workflow.
-
-Set up the folder:</source>
-        <translation type="vanished">Выходная папка для схемы это общая папка, которая используется для сохранения всех выходных файлов в дизайнере вычислительных схем. Для каждого запуска схемы будет создана отдельная папка.
-
-Установить папку:</translation>
-    </message>
-    <message>
-        <source>The Workflow Output Folder is a common folder that is used to store all output files in the Workflow Designer. A separate subdirectory of the folder is created for each run of a workflow.
-
-Set up the folder:</source>
-        <translation type="vanished">Выходная директория для схемы это общая директория, которая используется для сохранения всех выходных файлов в дизайнере вычислительных схем. Для каждого запуска схемы будет создана отдельная директория.
-
-Установить директорию:</translation>
     </message>
 </context>
 <context>
@@ -667,23 +627,19 @@ Set up the folder:</source>
 <context>
     <name>U2::AnnsActionDialog</name>
     <message>
-        <location filename="../src/NewGrouperSlotDialog.cpp" line="109"/>
+        <location filename="../src/NewGrouperSlotDialog.cpp" line="106"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/NewGrouperSlotDialog.cpp" line="110"/>
+        <location filename="../src/NewGrouperSlotDialog.cpp" line="107"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../src/NewGrouperSlotDialog.cpp" line="112"/>
+        <location filename="../src/NewGrouperSlotDialog.cpp" line="109"/>
         <source>Don&apos;t shift</source>
         <translation>Не сдвигать</translation>
-    </message>
-    <message>
-        <source>&lt;Don&apos;t shift&gt;</source>
-        <translation type="vanished">&lt;Don&apos;t shift&gt;</translation>
     </message>
 </context>
 <context>
@@ -704,17 +660,17 @@ bowtie index file</source>
 <context>
     <name>U2::BreakpointHitCountDialog</name>
     <message>
-        <location filename="../src/BreakpointHitCountDialog.cpp" line="69"/>
+        <location filename="../src/BreakpointHitCountDialog.cpp" line="73"/>
         <source>Reset</source>
         <translation>Сбросить</translation>
     </message>
     <message>
-        <location filename="../src/BreakpointHitCountDialog.cpp" line="70"/>
+        <location filename="../src/BreakpointHitCountDialog.cpp" line="74"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/BreakpointHitCountDialog.cpp" line="71"/>
+        <location filename="../src/BreakpointHitCountDialog.cpp" line="75"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
@@ -722,12 +678,12 @@ bowtie index file</source>
 <context>
     <name>U2::ComboBoxWidget</name>
     <message>
-        <location filename="../src/PropertyWidget.cpp" line="182"/>
+        <location filename="../src/PropertyWidget.cpp" line="217"/>
         <source>False</source>
         <translation>Ложь</translation>
     </message>
     <message>
-        <location filename="../src/PropertyWidget.cpp" line="183"/>
+        <location filename="../src/PropertyWidget.cpp" line="218"/>
         <source>True</source>
         <translation>Истина</translation>
     </message>
@@ -735,7 +691,7 @@ bowtie index file</source>
 <context>
     <name>U2::ComboBoxWithDbUrlWidget</name>
     <message>
-        <location filename="../src/PropertyWidget.cpp" line="343"/>
+        <location filename="../src/PropertyWidget.cpp" line="366"/>
         <source>Add New Connection</source>
         <translation>Добавить новое соединение</translation>
     </message>
@@ -743,12 +699,12 @@ bowtie index file</source>
 <context>
     <name>U2::ComboBoxWithUrlWidget</name>
     <message>
-        <location filename="../src/PropertyWidget.cpp" line="318"/>
+        <location filename="../src/PropertyWidget.cpp" line="343"/>
         <source>Select a folder</source>
         <translation>Укажите папку</translation>
     </message>
     <message>
-        <location filename="../src/PropertyWidget.cpp" line="323"/>
+        <location filename="../src/PropertyWidget.cpp" line="348"/>
         <source>Select a file</source>
         <translation>Выберите файл</translation>
     </message>
@@ -756,12 +712,12 @@ bowtie index file</source>
 <context>
     <name>U2::CreateDirectoryDialog</name>
     <message>
-        <location filename="../src/OutputFileDialog.cpp" line="213"/>
+        <location filename="../src/OutputFileDialog.cpp" line="210"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/OutputFileDialog.cpp" line="214"/>
+        <location filename="../src/OutputFileDialog.cpp" line="211"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
@@ -769,43 +725,35 @@ bowtie index file</source>
 <context>
     <name>U2::Dashboard</name>
     <message>
-        <source>Output Files</source>
-        <translation type="vanished">Выходные файлы</translation>
+        <location filename="../src/dashboard/Dashboard.cpp" line="156"/>
+        <source>Overview</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Workflow Task</source>
-        <translation type="vanished">Задача схемы</translation>
+        <location filename="../src/dashboard/Dashboard.cpp" line="164"/>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Common Statistics</source>
-        <translation type="vanished">Общая статистика</translation>
-    </message>
-    <message>
-        <source>Parameters</source>
-        <translation type="vanished">Параметры</translation>
-    </message>
-    <message>
+        <location filename="../src/dashboard/Dashboard.cpp" line="172"/>
         <source>External Tools</source>
-        <translation type="vanished">Внешние инструменты</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Problems</source>
-        <translation type="vanished">Проблемы</translation>
+        <location filename="../src/dashboard/Dashboard.cpp" line="192"/>
+        <source>Open workflow schema</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dashboard/Dashboard.cpp" line="188"/>
+        <location filename="../src/dashboard/Dashboard.cpp" line="330"/>
         <source>Can not create a folder: </source>
         <translation>Невозможно создать папку: </translation>
-    </message>
-    <message>
-        <source>Can not open a file for writing: </source>
-        <translation type="vanished">Невозможно открыть файл для записи: </translation>
     </message>
 </context>
 <context>
     <name>U2::DashboardInfoRegistry</name>
     <message>
-        <location filename="../src/dashboard/DashboardInfoRegistry.cpp" line="138"/>
+        <location filename="../src/dashboard/DashboardInfoRegistry.cpp" line="139"/>
         <source>Can&apos;t register a dashboard info: &apos;%1&apos;</source>
         <translation>Can&apos;t register a dashboard info: &apos;%1&apos;</translation>
     </message>
@@ -826,17 +774,17 @@ bowtie index file</source>
 <context>
     <name>U2::DatasetsController</name>
     <message>
-        <location filename="../src/DatasetsController.cpp" line="166"/>
+        <location filename="../src/DatasetsController.cpp" line="169"/>
         <source>Dataset name is empty</source>
         <translation>Имя набора данных пустое</translation>
     </message>
     <message>
-        <location filename="../src/DatasetsController.cpp" line="170"/>
+        <location filename="../src/DatasetsController.cpp" line="173"/>
         <source>Dataset name can not contain &apos;:&apos; and &apos;;&apos; symbols</source>
         <translation>Имя набора данных не может содержать &apos;:&apos; и &apos;;&apos; символы</translation>
     </message>
     <message>
-        <location filename="../src/DatasetsController.cpp" line="175"/>
+        <location filename="../src/DatasetsController.cpp" line="178"/>
         <source>This dataset name already exists</source>
         <translation>Это имя набора данных уже существует</translation>
     </message>
@@ -844,24 +792,24 @@ bowtie index file</source>
 <context>
     <name>U2::DatasetsListWidget</name>
     <message>
-        <location filename="../src/DatasetsListWidget.cpp" line="55"/>
+        <location filename="../src/DatasetsListWidget.cpp" line="54"/>
         <source>Add dataset</source>
         <translation>Добавить набор данных</translation>
     </message>
     <message>
-        <location filename="../src/DatasetsListWidget.cpp" line="99"/>
+        <location filename="../src/DatasetsListWidget.cpp" line="98"/>
         <source>Enter Dataset Name</source>
         <translation>Ввести имя набора данных</translation>
     </message>
     <message>
-        <location filename="../src/DatasetsListWidget.cpp" line="100"/>
+        <location filename="../src/DatasetsListWidget.cpp" line="99"/>
         <location filename="../src/DatasetsListWidget.cpp" line="132"/>
         <source>New dataset name:</source>
         <translation>Имя нового набора данных:</translation>
     </message>
     <message>
         <location filename="../src/DatasetsListWidget.cpp" line="110"/>
-        <location filename="../src/DatasetsListWidget.cpp" line="141"/>
+        <location filename="../src/DatasetsListWidget.cpp" line="142"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -871,7 +819,7 @@ bowtie index file</source>
         <translation>Переименовать набор данных</translation>
     </message>
     <message>
-        <location filename="../src/DatasetsListWidget.cpp" line="151"/>
+        <location filename="../src/DatasetsListWidget.cpp" line="152"/>
         <source>Rename dataset</source>
         <translation>Переименовать набор данных</translation>
     </message>
@@ -887,7 +835,7 @@ bowtie index file</source>
 <context>
     <name>U2::DbObjectItem</name>
     <message>
-        <location filename="../src/DbObjectItem.cpp" line="38"/>
+        <location filename="../src/DbObjectItem.cpp" line="37"/>
         <source>&quot; is located in the database &lt;b&gt;</source>
         <translation>&quot; расположено в наборе данных &lt;b&gt;</translation>
     </message>
@@ -895,7 +843,7 @@ bowtie index file</source>
 <context>
     <name>U2::DirectoryItem</name>
     <message>
-        <location filename="../src/DirectoryItem.cpp" line="37"/>
+        <location filename="../src/DirectoryItem.cpp" line="36"/>
         <source>Use &lt;i&gt;right click&lt;/i&gt; to set advanced options</source>
         <translation>Используйте &lt;i&gt;правый клик мыши&lt;/i&gt; чтобы установить дополнительные опции</translation>
     </message>
@@ -903,12 +851,12 @@ bowtie index file</source>
 <context>
     <name>U2::EditBreakpointLabelsDialog</name>
     <message>
-        <location filename="../src/EditBreakpointLabelsDialog.cpp" line="45"/>
+        <location filename="../src/EditBreakpointLabelsDialog.cpp" line="48"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/EditBreakpointLabelsDialog.cpp" line="46"/>
+        <location filename="../src/EditBreakpointLabelsDialog.cpp" line="49"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
@@ -916,23 +864,23 @@ bowtie index file</source>
 <context>
     <name>U2::EditMarkerDialog</name>
     <message>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="398"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="403"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="399"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="404"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="407"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="412"/>
         <source>Create Marker</source>
         <translation>Создание маркера</translation>
     </message>
     <message>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="445"/>
         <location filename="../src/EditMarkerGroupDialog.cpp" line="450"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="455"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -940,63 +888,63 @@ bowtie index file</source>
 <context>
     <name>U2::EditMarkerGroupDialog</name>
     <message>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="48"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="47"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="49"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="48"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="81"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="87"/>
         <source>Create Marker Group</source>
         <translation>Создание группы маркеров</translation>
     </message>
     <message>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="184"/>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="285"/>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="292"/>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="297"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="190"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="291"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="298"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="303"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="184"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="190"/>
         <source>You can not remove the required marker &quot;rest&quot;</source>
         <translation>Вы не можете удалить выбранный маркер &quot;rest&quot;</translation>
     </message>
     <message>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="203"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="209"/>
         <source>Warning</source>
         <translation>Ожидание</translation>
     </message>
     <message>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="203"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="209"/>
         <source>Are you really want to change marker&apos;s type? Some data can be lost!</source>
         <translation>Вы действиетльно хотите изменить тип маркера? Некоторые данные могут быть утеряны!</translation>
     </message>
     <message>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="235"/>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="259"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="241"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="265"/>
         <source>Marker&apos;s name contains a comma symbol: &quot;%1&quot;. It is not permitted for marker names</source>
         <translation>Имя маркера содержит запрещенный символ: &quot;%1&quot;. Это недопустимо для имени маркера</translation>
     </message>
     <message>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="241"/>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="264"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="247"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="270"/>
         <source>Duplicate marker&apos;s value: %1</source>
         <translation>Повторяющееся значение маркера: %1</translation>
     </message>
     <message>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="248"/>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="269"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="254"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="275"/>
         <source>Duplicate marker&apos;s name: %1</source>
         <translation>Повторящееся имя маркера: %1</translation>
     </message>
     <message>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="285"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="291"/>
         <source>Parameter &apos;%1&apos; is not set</source>
         <translation>Параметр &apos;%1&apos; не установлен</translation>
     </message>
@@ -1004,28 +952,24 @@ bowtie index file</source>
 <context>
     <name>U2::GroupBox</name>
     <message>
-        <location filename="../src/wizard/WizardController.cpp" line="908"/>
+        <location filename="../src/wizard/WizardController.cpp" line="911"/>
         <source>Show</source>
         <translation>Показать</translation>
     </message>
     <message>
-        <location filename="../src/wizard/WizardController.cpp" line="913"/>
+        <location filename="../src/wizard/WizardController.cpp" line="916"/>
         <source>Hide</source>
         <translation>Скрыть</translation>
     </message>
     <message>
-        <location filename="../src/wizard/WizardController.cpp" line="933"/>
+        <location filename="../src/wizard/WizardController.cpp" line="936"/>
         <source>additional</source>
         <translation>дополнительно</translation>
     </message>
     <message>
-        <location filename="../src/wizard/WizardController.cpp" line="937"/>
+        <location filename="../src/wizard/WizardController.cpp" line="940"/>
         <source> settings</source>
         <translation> настройки</translation>
-    </message>
-    <message>
-        <source> parameters</source>
-        <translation type="vanished"> параметры</translation>
     </message>
 </context>
 <context>
@@ -1036,17 +980,17 @@ bowtie index file</source>
         <translation>&lt;Unset&gt;</translation>
     </message>
     <message>
-        <location filename="../src/GrouperEditorWidget.cpp" line="112"/>
+        <location filename="../src/GrouperEditorWidget.cpp" line="111"/>
         <source>By value</source>
         <translation>По значению</translation>
     </message>
     <message>
-        <location filename="../src/GrouperEditorWidget.cpp" line="118"/>
+        <location filename="../src/GrouperEditorWidget.cpp" line="117"/>
         <source>By id</source>
         <translation>По идентификатору</translation>
     </message>
     <message>
-        <location filename="../src/GrouperEditorWidget.cpp" line="119"/>
+        <location filename="../src/GrouperEditorWidget.cpp" line="118"/>
         <source>By name</source>
         <translation>По имени</translation>
     </message>
@@ -1054,37 +998,26 @@ bowtie index file</source>
 <context>
     <name>U2::GrouperSlotsCfgModel</name>
     <message>
-        <location filename="../src/GrouperEditorWidget.cpp" line="303"/>
+        <location filename="../src/GrouperEditorWidget.cpp" line="300"/>
         <source>Output slot name</source>
         <translation>Имя выходного слота</translation>
     </message>
     <message>
-        <location filename="../src/GrouperEditorWidget.cpp" line="305"/>
+        <location filename="../src/GrouperEditorWidget.cpp" line="302"/>
         <source>Source data slot</source>
         <translation>Слот источника данных</translation>
     </message>
 </context>
 <context>
-    <name>U2::JavascriptAgent</name>
-    <message>
-        <source>Error</source>
-        <translation type="vanished">Ошибка</translation>
-    </message>
-    <message>
-        <source>The file does not exist</source>
-        <translation type="vanished">Файл не существует</translation>
-    </message>
-</context>
-<context>
     <name>U2::MarkerEditorWidget</name>
     <message>
-        <location filename="../src/MarkerEditorWidget.cpp" line="126"/>
-        <location filename="../src/MarkerEditorWidget.cpp" line="141"/>
+        <location filename="../src/MarkerEditorWidget.cpp" line="123"/>
+        <location filename="../src/MarkerEditorWidget.cpp" line="138"/>
         <source>Duplicate marker&apos;s name: %1</source>
         <translation>Повторящееся имя маркера: %1</translation>
     </message>
     <message>
-        <location filename="../src/MarkerEditorWidget.cpp" line="148"/>
+        <location filename="../src/MarkerEditorWidget.cpp" line="145"/>
         <source>Marker&apos;s name contains spaces: %1</source>
         <translation>Имя маркера содержит пробелы: %1</translation>
     </message>
@@ -1092,12 +1025,12 @@ bowtie index file</source>
 <context>
     <name>U2::MarkerListCfgModel</name>
     <message>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="346"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="350"/>
         <source>Marker name</source>
         <translation>Имя маркера</translation>
     </message>
     <message>
-        <location filename="../src/EditMarkerGroupDialog.cpp" line="348"/>
+        <location filename="../src/EditMarkerGroupDialog.cpp" line="352"/>
         <source>Marker value</source>
         <translation>Значение маркера</translation>
     </message>
@@ -1105,12 +1038,12 @@ bowtie index file</source>
 <context>
     <name>U2::MsaActionDialog</name>
     <message>
-        <location filename="../src/NewGrouperSlotDialog.cpp" line="221"/>
+        <location filename="../src/NewGrouperSlotDialog.cpp" line="216"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/NewGrouperSlotDialog.cpp" line="222"/>
+        <location filename="../src/NewGrouperSlotDialog.cpp" line="217"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
@@ -1118,12 +1051,12 @@ bowtie index file</source>
 <context>
     <name>U2::NewBreakpointDialog</name>
     <message>
-        <location filename="../src/NewBreakpointDialog.cpp" line="34"/>
+        <location filename="../src/NewBreakpointDialog.cpp" line="36"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/NewBreakpointDialog.cpp" line="35"/>
+        <location filename="../src/NewBreakpointDialog.cpp" line="37"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
@@ -1162,36 +1095,9 @@ bowtie index file</source>
     </message>
 </context>
 <context>
-    <name>U2::NotificationsWidget</name>
-    <message>
-        <source>Error</source>
-        <translation type="obsolete">Ошибка</translation>
-    </message>
-    <message>
-        <source>Warning</source>
-        <translation type="obsolete">Ожидание</translation>
-    </message>
-    <message>
-        <source>Information</source>
-        <translation type="obsolete">Информация</translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="obsolete">Тип</translation>
-    </message>
-    <message>
-        <source>Element</source>
-        <translation type="obsolete">Элемент</translation>
-    </message>
-    <message>
-        <source>Message</source>
-        <translation type="obsolete">Сообщение</translation>
-    </message>
-</context>
-<context>
     <name>U2::OutputDirectoryWidget</name>
     <message>
-        <location filename="../src/support/OutputDirectoryWidget.cpp" line="44"/>
+        <location filename="../src/support/OutputDirectoryWidget.cpp" line="43"/>
         <source>The Workflow Output Folder is a common folder that is used to store all output files in the Workflow Designer. A separate subdirectory of the folder is created for each run of a workflow.
 
 Set up the folder:</source>
@@ -1200,7 +1106,7 @@ Set up the folder:</source>
 Установить директорию:</translation>
     </message>
     <message>
-        <location filename="../src/support/OutputDirectoryWidget.cpp" line="69"/>
+        <location filename="../src/support/OutputDirectoryWidget.cpp" line="68"/>
         <source>Select a folder</source>
         <translation>Укажите папку</translation>
     </message>
@@ -1208,80 +1114,30 @@ Set up the folder:</source>
 <context>
     <name>U2::OutputFileDialog</name>
     <message>
-        <location filename="../src/OutputFileDialog.cpp" line="51"/>
+        <location filename="../src/OutputFileDialog.cpp" line="50"/>
         <source>Save</source>
         <translation>Сохранить</translation>
     </message>
     <message>
-        <location filename="../src/OutputFileDialog.cpp" line="52"/>
+        <location filename="../src/OutputFileDialog.cpp" line="51"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../src/OutputFileDialog.cpp" line="56"/>
+        <location filename="../src/OutputFileDialog.cpp" line="55"/>
         <source>Save a folder</source>
         <translation>Сохранить папку</translation>
     </message>
     <message>
-        <location filename="../src/OutputFileDialog.cpp" line="58"/>
+        <location filename="../src/OutputFileDialog.cpp" line="57"/>
         <source>Save a file</source>
         <translation>Сохранить файл</translation>
     </message>
 </context>
 <context>
-    <name>U2::OutputFilesWidget</name>
-    <message>
-        <source>File</source>
-        <translation type="vanished">Файл</translation>
-    </message>
-    <message>
-        <source>Producer</source>
-        <translation type="vanished">Производитель</translation>
-    </message>
-    <message>
-        <source>Open containing folder</source>
-        <translation type="vanished">Открыть содержащую папку</translation>
-    </message>
-    <message>
-        <source>Open by operating system</source>
-        <translation type="vanished">Открыть при помощи операционной системы</translation>
-    </message>
-    <message>
-        <source>files</source>
-        <translation type="vanished">файлы</translation>
-    </message>
-</context>
-<context>
-    <name>U2::ProblemsWidget</name>
-    <message>
-        <source>Error</source>
-        <translation type="vanished">Ошибка</translation>
-    </message>
-    <message>
-        <source>Warning</source>
-        <translation type="vanished">Ожидание</translation>
-    </message>
-    <message>
-        <source>Information</source>
-        <translation type="vanished">Информация</translation>
-    </message>
-    <message>
-        <source>Element</source>
-        <translation type="vanished">Элемент</translation>
-    </message>
-    <message>
-        <source>Message</source>
-        <translation type="vanished">Сообщение</translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="vanished">Тип</translation>
-    </message>
-</context>
-<context>
     <name>U2::QDCreateAnnotationsTask</name>
     <message>
-        <location filename="../src/QDScheduler.h" line="165"/>
+        <location filename="../src/QDScheduler.h" line="196"/>
         <source>Prepare annotations task</source>
         <translation>Подготовка задачи аннотирования</translation>
     </message>
@@ -1289,7 +1145,7 @@ Set up the folder:</source>
 <context>
     <name>U2::QDFindLocationTask</name>
     <message>
-        <location filename="../src/QDScheduler.h" line="119"/>
+        <location filename="../src/QDScheduler.h" line="138"/>
         <source>Find resultLocation</source>
         <translation>Поиск resultLocation</translation>
     </message>
@@ -1297,7 +1153,7 @@ Set up the folder:</source>
 <context>
     <name>U2::QDLinkResultsTask</name>
     <message>
-        <location filename="../src/QDScheduler.h" line="137"/>
+        <location filename="../src/QDScheduler.h" line="163"/>
         <source>Link results</source>
         <translation>Ссылка на результаты</translation>
     </message>
@@ -1330,12 +1186,12 @@ Set up the folder:</source>
         <translation>Invalid users applications settings detected</translation>
     </message>
     <message>
-        <location filename="../src/QDScheduler.cpp" line="360"/>
+        <location filename="../src/QDScheduler.cpp" line="361"/>
         <source>No results have been found for this scheme</source>
         <translation>Для этой схемы результатов не найдено</translation>
     </message>
     <message>
-        <location filename="../src/QDScheduler.cpp" line="477"/>
+        <location filename="../src/QDScheduler.cpp" line="478"/>
         <source>Too many results have been found for this scheme. Try to set stricter search conditions.</source>
         <translation>Было найдено очень много результатов для этой схемы. Попробуйте изменить условия поиска.</translation>
     </message>
@@ -1343,7 +1199,7 @@ Set up the folder:</source>
 <context>
     <name>U2::QDTask</name>
     <message>
-        <location filename="../src/QDScheduler.cpp" line="747"/>
+        <location filename="../src/QDScheduler.cpp" line="749"/>
         <source>Query task: %1</source>
         <translation>Запрос: %1</translation>
     </message>
@@ -1351,46 +1207,15 @@ Set up the folder:</source>
 <context>
     <name>U2::RemoveDashboardsTask</name>
     <message>
-        <location filename="../src/dashboard/RemoveDashboardsTask.cpp" line="31"/>
+        <location filename="../src/dashboard/RemoveDashboardsTask.cpp" line="30"/>
         <source>Remove dashboards</source>
         <translation>Удалить панель</translation>
     </message>
 </context>
 <context>
-    <name>U2::ResourcesWidget</name>
-    <message>
-        <source>Time</source>
-        <translation type="vanished">Время</translation>
-    </message>
-    <message>
-        <source>The workflow task is in progress...</source>
-        <translation type="vanished">Задача выполнения схемы в процессе...</translation>
-    </message>
-    <message>
-        <source>The workflow task is in progress. There are problems...</source>
-        <translation type="vanished">Задача выполнения схемы в процессе. Есть проблемы...</translation>
-    </message>
-    <message>
-        <source>The workflow task has been finished with warnings!</source>
-        <translation type="vanished">Задача выполнения схемы завершилась с предупреждениями!</translation>
-    </message>
-    <message>
-        <source>The workflow task has been finished with errors!</source>
-        <translation type="vanished">Задача выполнения схемы завершилась с ошибками!</translation>
-    </message>
-    <message>
-        <source>The workflow task has been finished successfully!</source>
-        <translation type="vanished">Задача выполнения схемы завершилась без ошибок!</translation>
-    </message>
-    <message>
-        <source>The workflow task has been canceled!</source>
-        <translation type="vanished">Задача выполнения схемы была отменена!</translation>
-    </message>
-</context>
-<context>
     <name>U2::ScanDashboardsDirTask</name>
     <message>
-        <location filename="../src/dashboard/ScanDashboardsDirTask.cpp" line="35"/>
+        <location filename="../src/dashboard/ScanDashboardsDirTask.cpp" line="36"/>
         <source>Scan dashboards folder</source>
         <translation>Сканирование папки панели</translation>
     </message>
@@ -1398,12 +1223,12 @@ Set up the folder:</source>
 <context>
     <name>U2::SchemaRunModeDelegate</name>
     <message>
-        <location filename="../src/DelegateEditors.cpp" line="624"/>
+        <location filename="../src/DelegateEditors.cpp" line="596"/>
         <source>This computer</source>
         <translation>Данный компьютер</translation>
     </message>
     <message>
-        <location filename="../src/DelegateEditors.cpp" line="625"/>
+        <location filename="../src/DelegateEditors.cpp" line="597"/>
         <source>Remote computer</source>
         <translation>Удаленный компьютер</translation>
     </message>
@@ -1411,40 +1236,25 @@ Set up the folder:</source>
 <context>
     <name>U2::SequeceActionDialog</name>
     <message>
-        <location filename="../src/NewGrouperSlotDialog.cpp" line="156"/>
+        <location filename="../src/NewGrouperSlotDialog.cpp" line="152"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/NewGrouperSlotDialog.cpp" line="157"/>
+        <location filename="../src/NewGrouperSlotDialog.cpp" line="153"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
 </context>
 <context>
-    <name>U2::StatisticsWidget</name>
-    <message>
-        <source>Element</source>
-        <translation type="vanished">Элемент</translation>
-    </message>
-    <message>
-        <source>Elapsed time</source>
-        <translation type="vanished">Прошедшее время</translation>
-    </message>
-    <message>
-        <source>Output messages</source>
-        <translation type="vanished">Выходные сообщения</translation>
-    </message>
-</context>
-<context>
     <name>U2::StringActionDialog</name>
     <message>
-        <location filename="../src/NewGrouperSlotDialog.cpp" line="255"/>
+        <location filename="../src/NewGrouperSlotDialog.cpp" line="249"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/NewGrouperSlotDialog.cpp" line="256"/>
+        <location filename="../src/NewGrouperSlotDialog.cpp" line="250"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
@@ -1452,17 +1262,17 @@ Set up the folder:</source>
 <context>
     <name>U2::StringListDelegate</name>
     <message>
-        <location filename="../src/DelegateEditors.cpp" line="753"/>
+        <location filename="../src/DelegateEditors.cpp" line="722"/>
         <source>Enter items</source>
         <translation>Введите элементы</translation>
     </message>
     <message>
-        <location filename="../src/DelegateEditors.cpp" line="755"/>
+        <location filename="../src/DelegateEditors.cpp" line="724"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/DelegateEditors.cpp" line="757"/>
+        <location filename="../src/DelegateEditors.cpp" line="726"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
@@ -1470,12 +1280,12 @@ Set up the folder:</source>
 <context>
     <name>U2::TophatSamples</name>
     <message>
-        <location filename="../src/wizard/TophatSamplesWidgetController.cpp" line="284"/>
+        <location filename="../src/wizard/TophatSamplesWidgetController.cpp" line="280"/>
         <source>Divide the input datasets into samples for running Cuffdiff. There are must be at least 2 samples. It is not necessary to have the same number of datasets (replicates) for each sample. The samples names will be used by Cuffdiff as labels, which will be included in various output files produced by Cuffdiff.</source>
         <translation>Разделите входные наборы данных на образцы для запуска Cuffdiff. Должно быть не менее двух образцов. Необязательно иметь одинаковое число наборов данных для каждого образца. Имена образцов будут использоваться Cuffdiff в качестве меток, которые будут включены в различные выходные Cuffdiff файлы.</translation>
     </message>
     <message>
-        <location filename="../src/wizard/TophatSamplesWidgetController.cpp" line="362"/>
+        <location filename="../src/wizard/TophatSamplesWidgetController.cpp" line="358"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -1483,17 +1293,17 @@ Set up the folder:</source>
 <context>
     <name>U2::TophatSamplesWidgetController</name>
     <message>
-        <location filename="../src/wizard/TophatSamplesWidgetController.cpp" line="61"/>
+        <location filename="../src/wizard/TophatSamplesWidgetController.cpp" line="59"/>
         <source>Sample name can not be empty</source>
         <translation>Имя образца не может быть пустым</translation>
     </message>
     <message>
-        <location filename="../src/wizard/TophatSamplesWidgetController.cpp" line="66"/>
+        <location filename="../src/wizard/TophatSamplesWidgetController.cpp" line="64"/>
         <source>Sample name can consist only of Latin letters, numbers and the &apos;_&apos; symbol</source>
         <translation>Имя образца может состоять только из латинских букв, цифр и &apos;_&apos; символов</translation>
     </message>
     <message>
-        <location filename="../src/wizard/TophatSamplesWidgetController.cpp" line="74"/>
+        <location filename="../src/wizard/TophatSamplesWidgetController.cpp" line="72"/>
         <source>Duplicate sample name</source>
         <translation>Повторяющееся имя образца</translation>
     </message>
@@ -1501,19 +1311,19 @@ Set up the folder:</source>
 <context>
     <name>U2::URLLineEdit</name>
     <message>
-        <location filename="../src/support/URLLineEdit.cpp" line="187"/>
+        <location filename="../src/support/URLLineEdit.cpp" line="185"/>
         <source>Select a folder</source>
         <translation>Укажите папку</translation>
     </message>
     <message>
-        <location filename="../src/support/URLLineEdit.cpp" line="205"/>
-        <location filename="../src/support/URLLineEdit.cpp" line="210"/>
-        <location filename="../src/support/URLLineEdit.cpp" line="213"/>
+        <location filename="../src/support/URLLineEdit.cpp" line="203"/>
+        <location filename="../src/support/URLLineEdit.cpp" line="208"/>
+        <location filename="../src/support/URLLineEdit.cpp" line="211"/>
         <source>Select a file</source>
         <translation>Выберите файл</translation>
     </message>
     <message>
-        <location filename="../src/support/URLLineEdit.cpp" line="190"/>
+        <location filename="../src/support/URLLineEdit.cpp" line="188"/>
         <source>Select file(s)</source>
         <translation>Выберите файл(ы)</translation>
     </message>
@@ -1521,7 +1331,7 @@ Set up the folder:</source>
 <context>
     <name>U2::URLListController</name>
     <message>
-        <location filename="../src/DatasetsController.cpp" line="770"/>
+        <location filename="../src/DatasetsController.cpp" line="767"/>
         <source>This file or folder does not exist: %1</source>
         <translation>Этот файл или папка не существует: %1</translation>
     </message>
@@ -1548,38 +1358,38 @@ Set up the folder:</source>
 <context>
     <name>U2::URLWidget</name>
     <message>
-        <location filename="../src/PropertyWidget.cpp" line="506"/>
+        <location filename="../src/PropertyWidget.cpp" line="521"/>
         <source>add</source>
         <translation>добавить</translation>
     </message>
+</context>
+<context>
+    <name>U2::WebViewControllerPrivate</name>
     <message>
-        <source>File Not Found</source>
-        <translation type="vanished">Файл не найден</translation>
-    </message>
-    <message>
-        <source>File not found: &quot;%1&quot;</source>
-        <translation type="vanished">Файл не найден: &quot;%1&quot;</translation>
+        <location filename="../src/dashboard/webview/WebViewControllerPrivate.cpp" line="40"/>
+        <source>Can not open a file for writing: </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>U2::WizardController</name>
     <message>
-        <location filename="../src/wizard/WizardController.cpp" line="101"/>
+        <location filename="../src/wizard/WizardController.cpp" line="100"/>
         <source>Apply</source>
         <translation>Принять</translation>
     </message>
     <message>
-        <location filename="../src/wizard/WizardController.cpp" line="123"/>
+        <location filename="../src/wizard/WizardController.cpp" line="122"/>
         <source>Defaults</source>
         <translation>По умолчанию</translation>
     </message>
     <message>
-        <location filename="../src/wizard/WizardController.cpp" line="124"/>
+        <location filename="../src/wizard/WizardController.cpp" line="123"/>
         <source>Set page values by default</source>
         <translation>Установить значения по умолчанию</translation>
     </message>
     <message>
-        <location filename="../src/wizard/WizardController.cpp" line="129"/>
+        <location filename="../src/wizard/WizardController.cpp" line="128"/>
         <source>Run</source>
         <translation>Запустить</translation>
     </message>
@@ -1587,12 +1397,12 @@ Set up the folder:</source>
 <context>
     <name>U2::Workflow::MarkerGroupListCfgModel</name>
     <message>
-        <location filename="../src/MarkerEditor.cpp" line="183"/>
+        <location filename="../src/MarkerEditor.cpp" line="180"/>
         <source>Marker Group</source>
         <translation>Группа маркера</translation>
     </message>
     <message>
-        <location filename="../src/MarkerEditor.cpp" line="185"/>
+        <location filename="../src/MarkerEditor.cpp" line="182"/>
         <source>Marker Value</source>
         <translation>Значение маркера</translation>
     </message>
@@ -1600,22 +1410,22 @@ Set up the folder:</source>
 <context>
     <name>U2::WorkflowUtils</name>
     <message>
-        <location filename="../src/DelegateEditors.cpp" line="612"/>
+        <location filename="../src/DelegateEditors.cpp" line="584"/>
         <source>Overwrite</source>
         <translation>Переписать</translation>
     </message>
     <message>
-        <location filename="../src/DelegateEditors.cpp" line="613"/>
+        <location filename="../src/DelegateEditors.cpp" line="585"/>
         <source>Rename</source>
         <translation>Переименовать</translation>
     </message>
     <message>
-        <location filename="../src/DelegateEditors.cpp" line="615"/>
+        <location filename="../src/DelegateEditors.cpp" line="587"/>
         <source>Append</source>
         <translation>Дописать</translation>
     </message>
     <message>
-        <location filename="../src/DesignerUtils.cpp" line="35"/>
+        <location filename="../src/DesignerUtils.cpp" line="36"/>
         <source>UGENE workflow documents</source>
         <translation>Вычислительные схемы UGENE</translation>
     </message>

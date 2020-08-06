@@ -20,18 +20,17 @@
  */
 
 #include "BaseWidthController.h"
+
 #include "ScrollController.h"
 #include "ov_msa/MaEditor.h"
 #include "ov_msa/view_rendering/MaEditorWgt.h"
 
 namespace U2 {
 
-BaseWidthController::BaseWidthController(MaEditorWgt *maEditorWgt) :
-    QObject(maEditorWgt),
-    maEditor(maEditorWgt->getEditor()),
-    ui(maEditorWgt)
-{
-
+BaseWidthController::BaseWidthController(MaEditorWgt *maEditorWgt)
+    : QObject(maEditorWgt),
+      maEditor(maEditorWgt->getEditor()),
+      ui(maEditorWgt) {
 }
 
 int BaseWidthController::getFirstVisibleBaseGlobalOffset(bool countClipped) const {
@@ -117,4 +116,4 @@ int BaseWidthController::screenXPositionToBase(int x) const {
     return 0 <= column && column < maEditor->getAlignmentLen() ? column : -1;
 }
 
-}   // namespace U2
+}    // namespace U2

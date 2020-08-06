@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "StringtieGeneAbundanceReportWorker.h"
+
 #include <U2Core/FailTask.h>
 #include <U2Core/FileAndDirectoryUtils.h>
 #include <U2Core/TaskSignalMapper.h>
@@ -27,22 +29,18 @@
 #include <U2Lang/WorkflowMonitor.h>
 
 #include "StringtieGeneAbundanceReportTask.h"
-#include "StringtieGeneAbundanceReportWorker.h"
 #include "StringtieGeneAbundanceReportWorkerFactory.h"
 
 namespace U2 {
 namespace LocalWorkflow {
 
 StringtieGeneAbundanceReportWorker::StringtieGeneAbundanceReportWorker(Actor *actor)
-    : BaseWorker(actor, false)
-{
-
+    : BaseWorker(actor, false) {
 }
 
 void StringtieGeneAbundanceReportWorker::init() {
     input = ports.value(StringtieGeneAbundanceReportWorkerFactory::INPUT_PORT_ID);
-    SAFE_POINT(NULL != input, QString("Port with id '%1' is NULL")
-               .arg(StringtieGeneAbundanceReportWorkerFactory::INPUT_PORT_ID), );
+    SAFE_POINT(NULL != input, QString("Port with id '%1' is NULL").arg(StringtieGeneAbundanceReportWorkerFactory::INPUT_PORT_ID), );
 }
 
 Task *StringtieGeneAbundanceReportWorker::tick() {
@@ -54,11 +52,12 @@ Task *StringtieGeneAbundanceReportWorker::tick() {
         while (input->hasMessage()) {
             Message message = getMessageAndSetupScriptValues(input);
             const QString stringtieReport = message.getData()
-                    .toMap()[BaseSlots::URL_SLOT().getId()].toString();
+                                                .toMap()[BaseSlots::URL_SLOT().getId()]
+                                                .toString();
             if (stringtieReport.isEmpty()) {
                 setDone();
                 return new FailTask(tr("An empty URL to StringTie report passed to the '%1'")
-                                    .arg(getActor()->getLabel()));
+                                        .arg(getActor()->getLabel()));
             }
             stringtieReports << stringtieReport;
         }
@@ -104,5 +103,5 @@ void StringtieGeneAbundanceReportWorker::sl_taskSucceeded(Task *task) {
     monitor()->addOutputFile(geneAbudanceReportUrl, getActor()->getId(), true);
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

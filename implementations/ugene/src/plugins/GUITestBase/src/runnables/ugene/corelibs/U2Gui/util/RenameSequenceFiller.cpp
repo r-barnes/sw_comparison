@@ -20,14 +20,15 @@
  */
 
 #include "RenameSequenceFiller.h"
-#include <primitives/GTLineEdit.h>
-#include <primitives/GTWidget.h>
-#include "system/GTClipboard.h"
 #include <drivers/GTKeyboardDriver.h>
 #include <drivers/GTMouseDriver.h>
+#include <primitives/GTLineEdit.h>
+#include <primitives/GTWidget.h>
 
 #include <QApplication>
 #include <QPushButton>
+
+#include "system/GTClipboard.h"
 
 namespace U2 {
 
@@ -39,19 +40,19 @@ void RenameSequenceFiller::commonScenario() {
     GT_CHECK(dialog != NULL, "dialog not found");
     GT_CHECK(dialog->windowTitle() == "Rename Read" || dialog->windowTitle() == "Rename Sequence", "dialog not found");
 
-    QLineEdit *nameEdit = dialog->findChild<QLineEdit*>();
+    QLineEdit *nameEdit = dialog->findChild<QLineEdit *>();
     GT_CHECK(nameEdit != NULL, "Line edit not found");
 
-    if(!oldName.isEmpty()){
+    if (!oldName.isEmpty()) {
         QString actualText = nameEdit->text();
         GT_CHECK(oldName == actualText, "edited sequence name not match with expected");
     }
-    
-    if (oldName != newName){
+
+    if (oldName != newName) {
         //if filler used not for checking sequence name
-        GTLineEdit::setText(os, nameEdit, newName);
+        GTLineEdit::setText(os, nameEdit, newName, false, useCopyPaste);
     }
- 
+
     GTWidget::click(os, GTWidget::findButtonByText(os, "OK", dialog));
     GTGlobals::sleep(500);
     if (NULL != QApplication::activeModalWidget()) {
@@ -62,4 +63,4 @@ void RenameSequenceFiller::commonScenario() {
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

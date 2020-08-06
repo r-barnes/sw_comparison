@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "BioStruct3DObjectUnitTests.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/BaseDocumentFormats.h>
@@ -31,8 +33,6 @@
 #include <U2Core/UdrDbi.h>
 
 #include <U2Test/TestRunnerSettings.h>
-
-#include "BioStruct3DObjectUnitTests.h"
 
 namespace U2 {
 
@@ -56,14 +56,14 @@ U2EntityRef BioStruct3DObjectTestData::getObjRef() {
     return objRef;
 }
 
-U2ObjectDbi * BioStruct3DObjectTestData::getObjDbi() {
+U2ObjectDbi *BioStruct3DObjectTestData::getObjDbi() {
     if (!inited) {
         init();
     }
     return dbiProvider.getDbi()->getObjectDbi();
 }
 
-UdrDbi * BioStruct3DObjectTestData::getUdrDbi() {
+UdrDbi *BioStruct3DObjectTestData::getUdrDbi() {
     if (!inited) {
         init();
     }
@@ -72,7 +72,7 @@ UdrDbi * BioStruct3DObjectTestData::getUdrDbi() {
 
 void BioStruct3DObjectTestData::init() {
     bool ok = dbiProvider.init(UDR_DB_URL, true);
-    SAFE_POINT(ok, "dbi provider failed to initialize",);
+    SAFE_POINT(ok, "dbi provider failed to initialize", );
 
     initData();
 
@@ -107,7 +107,7 @@ void BioStruct3DObjectTestData::shutdown() {
     }
 }
 
-const BioStruct3D & BioStruct3DObjectTestData::getBioStruct() {
+const BioStruct3D &BioStruct3DObjectTestData::getBioStruct() {
     if (!inited) {
         init();
     }
@@ -127,10 +127,10 @@ BioStruct3D BioStruct3DObjectTestData::readBioStruct(const QString &fileName, U2
     QScopedPointer<Document> doc(f->loadDocument(iof, trs->getVar("COMMON_DATA_DIR") + "/" + fileName, hints, os));
     CHECK_OP(os, BioStruct3D());
 
-    QList<GObject*> objs = doc->findGObjectByType(GObjectTypes::BIOSTRUCTURE_3D);
+    QList<GObject *> objs = doc->findGObjectByType(GObjectTypes::BIOSTRUCTURE_3D);
     CHECK_EXT(1 == objs.size(), os.setError("object list size"), BioStruct3D());
 
-    BioStruct3DObject *obj = dynamic_cast<BioStruct3DObject*>(objs.first());
+    BioStruct3DObject *obj = dynamic_cast<BioStruct3DObject *>(objs.first());
     CHECK_EXT(NULL != obj, os.setError("NULL object"), BioStruct3D());
 
     return obj->getBioStruct3D();
@@ -168,7 +168,7 @@ IMPLEMENT_TEST(BioStruct3DObjectUnitTests, clone) {
 
     U2OpStatusImpl os;
     GObject *clonedGObj = object.clone(BioStruct3DObjectTestData::getDbiRef(), os);
-    QScopedPointer<BioStruct3DObject> cloned(dynamic_cast<BioStruct3DObject*>(clonedGObj));
+    QScopedPointer<BioStruct3DObject> cloned(dynamic_cast<BioStruct3DObject *>(clonedGObj));
     CHECK_NO_ERROR(os);
 
     CHECK_TRUE(cloned->getBioStruct3D().pdbId == object.getBioStruct3D().pdbId, "pdbId");
@@ -208,4 +208,4 @@ IMPLEMENT_TEST(BioStruct3DObjectUnitTests, remove) {
     CHECK_TRUE(records.isEmpty(), "records");
 }
 
-} // U2
+}    // namespace U2

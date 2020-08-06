@@ -26,8 +26,8 @@
 
 #include <U2Algorithm/CreatePhyTreeSettings.h>
 
-#include <U2Core/global.h>
 #include <U2Core/MultipleSequenceAlignment.h>
+#include <U2Core/global.h>
 
 class Ui_CreatePhyTree;
 
@@ -40,7 +40,7 @@ class SaveDocumentController;
 class U2VIEW_EXPORT CreatePhyTreeDialogController : public QDialog {
     Q_OBJECT
 public:
-    CreatePhyTreeDialogController(QWidget* parent, const MultipleSequenceAlignmentObject* mobj, CreatePhyTreeSettings& settings);
+    CreatePhyTreeDialogController(QWidget *parent, const MultipleSequenceAlignmentObject *mobj, CreatePhyTreeSettings &settings);
     ~CreatePhyTreeDialogController();
 
 private slots:
@@ -56,13 +56,13 @@ private:
     void initSaveController(const MultipleSequenceAlignmentObject *mobj);
 
     MultipleSequenceAlignment msa;
-    CreatePhyTreeSettings& settings;
-    QList<CreatePhyTreeWidget*> childWidgets;
+    CreatePhyTreeSettings &settings;
+    QList<CreatePhyTreeWidget *> childWidgets;
     CreatePhyTreeWidget *settingsWidget;
-    Ui_CreatePhyTree* ui;
+    Ui_CreatePhyTree *ui;
     SaveDocumentController *saveController;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_CREATE_PHY_TREE_DIALOG_CONTROLLER_H_
+#endif    // _U2_CREATE_PHY_TREE_DIALOG_CONTROLLER_H_

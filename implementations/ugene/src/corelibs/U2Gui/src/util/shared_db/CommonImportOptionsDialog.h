@@ -32,15 +32,15 @@ namespace U2 {
 
 class CommonImportOptionsDialog : public QDialog, public Ui_CommonImportOptionsDialog {
 public:
-    CommonImportOptionsDialog(const QString& baseFolder, const ImportToDatabaseOptions& options, QWidget *parent = 0);
-    
+    CommonImportOptionsDialog(const QString &baseFolder, const ImportToDatabaseOptions &options, QWidget *parent = 0);
+
     QString getBaseFolder() const;
     ImportToDatabaseOptions getOptions() const;
 
 private:
-    void init(const QString& baseFolder, const ImportToDatabaseOptions& options);
+    void init(const QString &baseFolder, const ImportToDatabaseOptions &options);
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_COMMON_IMPORT_OPTIONS_DIALOG_H_
+#endif    // _U2_COMMON_IMPORT_OPTIONS_DIALOG_H_

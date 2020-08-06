@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "OutputDirectoryWidget.h"
+
 #include <QEvent>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -32,20 +34,17 @@
 
 #include <U2Lang/WorkflowSettings.h>
 
-#include "OutputDirectoryWidget.h"
-
 namespace U2 {
 
 OutputDirectoryWidget::OutputDirectoryWidget(QWidget *parent, bool commitOnHide)
-: QWidget(parent), commitOnHide(commitOnHide)
-{
+    : QWidget(parent), commitOnHide(commitOnHide) {
     QVBoxLayout *l = new QVBoxLayout(this);
     l->setContentsMargins(3, 3, 3, 3);
     label = new QLabel(tr(
                            "The Workflow Output Folder is a common folder that is used to store all output files in the Workflow Designer."
                            " A separate subdirectory of the folder is created for each run of a workflow."
-                           "\n\nSet up the folder:"
-                           ), this);
+                           "\n\nSet up the folder:"),
+                       this);
     label->setAlignment(Qt::AlignJustify | Qt::AlignVCenter);
     label->setWordWrap(true);
     label->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -68,7 +67,7 @@ OutputDirectoryWidget::OutputDirectoryWidget(QWidget *parent, bool commitOnHide)
 void OutputDirectoryWidget::sl_browse() {
     QString dir = U2FileDialog::getExistingDirectory(this, tr("Select a folder"), pathEdit->text());
 
-    if(!dir.isEmpty()) {
+    if (!dir.isEmpty()) {
         dir = QDir::toNativeSeparators(dir);
         if (!dir.endsWith(QDir::separator())) {
             dir += QDir::separator();
@@ -90,4 +89,4 @@ void OutputDirectoryWidget::hideEvent(QHideEvent *event) {
     QWidget::hideEvent(event);
 }
 
-} // U2
+}    // namespace U2

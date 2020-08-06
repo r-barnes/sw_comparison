@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "MultipleChromatogramAlignmentImporter.h"
+
 #include <U2Core/ChromatogramUtils.h>
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/GObjectTypes.h>
@@ -36,15 +38,14 @@
 #include <U2Core/U2SequenceDbi.h>
 #include <U2Core/U2SequenceUtils.h>
 
-#include "MultipleChromatogramAlignmentImporter.h"
 #include "datatype/msa/MultipleAlignmentRowInfo.h"
 
 namespace U2 {
 
-MultipleChromatogramAlignmentObject * MultipleChromatogramAlignmentImporter::createAlignment(U2OpStatus &os,
-    const U2DbiRef &dbiRef,
-    const QString &folder,
-    MultipleChromatogramAlignment &mca) {
+MultipleChromatogramAlignmentObject *MultipleChromatogramAlignmentImporter::createAlignment(U2OpStatus &os,
+                                                                                            const U2DbiRef &dbiRef,
+                                                                                            const QString &folder,
+                                                                                            MultipleChromatogramAlignment &mca) {
     DbiConnection connection(dbiRef, true, os);
     CHECK(!os.isCanceled(), NULL);
     SAFE_POINT_OP(os, NULL);
@@ -105,8 +106,8 @@ void MultipleChromatogramAlignmentImporter::importMcaInfo(U2OpStatus &os, const 
     U2AttributeDbi *attributeDbi = connection.dbi->getAttributeDbi();
     SAFE_POINT_EXT(NULL != attributeDbi, os.setError("NULL Attribute Dbi during importing an alignment"), );
 
-    foreach(const QString key, info.keys()) {
-        if (key != MultipleAlignmentInfo::NAME) { // name is stored in the object
+    foreach (const QString key, info.keys()) {
+        if (key != MultipleAlignmentInfo::NAME) {    // name is stored in the object
             const QString value = info.value(key).toString();
             U2StringAttribute attribute(mcaId, key, value);
             attributeDbi->createStringAttribute(attribute, os);
@@ -116,9 +117,9 @@ void MultipleChromatogramAlignmentImporter::importMcaInfo(U2OpStatus &os, const 
 }
 
 QList<McaRowDatabaseData> MultipleChromatogramAlignmentImporter::importRowChildObjects(U2OpStatus &os,
-    const DbiConnection &connection,
-    const QString &folder,
-    const MultipleChromatogramAlignment &mca) {
+                                                                                       const DbiConnection &connection,
+                                                                                       const QString &folder,
+                                                                                       const MultipleChromatogramAlignment &mca) {
     QList<McaRowDatabaseData> mcaRowsDatabaseData;
     UdrDbi *udrDbi = connection.dbi->getUdrDbi();
     SAFE_POINT_EXT(NULL != udrDbi, os.setError("NULL UDR Dbi during importing an alignment"), mcaRowsDatabaseData);
@@ -129,7 +130,7 @@ QList<McaRowDatabaseData> MultipleChromatogramAlignmentImporter::importRowChildO
     SAFE_POINT_EXT(NULL != alphabet, os.setError("MCA alphabet is NULL"), mcaRowsDatabaseData);
     const U2AlphabetId alphabetId = alphabet->getId();
 
-    foreach(const MultipleChromatogramAlignmentRow &row, mca->getMcaRows()) {
+    foreach (const MultipleChromatogramAlignmentRow &row, mca->getMcaRows()) {
         McaRowDatabaseData mcaRowDatabaseData;
 
         mcaRowDatabaseData.chromatogram = importChromatogram(os, connection, folder, row->getChromatogram());
@@ -154,12 +155,12 @@ QList<McaRowDatabaseData> MultipleChromatogramAlignmentImporter::importRowChildO
 }
 
 QList<U2McaRow> MultipleChromatogramAlignmentImporter::importRows(U2OpStatus &os,
-    const DbiConnection &connection,
-    U2Mca &dbMca,
-    const QList<McaRowDatabaseData> &mcaRowsDatabaseData) {
+                                                                  const DbiConnection &connection,
+                                                                  U2Mca &dbMca,
+                                                                  const QList<McaRowDatabaseData> &mcaRowsDatabaseData) {
     QList<U2McaRow> rows;
 
-    foreach(const McaRowDatabaseData &mcaRowDatabaseData, mcaRowsDatabaseData) {
+    foreach (const McaRowDatabaseData &mcaRowDatabaseData, mcaRowsDatabaseData) {
         U2McaRow row;
         row.chromatogramId = mcaRowDatabaseData.chromatogram.id;
         row.sequenceId = mcaRowDatabaseData.sequence.id;
@@ -177,9 +178,9 @@ QList<U2McaRow> MultipleChromatogramAlignmentImporter::importRows(U2OpStatus &os
 }
 
 U2Chromatogram MultipleChromatogramAlignmentImporter::importChromatogram(U2OpStatus &os,
-    const DbiConnection &connection,
-    const QString &folder,
-    const DNAChromatogram &chromatogram) {
+                                                                         const DbiConnection &connection,
+                                                                         const QString &folder,
+                                                                         const DNAChromatogram &chromatogram) {
     const U2EntityRef chromatogramRef = ChromatogramUtils::import(os, connection.dbi->getDbiRef(), folder, chromatogram);
     CHECK_OP(os, U2Chromatogram());
     connection.dbi->getObjectDbi()->setObjectRank(chromatogramRef.entityId, U2DbiObjectRank_Child, os);
@@ -188,10 +189,10 @@ U2Chromatogram MultipleChromatogramAlignmentImporter::importChromatogram(U2OpSta
 }
 
 U2Sequence MultipleChromatogramAlignmentImporter::importSequence(U2OpStatus &os,
-    const DbiConnection &connection,
-    const QString &folder,
-    const DNASequence &sequence,
-    const U2AlphabetId &alphabetId) {
+                                                                 const DbiConnection &connection,
+                                                                 const QString &folder,
+                                                                 const DNASequence &sequence,
+                                                                 const U2AlphabetId &alphabetId) {
     const U2EntityRef sequenceRef = U2SequenceUtils::import(os, connection.dbi->getDbiRef(), folder, sequence, alphabetId);
     CHECK_OP(os, U2Sequence());
     connection.dbi->getObjectDbi()->setObjectRank(sequenceRef.entityId, U2DbiObjectRank_Child, os);
@@ -231,4 +232,4 @@ void MultipleChromatogramAlignmentImporter::createRelation(U2OpStatus &os, const
     CHECK_OP(os, );
 }
 
-}   // namespace U2
+}    // namespace U2

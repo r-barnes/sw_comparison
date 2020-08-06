@@ -29,16 +29,17 @@ namespace U2 {
 class CEASSupport : public ExternalTool {
     Q_OBJECT
 public:
-    CEASSupport(const QString& id, const QString& name, const QString& path = "");
+    CEASSupport(const QString &id, const QString &name, const QString &path = "");
 
     static const QString ET_CEAS;
     static const QString ET_CEAS_ID;
     static const QString REFGENE_DIR_NAME;
     static const QString REF_GENES_DATA_NAME;
+
 private:
     void initialize();
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_CEAS_SUPPORT_
+#endif    // _U2_CEAS_SUPPORT_

@@ -23,6 +23,7 @@
 #define _U2_ORF_MARKER_PLUGIN_H_
 
 #include <U2Core/PluginModel.h>
+
 #include <U2Gui/ObjectViewModel.h>
 
 namespace U2 {
@@ -36,28 +37,26 @@ public:
     ~ORFMarkerPlugin();
 
 private:
-    GObjectViewWindowContext* viewCtx;
+    GObjectViewWindowContext *viewCtx;
 };
 
-class ORFViewContext: public GObjectViewWindowContext {
+class ORFViewContext : public GObjectViewWindowContext {
     Q_OBJECT
 public:
-    ORFViewContext(QObject* p);
+    ORFViewContext(QObject *p);
 
 protected slots:
-        void sl_showDialog();
+    void sl_showDialog();
 
 protected:
-    virtual void initViewContext(GObjectView* view);
+    virtual void initViewContext(GObjectView *view);
 };
 
 class ORFMarkerTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-
-} //namespace
+}    // namespace U2
 
 #endif
-

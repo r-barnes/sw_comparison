@@ -19,11 +19,11 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-#include <QDialogButtonBox>
-
 #include "CreateObjectRelationDialogFiller.h"
 #include <primitives/GTWidget.h>
+
+#include <QApplication>
+#include <QDialogButtonBox>
 
 namespace U2 {
 using namespace HI;
@@ -31,13 +31,12 @@ using namespace HI;
 #define GT_CLASS_NAME "GTUtilsDialog::FindRepeatsDialogFiller"
 #define GT_METHOD_NAME "run"
 
-CreateObjectRelationDialogFiller::CreateObjectRelationDialogFiller(HI::GUITestOpStatus& os) :
-    Filler(os, "CreateObjectRelationDialog")
-{
+CreateObjectRelationDialogFiller::CreateObjectRelationDialogFiller(HI::GUITestOpStatus &os)
+    : Filler(os, "CreateObjectRelationDialog") {
 }
 
 void CreateObjectRelationDialogFiller::commonScenario() {
-    QWidget* dialog = QApplication::activeModalWidget();
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(NULL != dialog, "activeModalWidget is NULL");
 
     GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
@@ -49,4 +48,4 @@ void CreateObjectRelationDialogFiller::commonScenario() {
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

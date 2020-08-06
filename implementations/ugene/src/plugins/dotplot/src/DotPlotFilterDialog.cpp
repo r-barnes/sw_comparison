@@ -19,36 +19,29 @@
  * MA 02110-1301, USA.
  */
 
-#include <QMessageBox>
+#include "DotPlotFilterDialog.h"
+
 #include <QButtonGroup>
+#include <QMessageBox>
 
 #include <U2Core/AnnotationSettings.h>
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/GObject.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/GUIUtils.h>
 #include <U2Gui/HelpButton.h>
-#include <U2Core/QObjectScopedPointer.h>
 
 #include <U2View/ADVSequenceObjectContext.h>
-
-#include "DotPlotFilterDialog.h"
 
 namespace U2 {
 
 DotPlotFilterDialog::DotPlotFilterDialog(QWidget *parent, ADVSequenceObjectContext *sequenceX, ADVSequenceObjectContext *sequenceY)
-: QDialog(parent)
-,xSeq(sequenceX)
-,ySeq(sequenceY)
-,fType(All)
-,filterGroup(NULL)
-,seqXItem(NULL)
-,seqYItem(NULL)
-{
+    : QDialog(parent), xSeq(sequenceX), ySeq(sequenceY), fType(All), filterGroup(NULL), seqXItem(NULL), seqYItem(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742440");
+    new HelpButton(this, buttonBox, "46499957");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -62,7 +55,7 @@ DotPlotFilterDialog::DotPlotFilterDialog(QWidget *parent, ADVSequenceObjectConte
     }
 
     {
-        if (xSeq == ySeq){
+        if (xSeq == ySeq) {
             differentButton->setEnabled(false);
         }
     }
@@ -70,25 +63,25 @@ DotPlotFilterDialog::DotPlotFilterDialog(QWidget *parent, ADVSequenceObjectConte
         QSet<QString> uniqueAnnotationNames = getUniqueAnnotationNames(xSeq);
         seqXItem = new QTreeWidgetItem(featuresTree);
         seqXItem->setText(0, "Sequence X: " + xSeq->getSequenceGObject()->getGObjectName());
-        AnnotationSettingsRegistry* asr = AppContext::getAnnotationsSettingsRegistry();
-        foreach(const QString& aName, uniqueAnnotationNames){
-            QTreeWidgetItem* aItem = new QTreeWidgetItem(seqXItem);
+        AnnotationSettingsRegistry *asr = AppContext::getAnnotationsSettingsRegistry();
+        foreach (const QString &aName, uniqueAnnotationNames) {
+            QTreeWidgetItem *aItem = new QTreeWidgetItem(seqXItem);
             aItem->setText(0, aName);
-            AnnotationSettings* as = asr->getAnnotationSettings(aName);
+            AnnotationSettings *as = asr->getAnnotationSettings(aName);
             QIcon icon = GUIUtils::createSquareIcon(as->color, 14);
             aItem->setIcon(0, icon);
             aItem->setCheckState(0, Qt::Unchecked);
         }
         seqXItem->setExpanded(true);
 
-        if(xSeq != ySeq){
+        if (xSeq != ySeq) {
             uniqueAnnotationNames = getUniqueAnnotationNames(ySeq);
             seqYItem = new QTreeWidgetItem(featuresTree);
             seqYItem->setText(0, "Sequence Y: " + ySeq->getSequenceGObject()->getGObjectName());
-            foreach(const QString& aName, uniqueAnnotationNames){
-                QTreeWidgetItem* aItem = new QTreeWidgetItem(seqYItem);
+            foreach (const QString &aName, uniqueAnnotationNames) {
+                QTreeWidgetItem *aItem = new QTreeWidgetItem(seqYItem);
                 aItem->setText(0, aName);
-                AnnotationSettings* as = asr->getAnnotationSettings(aName);
+                AnnotationSettings *as = asr->getAnnotationSettings(aName);
                 QIcon icon = GUIUtils::createSquareIcon(as->color, 14);
                 aItem->setIcon(0, icon);
                 aItem->setCheckState(0, Qt::Unchecked);
@@ -123,44 +116,44 @@ void DotPlotFilterDialog::accept() {
     bool sIempty = true;
 
     int childCount = seqXItem->childCount();
-    for (int i = 0; i < childCount; i++){
-        QTreeWidgetItem* tItem = seqXItem->child(i);
-        if(tItem->checkState(0) == Qt::Checked){
+    for (int i = 0; i < childCount; i++) {
+        QTreeWidgetItem *tItem = seqXItem->child(i);
+        if (tItem->checkState(0) == Qt::Checked) {
             selectedItems.insert(SequenceX, tItem->text(0));
             sIempty = false;
         }
     }
 
-    if(seqYItem!=NULL){
+    if (seqYItem != NULL) {
         childCount = seqYItem->childCount();
-        for (int i = 0; i < childCount; i++){
-            QTreeWidgetItem* tItem = seqYItem->child(i);
-            if(tItem->checkState(0) == Qt::Checked){
+        for (int i = 0; i < childCount; i++) {
+            QTreeWidgetItem *tItem = seqYItem->child(i);
+            if (tItem->checkState(0) == Qt::Checked) {
                 selectedItems.insert(SequenceY, tItem->text(0));
                 sIempty = false;
             }
         }
     }
 
-    if(sIempty && getFilterType() == Features){
+    if (sIempty && getFilterType() == Features) {
         QObjectScopedPointer<QMessageBox> mb = new QMessageBox(QMessageBox::Warning, tr("Feature names"), tr("No feature names have been selected. In that case dotplot will be empty. Note, If the feature names list is empty your sequences don't have annotations. Select some feature names or choose another filtration method"));
         mb->exec();
         CHECK(!mb.isNull(), );
-    }else{
+    } else {
         featureNames = selectedItems;
         QDialog::accept();
     }
 }
 
-FilterType DotPlotFilterDialog::getFilterType(){
+FilterType DotPlotFilterDialog::getFilterType() {
     SAFE_POINT(filterGroup, "Filter Button Group is NULL", All);
 
     return FilterType(filterGroup->checkedId());
 }
 
-void DotPlotFilterDialog::sl_filterTypeChanged(int id){
+void DotPlotFilterDialog::sl_filterTypeChanged(int id) {
     FilterType curType = FilterType(id);
-    switch (curType){
+    switch (curType) {
     case All:
         intersectionParams->setEnabled(false);
         break;
@@ -170,97 +163,96 @@ void DotPlotFilterDialog::sl_filterTypeChanged(int id){
     }
 }
 
-void DotPlotFilterDialog::sl_selectAll(){
+void DotPlotFilterDialog::sl_selectAll() {
     int childCount = seqXItem->childCount();
-    for (int i = 0; i < childCount; i++){
-        QTreeWidgetItem* tItem = seqXItem->child(i);
+    for (int i = 0; i < childCount; i++) {
+        QTreeWidgetItem *tItem = seqXItem->child(i);
         tItem->setCheckState(0, Qt::Checked);
     }
 
-    if(seqYItem!=NULL){
+    if (seqYItem != NULL) {
         childCount = seqYItem->childCount();
-        for (int i = 0; i < childCount; i++){
-            QTreeWidgetItem* tItem = seqYItem->child(i);
+        for (int i = 0; i < childCount; i++) {
+            QTreeWidgetItem *tItem = seqYItem->child(i);
             tItem->setCheckState(0, Qt::Checked);
         }
     }
 }
 
-void DotPlotFilterDialog::sl_selectDifferent(){
-    CHECK(seqYItem!=NULL, );
+void DotPlotFilterDialog::sl_selectDifferent() {
+    CHECK(seqYItem != NULL, );
     QSet<QString> commonNames;
 
     int childCount = seqXItem->childCount();
-    for (int i = 0; i < childCount; i++){
-        QTreeWidgetItem* tItem = seqXItem->child(i);
+    for (int i = 0; i < childCount; i++) {
+        QTreeWidgetItem *tItem = seqXItem->child(i);
         commonNames.insert(tItem->text(0));
     }
 
     childCount = seqYItem->childCount();
-    foreach(const QString& n, commonNames){
+    foreach (const QString &n, commonNames) {
         bool contain = false;
-        for (int i = 0; i < childCount; i++){
-            QTreeWidgetItem* tItem = seqYItem->child(i);
-            if(n == tItem->text(0)){
+        for (int i = 0; i < childCount; i++) {
+            QTreeWidgetItem *tItem = seqYItem->child(i);
+            if (n == tItem->text(0)) {
                 contain = true;
                 break;
             }
         }
-        if(!contain){
+        if (!contain) {
             commonNames.remove(n);
         }
     }
 
     childCount = seqXItem->childCount();
-    for (int i = 0; i < childCount; i++){
-        QTreeWidgetItem* tItem = seqXItem->child(i);
-        if(commonNames.contains(tItem->text(0))){
+    for (int i = 0; i < childCount; i++) {
+        QTreeWidgetItem *tItem = seqXItem->child(i);
+        if (commonNames.contains(tItem->text(0))) {
             tItem->setCheckState(0, Qt::Unchecked);
-        }else{
+        } else {
             tItem->setCheckState(0, Qt::Checked);
         }
     }
 
     childCount = seqYItem->childCount();
-    for (int i = 0; i < childCount; i++){
-        QTreeWidgetItem* tItem = seqYItem->child(i);
-        if(commonNames.contains(tItem->text(0))){
+    for (int i = 0; i < childCount; i++) {
+        QTreeWidgetItem *tItem = seqYItem->child(i);
+        if (commonNames.contains(tItem->text(0))) {
             tItem->setCheckState(0, Qt::Unchecked);
-        }else{
+        } else {
             tItem->setCheckState(0, Qt::Checked);
         }
     }
-
 }
-void DotPlotFilterDialog::sl_clearSelection(){
+void DotPlotFilterDialog::sl_clearSelection() {
     int childCount = seqXItem->childCount();
-    for (int i = 0; i < childCount; i++){
-        QTreeWidgetItem* tItem = seqXItem->child(i);
+    for (int i = 0; i < childCount; i++) {
+        QTreeWidgetItem *tItem = seqXItem->child(i);
         tItem->setCheckState(0, Qt::Unchecked);
     }
 
-    if(seqYItem!=NULL){
+    if (seqYItem != NULL) {
         childCount = seqYItem->childCount();
-        for (int i = 0; i < childCount; i++){
-            QTreeWidgetItem* tItem = seqYItem->child(i);
+        for (int i = 0; i < childCount; i++) {
+            QTreeWidgetItem *tItem = seqYItem->child(i);
             tItem->setCheckState(0, Qt::Unchecked);
         }
     }
 }
-void DotPlotFilterDialog::sl_invertSelection(){
+void DotPlotFilterDialog::sl_invertSelection() {
     int childCount = seqXItem->childCount();
-    for (int i = 0; i < childCount; i++){
-        QTreeWidgetItem* tItem = seqXItem->child(i);
+    for (int i = 0; i < childCount; i++) {
+        QTreeWidgetItem *tItem = seqXItem->child(i);
         tItem->setCheckState(0, tItem->checkState(0) == Qt::Unchecked ? Qt::Checked : Qt::Unchecked);
     }
 
-    if(seqYItem!=NULL){
+    if (seqYItem != NULL) {
         childCount = seqYItem->childCount();
-        for (int i = 0; i < childCount; i++){
-            QTreeWidgetItem* tItem = seqYItem->child(i);
+        for (int i = 0; i < childCount; i++) {
+            QTreeWidgetItem *tItem = seqYItem->child(i);
             tItem->setCheckState(0, tItem->checkState(0) == Qt::Unchecked ? Qt::Checked : Qt::Unchecked);
         }
     }
 }
 
-}//namespace
+}    // namespace U2

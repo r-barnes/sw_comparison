@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "GenomicLibraryDialog.h"
+
 #include <QPushButton>
 #include <QVBoxLayout>
 
@@ -28,7 +30,6 @@
 
 #include <U2Lang/URLContainer.h>
 
-#include "GenomicLibraryDialog.h"
 #include "ui_GenomicLibraryDialog.h"
 
 namespace U2 {
@@ -36,8 +37,7 @@ namespace LocalWorkflow {
 
 SingleDatasetController::SingleDatasetController(const Dataset &dataset, QObject *parent)
     : DatasetsController(QSet<GObjectType>(), parent),
-      dataset(dataset)
-{
+      dataset(dataset) {
     widgetController = new URLListController(this, &(this->dataset));
 }
 
@@ -47,19 +47,15 @@ SingleDatasetController::~SingleDatasetController() {
 }
 
 void SingleDatasetController::renameDataset(int, const QString &, U2OpStatus &) {
-
 }
 
 void SingleDatasetController::deleteDataset(int) {
-
 }
 
 void SingleDatasetController::addDataset(const QString &, U2OpStatus &) {
-
 }
 
 void SingleDatasetController::onUrlAdded(URLListController *, URLContainer *) {
-
 }
 
 QWidget *SingleDatasetController::getWigdet() {
@@ -74,12 +70,10 @@ QStringList SingleDatasetController::names() const {
     return QStringList() << dataset.getName();
 }
 
-
 GenomicLibraryDialog::GenomicLibraryDialog(const Dataset &dataset, QWidget *parent)
     : QDialog(parent),
       ui(new Ui_GenomicLibraryDialog),
-      singleDatasetController(new SingleDatasetController(dataset, this))
-{
+      singleDatasetController(new SingleDatasetController(dataset, this)) {
     ui = new Ui_GenomicLibraryDialog();
     ui->setupUi(this);
     ui->cantainer->layout()->addWidget(singleDatasetController->getWigdet());
@@ -97,5 +91,5 @@ Dataset GenomicLibraryDialog::getDataset() const {
     return singleDatasetController->getDataset();
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

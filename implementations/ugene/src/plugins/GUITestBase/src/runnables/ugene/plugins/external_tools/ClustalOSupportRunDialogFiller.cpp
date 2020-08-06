@@ -19,16 +19,15 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-
 #include "ClustalOSupportRunDialogFiller.h"
+
+#include <QApplication>
 
 namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::ClustalOSupportRunDialogFiller"
-ClustalOSupportRunDialogFiller::ClustalOSupportRunDialogFiller(HI::GUITestOpStatus &os) :
-    Filler(os, "ClustalOSupportRunDialog")
-{
+ClustalOSupportRunDialogFiller::ClustalOSupportRunDialogFiller(HI::GUITestOpStatus &os)
+    : Filler(os, "ClustalOSupportRunDialog") {
 }
 
 #define GT_METHOD_NAME "commonScenario"
@@ -42,4 +41,4 @@ void ClustalOSupportRunDialogFiller::commonScenario() {
 
 #undef GT_CLASS_NAME
 
-}   // namespace U2
+}    // namespace U2

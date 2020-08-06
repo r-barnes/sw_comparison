@@ -22,27 +22,22 @@
 #ifndef _U2_DNA_FLEX_DIALOG_H_
 #define _U2_DNA_FLEX_DIALOG_H_
 
+#include "HighFlexSettings.h"
 #include "ui_DNAFlexDialog.h"
 
-#include "HighFlexSettings.h"
-
-
 namespace U2 {
-
 
 class ADVSequenceObjectContext;
 class CreateAnnotationWidgetController;
 
-
 /**
  * Main and the only dialog of the DNA Flexibility plugin.
  */
-class DNAFlexDialog : public QDialog, public Ui_DNAFlexDialog
-{
+class DNAFlexDialog : public QDialog, public Ui_DNAFlexDialog {
     Q_OBJECT
 
 public:
-    DNAFlexDialog(ADVSequenceObjectContext* ctx);
+    DNAFlexDialog(ADVSequenceObjectContext *ctx);
     virtual void accept();
 
 private slots:
@@ -54,14 +49,13 @@ private slots:
     void sl_updateSizes(int);
 
 private:
-    ADVSequenceObjectContext* ctx;
-    CreateAnnotationWidgetController* annotController;
+    ADVSequenceObjectContext *ctx;
+    CreateAnnotationWidgetController *annotController;
     HighFlexSettings settings;
 
     void updateHighFlexValues();
 };
 
-
-} // namespace
+}    // namespace U2
 
 #endif

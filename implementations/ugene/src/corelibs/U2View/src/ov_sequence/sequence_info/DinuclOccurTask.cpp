@@ -28,41 +28,37 @@
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/U2SequenceDbi.h>
 
-
 namespace U2 {
 
-DinuclOccurTask::DinuclOccurTask(const DNAAlphabet* _alphabet,
+DinuclOccurTask::DinuclOccurTask(const DNAAlphabet *_alphabet,
                                  const U2EntityRef _seqRef,
-                                 const QVector<U2Region>& regions)
-    : BackgroundTask< QMap<QByteArray, qint64> >(
-    "Calculating dinucleotides occurrence",
-    TaskFlag_None),
+                                 const QVector<U2Region> &regions)
+    : BackgroundTask<QMap<QByteArray, qint64>>(
+          "Calculating dinucleotides occurrence",
+          TaskFlag_None),
       alphabet(_alphabet),
       seqRef(_seqRef),
-      regions(regions)
-{
+      regions(regions) {
     tpm = Progress_Manual;
     stateInfo.setProgress(0);
 }
 
-
-#define DI_NUCL_CODE(n1, n2) ((quint16((quint32)n1)<<8) + n2)
+#define DI_NUCL_CODE(n1, n2) ((quint16((quint32)n1) << 8) + n2)
 #define GAP = '-';
 
-void DinuclOccurTask::run()
-{
+void DinuclOccurTask::run() {
     // Create the connection
     U2OpStatus2Log os;
     DbiConnection dbiConnection(seqRef.dbiRef, os);
     CHECK_OP(os, );
 
-    U2SequenceDbi* sequenceDbi = dbiConnection.dbi->getSequenceDbi();
+    U2SequenceDbi *sequenceDbi = dbiConnection.dbi->getSequenceDbi();
 
     // Verify the alphabet
-    SAFE_POINT(0 != alphabet, "The alphabet is NULL!",)
+    SAFE_POINT(0 != alphabet, "The alphabet is NULL!", )
 
     QByteArray alphabetChars = alphabet->getAlphabetChars();
-    SAFE_POINT(!alphabetChars.isEmpty(), "There are no characters in the alphabet!",);
+    SAFE_POINT(!alphabetChars.isEmpty(), "There are no characters in the alphabet!", );
 
     qint64 seqLength = sequenceDbi->getSequenceObject(seqRef.entityId, os).length;
     CHECK_OP(os, );
@@ -74,9 +70,9 @@ void DinuclOccurTask::run()
     QVector<quint64> dinuclOccurrence(256 * 256, 0);
     qint64 totalLength = U2Region::sumLength(regions);
     qint64 processedLength = 0;
-    foreach (const U2Region& region, regions) {
+    foreach (const U2Region &region, regions) {
         QList<U2Region> blocks = U2Region::split(region, REGION_TO_ANALAYZE);
-        foreach(const U2Region& block, blocks) {
+        foreach (const U2Region &block, blocks) {
             // Get the selected region and verify that the data has been correctly read
             QByteArray sequence = sequenceDbi->getSequenceData(seqRef.entityId, block, os);
             if (os.hasError() || sequence.isEmpty()) {
@@ -89,22 +85,22 @@ void DinuclOccurTask::run()
                 char firstChar = sequence[i];
                 char secondChar = sequence[i + 1];
                 SAFE_POINT(alphabetChars.contains(secondChar),
-                           QString("Unexpected characters has been detected in the sequence: {%1}").arg(secondChar),);
+                           QString("Unexpected characters has been detected in the sequence: {%1}").arg(secondChar), );
 
                 dinuclOccurrence[DI_NUCL_CODE(firstChar, secondChar)]++;
             }
 
             // Update the task progress
-            processedLength+=block.length;
-            stateInfo.setProgress(processedLength* 100 / totalLength);
-            CHECK_OP(stateInfo,);
+            processedLength += block.length;
+            stateInfo.setProgress(processedLength * 100 / totalLength);
+            CHECK_OP(stateInfo, );
         }
     }
 
     // Convert to the result
     foreach (char firstChar, alphabetChars) {
         foreach (char secondChar, alphabetChars) {
-            qint64 count = (qint64) dinuclOccurrence[DI_NUCL_CODE(firstChar, secondChar)];
+            qint64 count = (qint64)dinuclOccurrence[DI_NUCL_CODE(firstChar, secondChar)];
             if (count == 0) {
                 continue;
             }
@@ -116,4 +112,4 @@ void DinuclOccurTask::run()
     }
 }
 
-} // namespace
+}    // namespace U2

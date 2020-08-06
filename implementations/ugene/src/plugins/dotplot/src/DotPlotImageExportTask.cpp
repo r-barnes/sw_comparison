@@ -19,12 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "DotPlotImageExportTask.h"
+
 #include <QCheckBox>
 #include <QVBoxLayout>
 
 #include <U2Core/U2SafePoints.h>
 
-#include "DotPlotImageExportTask.h"
 #include "DotPlotWidget.h"
 
 namespace U2 {
@@ -34,8 +35,8 @@ void DotPlotImageExportToBitmapTask::run() {
                    setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("DotPlotImageExportToBitmapTask")), );
     QImage im(settings.imageSize, QImage::Format_RGB32);
     int dpm = settings.imageDpi / 0.0254;
-    im.setDotsPerMeterX( dpm );
-    im.setDotsPerMeterY( dpm );
+    im.setDotsPerMeterX(dpm);
+    im.setDotsPerMeterY(dpm);
     im.fill(Qt::white);
     QPainter painter(&im);
 
@@ -49,15 +50,14 @@ void DotPlotImageExportToBitmapTask::run() {
     float fontScale = (float)defaultDpm / dpm;
     dotplotWidget->drawAll(painter, settings.imageSize, fontScale, dpExportSettings);
 
-    CHECK_EXT( im.save(settings.fileName, qPrintable(settings.format), settings.imageQuality), setError(EXPORT_FAIL_MESSAGE.arg(settings.fileName)), );
-    SAFE_POINT_EXT( settings.isBitmapFormat(), setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("CircularViewImageExportToBitmapTask")), );
+    CHECK_EXT(im.save(settings.fileName, qPrintable(settings.format), settings.imageQuality), setError(EXPORT_FAIL_MESSAGE.arg(settings.fileName)), );
+    SAFE_POINT_EXT(settings.isBitmapFormat(), setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("CircularViewImageExportToBitmapTask")), );
 }
 
 DotPlotImageExportController::DotPlotImageExportController(DotPlotWidget *wgt)
     : ImageExportController(),
-      dotplotWidget(wgt)
-{
-    SAFE_POINT( dotplotWidget != NULL, tr("Dotplot widget is NULL"), );
+      dotplotWidget(wgt) {
+    SAFE_POINT(dotplotWidget != NULL, tr("Dotplot widget is NULL"), );
     shortDescription = tr("Dotplot");
     initSettingsWidget();
 }
@@ -71,7 +71,7 @@ int DotPlotImageExportController::getImageHeight() const {
 }
 
 void DotPlotImageExportController::initSettingsWidget() {
-    QVBoxLayout* layout = new QVBoxLayout();
+    QVBoxLayout *layout = new QVBoxLayout();
     layout->setSizeConstraint(QLayout::SetMinAndMaxSize);
     layout->setContentsMargins(0, 0, 0, 0);
 
@@ -94,10 +94,10 @@ void DotPlotImageExportController::initSettingsWidget() {
     settingsWidget->setLayout(layout);
 }
 
-Task* DotPlotImageExportController::getExportToBitmapTask(const ImageExportTaskSettings &settings) const {
+Task *DotPlotImageExportController::getExportToBitmapTask(const ImageExportTaskSettings &settings) const {
     DotPlotImageExportSettings dpSettings(includeAreaSelection->isChecked(),
                                           includeRepeatSelection->isChecked());
     return new DotPlotImageExportToBitmapTask(dotplotWidget, dpSettings, settings);
 }
 
-} // namespace
+}    // namespace U2

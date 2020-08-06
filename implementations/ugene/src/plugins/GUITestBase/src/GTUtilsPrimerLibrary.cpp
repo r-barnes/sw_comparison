@@ -19,28 +19,32 @@
  * MA 02110-1301, USA.
  */
 
-#include <QTableView>
-
-#include <U2Gui/MainWindow.h>
-#include <U2Core/U2SafePoints.h>
-
-#include "utils/GTUtilsDialog.h"
-#include "GTUtilsMdi.h"
 #include "GTUtilsPrimerLibrary.h"
-#include "utils/GTKeyboardUtils.h"
-#include "primitives/GTMenu.h"
 #include <drivers/GTMouseDriver.h>
 #include <primitives/GTTableView.h>
 #include <primitives/GTWidget.h>
+
+#include <QTableView>
+
+#include <U2Core/U2SafePoints.h>
+
+#include <U2Gui/MainWindow.h>
+
+#include "GTUtilsMdi.h"
+#include "primitives/GTMenu.h"
 #include "runnables/ugene/plugins/pcr/AddPrimerDialogFiller.h"
+#include "utils/GTKeyboardUtils.h"
+#include "utils/GTUtilsDialog.h"
 
 namespace U2 {
 using namespace HI;
 
 #define GT_CLASS_NAME "GTUtilsPrimerLibrary"
 
-QWidget * GTUtilsPrimerLibrary::openLibrary(HI::GUITestOpStatus &os) {
-    GTMenu::clickMainMenuItem(os, QStringList() << "Tools" << "Primer" << "Primer library");
+QWidget *GTUtilsPrimerLibrary::openLibrary(HI::GUITestOpStatus &os) {
+    GTMenu::clickMainMenuItem(os, QStringList() << "Tools"
+                                                << "Primer"
+                                                << "Primer library");
     return GTUtilsMdi::activeWindow(os);
 }
 
@@ -48,23 +52,23 @@ void GTUtilsPrimerLibrary::clickButton(HI::GUITestOpStatus &os, Button button) {
     GTWidget::click(os, getButton(os, button));
 }
 
-QAbstractButton * GTUtilsPrimerLibrary::getButton(HI::GUITestOpStatus &os, Button button) {
+QAbstractButton *GTUtilsPrimerLibrary::getButton(HI::GUITestOpStatus &os, Button button) {
     QDialogButtonBox *box = GTUtilsDialog::buttonBox(os, GTWidget::findWidget(os, "PrimerLibraryWidget"));
     switch (button) {
-        case Add:
-            return box->buttons()[1];
-        case Edit:
-            return box->buttons()[2];
-        case Close:
-            return box->button(QDialogButtonBox::Close);
-        case Remove:
-            return box->buttons()[3];
-        case Import:
-            return box->buttons()[4];
-        case Export:
-            return box->buttons()[5];
-        default:
-            return NULL;
+    case Add:
+        return box->buttons()[1];
+    case Edit:
+        return box->buttons()[2];
+    case Close:
+        return box->button(QDialogButtonBox::Close);
+    case Remove:
+        return box->buttons()[3];
+    case Import:
+        return box->buttons()[4];
+    case Export:
+        return box->buttons()[5];
+    default:
+        return NULL;
     }
 }
 
@@ -131,10 +135,10 @@ void GTUtilsPrimerLibrary::selectAll(HI::GUITestOpStatus &os) {
     GTKeyboardUtils::selectAll(os);
 }
 
-QTableView * GTUtilsPrimerLibrary::table(HI::GUITestOpStatus &os) {
-    return dynamic_cast<QTableView*>(GTWidget::findWidget(os, "primerTable"));
+QTableView *GTUtilsPrimerLibrary::table(HI::GUITestOpStatus &os) {
+    return dynamic_cast<QTableView *>(GTWidget::findWidget(os, "primerTable"));
 }
 
 #undef GT_CLASS_NAME
 
-} // U2
+}    // namespace U2

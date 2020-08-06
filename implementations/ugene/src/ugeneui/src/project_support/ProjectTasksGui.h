@@ -46,15 +46,14 @@ class StateLock;
 /// CloseProjectTask schema:
 //	->CloseProjectTask (serial subtasks):
 //		->SaveProjectTask
-//		->UnregisterProjectTask	
+//		->UnregisterProjectTask
 class CloseProjectTask : public Task {
     Q_OBJECT
 
 public:
-	CloseProjectTask();
-	virtual void prepare();
+    CloseProjectTask();
+    virtual void prepare();
 };
-
 
 /// OpenProjectTask schema:
 //	->OpenProjectTask (serial subtasks):
@@ -67,17 +66,17 @@ class OpenProjectTask : public Task {
     Q_OBJECT
 
 public:
-	OpenProjectTask(const QString& url, const QString& name = QString::null);
-    
-	virtual void prepare();
-	
+    OpenProjectTask(const QString &url, const QString &name = QString::null);
+
+    virtual void prepare();
+
 protected:
-	virtual QList<Task*> onSubTaskFinished(Task* subTask);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
 
 private:
-	QString url;
-	QString name;
-	LoadProjectTask* loadProjectTask;
+    QString url;
+    QString name;
+    LoadProjectTask *loadProjectTask;
 };
 
 /// SaveProjectTask schema:
@@ -87,14 +86,14 @@ class SaveProjectTask : public Task {
     Q_OBJECT
 
 public:
-    SaveProjectTask(SaveProjectTaskKind k, Project* p = NULL, const QString& url = QString::null, bool silentSave_ = false);
+    SaveProjectTask(SaveProjectTaskKind k, Project *p = NULL, const QString &url = QString::null, bool silentSave_ = false);
     ~SaveProjectTask();
 
     virtual void prepare();
 
 private:
     SaveProjectTaskKind k;
-    Project* proj;
+    Project *proj;
     QString url;
     bool silentSave;
 };
@@ -102,45 +101,49 @@ private:
 class SaveOnlyProjectTask : public Task {
     Q_OBJECT
 public:
-    SaveOnlyProjectTask(Project* p = NULL, const QString& url = QString::null);
+    SaveOnlyProjectTask(Project *p = NULL, const QString &url = QString::null);
     ~SaveOnlyProjectTask();
 
     virtual void prepare();
     ReportResult report();
-    
+
 private:
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
     void _run();
 
     Task *sub;
-    Project* proj;
+    Project *proj;
     QString url;
-    StateLock* lock;
-    QList<Document*> phantomDocs;
+    StateLock *lock;
+    QList<Document *> phantomDocs;
 };
-
 
 /// LoadProjectTask
 class LoadProjectTask : public Task {
     Q_OBJECT
 
 public:
-	LoadProjectTask(const QString& url);
-	~LoadProjectTask();
+    LoadProjectTask(const QString &url);
+    ~LoadProjectTask();
 
-	virtual void run();
-	ReportResult report();
+    virtual void run();
+    ReportResult report();
 
-	Project* getProject() const {return proj;}
-	Project* detachProject() {Project* tmp = proj; proj = NULL; return tmp;}
+    Project *getProject() const {
+        return proj;
+    }
+    Project *detachProject() {
+        Project *tmp = proj;
+        proj = NULL;
+        return tmp;
+    }
 
 private:
-	QString         version;
-	Project*        proj;
-	QString         url;
-	QDomDocument*   xmlDoc;
+    QString version;
+    Project *proj;
+    QString url;
+    QDomDocument *xmlDoc;
 };
-
 
 /// register project task
 //TODO: remove service+plugin binding -> add 'singleton' property to service. After its done this task will not be needed
@@ -148,102 +151,105 @@ private:
 class RegisterProjectServiceTask : public Task {
     Q_OBJECT
 public:
-    RegisterProjectServiceTask(Project* proj);
+    RegisterProjectServiceTask(Project *proj);
     void prepare();
+
 private:
-    Project* proj;
+    Project *proj;
 };
 
-
-
-class ExportProjectTask : public Task{
-	Q_OBJECT
+class ExportProjectTask : public Task {
+    Q_OBJECT
 public:
-	ExportProjectTask(const QString& _destinationDir, const QString& projectFile, bool _compress = false);
+    ExportProjectTask(const QString &_destinationDir, const QString &projectFile, bool _compress = false);
 
-	void prepare();
+    void prepare();
     ReportResult report();
 
 private:
-	void _run(TaskStateInfo& ts, Project* p, QString url, QStringList paths);
+    void _run(TaskStateInfo &ts, Project *p, QString url, QStringList paths);
 
-	bool        compress;
-	QString     destinationDir;
-    QString     projectFile;
+    bool compress;
+    QString destinationDir;
+    QString projectFile;
 };
 
 //cppcheck-suppress noConstructor
 class GTest_LoadProject : public XmlTest {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_LoadProject, "load-project", TaskFlags_NR_FOSCOE);
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_LoadProject, "load-project", TaskFlags_NR_FOSCOE);
 
-	void prepare();
+    void prepare();
 
-	ReportResult report();
+    ReportResult report();
 
-	virtual void cleanup();
+    virtual void cleanup();
 
-	QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
+
 private:
-	QStringList			docContextList;
- 	QString             projContextName;
-	LoadProjectTask*    loadTask;
-	MultiTask			*mt;
- 	bool                contextAdded;
- 	QString             url;	
+    QStringList docContextList;
+    QString projContextName;
+    LoadProjectTask *loadTask;
+    MultiTask *mt;
+    bool contextAdded;
+    QString url;
 };
 
 //cppcheck-suppress noConstructor
 class GTest_ExportProject : public XmlTest {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_ExportProject, "export-project", TaskFlags_NR_FOSCOE);
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_ExportProject, "export-project", TaskFlags_NR_FOSCOE);
 
-	void prepare();
+    void prepare();
 
-	ReportResult report();
+    ReportResult report();
 
-	virtual void cleanup();
+    virtual void cleanup();
+
 private:
-	bool removeDir( const QDir &dir);
-	QString             url;	
-	QString				projContextname;
-	ExportProjectTask   *exportTask;
+    bool removeDir(const QDir &dir);
+    QString url;
+    QString projContextname;
+    ExportProjectTask *exportTask;
 };
 
 //cppcheck-suppress noConstructor
 class GTest_UnloadProject : public XmlTest {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_UnloadProject, "unload-project", TaskFlags_NR_FOSCOE);
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_UnloadProject, "unload-project", TaskFlags_NR_FOSCOE);
 
-	void prepare();
+    void prepare();
+
 private:
-	QStringList unloadDocList;
+    QStringList unloadDocList;
 };
 
 //cppcheck-suppress noConstructor
 class GTest_LoadDocumentFromProject : public XmlTest {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_LoadDocumentFromProject, "load-document-from-project", TaskFlags_NR_FOSCOE);
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_LoadDocumentFromProject, "load-document-from-project", TaskFlags_NR_FOSCOE);
 
-	void prepare();
-	void cleanup();
-	ReportResult report();
+    void prepare();
+    void cleanup();
+    ReportResult report();
+
 private:
-	LoadUnloadedDocumentTask *loadTask;
-	Document* loadedDoc;
-	QString documentFileName;
-	bool contextAdded;
+    LoadUnloadedDocumentTask *loadTask;
+    Document *loadedDoc;
+    QString documentFileName;
+    bool contextAdded;
 };
 
 class ProjectTests {
 public:
-	static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

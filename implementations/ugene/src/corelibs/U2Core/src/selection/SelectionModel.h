@@ -33,9 +33,13 @@ typedef QString GSelectionType;
 class U2CORE_EXPORT GSelection : public QObject {
     Q_OBJECT
 public:
-    GSelection(GSelectionType _type, QObject* p = NULL) : QObject(p), type(_type) {}
+    GSelection(GSelectionType _type, QObject *p = NULL)
+        : QObject(p), type(_type) {
+    }
 
-    GSelectionType getSelectionType() const {return type;}
+    GSelectionType getSelectionType() const {
+        return type;
+    }
 
     virtual bool isEmpty() const = 0;
 
@@ -45,32 +49,37 @@ protected slots:
     void sl_selectionChanged();
 
 signals:
-    void si_onSelectionChanged(GSelection*);
+    void si_onSelectionChanged(GSelection *);
 
 private:
     GSelectionType type;
 };
 
-typedef QList<GSelection*> GSelections;
+typedef QList<GSelection *> GSelections;
 
 class U2CORE_EXPORT MultiGSelection {
 public:
-    MultiGSelection(){}
+    MultiGSelection() {
+    }
     //TODO: deallocation! -> use shared data
 
-    void addSelection(const GSelection* s);
+    void addSelection(const GSelection *s);
 
-    void removeSelection(const GSelection* s);
+    void removeSelection(const GSelection *s);
 
-    bool contains(GSelectionType t) const {return findSelectionByType(t) !=NULL;}
+    bool contains(GSelectionType t) const {
+        return findSelectionByType(t) != NULL;
+    }
 
-    const GSelection* findSelectionByType(GSelectionType t) const;
+    const GSelection *findSelectionByType(GSelectionType t) const;
 
-    const QList<const GSelection*>& getSelections() const {return selections;}
+    const QList<const GSelection *> &getSelections() const {
+        return selections;
+    }
 
 private:
-    QList<const GSelection*> selections;
+    QList<const GSelection *> selections;
 };
 
-}//namespace
+}    // namespace U2
 #endif

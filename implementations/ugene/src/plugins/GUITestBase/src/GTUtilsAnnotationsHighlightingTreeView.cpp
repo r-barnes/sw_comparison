@@ -19,26 +19,27 @@
  * MA 02110-1301, USA.
  */
 
+#include "GTUtilsAnnotationsHighlightingTreeView.h"
+#include <drivers/GTKeyboardDriver.h>
+#include <drivers/GTMouseDriver.h>
+#include <primitives/GTTreeWidget.h>
+#include <primitives/GTWidget.h>
+#include <utils/GTThread.h>
+
 #include <QMainWindow>
 #include <QTreeWidget>
 
 #include <U2Core/ProjectModel.h>
 
 #include <U2Gui/MainWindow.h>
+
 #include <U2View/AnnotHighlightTreeItem.h>
 
-#include "GTUtilsAnnotationsHighlightingTreeView.h"
-#include "utils/GTUtilsDialog.h"
 #include "GTUtilsMdi.h"
 #include "GTUtilsTaskTreeView.h"
-#include <drivers/GTKeyboardDriver.h>
-#include "utils/GTKeyboardUtils.h"
-#include <utils/GTThread.h>
-#include <drivers/GTMouseDriver.h>
-#include <primitives/GTTreeWidget.h>
-#include <primitives/GTWidget.h>
 #include "primitives/PopupChooser.h"
-
+#include "utils/GTKeyboardUtils.h"
+#include "utils/GTUtilsDialog.h"
 
 namespace U2 {
 using namespace HI;
@@ -48,30 +49,28 @@ using namespace HI;
 const QString GTUtilsAnnotHighlightingTreeView::widgetName = "OP_ANNOT_HIGHLIGHT_TREE";
 
 #define GT_METHOD_NAME "getTreeWidget"
-QTreeWidget* GTUtilsAnnotHighlightingTreeView::getTreeWidget(HI::GUITestOpStatus &os) {
-
-    QTreeWidget *treeWidget = qobject_cast<QTreeWidget*>(GTWidget::findWidget(os, widgetName, NULL, false));
+QTreeWidget *GTUtilsAnnotHighlightingTreeView::getTreeWidget(HI::GUITestOpStatus &os) {
+    QTreeWidget *treeWidget = qobject_cast<QTreeWidget *>(GTWidget::findWidget(os, widgetName, NULL, false));
 
     if (!treeWidget) {
         GTWidget::click(os, GTWidget::findWidget(os, "OP_ANNOT_HIGHLIGHT"));
         GTGlobals::sleep(3000);
     }
 
-    treeWidget = qobject_cast<QTreeWidget*>(GTWidget::findWidget(os, widgetName));
+    treeWidget = qobject_cast<QTreeWidget *>(GTWidget::findWidget(os, widgetName));
     return treeWidget;
 }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "findItem"
-QTreeWidgetItem* GTUtilsAnnotHighlightingTreeView::findItem(HI::GUITestOpStatus &os, const QString &itemName, const GTGlobals::FindOptions &options) {
-
+QTreeWidgetItem *GTUtilsAnnotHighlightingTreeView::findItem(HI::GUITestOpStatus &os, const QString &itemName, const GTGlobals::FindOptions &options) {
     GT_CHECK_RESULT(itemName.isEmpty() == false, "Item name is empty", NULL);
 
     QTreeWidget *treeWidget = getTreeWidget(os);
     GT_CHECK_RESULT(treeWidget != NULL, "Tree widget is NULL", NULL);
 
-    for(int i =0; i< treeWidget->topLevelItemCount(); i++) {
-        AnnotHighlightTreeItem* vi = static_cast<AnnotHighlightTreeItem*>(treeWidget->topLevelItem(i));
+    for (int i = 0; i < treeWidget->topLevelItemCount(); i++) {
+        AnnotHighlightTreeItem *vi = static_cast<AnnotHighlightTreeItem *>(treeWidget->topLevelItem(i));
         if (vi->getName() == itemName) {
             return vi;
         }
@@ -83,13 +82,12 @@ QTreeWidgetItem* GTUtilsAnnotHighlightingTreeView::findItem(HI::GUITestOpStatus 
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getSelectedItem"
-QString GTUtilsAnnotHighlightingTreeView::getSelectedItem(HI::GUITestOpStatus &os)
-{
+QString GTUtilsAnnotHighlightingTreeView::getSelectedItem(HI::GUITestOpStatus &os) {
     QTreeWidget *treeWidget = getTreeWidget(os);
     GT_CHECK_RESULT(treeWidget != NULL, "Tree widget is NULL", NULL);
 
-    for(int i =0; i< treeWidget->topLevelItemCount(); i++) {
-        AnnotHighlightTreeItem* vi = static_cast<AnnotHighlightTreeItem*>(treeWidget->topLevelItem(i));
+    for (int i = 0; i < treeWidget->topLevelItemCount(); i++) {
+        AnnotHighlightTreeItem *vi = static_cast<AnnotHighlightTreeItem *>(treeWidget->topLevelItem(i));
         if (vi->isSelected()) {
             return vi->getName();
         }
@@ -101,17 +99,16 @@ QString GTUtilsAnnotHighlightingTreeView::getSelectedItem(HI::GUITestOpStatus &o
 
 #define GT_METHOD_NAME "getItemCenter"
 QPoint GTUtilsAnnotHighlightingTreeView::getItemCenter(HI::GUITestOpStatus &os, const QString &itemName) {
-
-    QTreeWidgetItem* item = findItem(os, itemName);
+    QTreeWidgetItem *item = findItem(os, itemName);
     GT_CHECK_RESULT(item != NULL, "Item " + itemName + " is NULL", QPoint());
 
     return GTTreeWidget::getItemCenter(os, item);
 }
 #undef GT_METHOD_NAME
 
-void GTUtilsAnnotHighlightingTreeView::click(HI::GUITestOpStatus &os, const QString &itemName){
-    QTreeWidgetItem* item = findItem(os, itemName);
-    QTreeWidget* tree = getTreeWidget(os);
+void GTUtilsAnnotHighlightingTreeView::click(HI::GUITestOpStatus &os, const QString &itemName) {
+    QTreeWidgetItem *item = findItem(os, itemName);
+    QTreeWidget *tree = getTreeWidget(os);
     tree->scrollToItem(item);
     GTThread::waitForMainThread();
 
@@ -121,12 +118,12 @@ void GTUtilsAnnotHighlightingTreeView::click(HI::GUITestOpStatus &os, const QStr
 }
 
 #define GT_METHOD_NAME "getItemCenter"
-QColor GTUtilsAnnotHighlightingTreeView::getItemColor(HI::GUITestOpStatus &os, const QString &itemName){
-    QTreeWidgetItem* item = findItem(os, itemName);
+QColor GTUtilsAnnotHighlightingTreeView::getItemColor(HI::GUITestOpStatus &os, const QString &itemName) {
+    QTreeWidgetItem *item = findItem(os, itemName);
     QIcon icon = item->icon(1);
     QPixmap pixmap = icon.pixmap(5, 5);
     QImage img = pixmap.toImage();
-    QRgb rgb = img.pixel(QPoint(2,2));
+    QRgb rgb = img.pixel(QPoint(2, 2));
     QColor result = QColor(rgb);
     return result;
 }
@@ -134,4 +131,4 @@ QColor GTUtilsAnnotHighlightingTreeView::getItemColor(HI::GUITestOpStatus &os, c
 
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

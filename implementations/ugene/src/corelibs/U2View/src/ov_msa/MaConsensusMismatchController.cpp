@@ -1,4 +1,4 @@
- /**
+/**
  * UGENE - Integrated Bioinformatics Tools.
  * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "MaConsensusMismatchController.h"
+
 #include <U2Algorithm/MSAConsensusAlgorithm.h>
 
 #include <U2Core/AppContext.h>
@@ -28,24 +30,22 @@
 #include <U2Gui/GUIUtils.h>
 #include <U2Gui/Notification.h>
 
-#include "MaConsensusMismatchController.h"
+#include "MSAEditorConsensusCache.h"
 #include "McaEditor.h"
 #include "McaEditorSequenceArea.h"
-#include "MSAEditorConsensusCache.h"
 #include "ov_msa/view_rendering/MaEditorSequenceArea.h"
 #include "ov_sequence/SequenceObjectContext.h"
 
 namespace U2 {
 
-MaConsensusMismatchController::MaConsensusMismatchController(QObject* p,
-                                                             const QSharedPointer<MSAEditorConsensusCache>& consCache,
-                                                             MaEditor* editor)
+MaConsensusMismatchController::MaConsensusMismatchController(QObject *p,
+                                                             const QSharedPointer<MSAEditorConsensusCache> &consCache,
+                                                             MaEditor *editor)
     : QObject(p),
       consCache(consCache),
       editor(editor),
       nextMismatch(NULL),
-      prevMismatch(NULL)
-{
+      prevMismatch(NULL) {
     mismatchCache = QBitArray(editor->getAlignmentLen(), false);
     connect(consCache.data(), SIGNAL(si_cachedItemUpdated(int, char)), SLOT(sl_updateItem(int, char)));
     connect(consCache.data(), SIGNAL(si_cacheResized(int)), SLOT(sl_resize(int)));
@@ -97,21 +97,19 @@ void MaConsensusMismatchController::sl_prev() {
 }
 
 void MaConsensusMismatchController::selectNextMismatch(NavigationDirection direction) {
-    McaEditor* mcaEditor = qobject_cast<McaEditor*>(editor);
+    McaEditor *mcaEditor = qobject_cast<McaEditor *>(editor);
     CHECK(mcaEditor != NULL, );
 
-    SequenceObjectContext* ctx = mcaEditor->getReferenceContext();
+    SequenceObjectContext *ctx = mcaEditor->getReferenceContext();
     int initialPos = -1;
 
     if (ctx->getSequenceSelection()->isEmpty()) {
         // find next/prev from visible range
-        MaEditorSequenceArea* seqArea = mcaEditor->getUI()->getSequenceArea();
-        initialPos = seqArea->getFirstVisibleBase() != 0
-                ? seqArea->getFirstVisibleBase() - 1
-                : mismatchCache.size() - 1;
+        MaEditorSequenceArea *seqArea = mcaEditor->getUI()->getSequenceArea();
+        initialPos = seqArea->getFirstVisibleBase() != 0 ? seqArea->getFirstVisibleBase() - 1 : mismatchCache.size() - 1;
     } else {
         // find next/prev from referenece selection
-        DNASequenceSelection* selection = ctx->getSequenceSelection();
+        DNASequenceSelection *selection = ctx->getSequenceSelection();
         initialPos = selection->getSelectedRegions().first().startPos;
     }
 
@@ -144,4 +142,4 @@ void MaConsensusMismatchController::selectNextMismatch(NavigationDirection direc
     notificationStack->addNotification(tr("There are no variations in the consensus sequence."), Info_Not);
 }
 
-} // namespace U2
+}    // namespace U2

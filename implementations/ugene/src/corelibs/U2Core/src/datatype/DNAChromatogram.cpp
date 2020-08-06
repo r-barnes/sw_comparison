@@ -19,22 +19,20 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
-
 #include "DNAChromatogram.h"
+
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
 const ushort DNAChromatogram::INVALID_VALUE = 0;
-const char DNAChromatogram::DEFAULT_PROBABILITY = 0; // SANGER_TODO: 100?
+const char DNAChromatogram::DEFAULT_PROBABILITY = 0;    // SANGER_TODO: 100?
 
 DNAChromatogram::DNAChromatogram()
     : name("chromatogram"),
       traceLength(0),
       seqLength(0),
-      hasQV(false)
-{
-
+      hasQV(false) {
 }
 
 ushort DNAChromatogram::getValue(Trace trace, qint64 position) const {
@@ -57,19 +55,19 @@ ushort DNAChromatogram::getValue(Trace trace, qint64 position) const {
     }
 }
 
-bool DNAChromatogram::operator ==(const DNAChromatogram &otherChromatogram) const {
+bool DNAChromatogram::operator==(const DNAChromatogram &otherChromatogram) const {
     return traceLength == otherChromatogram.traceLength &&
-            seqLength == otherChromatogram.seqLength &&
-            baseCalls == otherChromatogram.baseCalls &&
-            A == otherChromatogram.A &&
-            C == otherChromatogram.C &&
-            G == otherChromatogram.G &&
-            T == otherChromatogram.T &&
-            prob_A == otherChromatogram.prob_A &&
-            prob_C == otherChromatogram.prob_C &&
-            prob_G == otherChromatogram.prob_G &&
-            prob_T == otherChromatogram.prob_T &&
-            hasQV == otherChromatogram.hasQV;
+           seqLength == otherChromatogram.seqLength &&
+           baseCalls == otherChromatogram.baseCalls &&
+           A == otherChromatogram.A &&
+           C == otherChromatogram.C &&
+           G == otherChromatogram.G &&
+           T == otherChromatogram.T &&
+           prob_A == otherChromatogram.prob_A &&
+           prob_C == otherChromatogram.prob_C &&
+           prob_G == otherChromatogram.prob_G &&
+           prob_T == otherChromatogram.prob_T &&
+           hasQV == otherChromatogram.hasQV;
 }
 
-}   // namespace U2
+}    // namespace U2

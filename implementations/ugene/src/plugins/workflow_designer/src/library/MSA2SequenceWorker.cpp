@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "MSA2SequenceWorker.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/FailTask.h>
 #include <U2Core/MSAUtils.h>
@@ -34,8 +36,6 @@
 #include <U2Lang/BaseTypes.h>
 #include <U2Lang/CoreLibConstants.h>
 #include <U2Lang/WorkflowEnv.h>
-
-#include "MSA2SequenceWorker.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -54,7 +54,7 @@ void Alignment2SequenceWorker::init() {
     output = ports.value(BasePorts::OUT_SEQ_PORT_ID());
 }
 
-Task * Alignment2SequenceWorker::tick() {
+Task *Alignment2SequenceWorker::tick() {
     while (input->hasMessage()) {
         Message inputMessage = getMessageAndSetupScriptValues(input);
         if (inputMessage.isEmpty()) {
@@ -68,12 +68,12 @@ Task * Alignment2SequenceWorker::tick() {
         SAFE_POINT(!msaObj.isNull(), "NULL MSA Object!", NULL);
         const MultipleSequenceAlignment msa = msaObj->getMultipleAlignment();
 
-        if(msa->isEmpty()) {
+        if (msa->isEmpty()) {
             return new FailTask(tr("empty input alignment"));
         }
-        QList<DNASequence> seqs = MSAUtils::ma2seq(msa,true);
+        QList<DNASequence> seqs = MSAUtils::ma2seq(msa, true);
         QVariantMap channelContext = output->getContext();
-        foreach(const DNASequence &seq, seqs) {
+        foreach (const DNASequence &seq, seqs) {
             QVariantMap msgData;
             SharedDbiDataHandler seqId = context->getDataStorage()->putSequence(seq);
             msgData[BaseSlots::DNA_SEQUENCE_SLOT().getId()] = qVariantFromValue<SharedDbiDataHandler>(seqId);
@@ -96,37 +96,35 @@ void Alignment2SequenceWorker::cleanup() {
  *******************************/
 void Alignment2SequenceWorkerFactory::init() {
     // ports description
-    QList<PortDescriptor*> portDescs;
+    QList<PortDescriptor *> portDescs;
     {
         QMap<Descriptor, DataTypePtr> inM;
         inM[BaseSlots::MULTIPLE_ALIGNMENT_SLOT()] = BaseTypes::MULTIPLE_ALIGNMENT_TYPE();
         DataTypePtr inSet(new MapDataType(ALN_2_SEQUENCE_IN_TYPE_ID, inM));
-        Descriptor inPortDesc(BasePorts::IN_MSA_PORT_ID(), Alignment2SequenceWorker::tr("Input alignment"),
-            Alignment2SequenceWorker::tr("A alignment which will be split into sequences"));
+        Descriptor inPortDesc(BasePorts::IN_MSA_PORT_ID(), Alignment2SequenceWorker::tr("Input alignment"), Alignment2SequenceWorker::tr("A alignment which will be split into sequences"));
         portDescs << new PortDescriptor(inPortDesc, inSet, true);
 
         QMap<Descriptor, DataTypePtr> outM;
         outM[BaseSlots::DNA_SEQUENCE_SLOT()] = BaseTypes::DNA_SEQUENCE_TYPE();
         DataTypePtr outSet(new MapDataType(ALN_2_SEQUENCE_OUT_TYPE_ID, outM));
-        Descriptor outPortDesc(BasePorts::OUT_SEQ_PORT_ID(), Alignment2SequenceWorker::tr("Output sequences"),
-            Alignment2SequenceWorker::tr("Converted sequences"));
+        Descriptor outPortDesc(BasePorts::OUT_SEQ_PORT_ID(), Alignment2SequenceWorker::tr("Output sequences"), Alignment2SequenceWorker::tr("Converted sequences"));
         portDescs << new PortDescriptor(outPortDesc, outSet, false);
     }
 
-    QList<Attribute*> attrs;
+    QList<Attribute *> attrs;
 
     Descriptor protoDesc(Alignment2SequenceWorkerFactory::ACTOR_ID,
-        Alignment2SequenceWorker::tr("Split Alignment into Sequences"),
-        Alignment2SequenceWorker::tr("Splits input alignment into sequences"));
-    ActorPrototype * proto = new IntegralBusActorPrototype(protoDesc, portDescs, attrs);
+                         Alignment2SequenceWorker::tr("Split Alignment into Sequences"),
+                         Alignment2SequenceWorker::tr("Splits input alignment into sequences"));
+    ActorPrototype *proto = new IntegralBusActorPrototype(protoDesc, portDescs, attrs);
 
     proto->setPrompter(new Alignment2SequencePrompter());
 
     WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_ALIGNMENT(), proto);
-    WorkflowEnv::getDomainRegistry()->getById( LocalDomainFactory::ID )->registerEntry( new Alignment2SequenceWorkerFactory() );
+    WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID)->registerEntry(new Alignment2SequenceWorkerFactory());
 }
 
-Worker * Alignment2SequenceWorkerFactory::createWorker(Actor* a) {
+Worker *Alignment2SequenceWorkerFactory::createWorker(Actor *a) {
     return new Alignment2SequenceWorker(a);
 }
 
@@ -134,12 +132,12 @@ Worker * Alignment2SequenceWorkerFactory::createWorker(Actor* a) {
  * Alignment2SequencePrompter
  *******************************/
 QString Alignment2SequencePrompter::composeRichDoc() {
-    QString unsetStr = "<font color='red'>"+tr("unset")+"</font>";
-    IntegralBusPort* input = qobject_cast<IntegralBusPort*>(target->getPort(BasePorts::IN_MSA_PORT_ID()));
-    Actor* producer = input->getProducer(BaseSlots::MULTIPLE_ALIGNMENT_SLOT().getId());
+    QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
+    IntegralBusPort *input = qobject_cast<IntegralBusPort *>(target->getPort(BasePorts::IN_MSA_PORT_ID()));
+    Actor *producer = input->getProducer(BaseSlots::MULTIPLE_ALIGNMENT_SLOT().getId());
     QString source = tr(" from <u>%1</u>").arg(producer ? producer->getLabel() : unsetStr);
     return tr("Split alignment%1 into sequences.").arg(source);
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

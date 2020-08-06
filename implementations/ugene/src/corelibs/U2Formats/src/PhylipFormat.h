@@ -34,41 +34,40 @@ namespace U2 {
 class U2FORMATS_EXPORT PhylipFormat : public TextDocumentFormat {
     Q_OBJECT
 public:
-    PhylipFormat(QObject *p, const DocumentFormatId& id);
-    virtual void storeDocument(Document* d, IOAdapter* io, U2OpStatus& os);
+    PhylipFormat(QObject *p, const DocumentFormatId &id);
+    virtual void storeDocument(Document *d, IOAdapter *io, U2OpStatus &os);
 
 protected:
-    MultipleSequenceAlignmentObject* load(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap &fs, U2OpStatus& os);
+    MultipleSequenceAlignmentObject *load(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os);
     bool parseHeader(QByteArray data, int &species, int &characters) const;
     void removeSpaces(QByteArray &data) const;
-    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
+    virtual Document *loadTextDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os);
 
-    virtual MultipleSequenceAlignment parse(IOAdapter* io, U2OpStatus &os) const = 0;
+    virtual MultipleSequenceAlignment parse(IOAdapter *io, U2OpStatus &os) const = 0;
 };
 
 class U2FORMATS_EXPORT PhylipSequentialFormat : public PhylipFormat {
     Q_OBJECT
 public:
-    PhylipSequentialFormat(QObject* p);
-    virtual void storeEntry(IOAdapter *io, const QMap< GObjectType, QList<GObject*> > &objectsMap, U2OpStatus &os);
+    PhylipSequentialFormat(QObject *p);
+    virtual void storeEntry(IOAdapter *io, const QMap<GObjectType, QList<GObject *>> &objectsMap, U2OpStatus &os);
 
 protected:
-    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& = GUrl()) const;
-    virtual MultipleSequenceAlignment parse(IOAdapter* io, U2OpStatus &os) const;
+    virtual FormatCheckResult checkRawTextData(const QByteArray &rawData, const GUrl & = GUrl()) const;
+    virtual MultipleSequenceAlignment parse(IOAdapter *io, U2OpStatus &os) const;
 };
-
 
 class U2FORMATS_EXPORT PhylipInterleavedFormat : public PhylipFormat {
     Q_OBJECT
 public:
-    PhylipInterleavedFormat(QObject* p);
-    virtual void storeEntry(IOAdapter *io, const QMap< GObjectType, QList<GObject*> > &objectsMap, U2OpStatus &os);
+    PhylipInterleavedFormat(QObject *p);
+    virtual void storeEntry(IOAdapter *io, const QMap<GObjectType, QList<GObject *>> &objectsMap, U2OpStatus &os);
 
 protected:
-    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& = GUrl()) const;
+    virtual FormatCheckResult checkRawTextData(const QByteArray &rawData, const GUrl & = GUrl()) const;
     MultipleSequenceAlignment parse(IOAdapter *io, U2OpStatus &os) const;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_PHYLIP_FORMAT_H_
+#endif    // _U2_PHYLIP_FORMAT_H_

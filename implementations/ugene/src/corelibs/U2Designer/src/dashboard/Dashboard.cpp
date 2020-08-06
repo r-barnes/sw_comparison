@@ -19,22 +19,28 @@
  * MA 02110-1301, USA.
  */
 
+#include "Dashboard.h"
+
 #include <QApplication>
+#include <QButtonGroup>
 #include <QClipboard>
-#include <QDesktopServices>
 #include <QDir>
-#include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMessageBox>
 #include <QSettings>
+
+#if UGENE_WEB_KIT
+#    include <QWebFrame>
+#else
+#    include <QWebEnginePage>
+#endif
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/GUrlUtils.h>
 #include <U2Core/ProjectModel.h>
 #include <U2Core/Task.h>
-#include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/UserApplicationsSettings.h>
 
@@ -42,12 +48,10 @@
 
 #include <U2Gui/MainWindow.h>
 
-#include <U2Lang/URLAttribute.h>
-#include <U2Lang/URLContainer.h>
 #include <U2Lang/WorkflowSettings.h>
 #include <U2Lang/WorkflowUtils.h>
 
-#include "Dashboard.h"
+#include "DashboardJsAgent.h"
 #include "DashboardPageController.h"
 
 namespace U2 {
@@ -65,47 +69,155 @@ const QString Dashboard::STATE_FAILED = "FAILED";
 const QString Dashboard::STATE_SUCCESS = "SUCCESS";
 const QString Dashboard::STATE_CANCELED = "CANCELED";
 
+#define OVERVIEW_TAB_INDEX 0
+#define INPUT_TAB_INDEX 1
+#define EXTERNAL_TOOLS_TAB_INDEX 2
+
 /************************************************************************/
 /* Dashboard */
 /************************************************************************/
 Dashboard::Dashboard(const WorkflowMonitor *monitor, const QString &name, QWidget *parent)
-    : U2WebView(parent),
+    : QWidget(parent),
       loadingStarted(false),
       loadUrl("qrc:///U2Designer/html/Dashboard.html"),
       name(name),
       opened(true),
       monitor(monitor),
       workflowInProgress(true),
-      dashboardPageController(new DashboardPageController(this))
-{
+      dashboardPageController(nullptr) {
+    initLayout();
+    dashboardPageController = new DashboardPageController(this, webView);
     connect(monitor, SIGNAL(si_report()), SLOT(sl_serialize()));
     connect(monitor, SIGNAL(si_dirSet(const QString &)), SLOT(sl_setDirectory(const QString &)));
     connect(monitor, SIGNAL(si_taskStateChanged(Monitor::TaskState)), SLOT(sl_workflowStateChanged(Monitor::TaskState)));
+    connect(monitor, SIGNAL(si_logChanged(Monitor::LogEntry)), SLOT(sl_onLogChanged()));
 
     connect(dashboardPageController, SIGNAL(si_pageReady()), SLOT(sl_serialize()));
     connect(dashboardPageController, SIGNAL(si_pageReady()), SLOT(sl_pageReady()));
 
     setContextMenuPolicy(Qt::NoContextMenu);
     loadDocument();
-    setObjectName("Dashboard");
 }
 
 Dashboard::Dashboard(const QString &dirPath, QWidget *parent)
-    : U2WebView(parent),
+    : QWidget(parent),
       loadingStarted(false),
       loadUrl(QUrl::fromLocalFile(dirPath + REPORT_SUB_DIR + DB_FILE_NAME).toString()),
       dir(dirPath),
       opened(true),
       monitor(NULL),
       workflowInProgress(false),
-      dashboardPageController(new DashboardPageController(this))
-{
+      dashboardPageController(nullptr) {
+    initLayout();
+    dashboardPageController = new DashboardPageController(this, webView);
+
     setContextMenuPolicy(Qt::NoContextMenu);
     loadSettings();
     saveSettings();
 
     connect(dashboardPageController, SIGNAL(si_pageReady()), SLOT(sl_pageReady()));
+}
+
+void Dashboard::initLayout() {
     setObjectName("Dashboard");
+
+    mainLayout = new QVBoxLayout(this);
+    mainLayout->setMargin(0);
+    mainLayout->setSpacing(0);
+
+    auto tabButtonsRow = new QWidget(this);
+    mainLayout->addWidget(tabButtonsRow);
+
+    tabButtonsRow->setObjectName("tabButtonsRow");
+    tabButtonsRow->setStyleSheet(
+        "#tabButtonsRow {background: url(':U2Designer/images/background-menu.png') repeat scroll 0 0 transparent;}");
+
+    auto tabButtonsLayout = new QHBoxLayout(tabButtonsRow);
+    tabButtonsLayout->setMargin(5);
+    tabButtonsLayout->addSpacing(20);
+
+    QString tabButtonStyleSheet = "QToolButton {"
+                                  "  color: white;"
+                                  "  border-radius: 6px;"
+                                  "  padding: 4px;"
+                                  "}\n"
+                                  "QToolButton:checked {"
+                                  "  color: white;"
+                                  "  background: url(':U2Designer/images/background-menu-button.png') repeat scroll 0 0 transparent;"
+                                  "}"
+                                  "QToolButton:hover:!checked {"
+                                  "  color: #005580;"
+                                  "  background: white;"
+                                  "}\n";
+
+    setObjectName("dashboardWidget");
+
+    overviewTabButton = new QToolButton(tabButtonsRow);
+    overviewTabButton->setText(tr("Overview"));
+    overviewTabButton->setObjectName("overviewTabButton");
+    overviewTabButton->setStyleSheet(tabButtonStyleSheet);
+    overviewTabButton->setCursor(Qt::PointingHandCursor);
+    overviewTabButton->setCheckable(true);
+    tabButtonsLayout->addWidget(overviewTabButton);
+
+    inputTabButton = new QToolButton(tabButtonsRow);
+    inputTabButton->setText(tr("Input"));
+    inputTabButton->setObjectName("inputTabButton");
+    inputTabButton->setStyleSheet(tabButtonStyleSheet);
+    inputTabButton->setCursor(Qt::PointingHandCursor);
+    inputTabButton->setCheckable(true);
+    tabButtonsLayout->addWidget(inputTabButton);
+
+    externalToolsTabButton = new QToolButton(tabButtonsRow);
+    externalToolsTabButton->setText(tr("External Tools"));
+    externalToolsTabButton->setObjectName("externalToolsTabButton");
+    externalToolsTabButton->setStyleSheet(tabButtonStyleSheet);
+    externalToolsTabButton->setCursor(Qt::PointingHandCursor);
+    externalToolsTabButton->setCheckable(true);
+    externalToolsTabButton->setVisible(false);
+    tabButtonsLayout->addWidget(externalToolsTabButton);
+
+    auto tabButtonGroup = new QButtonGroup(tabButtonsRow);
+    tabButtonGroup->setExclusive(true);
+    tabButtonGroup->addButton(overviewTabButton, OVERVIEW_TAB_INDEX);
+    tabButtonGroup->addButton(inputTabButton, INPUT_TAB_INDEX);
+    tabButtonGroup->addButton(externalToolsTabButton, EXTERNAL_TOOLS_TAB_INDEX);
+    connect(tabButtonGroup, SIGNAL(buttonToggled(int, bool)), SLOT(sl_onTabButtonToggled(int, bool)));
+
+    tabButtonsLayout->addStretch(INT_MAX);    // Push the last button to the end.
+
+    auto loadSchemaButton = new QToolButton(tabButtonsRow);
+    loadSchemaButton->setIcon(QIcon(":U2Designer/images/load_schema.png"));
+    loadSchemaButton->setObjectName("loadSchemaButton");
+    loadSchemaButton->setToolTip(tr("Open workflow schema"));
+    //    loadSchemaButton->setText(tr("Open schema"));
+    //    loadSchemaButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    loadSchemaButton->setStyleSheet("padding: 4px 6px;");
+    loadSchemaButton->setCursor(Qt::PointingHandCursor);
+    connect(loadSchemaButton, SIGNAL(clicked()), SLOT(sl_loadSchema()));
+
+    tabButtonsLayout->addWidget(loadSchemaButton);
+    tabButtonsLayout->addSpacing(20);
+
+    webView = new U2WebView(this);
+    mainLayout->addWidget(webView, INT_MAX);
+}
+
+void Dashboard::sl_onTabButtonToggled(int id, bool checked) {
+    if (!checked) {
+        return;
+    }
+    switch (id) {
+    case OVERVIEW_TAB_INDEX:
+        dashboardPageController->getAgent()->si_switchTab("overview_tab");
+        break;
+    case INPUT_TAB_INDEX:
+        dashboardPageController->getAgent()->si_switchTab("input_tab");
+        break;
+    case EXTERNAL_TOOLS_TAB_INDEX:
+        dashboardPageController->getAgent()->si_switchTab("ext_tools_tab");
+        break;
+    }
 }
 
 void Dashboard::onShow() {
@@ -145,8 +257,8 @@ QString Dashboard::getPageFilePath() const {
     return dir + REPORT_SUB_DIR + DB_FILE_NAME;
 }
 
-void Dashboard::loadSchema() {
-    const QString url = dir + REPORT_SUB_DIR + WorkflowMonitor::WORKFLOW_FILE_NAME;
+void Dashboard::sl_loadSchema() {
+    QString url = dir + REPORT_SUB_DIR + WorkflowMonitor::WORKFLOW_FILE_NAME;
     emit si_loadSchema(url);
 }
 
@@ -168,14 +280,44 @@ void Dashboard::sl_runStateChanged(bool paused) {
     dashboardPageController->runJavaScript(script);
 }
 
+static bool isExternalToolsButtonVisibleInHtml(const QString &html) {
+    int externalToolsStartIndex = html.indexOf("ext_tools_tab_menu");
+    if (externalToolsStartIndex < 0) {
+        return false;
+    }
+    int externalToolsEndIndex = html.indexOf(">", externalToolsStartIndex);
+    if (externalToolsEndIndex < 0) {
+        return false;
+    }
+    QString tag = html.mid(externalToolsStartIndex, externalToolsEndIndex - externalToolsStartIndex);
+    return !tag.contains("display: none");
+}
+
 void Dashboard::sl_pageReady() {
-    if (NULL != getMonitor()) {
+    if (getMonitor() != nullptr) {
         connect(getMonitor(), SIGNAL(si_runStateChanged(bool)), SLOT(sl_runStateChanged(bool)));
     }
 
     if (!WorkflowSettings::isShowLoadButtonHint()) {
         dashboardPageController->runJavaScript("hideLoadBtnHint()");
     }
+#ifdef UGENE_WEB_KIT
+    QString html = webView->page()->mainFrame()->toHtml();
+    if (isExternalToolsButtonVisibleInHtml(html)) {
+        externalToolsTabButton->setVisible(true);
+    }
+#else
+    webView->page()->toHtml([this](const QString &html) mutable {
+        if (isExternalToolsButtonVisibleInHtml(html)) {
+            externalToolsTabButton->setVisible(true);
+        }
+    });
+#endif
+}
+
+void Dashboard::sl_onLogChanged() {
+    // Any log entry automatically adds external tools tab.
+    externalToolsTabButton->setVisible(true);
 }
 
 void Dashboard::sl_serialize() {
@@ -187,7 +329,7 @@ void Dashboard::sl_serialize() {
         bool created = d.mkpath(reportDir);
         CHECK_EXT(created, ioLog.error(tr("Can not create a folder: ") + reportDir), );
     }
-    serialize();
+    dashboardPageController->savePage(getPageFilePath());
     saveSettings();
 }
 
@@ -209,10 +351,6 @@ void Dashboard::sl_workflowStateChanged(Monitor::TaskState state) {
 void Dashboard::loadDocument() {
     loadingStarted = true;
     dashboardPageController->loadPage(loadUrl);
-}
-
-void Dashboard::serialize() {
-    dashboardPageController->savePage(getPageFilePath());
 }
 
 void Dashboard::saveSettings() {
@@ -246,4 +384,4 @@ void Dashboard::reserveName() const {
     AppContext::getDashboardInfoRegistry()->reserveName(getDashboardId(), name);
 }
 
-}   // namespace U2
+}    // namespace U2

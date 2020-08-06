@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "UgeneUpdater.h"
+
 #include <QCoreApplication>
 #include <QFile>
 #include <QProcess>
@@ -28,16 +30,15 @@
 #include <U2Core/Settings.h>
 #include <U2Core/UserApplicationsSettings.h>
 #include <U2Core/Version.h>
-#include <U2Gui/GUIUtils.h>
 
-#include "UgeneUpdater.h"
+#include <U2Gui/GUIUtils.h>
 
 namespace U2 {
 
 QScopedPointer<UgeneUpdater> UgeneUpdater::instance(NULL);
 QMutex UgeneUpdater::mutex;
 
-UgeneUpdater * UgeneUpdater::getInstance() {
+UgeneUpdater *UgeneUpdater::getInstance() {
     QMutexLocker lock(&mutex);
     if (NULL != instance.data()) {
         return instance.data();
@@ -59,9 +60,7 @@ void UgeneUpdater::onClose() {
 }
 
 UgeneUpdater::UgeneUpdater()
-: updateOnClose(false)
-{
-
+    : updateOnClose(false) {
 }
 
 void UgeneUpdater::update() {
@@ -123,4 +122,4 @@ void UgeneUpdater::startMaintenanceTool() const {
     QProcess::startDetached(getMaintenanceToolPath(), arguments);
 }
 
-} // U2
+}    // namespace U2

@@ -18,31 +18,32 @@
  * MA 02110-1301, USA.
  */
 
+#include "Bowtie2Task.h"
+
 #include <QFileInfo>
 
-#include <U2Core/DocumentUtils.h>
-#include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/AppResources.h>
+#include <U2Core/BaseDocumentFormats.h>
+#include <U2Core/DocumentUtils.h>
+
 #include <U2Formats/BgzipTask.h>
 
 #include "Bowtie2Support.h"
-#include "Bowtie2Task.h"
 
 namespace U2 {
 
 // Bowtie2BuildIndexTask
 
-Bowtie2BuildIndexTask::Bowtie2BuildIndexTask(const QString &referencePath, const QString &indexPath):
-    ExternalToolSupportTask("Build Bowtie2 index", TaskFlags_NR_FOSE_COSC),
-    referencePath(referencePath),
-    indexPath(indexPath)
-{
+Bowtie2BuildIndexTask::Bowtie2BuildIndexTask(const QString &referencePath, const QString &indexPath)
+    : ExternalToolSupportTask("Build Bowtie2 index", TaskFlags_NR_FOSE_COSC),
+      referencePath(referencePath),
+      indexPath(indexPath) {
 }
 
 void Bowtie2BuildIndexTask::prepare() {
     {
         QFileInfo file(referencePath);
-        if(!file.exists()) {
+        if (!file.exists()) {
             stateInfo.setError(tr("Reference file \"%1\" does not exist").arg(referencePath));
             return;
         }
@@ -59,19 +60,23 @@ void Bowtie2BuildIndexTask::prepare() {
 
 // Bowtie2AlignTask
 
-Bowtie2AlignTask::Bowtie2AlignTask(const DnaAssemblyToRefTaskSettings &settings):
-    ExternalToolSupportTask("Bowtie2 reads assembly", TaskFlags_NR_FOSE_COSC),
-    settings(settings)
-{
+Bowtie2AlignTask::Bowtie2AlignTask(const DnaAssemblyToRefTaskSettings &settings)
+    : ExternalToolSupportTask("Bowtie2 reads assembly", TaskFlags_NR_FOSE_COSC),
+      settings(settings) {
 }
 
 void Bowtie2AlignTask::prepare() {
     {
         QStringList indexSuffixes;
-        indexSuffixes << ".1.bt2" << ".2.bt2" << ".3.bt2" << ".4.bt2" << ".rev.1.bt2" << ".rev.2.bt2";
+        indexSuffixes << ".1.bt2"
+                      << ".2.bt2"
+                      << ".3.bt2"
+                      << ".4.bt2"
+                      << ".rev.1.bt2"
+                      << ".rev.2.bt2";
 
-        if(settings.indexFileName.isEmpty()) {
-            if(settings.prebuiltIndex) {
+        if (settings.indexFileName.isEmpty()) {
+            if (settings.prebuiltIndex) {
                 QString indexName = QFileInfo(settings.refSeqUrl.getURLString()).fileName();
                 for (int i = 0; i < indexSuffixes.size(); ++i) {
                     indexName.remove(indexSuffixes[i]);
@@ -100,7 +105,7 @@ void Bowtie2AlignTask::prepare() {
 
     {
         int seed = settings.getCustomValue(Bowtie2Task::OPTION_SEED, -1).toInt();
-        if(-1 != seed) {
+        if (-1 != seed) {
             arguments.append(QString("--seed"));
             arguments.append(QString::number(seed));
         }
@@ -118,33 +123,32 @@ void Bowtie2AlignTask::prepare() {
     if (settings.getCustomValue(Bowtie2Task::OPTION_NODISCORDANT, false).toBool()) {
         arguments.append("--no-discordant");
     }
-    if(settings.getCustomValue(Bowtie2Task::OPTION_NOFW, false).toBool()) {
+    if (settings.getCustomValue(Bowtie2Task::OPTION_NOFW, false).toBool()) {
         arguments.append("--nofw");
     }
-    if(settings.getCustomValue(Bowtie2Task::OPTION_NORC, false).toBool()) {
+    if (settings.getCustomValue(Bowtie2Task::OPTION_NORC, false).toBool()) {
         arguments.append("--norc");
     }
-    if(settings.getCustomValue(Bowtie2Task::OPTION_NOOVERLAP, false).toBool()) {
+    if (settings.getCustomValue(Bowtie2Task::OPTION_NOOVERLAP, false).toBool()) {
         arguments.append("--no-overlap");
     }
-    if(settings.getCustomValue(Bowtie2Task::OPTION_NOCONTAIN, false).toBool()) {
+    if (settings.getCustomValue(Bowtie2Task::OPTION_NOCONTAIN, false).toBool()) {
         arguments.append("--no-contain");
     }
 
     // We assume all datasets have the same format
     // QSEQ format is not supported
-    if(!settings.shortReadSets.isEmpty())
-    {
+    if (!settings.shortReadSets.isEmpty()) {
         QList<GUrl> shortReadUrls = settings.getShortReadUrls();
         QList<FormatDetectionResult> detectionResults = DocumentUtils::detectFormat(shortReadUrls.first());
-        if(!detectionResults.isEmpty()) {
-            if(detectionResults.first().format->getFormatId() == BaseDocumentFormats::FASTA) {
+        if (!detectionResults.isEmpty()) {
+            if (detectionResults.first().format->getFormatId() == BaseDocumentFormats::FASTA) {
                 arguments.append("-f");
-            } else if(detectionResults.first().format->getFormatId() == BaseDocumentFormats::RAW_DNA_SEQUENCE) {
+            } else if (detectionResults.first().format->getFormatId() == BaseDocumentFormats::RAW_DNA_SEQUENCE) {
                 arguments.append("-r");
             } else if (detectionResults.first().format->getFormatId() == BaseDocumentFormats::FASTQ) {
                 arguments.append("-q");
-            }else{
+            } else {
                 setError(tr("Unknown short reads format %1").arg(detectionResults.first().format->getFormatId()));
             }
         }
@@ -162,19 +166,19 @@ void Bowtie2AlignTask::prepare() {
         int setCount = settings.shortReadSets.size();
 
         // unpaired reeds
-        if (libType == ShortReadSet::SingleEndReads ) {
+        if (libType == ShortReadSet::SingleEndReads) {
             QStringList readUrlsArgument;
-            for(int index = 0;index < setCount;index++) {
+            for (int index = 0; index < setCount; index++) {
                 readUrlsArgument.append(settings.shortReadSets[index].url.getURLString());
             }
             arguments.append("-U");
             arguments.append(readUrlsArgument.join(","));
         } else {
             // paired reeds: mate 1s and 2s
-            QStringList upstreamReads,downstreamReads;
+            QStringList upstreamReads, downstreamReads;
 
-            for ( int i = 0; i<setCount; ++i) {
-                const ShortReadSet& set = settings.shortReadSets.at(i);
+            for (int i = 0; i < setCount; ++i) {
+                const ShortReadSet &set = settings.shortReadSets.at(i);
                 if (set.order == ShortReadSet::UpstreamMate) {
                     upstreamReads.append(set.url.getURLString());
                 } else {
@@ -182,7 +186,7 @@ void Bowtie2AlignTask::prepare() {
                 }
             }
 
-            if ( upstreamReads.count() != downstreamReads.count() ) {
+            if (upstreamReads.count() != downstreamReads.count()) {
                 setError("Unequal number of upstream and downstream reads!");
                 return;
             }
@@ -220,54 +224,63 @@ const QString Bowtie2Task::OPTION_NOFW = "nofw";
 const QString Bowtie2Task::OPTION_NORC = "norc";
 const QString Bowtie2Task::OPTION_NOOVERLAP = "no-overlap";
 const QString Bowtie2Task::OPTION_NOCONTAIN = "no-contain";
-const QStringList Bowtie2Task::indexSuffixes = QStringList() << ".1.bt2" << ".2.bt2" << ".3.bt2" << ".4.bt2" << ".rev.1.bt2" << ".rev.2.bt2";
-const QStringList Bowtie2Task::largeIndexSuffixes = QStringList() << ".1.bt2l" << ".2.bt2l" << ".3.bt2l" << ".4.bt2l" << ".rev.1.bt2l" << ".rev.2.bt2l";
+const QStringList Bowtie2Task::indexSuffixes = QStringList() << ".1.bt2"
+                                                             << ".2.bt2"
+                                                             << ".3.bt2"
+                                                             << ".4.bt2"
+                                                             << ".rev.1.bt2"
+                                                             << ".rev.2.bt2";
+const QStringList Bowtie2Task::largeIndexSuffixes = QStringList() << ".1.bt2l"
+                                                                  << ".2.bt2l"
+                                                                  << ".3.bt2l"
+                                                                  << ".4.bt2l"
+                                                                  << ".rev.1.bt2l"
+                                                                  << ".rev.2.bt2l";
 
-Bowtie2Task::Bowtie2Task(const DnaAssemblyToRefTaskSettings &settings, bool justBuildIndex):
-    DnaAssemblyToReferenceTask(settings, TaskFlags_NR_FOSE_COSC, justBuildIndex),
-    buildIndexTask(NULL),
-    alignTask(NULL),
-    unzipTask(NULL)
-{
+Bowtie2Task::Bowtie2Task(const DnaAssemblyToRefTaskSettings &settings, bool justBuildIndex)
+    : DnaAssemblyToReferenceTask(settings, TaskFlags_NR_FOSE_COSC, justBuildIndex),
+      buildIndexTask(NULL),
+      alignTask(NULL),
+      unzipTask(NULL) {
 }
 
 void Bowtie2Task::prepare() {
-    if(!justBuildIndex) {
+    if (!justBuildIndex) {
         setUpIndexBuilding(indexSuffixes);
-        if(!settings.prebuiltIndex) {
+        if (!settings.prebuiltIndex) {
             setUpIndexBuilding(largeIndexSuffixes);
         }
     }
 
     if (GzipDecompressTask::checkZipped(settings.refSeqUrl)) {
-        temp.open(); //opening creates new temporary file
+        temp.open();    //opening creates new temporary file
         temp.close();
         unzipTask = new GzipDecompressTask(settings.refSeqUrl, GUrl(QFileInfo(temp).absoluteFilePath()));
         settings.refSeqUrl = GUrl(QFileInfo(temp).absoluteFilePath());
     }
 
-    if(!settings.prebuiltIndex) {
+    if (!settings.prebuiltIndex) {
         QString indexFileName = settings.indexFileName;
-        if(indexFileName.isEmpty()) {
-            if(justBuildIndex) {
+        if (indexFileName.isEmpty()) {
+            if (justBuildIndex) {
                 indexFileName = settings.refSeqUrl.dirPath() + "/" + settings.refSeqUrl.baseFileName();
             } else {
                 indexFileName = settings.resultFileName.dirPath() + "/" + settings.resultFileName.baseFileName();
             }
         }
         buildIndexTask = new Bowtie2BuildIndexTask(settings.refSeqUrl.getURLString(), indexFileName);
-        buildIndexTask->addListeners(QList <ExternalToolListener*>() << getListener(0));
+        buildIndexTask->addListeners(QList<ExternalToolListener *>() << getListener(0));
     }
-    if(!justBuildIndex) {
+    if (!justBuildIndex) {
         alignTask = new Bowtie2AlignTask(settings);
-        alignTask->addListeners(QList <ExternalToolListener*>() << getListener(1));
+        alignTask->addListeners(QList<ExternalToolListener *>() << getListener(1));
     }
 
     if (unzipTask != NULL) {
         addSubTask(unzipTask);
-    } else if(!settings.prebuiltIndex) {
+    } else if (!settings.prebuiltIndex) {
         addSubTask(buildIndexTask);
-    } else if(!justBuildIndex) {
+    } else if (!justBuildIndex) {
         addSubTask(alignTask);
     } else {
         assert(false);
@@ -275,7 +288,7 @@ void Bowtie2Task::prepare() {
 }
 
 Task::ReportResult Bowtie2Task::report() {
-    if(!justBuildIndex) {
+    if (!justBuildIndex) {
         hasResults = true;
     }
     return ReportResult_Finished;
@@ -285,14 +298,14 @@ QList<Task *> Bowtie2Task::onSubTaskFinished(Task *subTask) {
     QList<Task *> result;
 
     if (subTask == unzipTask) {
-        if(!settings.prebuiltIndex) {
+        if (!settings.prebuiltIndex) {
             result.append(buildIndexTask);
-        } else if(!justBuildIndex) {
+        } else if (!justBuildIndex) {
             result.append(alignTask);
         }
     }
 
-    if((subTask == buildIndexTask) && !justBuildIndex) {
+    if ((subTask == buildIndexTask) && !justBuildIndex) {
         result.append(alignTask);
     }
     return result;
@@ -304,4 +317,4 @@ DnaAssemblyToReferenceTask *Bowtie2TaskFactory::createTaskInstance(const DnaAsse
     return new Bowtie2Task(settings, justBuildIndex);
 }
 
-} // namespace U2
+}    // namespace U2

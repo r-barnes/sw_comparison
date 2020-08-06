@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CircularViewSettingsWidget.h"
+
 #include <QFontDatabase>
 
 #include <U2Core/U2SafePoints.h>
@@ -26,19 +28,16 @@
 #include <U2Gui/ShowHideSubgroupWidget.h>
 #include <U2Gui/U2WidgetStateStorage.h>
 
-#include "CircularViewSplitter.h"
 #include "CircularViewPlugin.h"
-
-#include "CircularViewSettingsWidget.h"
+#include "CircularViewSplitter.h"
 
 namespace U2 {
 
-CircularViewSettingsWidget::CircularViewSettingsWidget(CircularViewSettings* s, CircularViewSplitter* cv)
+CircularViewSettingsWidget::CircularViewSettingsWidget(CircularViewSettings *s, CircularViewSplitter *cv)
     : circularViewSplitter(cv),
       settings(s),
       settingsWidget(NULL),
-      savableWidget(this, GObjectViewUtils::getActiveObjectViewWindow())
-{
+      savableWidget(this, GObjectViewUtils::getActiveObjectViewWindow()) {
     SAFE_POINT(s != NULL, tr("Circular view settings is NULL"), );
     setupUi(this);
 
@@ -80,7 +79,7 @@ void CircularViewSettingsWidget::sl_modifySettings() {
     }
 }
 
-void CircularViewSettingsWidget::sl_cvSplitterWasCreatedOrRemoved(CircularViewSplitter *splitter, CircularViewSettings* settings) {
+void CircularViewSettingsWidget::sl_cvSplitterWasCreatedOrRemoved(CircularViewSplitter *splitter, CircularViewSettings *settings) {
     if (settings != this->settings) {
         return;
     }
@@ -96,8 +95,8 @@ void CircularViewSettingsWidget::sl_openCvButton() {
 
 void CircularViewSettingsWidget::initLayout() {
     QFontDatabase fontDatabase;
-    fontComboBox->addItems(fontDatabase.families(QFontDatabase::Latin)); //! ckeck latin baundary
-    fontComboBox->setCurrentIndex( fontComboBox->findText(settings->titleFont));
+    fontComboBox->addItems(fontDatabase.families(QFontDatabase::Latin));    //! ckeck latin baundary
+    fontComboBox->setCurrentIndex(fontComboBox->findText(settings->titleFont));
     fontSizeSpinBox->setValue(settings->titleFontSize);
     rulerFontSizeSpinBox->setValue(settings->rulerFontSize);
     labelFontSizeSpinBox->setValue(settings->labelFontSize);
@@ -123,18 +122,18 @@ void CircularViewSettingsWidget::initLayout() {
     }
 
     settingsWidget = new QWidget(this);
-    QVBoxLayout* settingsLayout = new QVBoxLayout(settingsWidget);
+    QVBoxLayout *settingsLayout = new QVBoxLayout(settingsWidget);
     settingsLayout->setMargin(0);
     settingsLayout->setSpacing(0);
     settingsWidget->setLayout(settingsLayout);
 
-    ShowHideSubgroupWidget* titleGroup = new ShowHideSubgroupWidget("CV_TITLE", tr("Title"), titleWidget, true);
+    ShowHideSubgroupWidget *titleGroup = new ShowHideSubgroupWidget("CV_TITLE", tr("Title"), titleWidget, true);
     settingsLayout->addWidget(titleGroup);
 
-    ShowHideSubgroupWidget* rulerGroup = new ShowHideSubgroupWidget("CV_RULER", tr("Ruler"), rulerWidget, true);
+    ShowHideSubgroupWidget *rulerGroup = new ShowHideSubgroupWidget("CV_RULER", tr("Ruler"), rulerWidget, true);
     settingsLayout->addWidget(rulerGroup);
 
-    ShowHideSubgroupWidget* annotationGroup = new ShowHideSubgroupWidget("CV_ANNOTATION", tr("Annotations"), annotationLabelWidget, true);
+    ShowHideSubgroupWidget *annotationGroup = new ShowHideSubgroupWidget("CV_ANNOTATION", tr("Annotations"), annotationLabelWidget, true);
     settingsLayout->addWidget(annotationGroup);
 
     cvSettingsMainLayout->addWidget(settingsWidget);
@@ -159,4 +158,4 @@ void CircularViewSettingsWidget::connectSlots() {
     connect(openCvButton, SIGNAL(clicked()), SLOT(sl_openCvButton()));
 }
 
-} // namespace
+}    // namespace U2

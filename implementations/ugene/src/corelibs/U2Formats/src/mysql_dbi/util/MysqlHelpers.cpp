@@ -19,38 +19,37 @@
  * MA 02110-1301, USA.
  */
 
+#include "MysqlHelpers.h"
+
 #include <QSqlError>
 
 #include <U2Core/Log.h>
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "MysqlHelpers.h"
-
 namespace U2 {
 
-static U2DataId     emptyId;
-static QByteArray   emptyBlob;
-static QString      emptyString;
+static U2DataId emptyId;
+static QByteArray emptyBlob;
+static QString emptyString;
 
-MysqlDbRef::MysqlDbRef() :
-    mutex(QMutex::Recursive)
-{
+MysqlDbRef::MysqlDbRef()
+    : mutex(QMutex::Recursive) {
 }
 
-qint64 MysqlUtils::remove(const QString& table, const QString& field, const U2DataId& id, qint64 expectedRows, MysqlDbRef* db, U2OpStatus& os) {
+qint64 MysqlUtils::remove(const QString &table, const QString &field, const U2DataId &id, qint64 expectedRows, MysqlDbRef *db, U2OpStatus &os) {
     static const QString queryString = "DELETE FROM %1 WHERE %2 = :id";
     U2SqlQuery q(queryString.arg(table).arg(field), db, os);
     q.bindDataId(":id", id);
     const qint64 changedRows = q.update();
-    SAFE_POINT( -1 == expectedRows || changedRows == expectedRows,
-                "Unexpected changed row count",
-                changedRows );
+    SAFE_POINT(-1 == expectedRows || changedRows == expectedRows,
+               "Unexpected changed row count",
+               changedRows);
 
     return changedRows;
 }
 
-bool MysqlUtils::isTableExists(const QString& tableName, MysqlDbRef* db, U2OpStatus& os) {
+bool MysqlUtils::isTableExists(const QString &tableName, MysqlDbRef *db, U2OpStatus &os) {
     static const QString queryString = "show tables like '%1'";
     U2SqlQuery q(queryString.arg(tableName), db, os);
     return q.step();
@@ -59,22 +58,20 @@ bool MysqlUtils::isTableExists(const QString& tableName, MysqlDbRef* db, U2OpSta
 //////////////////////////////////////////////////////////////////////////
 // U2SqlQuery
 
-U2SqlQuery::U2SqlQuery(const QString& sql, MysqlDbRef* db, U2OpStatus& _os) :
-    db(db),
-    os(&_os),
-    query(NULL == db ? QSqlDatabase() : db->handle)
-{
+U2SqlQuery::U2SqlQuery(const QString &sql, MysqlDbRef *db, U2OpStatus &_os)
+    : db(db),
+      os(&_os),
+      query(NULL == db ? QSqlDatabase() : db->handle) {
     QMutexLocker locker(&db->mutex);
 
     query.setForwardOnly(true);
     query.prepare(sql);
 }
 
-U2SqlQuery::U2SqlQuery(const QString& sql, qint64 offset, qint64 count, MysqlDbRef* db, U2OpStatus& _os) :
-    db(db),
-    os(&_os),
-    query(NULL == db ? QSqlDatabase() : db->handle)
-{
+U2SqlQuery::U2SqlQuery(const QString &sql, qint64 offset, qint64 count, MysqlDbRef *db, U2OpStatus &_os)
+    : db(db),
+      os(&_os),
+      query(NULL == db ? QSqlDatabase() : db->handle) {
     QMutexLocker locker(&db->mutex);
     QString sqlString = sql;
     U2DbiUtils::addLimit(sqlString, offset, count);
@@ -87,7 +84,7 @@ U2SqlQuery::~U2SqlQuery() {
     query.clear();
 }
 
-void U2SqlQuery::setError(const QString& err) const {
+void U2SqlQuery::setError(const QString &err) const {
     ioLog.trace("SQL: error: " + err + " in query: " + query.lastQuery());
     if (!os->hasError()) {
         os->setError(err);
@@ -140,7 +137,7 @@ double U2SqlQuery::getDouble(int column) const {
     return result;
 }
 
-U2DataId U2SqlQuery::getDataId(int column, U2DataType type, const QByteArray& dbExtra) const {
+U2DataId U2SqlQuery::getDataId(int column, U2DataType type, const QByteArray &dbExtra) const {
     if (query.isNull(column)) {
         return emptyId;
     }
@@ -160,7 +157,6 @@ U2DataId U2SqlQuery::getDataIdExt(int column) const {
 
     return U2DbiUtils::toU2DataId(getInt64(column), type, dbExtra);
 }
-
 
 U2DataType U2SqlQuery::getDataType(int column) const {
     bool ok = false;
@@ -186,7 +182,7 @@ bool U2SqlQuery::getBool(int column) const {
     return query.value(column).toBool();
 }
 
-void U2SqlQuery::bindDataId(const QString& placeholder, const U2DataId& val) {
+void U2SqlQuery::bindDataId(const QString &placeholder, const U2DataId &val) {
     quint64 dbiId = U2DbiUtils::toDbiId(val);
     if (0 != dbiId) {
         query.bindValue(placeholder, dbiId);
@@ -204,7 +200,7 @@ void U2SqlQuery::addBindDataId(const U2DataId &val) {
     }
 }
 
-void U2SqlQuery::bindNull(const QString& placeholder) {
+void U2SqlQuery::bindNull(const QString &placeholder) {
     query.bindValue(placeholder, QVariant(QVariant::Int));
 }
 
@@ -212,7 +208,7 @@ void U2SqlQuery::addBindNull() {
     query.addBindValue(QVariant(QVariant::Int));
 }
 
-void U2SqlQuery::bindType(const QString& placeholder, U2DataType type) {
+void U2SqlQuery::bindType(const QString &placeholder, U2DataType type) {
     bindInt64(placeholder, type);
 }
 
@@ -220,7 +216,7 @@ void U2SqlQuery::addBindType(U2DataType type) {
     query.addBindValue(type);
 }
 
-void U2SqlQuery::bindString(const QString& placeholder, const QString& val) {
+void U2SqlQuery::bindString(const QString &placeholder, const QString &val) {
     query.bindValue(placeholder, val);
 }
 
@@ -228,7 +224,7 @@ void U2SqlQuery::addBindString(const QString &val) {
     query.addBindValue(val);
 }
 
-void U2SqlQuery::bindInt32(const QString& placeholder, qint32 val) {
+void U2SqlQuery::bindInt32(const QString &placeholder, qint32 val) {
     query.bindValue(placeholder, val);
 }
 
@@ -236,7 +232,7 @@ void U2SqlQuery::addBindInt32(qint32 val) {
     query.addBindValue(val);
 }
 
-void U2SqlQuery::bindDouble(const QString& placeholder, double val) {
+void U2SqlQuery::bindDouble(const QString &placeholder, double val) {
     query.bindValue(placeholder, val);
 }
 
@@ -244,7 +240,7 @@ void U2SqlQuery::addBindDouble(double val) {
     query.addBindValue(val);
 }
 
-void U2SqlQuery::bindInt64(const QString& placeholder, qint64 val) {
+void U2SqlQuery::bindInt64(const QString &placeholder, qint64 val) {
     query.bindValue(placeholder, val);
 }
 
@@ -252,7 +248,7 @@ void U2SqlQuery::addBindInt64(qint64 val) {
     query.addBindValue(val);
 }
 
-void U2SqlQuery::bindBool(const QString& placeholder, bool val) {
+void U2SqlQuery::bindBool(const QString &placeholder, bool val) {
     query.bindValue(placeholder, val);
 }
 
@@ -260,7 +256,7 @@ void U2SqlQuery::addBindBool(bool val) {
     query.addBindValue(val);
 }
 
-void U2SqlQuery::bindBlob(const QString& placeholder, const QByteArray& blob) {
+void U2SqlQuery::bindBlob(const QString &placeholder, const QByteArray &blob) {
     query.bindValue(placeholder, blob);
 }
 
@@ -268,7 +264,7 @@ void U2SqlQuery::addBindBlob(const QByteArray &blob) {
     query.addBindValue(blob);
 }
 
-void U2SqlQuery::bindZeroBlob(const QString& placeholder, int reservedSize) {
+void U2SqlQuery::bindZeroBlob(const QString &placeholder, int reservedSize) {
     QByteArray blob(reservedSize, 0);
     bindBlob(placeholder, blob);
 }
@@ -304,7 +300,7 @@ qint64 U2SqlQuery::insert() {
     return result;
 }
 
-U2DataId U2SqlQuery::insert(U2DataType type, const QByteArray& dbExtra) {
+U2DataId U2SqlQuery::insert(U2DataType type, const QByteArray &dbExtra) {
     qint64 lastRowId = insert();
     CHECK(!hasError(), emptyId);
 
@@ -317,8 +313,7 @@ qint32 U2SqlQuery::selectInt32() {
 
     if (step()) {
         return getInt32(0);
-    }
-    else {
+    } else {
         return -1;
     }
 }
@@ -345,7 +340,7 @@ qint64 U2SqlQuery::selectInt64(qint64 defaultValue) {
     }
 }
 
-QList<U2DataId> U2SqlQuery::selectDataIds(U2DataType type, const QByteArray& dbExtra) {
+QList<U2DataId> U2SqlQuery::selectDataIds(U2DataType type, const QByteArray &dbExtra) {
     QList<U2DataId> res;
 
     execute();
@@ -392,18 +387,18 @@ QString U2SqlQuery::getQueryText() const {
 }
 
 bool U2SqlQuery::hasError() const {
-     return (os != NULL) ? os->hasError() : true;
+    return (os != NULL) ? os->hasError() : true;
 }
 
-void U2SqlQuery::setOpStatus(U2OpStatus& os) {
+void U2SqlQuery::setOpStatus(U2OpStatus &os) {
     this->os = &os;
 }
 
-U2OpStatus& U2SqlQuery::getOpStatus() {
+U2OpStatus &U2SqlQuery::getOpStatus() {
     return *os;
 }
 
-const MysqlDbRef* U2SqlQuery::getDb() const {
+const MysqlDbRef *U2SqlQuery::getDb() const {
     return db;
 }
 
@@ -416,14 +411,12 @@ QString U2SqlQuery::getBoundValues() const {
     return result;
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 // Mysql transaction helper
-MysqlTransaction::MysqlTransaction(MysqlDbRef* db, U2OpStatus& os) :
-    db(db),
-    os(os),
-    started(false)
-{
+MysqlTransaction::MysqlTransaction(MysqlDbRef *db, U2OpStatus &os)
+    : db(db),
+      os(os),
+      started(false) {
     QMutexLocker locker(&db->mutex);
 
     if (db->transactionStack.isEmpty()) {
@@ -460,4 +453,4 @@ MysqlTransaction::~MysqlTransaction() {
     }
 }
 
-}   // namespace U2
+}    // namespace U2

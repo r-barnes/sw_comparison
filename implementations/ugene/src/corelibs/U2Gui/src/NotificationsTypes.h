@@ -31,6 +31,6 @@ enum NotificationType {
     Warning_Not
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

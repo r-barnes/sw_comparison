@@ -19,9 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include <system/GTClipboard.h>
 #include "system/GTFile.h"
+
 #include <QDir>
-#include<QDebug>
+#include <QDebug>
 
 #ifdef Q_OS_WIN
 
@@ -207,6 +209,21 @@ bool GTFile::equals(GUITestOpStatus &os, const QString& path1, const QString& pa
 }
 #undef GT_METHOD_NAME
 
+#define GT_METHOD_NAME "equals"
+bool GTFile::equals(GUITestOpStatus &os, const QString &path1) {
+    QFile f1(path1);
+
+    bool ok = f1.open(QIODevice::ReadOnly);
+    GT_CHECK_RESULT(ok, f1.errorString(), false);
+
+    QByteArray byteArray1 = f1.readAll();
+    QByteArray byteArray2 = GTClipboard::text(os).toLocal8Bit();
+
+    GT_CHECK_RESULT(f1.error() == QFile::NoError, f1.errorString(), false);
+
+    return byteArray1 == byteArray2;
+}
+#undef GT_METHOD_NAME
 #define GT_METHOD_NAME "getSize"
 qint64 GTFile::getSize(GUITestOpStatus &os, const QString &path){
     QFile f(path);

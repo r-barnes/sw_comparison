@@ -19,24 +19,27 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/DNASequenceObject.h>
-#include <U2Core/DNASequence.h>
-#include <U2Core/AppResources.h>
-#include <U2Core/AppContext.h>
-#include <U2Core/AppSettings.h>
-#include <U2Core/Timer.h>
-#include <U2Algorithm/OpenCLGpuRegistry.h>
-#include "U2Formats/StreamSequenceReader.h"
-#include <QtEndian>
-#include "GenomeAlignerIndex.h"
-
 #include "GenomeAlignerIndexTask.h"
+
+#include <QtEndian>
+
+#include <U2Algorithm/OpenCLGpuRegistry.h>
+
+#include <U2Core/AppContext.h>
+#include <U2Core/AppResources.h>
+#include <U2Core/AppSettings.h>
+#include <U2Core/DNASequence.h>
+#include <U2Core/DNASequenceObject.h>
+#include <U2Core/Timer.h>
+
+#include "U2Formats/StreamSequenceReader.h"
+
+#include "GenomeAlignerIndex.h"
 
 namespace U2 {
 
 GenomeAlignerIndexTask::GenomeAlignerIndexTask(const GenomeAlignerIndexSettings &settings)
-    : Task("Building genome aligner's index", TaskFlag_None), objLens(NULL), objCount(0), unknownChar('N')
-{
+    : Task("Building genome aligner's index", TaskFlag_None), objLens(NULL), objCount(0), unknownChar('N') {
     GUrl i = settings.indexFileName;
     baseFileName = i.dirPath() + "/" + i.baseFileName();
     w = MAX_BIT_MASK_LENGTH;
@@ -47,7 +50,7 @@ GenomeAlignerIndexTask::GenomeAlignerIndexTask(const GenomeAlignerIndexSettings 
     index = new GenomeAlignerIndex();
     index->baseFileName = baseFileName;
     index->unknownChar = unknownChar;
-    index->bitFilter = ((BMType)1<<(bitCharLen * w))-1;
+    index->bitFilter = ((BMType)1 << (bitCharLen * w)) - 1;
     this->settings = settings;
 }
 
@@ -55,7 +58,7 @@ GenomeAlignerIndexTask::~GenomeAlignerIndexTask() {
 }
 
 SAType getPartStartPos(SAType seqLength, int parts, int curPart) {
-    SAType start = (seqLength/parts)*curPart;
+    SAType start = (seqLength / parts) * curPart;
     if (curPart > 0) {
         start -= GenomeAlignerIndex::overlapSize;
     }
@@ -65,9 +68,9 @@ SAType getPartStartPos(SAType seqLength, int parts, int curPart) {
 SAType getPartLength(SAType seqLength, int parts, int curPart) {
     SAType length = 0;
     if (curPart < parts - 1) {
-        length = (seqLength/parts) + GenomeAlignerIndex::overlapSize;
+        length = (seqLength / parts) + GenomeAlignerIndex::overlapSize;
     } else {
-        length = seqLength - (seqLength/parts)*curPart;
+        length = seqLength - (seqLength / parts) * curPart;
     }
     if (curPart > 0) {
         length += GenomeAlignerIndex::overlapSize;
@@ -105,24 +108,24 @@ void GenomeAlignerIndexTask::run() {
             if (isCanceled() || hasError()) {
                 return;
             }
-            seqLength = objLens[objCount-1];
+            seqLength = objLens[objCount - 1];
             index->seqLength = seqLength;
             index->w = w;
             index->seqPartSize = settings.seqPartSize;
         }
     }
 
-    MAX_ELEM_COUNT_IN_MEMORY = settings.seqPartSize*1024*1024;
-    int parts = seqLength/(MAX_ELEM_COUNT_IN_MEMORY - 2*GenomeAlignerIndex::overlapSize) + 1;
+    MAX_ELEM_COUNT_IN_MEMORY = settings.seqPartSize * 1024 * 1024;
+    int parts = seqLength / (MAX_ELEM_COUNT_IN_MEMORY - 2 * GenomeAlignerIndex::overlapSize) + 1;
     index->indexPart.partCount = parts;
     index->indexPart.seqStarts = new SAType[parts];
     index->indexPart.seqLengths = new SAType[parts];
     index->indexPart.saLengths = new SAType[parts];
-    index->indexPart.partFiles = new QFile*[parts];
+    index->indexPart.partFiles = new QFile *[parts];
 
     SAType start = 0;
     SAType length = 0;
-    for (int i=0; i<parts; i++) {
+    for (int i = 0; i < parts; i++) {
         start = getPartStartPos(seqLength, parts, i);
         length = getPartLength(seqLength, parts, i);
 
@@ -144,31 +147,30 @@ void GenomeAlignerIndexTask::run() {
         }
     }
 
-
     if (!index->openIndexFiles()) {
         setError("Can't open some of index files");
         return;
     }
-    memFreeSize = MEM_FOR_READS*1024*1024;
+    memFreeSize = MEM_FOR_READS * 1024 * 1024;
     gpuFreeSize = memFreeSize;
     SAType maxLength = index->indexPart.getMaxLength();
 
     try {
-        assert(0!=maxLength);
+        assert(0 != maxLength);
         index->indexPart.bitMask = new BMType[maxLength];
         index->indexPart.sArray = new SAType[maxLength];
         index->indexPart.seq = new char[maxLength];
-    } catch(std::bad_alloc &e) {
+    } catch (std::bad_alloc &e) {
         Q_UNUSED(e);
         setError("Can't allocate this amount of memory. Try to close some of your programs or to decrease \"maxMemorySize\"-option");
         return;
     }
     if (settings.justBuildIndex) {
-        for (int i=0; i<parts; i++) {
+        for (int i = 0; i < parts; i++) {
             index->build = true;
             index->loadPart(i);
             index->indexPart.partFiles[i]->close();
-            stateInfo.progress += 100/parts;
+            stateInfo.progress += 100 / parts;
         }
     }
 }
@@ -196,7 +198,7 @@ void GenomeAlignerIndexTask::reformatSequence() {
             setError("Reference object type must be a sequence, but not a multiple alignment");
             return;
         }
-        if(NULL == seq->alphabet){
+        if (NULL == seq->alphabet) {
             setError("Cannot define an alphabet for the reference sequence");
             return;
         }
@@ -207,7 +209,7 @@ void GenomeAlignerIndexTask::reformatSequence() {
         seqLens.append(seq->length());
         newRefFile.write(seq->constData());
         if (firstSeq) {
-            index->firstSequenceObjectName = seq->getName();// + QString("_and_others");
+            index->firstSequenceObjectName = seq->getName();    // + QString("_and_others");
             firstSeq = false;
         }
         CHECK_OP_EXT(stateInfo, newRefFile.close(), );
@@ -230,4 +232,4 @@ void GenomeAlignerIndexTask::reformatSequence() {
     }
 }
 
-} //U2
+}    // namespace U2

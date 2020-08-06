@@ -24,15 +24,15 @@
 
 #include <QTemporaryDir>
 
-#include <U2Core/Task.h>
 #include <U2Core/ExternalToolRunTask.h>
+#include <U2Core/Task.h>
 
 namespace U2 {
 
-
-class FastQCSetting{
+class FastQCSetting {
 public:
-    FastQCSetting() {}
+    FastQCSetting() {
+    }
 
     QString inputUrl;
     QString outDir;
@@ -49,23 +49,26 @@ public:
     void prepare();
     void run();
 
-    const QString& getResult(){return resultUrl;}
+    const QString &getResult() {
+        return resultUrl;
+    }
     QString getResFileUrl() const;
 
 protected:
-    QStringList getParameters(U2OpStatus& os) const;
+    QStringList getParameters(U2OpStatus &os) const;
 
 protected:
     FastQCSetting settings;
     QString resultUrl;
+
 private:
     QTemporaryDir temporaryDir;
 };
 
-
 class FastQCParser : public ExternalToolLogParser {
+    Q_OBJECT
 public:
-    FastQCParser(const QString& inputFile);
+    FastQCParser(const QString &inputFile);
 
     int getProgress() override;
 
@@ -79,8 +82,8 @@ private:
         Multiline
     };
 
-    bool isCommonError(const QString& err) const;
-    bool isMultiLineError(const QString& err);
+    bool isCommonError(const QString &err) const;
+    bool isMultiLineError(const QString &err);
 
     static const QMap<ErrorType, QString> initWellKnownErrors();
 
@@ -91,6 +94,6 @@ private:
     static const QMap<ErrorType, QString> WELL_KNOWN_ERRORS;
 };
 
-}//namespace
+}    // namespace U2
 
-#endif // _U2_FASTQC_TASK_H_
+#endif    // _U2_FASTQC_TASK_H_

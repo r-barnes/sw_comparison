@@ -35,7 +35,7 @@ class MaOverviewContextMenu;
 class MaEditorOverviewArea : public QWidget {
     Q_OBJECT
 public:
-    MaEditorOverviewArea(MaEditorWgt* ui, const QString& objectName);
+    MaEditorOverviewArea(MaEditorWgt *ui, const QString &objectName);
 
     virtual void cancelRendering();
 
@@ -45,14 +45,14 @@ protected slots:
     virtual void sl_show();
 
 protected:
-    void addOverview(QWidget* overviewWgt);
+    void addOverview(QWidget *overviewWgt);
 
     bool isWidgetResizable;
 
 private:
-    QVBoxLayout* layout;
+    QVBoxLayout *layout;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_MA_EDITOR_OVERVIEW_AREA_H_
+#endif    // _U2_MA_EDITOR_OVERVIEW_AREA_H_

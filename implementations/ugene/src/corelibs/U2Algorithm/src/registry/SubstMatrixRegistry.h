@@ -22,42 +22,42 @@
 #ifndef _U2_SUBST_MATRIX_REGISTRY_H_
 #define _U2_SUBST_MATRIX_REGISTRY_H_
 
-#include <U2Core/global.h>
-#include <U2Core/SMatrix.h>
-
-#include <QMutex>
 #include <QMap>
+#include <QMutex>
 #include <QStringList>
+
+#include <U2Core/SMatrix.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
 class U2ALGORITHM_EXPORT SubstMatrixRegistry : public QObject {
     Q_OBJECT
 public:
-    SubstMatrixRegistry(QObject* pOwn = 0);
+    SubstMatrixRegistry(QObject *pOwn = 0);
 
-    SMatrix getMatrix(const QString& name);
+    SMatrix getMatrix(const QString &name);
 
     QList<SMatrix> getMatrices() const;
 
     QStringList getMatrixNames() const;
 
-    QList<SMatrix> selectMatricesByAlphabet(const DNAAlphabet* al) const;
+    QList<SMatrix> selectMatricesByAlphabet(const DNAAlphabet *al) const;
 
-    QStringList selectMatrixNamesByAlphabet(const DNAAlphabet* al) const;
+    QStringList selectMatrixNamesByAlphabet(const DNAAlphabet *al) const;
 
-    void registerMatrix(const SMatrix& m);
+    void registerMatrix(const SMatrix &m);
 
-    static SMatrix readMatrixFromFile(const QString& fileName, QString& error);
+    static SMatrix readMatrixFromFile(const QString &fileName, QString &error);
 
 private:
     void readMatrices();
-    static SMatrix parseMatrix(const QString& name, const QByteArray& text, QString& error);
+    static SMatrix parseMatrix(const QString &name, const QByteArray &text, QString &error);
 
     mutable QMutex mutex;
     QMap<QString, SMatrix> matrixByName;
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

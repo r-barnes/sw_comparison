@@ -36,12 +36,15 @@ typedef PrompterBase<EnsembleClassificationPrompter> EnsembleClassificationBase;
 class EnsembleClassificationPrompter : public EnsembleClassificationBase {
     Q_OBJECT
 public:
-    EnsembleClassificationPrompter(Actor* p = 0) : EnsembleClassificationBase(p) {}
+    EnsembleClassificationPrompter(Actor *p = 0)
+        : EnsembleClassificationBase(p) {
+    }
+
 protected:
     QString composeRichDoc();
 };
 
-class EnsembleClassificationWorker: public BaseWorker {
+class EnsembleClassificationWorker : public BaseWorker {
     Q_OBJECT
 public:
     EnsembleClassificationWorker(Actor *a);
@@ -49,8 +52,9 @@ public:
 protected:
     bool isReady() const;
     void init();
-    Task * tick();
-    void cleanup() {}
+    Task *tick();
+    void cleanup() {
+    }
 
 private slots:
     void sl_taskFinished(Task *task);
@@ -70,11 +74,16 @@ private:
 
 class EnsembleClassificationWorkerFactory : public DomainFactory {
     static const QString ACTOR_ID;
+
 public:
     static void init();
     static void cleanup();
-    EnsembleClassificationWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    Worker* createWorker(Actor* a) { return new EnsembleClassificationWorker(a); }
+    EnsembleClassificationWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    Worker *createWorker(Actor *a) {
+        return new EnsembleClassificationWorker(a);
+    }
 };
 
 class EnsembleClassificationTask : public Task {
@@ -82,8 +91,12 @@ class EnsembleClassificationTask : public Task {
 public:
     EnsembleClassificationTask(const QList<TaxonomyClassificationResult> &taxData, const bool tripleInput, const QString &outputFile, const QString &workingDir);
 
-    bool foundMismatches() const {return hasMissing;}
-    const QString &getOutputFile() const {return outputFile;}
+    bool foundMismatches() const {
+        return hasMissing;
+    }
+    const QString &getOutputFile() const {
+        return outputFile;
+    }
 
 private:
     void run();
@@ -96,7 +109,7 @@ private:
     bool hasMissing;
 };
 
-} //LocalWorkflow
-} //U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

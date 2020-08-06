@@ -39,9 +39,11 @@ class U2CORE_EXPORT AppGlobalObject : public QObject, public Identifiable<QStrin
     Q_OBJECT
 
 public:
-    AppGlobalObject(const QString& id) : Identifiable<QString>(id) {}
+    AppGlobalObject(const QString &id)
+        : Identifiable<QString>(id) {
+    }
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

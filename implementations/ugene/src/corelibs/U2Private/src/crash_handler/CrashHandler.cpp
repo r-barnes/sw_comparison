@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CrashHandler.h"
+
 #include <QTextStream>
 
 #include <U2Core/AppContext.h>
@@ -26,27 +28,26 @@
 #include <U2Core/Timer.h>
 #include <U2Core/Version.h>
 
-#include "CrashHandler.h"
 #include "CrashHandlerArgsHelper.h"
 #include "CrashHandlerPrivate.h"
 #include "CrashLogCache.h"
 #include "TaskSchedulerImpl.h"
 
 #if defined(Q_OS_MAC)
-#include "CrashHandlerPrivateMac.h"
+#    include "CrashHandlerPrivateMac.h"
 #elif defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
-#include "CrashHandlerPrivateUnixNotMac.h"
+#    include "CrashHandlerPrivateUnixNotMac.h"
 #elif defined(Q_OS_WIN)
-#include "CrashHandlerPrivateWin.h"
+#    include "CrashHandlerPrivateWin.h"
 #endif
 
-const static char * SETTINGS_UGENE_UID            = "shtirlitz/uid";
+const static char *SETTINGS_UGENE_UID = "shtirlitz/uid";
 
 namespace U2 {
 
-CrashHandlerPrivate * CrashHandler::crashHandlerPrivate = NULL;
-char* CrashHandler::buffer = NULL;
-LogCache* CrashHandler::crashLogCache = NULL;
+CrashHandlerPrivate *CrashHandler::crashHandlerPrivate = NULL;
+char *CrashHandler::buffer = NULL;
+LogCache *CrashHandler::crashLogCache = NULL;
 bool CrashHandler::sendCrashReports = true;
 
 bool CrashHandler::isEnabled() {
@@ -137,16 +138,16 @@ QString CrashHandler::generateReport(const QString &exceptionType, int maxReport
     reportText += Version::appVersion().text;
     reportText += "|";
 
-    Settings* settings = AppContext::getSettings();
-    if (settings != NULL){
-        QVariant uuidQvar = settings->getValue( SETTINGS_UGENE_UID, "None" );
+    Settings *settings = AppContext::getSettings();
+    if (settings != NULL) {
+        QVariant uuidQvar = settings->getValue(SETTINGS_UGENE_UID, "None");
         reportText += uuidQvar.toString() + "|";
     } else {
         reportText += "Settings is null|";
     }
 
     QString activeWindow = AppContext::getActiveWindowName();
-    if(activeWindow.isEmpty()) {
+    if (activeWindow.isEmpty()) {
         reportText += "None|";
     } else {
         reportText += activeWindow + "|";
@@ -155,23 +156,23 @@ QString CrashHandler::generateReport(const QString &exceptionType, int maxReport
     const QString handlerAdditionalInfo = (crashHandlerPrivate == NULL ? "" : crashHandlerPrivate->getAdditionalInfo());
     reportText += (handlerAdditionalInfo.isEmpty() ? "None" : handlerAdditionalInfo) + "|";
 
-    QList<LogMessage*> logMessages = crashLogCache == NULL ? QList<LogMessage*>() : crashLogCache->messages;
+    QList<LogMessage *> logMessages = crashLogCache == NULL ? QList<LogMessage *>() : crashLogCache->messages;
     QString messageLog;
     if (!logMessages.isEmpty()) {
-        QList<LogMessage*>::iterator it;
+        QList<LogMessage *>::iterator it;
         int i;
-        for(i = 0, it = --logMessages.end(); i <= maxReportSize && it!= logMessages.begin(); i++, it--) {
-            LogMessage* msg = *it;
+        for (i = 0, it = --logMessages.end(); i <= maxReportSize && it != logMessages.begin(); i++, it--) {
+            LogMessage *msg = *it;
             messageLog.prepend("[" + GTimer::createDateTime(msg->time).toString("hh:mm:ss.zzz") + "] " + "[" + msg->categories.first() + "] " + msg->text + "\n");
         }
     } else {
         messageLog += "None";
     }
 
-    AppResourcePool* pool = AppResourcePool::instance();
+    AppResourcePool *pool = AppResourcePool::instance();
     if (pool) {
         size_t memoryBytes = pool->getCurrentAppMemory();
-        QString memInfo = QString("AppMemory: %1Mb; ").arg(memoryBytes/(1000*1000));
+        QString memInfo = QString("AppMemory: %1Mb; ").arg(memoryBytes / (1000 * 1000));
 
         reportText += (memInfo + "\n");
     }
@@ -179,20 +180,20 @@ QString CrashHandler::generateReport(const QString &exceptionType, int maxReport
 
     QString taskList;
     TaskScheduler *ts = AppContext::getTaskScheduler();
-    QList<Task* > topTasks = ts != NULL ? ts->getTopLevelTasks() : QList<Task*>();
-    foreach(Task *t, topTasks) {
-        if(t->getState() != Task::State_Finished) {
+    QList<Task *> topTasks = ts != NULL ? ts->getTopLevelTasks() : QList<Task *>();
+    foreach (Task *t, topTasks) {
+        if (t->getState() != Task::State_Finished) {
             QString state;
             if (t->getState() == Task::State_Running) {
                 state = "(Running)";
-            } else if(t->getState() == Task::State_New) {
+            } else if (t->getState() == Task::State_New) {
                 state = "(New)";
-            } else if(t->getState() == Task::State_Prepared) {
+            } else if (t->getState() == Task::State_Prepared) {
                 state = "(Preparing)";
             }
             QString progress = QString::number(t->getStateInfo().progress);
-            taskList.append(t->getTaskName() + "\t" + state + "\t" + progress  + "\n");
-            foreach(const QPointer<Task> &tt, t->getSubtasks()) {
+            taskList.append(t->getTaskName() + "\t" + state + "\t" + progress + "\n");
+            foreach (const QPointer<Task> &tt, t->getSubtasks()) {
                 getSubTasks(tt.data(), taskList, 1);
             }
         }
@@ -231,24 +232,24 @@ void CrashHandler::runMonitorProcess(const CrashHandlerArgsHelper &helper) {
     QProcess::startDetached(path, helper.getArguments());
 }
 
-void CrashHandler::getSubTasks(Task *t, QString& list, int lvl) {
-    if(t->getState() != Task::State_Finished) {
+void CrashHandler::getSubTasks(Task *t, QString &list, int lvl) {
+    if (t->getState() != Task::State_Finished) {
         QString prefix;
         QString state;
         prefix.fill('-', lvl);
-        if(t->getState() == Task::State_Running) {
+        if (t->getState() == Task::State_Running) {
             state = "(Running)";
-        } else if(t->getState() == Task::State_New) {
+        } else if (t->getState() == Task::State_New) {
             state = "(New)";
-        } else if(t->getState() == Task::State_Prepared) {
+        } else if (t->getState() == Task::State_Prepared) {
             state = "(Preparing)";
         }
         QString progress = QString::number(t->getStateInfo().progress);
-        list.append(prefix + t->getTaskName() + "\t" + state + "\t" + progress  + "\n");
-        foreach(const QPointer<Task> &tt, t->getSubtasks()) {
+        list.append(prefix + t->getTaskName() + "\t" + state + "\t" + progress + "\n");
+        foreach (const QPointer<Task> &tt, t->getSubtasks()) {
             getSubTasks(tt.data(), list, lvl + 1);
         }
     }
 }
 
-}
+}    // namespace U2

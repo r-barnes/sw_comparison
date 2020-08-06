@@ -20,27 +20,27 @@
  */
 
 #include "SAMFormat.h"
-#include "DocumentFormatUtils.h"
 
-#include <U2Core/U2OpStatus.h>
-#include <U2Core/IOAdapter.h>
+#include <QRegExp>
+
+#include <U2Core/AppContext.h>
 #include <U2Core/DNAAlphabet.h>
-#include <U2Core/L10n.h>
 #include <U2Core/DNAQuality.h>
-
 #include <U2Core/DNASequenceObject.h>
+#include <U2Core/DNATranslation.h>
 #include <U2Core/GObjectTypes.h>
+#include <U2Core/IOAdapter.h>
+#include <U2Core/L10n.h>
 #include <U2Core/MultipleSequenceAlignmentObject.h>
 #include <U2Core/TextUtils.h>
-#include <U2Core/DNATranslation.h>
-#include <U2Core/AppContext.h>
-#include <U2Core/U2AssemblyUtils.h>
-#include <U2Core/U2SafePoints.h>
 #include <U2Core/U2AlphabetUtils.h>
+#include <U2Core/U2AssemblyUtils.h>
+#include <U2Core/U2OpStatus.h>
+#include <U2Core/U2SafePoints.h>
 
 #include <U2Formats/BAMUtils.h>
 
-#include <QRegExp>
+#include "DocumentFormatUtils.h"
 
 namespace U2 {
 
@@ -63,7 +63,7 @@ const QByteArray SAMFormat::TAG_SEQUENCE_MD5_SUM = "M5";
 const QByteArray SAMFormat::TAG_SEQUENCE_URI = "UR";
 const QByteArray SAMFormat::TAG_SEQUENCE_SPECIES = "SP";
 
-const SAMFormat::Field SAMFormat::samFields[] = { //alignment section fields excluding optional tags
+const SAMFormat::Field SAMFormat::samFields[] = {    //alignment section fields excluding optional tags
     Field("QNAME", "[ !-?A-~]+"),
     Field("FLAG", "[0-9]+"),
     Field("RNAME", "\\*|[!-()+-<>-~][ !-~]*"),
@@ -74,12 +74,11 @@ const SAMFormat::Field SAMFormat::samFields[] = { //alignment section fields exc
     Field("PNEXT", "[0-9]+"),
     Field("TLEN", "-?[0-9]+"),
     Field("SEQ", "\\*|[A-Za-z=.]+"),
-    Field("QUAL", "[!-~]+|\\*")
-};
+    Field("QUAL", "[!-~]+|\\*")};
 
 bool SAMFormat::validateField(int num, QByteArray &field, U2OpStatus *ti) {
-    if(!samFields[num].getPattern().exactMatch(field)) {
-        if(ti != NULL) {
+    if (!samFields[num].getPattern().exactMatch(field)) {
+        if (ti != NULL) {
             ti->setError(SAMFormat::tr("Field \"%1\" not matched pattern \"%2\", expected pattern \"%3\"").arg(samFields[num].name).arg(QString(field)).arg(samFields[num].getPattern().pattern()));
         }
         return false;
@@ -87,31 +86,31 @@ bool SAMFormat::validateField(int num, QByteArray &field, U2OpStatus *ti) {
     return true;
 }
 
-SAMFormat::SAMFormat( QObject* p ): TextDocumentFormat(p, BaseDocumentFormats::SAM, DocumentFormatFlags(DocumentFormatFlag_SupportWriting | DocumentFormatFlag_CannotBeCompressed), QStringList()<< "sam")
-{
+SAMFormat::SAMFormat(QObject *p)
+    : TextDocumentFormat(p, BaseDocumentFormats::SAM, DocumentFormatFlags(DocumentFormatFlag_SupportWriting | DocumentFormatFlag_CannotBeCompressed), QStringList() << "sam") {
     formatName = tr("SAM");
     formatDescription = tr("The Sequence Alignment/Map (SAM) format is a generic alignment format for"
-        "storing read alignments against reference sequence");
-    supportedObjectTypes+=GObjectTypes::ASSEMBLY;
+                           "storing read alignments against reference sequence");
+    supportedObjectTypes += GObjectTypes::ASSEMBLY;
     skipDetection = false;
     formatFlags |= DocumentFormatFlag_Hidden;
 }
 
-FormatCheckResult SAMFormat::checkRawTextData( const QByteArray& rawData, const GUrl&) const {
+FormatCheckResult SAMFormat::checkRawTextData(const QByteArray &rawData, const GUrl &) const {
     if (skipDetection) {
         return FormatDetection_NotMatched;
     }
     QRegExp rx("^@[A-Za-z][A-Za-z](\\t[A-Za-z][A-Za-z]:[ -~]+)");
     //try to find SAM header
-    if(rx.indexIn(rawData) != 0) {
+    if (rx.indexIn(rawData) != 0) {
         // if no header try to parse first alignment line
         QList<QByteArray> fieldValues = rawData.split('\n')[0].split(SPACE);
         int readFieldsCount = fieldValues.count();
-        if(readFieldsCount < 11) {
+        if (readFieldsCount < 11) {
             return FormatDetection_NotMatched;
         }
-        for(int i=0; i < qMin(11, readFieldsCount); i++) {
-            if(!validateField(i, fieldValues[i])) {
+        for (int i = 0; i < qMin(11, readFieldsCount); i++) {
+            if (!validateField(i, fieldValues[i])) {
                 return FormatDetection_NotMatched;
             }
         }
@@ -168,7 +167,7 @@ FormatCheckResult SAMFormat::checkRawTextData( const QByteArray& rawData, const 
 //    }
 //}
 
-Document* SAMFormat::loadTextDocument(IOAdapter* /* io */, const U2DbiRef& /* dbiRef */, const QVariantMap& /* _fs */, U2OpStatus& /* os */) {
+Document *SAMFormat::loadTextDocument(IOAdapter * /* io */, const U2DbiRef & /* dbiRef */, const QVariantMap & /* _fs */, U2OpStatus & /* os */) {
     FAIL("Not implemented", NULL);
 
     //CHECK_EXT(io != NULL   && io->isOpen(), os.setError(L10N::badArgument("IO adapter")), NULL);
@@ -325,12 +324,11 @@ Document* SAMFormat::loadTextDocument(IOAdapter* /* io */, const U2DbiRef& /* db
     //return doc;
 }
 
-
 void SAMFormat::storeDocument(Document *d, IOAdapter *io, U2OpStatus &os) {
     CHECK_EXT(d != NULL, os.setError(L10N::badArgument("doc")), );
     CHECK_EXT(io != NULL && io->isOpen(), os.setError(L10N::badArgument("IO adapter")), );
 
-    QList<GObject*> als = d->findGObjectByType(GObjectTypes::ASSEMBLY);
+    QList<GObject *> als = d->findGObjectByType(GObjectTypes::ASSEMBLY);
     GUrl url = io->getURL();
     io->close();
 
@@ -341,7 +339,7 @@ void SAMFormat::storeDocument(Document *d, IOAdapter *io, U2OpStatus &os) {
         os);
 }
 
-void SAMFormat::storeEntry(IOAdapter * /* io */, const QMap< GObjectType, QList<GObject*> > & /* objectsMap */, U2OpStatus &/*os*/) {
+void SAMFormat::storeEntry(IOAdapter * /* io */, const QMap<GObjectType, QList<GObject *>> & /* objectsMap */, U2OpStatus & /*os*/) {
     FAIL("Not implemented", );
     //SAFE_POINT(objectsMap.contains(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT), "Clustal entry storing: no alignment", );
     //const QList<GObject*> &als = objectsMap[GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT];
@@ -409,16 +407,16 @@ void SAMFormat::storeEntry(IOAdapter * /* io */, const QMap< GObjectType, QList<
     //}
 }
 
-bool SAMFormat::getSectionTags( QByteArray &line, const QByteArray &sectionName, QList<QByteArray> &tags )
-{
-    if(!line.startsWith(sectionName)) return false;
+bool SAMFormat::getSectionTags(QByteArray &line, const QByteArray &sectionName, QList<QByteArray> &tags) {
+    if (!line.startsWith(sectionName))
+        return false;
     QByteArray tagsLine = QByteArray(line.constData() + 3, line.length() - 3);
     tags = tagsLine.split(SPACE);
     tags.removeAll("");
     return true;
 }
 
-bool SAMFormat::storeHeader(IOAdapter* io, const QVector<QByteArray> &names, const QVector<int> &lengths, bool coordinateSorted) {
+bool SAMFormat::storeHeader(IOAdapter *io, const QVector<QByteArray> &names, const QVector<int> &lengths, bool coordinateSorted) {
     assert(names.size() > 0);
     assert(names.size() == lengths.size());
     io->setFormatMode(IOAdapter::TextMode);
@@ -429,12 +427,12 @@ bool SAMFormat::storeHeader(IOAdapter* io, const QVector<QByteArray> &names, con
         block.append(TAB).append(TAG_SORT_ORDER).append(":").append("coordinate");
     }
     block.append("\n");
-    for (int i=0; i<names.size(); i++) {
+    for (int i = 0; i < names.size(); i++) {
         block.append(SECTION_SEQUENCE).append(TAB).append(TAG_SEQUENCE_NAME).append(":");
         block.append(names[i]).append(TAB);
         block.append(TAG_SEQUENCE_LENGTH).append(":").append(QByteArray::number(lengths[i])).append("\n");
     }
-    if (io->writeBlock( block ) != block.length()) {
+    if (io->writeBlock(block) != block.length()) {
         return false;
     }
     block.clear();
@@ -442,20 +440,17 @@ bool SAMFormat::storeHeader(IOAdapter* io, const QVector<QByteArray> &names, con
     return true;
 }
 
-bool SAMFormat::storeAlignedRead(int offset, const DNASequence& read, IOAdapter* io, const QByteArray& refName, int refLength, bool first, bool useCigar, const QByteArray &cigar)
-{
+bool SAMFormat::storeAlignedRead(int offset, const DNASequence &read, IOAdapter *io, const QByteArray &refName, int refLength, bool first, bool useCigar, const QByteArray &cigar) {
     static const QByteArray TAB = "\t";
-    static const QByteArray flag("0"); // can contains strand, mapped/unmapped, etc.
-    static const QByteArray mapq("255"); //255 indicating the mapping quality is not available
+    static const QByteArray flag("0");    // can contains strand, mapped/unmapped, etc.
+    static const QByteArray mapq("255");    //255 indicating the mapping quality is not available
     static const QByteArray mrnm("*");
     static const QByteArray mpos("0");
     static const QByteArray isize("0");
-    static const QString rowDataNotCigar = "%1" + TAB + flag + TAB + "%2" + TAB + "%3" + TAB + mapq + TAB + "%4M" + TAB + mrnm
-        + TAB + mpos + TAB + isize + TAB + "%5" + TAB + "%6" + "\n";
-    static const QString rowDataCigar = "%1" + TAB + flag + TAB + "%2" + TAB + "%3" + TAB + mapq + TAB + "%4" + TAB + mrnm
-        + TAB + mpos + TAB + isize + TAB + "%5" + TAB + "%6" + "\n";
+    static const QString rowDataNotCigar = "%1" + TAB + flag + TAB + "%2" + TAB + "%3" + TAB + mapq + TAB + "%4M" + TAB + mrnm + TAB + mpos + TAB + isize + TAB + "%5" + TAB + "%6" + "\n";
+    static const QString rowDataCigar = "%1" + TAB + flag + TAB + "%2" + TAB + "%3" + TAB + mapq + TAB + "%4" + TAB + mrnm + TAB + mpos + TAB + isize + TAB + "%5" + TAB + "%6" + "\n";
 
-    if( NULL == io || !io->isOpen() ) {
+    if (NULL == io || !io->isOpen()) {
         return false;
     }
     io->setFormatMode(IOAdapter::TextMode);
@@ -466,7 +461,7 @@ bool SAMFormat::storeAlignedRead(int offset, const DNASequence& read, IOAdapter*
         block.append(SECTION_SEQUENCE).append(TAB).append(TAG_SEQUENCE_NAME).append(":");
         block.append(refName).append(TAB);
         block.append(TAG_SEQUENCE_LENGTH).append(":").append(QByteArray::number(refLength)).append("\n");
-        if (io->writeBlock( block ) != block.length()) {
+        if (io->writeBlock(block) != block.length()) {
             return false;
         }
         block.clear();
@@ -486,18 +481,18 @@ bool SAMFormat::storeAlignedRead(int offset, const DNASequence& read, IOAdapter*
     QString row;
     if (useCigar) {
         row = rowDataCigar.arg(qname.constData())
-            .arg(refName.constData())
-            .arg(offset+1)
-            .arg(cigar.constData())
-            .arg(read.seq.constData())
-            .arg(qual.constData());
+                  .arg(refName.constData())
+                  .arg(offset + 1)
+                  .arg(cigar.constData())
+                  .arg(read.seq.constData())
+                  .arg(qual.constData());
     } else {
         row = rowDataNotCigar.arg(qname.constData())
-            .arg(refName.constData())
-            .arg(offset+1)
-            .arg(read.seq.length())
-            .arg(read.seq.constData())
-            .arg(qual.constData());
+                  .arg(refName.constData())
+                  .arg(offset + 1)
+                  .arg(read.seq.length())
+                  .arg(read.seq.constData())
+                  .arg(qual.constData());
     }
 
     if (io->writeBlock(row.toLatin1()) != row.length()) {
@@ -507,4 +502,4 @@ bool SAMFormat::storeAlignedRead(int offset, const DNASequence& read, IOAdapter*
     return true;
 }
 
-}// namespace
+}    // namespace U2

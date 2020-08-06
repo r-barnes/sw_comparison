@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "GTDatabaseConfig.h"
+
 #include <QSettings>
 
 #include <U2Core/AppContext.h>
@@ -27,8 +29,6 @@
 #include <U2Core/U2DbiUtils.h>
 
 #include <U2Test/UGUITest.h>
-
-#include "GTDatabaseConfig.h"
 
 namespace U2 {
 
@@ -48,7 +48,9 @@ const QString READ_ONLY_LOGIN = "read_only_login";
 const QString PASSWORD = "password";
 
 QVariant getSetting(const QString &key) {
-    QSettings settings(UGUITest::testDir +"_common_data/database.ini", QSettings::IniFormat);
+    QString customDatabaseIniPath =  qgetenv("UGENE_TESTS_DATABASE_INI_PATH");
+    QString databaseIniPath = customDatabaseIniPath.isEmpty() ? UGUITest::testDir + "_common_data/database.ini" : customDatabaseIniPath;
+    QSettings settings(databaseIniPath, QSettings::IniFormat);
     return settings.value(SETTINGS_ROOT + key);
 }
 
@@ -66,7 +68,7 @@ QString getOsSuffix() {
 #endif
 }
 
-}
+}    // namespace
 
 QString GTDatabaseConfig::host() {
     return getStringSetting(HOST);
@@ -105,11 +107,11 @@ QString GTDatabaseConfig::password() {
 }
 
 void GTDatabaseConfig::initTestConnectionInfo(const QString &name, const QString &db, bool withCredentials, bool readOnly) {
-    QString url =  U2DbiUtils::createFullDbiUrl((readOnly ? readOnlyLogin() : login()), host(), port(), db);
+    QString url = U2DbiUtils::createFullDbiUrl((readOnly ? readOnlyLogin() : login()), host(), port(), db);
     AppContext::getSettings()->setValue(SETTINGS_RECENT + name, url);
     if (withCredentials) {
         AppContext::getPasswordStorage()->addEntry(url, password(), true /*remember*/);
     }
 }
 
-} // U2
+}    // namespace U2

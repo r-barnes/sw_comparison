@@ -19,29 +19,28 @@
  * MA 02110-1301, USA.
  */
 
-#include <QPushButton>
+#include "OutputFileDialog.h"
+
 #include <QMenu>
+#include <QPushButton>
 #include <QWidgetAction>
 
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Designer/OutputDirectoryWidget.h>
 
 #include <U2Gui/HelpButton.h>
 #include <U2Gui/SuggestCompleter.h>
-#include <U2Core/QObjectScopedPointer.h>
 
 #include <U2Lang/RunFileSystem.h>
-
-#include "OutputFileDialog.h"
 
 namespace U2 {
 
 static const QString BAD_CHARS = "\\*\\?\\|\\\"\\:";
 
 OutputFileDialog::OutputFileDialog(RunFileSystem *_rfs, bool _saveDir, CompletionFiller *filler, QWidget *parent)
-: QDialog(parent), rfs(_rfs), saveDir(_saveDir), saveToFileSystem(false)
-{
+    : QDialog(parent), rfs(_rfs), saveDir(_saveDir), saveToFileSystem(false) {
     setupUi(this);
     addDirButton->setIcon(QIcon(":U2Designer/images/add_directory.png"));
     absolutePathButton->setIcon(QIcon(":U2Designer/images/outside.png"));
@@ -73,8 +72,7 @@ OutputFileDialog::OutputFileDialog(RunFileSystem *_rfs, bool _saveDir, Completio
     updateSaveButton();
 
     connect(nameEdit, SIGNAL(textEdited(const QString &)), SLOT(sl_textChanged()));
-    connect(selectionModel, SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
-        SLOT(sl_selectionChanged()));
+    connect(selectionModel, SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), SLOT(sl_selectionChanged()));
     connect(addDirButton, SIGNAL(clicked()), SLOT(sl_addDir()));
     connect(absolutePathButton, SIGNAL(clicked()), SLOT(sl_saveToFS()));
 }
@@ -91,7 +89,7 @@ void OutputFileDialog::setupSettings() {
     settingsButton->setMenu(m);
 }
 
-FSItem * OutputFileDialog::selectedItem() const {
+FSItem *OutputFileDialog::selectedItem() const {
     QModelIndexList idxs = selectionModel->selectedIndexes();
     CHECK(!idxs.isEmpty(), NULL);
 
@@ -204,8 +202,7 @@ void OutputFileDialog::updateFocus() {
 /* CreateDirectoryDialog */
 /************************************************************************/
 CreateDirectoryDialog::CreateDirectoryDialog(RunFileSystem *_rfs, const QString &_parentDir, QWidget *parent)
-: QDialog(parent), rfs(_rfs), parentDir(_parentDir)
-{
+    : QDialog(parent), rfs(_rfs), parentDir(_parentDir) {
     setupUi(this);
     QPushButton *okButton = buttonBox->button(QDialogButtonBox::Ok);
     QPushButton *cancelButton = buttonBox->button(QDialogButtonBox::Cancel);
@@ -248,8 +245,7 @@ QString CreateDirectoryDialog::getResult() const {
 /* RFSTreeModel */
 /************************************************************************/
 RFSTreeModel::RFSTreeModel(FSItem *rootItem, bool _saveDir, QObject *parent)
-: QAbstractItemModel(parent), saveDir(_saveDir)
-{
+    : QAbstractItemModel(parent), saveDir(_saveDir) {
     superRootItem = new FSItem("", true);
     superRootItem->addChild(rootItem);
 }
@@ -332,7 +328,7 @@ int RFSTreeModel::rowCount(const QModelIndex &parent) const {
     return parentItem->children().size();
 }
 
-int RFSTreeModel::columnCount(const QModelIndex &/*parent*/) const {
+int RFSTreeModel::columnCount(const QModelIndex & /*parent*/) const {
     return 1;
 }
 
@@ -348,9 +344,9 @@ QString RFSTreeModel::getPath(FSItem *target) const {
     return result.join("/");
 }
 
-FSItem * RFSTreeModel::toItem(const QModelIndex &index) const {
+FSItem *RFSTreeModel::toItem(const QModelIndex &index) const {
     CHECK(index.isValid(), NULL);
-    return static_cast<FSItem*>(index.internalPointer());
+    return static_cast<FSItem *>(index.internalPointer());
 }
 
 QModelIndex RFSTreeModel::addDir(const QModelIndex &index, const QString &dirName) {
@@ -363,4 +359,4 @@ QModelIndex RFSTreeModel::addDir(const QModelIndex &index, const QString &dirNam
     return index.child(pos, 0);
 }
 
-} // U2
+}    // namespace U2

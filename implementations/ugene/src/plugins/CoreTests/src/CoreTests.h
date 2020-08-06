@@ -33,12 +33,13 @@ class CoreTests : public Plugin {
 public:
     CoreTests();
     virtual ~CoreTests();
+
 private:
-    template <class Factory>
+    template<class Factory>
     bool registerFactory(XMLTestFormat *xmlTestFormat);
     void registerFactories();
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

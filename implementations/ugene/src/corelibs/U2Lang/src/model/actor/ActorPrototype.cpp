@@ -19,81 +19,81 @@
  * MA 02110-1301, USA.
  */
 
+#include "ActorPrototype.h"
+
 #include <U2Lang/Actor.h>
 
 #include "ActorConfigurationEditor.h"
 #include "ActorDocument.h"
 
-#include "ActorPrototype.h"
-
 namespace U2 {
 namespace Workflow {
 
-QList<PortDescriptor*> ActorPrototype::getPortDesciptors() const {
+QList<PortDescriptor *> ActorPrototype::getPortDesciptors() const {
     return ports;
 }
 
-QList<Attribute*> ActorPrototype::getAttributes() const {
+QList<Attribute *> ActorPrototype::getAttributes() const {
     return attrs;
 }
 
-void ActorPrototype::addAttribute( Attribute * a ) {
+void ActorPrototype::addAttribute(Attribute *a) {
     assert(a != NULL);
     attrs << a;
 }
 
-int ActorPrototype::removeAttribute( Attribute * attr ) {
+int ActorPrototype::removeAttribute(Attribute *attr) {
     assert(attr != NULL);
-    return attrs.removeAll( attr );
+    return attrs.removeAll(attr);
 }
 
-void ActorPrototype::setEditor(ConfigurationEditor* e) {
+void ActorPrototype::setEditor(ConfigurationEditor *e) {
     assert(e != NULL);
     ed = e;
 }
 
-ConfigurationEditor * ActorPrototype::getEditor()const {
+ConfigurationEditor *ActorPrototype::getEditor() const {
     return ed;
 }
 
-void ActorPrototype::setValidator(ConfigurationValidator* v) {
+void ActorPrototype::setValidator(ConfigurationValidator *v) {
     assert(v != NULL);
     val = v;
 }
 
-void ActorPrototype::setPrompter(Prompter* p) {
+void ActorPrototype::setPrompter(Prompter *p) {
     assert(p != NULL);
     prompter = p;
 }
 
-void ActorPrototype::setPortValidator(const QString& id, ConfigurationValidator* v) {
+void ActorPrototype::setPortValidator(const QString &id, ConfigurationValidator *v) {
     assert(v != NULL);
     portValidators[id] = v;
 }
 
-bool ActorPrototype::isAcceptableDrop(const QMimeData*, QVariantMap* ) const {
+bool ActorPrototype::isAcceptableDrop(const QMimeData *, QVariantMap *) const {
     return false;
 }
 
-Port* ActorPrototype::createPort(const PortDescriptor& d, Actor* p) {
+Port *ActorPrototype::createPort(const PortDescriptor &d, Actor *p) {
     return new Port(d, p);
 }
 
-Actor* ActorPrototype::createInstance(const ActorId &actorId, AttributeScript *script, const QVariantMap& params) {
-    Actor* proc = new Actor(actorId, this, script);
+Actor *ActorPrototype::createInstance(const ActorId &actorId, AttributeScript *script, const QVariantMap &params) {
+    Actor *proc = new Actor(actorId, this, script);
     if (ed) {
         ed->updateDelegates();
     }
 
-    foreach(PortDescriptor* pd, getPortDesciptors()) {
-        Port* p = createPort(*pd, proc);
+    foreach (PortDescriptor *pd, getPortDesciptors()) {
+        Port *p = createPort(*pd, proc);
         QString pid = pd->getId();
         if (portValidators.contains(pid)) {
             p->setValidator(portValidators.value(pid));
         }
         proc->ports[pid] = p;
     }
-    foreach(Attribute* a, getAttributes()) {
+    foreach (Attribute *a, getAttributes()) {
         proc->addParameter(a->getId(), a->clone());
     }
     if (val) {
@@ -109,9 +109,9 @@ Actor* ActorPrototype::createInstance(const ActorId &actorId, AttributeScript *s
         proc->setParameter(i.key(), i.value());
     }
     if (ed) {
-        ActorConfigurationEditor *actorEd = dynamic_cast<ActorConfigurationEditor*>(ed);
+        ActorConfigurationEditor *actorEd = dynamic_cast<ActorConfigurationEditor *>(ed);
         if (NULL != actorEd) {
-            ActorConfigurationEditor *editor = dynamic_cast<ActorConfigurationEditor*>(ed->clone());
+            ActorConfigurationEditor *editor = dynamic_cast<ActorConfigurationEditor *>(ed->clone());
             editor->setConfiguration(proc);
             proc->setEditor(editor);
         } else {
@@ -126,20 +126,20 @@ Actor* ActorPrototype::createInstance(const ActorId &actorId, AttributeScript *s
     return proc;
 }
 
-void ActorPrototype::setDisplayName(const QString& n) {
+void ActorPrototype::setDisplayName(const QString &n) {
     VisualDescriptor::setDisplayName(n);
     emit si_nameChanged();
 }
 
-void ActorPrototype::setDocumentation(const QString& d) {
+void ActorPrototype::setDocumentation(const QString &d) {
     VisualDescriptor::setDocumentation(d);
     emit si_descriptionChanged();
 }
 
-Attribute * ActorPrototype::getAttribute( const QString & id ) const {
-    Attribute * res = NULL;
-    foreach( Attribute * a, attrs ) {
-        if( a->getId() == id ) {
+Attribute *ActorPrototype::getAttribute(const QString &id) const {
+    Attribute *res = NULL;
+    foreach (Attribute *a, attrs) {
+        if (a->getId() == id) {
             res = a;
             break;
         }
@@ -166,7 +166,7 @@ void ActorPrototype::addExternalTool(const QString &toolId, const QString &param
     externalTools[toolId] = paramId;
 }
 
-const StrStrMap & ActorPrototype::getExternalTools() const {
+const StrStrMap &ActorPrototype::getExternalTools() const {
     return externalTools;
 }
 
@@ -174,11 +174,11 @@ void ActorPrototype::clearExternalTools() {
     externalTools.clear();
 }
 
-ActorPrototype::ActorPrototype(const Descriptor& d,
-                               const QList<PortDescriptor*>& ports,
-                               const QList<Attribute*>& attrs)
-: QObject(nullptr), VisualDescriptor(d), attrs(attrs), ports(ports), ed(NULL), val(NULL), prompter(NULL),
-isScript(false), isStandard(true), isSchema(false), allowsEmptyPorts(false), influenceOnPathFlag(false), usageCounter(0) {
+ActorPrototype::ActorPrototype(const Descriptor &d,
+                               const QList<PortDescriptor *> &ports,
+                               const QList<Attribute *> &attrs)
+    : QObject(nullptr), VisualDescriptor(d), attrs(attrs), ports(ports), ed(NULL), val(NULL), prompter(NULL),
+      isScript(false), isStandard(true), isSchema(false), allowsEmptyPorts(false), influenceOnPathFlag(false), usageCounter(0) {
 }
 
 ActorPrototype::~ActorPrototype() {
@@ -198,5 +198,5 @@ int ActorPrototype::getUsageCounter() const {
     return usageCounter;
 }
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

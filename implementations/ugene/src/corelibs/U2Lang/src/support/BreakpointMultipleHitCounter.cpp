@@ -19,17 +19,17 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
-
 #include "BreakpointMultipleHitCounter.h"
+
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
 BreakpointMultipleHitCounter::BreakpointMultipleHitCounter(
-    BreakpointHitCountCondition initCondition, quint32 initMultiple)
-    : BaseBreakpointHitCounter(initCondition), multiple(initMultiple)
-{
-    SAFE_POINT( 0 < multiple, "Invalid value for hit counter!", );
+    BreakpointHitCountCondition initCondition,
+    quint32 initMultiple)
+    : BaseBreakpointHitCounter(initCondition), multiple(initMultiple) {
+    SAFE_POINT(0 < multiple, "Invalid value for hit counter!", );
 }
 
 bool BreakpointMultipleHitCounter::hit() {
@@ -44,4 +44,4 @@ void BreakpointMultipleHitCounter::setHitCountParameter(quint32 newParameter) {
     multiple = newParameter;
 }
 
-} // namespace U2
+}    // namespace U2

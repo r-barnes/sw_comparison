@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "EditPrimerDialog.h"
+
 #include <QPushButton>
 #include <QValidator>
 
@@ -28,19 +30,15 @@
 
 #include <U2Gui/HelpButton.h>
 
-#include "EditPrimerDialog.h"
-
 namespace U2 {
 
 EditPrimerDialog::EditPrimerDialog(QWidget *parent)
-: QDialog(parent)
-{
+    : QDialog(parent) {
     init();
 }
 
 EditPrimerDialog::EditPrimerDialog(QWidget *parent, const Primer &editToPrimer)
-: QDialog(parent)
-{
+    : QDialog(parent) {
     init();
     setWindowTitle(tr("Edit Primer"));
     primerEdit->setText(editToPrimer.sequence);
@@ -50,7 +48,7 @@ EditPrimerDialog::EditPrimerDialog(QWidget *parent, const Primer &editToPrimer)
 void EditPrimerDialog::init() {
     GCOUNTER(cvar, tvar, "Add primer in library");
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742643");
+    new HelpButton(this, buttonBox, "46501130");
 
     primerEdit->setValidator(new PrimerValidator(this));
 
@@ -87,4 +85,4 @@ void EditPrimerDialog::validate(bool isValid) {
     okButton->setEnabled(isValid);
 }
 
-} // U2
+}    // namespace U2

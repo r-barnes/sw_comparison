@@ -20,7 +20,6 @@
  */
 
 #include "ModDbiSQLiteSpecificUnitTests.h"
-#include "core/util/MsaDbiUtilsUnitTests.h"
 
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/U2AbstractDbi.h>
@@ -32,6 +31,7 @@
 #include <U2Formats/SQLiteModDbi.h>
 #include <U2Formats/SQLiteObjectDbi.h>
 
+#include "core/util/MsaDbiUtilsUnitTests.h"
 
 #define IMPLEMENT_MOD_TEST(suite, name) \
     static const int _##suite##_##name##_type ATTR_UNUSED = qRegisterMetaType<U2::TEST_CLASS(suite, name)>(TEST_CLASS_STR(suite, name)); \
@@ -43,8 +43,8 @@
 namespace U2 {
 
 TestDbiProvider ModSQLiteSpecificTestData::dbiProvider = TestDbiProvider();
-const QString& ModSQLiteSpecificTestData::SQLITE_MSA_DB_URL("sqlite-mod-dbi.ugenedb");
-SQLiteDbi* ModSQLiteSpecificTestData::sqliteDbi = NULL;
+const QString &ModSQLiteSpecificTestData::SQLITE_MSA_DB_URL("sqlite-mod-dbi.ugenedb");
+SQLiteDbi *ModSQLiteSpecificTestData::sqliteDbi = NULL;
 
 const QString ModSQLiteSpecificTestData::TEST_MSA_NAME = "Test alignment";
 
@@ -53,9 +53,9 @@ void ModSQLiteSpecificTestData::init() {
 
     // Get URL
     bool ok = dbiProvider.init(SQLITE_MSA_DB_URL, false);
-    SAFE_POINT(ok, "Dbi provider failed to initialize!",);
+    SAFE_POINT(ok, "Dbi provider failed to initialize!", );
 
-    U2Dbi* dbi = dbiProvider.getDbi();
+    U2Dbi *dbi = dbiProvider.getDbi();
     QString url = dbi->getDbiRef().dbiId;
     dbiProvider.close();
 
@@ -68,9 +68,8 @@ void ModSQLiteSpecificTestData::init() {
     SAFE_POINT_OP(os, );
 
     // Get msa IDs
-    QList<U2DataId> ids = sqliteDbi->getObjectDbi()->getObjects(U2Type::Msa, 0,
-        U2DbiOptions::U2_DBI_NO_LIMIT, os);
-    SAFE_POINT_OP(os,);
+    QList<U2DataId> ids = sqliteDbi->getObjectDbi()->getObjects(U2Type::Msa, 0, U2DbiOptions::U2_DBI_NO_LIMIT, os);
+    SAFE_POINT_OP(os, );
 }
 
 void ModSQLiteSpecificTestData::shutdown() {
@@ -96,14 +95,14 @@ void ModSQLiteSpecificTestData::cleanUpAllModSteps() {
     }
 }
 
-SQLiteDbi* ModSQLiteSpecificTestData::getSQLiteDbi() {
+SQLiteDbi *ModSQLiteSpecificTestData::getSQLiteDbi() {
     if (NULL == sqliteDbi) {
         init();
     }
     return sqliteDbi;
 }
 
-void ModSQLiteSpecificTestData::getAllSteps(QList<U2SingleModStep>& singleSteps, QList<U2MultiModStep4Test>& multiSteps, QList<U2UserModStep4Test>& userSteps, U2OpStatus& os) {
+void ModSQLiteSpecificTestData::getAllSteps(QList<U2SingleModStep> &singleSteps, QList<U2MultiModStep4Test> &multiSteps, QList<U2UserModStep4Test> &userSteps, U2OpStatus &os) {
     singleSteps.clear();
     multiSteps.clear();
     userSteps.clear();
@@ -141,7 +140,7 @@ void ModSQLiteSpecificTestData::getAllSteps(QList<U2SingleModStep>& singleSteps,
     }
 }
 
-U2SingleModStep ModSQLiteSpecificTestData::prepareSingleStep(qint64 modVersion, U2OpStatus& os) {
+U2SingleModStep ModSQLiteSpecificTestData::prepareSingleStep(qint64 modVersion, U2OpStatus &os) {
     U2SingleModStep step;
 
     // Create an object
@@ -157,9 +156,9 @@ U2SingleModStep ModSQLiteSpecificTestData::prepareSingleStep(qint64 modVersion, 
     return step;
 }
 
-U2DataId ModSQLiteSpecificTestData::createObject(U2OpStatus& os) {
+U2DataId ModSQLiteSpecificTestData::createObject(U2OpStatus &os) {
     // Create an object
-    U2Sequence obj; // creates a sequence object to make type U2Type::Sequence
+    U2Sequence obj;    // creates a sequence object to make type U2Type::Sequence
     obj.dbiId = sqliteDbi->getDbiId();
     obj.visualName = "Test object";
 
@@ -169,13 +168,13 @@ U2DataId ModSQLiteSpecificTestData::createObject(U2OpStatus& os) {
     return obj.id;
 }
 
-qint64 ModSQLiteSpecificTestData::getModStepsNum(const U2DataId& objId, U2OpStatus& os) {
+qint64 ModSQLiteSpecificTestData::getModStepsNum(const U2DataId &objId, U2OpStatus &os) {
     SQLiteReadQuery qModSteps("SELECT COUNT(*) FROM SingleModStep WHERE object = ?1", sqliteDbi->getDbRef(), os);
     qModSteps.bindDataId(1, objId);
     return qModSteps.selectInt64();
 }
 
-U2SingleModStep ModSQLiteSpecificTestData::getLastModStep(const U2DataId& objId, U2OpStatus& os) {
+U2SingleModStep ModSQLiteSpecificTestData::getLastModStep(const U2DataId &objId, U2OpStatus &os) {
     U2SingleModStep res;
     SQLiteReadQuery qModStep("SELECT id, object, otype, oextra, version, modType, details FROM SingleModStep WHERE object = ?1 ORDER BY version DESC LIMIT 1", sqliteDbi->getDbRef(), os);
     CHECK_OP(os, res);
@@ -191,14 +190,16 @@ U2SingleModStep ModSQLiteSpecificTestData::getLastModStep(const U2DataId& objId,
     return res;
 }
 
-QList<U2SingleModStep> ModSQLiteSpecificTestData::getAllModSteps(const U2DataId& objId, U2OpStatus& os) {
+QList<U2SingleModStep> ModSQLiteSpecificTestData::getAllModSteps(const U2DataId &objId, U2OpStatus &os) {
     QList<U2SingleModStep> res;
     SQLiteReadQuery qModStep("SELECT id, object, otype, oextra, version, modType, details"
-        " FROM SingleModStep WHERE object = ?1 ORDER BY version", sqliteDbi->getDbRef(), os);
+                             " FROM SingleModStep WHERE object = ?1 ORDER BY version",
+                             sqliteDbi->getDbRef(),
+                             os);
     CHECK_OP(os, res);
 
     qModStep.bindDataId(1, objId);
-    while(qModStep.step()) {
+    while (qModStep.step()) {
         U2SingleModStep modStep;
         modStep.id = qModStep.getInt32(0);
         modStep.objectId = qModStep.getDataIdExt(1);
@@ -233,7 +234,7 @@ U2MsaRow ModSQLiteSpecificTestData::addRow(const U2DataId &msaId, const QByteArr
     return row;
 }
 
-U2DataId ModSQLiteSpecificTestData::createTestMsa(bool enableModTracking, U2OpStatus& os) {
+U2DataId ModSQLiteSpecificTestData::createTestMsa(bool enableModTracking, U2OpStatus &os) {
     // Create an alignment
     U2AlphabetId alphabet = BaseDNAAlphabetIds::NUCL_DNA_DEFAULT();
     U2DataId msaId = sqliteDbi->getMsaDbi()->createMsaObject("", TEST_MSA_NAME, alphabet, os);
@@ -263,10 +264,9 @@ U2DataId ModSQLiteSpecificTestData::createTestMsa(bool enableModTracking, U2OpSt
     return msaId;
 }
 
-
 IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaName_noModTrack) {
     U2OpStatusImpl os;
-    SQLiteDbi* sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
+    SQLiteDbi *sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
     U2DataId msaId = ModSQLiteSpecificTestData::createTestMsa(false, os);
     CHECK_NO_ERROR(os);
 
@@ -284,7 +284,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaName_noModTrack) {
 IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaName_severalSteps) {
     //5 changes, 4 undo steps, 2 redo steps, 1 undo step, 1 redo step
     U2OpStatusImpl os;
-    SQLiteDbi* sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
+    SQLiteDbi *sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
     U2DataId msaId = ModSQLiteSpecificTestData::createTestMsa(true, os);
     CHECK_NO_ERROR(os);
 
@@ -303,7 +303,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaName_severalSteps) {
 
     // Steps count
     int valuesCount = names.length();    // changes = valuesCount - 1;
-    QList<int> steps;                       // negative - undo steps, positive - redo steps;
+    QList<int> steps;    // negative - undo steps, positive - redo steps;
     steps << -4 << 2 << -1 << 1;
     int expectedIndex = valuesCount - 1;
     for (int i = 0; i < steps.length(); ++i) {
@@ -332,7 +332,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaName_severalSteps) {
     // Undo and redo msa renaming
     int totalUndo = 0;
     int totalRedo = 0;
-    for (int i  = 0; i < steps.length(); ++i) {
+    for (int i = 0; i < steps.length(); ++i) {
         if (steps[i] < 0) {
             for (int j = 0; j < -steps[i]; ++j) {
                 sqliteDbi->getSQLiteObjectDbi()->undo(msaId, os);
@@ -362,7 +362,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaName_severalSteps) {
 IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaName_severalUndoThenAction) {
     //5 changes, 4 undo steps, 1 action
     U2OpStatusImpl os;
-    SQLiteDbi* sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
+    SQLiteDbi *sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
     U2DataId msaId = ModSQLiteSpecificTestData::createTestMsa(true, os);
     CHECK_NO_ERROR(os);
 
@@ -381,8 +381,8 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaName_severalUndoThenActio
     QString newName("Action occurred");
 
     // Steps count
-    int valuesCount = names.length();       // changes = valuesCount - 1;
-    QList<int> steps;                       // negative - undo steps, positive - redo steps;
+    int valuesCount = names.length();    // changes = valuesCount - 1;
+    QList<int> steps;    // negative - undo steps, positive - redo steps;
     steps << -4;
     int expectedIndex = valuesCount - 1;
     for (int i = 0; i < steps.length(); ++i) {
@@ -421,7 +421,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaName_severalUndoThenActio
     // Undo and redo msa renaming
     int totalUndo = 0;
     int totalRedo = 0;
-    for (int i  = 0; i < steps.length(); ++i) {
+    for (int i = 0; i < steps.length(); ++i) {
         if (steps[i] < 0) {
             for (int j = 0; j < -steps[i]; ++j) {
                 sqliteDbi->getSQLiteObjectDbi()->undo(msaId, os);
@@ -454,7 +454,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaName_severalUndoThenActio
 
 IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaAlphabet_noModTrack) {
     U2OpStatusImpl os;
-    SQLiteDbi* sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
+    SQLiteDbi *sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
     U2DataId msaId = ModSQLiteSpecificTestData::createTestMsa(false, os);
     CHECK_NO_ERROR(os);
 
@@ -472,7 +472,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaAlphabet_noModTrack) {
 IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaAlphabet_severalSteps) {
     //3 changes, 3 undo steps, 2 redo steps, 2 undo steps, 1 redo step
     U2OpStatusImpl os;
-    SQLiteDbi* sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
+    SQLiteDbi *sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
     U2DataId msaId = ModSQLiteSpecificTestData::createTestMsa(true, os);
     CHECK_NO_ERROR(os);
 
@@ -492,7 +492,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaAlphabet_severalSteps) {
 
     // Steps count
     int valuesCount = alphabets.length();    // changes = valuesCount - 1;
-    QList<int> steps;                           // negative - undo steps, positive - redo steps;
+    QList<int> steps;    // negative - undo steps, positive - redo steps;
     steps << -3 << 2 << -2 << 1;
     int expectedIndex = valuesCount - 1;
     for (int i = 0; i < steps.length(); ++i) {
@@ -521,7 +521,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaAlphabet_severalSteps) {
     // Undo and redo alphabet updating
     int totalUndo = 0;
     int totalRedo = 0;
-    for (int i  = 0; i < steps.length(); ++i) {
+    for (int i = 0; i < steps.length(); ++i) {
         if (steps[i] < 0) {
             for (int j = 0; j < -steps[i]; ++j) {
                 sqliteDbi->getSQLiteObjectDbi()->undo(msaId, os);
@@ -551,7 +551,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaAlphabet_severalSteps) {
 IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaAlphabet_severalUndoThenAction) {
     //3 changes, 2 undo steps, 1 action
     U2OpStatusImpl os;
-    SQLiteDbi* sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
+    SQLiteDbi *sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
     U2DataId msaId = ModSQLiteSpecificTestData::createTestMsa(true, os);
     CHECK_NO_ERROR(os);
 
@@ -572,7 +572,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaAlphabet_severalUndoThenA
 
     // Steps count
     int valuesCount = alphabets.length();    // changes = valuesCount - 1;
-    QList<int> steps;                           // negative - undo steps, positive - redo steps;
+    QList<int> steps;    // negative - undo steps, positive - redo steps;
     steps << -2;
     int expectedIndex = valuesCount - 1;
     for (int i = 0; i < steps.length(); ++i) {
@@ -613,7 +613,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaAlphabet_severalUndoThenA
     // Undo and redo alphabet updating
     int totalUndo = 0;
     int totalRedo = 0;
-    for (int i  = 0; i < steps.length(); ++i) {
+    for (int i = 0; i < steps.length(); ++i) {
         if (steps[i] < 0) {
             for (int j = 0; j < -steps[i]; ++j) {
                 sqliteDbi->getSQLiteObjectDbi()->undo(msaId, os);
@@ -655,7 +655,8 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateGapModel_noModTrack) {
     CHECK_NO_ERROR(os);
 
     // Update gaps
-    QList<U2MsaGap> newGaps; newGaps << U2MsaGap(4, 3) << U2MsaGap(11, 3); // TAAG---ACTT---CTA
+    QList<U2MsaGap> newGaps;
+    newGaps << U2MsaGap(4, 3) << U2MsaGap(11, 3);    // TAAG---ACTT---CTA
     CHECK_NO_ERROR(os);
     sqliteDbi->getMsaDbi()->updateGapModel(msaId, baseRows[0].rowId, newGaps, os);
     CHECK_NO_ERROR(os);
@@ -682,8 +683,8 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateGapModel_severalSteps) {
     CHECK_NO_ERROR(os);
 
     // Prepare value list
-    QList<QList<U2MsaGap> > gapModels;
-    gapModels << baseRows[0].gaps;  // base value
+    QList<QList<U2MsaGap>> gapModels;
+    gapModels << baseRows[0].gaps;    // base value
 
     QList<U2MsaGap> gapModel;
     for (int i = 0; i < 6; ++i) {
@@ -694,7 +695,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateGapModel_severalSteps) {
 
     // Steps count
     int valuesCount = gapModels.length();    // changes = valuesCount - 1;
-    QList<int> steps;                        // negative - undo steps, positive - redo steps;
+    QList<int> steps;    // negative - undo steps, positive - redo steps;
     steps << -4 << 2 << -1 << 3;
     int expectedIndex = valuesCount - 1;
     for (int i = 0; i < steps.length(); ++i) {
@@ -712,7 +713,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateGapModel_severalSteps) {
         QByteArray gapsToByteArrayFirst;
         QByteArray gapsToByteArraySecond;
         gapsToByteArrayFirst += "\"";
-        foreach(U2MsaGap gap, gapModels[i]) {
+        foreach (U2MsaGap gap, gapModels[i]) {
             if (gapsToByteArrayFirst.length() > 1) {
                 gapsToByteArrayFirst += ";";
             }
@@ -720,7 +721,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateGapModel_severalSteps) {
         }
         gapsToByteArrayFirst += "\"";
         gapsToByteArraySecond += "\"";
-        foreach(U2MsaGap gap, gapModels[i + 1]) {
+        foreach (U2MsaGap gap, gapModels[i + 1]) {
             if (gapsToByteArraySecond.length() > 1) {
                 gapsToByteArraySecond += ";";
             }
@@ -742,7 +743,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateGapModel_severalSteps) {
     // Undo and redo gap model updating
     int totalUndo = 0;
     int totalRedo = 0;
-    for (int i  = 0; i < steps.length(); ++i) {
+    for (int i = 0; i < steps.length(); ++i) {
         if (steps[i] < 0) {
             for (int j = 0; j < -steps[i]; ++j) {
                 sqliteDbi->getSQLiteObjectDbi()->undo(msaId, os);
@@ -785,8 +786,8 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateGapModel_severalUndoThenActi
     CHECK_NO_ERROR(os);
 
     // Prepare value list
-    QList<QList<U2MsaGap> > gapModels;
-    gapModels << baseRows[0].gaps;  // base value
+    QList<QList<U2MsaGap>> gapModels;
+    gapModels << baseRows[0].gaps;    // base value
 
     QList<U2MsaGap> gapModel;
     for (int i = 0; i < 6; ++i) {
@@ -798,7 +799,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateGapModel_severalUndoThenActi
 
     // Steps count
     int valuesCount = gapModels.length();    // changes = valuesCount - 1;
-    QList<int> steps;                        // negative - undo steps, positive - redo steps;
+    QList<int> steps;    // negative - undo steps, positive - redo steps;
     steps << -4 << 2 << -1 << 3;
     int expectedIndex = valuesCount - 1;
     for (int i = 0; i < steps.length(); ++i) {
@@ -816,7 +817,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateGapModel_severalUndoThenActi
         QByteArray gapsToByteArrayFirst;
         QByteArray gapsToByteArraySecond;
         gapsToByteArrayFirst += "\"";
-        foreach(U2MsaGap gap, gapModels[i]) {
+        foreach (U2MsaGap gap, gapModels[i]) {
             if (gapsToByteArrayFirst.length() > 1) {
                 gapsToByteArrayFirst += ";";
             }
@@ -824,7 +825,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateGapModel_severalUndoThenActi
         }
         gapsToByteArrayFirst += "\"";
         gapsToByteArraySecond += "\"";
-        foreach(U2MsaGap gap, gapModels[i + 1]) {
+        foreach (U2MsaGap gap, gapModels[i + 1]) {
             if (gapsToByteArraySecond.length() > 1) {
                 gapsToByteArraySecond += ";";
             }
@@ -849,7 +850,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateGapModel_severalUndoThenActi
     QByteArray gapsToByteArrayFirst;
     QByteArray gapsToByteArraySecond;
     gapsToByteArrayFirst += "\"";
-    foreach(U2MsaGap gap, gapModels[expectedIndex]) {
+    foreach (U2MsaGap gap, gapModels[expectedIndex]) {
         if (gapsToByteArrayFirst.length() > 1) {
             gapsToByteArrayFirst += ";";
         }
@@ -857,7 +858,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateGapModel_severalUndoThenActi
     }
     gapsToByteArrayFirst += "\"";
     gapsToByteArraySecond += "\"";
-    foreach(U2MsaGap gap, newGapModel) {
+    foreach (U2MsaGap gap, newGapModel) {
         if (gapsToByteArraySecond.length() > 1) {
             gapsToByteArraySecond += ";";
         }
@@ -877,7 +878,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateGapModel_severalUndoThenActi
     // Undo and redo gap model updating
     int totalUndo = 0;
     int totalRedo = 0;
-    for (int i  = 0; i < steps.length(); ++i) {
+    for (int i = 0; i < steps.length(); ++i) {
         if (steps[i] < 0) {
             for (int j = 0; j < -steps[i]; ++j) {
                 sqliteDbi->getSQLiteObjectDbi()->undo(msaId, os);
@@ -920,7 +921,8 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateRowContent_noModTrack) {
 
     // Update row content
     QByteArray newSeq = "AAAAGGGGCCCCTTTT";
-    QList<U2MsaGap> newGaps; newGaps << U2MsaGap(4, 4) << U2MsaGap(20, 4); // AAAA----GGGGCCCCTTTT----
+    QList<U2MsaGap> newGaps;
+    newGaps << U2MsaGap(4, 4) << U2MsaGap(20, 4);    // AAAA----GGGGCCCCTTTT----
     sqliteDbi->getMsaDbi()->updateRowContent(msaId, baseRows[0].rowId, newSeq, newGaps, os);
     CHECK_NO_ERROR(os);
 
@@ -966,8 +968,8 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateRowContent_severalSteps) {
         row.gstart = 0;
         row.gend = firstPart.length() + secondPart.length();
         row.length = row.gend;
-        foreach (const U2MsaGap& gap, gapModel) {
-            if (gap.offset < row.length) { // ignore trailing gaps
+        foreach (const U2MsaGap &gap, gapModel) {
+            if (gap.offset < row.length) {    // ignore trailing gaps
                 row.length += gap.gap;
             }
         }
@@ -980,7 +982,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateRowContent_severalSteps) {
 
     // Steps count
     int valuesCount = seqDataList.length();    // changes = valuesCount - 1;
-    QList<int> steps;                          // negative - undo steps, positive - redo steps;
+    QList<int> steps;    // negative - undo steps, positive - redo steps;
     steps << -6 << 4 << -3 << 2;
     int expectedIndex = valuesCount - 1;
     for (int i = 0; i < steps.length(); ++i) {
@@ -1003,8 +1005,8 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateRowContent_severalSteps) {
         gapModStep.objectId = msaId;
         gapModStep.version = baseMsaVersion + i;
         gapModStep.details = U2DbiPackUtils::packGapDetails(baseRows[rowNumber].rowId,
-                                                               rowInfoList[i].gaps,
-                                                               rowInfoList[i + 1].gaps);
+                                                            rowInfoList[i].gaps,
+                                                            rowInfoList[i + 1].gaps);
         msaModSteps << gapModStep;
     }
     QList<U2SingleModStep> expectedMsaModStepList = baseMsaModStepList + msaModSteps;
@@ -1017,9 +1019,9 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateRowContent_severalSteps) {
         modStep.objectId = baseRows[rowNumber].sequenceId;
         modStep.version = baseSeqVersion + i;
         modStep.details = U2DbiPackUtils::packSequenceDataDetails(U2_REGION_MAX,
-                                                                     seqDataList[i],
-                                                                     seqDataList[i + 1],
-                                                                     QVariantMap());
+                                                                  seqDataList[i],
+                                                                  seqDataList[i + 1],
+                                                                  QVariantMap());
         seqModSteps << modStep;
     }
     QList<U2SingleModStep> expectedSeqModStepList = baseSeqModStepList + seqModSteps;
@@ -1033,7 +1035,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateRowContent_severalSteps) {
     // Undo and redo gap model updating
     int totalUndo = 0;
     int totalRedo = 0;
-    for (int i  = 0; i < steps.length(); ++i) {
+    for (int i = 0; i < steps.length(); ++i) {
         if (steps[i] < 0) {
             for (int j = 0; j < -steps[i]; ++j) {
                 sqliteDbi->getSQLiteObjectDbi()->undo(msaId, os);
@@ -1106,8 +1108,8 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateRowContent_severalUndoThenAc
         row.gstart = 0;
         row.gend = firstPart.length() + secondPart.length();
         row.length = row.gend;
-        foreach (const U2MsaGap& gap, gapModel) {
-            if (gap.offset < row.length) { // ignore trailing gaps
+        foreach (const U2MsaGap &gap, gapModel) {
+            if (gap.offset < row.length) {    // ignore trailing gaps
                 row.length += gap.gap;
             }
         }
@@ -1128,7 +1130,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateRowContent_severalUndoThenAc
 
     // Steps count
     int valuesCount = seqDataList.length();    // changes = valuesCount - 1;
-    QList<int> steps;                          // negative - undo steps, positive - redo steps;
+    QList<int> steps;    // negative - undo steps, positive - redo steps;
     steps << -6 << 4 << -3 << 2;
     int expectedIndex = valuesCount - 1;
     for (int i = 0; i < steps.length(); ++i) {
@@ -1151,8 +1153,8 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateRowContent_severalUndoThenAc
         gapModStep.objectId = msaId;
         gapModStep.version = baseMsaVersion + i;
         gapModStep.details = U2DbiPackUtils::packGapDetails(baseRows[rowNumber].rowId,
-                                                               rowInfoList[i].gaps,
-                                                               rowInfoList[i + 1].gaps);
+                                                            rowInfoList[i].gaps,
+                                                            rowInfoList[i + 1].gaps);
         msaModSteps << gapModStep;
     }
 
@@ -1164,9 +1166,9 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateRowContent_severalUndoThenAc
         modStep.objectId = baseRows[rowNumber].sequenceId;
         modStep.version = baseSeqVersion + i;
         modStep.details = U2DbiPackUtils::packSequenceDataDetails(U2_REGION_MAX,
-                                                                     seqDataList[i],
-                                                                     seqDataList[i + 1],
-                                                                     QVariantMap());
+                                                                  seqDataList[i],
+                                                                  seqDataList[i + 1],
+                                                                  QVariantMap());
         seqModSteps << modStep;
     }
 
@@ -1183,9 +1185,9 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateRowContent_severalUndoThenAc
     actionSeqModStep.objectId = baseRows[rowNumber].sequenceId;
     actionSeqModStep.version = baseSeqVersion + expectedIndex;
     actionSeqModStep.details = U2DbiPackUtils::packSequenceDataDetails(U2_REGION_MAX,
-                                                                          seqDataList[expectedIndex],
-                                                                          newSeqData,
-                                                                          QVariantMap());
+                                                                       seqDataList[expectedIndex],
+                                                                       newSeqData,
+                                                                       QVariantMap());
     U2SingleModStep actionRowModStep;
     actionRowModStep.modType = U2ModType::msaUpdatedRowInfo;
     actionRowModStep.objectId = msaId;
@@ -1197,8 +1199,8 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateRowContent_severalUndoThenAc
     actionGapModStep.objectId = msaId;
     actionGapModStep.version = baseMsaVersion + expectedIndex;
     actionGapModStep.details = U2DbiPackUtils::packGapDetails(baseRows[rowNumber].rowId,
-                                                                 rowInfoList[expectedIndex].gaps,
-                                                                 newRow.gaps);
+                                                              rowInfoList[expectedIndex].gaps,
+                                                              newRow.gaps);
 
     expectedSeqModStepList << actionSeqModStep;
     expectedMsaModStepList << actionRowModStep;
@@ -1213,7 +1215,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateRowContent_severalUndoThenAc
     // Undo and redo gap model updating
     int totalUndo = 0;
     int totalRedo = 0;
-    for (int i  = 0; i < steps.length(); ++i) {
+    for (int i = 0; i < steps.length(); ++i) {
         if (steps[i] < 0) {
             for (int j = 0; j < -steps[i]; ++j) {
                 sqliteDbi->getSQLiteObjectDbi()->undo(msaId, os);
@@ -1298,7 +1300,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, setNewRowsOrder_severalSteps) {
     CHECK_NO_ERROR(os);
 
     // Prepare value list
-    QList<QList<qint64> > rowOrders;
+    QList<QList<qint64>> rowOrders;
     rowOrders << baseRowOrder;
 
     QList<qint64> rowOrder;
@@ -1315,7 +1317,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, setNewRowsOrder_severalSteps) {
 
     // Steps count
     int valuesCount = rowOrders.length();    // changes = valuesCount - 1;
-    QList<int> steps;                        // negative - undo steps, positive - redo steps;
+    QList<int> steps;    // negative - undo steps, positive - redo steps;
     steps << -5 << 3 << -4 << 3;
     int expectedIndex = valuesCount - 1;
     for (int i = 0; i < steps.length(); ++i) {
@@ -1333,7 +1335,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, setNewRowsOrder_severalSteps) {
         QByteArray orderToByteArrayFirst;
         QByteArray orderToByteArraySecond;
         orderToByteArrayFirst += "\"";
-        foreach(qint64 rowId, rowOrders[i]) {
+        foreach (qint64 rowId, rowOrders[i]) {
             if (orderToByteArrayFirst.length() > 1) {
                 orderToByteArrayFirst += ",";
             }
@@ -1341,7 +1343,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, setNewRowsOrder_severalSteps) {
         }
         orderToByteArrayFirst += "\"";
         orderToByteArraySecond += "\"";
-        foreach(qint64 rowId, rowOrders[i + 1]) {
+        foreach (qint64 rowId, rowOrders[i + 1]) {
             if (orderToByteArraySecond.length() > 1) {
                 orderToByteArraySecond += ",";
             }
@@ -1363,7 +1365,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, setNewRowsOrder_severalSteps) {
     // Undo and redo row order updating
     int totalUndo = 0;
     int totalRedo = 0;
-    for (int i  = 0; i < steps.length(); ++i) {
+    for (int i = 0; i < steps.length(); ++i) {
         if (steps[i] < 0) {
             for (int j = 0; j < -steps[i]; ++j) {
                 sqliteDbi->getSQLiteObjectDbi()->undo(msaId, os);
@@ -1406,7 +1408,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, setNewRowsOrder_severalUndoThenAct
     CHECK_NO_ERROR(os);
 
     // Prepare value list
-    QList<QList<qint64> > rowOrders;
+    QList<QList<qint64>> rowOrders;
     rowOrders << baseRowOrder;
     QList<qint64> newRowOrder = QList<qint64>() << baseRowOrder[6]
                                                 << baseRowOrder[5]
@@ -1430,7 +1432,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, setNewRowsOrder_severalUndoThenAct
 
     // Steps count
     int valuesCount = rowOrders.length();    // changes = valuesCount - 1;
-    QList<int> steps;                        // negative - undo steps, positive - redo steps;
+    QList<int> steps;    // negative - undo steps, positive - redo steps;
     steps << -5 << 3 << -4 << 3;
     int expectedIndex = valuesCount - 1;
     for (int i = 0; i < steps.length(); ++i) {
@@ -1448,7 +1450,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, setNewRowsOrder_severalUndoThenAct
         QByteArray orderToByteArrayFirst;
         QByteArray orderToByteArraySecond;
         orderToByteArrayFirst += "\"";
-        foreach(qint64 rowId, rowOrders[i]) {
+        foreach (qint64 rowId, rowOrders[i]) {
             if (orderToByteArrayFirst.length() > 1) {
                 orderToByteArrayFirst += ",";
             }
@@ -1456,7 +1458,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, setNewRowsOrder_severalUndoThenAct
         }
         orderToByteArrayFirst += "\"";
         orderToByteArraySecond += "\"";
-        foreach(qint64 rowId, rowOrders[i + 1]) {
+        foreach (qint64 rowId, rowOrders[i + 1]) {
             if (orderToByteArraySecond.length() > 1) {
                 orderToByteArraySecond += ",";
             }
@@ -1481,7 +1483,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, setNewRowsOrder_severalUndoThenAct
     QByteArray orderToByteArrayFirst;
     QByteArray orderToByteArraySecond;
     orderToByteArrayFirst += "\"";
-    foreach(qint64 rowId, rowOrders[expectedIndex]) {
+    foreach (qint64 rowId, rowOrders[expectedIndex]) {
         if (orderToByteArrayFirst.length() > 1) {
             orderToByteArrayFirst += ",";
         }
@@ -1489,7 +1491,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, setNewRowsOrder_severalUndoThenAct
     }
     orderToByteArrayFirst += "\"";
     orderToByteArraySecond += "\"";
-    foreach(qint64 rowId, newRowOrder) {
+    foreach (qint64 rowId, newRowOrder) {
         if (orderToByteArraySecond.length() > 1) {
             orderToByteArraySecond += ",";
         }
@@ -1509,7 +1511,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, setNewRowsOrder_severalUndoThenAct
     // Undo and redo row order updating
     int totalUndo = 0;
     int totalRedo = 0;
-    for (int i  = 0; i < steps.length(); ++i) {
+    for (int i = 0; i < steps.length(); ++i) {
         if (steps[i] < 0) {
             for (int j = 0; j < -steps[i]; ++j) {
                 sqliteDbi->getSQLiteObjectDbi()->undo(msaId, os);
@@ -1592,8 +1594,8 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateRowName_severalSteps) {
     }
 
     // Steps count
-    int valuesCount = rowNames.length();     // changes = valuesCount - 1;
-    QList<int> steps;                        // negative - undo steps, positive - redo steps;
+    int valuesCount = rowNames.length();    // changes = valuesCount - 1;
+    QList<int> steps;    // negative - undo steps, positive - redo steps;
     steps << -3 << 1 << -4 << 3;
     int expectedIndex = valuesCount - 1;
     for (int i = 0; i < steps.length(); ++i) {
@@ -1622,7 +1624,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateRowName_severalSteps) {
     // Undo and redo row order updating
     int totalUndo = 0;
     int totalRedo = 0;
-    for (int i  = 0; i < steps.length(); ++i) {
+    for (int i = 0; i < steps.length(); ++i) {
         if (steps[i] < 0) {
             for (int j = 0; j < -steps[i]; ++j) {
                 sqliteDbi->getSQLiteObjectDbi()->undo(msaId, os);
@@ -1677,8 +1679,8 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateRowName_severalUndoThenActio
     QString newRowName("Action occurred");
 
     // Steps count
-    int valuesCount = rowNames.length();     // changes = valuesCount - 1;
-    QList<int> steps;                        // negative - undo steps, positive - redo steps;
+    int valuesCount = rowNames.length();    // changes = valuesCount - 1;
+    QList<int> steps;    // negative - undo steps, positive - redo steps;
     steps << -3 << 1 << -4 << 3;
     int expectedIndex = valuesCount - 1;
     for (int i = 0; i < steps.length(); ++i) {
@@ -1719,7 +1721,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateRowName_severalUndoThenActio
     // Undo and redo row order updating
     int totalUndo = 0;
     int totalRedo = 0;
-    for (int i  = 0; i < steps.length(); ++i) {
+    for (int i = 0; i < steps.length(); ++i) {
         if (steps[i] < 0) {
             for (int j = 0; j < -steps[i]; ++j) {
                 sqliteDbi->getSQLiteObjectDbi()->undo(msaId, os);
@@ -1749,8 +1751,6 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateRowName_severalUndoThenActio
         CHECK_EQUAL(QString(expectedModStepList[i].details), QString(finalModStepList[i].details), "details");
     }
 }
-
-
 
 IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, createStep_noMultiAndUser) {
     SQLiteDbi *sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
@@ -1786,11 +1786,15 @@ IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, createStep_noMultiAndUser2Step
     SQLiteDbi *sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
     U2OpStatusImpl os;
 
-    U2SingleModStep singleStep1 = ModSQLiteSpecificTestData::prepareSingleStep(0, os); CHECK_NO_ERROR(os);
-    U2SingleModStep singleStep2 = ModSQLiteSpecificTestData::prepareSingleStep(1, os); CHECK_NO_ERROR(os);
+    U2SingleModStep singleStep1 = ModSQLiteSpecificTestData::prepareSingleStep(0, os);
+    CHECK_NO_ERROR(os);
+    U2SingleModStep singleStep2 = ModSQLiteSpecificTestData::prepareSingleStep(1, os);
+    CHECK_NO_ERROR(os);
 
-    sqliteDbi->getSQLiteModDbi()->createModStep(singleStep1.objectId, singleStep1, os); CHECK_NO_ERROR(os);
-    sqliteDbi->getSQLiteModDbi()->createModStep(singleStep2.objectId, singleStep2, os); CHECK_NO_ERROR(os);
+    sqliteDbi->getSQLiteModDbi()->createModStep(singleStep1.objectId, singleStep1, os);
+    CHECK_NO_ERROR(os);
+    sqliteDbi->getSQLiteModDbi()->createModStep(singleStep2.objectId, singleStep2, os);
+    CHECK_NO_ERROR(os);
 
     QList<U2SingleModStep> actualSingleSteps;
     QList<U2MultiModStep4Test> actualMultiSteps;
@@ -1825,13 +1829,18 @@ IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, createStep_startMulti) {
     SQLiteDbi *sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
     U2OpStatusImpl os;
 
-    U2SingleModStep singleStep1 = ModSQLiteSpecificTestData::prepareSingleStep(0, os); CHECK_NO_ERROR(os);
-    U2SingleModStep singleStep2 = ModSQLiteSpecificTestData::prepareSingleStep(1, os); CHECK_NO_ERROR(os);
+    U2SingleModStep singleStep1 = ModSQLiteSpecificTestData::prepareSingleStep(0, os);
+    CHECK_NO_ERROR(os);
+    U2SingleModStep singleStep2 = ModSQLiteSpecificTestData::prepareSingleStep(1, os);
+    CHECK_NO_ERROR(os);
 
     {
-        U2UseCommonMultiModStep useMultiStep(sqliteDbi, singleStep2.objectId, os); CHECK_NO_ERROR(os);
-        sqliteDbi->getSQLiteModDbi()->createModStep(singleStep2.objectId, singleStep1, os); CHECK_NO_ERROR(os);
-        sqliteDbi->getSQLiteModDbi()->createModStep(singleStep2.objectId, singleStep2, os); CHECK_NO_ERROR(os);
+        U2UseCommonMultiModStep useMultiStep(sqliteDbi, singleStep2.objectId, os);
+        CHECK_NO_ERROR(os);
+        sqliteDbi->getSQLiteModDbi()->createModStep(singleStep2.objectId, singleStep1, os);
+        CHECK_NO_ERROR(os);
+        sqliteDbi->getSQLiteModDbi()->createModStep(singleStep2.objectId, singleStep2, os);
+        CHECK_NO_ERROR(os);
 
         bool multiStepStarted = sqliteDbi->getSQLiteModDbi()->isMultiStepStarted(singleStep2.objectId);
         bool userStepStarted = sqliteDbi->getSQLiteModDbi()->isUserStepStarted(singleStep2.objectId);
@@ -1849,7 +1858,7 @@ IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, createStep_startMulti) {
     CHECK_EQUAL(1, actualMultiSteps.count(), "multi steps num");
     CHECK_EQUAL(1, actualUserSteps.count(), "user steps num");
 
-    qint64 multiStepId  = actualMultiSteps[0].id;
+    qint64 multiStepId = actualMultiSteps[0].id;
 
     CHECK_EQUAL(multiStepId, actualSingleSteps[0].multiStepId, "multi step id of single1");
     CHECK_EQUAL(multiStepId, actualSingleSteps[1].multiStepId, "multi step id of single2");
@@ -1866,18 +1875,26 @@ IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, createStep_start2MultiNoUser) 
     SQLiteDbi *sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
     U2OpStatusImpl os;
 
-    U2SingleModStep singleStep1 = ModSQLiteSpecificTestData::prepareSingleStep(0, os); CHECK_NO_ERROR(os);
-    U2SingleModStep singleStep2 = ModSQLiteSpecificTestData::prepareSingleStep(1, os); CHECK_NO_ERROR(os);
-    U2SingleModStep singleStep3 = ModSQLiteSpecificTestData::prepareSingleStep(2, os); CHECK_NO_ERROR(os);
+    U2SingleModStep singleStep1 = ModSQLiteSpecificTestData::prepareSingleStep(0, os);
+    CHECK_NO_ERROR(os);
+    U2SingleModStep singleStep2 = ModSQLiteSpecificTestData::prepareSingleStep(1, os);
+    CHECK_NO_ERROR(os);
+    U2SingleModStep singleStep3 = ModSQLiteSpecificTestData::prepareSingleStep(2, os);
+    CHECK_NO_ERROR(os);
 
     {
-        U2UseCommonMultiModStep useMultiStep1(sqliteDbi, singleStep2.objectId, os); CHECK_NO_ERROR(os);
-        sqliteDbi->getSQLiteModDbi()->createModStep(singleStep2.objectId, singleStep1, os); CHECK_NO_ERROR(os);
-        sqliteDbi->getSQLiteModDbi()->createModStep(singleStep2.objectId, singleStep2, os); CHECK_NO_ERROR(os);
+        U2UseCommonMultiModStep useMultiStep1(sqliteDbi, singleStep2.objectId, os);
+        CHECK_NO_ERROR(os);
+        sqliteDbi->getSQLiteModDbi()->createModStep(singleStep2.objectId, singleStep1, os);
+        CHECK_NO_ERROR(os);
+        sqliteDbi->getSQLiteModDbi()->createModStep(singleStep2.objectId, singleStep2, os);
+        CHECK_NO_ERROR(os);
     }
     {
-        U2UseCommonMultiModStep useMultiStep2(sqliteDbi, singleStep3.objectId, os); CHECK_NO_ERROR(os);
-        sqliteDbi->getSQLiteModDbi()->createModStep(singleStep3.objectId, singleStep3, os); CHECK_NO_ERROR(os);
+        U2UseCommonMultiModStep useMultiStep2(sqliteDbi, singleStep3.objectId, os);
+        CHECK_NO_ERROR(os);
+        sqliteDbi->getSQLiteModDbi()->createModStep(singleStep3.objectId, singleStep3, os);
+        CHECK_NO_ERROR(os);
     }
 
     QList<U2SingleModStep> actualSingleSteps;
@@ -1890,8 +1907,8 @@ IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, createStep_start2MultiNoUser) 
     CHECK_EQUAL(2, actualMultiSteps.count(), "multi steps num");
     CHECK_EQUAL(2, actualUserSteps.count(), "user steps num");
 
-    qint64 multiStepId1  = actualMultiSteps[0].id;
-    qint64 multiStepId2  = actualMultiSteps[1].id;
+    qint64 multiStepId1 = actualMultiSteps[0].id;
+    qint64 multiStepId2 = actualMultiSteps[1].id;
 
     CHECK_EQUAL(multiStepId1, actualSingleSteps[0].multiStepId, "multi step id of single1");
     CHECK_EQUAL(multiStepId1, actualSingleSteps[1].multiStepId, "multi step id of single2");
@@ -1916,24 +1933,27 @@ IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, createStep_start2MultiNoUser) 
     bool userStepStarted3 = sqliteDbi->getSQLiteModDbi()->isUserStepStarted(singleStep3.objectId);
     CHECK_FALSE(multiStepStarted3, "Multi step must be ended!");
     CHECK_FALSE(userStepStarted3, "User step must be ended!");
-
 }
 
 IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, createStep_startUser) {
     SQLiteDbi *sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
     U2OpStatusImpl os;
 
-    U2DataId masterObjId = ModSQLiteSpecificTestData::createObject(os); CHECK_NO_ERROR(os);
-    U2SingleModStep singleStep = ModSQLiteSpecificTestData::prepareSingleStep(0, os); CHECK_NO_ERROR(os);
+    U2DataId masterObjId = ModSQLiteSpecificTestData::createObject(os);
+    CHECK_NO_ERROR(os);
+    U2SingleModStep singleStep = ModSQLiteSpecificTestData::prepareSingleStep(0, os);
+    CHECK_NO_ERROR(os);
 
     {
-        U2UseCommonUserModStep useUserStep(sqliteDbi, masterObjId, os); CHECK_NO_ERROR(os);
+        U2UseCommonUserModStep useUserStep(sqliteDbi, masterObjId, os);
+        CHECK_NO_ERROR(os);
         bool multiStepStarted = sqliteDbi->getSQLiteModDbi()->isMultiStepStarted(masterObjId);
         bool userStepStarted = sqliteDbi->getSQLiteModDbi()->isUserStepStarted(masterObjId);
         CHECK_TRUE(userStepStarted, "User step must be started!");
         CHECK_FALSE(multiStepStarted, "Multi step must be ended!");
 
-        sqliteDbi->getSQLiteModDbi()->createModStep(masterObjId, singleStep, os); CHECK_NO_ERROR(os);
+        sqliteDbi->getSQLiteModDbi()->createModStep(masterObjId, singleStep, os);
+        CHECK_NO_ERROR(os);
     }
 
     QList<U2SingleModStep> single;
@@ -1961,19 +1981,27 @@ IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, createStep_oneUser2Multi) {
     SQLiteDbi *sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
     U2OpStatusImpl os;
 
-    U2DataId masterObjId = ModSQLiteSpecificTestData::createObject(os); CHECK_NO_ERROR(os);
-    U2SingleModStep singleStep1 = ModSQLiteSpecificTestData::prepareSingleStep(0, os); CHECK_NO_ERROR(os);
-    U2SingleModStep singleStep2 = ModSQLiteSpecificTestData::prepareSingleStep(1, os); CHECK_NO_ERROR(os);
+    U2DataId masterObjId = ModSQLiteSpecificTestData::createObject(os);
+    CHECK_NO_ERROR(os);
+    U2SingleModStep singleStep1 = ModSQLiteSpecificTestData::prepareSingleStep(0, os);
+    CHECK_NO_ERROR(os);
+    U2SingleModStep singleStep2 = ModSQLiteSpecificTestData::prepareSingleStep(1, os);
+    CHECK_NO_ERROR(os);
 
     {
-        U2UseCommonUserModStep useUserStep(sqliteDbi, masterObjId, os); CHECK_NO_ERROR(os);
+        U2UseCommonUserModStep useUserStep(sqliteDbi, masterObjId, os);
+        CHECK_NO_ERROR(os);
         {
-            U2UseCommonMultiModStep useMultiStep1(sqliteDbi, masterObjId, os); CHECK_NO_ERROR(os);
-            sqliteDbi->getSQLiteModDbi()->createModStep(masterObjId, singleStep1, os); CHECK_NO_ERROR(os);
+            U2UseCommonMultiModStep useMultiStep1(sqliteDbi, masterObjId, os);
+            CHECK_NO_ERROR(os);
+            sqliteDbi->getSQLiteModDbi()->createModStep(masterObjId, singleStep1, os);
+            CHECK_NO_ERROR(os);
         }
         {
-            U2UseCommonMultiModStep useMultiStep2(sqliteDbi, masterObjId, os); CHECK_NO_ERROR(os);
-            sqliteDbi->getSQLiteModDbi()->createModStep(masterObjId, singleStep2, os); CHECK_NO_ERROR(os);
+            U2UseCommonMultiModStep useMultiStep2(sqliteDbi, masterObjId, os);
+            CHECK_NO_ERROR(os);
+            sqliteDbi->getSQLiteModDbi()->createModStep(masterObjId, singleStep2, os);
+            CHECK_NO_ERROR(os);
         }
     }
 
@@ -2007,9 +2035,12 @@ IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, createStep_severalUser) {
     SQLiteDbi *sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
     U2OpStatusImpl os;
 
-    U2DataId masterObjId = ModSQLiteSpecificTestData::createObject(os); CHECK_NO_ERROR(os);
-    U2SingleModStep singleStep1 = ModSQLiteSpecificTestData::prepareSingleStep(0, os); CHECK_NO_ERROR(os);
-    U2SingleModStep singleStep2 = ModSQLiteSpecificTestData::prepareSingleStep(1, os); CHECK_NO_ERROR(os);
+    U2DataId masterObjId = ModSQLiteSpecificTestData::createObject(os);
+    CHECK_NO_ERROR(os);
+    U2SingleModStep singleStep1 = ModSQLiteSpecificTestData::prepareSingleStep(0, os);
+    CHECK_NO_ERROR(os);
+    U2SingleModStep singleStep2 = ModSQLiteSpecificTestData::prepareSingleStep(1, os);
+    CHECK_NO_ERROR(os);
 
     bool multiStepStarted = sqliteDbi->getSQLiteModDbi()->isMultiStepStarted(masterObjId);
     bool userStepStarted = sqliteDbi->getSQLiteModDbi()->isUserStepStarted(masterObjId);
@@ -2017,10 +2048,13 @@ IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, createStep_severalUser) {
     CHECK_FALSE(userStepStarted, "User step must be ended!");
 
     {
-        U2UseCommonUserModStep useUserStep(sqliteDbi, masterObjId, os); CHECK_NO_ERROR(os);
+        U2UseCommonUserModStep useUserStep(sqliteDbi, masterObjId, os);
+        CHECK_NO_ERROR(os);
         {
-            U2UseCommonMultiModStep useMultiStep1(sqliteDbi, masterObjId, os); CHECK_NO_ERROR(os);
-            sqliteDbi->getSQLiteModDbi()->createModStep(masterObjId, singleStep1, os); CHECK_NO_ERROR(os);
+            U2UseCommonMultiModStep useMultiStep1(sqliteDbi, masterObjId, os);
+            CHECK_NO_ERROR(os);
+            sqliteDbi->getSQLiteModDbi()->createModStep(masterObjId, singleStep1, os);
+            CHECK_NO_ERROR(os);
 
             multiStepStarted = sqliteDbi->getSQLiteModDbi()->isMultiStepStarted(masterObjId);
             userStepStarted = sqliteDbi->getSQLiteModDbi()->isUserStepStarted(masterObjId);
@@ -2037,10 +2071,13 @@ IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, createStep_severalUser) {
     CHECK_FALSE(multiStepStarted, "Multi step must be ended!");
     CHECK_FALSE(userStepStarted, "User step must be ended!");
     {
-        U2UseCommonUserModStep useUserStep(sqliteDbi, masterObjId, os); CHECK_NO_ERROR(os);
+        U2UseCommonUserModStep useUserStep(sqliteDbi, masterObjId, os);
+        CHECK_NO_ERROR(os);
         {
-            U2UseCommonMultiModStep useMultiStep2(sqliteDbi, masterObjId, os); CHECK_NO_ERROR(os);
-            sqliteDbi->getSQLiteModDbi()->createModStep(masterObjId, singleStep2, os); CHECK_NO_ERROR(os);
+            U2UseCommonMultiModStep useMultiStep2(sqliteDbi, masterObjId, os);
+            CHECK_NO_ERROR(os);
+            sqliteDbi->getSQLiteModDbi()->createModStep(masterObjId, singleStep2, os);
+            CHECK_NO_ERROR(os);
         }
     }
 
@@ -2075,9 +2112,11 @@ IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, createStep_separateThread) {
         U2Dbi *dbi;
         const U2DataId &objId;
         U2OpStatus &os;
+
     public:
         TestThread(U2Dbi *_dbi, const U2DataId &_objId, U2OpStatus &_os)
-            : dbi(_dbi), objId(_objId), os(_os) {}
+            : dbi(_dbi), objId(_objId), os(_os) {
+        }
         void run() {
             U2UseCommonUserModStep(dbi, objId, os);
         }
@@ -2098,23 +2137,27 @@ IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, createStep_separateThread) {
 IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, createStep_emptyUser) {
     SQLiteDbi *sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
     U2OpStatusImpl os;
-    U2DataId masterObjId = ModSQLiteSpecificTestData::createObject(os); CHECK_NO_ERROR(os);
+    U2DataId masterObjId = ModSQLiteSpecificTestData::createObject(os);
+    CHECK_NO_ERROR(os);
 
     QList<U2SingleModStep> actualSingleSteps;
     QList<U2MultiModStep4Test> actualMultiSteps;
     QList<U2UserModStep4Test> actualUserSteps;
 
     {
-        U2UseCommonUserModStep userModStep(sqliteDbi, masterObjId, os); CHECK_NO_ERROR(os);
+        U2UseCommonUserModStep userModStep(sqliteDbi, masterObjId, os);
+        CHECK_NO_ERROR(os);
         Q_UNUSED(userModStep);
-        ModSQLiteSpecificTestData::getAllSteps(actualSingleSteps, actualMultiSteps, actualUserSteps, os); CHECK_NO_ERROR(os);
+        ModSQLiteSpecificTestData::getAllSteps(actualSingleSteps, actualMultiSteps, actualUserSteps, os);
+        CHECK_NO_ERROR(os);
 
         CHECK_EQUAL(1, actualUserSteps.count(), "user steps count");
         CHECK_EQUAL(0, actualMultiSteps.count(), "multi steps count");
         CHECK_EQUAL(0, actualSingleSteps.count(), "single steps count");
     }
 
-    ModSQLiteSpecificTestData::getAllSteps(actualSingleSteps, actualMultiSteps, actualUserSteps, os); CHECK_NO_ERROR(os);
+    ModSQLiteSpecificTestData::getAllSteps(actualSingleSteps, actualMultiSteps, actualUserSteps, os);
+    CHECK_NO_ERROR(os);
 
     CHECK_EQUAL(0, actualUserSteps.count(), "user steps count");
     CHECK_EQUAL(0, actualMultiSteps.count(), "multi steps count");
@@ -2124,23 +2167,27 @@ IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, createStep_emptyUser) {
 IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, createStep_emptyMultiAutoUser) {
     SQLiteDbi *sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
     U2OpStatusImpl os;
-    U2DataId masterObjId = ModSQLiteSpecificTestData::createObject(os); CHECK_NO_ERROR(os);
+    U2DataId masterObjId = ModSQLiteSpecificTestData::createObject(os);
+    CHECK_NO_ERROR(os);
 
     QList<U2SingleModStep> actualSingleSteps;
     QList<U2MultiModStep4Test> actualMultiSteps;
     QList<U2UserModStep4Test> actualUserSteps;
 
     {
-        U2UseCommonMultiModStep multiModStep(sqliteDbi, masterObjId, os); CHECK_NO_ERROR(os);
+        U2UseCommonMultiModStep multiModStep(sqliteDbi, masterObjId, os);
+        CHECK_NO_ERROR(os);
         Q_UNUSED(multiModStep);
-        ModSQLiteSpecificTestData::getAllSteps(actualSingleSteps, actualMultiSteps, actualUserSteps, os); CHECK_NO_ERROR(os);
+        ModSQLiteSpecificTestData::getAllSteps(actualSingleSteps, actualMultiSteps, actualUserSteps, os);
+        CHECK_NO_ERROR(os);
 
         CHECK_EQUAL(1, actualUserSteps.count(), "user steps count");
         CHECK_EQUAL(1, actualMultiSteps.count(), "multi steps count");
         CHECK_EQUAL(0, actualSingleSteps.count(), "single steps count");
     }
 
-    ModSQLiteSpecificTestData::getAllSteps(actualSingleSteps, actualMultiSteps, actualUserSteps, os); CHECK_NO_ERROR(os);
+    ModSQLiteSpecificTestData::getAllSteps(actualSingleSteps, actualMultiSteps, actualUserSteps, os);
+    CHECK_NO_ERROR(os);
 
     CHECK_EQUAL(1, actualUserSteps.count(), "user steps count");
     CHECK_EQUAL(1, actualMultiSteps.count(), "multi steps count");
@@ -2150,25 +2197,30 @@ IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, createStep_emptyMultiAutoUser)
 IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, createStep_emptyMultiManUser) {
     SQLiteDbi *sqliteDbi = ModSQLiteSpecificTestData::getSQLiteDbi();
     U2OpStatusImpl os;
-    U2DataId masterObjId = ModSQLiteSpecificTestData::createObject(os); CHECK_NO_ERROR(os);
+    U2DataId masterObjId = ModSQLiteSpecificTestData::createObject(os);
+    CHECK_NO_ERROR(os);
 
     QList<U2SingleModStep> actualSingleSteps;
     QList<U2MultiModStep4Test> actualMultiSteps;
     QList<U2UserModStep4Test> actualUserSteps;
 
     {
-        U2UseCommonUserModStep userModStep(sqliteDbi, masterObjId, os); CHECK_NO_ERROR(os);
+        U2UseCommonUserModStep userModStep(sqliteDbi, masterObjId, os);
+        CHECK_NO_ERROR(os);
         Q_UNUSED(userModStep);
-        U2UseCommonMultiModStep multiModStep(sqliteDbi, masterObjId, os); CHECK_NO_ERROR(os);
+        U2UseCommonMultiModStep multiModStep(sqliteDbi, masterObjId, os);
+        CHECK_NO_ERROR(os);
         Q_UNUSED(multiModStep);
-        ModSQLiteSpecificTestData::getAllSteps(actualSingleSteps, actualMultiSteps, actualUserSteps, os); CHECK_NO_ERROR(os);
+        ModSQLiteSpecificTestData::getAllSteps(actualSingleSteps, actualMultiSteps, actualUserSteps, os);
+        CHECK_NO_ERROR(os);
 
         CHECK_EQUAL(1, actualUserSteps.count(), "user steps count");
         CHECK_EQUAL(1, actualMultiSteps.count(), "multi steps count");
         CHECK_EQUAL(0, actualSingleSteps.count(), "single steps count");
     }
 
-    ModSQLiteSpecificTestData::getAllSteps(actualSingleSteps, actualMultiSteps, actualUserSteps, os); CHECK_NO_ERROR(os);
+    ModSQLiteSpecificTestData::getAllSteps(actualSingleSteps, actualMultiSteps, actualUserSteps, os);
+    CHECK_NO_ERROR(os);
 
     CHECK_EQUAL(1, actualUserSteps.count(), "user steps count");
     CHECK_EQUAL(1, actualMultiSteps.count(), "multi steps count");
@@ -2703,7 +2755,6 @@ IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, userSteps_severalActUndo_diffO
     CHECK_NO_ERROR(os)
     CHECK_EQUAL(baseVersion1 - baseVersion2, currentVersion1 - currentVersion2, "objects versions");
 
-
     // Undo twice (for master object)
     sqliteDbi->getObjectDbi()->undo(msaId1, os);
     CHECK_NO_ERROR(os);
@@ -2894,4 +2945,4 @@ IMPLEMENT_MOD_TEST(ModDbiSQLiteSpecificUnitTests, userSteps_severalActUndoRedoAc
     CHECK_EQUAL(baseVersion1 + 6, actualUserSteps[5].version, "user step version");
 }
 
-} // namespace
+}    // namespace U2

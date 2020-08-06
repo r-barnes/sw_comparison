@@ -19,39 +19,37 @@
  * MA 02110-1301, USA.
  */
 
-#include <QPushButton>
+#include "ExportSequencesDialog.h"
+
 #include <QMessageBox>
+#include <QPushButton>
 #include <QTreeWidget>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/DNATranslation.h>
+#include <U2Core/GUrlUtils.h>
 #include <U2Core/L10n.h>
 #include <U2Core/Settings.h>
 #include <U2Core/U2SafePoints.h>
-#include <U2Core/GUrlUtils.h>
 
 #include <U2Gui/DialogUtils.h>
 #include <U2Gui/GUIUtils.h>
 #include <U2Gui/HelpButton.h>
 #include <U2Gui/SaveDocumentController.h>
 
-#include "ExportSequencesDialog.h"
-
 #define SETTINGS_ROOT QString("dna_export/")
 
 namespace U2 {
 
-ExportSequencesDialog::ExportSequencesDialog( bool m, bool allowComplement, bool allowTranslation,
-    bool allowBackTranslation, const QString& defaultFileName, const QString &sourceFileBaseName,
-    const DocumentFormatId& defaultFormatId, QWidget* p )
+ExportSequencesDialog::ExportSequencesDialog(bool m, bool allowComplement, bool allowTranslation, bool allowBackTranslation, const QString &defaultFileName, const QString &sourceFileBaseName, const DocumentFormatId &defaultFormatId, QWidget *p)
     : QDialog(p),
       sequenceName(sourceFileBaseName),
       saveController(NULL),
       defaultFileName(defaultFileName) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742330");
+    new HelpButton(this, buttonBox, "46499656");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Export"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -63,7 +61,7 @@ ExportSequencesDialog::ExportSequencesDialog( bool m, bool allowComplement, bool
     translateAllFrames = false;
     addToProject = false;
 
-    sequenceNameEdit->setText( sequenceName );
+    sequenceNameEdit->setText(sequenceName);
     withAnnotationsBox->setEnabled(false);
 
     if (!allowComplement) {
@@ -74,7 +72,6 @@ ExportSequencesDialog::ExportSequencesDialog( bool m, bool allowComplement, bool
         directStrandButton->setHidden(true);
         complementStrandButton->setHidden(true);
         bothStrandsButton->setHidden(true);
-
     }
     if (!allowTranslation) {
         translateButton->setEnabled(false);
@@ -83,7 +80,7 @@ ExportSequencesDialog::ExportSequencesDialog( bool m, bool allowComplement, bool
     }
 
     if (!allowTranslation && !allowComplement) {
-         translationBox->setHidden(true);
+        translationBox->setHidden(true);
     }
 
     if (!multiMode) {
@@ -95,11 +92,11 @@ ExportSequencesDialog::ExportSequencesDialog( bool m, bool allowComplement, bool
     }
 
     if (allowTranslation) {
-        const DNAAlphabet* al = AppContext::getDNAAlphabetRegistry()->findById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
-        DNATranslationRegistry* tr = AppContext::getDNATranslationRegistry();
-        QList<DNATranslation*> aminoTs = tr->lookupTranslation(al, DNATranslationType_NUCL_2_AMINO);
+        const DNAAlphabet *al = AppContext::getDNAAlphabetRegistry()->findById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
+        DNATranslationRegistry *tr = AppContext::getDNATranslationRegistry();
+        QList<DNATranslation *> aminoTs = tr->lookupTranslation(al, DNATranslationType_NUCL_2_AMINO);
         if (!aminoTs.empty()) {
-            foreach(DNATranslation* t, aminoTs) {
+            foreach (DNATranslation *t, aminoTs) {
                 translationTableCombo->addItem(t->getTranslationName());
                 tableID.append(t->getTranslationId());
             }
@@ -108,25 +105,25 @@ ExportSequencesDialog::ExportSequencesDialog( bool m, bool allowComplement, bool
     }
 
     if (allowBackTranslation) {
-        const DNAAlphabet* al = AppContext::getDNAAlphabetRegistry()->findById(BaseDNAAlphabetIds::AMINO_DEFAULT());
-        DNATranslationRegistry* treg = AppContext::getDNATranslationRegistry();
-        QList<DNATranslation*> nucleicTs = treg->lookupTranslation(al, DNATranslationType_AMINO_2_NUCL);
+        const DNAAlphabet *al = AppContext::getDNAAlphabetRegistry()->findById(BaseDNAAlphabetIds::AMINO_DEFAULT());
+        DNATranslationRegistry *treg = AppContext::getDNATranslationRegistry();
+        QList<DNATranslation *> nucleicTs = treg->lookupTranslation(al, DNATranslationType_AMINO_2_NUCL);
         QTreeWidget *tree = new QTreeWidget();
         tree->setHeaderHidden(true);
         organismCombo->setModel(tree->model());
-        organismCombo->setView (tree);
+        organismCombo->setView(tree);
 
         if (!nucleicTs.empty()) {
             tree->setSortingEnabled(false);
-            foreach(DNATranslation* t, nucleicTs) {
+            foreach (DNATranslation *t, nucleicTs) {
                 QStringList current = t->getTranslationId().split("/");
                 QString type = current[1];
                 QString text = t->getTranslationName();
                 int i, n = tree->topLevelItemCount();
                 for (i = 0; i < n; i++) {
-                    QTreeWidgetItem* gi = tree->topLevelItem(i);
+                    QTreeWidgetItem *gi = tree->topLevelItem(i);
                     if (gi->text(0) == type) {
-                        QTreeWidgetItem* curr = new QTreeWidgetItem(gi);
+                        QTreeWidgetItem *curr = new QTreeWidgetItem(gi);
                         curr->setText(0, text);
                         curr->setText(1, t->getTranslationId());
                         gi->addChild(curr);
@@ -134,11 +131,11 @@ ExportSequencesDialog::ExportSequencesDialog( bool m, bool allowComplement, bool
                     }
                 }
                 if (i == n) {
-                    QTreeWidgetItem* gi = new QTreeWidgetItem(tree);
+                    QTreeWidgetItem *gi = new QTreeWidgetItem(tree);
                     gi->setFlags(gi->flags() & ~Qt::ItemIsSelectable);
                     gi->setText(0, type);
                     tree->addTopLevelItem(gi);
-                    QTreeWidgetItem* curr = new QTreeWidgetItem(gi);
+                    QTreeWidgetItem *curr = new QTreeWidgetItem(gi);
                     curr->setText(0, text);
                     curr->setText(1, t->getTranslationId());
                     gi->addChild(curr);
@@ -146,17 +143,17 @@ ExportSequencesDialog::ExportSequencesDialog( bool m, bool allowComplement, bool
                 }
             }
             tree->sortItems(0, Qt::AscendingOrder);
-            QTreeWidgetItem* def = new QTreeWidgetItem(tree);
+            QTreeWidgetItem *def = new QTreeWidgetItem(tree);
             def->setText(0, tr("Select organism"));
             def->setFlags(def->flags() & ~Qt::ItemIsSelectable);
             tree->insertTopLevelItem(0, def);
             tree->setCurrentItem(def);
-            organismCombo->setCurrentIndex(organismCombo->count()-1);
+            organismCombo->setCurrentIndex(organismCombo->count() - 1);
         }
     }
 
     formatId = defaultFormatId;
-    QPushButton* exportButton = buttonBox->button(QDialogButtonBox::Ok);
+    QPushButton *exportButton = buttonBox->button(QDialogButtonBox::Ok);
     connect(exportButton, SIGNAL(clicked()), SLOT(sl_exportClicked()));
     connect(translateButton, SIGNAL(clicked()), SLOT(sl_translationTableEnabler()));
     connect(translationTableButton, SIGNAL(clicked()), SLOT(sl_translationTableEnabler()));
@@ -208,11 +205,11 @@ void ExportSequencesDialog::updateModel() {
 
     file = saveController->getSaveFileName();
     QFileInfo fi(file);
-    if( fi.isRelative() ) {
+    if (fi.isRelative()) {
         // save it in root sequence folder
         file = QFileInfo(defaultFileName).absoluteDir().absolutePath() + "/" + file;
     }
-    sequenceName = ( customSeqNameBox->isChecked( ) ) ? sequenceNameEdit->text( ) : QString( );
+    sequenceName = (customSeqNameBox->isChecked()) ? sequenceNameEdit->text() : QString();
 
     formatId = saveController->getFormatIdToSave();
     useSpecificTable = translationTableButton->isChecked();
@@ -243,7 +240,7 @@ void ExportSequencesDialog::sl_exportClicked() {
         fileNameEdit->setFocus();
         return;
     }
-    if (backTranslateButton->isChecked() && organismCombo->currentText().isEmpty()){
+    if (backTranslateButton->isChecked() && organismCombo->currentText().isEmpty()) {
         QMessageBox::warning(this, L10N::warningTitle(), tr("Organism for back translation not specified"));
         organismCombo->setFocus();
         return;
@@ -275,5 +272,4 @@ void ExportSequencesDialog::disableAnnotationsOption(bool v) {
     withAnnotationsBox->setDisabled(v);
 }
 
-
-}//namespace
+}    // namespace U2

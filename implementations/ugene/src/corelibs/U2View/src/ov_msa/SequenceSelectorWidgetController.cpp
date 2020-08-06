@@ -19,19 +19,19 @@
  * MA 02110-1301, USA.
  */
 
+#include "SequenceSelectorWidgetController.h"
+
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "SequenceSelectorWidgetController.h"
 #include "./view_rendering/MaEditorSelection.h"
 
 const int CURSOR_START_POSITION = 0;
 
 namespace U2 {
 
-SequenceSelectorWidgetController::SequenceSelectorWidgetController(MSAEditor* _msa)
-    : msa(_msa), defaultSeqName(""), seqId(U2MsaRow::INVALID_ROW_ID)
-{
+SequenceSelectorWidgetController::SequenceSelectorWidgetController(MSAEditor *_msa)
+    : msa(_msa), defaultSeqName(""), seqId(U2MsaRow::INVALID_ROW_ID) {
     setupUi(this);
     filler = new MSACompletionFiller();
 
@@ -45,8 +45,7 @@ SequenceSelectorWidgetController::SequenceSelectorWidgetController(MSAEditor* _m
     connect(addSeq, SIGNAL(clicked()), SLOT(sl_addSeqClicked()));
     connect(deleteSeq, SIGNAL(clicked()), SLOT(sl_deleteSeqClicked()));
 
-    connect(msa->getMaObject(), SIGNAL(si_alignmentChanged(const MultipleAlignment& , const MaModificationInfo&)),
-        SLOT(sl_seqLineEditEditingFinished(const MultipleAlignment& , const MaModificationInfo&)));
+    connect(msa->getMaObject(), SIGNAL(si_alignmentChanged(const MultipleAlignment &, const MaModificationInfo &)), SLOT(sl_seqLineEditEditingFinished(const MultipleAlignment &, const MaModificationInfo &)));
 
     connect(completer, SIGNAL(si_editingFinished()), SLOT(sl_seqLineEditEditingFinished()));
 
@@ -78,7 +77,7 @@ void SequenceSelectorWidgetController::setSequenceId(qint64 newId) {
     }
 }
 
-qint64 SequenceSelectorWidgetController::sequenceId( ) const {
+qint64 SequenceSelectorWidgetController::sequenceId() const {
     return seqId;
 }
 
@@ -90,8 +89,8 @@ void SequenceSelectorWidgetController::updateCompleter() {
     }
 }
 
-void SequenceSelectorWidgetController::sl_seqLineEditEditingFinished(const MultipleAlignment& , const MaModificationInfo& modInfo){
-    if(!modInfo.rowListChanged) {
+void SequenceSelectorWidgetController::sl_seqLineEditEditingFinished(const MultipleAlignment &, const MaModificationInfo &modInfo) {
+    if (!modInfo.rowListChanged) {
         return;
     }
     filler->updateSeqList(msa->getMaObject()->getMultipleAlignment()->getRowNames());
@@ -110,18 +109,18 @@ void SequenceSelectorWidgetController::sl_seqLineEditEditingFinished() {
         }
         // index in popup list
         const int sequenceIndex = completer->getLastChosenItemIndex();
-        if ( completer == QObject::sender( ) && -1 != sequenceIndex ) {
-            const QStringList rowNames = ma->getRowNames( );
-            SAFE_POINT( rowNames.contains( selectedSeqName ), "Unexpected sequence name is selected", );
-            if ( 1 < rowNames.count( selectedSeqName ) ) { // case when there are sequences with identical names
+        if (completer == QObject::sender() && -1 != sequenceIndex) {
+            const QStringList rowNames = ma->getRowNames();
+            SAFE_POINT(rowNames.contains(selectedSeqName), "Unexpected sequence name is selected", );
+            if (1 < rowNames.count(selectedSeqName)) {    // case when there are sequences with identical names
                 int selectedRowIndex = -1;
                 // search for chosen row in the msa
-                for ( int sameNameCounter = 0; sameNameCounter <= sequenceIndex; ++sameNameCounter ) {
-                    selectedRowIndex = rowNames.indexOf( selectedSeqName, selectedRowIndex + 1 );
+                for (int sameNameCounter = 0; sameNameCounter <= sequenceIndex; ++sameNameCounter) {
+                    selectedRowIndex = rowNames.indexOf(selectedSeqName, selectedRowIndex + 1);
                 }
-                seqId = ma->getMsaRow( selectedRowIndex )->getRowId( );
-            } else { // case when chosen name is unique in the msa
-                seqId = ma->getMsaRow( selectedSeqName )->getRowId( );
+                seqId = ma->getMsaRow(selectedRowIndex)->getRowId();
+            } else {    // case when chosen name is unique in the msa
+                seqId = ma->getMsaRow(selectedSeqName)->getRowId();
             }
         }
     }
@@ -133,7 +132,7 @@ void SequenceSelectorWidgetController::sl_addSeqClicked() {
         return;
     }
 
-    const MultipleSequenceAlignmentRow selectedRow = msa->getRowByLineNumber(msa->getSelection().y());
+    const MultipleSequenceAlignmentRow selectedRow = msa->getRowByViewRowIndex(msa->getSelection().y());
     setSequenceId(selectedRow->getRowId());
     emit si_selectionChanged();
 }
@@ -150,4 +149,4 @@ void SequenceSelectorWidgetController::sl_setDefaultLineEditValue() {
     seqLineEdit->clearFocus();
 }
 
-}
+}    // namespace U2

@@ -19,40 +19,40 @@
  * MA 02110-1301, USA.
  */
 
+#include "PrimerLibraryWidget.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/L10n.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/TaskSignalMapper.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/HelpButton.h>
-#include <U2Core/QObjectScopedPointer.h>
 
 #include "EditPrimerDialog.h"
 #include "PrimerLibrary.h"
 #include "PrimerLibraryTable.h"
 #include "PrimerLibraryTableController.h"
-#include "PrimerLibraryWidget.h"
 #include "export/ExportPrimersDialog.h"
 #include "import/ImportPrimersDialog.h"
 #include "import/ImportPrimersMultiTask.h"
 
 #define CHECK_OP_UI(os, result) \
     if (os.hasError()) { \
-    QMessageBox::warning(this, QCoreApplication::translate("Global", "Error"), os.getError()); \
+        QMessageBox::warning(this, QCoreApplication::translate("Global", "Error"), os.getError()); \
     } \
     CHECK_OP(os, result);
 
 namespace U2 {
 
 PrimerLibraryWidget::PrimerLibraryWidget(QWidget *parent)
-: QWidget(parent), editPrimerButton(NULL), removePrimersButton(NULL)
-{
+    : QWidget(parent), editPrimerButton(NULL), removePrimersButton(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742643");
+    new HelpButton(this, buttonBox, "46501130");
 
     QPushButton *newPrimerButton = buttonBox->addButton(tr("New primer"), QDialogButtonBox::ActionRole);
     connect(newPrimerButton, SIGNAL(clicked()), SLOT(sl_newPrimer()));
@@ -143,4 +143,4 @@ void PrimerLibraryWidget::sl_selectionChanged() {
     exportPrimersButton->setDisabled(selection.isEmpty());
 }
 
-} // U2
+}    // namespace U2

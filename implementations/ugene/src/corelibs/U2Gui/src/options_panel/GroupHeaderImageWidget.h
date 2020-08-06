@@ -23,6 +23,7 @@
 #define _U2_GROUP_HEADER_IMAGE_WIDGET_H_
 
 #include <QLabel>
+
 #include <U2Core/global.h>
 
 namespace U2 {
@@ -30,25 +31,28 @@ namespace U2 {
 /**
  * Widget with image that represents a group header.
  */
-class U2GUI_EXPORT GroupHeaderImageWidget : public QLabel
-{
+class U2GUI_EXPORT GroupHeaderImageWidget : public QLabel {
     Q_OBJECT
 public:
-    GroupHeaderImageWidget(const QString& groupId, const QPixmap& image);
+    GroupHeaderImageWidget(const QString &groupId, const QPixmap &image);
 
-    inline const QString& getGroupId() { return groupId; }
+    inline const QString &getGroupId() {
+        return groupId;
+    }
 
     void setHeaderSelected();
     void setHeaderDeselected();
 
-    void changeState() {emit si_groupHeaderPressed(groupId);}
+    void changeState() {
+        emit si_groupHeaderPressed(groupId);
+    }
 
 signals:
     /** Emitted when the widget has been pressed */
     void si_groupHeaderPressed(QString groupId);
 
 protected:
-    virtual void mousePressEvent(QMouseEvent*);
+    virtual void mousePressEvent(QMouseEvent *);
 
 private:
     QString groupId;
@@ -56,8 +60,6 @@ private:
     static const QString HEADER_COMMON_STYLE;
 };
 
-
-} // namespace
+}    // namespace U2
 
 #endif
-

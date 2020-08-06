@@ -19,12 +19,12 @@
  * MA 02110-1301, USA.
  */
 
+#include "KrakenSupport.h"
+
 #include <QDir>
 #include <QFileInfo>
 
 #include <U2Core/AppContext.h>
-
-#include "KrakenSupport.h"
 
 namespace U2 {
 
@@ -34,9 +34,8 @@ const QString KrakenSupport::CLASSIFY_TOOL = "kraken";
 const QString KrakenSupport::CLASSIFY_TOOL_ID = "USUPP_KRAKEN";
 const QString KrakenSupport::GROUP_NAME = "Kraken";
 
-KrakenSupport::KrakenSupport(const QString& id, const QString &name)
-    : ExternalTool(id, name, "")
-{
+KrakenSupport::KrakenSupport(const QString &id, const QString &name)
+    : ExternalTool(id, name, "") {
     toolKitName = GROUP_NAME;
 
     validationArguments << "--version";
@@ -72,4 +71,4 @@ void KrakenSupport::initClassify() {
     description = tr("The tool is used to classify a set of sequences. It does this by examining the k-mers within a read and querying a database with those k-mers.");
 }
 
-}   // namespace U2
+}    // namespace U2

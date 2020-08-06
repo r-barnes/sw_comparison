@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "AnnotatorTests.h"
+
 #include <QDir>
 #include <QStringList>
 
@@ -27,8 +29,6 @@
 #include <U2Core/DocumentModel.h>
 #include <U2Core/GObject.h>
 #include <U2Core/GObjectTypes.h>
-
-#include "AnnotatorTests.h"
 
 /* TRANSLATOR U2::GTest */
 
@@ -42,11 +42,11 @@ namespace U2 {
 #define FIT_TO_REGION_ATTR "is_fit_to_region"
 #define DOC_ATTR "doc"
 #define SEQ_ATTR "seq"
-#define EXPECTED_RESULTS_ATTR  "expected_results"
+#define EXPECTED_RESULTS_ATTR "expected_results"
 #define RES_ATTR "result"
 #define CIRCULAR_ATTR "circular"
 
-void GTest_AnnotatorSearch::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_AnnotatorSearch::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     docName = el.attribute(DOC_ATTR);
@@ -66,21 +66,21 @@ void GTest_AnnotatorSearch::init(XMLTestFormat *tf, const QDomElement& el) {
         failMissingValue(GROUPS_ATTR);
         return;
     }
-    groupsToSearch = (groups.split(QRegExp("\\,"))).toSet(); //may be QRegExp("\\,")
+    groupsToSearch = (groups.split(QRegExp("\\,"))).toSet();    //may be QRegExp("\\,")
 
     QString expected = el.attribute(EXPECTED_RESULTS_ATTR);
     if (!expected.isEmpty()) {
-        QStringList expectedList = expected.split(QRegExp("\\,")); //may be QRegExp("\\,")
-        foreach(QString region, expectedList) {
+        QStringList expectedList = expected.split(QRegExp("\\,"));    //may be QRegExp("\\,")
+        foreach (QString region, expectedList) {
             QStringList bounds = region.split(QRegExp("\\.."));
             if (bounds.size() != 2) {
-                stateInfo.setError( QString("wrong value for %1").arg(EXPECTED_RESULTS_ATTR));
+                stateInfo.setError(QString("wrong value for %1").arg(EXPECTED_RESULTS_ATTR));
                 return;
             }
             bool startOk, finishOk;
             int start = bounds.first().toInt(&startOk), finish = bounds.last().toInt(&finishOk);
             if (!startOk || !finishOk) {
-                stateInfo.setError( QString("wrong value for %1").arg(EXPECTED_RESULTS_ATTR));
+                stateInfo.setError(QString("wrong value for %1").arg(EXPECTED_RESULTS_ATTR));
                 return;
             }
             start--;
@@ -96,7 +96,7 @@ void GTest_AnnotatorSearch::init(XMLTestFormat *tf, const QDomElement& el) {
     bool isOk = false;
     regionSize = strRegionSize.toInt(&isOk);
     if (!isOk) {
-        stateInfo.setError( QString("Unable to convert. Value wrong %1").arg(REGION_SIZE_ATTR));
+        stateInfo.setError(QString("Unable to convert. Value wrong %1").arg(REGION_SIZE_ATTR));
         return;
     }
 
@@ -107,41 +107,41 @@ void GTest_AnnotatorSearch::init(XMLTestFormat *tf, const QDomElement& el) {
     }
     if (strFitToRegion == "true") {
         st = CollocationsAlgorithm::NormalSearch;
-    } else if (strFitToRegion == "false"){
+    } else if (strFitToRegion == "false") {
         st = CollocationsAlgorithm::PartialSearch;
     } else {
-        stateInfo.setError( QString("Unable to convert. Value wrong %1").arg(FIT_TO_REGION_ATTR));
+        stateInfo.setError(QString("Unable to convert. Value wrong %1").arg(FIT_TO_REGION_ATTR));
         return;
     }
 }
 
 void GTest_AnnotatorSearch::prepare() {
     searchTask = NULL;
-    Document* doc = getContext<Document>(this, docName);
+    Document *doc = getContext<Document>(this, docName);
     if (doc == NULL) {
-        stateInfo.setError( QString("context not found %1").arg(docName));
+        stateInfo.setError(QString("context not found %1").arg(docName));
         return;
     }
 
-    QList<GObject*> list = doc->findGObjectByType(GObjectTypes::SEQUENCE);
+    QList<GObject *> list = doc->findGObjectByType(GObjectTypes::SEQUENCE);
     if (list.size() == 0) {
-        stateInfo.setError( QString("container of object with type \"%1\" is empty").arg(GObjectTypes::SEQUENCE));
+        stateInfo.setError(QString("container of object with type \"%1\" is empty").arg(GObjectTypes::SEQUENCE));
         return;
     }
     GObject *obj = list.first();
-    if(obj==NULL){
-        stateInfo.setError( QString("object with type \"%1\" not found").arg(GObjectTypes::SEQUENCE));
+    if (obj == NULL) {
+        stateInfo.setError(QString("object with type \"%1\" not found").arg(GObjectTypes::SEQUENCE));
         return;
     }
-    assert(obj!=NULL);
-    U2SequenceObject * mySequence = qobject_cast<U2SequenceObject*>(obj);
-    if(mySequence==NULL){
-        stateInfo.setError( QString("error can't cast to sequence from GObject"));
+    assert(obj != NULL);
+    U2SequenceObject *mySequence = qobject_cast<U2SequenceObject *>(obj);
+    if (mySequence == NULL) {
+        stateInfo.setError(QString("error can't cast to sequence from GObject"));
         return;
     }
-    AnnotationTableObject *ao =  getContext<AnnotationTableObject>(this, seqName);
+    AnnotationTableObject *ao = getContext<AnnotationTableObject>(this, seqName);
     if (NULL == ao) {
-        stateInfo.setError( QString("context not found %1").arg(seqName));
+        stateInfo.setError(QString("context not found %1").arg(seqName));
         return;
     }
     QList<AnnotationTableObject *> aoList;
@@ -155,17 +155,18 @@ void GTest_AnnotatorSearch::prepare() {
 }
 
 Task::ReportResult GTest_AnnotatorSearch::report() {
-    if(searchTask != NULL){
-        if (!searchTask->hasError()){
+    if (searchTask != NULL) {
+        if (!searchTask->hasError()) {
             QVector<U2Region> actualResults = searchTask->popResults();
             int actualSize = actualResults.size(), expectedSize = expectedResults.size();
             if (actualSize != expectedSize) {
-                stateInfo.setError( QString("Expected and Actual lists of regions are different: %1 %2").arg(expectedSize).arg(actualSize));
+                stateInfo.setError(QString("Expected and Actual lists of regions are different: %1 %2").arg(expectedSize).arg(actualSize));
                 return ReportResult_Finished;
             }
-            qSort(actualResults); qSort(expectedResults);
+            qSort(actualResults);
+            qSort(expectedResults);
             if (actualResults != expectedResults) {
-                stateInfo.setError( QString("One of the expected regions not found in results").arg(expectedSize).arg(actualSize));
+                stateInfo.setError(QString("One of the expected regions not found in results").arg(expectedSize).arg(actualSize));
             }
         }
     }
@@ -175,7 +176,7 @@ Task::ReportResult GTest_AnnotatorSearch::report() {
 //////////////////////////////////////////////////////////////////////////
 //GTest_PlasmidAutoAnnotation
 
-void GTest_CustomAutoAnnotation::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_CustomAutoAnnotation::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     docName = el.attribute(DOC_ATTR);
@@ -203,33 +204,31 @@ void GTest_CustomAutoAnnotation::init(XMLTestFormat *tf, const QDomElement& el) 
             isCircular = true;
         }
     }
-
-
 }
 
 void GTest_CustomAutoAnnotation::prepare() {
     searchTask = NULL;
-    Document* doc = getContext<Document>(this, docName);
+    Document *doc = getContext<Document>(this, docName);
     if (doc == NULL) {
-        stateInfo.setError( QString("context not found %1").arg(docName));
+        stateInfo.setError(QString("context not found %1").arg(docName));
         return;
     }
 
-    QList<GObject*> list = doc->findGObjectByType(GObjectTypes::SEQUENCE);
+    QList<GObject *> list = doc->findGObjectByType(GObjectTypes::SEQUENCE);
     if (list.size() == 0) {
-        stateInfo.setError( QString("container of object with type \"%1\" is empty").arg(GObjectTypes::SEQUENCE));
+        stateInfo.setError(QString("container of object with type \"%1\" is empty").arg(GObjectTypes::SEQUENCE));
         return;
     }
 
     GObject *obj = list.first();
-    if(obj==NULL){
-        stateInfo.setError( QString("object with type \"%1\" not found").arg(GObjectTypes::SEQUENCE));
+    if (obj == NULL) {
+        stateInfo.setError(QString("object with type \"%1\" not found").arg(GObjectTypes::SEQUENCE));
         return;
     }
-    assert(obj!=NULL);
-    U2SequenceObject * dnaObj = qobject_cast<U2SequenceObject*>(obj);
-    if(dnaObj==NULL){
-        stateInfo.setError( QString("error can't cast to sequence from GObject"));
+    assert(obj != NULL);
+    U2SequenceObject *dnaObj = qobject_cast<U2SequenceObject *>(obj);
+    if (dnaObj == NULL) {
+        stateInfo.setError(QString("error can't cast to sequence from GObject"));
         return;
     }
 
@@ -251,8 +250,6 @@ void GTest_CustomAutoAnnotation::prepare() {
 
     searchTask = new CustomPatternAnnotationTask(ao, dnaObj->getEntityRef(), store);
     addSubTask(searchTask);
-
-
 }
 
 Task::ReportResult GTest_CustomAutoAnnotation::report() {
@@ -273,8 +270,6 @@ Task::ReportResult GTest_CustomAutoAnnotation::report() {
     return ReportResult_Finished;
 }
 
-
-
 //////////////////////////////////////////////////////////////////////////
 //GTest_GeneByGeneApproach
 
@@ -282,8 +277,7 @@ Task::ReportResult GTest_CustomAutoAnnotation::report() {
 #define ANN_NAME_ATTR "ann_name"
 #define EXPECTED_RESULT "exp_result"
 
-
-void GTest_GeneByGeneApproach::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_GeneByGeneApproach::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     docName = el.attribute(DOC_ATTR);
@@ -307,10 +301,10 @@ void GTest_GeneByGeneApproach::init(XMLTestFormat *tf, const QDomElement& el) {
     QString expectedStr = el.attribute(EXPECTED_RESULT);
     if (expectedStr == "true") {
         expected = true;
-    } else if (expectedStr == "false"){
+    } else if (expectedStr == "false") {
         expected = false;
     } else {
-        stateInfo.setError( QString("Unable to convert. Value wrong %1").arg(EXPECTED_RESULT));
+        stateInfo.setError(QString("Unable to convert. Value wrong %1").arg(EXPECTED_RESULT));
         return;
     }
 
@@ -321,42 +315,40 @@ void GTest_GeneByGeneApproach::init(XMLTestFormat *tf, const QDomElement& el) {
         failMissingValue(IDENTITY_ATTR);
         return;
     }
-
 }
 
 void GTest_GeneByGeneApproach::prepare() {
-
-    Document* doc = getContext<Document>(this, docName);
+    Document *doc = getContext<Document>(this, docName);
     if (doc == NULL) {
-        stateInfo.setError( QString("context not found %1").arg(docName));
+        stateInfo.setError(QString("context not found %1").arg(docName));
         return;
     }
 
-    QList<GObject*> list = doc->findGObjectByType(GObjectTypes::SEQUENCE);
+    QList<GObject *> list = doc->findGObjectByType(GObjectTypes::SEQUENCE);
     if (list.size() == 0) {
-        stateInfo.setError( QString("container of object with type \"%1\" is empty").arg(GObjectTypes::SEQUENCE));
+        stateInfo.setError(QString("container of object with type \"%1\" is empty").arg(GObjectTypes::SEQUENCE));
         return;
     }
     GObject *obj = NULL;
-    foreach(GObject* o, list){
-        if (o->getGObjectName() == seqName){
+    foreach (GObject *o, list) {
+        if (o->getGObjectName() == seqName) {
             obj = o;
             break;
         }
     }
-    if(obj==NULL){
-        stateInfo.setError( QString("object with name \"%1\" not found").arg(seqName));
+    if (obj == NULL) {
+        stateInfo.setError(QString("object with name \"%1\" not found").arg(seqName));
         return;
     }
-    assert(obj!=NULL);
-    U2SequenceObject * mySequence = qobject_cast<U2SequenceObject*>(obj);
-    if(mySequence==NULL){
-        stateInfo.setError( QString("error can't cast to sequence from GObject"));
+    assert(obj != NULL);
+    U2SequenceObject *mySequence = qobject_cast<U2SequenceObject *>(obj);
+    if (mySequence == NULL) {
+        stateInfo.setError(QString("error can't cast to sequence from GObject"));
         return;
     }
-    AnnotationTableObject *ao =  getContext<AnnotationTableObject>(this, seqName);
-    if(ao==NULL){
-        stateInfo.setError( QString("context not found %1").arg(seqName));
+    AnnotationTableObject *ao = getContext<AnnotationTableObject>(this, seqName);
+    if (ao == NULL) {
+        stateInfo.setError(QString("context not found %1").arg(seqName));
         return;
     }
     const QList<Annotation *> annotations = ao->getAnnotations();
@@ -371,11 +363,11 @@ void GTest_GeneByGeneApproach::prepare() {
 }
 
 Task::ReportResult GTest_GeneByGeneApproach::report() {
-    if (expected!=result.identical){
-        stateInfo.setError( QString("Expected gene is not found"));
+    if (expected != result.identical) {
+        stateInfo.setError(QString("Expected gene is not found"));
     }
 
     return ReportResult_Finished;
 }
 
-} //namespace
+}    // namespace U2

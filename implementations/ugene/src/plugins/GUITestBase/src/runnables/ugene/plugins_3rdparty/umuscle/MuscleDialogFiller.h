@@ -43,6 +43,6 @@ private:
     bool translateToAmino;
 };
 
-}
+}    // namespace U2
 
 #endif

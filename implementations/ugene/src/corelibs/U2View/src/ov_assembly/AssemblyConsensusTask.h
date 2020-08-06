@@ -22,13 +22,13 @@
 #ifndef _U2_ASSEMBLY_CONSENSUS_TASK_H_
 #define _U2_ASSEMBLY_CONSENSUS_TASK_H_
 
-#include "AssemblyModel.h"
+#include <U2Algorithm/AssemblyConsensusAlgorithm.h>
 
 #include <U2Core/BackgroundTaskRunner.h>
 #include <U2Core/U2Assembly.h>
 #include <U2Core/U2Type.h>
 
-#include <U2Algorithm/AssemblyConsensusAlgorithm.h>
+#include "AssemblyModel.h"
 
 namespace U2 {
 
@@ -50,8 +50,9 @@ struct U2VIEW_EXPORT AssemblyConsensusTaskSettings {
 class AssemblyConsensusTask : public BackgroundTask<ConsensusInfo> {
     Q_OBJECT
 public:
-    AssemblyConsensusTask(const AssemblyConsensusTaskSettings & settings);
+    AssemblyConsensusTask(const AssemblyConsensusTaskSettings &settings);
     virtual void run();
+
 private:
     AssemblyConsensusTaskSettings settings;
 };
@@ -64,7 +65,7 @@ public:
     virtual bool hasNext() = 0;
     virtual AssemblyConsensusTaskSettings getNextSettings() = 0;
     virtual int count() = 0;
-    virtual void reportResult(const ConsensusInfo & result) = 0;
+    virtual void reportResult(const ConsensusInfo &result) = 0;
 };
 
 /**
@@ -74,13 +75,13 @@ public:
 class AssemblyConsensusWorker : public Task {
     Q_OBJECT
 public:
-    AssemblyConsensusWorker(ConsensusSettingsQueue * settingsQueue);
+    AssemblyConsensusWorker(ConsensusSettingsQueue *settingsQueue);
     virtual void run();
 
 private:
-    ConsensusSettingsQueue * settingsQueue;
+    ConsensusSettingsQueue *settingsQueue;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_ASSEMBLY_CONSENSUS_H_
+#endif    // _U2_ASSEMBLY_CONSENSUS_H_

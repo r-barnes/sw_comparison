@@ -19,12 +19,11 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/AppContext.h>
+#include "AbstractProjectFilterTask.h"
 
+#include <U2Core/AppContext.h>
 #include <U2Core/L10n.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "AbstractProjectFilterTask.h"
 
 namespace U2 {
 
@@ -32,11 +31,9 @@ namespace U2 {
 /// AbstractProjectFilterTask
 //////////////////////////////////////////////////////////////////////////
 
-AbstractProjectFilterTask::AbstractProjectFilterTask(const ProjectTreeControllerModeSettings &settings, const QString &filterGroupName,
-    const QList<QPointer<Document> > &docs)
+AbstractProjectFilterTask::AbstractProjectFilterTask(const ProjectTreeControllerModeSettings &settings, const QString &filterGroupName, const QList<QPointer<Document>> &docs)
     : Task(tr("Filtering project content by the \"%1\" criterion").arg(filterGroupName), TaskFlag_None), settings(settings), docs(docs),
-    filterGroupName(filterGroupName), filteredObjCountPerIteration(10), totalObjectCount(0), processedObjectCount(0)
-{
+      filterGroupName(filterGroupName), filteredObjCountPerIteration(10), totalObjectCount(0), processedObjectCount(0) {
     tpm = Task::Progress_Manual;
 
     SAFE_POINT(!filterGroupName.isEmpty(), "Project filter has empty name", );
@@ -95,16 +92,14 @@ void AbstractProjectFilterTask::doStaticInitialization() {
 //////////////////////////////////////////////////////////////////////////
 
 ProjectFilterTaskFactory::~ProjectFilterTaskFactory() {
-
 }
 
-AbstractProjectFilterTask * ProjectFilterTaskFactory::registerNewTask(const ProjectTreeControllerModeSettings &settings,
-    const QList<QPointer<Document> > &docs) const
-{
+AbstractProjectFilterTask *ProjectFilterTaskFactory::registerNewTask(const ProjectTreeControllerModeSettings &settings,
+                                                                     const QList<QPointer<Document>> &docs) const {
     AbstractProjectFilterTask *task = createNewTask(settings, docs);
     SAFE_POINT(NULL != task, L10N::nullPointerError("project filter task"), NULL);
     AppContext::getTaskScheduler()->registerTopLevelTask(task);
     return task;
 }
 
-} // namespace U2
+}    // namespace U2

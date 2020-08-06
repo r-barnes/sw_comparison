@@ -22,17 +22,14 @@
 #ifndef _U2_SEQPOS_SETTINGS_
 #define _U2_SEQPOS_SETTINGS_
 
-
 #include <QList>
 #include <QString>
 #include <QStringList>
 
 namespace U2 {
 
-
 class SeqPosSettings {
 public:
-
     static const QString MOTIF_DB_CISTROME;
     static const QString MOTIF_DB_PDM;
     static const QString MOTIF_DB_Y1H;
@@ -42,22 +39,21 @@ public:
 
     SeqPosSettings();
 
-    QString     outDir;
-    QString     genomeAssembly;
-    bool        findDeNovo;
-    QString     motifDB;
-    QString     outName;
-    qint64      regWidth;
-    float       pVal;
+    QString outDir;
+    QString genomeAssembly;
+    bool findDeNovo;
+    QString motifDB;
+    QString outName;
+    qint64 regWidth;
+    float pVal;
 
 public:
-     QStringList getArguments(const QString& annFilePath);
+    QStringList getArguments(const QString &annFilePath);
 
 private:
     void initDefault();
-
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_SEQPOS_SETTINGS_
+#endif    // _U2_SEQPOS_SETTINGS_

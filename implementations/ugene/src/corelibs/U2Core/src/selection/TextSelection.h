@@ -29,15 +29,19 @@ namespace U2 {
 
 class TextObject;
 
-class  U2CORE_EXPORT TextSelection : public LRegionsSelection {
+class U2CORE_EXPORT TextSelection : public LRegionsSelection {
 public:
-    TextSelection(TextObject* _obj, QObject* p = NULL) : LRegionsSelection(GSelectionTypes::TEXT, p), obj(_obj) {}
-    TextObject *getObject() const { return obj; }
+    TextSelection(TextObject *_obj, QObject *p = NULL)
+        : LRegionsSelection(GSelectionTypes::TEXT, p), obj(_obj) {
+    }
+    TextObject *getObject() const {
+        return obj;
+    }
 
 private:
-    TextObject* obj;
+    TextObject *obj;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

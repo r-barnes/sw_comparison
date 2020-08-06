@@ -19,16 +19,14 @@
  * MA 02110-1301, USA.
  */
 
-
 #ifndef _U2_MSA_DBI_UTILS_UNIT_TESTS_H_
 #define _U2_MSA_DBI_UTILS_UNIT_TESTS_H_
 
-#include <U2Core/MultipleSequenceAlignment.h>
-
 #include <unittest.h>
 
-#include "core/dbi/DbiTest.h"
+#include <U2Core/MultipleSequenceAlignment.h>
 
+#include "core/dbi/DbiTest.h"
 
 namespace U2 {
 
@@ -37,9 +35,7 @@ class U2SequenceDbi;
 
 class Utils {
 public:
-    static void addRow(U2Dbi *dbi, const U2DataId &msaId,
-        const QByteArray &name, const QByteArray &seq, const QList<U2MsaGap> &gaps,
-        U2OpStatus &os);
+    static void addRow(U2Dbi *dbi, const U2DataId &msaId, const QByteArray &name, const QByteArray &seq, const QList<U2MsaGap> &gaps, U2OpStatus &os);
 };
 
 class MsaDbiUtilsTestUtils {
@@ -47,12 +43,12 @@ public:
     static void init();
     static void shutdown();
 
-    static U2MsaDbi* getMsaDbi();
-    static U2SequenceDbi* getSequenceDbi();
+    static U2MsaDbi *getMsaDbi();
+    static U2SequenceDbi *getSequenceDbi();
 
     static U2EntityRef initTestAlignment(const qint64 rowConut);
-    static U2EntityRef initTestAlignment(const QStringList& rowsData);
-    static U2EntityRef initTestAlignment(QList<U2MsaRow>& rows);
+    static U2EntityRef initTestAlignment(const QStringList &rowsData);
+    static U2EntityRef initTestAlignment(QList<U2MsaRow> &rows);
     static QStringList getRowNames(U2EntityRef msaRef);
 
     static U2EntityRef removeRegionTestAlignment(U2OpStatus &os);
@@ -62,14 +58,13 @@ public:
 
 private:
     static TestDbiProvider dbiProvider;
-    static const QString& MSA_DB_URL;
-    static U2MsaDbi* msaDbi;
-    static U2SequenceDbi* sequenceDbi;
+    static const QString &MSA_DB_URL;
+    static U2MsaDbi *msaDbi;
+    static U2SequenceDbi *sequenceDbi;
 
 private:
     static U2MsaRow addRow(const QByteArray &name, const QByteArray &seq, const QList<U2MsaGap> &gaps, U2OpStatus &os);
 };
-
 
 /**
   * Changeing order of rows:
@@ -119,7 +114,6 @@ DECLARE_TEST(MsaDbiUtilsUnitTests, moveRows_threeBlocksWithOnceGluing);
 DECLARE_TEST(MsaDbiUtilsUnitTests, moveRows_threeBlocksWithTwiceGluing);
 DECLARE_TEST(MsaDbiUtilsUnitTests, moveRows_UnorderedList);
 DECLARE_TEST(MsaDbiUtilsUnitTests, moveRows_InvalidRowList);
-
 
 /**
   * Trim gaps:
@@ -173,7 +167,7 @@ DECLARE_TEST(MsaDbiUtilsUnitTests, updateMsa_additionalRows);
 DECLARE_TEST(MsaDbiUtilsUnitTests, updateMsa_removeRows);
 DECLARE_TEST(MsaDbiUtilsUnitTests, updateMsa_clear);
 
-}   // namespace
+}    // namespace U2
 
 DECLARE_METATYPE(MsaDbiUtilsUnitTests, moveRows_oneLineInMiddle);
 DECLARE_METATYPE(MsaDbiUtilsUnitTests, moveRows_oneLineInMiddleToTheTop);
@@ -220,4 +214,4 @@ DECLARE_METATYPE(MsaDbiUtilsUnitTests, updateMsa_additionalRows);
 DECLARE_METATYPE(MsaDbiUtilsUnitTests, updateMsa_removeRows);
 DECLARE_METATYPE(MsaDbiUtilsUnitTests, updateMsa_clear);
 
-#endif // _U2_MSA_DBI_UTILS_UNIT_TESTS_H_
+#endif    // _U2_MSA_DBI_UTILS_UNIT_TESTS_H_

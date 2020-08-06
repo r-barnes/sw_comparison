@@ -500,7 +500,7 @@ QString Annotation::getQualifiersTip(const SharedAnnotationData &data, int maxRo
     QString tip;
 
     int rows = 0;
-    const int QUALIFIER_VALUE_CUT = 40;
+    const qint64 QUALIFIER_VALUE_CUT = 40;
 
     QString cigar;
     QString ref;
@@ -546,57 +546,82 @@ QString Annotation::getQualifiersTip(const SharedAnnotationData &data, int maxRo
         }
     }
 
-    if (NULL != seqObj && rows <= maxRows && (data->location->strand.isCompementary() || complTT != NULL) && canShowSeq) {
+    if (NULL != seqObj && rows <= maxRows && (data->location->strand.isCompementary() || complTT != nullptr) && canShowSeq) {
         QVector<U2Region> loc = data->location->regions;
-        std::stable_sort(loc.begin(), loc.end());
         QString seqVal;
         QString aminoVal;
         bool complete = true;
-        bool hasAnnotationOnJunctionPoint = seqObj->isCircular() && U1AnnotationUtils::isRegionsAroundJunctionPoint(loc, seqLen);
-        if (hasAnnotationOnJunctionPoint) {
-            U2Region start = loc.takeFirst();
-            loc.push_back(start);
+        QList<RegionsPair> merged = U1AnnotationUtils::mergeAnnotatiedRegionsAroundJunctionPoint(loc, seqLen);
+        bool isComplementary = data->location->strand.isCompementary() && nullptr != complTT;
+        if (isComplementary) {
+            std::reverse(merged.begin(), merged.end());
         }
-        QByteArray tripletBeginingBeforeJunctionPoint;
-        for (int i = 0; i < loc.size(); i++) {
-            if (!hasAnnotationOnJunctionPoint || i != loc.size() - 1) {
-                if (!seqVal.isEmpty()) {
-                    seqVal += "^";
-                }
-                if (!aminoVal.isEmpty()) {
-                    aminoVal += "^";
-                }
+        bool hasAnnotatiedRegionsContainJunctionPoint = seqObj->isCircular() && U1AnnotationUtils::isAnnotationContainsJunctionPoint(merged);
+        foreach (const RegionsPair &pair, merged) {
+            if (!seqVal.isEmpty()) {
+                seqVal += "^";
             }
-            const U2Region &r = loc.at(i);
-            const int currentRegionLength = qMin(int(r.length), QUALIFIER_VALUE_CUT - seqVal.length());
-            const int tripletBeginingLength = tripletBeginingBeforeJunctionPoint.length();
-            const int len = currentRegionLength + tripletBeginingLength;
-            if (currentRegionLength != r.length) {
+            if (!aminoVal.isEmpty()) {
+                aminoVal += "^";
+            }
+            qint64 firstRegionLength = qMin<qint64>(pair.first.length, QUALIFIER_VALUE_CUT - seqVal.length());
+            qint64 secondPartRegionLength = 0;
+            if (firstRegionLength != pair.first.length) {
                 complete = false;
             }
-            bool isAminoBeforeJunctionPoint = hasAnnotationOnJunctionPoint && i == loc.size() - 2;
-            bool isAminoAfterJunctionPoint = hasAnnotationOnJunctionPoint && i == loc.size() - 1;
-            bool isComlpementary = data->location->strand.isCompementary() && nullptr != complTT;
-            QByteArray ba = seqObj->getSequenceData(U2Region((isComlpementary ? r.endPos() - currentRegionLength : r.startPos), currentRegionLength));
-             if (isAminoBeforeJunctionPoint) {
-                tripletBeginingBeforeJunctionPoint = ba;
+            U2Region firstRegion;
+            U2Region secondRegion;
+            if (hasAnnotatiedRegionsContainJunctionPoint && !pair.second.isEmpty()) {
+                if (isComplementary) {
+                    /*
+                     * If the sequence is circular and the annotation is complementary the region from 0 to N should be shown first from N to 0 and the region from M to 'sequeceLength' should be shown second from 'sequeceLength' to M
+                     */
+                    firstRegionLength = qMin<qint64>(pair.second.length, QUALIFIER_VALUE_CUT - seqVal.length());
+                    if (firstRegionLength != pair.second.length) {
+                        complete = false;
+                    }
+                    firstRegion = U2Region((pair.second.endPos() - firstRegionLength), firstRegionLength);
+                    secondPartRegionLength = qMin<qint64>(pair.first.length, QUALIFIER_VALUE_CUT - (seqVal.length() + firstRegionLength));
+                    if (secondPartRegionLength != pair.first.length) {
+                        complete = false;
+                    }
+                    secondRegion = U2Region((pair.first.endPos() - secondPartRegionLength), secondPartRegionLength);
+                } else {
+                    firstRegion = U2Region(pair.first.startPos, firstRegionLength);
+                    secondPartRegionLength = qMin<qint64>(pair.second.length, QUALIFIER_VALUE_CUT - (seqVal.length() + firstRegion.length));
+                    if (secondPartRegionLength != pair.second.length) {
+                        complete = false;
+                    }
+                    secondRegion = U2Region(pair.second.startPos, secondPartRegionLength);
+                }
             } else {
-                if (isAminoAfterJunctionPoint) {
-                    ba.insert(0, tripletBeginingBeforeJunctionPoint);
-                    tripletBeginingBeforeJunctionPoint.clear();
-                }
-                if (isComlpementary) {
-                    complTT->translate(ba.data(), len);
-                    TextUtils::reverse(ba.data(), len);
-                }
-                seqVal += QString::fromLocal8Bit(ba.constData(), len);
-                if (nullptr != aminoTT) {
-                    const int aminoLen = aminoTT->translate(ba.data(), len);
-                    aminoVal += QString::fromLocal8Bit(ba.data(), aminoLen);
+                if (isComplementary) {
+                    firstRegion = U2Region((pair.first.endPos() - firstRegionLength), firstRegionLength);
+                } else {
+                    firstRegion = U2Region(pair.first.startPos, firstRegionLength);
                 }
             }
+            QByteArray first = seqObj->getSequenceData(firstRegion);
+            if (isComplementary) {
+                complTT->translate(first.data(), firstRegionLength);
+                TextUtils::reverse(first.data(), firstRegionLength);
+            }
+            QByteArray second;
+            if (!secondRegion.isEmpty()) {
+                second = seqObj->getSequenceData(secondRegion);
+                if (isComplementary) {
+                    complTT->translate(second.data(), secondPartRegionLength);
+                    TextUtils::reverse(second.data(), secondPartRegionLength);
+                }
+            }
+            QByteArray resultSequenceTip = first + second;
+            seqVal += QString::fromLocal8Bit(resultSequenceTip);
+            if (nullptr != aminoTT) {
+                const int aminoLen = aminoTT->translate(resultSequenceTip.data(), firstRegionLength + secondPartRegionLength);
+                aminoVal += QString::fromLocal8Bit(resultSequenceTip, aminoLen);
+            }
             if (seqVal.length() >= QUALIFIER_VALUE_CUT) {
-                complete &= (i == loc.size() - 1);
+                complete = complete && merged.last() == pair;
                 break;
             }
         }

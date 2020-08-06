@@ -43,19 +43,20 @@ class ComposeResultSubTask : public Task {
 public:
     ComposeResultSubTask(const SharedDbiDataHandler &reference,
                          const QList<SharedDbiDataHandler> &reads,
-                         const QList<BlastAndSwReadTask*> subTasks, DbiDataStorage *storage);
+                         const QList<BlastAndSwReadTask *> subTasks,
+                         DbiDataStorage *storage);
     ~ComposeResultSubTask();
 
     void prepare();
     void run();
 
-    const SharedDbiDataHandler& getAnnotations() const;
+    const SharedDbiDataHandler &getAnnotations() const;
 
     U2SequenceObject *takeReferenceSequenceObject();
     MultipleChromatogramAlignmentObject *takeMcaObject();
 
 private:
-    BlastAndSwReadTask * getBlastSwTask(int readNum);
+    BlastAndSwReadTask *getBlastSwTask(int readNum);
     DNASequence getReadSequence(int readNum);
     DNAChromatogram getReadChromatogram(int readNum);
     U2MsaRowGapModel getReferenceGaps();
@@ -70,14 +71,14 @@ private:
 private:
     const SharedDbiDataHandler reference;
     const QList<SharedDbiDataHandler> reads;
-    const QList<BlastAndSwReadTask*> subTasks;
+    const QList<BlastAndSwReadTask *> subTasks;
     DbiDataStorage *storage;
     MultipleChromatogramAlignmentObject *mcaObject;
     U2SequenceObject *referenceSequenceObject;
     SharedDbiDataHandler annotations;
 };
 
-} // namespace Workflow
-} // namespace U2
+}    // namespace Workflow
+}    // namespace U2
 
-#endif // _U2_COMPOSE_RESULT_SUBTASK_H_
+#endif    // _U2_COMPOSE_RESULT_SUBTASK_H_

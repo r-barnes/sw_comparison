@@ -35,19 +35,18 @@
 namespace U2 {
 namespace LocalWorkflow {
 
-
 class ClassificationFilterSettings {
 public:
-//    static const QString SPECIES;
-//    static const QString GENUS;
-//    static const QString FAMILY;
-//    static const QString ORDER;
-//    static const QString CLASS;
-//    static const QString PHYLUM;
+    //    static const QString SPECIES;
+    //    static const QString GENUS;
+    //    static const QString FAMILY;
+    //    static const QString ORDER;
+    //    static const QString CLASS;
+    //    static const QString PHYLUM;
 
     ClassificationFilterSettings();
 
-//    QString rank;
+    //    QString rank;
     bool saveUnspecificSequences;
     QSet<TaxID> taxons;
     QString workingDir;
@@ -62,23 +61,27 @@ typedef PrompterBase<ClassificationFilterPrompter> ClassificationFilterBase;
 class ClassificationFilterPrompter : public ClassificationFilterBase {
     Q_OBJECT
 public:
-    ClassificationFilterPrompter(Actor* p = 0) : ClassificationFilterBase(p) {}
+    ClassificationFilterPrompter(Actor *p = 0)
+        : ClassificationFilterBase(p) {
+    }
+
 protected:
     QString composeRichDoc();
 };
 
-class ClassificationFilterWorker: public BaseWorker {
+class ClassificationFilterWorker : public BaseWorker {
     Q_OBJECT
 public:
     ClassificationFilterWorker(Actor *a);
+
 protected:
     void init();
-//    bool isReady() const;
-    Task * tick();
-    void cleanup() {}
+    //    bool isReady() const;
+    Task *tick();
+    void cleanup() {
+    }
 
 private:
-
 private slots:
     void sl_taskFinished(Task *task);
 
@@ -92,7 +95,7 @@ protected:
 class ClassificationFilterValidator : public ActorValidator {
     Q_DECLARE_TR_FUNCTIONS(ClassificationFilterValidator)
 public:
-    bool validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString>& options) const;
+    bool validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &options) const;
 
 private:
     bool validateTaxaListAttribute(const Actor *actor, NotificationsList &notificationList) const;
@@ -103,8 +106,12 @@ class ClassificationFilterWorkerFactory : public DomainFactory {
 public:
     static void init();
     static void cleanup();
-    ClassificationFilterWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    Worker* createWorker(Actor* a) { return new ClassificationFilterWorker(a); }
+    ClassificationFilterWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    Worker *createWorker(Actor *a) {
+        return new ClassificationFilterWorker(a);
+    }
 
     static const QString ACTOR_ID;
 
@@ -129,13 +136,20 @@ public:
 class ClassificationFilterTask : public Task {
     Q_OBJECT
 public:
-    ClassificationFilterTask(const ClassificationFilterSettings &cfg, const QString &readsUrl,
-                             const QString &pairedReadsUrl, const TaxonomyClassificationResult &report);
+    ClassificationFilterTask(const ClassificationFilterSettings &cfg, const QString &readsUrl, const QString &pairedReadsUrl, const TaxonomyClassificationResult &report);
 
-    const QStringList &getSeUrls() const {return seUrls;}
-    const QStringList &getPeUrls() const {return peUrls;}
-    const QMap<QString, TaxID> &getFoundIDs() const {return foundIDs;}
-    bool hasMissed() const {return missed;}
+    const QStringList &getSeUrls() const {
+        return seUrls;
+    }
+    const QStringList &getPeUrls() const {
+        return peUrls;
+    }
+    const QMap<QString, TaxID> &getFoundIDs() const {
+        return foundIDs;
+    }
+    bool hasMissed() const {
+        return missed;
+    }
 
 private:
     void run();
@@ -153,7 +167,7 @@ private:
     bool missed;
 };
 
-} //LocalWorkflow
-} //U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

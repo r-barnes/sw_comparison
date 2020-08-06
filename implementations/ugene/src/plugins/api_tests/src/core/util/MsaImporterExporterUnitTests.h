@@ -22,12 +22,11 @@
 #ifndef _U2_MSA_IMPORTER_EXPORTER_UNIT_TESTS_H_
 #define _U2_MSA_IMPORTER_EXPORTER_UNIT_TESTS_H_
 
-#include "core/dbi/DbiTest.h"
+#include <unittest.h>
 
 #include <U2Core/U2DbiUtils.h>
 
-#include <unittest.h>
-
+#include "core/dbi/DbiTest.h"
 
 namespace U2 {
 
@@ -35,17 +34,17 @@ class MsaImporterExporterTestData {
 public:
     static void init();
 
-    static const U2DbiRef& getDbiRef();
+    static const U2DbiRef &getDbiRef();
 
 private:
     static TestDbiProvider dbiProvider;
-    static const QString& IMP_EXP_DB_URL;
+    static const QString &IMP_EXP_DB_URL;
     static U2DbiRef dbiRef;
 };
 
 DECLARE_TEST(MsaImporterExporterUnitTests, importExportAlignment);
 
-} // namespace
+}    // namespace U2
 
 DECLARE_METATYPE(MsaImporterExporterUnitTests, importExportAlignment);
 

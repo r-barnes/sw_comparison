@@ -31,8 +31,10 @@ namespace U2 {
  */
 class U2CORE_EXPORT InputStream {
 public:
-    InputStream() {}
-    virtual ~InputStream() {}
+    InputStream() {
+    }
+    virtual ~InputStream() {
+    }
 
     /**
      * Returns the number of bytes that can be read from this input stream.
@@ -55,6 +57,6 @@ public:
     virtual qint64 skip(qint64 n, U2OpStatus &os) = 0;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_INPUTSTREAM_H_
+#endif    // _U2_INPUTSTREAM_H_

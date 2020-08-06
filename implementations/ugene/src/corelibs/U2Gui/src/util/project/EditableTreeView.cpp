@@ -21,16 +21,14 @@
 
 #include "EditableTreeView.h"
 
-
 namespace U2 {
 
 EditableTreeView::EditableTreeView(QWidget *p)
     : QTreeView(p) {
-
 }
 
 bool EditableTreeView::isEditingActive() {
     return state() == QAbstractItemView::EditingState;
 }
 
-} // namespace
+}    // namespace U2

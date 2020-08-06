@@ -19,50 +19,46 @@
  * MA 02110-1301, USA.
  */
 
-#include <QFile>
-#include <QTextStream>
-
-#include <U2Core/Log.h>
-#include <U2Core/IOAdapter.h>
-#include <U2Core/AppContext.h>
-#include <U2Core/TextUtils.h>
-#include <U2Core/DNASequenceObject.h>
-#include <U2Core/U2SafePoints.h>
-
 #include "ImportQualityScoresTask.h"
 #include <time.h>
 
+#include <QFile>
+#include <QTextStream>
+
+#include <U2Core/AppContext.h>
+#include <U2Core/DNASequenceObject.h>
+#include <U2Core/IOAdapter.h>
+#include <U2Core/Log.h>
+#include <U2Core/TextUtils.h>
+#include <U2Core/U2SafePoints.h>
+
 namespace U2 {
 
-ReadQualityScoresTask::ReadQualityScoresTask( const QString& file, DNAQualityType t, const DNAQualityFormat& f)
-: Task("ReadPhredQuality", TaskFlag_None), fileName(file), type(t), format(f)
-{
-
+ReadQualityScoresTask::ReadQualityScoresTask(const QString &file, DNAQualityType t, const DNAQualityFormat &f)
+    : Task("ReadPhredQuality", TaskFlag_None), fileName(file), type(t), format(f) {
 }
 
 #define READ_BUF_SIZE 4096
 
 void ReadQualityScoresTask::run() {
-
     if (!checkRawData()) {
         return;
     }
 
-    IOAdapterFactory* f = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
-    QScopedPointer<IOAdapter> io( f->createIOAdapter() );
+    IOAdapterFactory *f = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
+    QScopedPointer<IOAdapter> io(f->createIOAdapter());
 
-    if (!io->open(fileName, IOAdapterMode_Read) ) {
+    if (!io->open(fileName, IOAdapterMode_Read)) {
         stateInfo.setError("Can not open quality file");
         return;
     }
 
     int headerCounter = -1;
-    QByteArray readBuf(READ_BUF_SIZE+1, 0);
-    char* buf = readBuf.data();
+    QByteArray readBuf(READ_BUF_SIZE + 1, 0);
+    char *buf = readBuf.data();
     int lineCount = 0;
 
     while (!stateInfo.cancelFlag) {
-
         int len = io->readUntil(buf, READ_BUF_SIZE, TextUtils::LINE_BREAKS, IOAdapter::Term_Include);
         ++lineCount;
         stateInfo.progress = io->getProgress();
@@ -84,10 +80,10 @@ void ReadQualityScoresTask::run() {
         QByteArray valsBuf = readBuf.mid(0, len).trimmed();
         if (format == DNAQuality::QUAL_FORMAT) {
             QList<QByteArray> valList = valsBuf.split(' ');
-            foreach(const QByteArray& valStr, valList) {
+            foreach (const QByteArray &valStr, valList) {
                 bool ok = false;
-                if(!valStr.isEmpty()){
-                    values.append( valStr.toInt(&ok) );
+                if (!valStr.isEmpty()) {
+                    values.append(valStr.toInt(&ok));
                     if (!ok) {
                         setError(tr("Failed parse quality value: file %1, line %2").arg(fileName).arg(lineCount));
                         return;
@@ -100,12 +96,9 @@ void ReadQualityScoresTask::run() {
     }
 
     io->close();
-
 }
 
-
-void ReadQualityScoresTask::recordQuality( int headerCounter )
-{
+void ReadQualityScoresTask::recordQuality(int headerCounter) {
     if (headerCounter != -1) {
         QByteArray qualCodes;
         if (format == DNAQuality::QUAL_FORMAT) {
@@ -116,26 +109,25 @@ void ReadQualityScoresTask::recordQuality( int headerCounter )
         } else {
             qualCodes = encodedQuality;
         }
-        result.insert(headers[headerCounter], DNAQuality(qualCodes,type));
+        result.insert(headers[headerCounter], DNAQuality(qualCodes, type));
         //log.trace( QString("Phred quality parsed: %1 %2").arg(headers[headerCounter]).arg(qualCodes.constData()) );
     }
 }
 
 #define RAW_BUF_SIZE 256
 
-bool ReadQualityScoresTask::checkRawData()
-{
-    IOAdapterFactory* f = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
-    QScopedPointer<IOAdapter> io( f->createIOAdapter() );
+bool ReadQualityScoresTask::checkRawData() {
+    IOAdapterFactory *f = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
+    QScopedPointer<IOAdapter> io(f->createIOAdapter());
 
     QByteArray buf;
     buf.reserve(RAW_BUF_SIZE);
 
-    if (!io->open(fileName, IOAdapterMode_Read )) {
+    if (!io->open(fileName, IOAdapterMode_Read)) {
         setError(tr("Failed to open quality file %1").arg(fileName));
         return false;
     }
-    int len =  io->readBlock(buf.data(), RAW_BUF_SIZE);
+    int len = io->readBlock(buf.data(), RAW_BUF_SIZE);
     if (len == 0 || len == -1) {
         setError(tr("Failed to read data from quality file %1, probably it is empty. %2").arg(fileName).arg(io->errorString()));
         return false;
@@ -147,17 +139,12 @@ bool ReadQualityScoresTask::checkRawData()
 
     io->close();
     return true;
-
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 
-
-ImportPhredQualityScoresTask::ImportPhredQualityScoresTask(const QList<U2SequenceObject*>& sequences, ImportQualityScoresConfig& cfg )
-: Task("ImportPhredQualityScores", TaskFlags_NR_FOSCOE), readQualitiesTask(NULL), config(cfg), seqList(sequences)
-{
-
+ImportPhredQualityScoresTask::ImportPhredQualityScoresTask(const QList<U2SequenceObject *> &sequences, ImportQualityScoresConfig &cfg)
+    : Task("ImportPhredQualityScores", TaskFlags_NR_FOSCOE), readQualitiesTask(NULL), config(cfg), seqList(sequences) {
 }
 
 void ImportPhredQualityScoresTask::prepare() {
@@ -165,19 +152,19 @@ void ImportPhredQualityScoresTask::prepare() {
     addSubTask(readQualitiesTask);
 }
 
-QList<Task*> ImportPhredQualityScoresTask::onSubTaskFinished( Task* subTask ) {
-    QList<Task*> subTasks;
+QList<Task *> ImportPhredQualityScoresTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> subTasks;
     CHECK_OP(subTask->getStateInfo(), subTasks);
 
     if (subTask != readQualitiesTask) {
         return subTasks;
     }
-    QMap<QString,DNAQuality> qualities = readQualitiesTask->getResult();
+    QMap<QString, DNAQuality> qualities = readQualitiesTask->getResult();
     if (config.createNewDocument) {
         assert(0);
         //TODO: consider creating this option
     } else {
-        foreach (U2SequenceObject* obj, seqList) {
+        foreach (U2SequenceObject *obj, seqList) {
             if (obj->isStateLocked()) {
                 setError(QString("Unable to modify sequence %1: object is locked.").arg(obj->getGObjectName()));
                 continue;
@@ -194,7 +181,4 @@ QList<Task*> ImportPhredQualityScoresTask::onSubTaskFinished( Task* subTask ) {
     return subTasks;
 }
 
-
-
-
-} // namespace U2
+}    // namespace U2

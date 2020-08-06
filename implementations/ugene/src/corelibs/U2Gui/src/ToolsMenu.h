@@ -108,20 +108,20 @@ public:
     static const QString GUI_TEST_RUNNER;
 
 private:
-    static QMenu * getToolsMenu();
-    static QMenu * getMenu(const QString &menuName);
-    static QMenu * createMenu(QMenu *tools, const QString &menuName);
-    static QAction * getPrevAction(QMenu *menu, const QString &menuName, const QString &actionName);
-    static QAction * getNextAction(QMenu *menu, const QString &menuName, const QString &actionName);
+    static QMenu *getToolsMenu();
+    static QMenu *getMenu(const QString &menuName);
+    static QMenu *createMenu(QMenu *tools, const QString &menuName);
+    static QAction *getPrevAction(QMenu *menu, const QString &menuName, const QString &actionName);
+    static QAction *getNextAction(QMenu *menu, const QString &menuName, const QString &actionName);
     static void insertAction(QMenu *menu, const QString &menuName, QAction *action);
     static bool mustHaveSeparator(const QString &menuName, const QString &actionName1, const QString &actionName2);
 
 private:
     static QMap<QString, QString> actionText;
     static QMap<QString, QString> actionIcon;
-    static QMap<QString, QStringList> subMenuAction; // subMenuObjectName -> List(actionObjectName)
+    static QMap<QString, QStringList> subMenuAction;    // subMenuObjectName -> List(actionObjectName)
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_TOOLS_MENU_H_
+#endif    // _U2_TOOLS_MENU_H_

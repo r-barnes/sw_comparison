@@ -20,16 +20,17 @@
  */
 
 #include "MsaHighlightingSavableTab.h"
-#include "MSAHighlightingTab.h"
+
+#include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/U2WidgetStateStorage.h>
-#include <U2Core/U2SafePoints.h>
+
+#include "MSAHighlightingTab.h"
 
 namespace U2 {
 
 MsaHighlightingSavableTab::MsaHighlightingSavableTab(QWidget *wrappedWidget, MWMDIWindow *contextWindow)
-    : MsaOpSavableTab(wrappedWidget, contextWindow)
-{
+    : MsaOpSavableTab(wrappedWidget, contextWindow) {
     SAFE_POINT(NULL != qobject_cast<MSAHighlightingTab *>(wrappedWidget), "Invalid widget provided", );
 }
 
@@ -50,4 +51,4 @@ void MsaHighlightingSavableTab::disableSavingForWidgets(const QStringList &s) {
     widgetsNotToSave.append(s);
 }
 
-}
+}    // namespace U2

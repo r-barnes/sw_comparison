@@ -36,7 +36,7 @@ private:
     QString composeRichDoc();
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_METAPHLAN2_PROMPTER_H_
+#endif    // _U2_METAPHLAN2_PROMPTER_H_

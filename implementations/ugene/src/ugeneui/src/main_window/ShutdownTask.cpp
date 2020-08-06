@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ShutdownTask.h"
+
 #include <QMessageBox>
 
 #include <U2Core/AppContext.h>
@@ -30,22 +32,19 @@
 #include <U2Core/Settings.h>
 
 #include "MainWindowImpl.h"
-#include "ShutdownTask.h"
 #include "project_support/ProjectLoaderImpl.h"
 
 namespace U2 {
 
-ShutdownTask::ShutdownTask(MainWindowImpl* _mw)
-    : Task(tr("Shutdown"), TaskFlags(TaskFlag_NoRun)), mw(_mw), docsToRemoveAreFetched(false)
-{
-
+ShutdownTask::ShutdownTask(MainWindowImpl *_mw)
+    : Task(tr("Shutdown"), TaskFlags(TaskFlag_NoRun)), mw(_mw), docsToRemoveAreFetched(false) {
 }
 
-static bool isReadyToBeDisabled(Service* s, ServiceRegistry* sr) {
+static bool isReadyToBeDisabled(Service *s, ServiceRegistry *sr) {
     ServiceType st = s->getType();
     int nServicesOfTheSameType = sr->findServices(st).size();
     assert(nServicesOfTheSameType >= 1);
-    foreach(Service* child, sr->getServices()) {
+    foreach (Service *child, sr->getServices()) {
         if (!child->getParentServiceTypes().contains(st) || !child->isEnabled()) {
             continue;
         }
@@ -56,21 +55,21 @@ static bool isReadyToBeDisabled(Service* s, ServiceRegistry* sr) {
     return true;
 }
 
-static Service* findServiceToDisable(ServiceRegistry* sr) {
+static Service *findServiceToDisable(ServiceRegistry *sr) {
     int nEnabled = 0;
-    foreach(Service* s, sr->getServices()) {
-        nEnabled+= s->isEnabled() ? 1 : 0;
+    foreach (Service *s, sr->getServices()) {
+        nEnabled += s->isEnabled() ? 1 : 0;
         if (s->isEnabled() && isReadyToBeDisabled(s, sr)) {
             return s;
         }
     }
     assert(nEnabled == 0);
-return NULL;
+    return NULL;
 }
 
 static bool closeViews() {
-    MWMDIManager* wm = AppContext::getMainWindow()->getMDIManager();
-    MWMDIWindow* w = NULL;
+    MWMDIManager *wm = AppContext::getMainWindow()->getMDIManager();
+    MWMDIWindow *w = NULL;
     // close windows one by one, asking active window first
     // straightforward foreach() cycle appears not flexible enough,
     // as interdependent windows may close each other (happened with TestRunner and TestReporter)
@@ -90,7 +89,7 @@ static bool closeViews() {
 // This function prepends empty string to RecentProjects in UGENE SETTINGS in order
 // to prevent project auto loading on next UGENE launch
 static void cancelProjectAutoLoad() {
-    QStringList recentFiles = AppContext::getSettings()->getValue(SETTINGS_DIR + RECENT_PROJECTS_SETTINGS_NAME, QStringList(),  true).toStringList();
+    QStringList recentFiles = AppContext::getSettings()->getValue(SETTINGS_DIR + RECENT_PROJECTS_SETTINGS_NAME, QStringList(), true).toStringList();
     QString emptyUrl;
     recentFiles.prepend(emptyUrl);
     AppContext::getSettings()->setValue(SETTINGS_DIR + RECENT_PROJECTS_SETTINGS_NAME, recentFiles, true);
@@ -100,26 +99,26 @@ void ShutdownTask::prepare() {
     coreLog.info(tr("Starting shutdown process..."));
     mw->setShutDownInProcess(true);
 
-    Project* currProject = AppContext::getProject();
+    Project *currProject = AppContext::getProject();
     if (currProject == NULL) {
         cancelProjectAutoLoad();
     }
 
-    Task* ct = new CloseWindowsTask();
+    Task *ct = new CloseWindowsTask();
     addSubTask(ct);
 
-    QList<Task*> activeTopTasks = AppContext::getTaskScheduler()->getTopLevelTasks();
+    QList<Task *> activeTopTasks = AppContext::getTaskScheduler()->getTopLevelTasks();
     activeTopTasks.removeOne(this);
     if (!activeTopTasks.isEmpty()) {
         QStringList sl;
-        foreach(Task* t, activeTopTasks) {
+        foreach (Task *t, activeTopTasks) {
             sl.append(t->getTaskName());
         }
 
         QMessageBox::StandardButton ret = QMessageBox::question(mw->getQMainWindow(),
-            tr("Shutdown confirmation"),
-            tr("There are active tasks. Stop them now?")+QString("\n\n - %1").arg(sl.join("\n - ")),
-            QMessageBox::Ok|QMessageBox::Cancel);
+                                                                tr("Shutdown confirmation"),
+                                                                tr("There are active tasks. Stop them now?") + QString("\n\n - %1").arg(sl.join("\n - ")),
+                                                                QMessageBox::Ok | QMessageBox::Cancel);
         if (ret != QMessageBox::Ok) {
             cancel();
             return;
@@ -130,18 +129,18 @@ void ShutdownTask::prepare() {
     }
 }
 
-QList<Task*> ShutdownTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> res;
+QList<Task *> ShutdownTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> res;
 
     stateInfo.cancelFlag = subTask->isCanceled();
-    if (isCanceled() || subTask->hasError() ) {
+    if (isCanceled() || subTask->hasError()) {
         cancelShutdown();
         return res;
     }
 
-    ServiceRegistry* sr = AppContext::getServiceRegistry();
-    Service* s = findServiceToDisable(sr);
-    if (s!=NULL) {
+    ServiceRegistry *sr = AppContext::getServiceRegistry();
+    Service *s = findServiceToDisable(sr);
+    if (s != NULL) {
         res.append(sr->disableServiceTask(s));
     }
 
@@ -154,7 +153,7 @@ QList<Task*> ShutdownTask::onSubTaskFinished(Task* subTask) {
         docsToRemoveAreFetched = true;
     }
 
-    if (res.isEmpty()) { // all services has stopped
+    if (res.isEmpty()) {    // all services has stopped
         qDeleteAll(docsToRemove);
     }
 
@@ -173,13 +172,13 @@ Task::ReportResult ShutdownTask::report() {
         return Task::ReportResult_Finished;
     }
 
-    if (AppContext::getTaskScheduler()->getTopLevelTasks().size() > 1) { // some documents are being deleted
+    if (AppContext::getTaskScheduler()->getTopLevelTasks().size() > 1) {    // some documents are being deleted
         return Task::ReportResult_CallMeAgain;
     }
 
 #ifdef _DEBUG
-    const QList<Service*>& services = AppContext::getServiceRegistry()->getServices();
-    foreach(Service* s, services) {
+    const QList<Service *> &services = AppContext::getServiceRegistry()->getServices();
+    foreach (Service *s, services) {
         assert(s->isDisabled());
     }
 #endif
@@ -189,17 +188,15 @@ Task::ReportResult ShutdownTask::report() {
 }
 
 CloseWindowsTask::CloseWindowsTask()
-    : Task(QObject::tr("Close windows"), TaskFlags(TaskFlag_NoRun))
-{
-
+    : Task(QObject::tr("Close windows"), TaskFlags(TaskFlag_NoRun)) {
 }
 
 void CloseWindowsTask::prepare() {
-    Project* proj = AppContext::getProject();
+    Project *proj = AppContext::getProject();
     if (proj == NULL) {
         return;
     }
-    if ( proj->isTreeItemModified() || proj->getProjectURL().isEmpty() ) {
+    if (proj->isTreeItemModified() || proj->getProjectURL().isEmpty()) {
         addSubTask(AppContext::getProjectService()->saveProjectTask(SaveProjectTaskKind_SaveProjectAndDocumentsAskEach));
     }
 }
@@ -207,18 +204,18 @@ void CloseWindowsTask::prepare() {
 QList<Task *> CloseWindowsTask::onSubTaskFinished(Task *subTask) {
     if (subTask->isCanceled()) {
         stateInfo.cancelFlag = true;
-        return QList<Task*>();
+        return QList<Task *>();
     }
     coreLog.trace(tr("Closing views"));
     if (!closeViews()) {
         getTopLevelParentTask()->cancel();
     }
-    return QList<Task*>();
+    return QList<Task *>();
 }
 
 Task::ReportResult CloseWindowsTask::report() {
     // wait for saving/closing tasks if any
-    foreach(Task* t, AppContext::getTaskScheduler()->getTopLevelTasks()) {
+    foreach (Task *t, AppContext::getTaskScheduler()->getTopLevelTasks()) {
         if (t != getTopLevelParentTask() && !t->isFinished()) {
             return ReportResult_CallMeAgain;
         }
@@ -227,23 +224,21 @@ Task::ReportResult CloseWindowsTask::report() {
 }
 
 CancelAllTask::CancelAllTask()
-    : Task(ShutdownTask::tr("Cancel active tasks"), TaskFlag_NoRun)
-{
-
+    : Task(ShutdownTask::tr("Cancel active tasks"), TaskFlag_NoRun) {
 }
 
 void CancelAllTask::prepare() {
     // cancel all tasks but ShutdownTask
-    QList<Task*> activeTopTasks = AppContext::getTaskScheduler()->getTopLevelTasks();
+    QList<Task *> activeTopTasks = AppContext::getTaskScheduler()->getTopLevelTasks();
     activeTopTasks.removeOne(getTopLevelParentTask());
-    foreach(Task* t, activeTopTasks) {
+    foreach (Task *t, activeTopTasks) {
         coreLog.trace(tr("Canceling: %1").arg(t->getTaskName()));
         t->cancel();
     }
 }
 
 Task::ReportResult CancelAllTask::report() {
-    foreach(Task* t, AppContext::getTaskScheduler()->getTopLevelTasks()) {
+    foreach (Task *t, AppContext::getTaskScheduler()->getTopLevelTasks()) {
         if (t->isCanceled() && !t->isFinished()) {
             return ReportResult_CallMeAgain;
         }
@@ -251,4 +246,4 @@ Task::ReportResult CancelAllTask::report() {
     return ReportResult_Finished;
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -24,40 +24,42 @@
 
 #include <ui_UserApplicationsSettingsWidget.h>
 
-#include <U2Core/NetworkConfiguration.h>
-#include <U2Gui/AppSettingsGUI.h>
-
 #include <QUrl>
 
-namespace U2 {
+#include <U2Core/NetworkConfiguration.h>
 
+#include <U2Gui/AppSettingsGUI.h>
+
+namespace U2 {
 
 class UserApplicationsSettingsPageController : public AppSettingsGUIPageController {
     Q_OBJECT
 public:
-    UserApplicationsSettingsPageController(QObject* p = NULL);
+    UserApplicationsSettingsPageController(QObject *p = NULL);
 
-    virtual AppSettingsGUIPageState* getSavedState();
+    virtual AppSettingsGUIPageState *getSavedState();
 
-    virtual void saveState(AppSettingsGUIPageState* s);
+    virtual void saveState(AppSettingsGUIPageState *s);
 
-    virtual AppSettingsGUIPageWidget* createWidget(AppSettingsGUIPageState* data);
-    
+    virtual AppSettingsGUIPageWidget *createWidget(AppSettingsGUIPageState *data);
+
     QMap<QString, QString> translations;
 
-    const QString& getHelpPageId() const {return helpPageId;};
+    const QString &getHelpPageId() const {
+        return helpPageId;
+    };
 
 private:
     static const QString helpPageId;
 };
-
 
 class UserApplicationsSettingsPageState : public AppSettingsGUIPageState {
     Q_OBJECT
 public:
     UserApplicationsSettingsPageState()
         : openLastProjectFlag(false), askToSaveProject(0), enableStatistics(false),
-        tabbedWindowLayout(false), resetSettings(false), updatesEnabled(true) {}
+          tabbedWindowLayout(false), resetSettings(false), updatesEnabled(true) {
+    }
 
     QString translFile;
     QString style;
@@ -69,20 +71,19 @@ public:
     bool updatesEnabled;
 };
 
-
-class UserApplicationsSettingsPageWidget: public AppSettingsGUIPageWidget, public Ui_UserApplicationsSettingsWidget {
+class UserApplicationsSettingsPageWidget : public AppSettingsGUIPageWidget, public Ui_UserApplicationsSettingsWidget {
     Q_OBJECT
 public:
-    UserApplicationsSettingsPageWidget(UserApplicationsSettingsPageController* ctrl);
+    UserApplicationsSettingsPageWidget(UserApplicationsSettingsPageController *ctrl);
 
-    virtual void setState(AppSettingsGUIPageState* state);
+    virtual void setState(AppSettingsGUIPageState *state);
 
-    virtual AppSettingsGUIPageState* getState(QString& err) const;
+    virtual AppSettingsGUIPageState *getState(QString &err) const;
 
 private slots:
     void sl_transFileClicked();
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

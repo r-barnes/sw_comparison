@@ -23,20 +23,20 @@
 #define _U2_SCRIPT_WORKER_H_
 
 #include <U2Lang/LocalDomain.h>
-#include <U2Lang/WorkflowUtils.h>
 #include <U2Lang/WorkflowScriptEngine.h>
+#include <U2Lang/WorkflowUtils.h>
 
 namespace U2 {
 
 namespace LocalWorkflow {
 
-class ScriptWorkerTask: public Task {
+class ScriptWorkerTask : public Task {
     Q_OBJECT
 public:
     ScriptWorkerTask(WorkflowScriptEngine *engine, AttributeScript *script);
     void run();
     QVariant getResult() const;
-    WorkflowScriptEngine * getEngine();
+    WorkflowScriptEngine *getEngine();
 
 private:
     QVariant result;
@@ -47,17 +47,20 @@ private:
 class ScriptPromter : public PrompterBase<ScriptPromter> {
     Q_OBJECT
 public:
-    ScriptPromter(Actor * p = 0) : PrompterBase<ScriptPromter>(p) {}
+    ScriptPromter(Actor *p = 0)
+        : PrompterBase<ScriptPromter>(p) {
+    }
+
 protected:
     QString composeRichDoc();
 };
 
-class ScriptWorker: public BaseWorker {
+class ScriptWorker : public BaseWorker {
     Q_OBJECT
 public:
     ScriptWorker(Actor *a);
     virtual void init();
-    virtual Task * tick();
+    virtual Task *tick();
     virtual void cleanup();
     virtual void setDone();
 
@@ -79,21 +82,21 @@ private:
     bool isNeedToBeRun() const;
 };
 
-class ScriptWorkerFactory: public DomainFactory {
+class ScriptWorkerFactory : public DomainFactory {
 public:
-    ScriptWorkerFactory(QString name) : DomainFactory(name) {}
+    ScriptWorkerFactory(QString name)
+        : DomainFactory(name) {
+    }
 
-    virtual Worker * createWorker(Actor *a);
+    virtual Worker *createWorker(Actor *a);
 
-    static bool init(QList<DataTypePtr> input, QList<DataTypePtr> output, QList<Attribute*> attrs,
-        const QString &name,const QString &description, const QString &actorFilePath);
+    static bool init(QList<DataTypePtr> input, QList<DataTypePtr> output, QList<Attribute *> attrs, const QString &name, const QString &description, const QString &actorFilePath);
 
 public:
     static const QString ACTOR_ID;
 };
 
-
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

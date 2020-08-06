@@ -48,11 +48,11 @@ private:
     QString reportUrl;
 
     QString sortAndShrinkToTemp(QString tsvFile, QString runDir);
-    bool mergeFpkmToReportUrl(QMap<QString,QString> mapFiles, QString reportUrl);
-    static QList<QStringList> parseLinesIntoTokens(const QString& text);
+    bool mergeFpkmToReportUrl(QMap<QString, QString> mapFiles, QString reportUrl);
+    static QList<QStringList> parseLinesIntoTokens(const QString &text);
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_STRINGTIE_GENE_ABUNDANCE_REPORT_TASK_H_
+#endif    // _U2_STRINGTIE_GENE_ABUNDANCE_REPORT_TASK_H_

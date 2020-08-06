@@ -36,8 +36,8 @@ class OffsetRegions {
 public:
     OffsetRegions();
 
-    void append(const U2Region& region, int offset);
-    int findIntersectedRegion(const U2Region& region) const;
+    void append(const U2Region &region, int offset);
+    int findIntersectedRegion(const U2Region &region) const;
 
     U2Region getRegion(int i) const;
     int getOffset(int i) const;
@@ -46,16 +46,16 @@ public:
     void clear();
 
 private:
-    QVector<U2Region>   regions;
-    QVector<int>        offsets;
+    QVector<U2Region> regions;
+    QVector<int> offsets;
 };
 
 class McaReferenceCharController : public QObject {
     Q_OBJECT
 public:
-    McaReferenceCharController(QObject* p, McaEditor* editor);
+    McaReferenceCharController(QObject *p, McaEditor *editor);
 
-    OffsetRegions getCharRegions(const U2Region& region) const;
+    OffsetRegions getCharRegions(const U2Region &region) const;
 
     int getUngappedPosition(int pos) const;
     int getUngappedLength() const;
@@ -70,11 +70,11 @@ public slots:
 private:
     void initRegions();
 
-    OffsetRegions       charRegions;
-    U2SequenceObject*   refObject;
-    int                 ungappedLength;
+    OffsetRegions charRegions;
+    U2SequenceObject *refObject;
+    int ungappedLength;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_MCA_REFERENCE_RULER_CONTROLLER_H_
+#endif    // _U2_MCA_REFERENCE_RULER_CONTROLLER_H_

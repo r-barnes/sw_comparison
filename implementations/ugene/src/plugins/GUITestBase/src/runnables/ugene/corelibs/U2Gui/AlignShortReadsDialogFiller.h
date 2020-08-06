@@ -22,8 +22,9 @@
 #ifndef _U2_GT_ALIGN_SHORT_READS_DIALOG_FILLER_H_
 #define _U2_GT_ALIGN_SHORT_READS_DIALOG_FILLER_H_
 
-#include "utils/GTUtilsDialog.h"
 #include <base_dialogs/GTFileDialog.h>
+
+#include "utils/GTUtilsDialog.h"
 
 namespace U2 {
 using namespace HI;
@@ -48,18 +49,23 @@ public:
             PairedEnd
         };
 
-        Parameters(const QString& refDir = "",
-                   const QString& refFileName = "",
-                   const QString& readsDir = "",
-                   const QString& readsFileName = "",
+        Parameters(const QString &refDir = "",
+                   const QString &refFileName = "",
+                   const QString &readsDir = "",
+                   const QString &readsFileName = "",
                    AlignmentMethod alignmentMethod = UgeneGenomeAligner);
         Parameters(const QString &reference,
                    const QStringList &readsFiles,
                    AlignmentMethod alignmentMethod = UgeneGenomeAligner);
-        virtual ~Parameters() {}
+        virtual ~Parameters() {
+        }
 
-        const QString getAlignmentMethod() const { return alignmentMethodMap[alignmentMethod]; }
-        const QString getLibrary() const { return libraryMap[library]; }
+        const QString getAlignmentMethod() const {
+            return alignmentMethodMap[alignmentMethod];
+        }
+        const QString getLibrary() const {
+            return libraryMap[library];
+        }
 
         AlignmentMethod alignmentMethod;
         QString referenceFile;
@@ -86,33 +92,35 @@ public:
             Local
         };
 
-        Bowtie2Parameters(const QString& refDir = "",
-                          const QString& refFileName = "",
-                          const QString& readsDir = "",
-                          const QString& readsFileName = "") :
-            Parameters(refDir, refFileName, readsDir, readsFileName, Bowtie2),
-            mode(EntToEnd),
-            numberOfMismatches(0),
-            seedLengthCheckBox(false),
-            seedLength(20),
-            addColumnsToAllowGapsCheckBox(false),
-            addColumnsToAllowGaps(15),
-            disallowGapsCheckBox(false),
-            disallowGaps(4),
-            seedCheckBox(false),
-            seed(0),
-            threads(4),
-            noUnpairedAlignments(false),
-            noDiscordantAlignments(false),
-            noForwardOrientation(false),
-            noReverseComplementOrientation(false),
-            noOverlappingMates(false),
-            noMatesContainingOneAnother(false) {
+        Bowtie2Parameters(const QString &refDir = "",
+                          const QString &refFileName = "",
+                          const QString &readsDir = "",
+                          const QString &readsFileName = "")
+            : Parameters(refDir, refFileName, readsDir, readsFileName, Bowtie2),
+              mode(EntToEnd),
+              numberOfMismatches(0),
+              seedLengthCheckBox(false),
+              seedLength(20),
+              addColumnsToAllowGapsCheckBox(false),
+              addColumnsToAllowGaps(15),
+              disallowGapsCheckBox(false),
+              disallowGaps(4),
+              seedCheckBox(false),
+              seed(0),
+              threads(4),
+              noUnpairedAlignments(false),
+              noDiscordantAlignments(false),
+              noForwardOrientation(false),
+              noReverseComplementOrientation(false),
+              noOverlappingMates(false),
+              noMatesContainingOneAnother(false) {
             modeMap.insert(EntToEnd, "--end-to-end");
             modeMap.insert(Local, "--local");
         }
 
-        const QString getMode() const { return modeMap[mode]; }
+        const QString getMode() const {
+            return modeMap[mode];
+        }
 
         // Additional parameters:
         Mode mode;
@@ -188,7 +196,6 @@ public:
         BwaParameters(const QString &referenceFile,
                       const QString &readsFile);
 
-
         QString getIndexAlgorithmString() const;
 
         IndexAlgorithm indexAlgorithm;
@@ -198,26 +205,28 @@ public:
         static const QMap<IndexAlgorithm, QString> indexAlgorithmMap;
     };
 
-    AlignShortReadsFiller(HI::GUITestOpStatus &os, Parameters* parameters) :
-        Filler(os, "AssemblyToRefDialog"),
-        parameters(parameters) {
+    AlignShortReadsFiller(HI::GUITestOpStatus &os, Parameters *parameters)
+        : Filler(os, "AssemblyToRefDialog"),
+          parameters(parameters) {
         CHECK_SET_ERR(parameters, "Invalid filler parameters: NULL pointer");
     }
-    AlignShortReadsFiller(HI::GUITestOpStatus &os, CustomScenario* c): Filler(os, "AssemblyToRefDialog", c), parameters(NULL) {}
+    AlignShortReadsFiller(HI::GUITestOpStatus &os, CustomScenario *c)
+        : Filler(os, "AssemblyToRefDialog", c), parameters(NULL) {
+    }
 
     virtual void commonScenario();
 
 private:
-    void setCommonParameters(QWidget* dialog);
-    void setAdditionalParameters(QWidget* dialog);
-    void setBowtie2AdditionalParameters(Bowtie2Parameters* bowtie2Parameters, QWidget* dialog);
-    void setUgaAdditionalParameters(UgeneGenomeAlignerParams *ugaParameters, QWidget* dialog);
-    void setBwaAdditionalParameters(BwaParameters *bwaParameters, QWidget* dialog);
-    void setBwaSwAdditionalParameters(BwaSwParameters *bwaSwParameters, QWidget* dialog);
+    void setCommonParameters(QWidget *dialog);
+    void setAdditionalParameters(QWidget *dialog);
+    void setBowtie2AdditionalParameters(Bowtie2Parameters *bowtie2Parameters, QWidget *dialog);
+    void setUgaAdditionalParameters(UgeneGenomeAlignerParams *ugaParameters, QWidget *dialog);
+    void setBwaAdditionalParameters(BwaParameters *bwaParameters, QWidget *dialog);
+    void setBwaSwAdditionalParameters(BwaSwParameters *bwaSwParameters, QWidget *dialog);
 
-    Parameters* parameters;
+    Parameters *parameters;
 };
 
-}
+}    // namespace U2
 
 #endif

@@ -19,11 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "MimeDataIterator.h"
+
 #include <U2Core/BunchMimeData.h>
 #include <U2Core/GObject.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "MimeDataIterator.h"
 
 namespace U2 {
 
@@ -31,24 +31,23 @@ namespace U2 {
 /* MimeDataIterator */
 /************************************************************************/
 MimeDataIterator::MimeDataIterator(const QMimeData *md)
-: docIdx(0), objectIdx(0), folderIdx(0)
-{
-    const DocumentMimeData *dmd = dynamic_cast<const DocumentMimeData*>(md);
+    : docIdx(0), objectIdx(0), folderIdx(0) {
+    const DocumentMimeData *dmd = dynamic_cast<const DocumentMimeData *>(md);
     if (NULL != dmd) {
         docs << dmd->objPtr;
     }
 
-    const GObjectMimeData *gomd = dynamic_cast<const GObjectMimeData*>(md);
+    const GObjectMimeData *gomd = dynamic_cast<const GObjectMimeData *>(md);
     if (NULL != gomd) {
         objects << gomd->objPtr;
     }
 
-    const FolderMimeData *fmd = dynamic_cast<const FolderMimeData*>(md);
+    const FolderMimeData *fmd = dynamic_cast<const FolderMimeData *>(md);
     if (NULL != fmd) {
         folders << fmd->folder;
     }
 
-    const BunchMimeData *bmd = dynamic_cast<const BunchMimeData*>(md);
+    const BunchMimeData *bmd = dynamic_cast<const BunchMimeData *>(md);
     if (NULL != bmd) {
         docs << bmd->docs;
         objects << bmd->objects;
@@ -60,20 +59,20 @@ bool MimeDataIterator::hasNextDocument() const {
     return (docIdx < docs.size());
 }
 
-Document * MimeDataIterator::nextDocument() {
+Document *MimeDataIterator::nextDocument() {
     CHECK(hasNextDocument(), NULL);
     docIdx++;
-    return docs[docIdx-1];
+    return docs[docIdx - 1];
 }
 
 bool MimeDataIterator::hasNextObject() const {
     return (objectIdx < objects.size());
 }
 
-GObject * MimeDataIterator::nextObject() {
+GObject *MimeDataIterator::nextObject() {
     CHECK(hasNextObject(), NULL);
     objectIdx++;
-    return objects[objectIdx-1];
+    return objects[objectIdx - 1];
 }
 
 bool MimeDataIterator::hasNextFolder() const {
@@ -83,7 +82,7 @@ bool MimeDataIterator::hasNextFolder() const {
 Folder MimeDataIterator::nextFolder() {
     CHECK(hasNextFolder(), Folder());
     folderIdx++;
-    return folders[folderIdx-1];
+    return folders[folderIdx - 1];
 }
 
-} // U2
+}    // namespace U2

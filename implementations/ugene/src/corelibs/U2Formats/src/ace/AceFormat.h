@@ -23,9 +23,9 @@
 #define _U2_ACE_FORMAT_H_
 
 #include <U2Core/BaseDocumentFormats.h>
+#include <U2Core/DNASequenceObject.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/MultipleSequenceAlignmentObject.h>
-#include <U2Core/DNASequenceObject.h>
 
 #include "../TextDocumentFormat.h"
 
@@ -36,14 +36,14 @@ class IOAdapter;
 class U2FORMATS_EXPORT ACEFormat : public TextDocumentFormat {
     Q_OBJECT
 public:
-    ACEFormat(QObject* p);
+    ACEFormat(QObject *p);
 
 protected:
-    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& = GUrl()) const;
-    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
+    virtual FormatCheckResult checkRawTextData(const QByteArray &rawData, const GUrl & = GUrl()) const;
+    virtual Document *loadTextDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os);
 
 private:
-    void load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& objects, const QVariantMap &hints, U2OpStatus& ti);
+    void load(IOAdapter *io, const U2DbiRef &dbiRef, QList<GObject *> &objects, const QVariantMap &hints, U2OpStatus &ti);
 
     static const QString CO;
     static const QString RD;
@@ -53,6 +53,6 @@ private:
     static const QString BQ;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

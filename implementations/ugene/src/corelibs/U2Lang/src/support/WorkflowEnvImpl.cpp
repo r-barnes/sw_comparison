@@ -22,11 +22,11 @@
 #include "WorkflowEnvImpl.h"
 
 #include "U2Lang/ActorPrototypeRegistry.h"
-#include <U2Lang/Datatype.h>
-#include <U2Lang/WorkflowManager.h>
-#include <U2Lang/Schema.h>
-#include <U2Lang/IntegralBusModel.h>
 #include <U2Lang/BaseTypes.h>
+#include <U2Lang/Datatype.h>
+#include <U2Lang/IntegralBusModel.h>
+#include <U2Lang/Schema.h>
+#include <U2Lang/WorkflowManager.h>
 #include <U2Lang/WorkflowMonitor.h>
 #include <U2Lang/WorkflowTasksRegistry.h>
 
@@ -35,7 +35,7 @@
 namespace U2 {
 namespace Workflow {
 
-DataTypeRegistry * WorkflowEnvImpl::initDataRegistry() {
+DataTypeRegistry *WorkflowEnvImpl::initDataRegistry() {
     qRegisterMetaTypeStreamOperators<StrStrMap>("StrStrMap");
     qRegisterMetaTypeStreamOperators<CfgMap>("CfgMap");
     qRegisterMetaTypeStreamOperators<IterationCfg>("IterationCfg");
@@ -50,29 +50,28 @@ DataTypeRegistry * WorkflowEnvImpl::initDataRegistry() {
     return r;
 }
 
-DomainFactoryRegistry * WorkflowEnvImpl::initDomainRegistry() {
+DomainFactoryRegistry *WorkflowEnvImpl::initDomainRegistry() {
     DomainFactoryRegistry *r = new DomainFactoryRegistry();
     return r;
 }
 
-ActorPrototypeRegistry * WorkflowEnvImpl::initProtoRegistry() {
+ActorPrototypeRegistry *WorkflowEnvImpl::initProtoRegistry() {
     ActorPrototypeRegistry *r = new ActorPrototypeRegistry();
     return r;
 }
 
-DataTypeValueFactoryRegistry * WorkflowEnvImpl::initDataTypeValueFactoryRegistry() {
+DataTypeValueFactoryRegistry *WorkflowEnvImpl::initDataTypeValueFactoryRegistry() {
     DataTypeValueFactoryRegistry *ret = new DataTypeValueFactoryRegistry();
-    ret->registerEntry( new StringTypeValueFactory() );
-    ret->registerEntry( new StringListTypeValueFactory() );
-    ret->registerEntry( new MapTypeValueFactory() );
-    ret->registerEntry( new BoolTypeValueFactory() );
-    ret->registerEntry( new NumTypeValueFactory() );
-    ret->registerEntry( new UrlTypeValueFactory() );
+    ret->registerEntry(new StringTypeValueFactory());
+    ret->registerEntry(new StringListTypeValueFactory());
+    ret->registerEntry(new MapTypeValueFactory());
+    ret->registerEntry(new BoolTypeValueFactory());
+    ret->registerEntry(new NumTypeValueFactory());
+    ret->registerEntry(new UrlTypeValueFactory());
     return ret;
 }
 
-WorkflowEnvImpl::~WorkflowEnvImpl()
-{
+WorkflowEnvImpl::~WorkflowEnvImpl() {
     delete domain;
     delete proto;
     delete data;
@@ -80,25 +79,25 @@ WorkflowEnvImpl::~WorkflowEnvImpl()
     delete actorValidatorRegistry;
 }
 
-ExternalToolCfgRegistry * WorkflowEnvImpl::initExternalToolCfgRegistry() {
+ExternalToolCfgRegistry *WorkflowEnvImpl::initExternalToolCfgRegistry() {
     ExternalToolCfgRegistry *ecfgReg = new ExternalToolCfgRegistry();
     return ecfgReg;
 }
 
-SchemaActorsRegistry * WorkflowEnvImpl::initSchemaActorsRegistry() {
+SchemaActorsRegistry *WorkflowEnvImpl::initSchemaActorsRegistry() {
     SchemaActorsRegistry *actorsRegistry = new SchemaActorsRegistry();
     return actorsRegistry;
 }
 
-WorkflowTasksRegistry * WorkflowEnvImpl::initWorkflowTasksRegistry() {
+WorkflowTasksRegistry *WorkflowEnvImpl::initWorkflowTasksRegistry() {
     WorkflowTasksRegistry *workflowTasksRegistry = new WorkflowTasksRegistry();
     return workflowTasksRegistry;
 }
 
-ActorValidatorRegistry * WorkflowEnvImpl::initActorValidatorRegistry() {
+ActorValidatorRegistry *WorkflowEnvImpl::initActorValidatorRegistry() {
     ActorValidatorRegistry *actorValidatorRegistry = new ActorValidatorRegistry();
     return actorValidatorRegistry;
 }
 
-}//namespace Workflow
-}//namespace U2
+}    //namespace Workflow
+}    //namespace U2

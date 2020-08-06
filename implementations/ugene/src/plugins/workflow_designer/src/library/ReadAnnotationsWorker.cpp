@@ -19,11 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "ReadAnnotationsWorker.h"
+
 #include <QScopedPointer>
 
+#include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/AppResources.h>
-#include <U2Core/AnnotationTableObject.h>
 #include <U2Core/DocumentUtils.h>
 #include <U2Core/IOAdapter.h>
 #include <U2Core/IOAdapterUtils.h>
@@ -46,8 +48,6 @@
 
 #include "DocActors.h"
 
-#include "ReadAnnotationsWorker.h"
-
 namespace U2 {
 namespace LocalWorkflow {
 
@@ -56,29 +56,26 @@ namespace {
 const QString MODE_ATTR("mode");
 const QString ANN_TABLE_NAME_ATTR("ann-table-name");
 const QString ANN_TABLE_DEFAULT_NAME("Unknown features");
-}
+}    // namespace
 
 /************************************************************************/
 /* Worker */
 /************************************************************************/
 ReadAnnotationsWorker::ReadAnnotationsWorker(Actor *p)
-: GenericDocReader(p), mode(ReadAnnotationsProto::SPLIT)
-{
-
+    : GenericDocReader(p), mode(ReadAnnotationsProto::SPLIT) {
 }
 
 void ReadAnnotationsWorker::init() {
     GenericDocReader::init();
     mode = ReadAnnotationsProto::Mode(getValue<int>(MODE_ATTR));
-    IntegralBus *outBus = dynamic_cast<IntegralBus*>(ch);
+    IntegralBus *outBus = dynamic_cast<IntegralBus *>(ch);
     assert(outBus);
     mtype = outBus->getBusType();
 }
 
-Task * ReadAnnotationsWorker::createReadTask(const QString &url, const QString &datasetName) {
+Task *ReadAnnotationsWorker::createReadTask(const QString &url, const QString &datasetName) {
     bool mergeAnnotations = (mode != ReadAnnotationsProto::SPLIT);
-    return new ReadAnnotationsTask(url, datasetName, context, mergeAnnotations,
-                                   mergeAnnotations ? getValue<QString>(ANN_TABLE_NAME_ATTR) : "");
+    return new ReadAnnotationsTask(url, datasetName, context, mergeAnnotations, mergeAnnotations ? getValue<QString>(ANN_TABLE_NAME_ATTR) : "");
 }
 
 QString ReadAnnotationsWorker::addReadDbObjectToData(const QString &objUrl, QVariantMap &data) {
@@ -89,7 +86,7 @@ QString ReadAnnotationsWorker::addReadDbObjectToData(const QString &objUrl, QVar
 }
 
 void ReadAnnotationsWorker::onTaskFinished(Task *task) {
-    ReadAnnotationsTask *t = qobject_cast<ReadAnnotationsTask*>(task);
+    ReadAnnotationsTask *t = qobject_cast<ReadAnnotationsTask *>(task);
     if (ReadAnnotationsProto::MERGE_FILES == mode) {
         datasetData << t->takeResults();
         return;
@@ -99,7 +96,7 @@ void ReadAnnotationsWorker::onTaskFinished(Task *task) {
 }
 
 void ReadAnnotationsWorker::sl_datasetEnded() {
-    CHECK(datasetData.size() > 0,);
+    CHECK(datasetData.size() > 0, );
     QList<SharedAnnotationData> anns;
     foreach (const QVariantMap &m, datasetData) {
         const QVariant annsVar = m[BaseSlots::ANNOTATION_TABLE_SLOT().getId()];
@@ -117,7 +114,7 @@ void ReadAnnotationsWorker::sl_datasetEnded() {
 }
 
 void ReadAnnotationsWorker::sendData(const QList<QVariantMap> &data) {
-    foreach(const QVariantMap &m, data) {
+    foreach (const QVariantMap &m, data) {
         QString url = m[BaseSlots::URL_SLOT().getId()].toString();
         QString datasetName = m[BaseSlots::DATASET_SLOT().getId()].toString();
         MessageMetadata metadata(url, datasetName);
@@ -130,14 +127,13 @@ void ReadAnnotationsWorker::sendData(const QList<QVariantMap> &data) {
 /* Factory */
 /************************************************************************/
 ReadAnnotationsProto::ReadAnnotationsProto()
-: GenericReadDocProto(ReadAnnotationsWorkerFactory::ACTOR_ID)
-{
+    : GenericReadDocProto(ReadAnnotationsWorkerFactory::ACTOR_ID) {
     setCompatibleDbObjectTypes(QSet<GObjectType>() << GObjectTypes::ANNOTATION_TABLE);
 
     setDisplayName(ReadAnnotationsWorker::tr("Read Annotations"));
     setDocumentation(ReadAnnotationsWorker::tr("Input one or several files with annotations: a file may also contain a sequence (e.g. GenBank format)"
                                                " or contain annotations only (e.g. GTF format). The element outputs message(s) with the annotations data."));
-    { // ports description
+    {    // ports description
         QMap<Descriptor, DataTypePtr> outTypeMap;
         outTypeMap[BaseSlots::ANNOTATION_TABLE_SLOT()] = BaseTypes::ANNOTATION_TABLE_TYPE();
         outTypeMap[BaseSlots::URL_SLOT()] = BaseTypes::STRING_TYPE();
@@ -145,22 +141,20 @@ ReadAnnotationsProto::ReadAnnotationsProto()
         DataTypePtr outTypeSet(new MapDataType(BasePorts::OUT_ANNOTATIONS_PORT_ID(), outTypeMap));
 
         Descriptor outDesc(BasePorts::OUT_ANNOTATIONS_PORT_ID(),
-            ReadAnnotationsWorker::tr("Annotations"),
-            ReadAnnotationsWorker::tr("Annotations."));
+                           ReadAnnotationsWorker::tr("Annotations"),
+                           ReadAnnotationsWorker::tr("Annotations."));
 
         ports << new PortDescriptor(outDesc, outTypeSet, false, true);
     }
 
-    Descriptor md(MODE_ATTR, ReadAnnotationsWorker::tr("Mode"),
-        ReadAnnotationsWorker::tr("<ul>"
-                                  "<li><i>\"Separate\"</i> mode keeps the tables as they are;</li>"
-                                  "<li><i>\"Merge from file\"</i> unites annotation tables from one file into one annotations table;</li>"
-                                  "<li><i>\"Merge from dataset\"</i> unites all annotation tables from all files from dataset;</li>"
-                                  "</ul>"));
+    Descriptor md(MODE_ATTR, ReadAnnotationsWorker::tr("Mode"), ReadAnnotationsWorker::tr("<ul>"
+                                                                                          "<li><i>\"Separate\"</i> mode keeps the tables as they are;</li>"
+                                                                                          "<li><i>\"Merge from file\"</i> unites annotation tables from one file into one annotations table;</li>"
+                                                                                          "<li><i>\"Merge from dataset\"</i> unites all annotation tables from all files from dataset;</li>"
+                                                                                          "</ul>"));
     attrs << new Attribute(md, BaseTypes::NUM_TYPE(), true, SPLIT);
 
-    Descriptor annTableNameDesc(ANN_TABLE_NAME_ATTR, ReadAnnotationsWorker::tr("Annotation table name"),
-        ReadAnnotationsWorker::tr("The name for the result annotation table that contains merged annotation data from file or dataset."));
+    Descriptor annTableNameDesc(ANN_TABLE_NAME_ATTR, ReadAnnotationsWorker::tr("Annotation table name"), ReadAnnotationsWorker::tr("The name for the result annotation table that contains merged annotation data from file or dataset."));
     Attribute *objNameAttr = new Attribute(annTableNameDesc, BaseTypes::STRING_TYPE(), false, ANN_TABLE_DEFAULT_NAME);
     objNameAttr->addRelation(new VisibilityRelation(MODE_ATTR, QVariantList() << MERGE << MERGE_FILES));
 
@@ -181,7 +175,6 @@ ReadAnnotationsProto::ReadAnnotationsProto()
     if (AppContext::isGUIMode()) {
         setIcon(QIcon(":/U2Designer/images/blue_circle.png"));
     }
-
 }
 
 void ReadAnnotationsWorkerFactory::init() {
@@ -190,34 +183,32 @@ void ReadAnnotationsWorkerFactory::init() {
     WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID)->registerEntry(new ReadAnnotationsWorkerFactory());
 }
 
-Worker * ReadAnnotationsWorkerFactory::createWorker(Actor *a) {
+Worker *ReadAnnotationsWorkerFactory::createWorker(Actor *a) {
     return new ReadAnnotationsWorker(a);
 }
 
 /************************************************************************/
 /* Task */
 /************************************************************************/
-ReadAnnotationsTask::ReadAnnotationsTask(const QString &url, const QString &datasetName, WorkflowContext *context,
-                                         bool mergeAnnotations, const QString& mergedAnnTableName)
+ReadAnnotationsTask::ReadAnnotationsTask(const QString &url, const QString &datasetName, WorkflowContext *context, bool mergeAnnotations, const QString &mergedAnnTableName)
     : Task(tr("Read annotations from %1").arg(url), TaskFlag_None),
       url(url),
       datasetName(datasetName),
       mergeAnnotations(mergeAnnotations),
       mergedAnnTableName(mergedAnnTableName),
-      context(context)
-{
-    SAFE_POINT(NULL != context, "Invalid workflow context encountered!",);
+      context(context) {
+    SAFE_POINT(NULL != context, "Invalid workflow context encountered!", );
 }
 
 void ReadAnnotationsTask::prepare() {
     int memUseMB = 0;
     QFileInfo file(url);
-    memUseMB = file.size() / (1024*1024) + 1;
+    memUseMB = file.size() / (1024 * 1024) + 1;
     IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
     if (BaseIOAdapters::GZIPPED_LOCAL_FILE == iof->getAdapterId()) {
-        memUseMB = ZlibAdapter::getUncompressedFileSizeInBytes(url) / (1024*1024) + 1;
+        memUseMB = ZlibAdapter::getUncompressedFileSizeInBytes(url) / (1024 * 1024) + 1;
     } else if (BaseIOAdapters::GZIPPED_HTTP_FILE == iof->getAdapterId()) {
-        memUseMB *= 2.5; //Need to calculate compress level
+        memUseMB *= 2.5;    //Need to calculate compress level
     }
     coreLog.trace(QString("Load annotations: Memory resource %1").arg(memUseMB));
 
@@ -228,7 +219,7 @@ void ReadAnnotationsTask::prepare() {
 
 void ReadAnnotationsTask::run() {
     QFileInfo fi(url);
-    CHECK_EXT(fi.exists(), stateInfo.setError(tr("File '%1' does not exist").arg(url)),);
+    CHECK_EXT(fi.exists(), stateInfo.setError(tr("File '%1' does not exist").arg(url)), );
 
     DocumentFormat *format = NULL;
     QList<DocumentFormat *> fs = DocumentUtils::toFormats(DocumentUtils::detectFormat(url));
@@ -238,7 +229,7 @@ void ReadAnnotationsTask::run() {
             break;
         }
     }
-    CHECK_EXT(NULL != format, stateInfo.setError(tr("Unsupported document format: %1").arg(url)),);
+    CHECK_EXT(NULL != format, stateInfo.setError(tr("Unsupported document format: %1").arg(url)), );
 
     ioLog.info(tr("Reading annotations from %1 [%2]").arg(url).arg(format->getFormatName()));
     IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
@@ -290,5 +281,5 @@ void ReadAnnotationsTask::cleanup() {
     results.clear();
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

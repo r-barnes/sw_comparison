@@ -25,6 +25,9 @@
 #include <U2Lang/IntegralBusModel.h>
 
 namespace U2 {
+
+class DocumentFormat;
+
 namespace Workflow {
 
 class WriteSequenceValidator : public ScreenedParamValidator {
@@ -32,7 +35,7 @@ public:
     WriteSequenceValidator(const QString &attr, const QString &port, const QString &slot);
     virtual bool validate(const Configuration *cfg, NotificationsList &notificationList) const;
 
-    static DocumentFormat * getFormatSafe(const Actor *actor);
+    static DocumentFormat *getFormatSafe(const Actor *actor);
     static bool isAnnotationsSupported(const DocumentFormat *format);
 
 private:
@@ -44,7 +47,7 @@ public:
     bool validate(const IntegralBusPort *port, NotificationsList &notificationList) const;
 };
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2
 
-#endif // _U2_WRITESEQUENCEVALIDATOR_H_
+#endif    // _U2_WRITESEQUENCEVALIDATOR_H_

@@ -22,9 +22,9 @@
 #ifndef _U2_URL_LIST_WIDGET_H_
 #define _U2_URL_LIST_WIDGET_H_
 
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/U2OpStatus.h>
 
-#include <U2Core/QObjectScopedPointer.h>
 #include <U2Gui/SharedConnectionsDialog.h>
 
 #include "UrlItem.h"
@@ -90,6 +90,6 @@ private:
     QVBoxLayout *l;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_URL_LIST_WIDGET_H_
+#endif    // _U2_URL_LIST_WIDGET_H_

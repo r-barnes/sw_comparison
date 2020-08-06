@@ -19,22 +19,22 @@
  * MA 02110-1301, USA.
  */
 
+#include "ScriptEngineUtils.h"
+
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Lang/BaseTypes.h>
-
-#include "SequencePrototype.h"
 #include <U2Lang/WorkflowScriptEngine.h>
 
-#include "ScriptEngineUtils.h"
+#include "SequencePrototype.h"
 
 namespace U2 {
 
-WorkflowScriptEngine * ScriptEngineUtils::workflowEngine(QScriptEngine *engine) {
-    return dynamic_cast<WorkflowScriptEngine*>(engine);
+WorkflowScriptEngine *ScriptEngineUtils::workflowEngine(QScriptEngine *engine) {
+    return dynamic_cast<WorkflowScriptEngine *>(engine);
 }
 
-DbiDataStorage * ScriptEngineUtils::dataStorage(QScriptEngine *engine) {
+DbiDataStorage *ScriptEngineUtils::dataStorage(QScriptEngine *engine) {
     WorkflowScriptEngine *we = workflowEngine(engine);
     CHECK(NULL != we, NULL);
     WorkflowContext *wc = we->getWorkflowContext();
@@ -42,10 +42,10 @@ DbiDataStorage * ScriptEngineUtils::dataStorage(QScriptEngine *engine) {
     return wc->getDataStorage();
 }
 
-SequenceScriptClass * ScriptEngineUtils::getSequenceClass(QScriptEngine *engine) {
+SequenceScriptClass *ScriptEngineUtils::getSequenceClass(QScriptEngine *engine) {
     QScriptValue cls = engine->globalObject().property(SequenceScriptClass::CLASS_NAME);
     CHECK(!cls.isNull(), NULL);
-    return qscriptvalue_cast<SequenceScriptClass*>(cls.data());
+    return qscriptvalue_cast<SequenceScriptClass *>(cls.data());
 }
 
 SharedDbiDataHandler ScriptEngineUtils::getDbiId(QScriptEngine *engine, const QScriptValue &value, const QString &className) {
@@ -93,11 +93,10 @@ QScriptValue ScriptEngineUtils::toScriptValue(QScriptEngine *engine, const QVari
 
 QVariant ScriptEngineUtils::fromScriptValue(QScriptEngine *engine, const QScriptValue &value, DataTypePtr type) {
     if (BaseTypes::DNA_SEQUENCE_TYPE() == type) {
-        SharedDbiDataHandler seqId = ScriptEngineUtils::getDbiId(engine, value,
-            SequenceScriptClass::CLASS_NAME);
+        SharedDbiDataHandler seqId = ScriptEngineUtils::getDbiId(engine, value, SequenceScriptClass::CLASS_NAME);
         return qVariantFromValue(seqId);
     }
     return value.toVariant();
 }
 
-} // U2
+}    // namespace U2

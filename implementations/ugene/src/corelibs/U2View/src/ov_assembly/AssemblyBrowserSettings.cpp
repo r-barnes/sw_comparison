@@ -75,4 +75,4 @@ void AssemblyBrowserSettings::setOptimizeRenderOnScroll(bool what) {
     AppContext::getSettings()->setValue(OPTIMIZE_SCROLL, what);
 }
 
-} // U2
+}    // namespace U2

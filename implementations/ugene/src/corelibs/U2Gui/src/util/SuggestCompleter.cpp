@@ -21,22 +21,21 @@
 
 #include "SuggestCompleter.h"
 
-#include <U2Core/AppContext.h>
-#include <U2Core/DocumentModel.h>
-#include <U2Core/MultipleSequenceAlignmentObject.h>
-#include <U2Core/MultipleSequenceAlignment.h>
-
-#include <QTreeWidget>
 #include <QHeaderView>
 #include <QKeyEvent>
+#include <QTreeWidget>
+
+#include <U2Core/AppContext.h>
+#include <U2Core/DocumentModel.h>
+#include <U2Core/MultipleSequenceAlignment.h>
+#include <U2Core/MultipleSequenceAlignmentObject.h>
 
 const int INVALID_ITEM_INDEX = -1;
 
 namespace U2 {
 
-BaseCompleter::BaseCompleter( CompletionFiller *filler, QLineEdit *parent /* = 0*/ )
-    : QObject(parent), filler(filler), editor(parent), lastChosenItemIndex(INVALID_ITEM_INDEX)
-{
+BaseCompleter::BaseCompleter(CompletionFiller *filler, QLineEdit *parent /* = 0*/)
+    : QObject(parent), filler(filler), editor(parent), lastChosenItemIndex(INVALID_ITEM_INDEX) {
     popup = new QTreeWidget(parent);
     popup->setWindowFlags(Qt::Popup);
     popup->setFocusPolicy(Qt::NoFocus);
@@ -55,18 +54,18 @@ BaseCompleter::BaseCompleter( CompletionFiller *filler, QLineEdit *parent /* = 0
     popup->installEventFilter(this);
     editor->installEventFilter(this);
 
-    connect(popup, SIGNAL(itemClicked(QTreeWidgetItem*,int)), SLOT(doneCompletion()));
+    connect(popup, SIGNAL(itemClicked(QTreeWidgetItem *, int)), SLOT(doneCompletion()));
     connect(editor, SIGNAL(textChanged(QString)), SLOT(sl_textChanged(QString)));
 }
 
-BaseCompleter::~BaseCompleter(){
+BaseCompleter::~BaseCompleter() {
     delete filler;
 }
 
-bool BaseCompleter::eventFilter(QObject *obj, QEvent *ev){
+bool BaseCompleter::eventFilter(QObject *obj, QEvent *ev) {
     if (obj == editor) {
         if (QEvent::FocusOut == ev->type()) {
-            QFocusEvent *fe = static_cast<QFocusEvent*>(ev);
+            QFocusEvent *fe = static_cast<QFocusEvent *>(ev);
             if (Qt::PopupFocusReason == fe->reason()) {
                 return true;
             }
@@ -83,33 +82,32 @@ bool BaseCompleter::eventFilter(QObject *obj, QEvent *ev){
     }
 
     if (ev->type() == QEvent::KeyPress) {
-
         bool consumed = false;
-        int key = static_cast<QKeyEvent*>(ev)->key();
+        int key = static_cast<QKeyEvent *>(ev)->key();
         switch (key) {
-         case Qt::Key_Enter:
-         case Qt::Key_Return:
-             doneCompletion();
-             consumed = true;
+        case Qt::Key_Enter:
+        case Qt::Key_Return:
+            doneCompletion();
+            consumed = true;
 
-         case Qt::Key_Escape:
-             editor->setFocus();
-             popup->hide();
-             emit si_completerClosed();
-             consumed = true;
+        case Qt::Key_Escape:
+            editor->setFocus();
+            popup->hide();
+            emit si_completerClosed();
+            consumed = true;
 
-         case Qt::Key_Up:
-         case Qt::Key_Down:
-         case Qt::Key_Home:
-         case Qt::Key_End:
-         case Qt::Key_PageUp:
-         case Qt::Key_PageDown:
-             break;
+        case Qt::Key_Up:
+        case Qt::Key_Down:
+        case Qt::Key_Home:
+        case Qt::Key_End:
+        case Qt::Key_PageUp:
+        case Qt::Key_PageDown:
+            break;
 
-         default:
-             editor->setFocus();
-             editor->event(ev);
-             break;
+        default:
+            editor->setFocus();
+            editor->event(ev);
+            break;
         }
 
         return consumed;
@@ -118,8 +116,8 @@ bool BaseCompleter::eventFilter(QObject *obj, QEvent *ev){
     return false;
 }
 
-void BaseCompleter::showCompletion(const QStringList &choices){
-    if (choices.isEmpty()){
+void BaseCompleter::showCompletion(const QStringList &choices) {
+    if (choices.isEmpty()) {
         popup->hide();
         return;
     }
@@ -127,7 +125,7 @@ void BaseCompleter::showCompletion(const QStringList &choices){
     popup->setUpdatesEnabled(false);
     popup->clear();
     for (int i = 0; i < choices.count(); ++i) {
-        QTreeWidgetItem * item;
+        QTreeWidgetItem *item;
         item = new QTreeWidgetItem(popup);
         item->setText(0, choices[i]);
     }
@@ -142,7 +140,7 @@ void BaseCompleter::showCompletion(const QStringList &choices){
     popup->show();
 }
 
-void BaseCompleter::doneCompletion(){
+void BaseCompleter::doneCompletion() {
     popup->hide();
     editor->setFocus();
     QTreeWidgetItem *item = popup->currentItem();
@@ -155,8 +153,8 @@ void BaseCompleter::doneCompletion(){
     }
 }
 
-void BaseCompleter::sl_textChanged( const QString& typedText){
-    if (typedText.isEmpty()){
+void BaseCompleter::sl_textChanged(const QString &typedText) {
+    if (typedText.isEmpty()) {
         popup->hide();
         return;
     }
@@ -174,25 +172,25 @@ int BaseCompleter::getLastChosenItemIndex() const {
     return lastChosenItemIndex;
 }
 
-QStringList MSACompletionFiller::getSuggestions(const QString &str){
+QStringList MSACompletionFiller::getSuggestions(const QString &str) {
     QStringList result;
     QString ss = str.toLower();
-    foreach(QString s, seqNameList){
-        QString podbor  = s.toLower();
-        if (podbor.startsWith(ss)){
+    foreach (QString s, seqNameList) {
+        QString podbor = s.toLower();
+        if (podbor.startsWith(ss)) {
             result.append(s);
         }
     }
 
-    if (result.isEmpty()){
+    if (result.isEmpty()) {
         result.append(defaultValue);
     }
 
-    return  result;
+    return result;
 }
 
 QString MSACompletionFiller::finalyze(const QString & /*editorText*/, const QString &suggestion) {
     return suggestion;
 }
 
-}
+}    // namespace U2

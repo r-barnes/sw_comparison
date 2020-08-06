@@ -22,8 +22,8 @@
 #ifndef _U2_SEQUENCE_H_
 #define _U2_SEQUENCE_H_
 
-#include <U2Core/U2Type.h>
 #include <U2Core/U2Alphabet.h>
+#include <U2Core/U2Type.h>
 
 namespace U2 {
 
@@ -33,21 +33,27 @@ namespace U2 {
     */
 class U2CORE_EXPORT U2Sequence : public U2Object {
 public:
-    U2Sequence() : length(0), circular(false) {}
-    U2Sequence(const U2DataId& id, const QString& dbId, qint64 version) : U2Object(id, dbId, version), length(0) {}
+    U2Sequence()
+        : length(0), circular(false) {
+    }
+    U2Sequence(const U2DataId &id, const QString &dbId, qint64 version)
+        : U2Object(id, dbId, version), length(0) {
+    }
 
     /** Sequence alphabet id */
-    U2AlphabetId    alphabet;
+    U2AlphabetId alphabet;
 
     /** Length of the sequence */
-    qint64          length;
+    qint64 length;
 
     /** A flag to mark that sequence is circular */
-    bool            circular;
+    bool circular;
 
-    U2DataType getType() const { return U2Type::Sequence; }
+    U2DataType getType() const {
+        return U2Type::Sequence;
+    }
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

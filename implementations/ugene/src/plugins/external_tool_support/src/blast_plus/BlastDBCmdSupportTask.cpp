@@ -20,18 +20,19 @@
  */
 
 #include "BlastDBCmdSupportTask.h"
-#include "BlastDBCmdSupport.h"
 
+#include <U2Core/AddDocumentTask.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/Counter.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/ExternalToolRegistry.h>
 #include <U2Core/LoadDocumentTask.h>
-#include <U2Core/ProjectModel.h>
-#include <U2Core/AddDocumentTask.h>
 #include <U2Core/Log.h>
+#include <U2Core/ProjectModel.h>
 
 #include <U2Gui/OpenViewTask.h>
+
+#include "BlastDBCmdSupport.h"
 
 namespace U2 {
 
@@ -43,45 +44,42 @@ void BlastDBCmdSupportTaskSettings::reset() {
     addToProject = false;
 }
 
-BlastDBCmdSupportTask::BlastDBCmdSupportTask(const BlastDBCmdSupportTaskSettings& _settings) :
-        Task("Run NCBI BlastDBCmd task", TaskFlags_NR_FOSCOE),settings(_settings)
-{
-    GCOUNTER( cvar, tvar, "BlastDBCmdSupportTask" );
+BlastDBCmdSupportTask::BlastDBCmdSupportTask(const BlastDBCmdSupportTaskSettings &_settings)
+    : Task("Run NCBI BlastDBCmd task", TaskFlags_NR_FOSCOE), settings(_settings) {
+    GCOUNTER(cvar, tvar, "BlastDBCmdSupportTask");
     blastDBCmdTask = nullptr;
     toolId = BlastDbCmdSupport::ET_BLASTDBCMD_ID;
 }
 
-void BlastDBCmdSupportTask::prepare(){
-
+void BlastDBCmdSupportTask::prepare() {
     QStringList arguments;
 
     arguments << "-db" << settings.databasePath;
     arguments << "-dbtype" << (settings.isNuclDatabase ? "nucl" : "prot");
     arguments << "-entry" << settings.query;
-    arguments << "-logfile" << settings.outputPath+".BlastDBCmd.log";
+    arguments << "-logfile" << settings.outputPath + ".BlastDBCmd.log";
     arguments << "-out" << settings.outputPath;
 
     blastDBCmdTask = new ExternalToolRunTask(toolId, arguments, new ExternalToolLogParser());
     blastDBCmdTask->setSubtaskProgressWeight(95);
     addSubTask(blastDBCmdTask);
 }
-Task::ReportResult BlastDBCmdSupportTask::report(){
+Task::ReportResult BlastDBCmdSupportTask::report() {
     return ReportResult_Finished;
 }
 
-QList<Task*> BlastDBCmdSupportTask::onSubTaskFinished( Task* subTask )
-{
-    QList<Task*> res;
+QList<Task *> BlastDBCmdSupportTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> res;
 
     if (subTask == blastDBCmdTask) {
         if (settings.addToProject) {
-            IOAdapterFactory * iow = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
-            LoadDocumentTask* loadTask = new LoadDocumentTask(BaseDocumentFormats::FASTA, settings.outputPath, iow);
-            res.append( new AddDocumentAndOpenViewTask(loadTask) );
+            IOAdapterFactory *iow = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
+            LoadDocumentTask *loadTask = new LoadDocumentTask(BaseDocumentFormats::FASTA, settings.outputPath, iow);
+            res.append(new AddDocumentAndOpenViewTask(loadTask));
         }
     }
 
     return res;
 }
 
-}//namespace
+}    // namespace U2

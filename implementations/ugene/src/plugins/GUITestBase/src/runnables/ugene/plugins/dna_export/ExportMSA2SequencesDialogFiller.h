@@ -29,9 +29,13 @@ using namespace HI;
 
 class ExportToSequenceFormatFiller : public Filler {
 public:
-    enum documentFormat {EMBL, FASTA, FASTQ, GFF, Genbank, Swiss_Prot};
-    ExportToSequenceFormatFiller(HI::GUITestOpStatus &os, const QString &path, const QString &name, documentFormat format,
-                                    bool saveFile, bool keepCharacters, GTGlobals::UseMethod method = GTGlobals::UseMouse);
+    enum documentFormat { EMBL,
+                          FASTA,
+                          FASTQ,
+                          GFF,
+                          Genbank,
+                          Swiss_Prot };
+    ExportToSequenceFormatFiller(HI::GUITestOpStatus &os, const QString &path, const QString &name, documentFormat format, bool saveFile, bool keepCharacters, GTGlobals::UseMethod method = GTGlobals::UseMouse);
     ExportToSequenceFormatFiller(HI::GUITestOpStatus &os, CustomScenario *scenario);
 
     void commonScenario();
@@ -45,6 +49,6 @@ private:
     GTGlobals::UseMethod useMethod;
 };
 
-}
+}    // namespace U2
 
 #endif

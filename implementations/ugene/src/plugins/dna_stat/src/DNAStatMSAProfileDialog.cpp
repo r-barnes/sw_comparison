@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DNAStatMSAProfileDialog.h"
+
 #include <QDir>
 #include <QFile>
 #include <QMessageBox>
@@ -39,19 +41,17 @@
 #include <U2View/MSAEditor.h>
 #include <U2View/WebWindow.h>
 
-#include "DNAStatMSAProfileDialog.h"
-
 namespace U2 {
 
 const QString DNAStatMSAProfileDialog::HTML = "html";
 const QString DNAStatMSAProfileDialog::CSV = "csv";
 
 DNAStatMSAProfileDialog::DNAStatMSAProfileDialog(QWidget *p, MSAEditor *_c)
-        : QDialog(p),
-          ctx(_c),
-          saveController(NULL) {
+    : QDialog(p),
+      ctx(_c),
+      saveController(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742492");
+    new HelpButton(this, buttonBox, "46500056");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
     initSaveController();
@@ -93,9 +93,7 @@ void DNAStatMSAProfileDialog::initSaveController() {
 
     saveController = new SaveDocumentController(config, formats, this);
 
-    connect(saveController, SIGNAL(si_formatChanged(
-                                           const QString &)), SLOT(sl_formatChanged(
-                                                                           const QString &)));
+    connect(saveController, SIGNAL(si_formatChanged(const QString &)), SLOT(sl_formatChanged(const QString &)));
     connect(htmlRB, SIGNAL(toggled(bool)), SLOT(sl_formatSelected()));
     connect(csvRB, SIGNAL(toggled(bool)), SLOT(sl_formatSelected()));
 }
@@ -125,12 +123,12 @@ void DNAStatMSAProfileDialog::accept() {
     QDialog::accept();
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 // task
 DNAStatMSAProfileTask::DNAStatMSAProfileTask(const DNAStatMSAProfileTaskSettings &_s)
-        : Task(tr("Generate alignment profile"),
-               TaskFlags(TaskFlag_ReportingIsSupported) | TaskFlag_ReportingIsEnabled), s(_s) {
+    : Task(tr("Generate alignment profile"),
+           TaskFlags(TaskFlag_ReportingIsSupported) | TaskFlag_ReportingIsEnabled),
+      s(_s) {
     setVerboseLogMode(true);
 }
 
@@ -269,7 +267,7 @@ void DNAStatMSAProfileTask::run() {
             resultText.clear();
             if (s.outFormat == DNAStatMSAProfileOutputFormat_Show) {
                 setError(
-                        tr("There is not enough memory to show this grid profile in UGENE. You can save it to an HTML file and open it with a web browser."));
+                    tr("There is not enough memory to show this grid profile in UGENE. You can save it to an HTML file and open it with a web browser."));
             } else {
                 setError(tr("There is not enough memory to generate this grid profile in UGENE."));
             }
@@ -332,8 +330,7 @@ Task::ReportResult DNAStatMSAProfileTask::report() {
         return Task::ReportResult_Finished;
     }
     assert(!resultText.isEmpty());
-    QString title = s.profileName.isEmpty() ? tr("Alignment profile") : tr("Alignment profile for %1").arg(
-            s.profileName);
+    QString title = s.profileName.isEmpty() ? tr("Alignment profile") : tr("Alignment profile for %1").arg(s.profileName);
 
     WebWindow *w = new WebWindow(title, resultText);
     // Qt 5.4 has a bug and does not process 'white-space: nowrap' correctly. Enforcing it using rich text styles.
@@ -389,6 +386,4 @@ void DNAStatMSAProfileTask::computeStats() {
     }
 }
 
-
-}//namespace
-
+}    // namespace U2

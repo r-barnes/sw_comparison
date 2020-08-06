@@ -22,9 +22,9 @@
 #ifndef _U2_ANAGLYPH_RENDERER_H_
 #define _U2_ANAGLYPH_RENDERER_H_
 
-#include <U2Core/Log.h>
-
 #include <QColor>
+
+#include <U2Core/Log.h>
 // include this for proper cross-platform including of glu.h
 #include "GraphicUtils.h"
 
@@ -32,13 +32,15 @@ namespace U2 {
 
 class BioStruct3DGLWidget;
 
-enum AnaglyphStatus {NOT_AVAILABLE = -1, DISABLED = 0, ENABLED = 1};
+enum AnaglyphStatus { NOT_AVAILABLE = -1,
+                      DISABLED = 0,
+                      ENABLED = 1 };
 
 class AnaglyphSettings {
 public:
     AnaglyphSettings(float _eyesShift, const QColor &_leftEyeColor, const QColor &_rightEyeColor)
-            : eyesShift(_eyesShift), leftEyeColor(_leftEyeColor), rightEyeColor(_rightEyeColor)
-    {}
+        : eyesShift(_eyesShift), leftEyeColor(_leftEyeColor), rightEyeColor(_rightEyeColor) {
+    }
 
     float eyesShift;
     QColor leftEyeColor, rightEyeColor;
@@ -52,7 +54,6 @@ public:
     QVariantMap toMap(QVariantMap &map) const;
     static AnaglyphSettings fromMap(const QVariantMap &map);
 };
-
 
 /** Anaglyph effect renderer */
 class AnaglyphRenderer {
@@ -68,8 +69,12 @@ public:
     virtual void resize(int w, int h);
     virtual void draw();
 
-    const AnaglyphSettings& getSettings() const { return settings; }
-    void setSettings(const AnaglyphSettings &_settings) { settings = _settings; }
+    const AnaglyphSettings &getSettings() const {
+        return settings;
+    }
+    void setSettings(const AnaglyphSettings &_settings) {
+        settings = _settings;
+    }
 
 private:
     /** Set up an ortho projection. For textures rendering */
@@ -99,13 +104,13 @@ inline void AnaglyphRenderer::checkGlError(const char *file, int line) {
     GLenum error = glGetError();
     if (error != GL_NO_ERROR) {
         QString where = QString("%1:%2: ").arg(file).arg(line);
-        QString msg = QString("OpenGL error (%1): %2").arg(error).arg((char*)gluErrorString(error));
+        QString msg = QString("OpenGL error (%1): %2").arg(error).arg((char *)gluErrorString(error));
         uiLog.trace(where + msg);
 
         hasErrors = true;
     }
 }
 
-}   // namespace U2
+}    // namespace U2
 
-#endif  // #ifndef _U2_ANAGLYPH_RENDERER_H_
+#endif    // #ifndef _U2_ANAGLYPH_RENDERER_H_

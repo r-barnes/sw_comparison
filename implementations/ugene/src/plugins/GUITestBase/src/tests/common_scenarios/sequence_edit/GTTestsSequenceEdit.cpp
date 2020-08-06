@@ -19,50 +19,50 @@
  * MA 02110-1301, USA.
  */
 
+#include "GTTestsSequenceEdit.h"
+#include <base_dialogs/GTFileDialog.h>
+#include <drivers/GTKeyboardDriver.h>
+#include <drivers/GTMouseDriver.h>
+#include <primitives/GTTreeWidget.h>
+
 #include <QApplication>
 #include <QClipboard>
 #include <QTreeWidgetItem>
 
+#include <U2Core/DocumentModel.h>
 #include <U2Core/U2IdTypes.h>
-#include "system/GTClipboard.h"
-#include "GTTestsSequenceEdit.h"
+
+#include <U2View/ADVConstants.h>
+#include <U2View/AnnotatedDNAViewFactory.h>
+#include <U2View/MaEditorFactory.h>
+
 #include "GTGlobals.h"
-#include <drivers/GTKeyboardDriver.h>
-#include "utils/GTKeyboardUtils.h"
-#include <drivers/GTMouseDriver.h>
-#include "primitives/GTMenu.h"
-#include <base_dialogs/GTFileDialog.h>
-#include <primitives/GTTreeWidget.h>
-#include "GTUtilsProject.h"
+#include "GTUtilsAnnotationsTreeView.h"
 #include "GTUtilsDocument.h"
 #include "GTUtilsLog.h"
-#include "utils/GTUtilsApp.h"
-#include "utils/GTUtilsToolTip.h"
 #include "GTUtilsMdi.h"
-#include "GTUtilsAnnotationsTreeView.h"
 #include "GTUtilsNotifications.h"
+#include "GTUtilsProject.h"
 #include "GTUtilsProjectTreeView.h"
-#include "GTUtilsTaskTreeView.h"
 #include "GTUtilsSequenceView.h"
-#include "GTUtilsMdi.h"
+#include "GTUtilsTaskTreeView.h"
+#include "primitives/GTMenu.h"
 #include "primitives/PopupChooser.h"
 #include "runnables/ugene/corelibs/U2Gui/EditSequenceDialogFiller.h"
 #include "runnables/ugene/corelibs/U2Gui/RangeSelectionDialogFiller.h"
 #include "runnables/ugene/corelibs/U2Gui/RemovePartFromSequenceDialogFiller.h"
 #include "runnables/ugene/corelibs/U2Gui/ReplaceSubsequenceDialogFiller.h"
+#include "system/GTClipboard.h"
+#include "utils/GTKeyboardUtils.h"
+#include "utils/GTUtilsApp.h"
+#include "utils/GTUtilsToolTip.h"
 
-#include <U2Core/DocumentModel.h>
-#include <U2View/AnnotatedDNAViewFactory.h>
-#include <U2View/MaEditorFactory.h>
-#include <U2View/ADVConstants.h>
-
-namespace U2{
+namespace U2 {
 
 namespace GUITest_common_scenarios_sequence_edit {
 using namespace HI;
 GUI_TEST_CLASS_DEFINITION(test_0001) {
-
-    GTUtilsProject::openFiles(os, dataDir + "samples/FASTA/human_T1.fa");
+    GTUtilsProject::openFile(os, dataDir + "samples/FASTA/human_T1.fa");
     GTGlobals::sleep();
 
     GTUtilsDialog::waitForDialog(os, new SelectSequenceRegionDialogFiller(os, 1, 50));
@@ -71,14 +71,16 @@ GUI_TEST_CLASS_DEFINITION(test_0001) {
     GTGlobals::sleep(1000);
 
     Runnable *removeDialog = new RemovePartFromSequenceDialogFiller(os,
-        RemovePartFromSequenceDialogFiller::Remove,
-        true,
-        testDir+"_common_data/scenarios/sandbox/result.fa",
-        RemovePartFromSequenceDialogFiller::FASTA
-    );
+                                                                    RemovePartFromSequenceDialogFiller::Remove,
+                                                                    true,
+                                                                    testDir + "_common_data/scenarios/sandbox/result.fa",
+                                                                    RemovePartFromSequenceDialogFiller::FASTA);
     GTUtilsDialog::waitForDialog(os, removeDialog);
 
-    GTMenu::clickMainMenuItem(os, QStringList() << "Actions" << "Edit" << "Remove subsequence...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Actions"
+                                                << "Edit"
+                                                << "Remove subsequence...",
+                              GTGlobals::UseMouse);
     GTGlobals::sleep(1000);
 
     GTUtilsSequenceView::openSequenceView(os, "result.fa");
@@ -91,49 +93,43 @@ GUI_TEST_CLASS_DEFINITION(test_0001) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0002) {
-// Removing part from sequence
-//
-// Steps:
-//
-// 1. Use menu {File->Open}. Open file samples/FASTA/human_T1.fa
-    GTUtilsProject::openFiles(os, dataDir + "samples/FASTA/human_T1.fa");
-
-// 2. Click Ctrl+A.
-// Expected state: Select range dialog appears
-//
-// 3. Fill the next field in dialog:
-//     {Range:} 1..50
-//
+    // Removing part from sequence
+    //
+    // Steps:
+    //
+    // 1. Use menu {File->Open}. Open file samples/FASTA/human_T1.fa
+    GTUtilsProject::openFile(os, dataDir + "samples/FASTA/human_T1.fa");
+    GTUtilsSequenceView::checkSequenceViewWindowIsActive(os);
+    // 2. Click Ctrl+A.
+    // Expected state: Select range dialog appears
+    //
+    // 3. Fill the next field in dialog:
+    //     {Range:} 1..50
+    //
     GTUtilsDialog::waitForDialog(os, new SelectSequenceRegionDialogFiller(os, 1, 50));
-    GTWidget::click(os, GTWidget::findWidget(os, "ADV_single_sequence_widget_0"));
+    GTUtilsSequenceView::clickMouseOnTheSafeSequenceViewArea(os);
     GTKeyboardUtils::selectAll(os);
-    GTGlobals::sleep(1000);
 
-// 4. Click OK. Right click on sequence area. Use context menu {Edit sequence->Remove selected sequence}.
-// Expected state: Remove subsequence dialog appears
-//
-// 5. Fill the next field in dialog:
-//     {Save resulted document to a new file} set checked
-//     {Document format} Genbank
-//     {Document location} _common_data/scenarios/sandbox/result.gb
-// 6. Click Remove Button.
+    // 4. Click OK. Right click on sequence area. Use context menu {Edit sequence->Remove selected sequence}.
+    // Expected state: Remove subsequence dialog appears
+    //
+    // 5. Fill the next field in dialog:
+    //     {Save resulted document to a new file} set checked
+    //     {Document format} Genbank
+    //     {Document location} _common_data/scenarios/sandbox/result.gb
+    // 6. Click Remove Button.
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << ADV_MENU_EDIT << ACTION_EDIT_REMOVE_SUBSEQUENCE, GTGlobals::UseMouse));
-    Runnable *removeDialog = new RemovePartFromSequenceDialogFiller(os,
-        RemovePartFromSequenceDialogFiller::Remove,
-        true,
-        testDir+"_common_data/scenarios/sandbox/result.gb",
-        RemovePartFromSequenceDialogFiller::Genbank
-    );
-    GTUtilsDialog::waitForDialog(os, removeDialog);
-    GTWidget::click(os, GTWidget::findWidget(os, "ADV_single_sequence_widget_0"), Qt::RightButton);
+    GTUtilsDialog::waitForDialog(os, new RemovePartFromSequenceDialogFiller(os, RemovePartFromSequenceDialogFiller::Remove, true, testDir + "_common_data/scenarios/sandbox/result.gb", RemovePartFromSequenceDialogFiller::Genbank));
+    GTUtilsSequenceView::openPopupMenuOnSequenceViewArea(os);
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
-// Expected state:
-//     document with edited sequence must appear in project view,
-//     sequence length in new document must be 199900
-//     sequence must starts with "AGAGAGA"
+    // Expected state:
+    //     document with edited sequence must appear in project view,
+    //     sequence length in new document must be 199900
+    //     sequence must starts with "AGAGAGA"
     GTUtilsSequenceView::openSequenceView(os, "result.gb");
+
     int length = GTUtilsSequenceView::getLengthOfSequence(os);
     CHECK_SET_ERR(length == 199900, "Expected length differs");
     QString seqStart = GTUtilsSequenceView::getBeginOfSequenceAsString(os, 7);
@@ -141,20 +137,23 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0003) {
-
     GTFileDialog::openFile(os, dataDir + "samples/FASTA/", "human_T1.fa");
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTGlobals::sleep();
 
     Runnable *filler = new InsertSequenceFiller(os,
-        "AAAAAA", InsertSequenceFiller::Resize, 1,
-        testDir + "_common_data/scenarios/sandbox/result.fa",
-        InsertSequenceFiller::FASTA,
-        true,
-        false
-    );
+                                                "AAAAAA",
+                                                InsertSequenceFiller::Resize,
+                                                1,
+                                                testDir + "_common_data/scenarios/sandbox/result.fa",
+                                                InsertSequenceFiller::FASTA,
+                                                true,
+                                                false);
     GTUtilsDialog::waitForDialog(os, filler);
-    GTMenu::clickMainMenuItem(os, QStringList() << "Actions" << "Edit" << "Insert subsequence...", GTGlobals::UseKey);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Actions"
+                                                << "Edit"
+                                                << "Insert subsequence...",
+                              GTGlobals::UseKey);
     GTGlobals::sleep();
 
     GTUtilsDocument::checkDocument(os, "result.fa");
@@ -167,23 +166,25 @@ GUI_TEST_CLASS_DEFINITION(test_0003) {
 
     QString sequenceBegin = GTUtilsSequenceView::getBeginOfSequenceAsString(os, 6);
     CHECK_SET_ERR(sequenceBegin == "AAAAAA", "Sequence starts with <" + sequenceBegin + ">, expected AAAAAA");
-
 }
 GUI_TEST_CLASS_DEFINITION(test_0004) {
-
     GTFileDialog::openFile(os, dataDir + "samples/FASTA/", "human_T1.fa");
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTGlobals::sleep();
 
     Runnable *filler = new InsertSequenceFiller(os,
-        "AAAAAA", InsertSequenceFiller::Resize, 1,
-        testDir + "_common_data/scenarios/sandbox/result.gb",
-        InsertSequenceFiller::Genbank,
-        true,
-        false
-    );
+                                                "AAAAAA",
+                                                InsertSequenceFiller::Resize,
+                                                1,
+                                                testDir + "_common_data/scenarios/sandbox/result.gb",
+                                                InsertSequenceFiller::Genbank,
+                                                true,
+                                                false);
     GTUtilsDialog::waitForDialog(os, filler);
-    GTMenu::clickMainMenuItem(os, QStringList() << "Actions" << "Edit" << "Insert subsequence...", GTGlobals::UseKey);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Actions"
+                                                << "Edit"
+                                                << "Insert subsequence...",
+                              GTGlobals::UseKey);
     GTGlobals::sleep();
 
     GTUtilsDocument::checkDocument(os, "result.gb");
@@ -196,23 +197,23 @@ GUI_TEST_CLASS_DEFINITION(test_0004) {
 
     QString sequenceBegin = GTUtilsSequenceView::getBeginOfSequenceAsString(os, 6);
     CHECK_SET_ERR(sequenceBegin == "AAAAAA", "Sequence starts with <" + sequenceBegin + ">, expected AAAAAA");
-
 }
 GUI_TEST_CLASS_DEFINITION(test_0005) {
-
     GTFileDialog::openFile(os, dataDir + "samples/FASTA/", "human_T1.fa");
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTUtilsDialog::waitForDialog(os, new SelectSequenceRegionDialogFiller(os, 1, 50));
     GTKeyboardUtils::selectAll(os);
     GTGlobals::sleep(1000);
     Runnable *removeDialog = new RemovePartFromSequenceDialogFiller(os,
-        RemovePartFromSequenceDialogFiller::Remove,
-        true,
-        testDir+"_common_data/scenarios/sandbox/result.fa",
-        RemovePartFromSequenceDialogFiller::FASTA
-    );
+                                                                    RemovePartFromSequenceDialogFiller::Remove,
+                                                                    true,
+                                                                    testDir + "_common_data/scenarios/sandbox/result.fa",
+                                                                    RemovePartFromSequenceDialogFiller::FASTA);
     GTUtilsDialog::waitForDialog(os, removeDialog);
-    GTMenu::clickMainMenuItem(os, QStringList() << "Actions" << "Edit" << "Remove subsequence...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Actions"
+                                                << "Edit"
+                                                << "Remove subsequence...",
+                              GTGlobals::UseMouse);
     GTGlobals::sleep(1000);
     GTUtilsDocument::checkDocument(os, "result.fa");
     GTGlobals::sleep(1000);
@@ -224,31 +225,30 @@ GUI_TEST_CLASS_DEFINITION(test_0005) {
 
     QString sequenceBegin = GTUtilsSequenceView::getBeginOfSequenceAsString(os, 7);
     CHECK_SET_ERR(sequenceBegin == "AGAGAGA", "Sequence starts with <" + sequenceBegin + ">, expected AGAGAGA");
-
-
 }
 GUI_TEST_CLASS_DEFINITION(test_0006) {
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/dp_view/", "NC_014267.gb");
-    GTUtilsTaskTreeView::waitTaskFinished(os);
-    QWidget *mdiWindow = GTUtilsMdi::activeWindow(os);
+    GTUtilsSequenceView::checkSequenceViewWindowIsActive(os);
 
-    GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << ADV_MENU_EDIT << ACTION_EDIT_RESERVE_COMPLEMENT_SEQUENCE, GTGlobals::UseKey));
-    GTMenu::showContextMenu(os, mdiWindow);
-    GTGlobals::sleep(1000);
+    GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << ADV_MENU_EDIT << ADV_MENU_REPLACE_WHOLE_SEQUENCE << ACTION_EDIT_RESERVE_COMPLEMENT_SEQUENCE, GTGlobals::UseKey));
+    GTUtilsSequenceView::openPopupMenuOnSequenceViewArea(os);
 
     QString expectedSequenceBegin = "ATCAGATT";
     QString sequenceBegin = GTUtilsSequenceView::getBeginOfSequenceAsString(os, 8);
-    CHECK_SET_ERR(sequenceBegin == expectedSequenceBegin, "unecpected begin. Expected ATCAGATT, actual: " + sequenceBegin);
+    CHECK_SET_ERR(sequenceBegin == expectedSequenceBegin, "unexpected begin. Expected ATCAGATT, actual: " + sequenceBegin);
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0007) {
     // 1. Open file "test/_common_data/edit_sequence/test.gb"
-    GTUtilsProject::openFiles(os, testDir + "_common_data/edit_sequence/test.gb");
+    GTUtilsProject::openFile(os, testDir + "_common_data/edit_sequence/test.gb");
 
     // 2. Select "Remove subsequence" in the context menu.
     // 3. Insert region "2..2" into the "Region to remove" field.
     GTUtilsDialog::waitForDialog(os, new RemovePartFromSequenceDialogFiller(os, "2..2"));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Actions" << "Edit" << "Remove subsequence...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Actions"
+                                                << "Edit"
+                                                << "Remove subsequence...",
+                              GTGlobals::UseMouse);
     GTGlobals::sleep(1000);
 
     // Expected result: the sequence is started from "AAT", the sequence length is 29, DUMMY_1 annotation is [2..5].
@@ -263,7 +263,6 @@ GUI_TEST_CLASS_DEFINITION(test_0007) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0008) {
-
     GTFileDialog::openFile(os, testDir + "_common_data/edit_sequence/", "test.gb");
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
@@ -275,16 +274,17 @@ GUI_TEST_CLASS_DEFINITION(test_0008) {
     GTKeyboardUtils::selectAll(os);
     GTGlobals::sleep();
 
-
     Runnable *removeDialog = new RemovePartFromSequenceDialogFiller(os,
-        RemovePartFromSequenceDialogFiller::Remove,
-        false,
-        testDir+"_common_data/scenarios/sandbox/result.fa",
-        RemovePartFromSequenceDialogFiller::FASTA
-        );
+                                                                    RemovePartFromSequenceDialogFiller::Remove,
+                                                                    false,
+                                                                    testDir + "_common_data/scenarios/sandbox/result.fa",
+                                                                    RemovePartFromSequenceDialogFiller::FASTA);
 
     GTUtilsDialog::waitForDialog(os, removeDialog);
-    GTMenu::clickMainMenuItem(os, QStringList() << "Actions" << "Edit" << "Remove subsequence...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Actions"
+                                                << "Edit"
+                                                << "Remove subsequence...",
+                              GTGlobals::UseMouse);
     GTGlobals::sleep();
 
     int sequenceLength = GTUtilsSequenceView::getLengthOfSequence(os);
@@ -298,7 +298,7 @@ GUI_TEST_CLASS_DEFINITION(test_0008) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0009) {
-    GTUtilsProject::openFiles(os, testDir + "_common_data/fasta/AMINO.fa");
+    GTUtilsProject::openFile(os, testDir + "_common_data/fasta/AMINO.fa");
     GTUtilsDialog::waitForDialog(os, new SelectSequenceRegionDialogFiller(os, 10, 13));
 
     GTWidget::click(os, GTWidget::findWidget(os, "ADV_single_sequence_widget_0"));
@@ -306,12 +306,11 @@ GUI_TEST_CLASS_DEFINITION(test_0009) {
     GTKeyboardUtils::selectAll(os);
     GTGlobals::sleep(1000);
 
-    GTKeyboardDriver::keyClick( 'c', Qt::ControlModifier);
+    GTKeyboardDriver::keyClick('c', Qt::ControlModifier);
     GTGlobals::sleep(1000);
 
     QString sequence = GTClipboard::text(os);
     CHECK_SET_ERR("ACCC" == sequence, "Incorrect sequence is copied");
-
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0010) {
@@ -331,12 +330,12 @@ GUI_TEST_CLASS_DEFINITION(test_0010) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0011) {
-
     GTFileDialog::openFile(os, testDir + "_common_data/edit_sequence/", "test.gb");
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTGlobals::sleep(1000);
 
-    GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << "ADV_MENU_COPY" << "action_copy_annotation_sequence"));
+    GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << "ADV_MENU_COPY"
+                                                                        << "action_copy_annotation_sequence"));
     GTMouseDriver::moveTo(GTUtilsAnnotationsTreeView::getItemCenter(os, "DUMMY_1"));
     GTGlobals::sleep(1000);
     GTMouseDriver::click(Qt::RightButton);
@@ -346,14 +345,16 @@ GUI_TEST_CLASS_DEFINITION(test_0011) {
 
     QString realSequence = GTClipboard::text(os);
     CHECK_SET_ERR(expectedSequence == realSequence, "Sequence is not pasted");
-
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0012) {
-    GTUtilsProject::openFiles(os, testDir + "_common_data/edit_sequence/test.gb");
+    GTUtilsProject::openFile(os, testDir + "_common_data/edit_sequence/test.gb");
 
     GTUtilsDialog::waitForDialog(os, new RemovePartFromSequenceDialogFiller(os, "2..2"));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Actions" << "Edit" << "Remove subsequence...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Actions"
+                                                << "Edit"
+                                                << "Remove subsequence...",
+                              GTGlobals::UseMouse);
     GTGlobals::sleep(1000);
 
     QString sequenceBegin = GTUtilsSequenceView::getBeginOfSequenceAsString(os, 3);
@@ -402,12 +403,11 @@ void checkQualifierValue(HI::GUITestOpStatus &os, const QString &qualName, int r
     QTreeWidgetItem *qual = GTUtilsAnnotationsTreeView::findItem(os, qualName);
     const QString qualValue = qual->data(2, Qt::DisplayRole).toString();
     const QString expectedVal = shiftQualifierRegions(getReferenceQualifiers()[qualName], regionShift);
-    CHECK_SET_ERR(qualValue == expectedVal, QString("Qualifier value has changed unexpectedly. Expected: '%1'. Actual: '%2'")
-        .arg(expectedVal).arg(qualValue));
+    CHECK_SET_ERR(qualValue == expectedVal, QString("Qualifier value has changed unexpectedly. Expected: '%1'. Actual: '%2'").arg(expectedVal).arg(qualValue));
 }
 
 void checkQualifierRegionsShift(HI::GUITestOpStatus &os, int shift) {
-    foreach(const QString &qualName, getReferenceQualifiers().keys()) {
+    foreach (const QString &qualName, getReferenceQualifiers().keys()) {
         checkQualifierValue(os, qualName, shift);
     }
 }
@@ -420,23 +420,29 @@ void doMagic(HI::GUITestOpStatus &os) {
     }
 }
 
-}
+}    // namespace
 
 GUI_TEST_CLASS_DEFINITION(test_0013_1) {
     // Check that qualifiers are recalculated on a removal of a subsequence that is located to the left of a region mentioned in a qualifier
 
     GTFileDialog::openFile(os, testDir + "_common_data/genbank/qulifier_rebuilding.gb");
     GTUtilsTaskTreeView::waitTaskFinished(os);
-    doMagic(os); // for some reason annotation qualifiers are not found without actions done by this function
+    doMagic(os);    // for some reason annotation qualifiers are not found without actions done by this function
 
     GTUtilsDialog::waitForDialog(os, new RemovePartFromSequenceDialogFiller(os, "1..10", false));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Actions" << "Edit" << "Remove subsequence...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Actions"
+                                                << "Edit"
+                                                << "Remove subsequence...",
+                              GTGlobals::UseMouse);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     checkQualifierRegionsShift(os, 0);
 
     GTUtilsDialog::waitForDialog(os, new RemovePartFromSequenceDialogFiller(os, "1..10", true));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Actions" << "Edit" << "Remove subsequence...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Actions"
+                                                << "Edit"
+                                                << "Remove subsequence...",
+                              GTGlobals::UseMouse);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     checkQualifierRegionsShift(os, -10);
@@ -447,10 +453,13 @@ GUI_TEST_CLASS_DEFINITION(test_0013_1_neg) {
 
     GTFileDialog::openFile(os, testDir + "_common_data/genbank/qulifier_rebuilding.gb");
     GTUtilsTaskTreeView::waitTaskFinished(os);
-    doMagic(os); // for some reason annotation qualifiers are not found without actions done by this function
+    doMagic(os);    // for some reason annotation qualifiers are not found without actions done by this function
 
     GTUtilsDialog::waitForDialog(os, new RemovePartFromSequenceDialogFiller(os, "1000..1100", true));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Actions" << "Edit" << "Remove subsequence...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Actions"
+                                                << "Edit"
+                                                << "Remove subsequence...",
+                              GTGlobals::UseMouse);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     checkQualifierRegionsShift(os, 0);
@@ -463,7 +472,10 @@ GUI_TEST_CLASS_DEFINITION(test_0013_2) {
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     GTUtilsDialog::waitForDialog(os, new RemovePartFromSequenceDialogFiller(os, "1040..1042", true));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Actions" << "Edit" << "Remove subsequence...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Actions"
+                                                << "Edit"
+                                                << "Remove subsequence...",
+                              GTGlobals::UseMouse);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     QTreeWidgetItem *annotationGroup = GTUtilsAnnotationsTreeView::findItem(os, "CDS  (0, 4)");
@@ -481,7 +493,10 @@ GUI_TEST_CLASS_DEFINITION(test_0013_2_neg) {
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     GTUtilsDialog::waitForDialog(os, new RemovePartFromSequenceDialogFiller(os, "996..1000", true));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Actions" << "Edit" << "Remove subsequence...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Actions"
+                                                << "Edit"
+                                                << "Remove subsequence...",
+                              GTGlobals::UseMouse);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     QTreeWidgetItem *annotationGroup = GTUtilsAnnotationsTreeView::findItem(os, "CDS  (0, 4)");
@@ -497,20 +512,24 @@ GUI_TEST_CLASS_DEFINITION(test_0014_1) {
 
     GTFileDialog::openFile(os, testDir + "_common_data/genbank/qulifier_rebuilding.gb");
     GTUtilsTaskTreeView::waitTaskFinished(os);
-    doMagic(os); // for some reason annotation qualifiers are not found without actions done by this function
+    doMagic(os);    // for some reason annotation qualifiers are not found without actions done by this function
 
     GTUtilsSequenceView::selectSequenceRegion(os, 1, 1);
 
-    GTUtilsDialog::waitForDialog(os, new InsertSequenceFiller(os, "AAAAAAAAAA", InsertSequenceFiller::Resize, 1, "",
-        InsertSequenceFiller::FASTA, false, false, GTGlobals::UseKey, false, false));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Actions" << "Edit" << "Insert subsequence...", GTGlobals::UseMouse);
+    GTUtilsDialog::waitForDialog(os, new InsertSequenceFiller(os, "AAAAAAAAAA", InsertSequenceFiller::Resize, 1, "", InsertSequenceFiller::FASTA, false, false, GTGlobals::UseKey, false, false));
+    GTMenu::clickMainMenuItem(os, QStringList() << "Actions"
+                                                << "Edit"
+                                                << "Insert subsequence...",
+                              GTGlobals::UseMouse);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     checkQualifierRegionsShift(os, 0);
 
-    GTUtilsDialog::waitForDialog(os, new InsertSequenceFiller(os, "AAAAAAAAAA", InsertSequenceFiller::Resize, 1, "",
-        InsertSequenceFiller::FASTA, false, false, GTGlobals::UseKey, false, true));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Actions" << "Edit" << "Insert subsequence...", GTGlobals::UseMouse);
+    GTUtilsDialog::waitForDialog(os, new InsertSequenceFiller(os, "AAAAAAAAAA", InsertSequenceFiller::Resize, 1, "", InsertSequenceFiller::FASTA, false, false, GTGlobals::UseKey, false, true));
+    GTMenu::clickMainMenuItem(os, QStringList() << "Actions"
+                                                << "Edit"
+                                                << "Insert subsequence...",
+                              GTGlobals::UseMouse);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     checkQualifierRegionsShift(os, 10);
@@ -521,13 +540,15 @@ GUI_TEST_CLASS_DEFINITION(test_0014_1_neg) {
 
     GTFileDialog::openFile(os, testDir + "_common_data/genbank/qulifier_rebuilding.gb");
     GTUtilsTaskTreeView::waitTaskFinished(os);
-    doMagic(os); // for some reason annotation qualifiers are not found without actions done by this function
+    doMagic(os);    // for some reason annotation qualifiers are not found without actions done by this function
 
     GTUtilsSequenceView::selectSequenceRegion(os, 100000, 100000);
 
-    GTUtilsDialog::waitForDialog(os, new InsertSequenceFiller(os, "AAAAAAAAAA", InsertSequenceFiller::Resize, 100000, "",
-        InsertSequenceFiller::FASTA, false, false, GTGlobals::UseKey, false, true));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Actions" << "Edit" << "Insert subsequence...", GTGlobals::UseMouse);
+    GTUtilsDialog::waitForDialog(os, new InsertSequenceFiller(os, "AAAAAAAAAA", InsertSequenceFiller::Resize, 100000, "", InsertSequenceFiller::FASTA, false, false, GTGlobals::UseKey, false, true));
+    GTMenu::clickMainMenuItem(os, QStringList() << "Actions"
+                                                << "Edit"
+                                                << "Insert subsequence...",
+                              GTGlobals::UseMouse);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     checkQualifierRegionsShift(os, 0);
@@ -541,9 +562,11 @@ GUI_TEST_CLASS_DEFINITION(test_0014_2) {
 
     GTUtilsSequenceView::selectSequenceRegion(os, 1050, 1050);
 
-    GTUtilsDialog::waitForDialog(os, new InsertSequenceFiller(os, "A", InsertSequenceFiller::Resize, 1050, "",
-        InsertSequenceFiller::FASTA, false, false, GTGlobals::UseKey, false, true));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Actions" << "Edit" << "Insert subsequence...", GTGlobals::UseMouse);
+    GTUtilsDialog::waitForDialog(os, new InsertSequenceFiller(os, "A", InsertSequenceFiller::Resize, 1050, "", InsertSequenceFiller::FASTA, false, false, GTGlobals::UseKey, false, true));
+    GTMenu::clickMainMenuItem(os, QStringList() << "Actions"
+                                                << "Edit"
+                                                << "Insert subsequence...",
+                              GTGlobals::UseMouse);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     QTreeWidgetItem *annotationGroup = GTUtilsAnnotationsTreeView::findItem(os, "CDS  (0, 4)");
@@ -562,9 +585,11 @@ GUI_TEST_CLASS_DEFINITION(test_0014_2_neg) {
 
     GTUtilsSequenceView::selectSequenceRegion(os, 1, 1);
 
-    GTUtilsDialog::waitForDialog(os, new InsertSequenceFiller(os, "A", InsertSequenceFiller::Resize, 1, "",
-        InsertSequenceFiller::FASTA, false, false, GTGlobals::UseKey, false, true));
-    GTMenu::clickMainMenuItem(os, QStringList() << "Actions" << "Edit" << "Insert subsequence...", GTGlobals::UseMouse);
+    GTUtilsDialog::waitForDialog(os, new InsertSequenceFiller(os, "A", InsertSequenceFiller::Resize, 1, "", InsertSequenceFiller::FASTA, false, false, GTGlobals::UseKey, false, true));
+    GTMenu::clickMainMenuItem(os, QStringList() << "Actions"
+                                                << "Edit"
+                                                << "Insert subsequence...",
+                              GTGlobals::UseMouse);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     QTreeWidgetItem *annotationGroup = GTUtilsAnnotationsTreeView::findItem(os, "CDS  (0, 4)");
@@ -580,13 +605,14 @@ GUI_TEST_CLASS_DEFINITION(test_0015_1) {
 
     GTFileDialog::openFile(os, testDir + "_common_data/genbank/qulifier_rebuilding.gb");
     GTUtilsTaskTreeView::waitTaskFinished(os);
-    doMagic(os); // for some reason annotation qualifiers are not found without actions done by this function
+    doMagic(os);    // for some reason annotation qualifiers are not found without actions done by this function
 
     GTUtilsSequenceView::selectSequenceRegion(os, 1, 10);
 
     GTUtilsDialog::waitForDialog(os, new ReplaceSubsequenceDialogFiller(os, "AAAAA", false));
-    GTUtilsDialog::waitForDialog(os, new PopupChooserByText(os, QStringList() << "Edit" << "Replace subsequence..."));
-    GTWidget::click(os, GTUtilsSequenceView::getSeqWidgetByNumber(os), Qt::RightButton);
+    GTUtilsDialog::waitForDialog(os, new PopupChooserByText(os, QStringList() << "Edit"
+                                                                              << "Replace subsequence..."));
+    GTUtilsSequenceView::openPopupMenuOnSequenceViewArea(os);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     checkQualifierRegionsShift(os, 0);
@@ -594,8 +620,9 @@ GUI_TEST_CLASS_DEFINITION(test_0015_1) {
     GTUtilsSequenceView::selectSequenceRegion(os, 1, 10);
 
     GTUtilsDialog::waitForDialog(os, new ReplaceSubsequenceDialogFiller(os, "AAAAA", true));
-    GTUtilsDialog::waitForDialog(os, new PopupChooserByText(os, QStringList() << "Edit" << "Replace subsequence..."));
-    GTWidget::click(os, GTUtilsSequenceView::getSeqWidgetByNumber(os), Qt::RightButton);
+    GTUtilsDialog::waitForDialog(os, new PopupChooserByText(os, QStringList() << "Edit"
+                                                                              << "Replace subsequence..."));
+    GTUtilsSequenceView::openPopupMenuOnSequenceViewArea(os);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     checkQualifierRegionsShift(os, -5);
@@ -606,13 +633,14 @@ GUI_TEST_CLASS_DEFINITION(test_0015_1_neg) {
 
     GTFileDialog::openFile(os, testDir + "_common_data/genbank/qulifier_rebuilding.gb");
     GTUtilsTaskTreeView::waitTaskFinished(os);
-    doMagic(os); // for some reason annotation qualifiers are not found without actions done by this function
+    doMagic(os);    // for some reason annotation qualifiers are not found without actions done by this function
 
     GTUtilsSequenceView::selectSequenceRegion(os, 1000, 1010);
 
     GTUtilsDialog::waitForDialog(os, new ReplaceSubsequenceDialogFiller(os, "AAAAA", true));
-    GTUtilsDialog::waitForDialog(os, new PopupChooserByText(os, QStringList() << "Edit" << "Replace subsequence..."));
-    GTWidget::click(os, GTUtilsSequenceView::getSeqWidgetByNumber(os), Qt::RightButton);
+    GTUtilsDialog::waitForDialog(os, new PopupChooserByText(os, QStringList() << "Edit"
+                                                                              << "Replace subsequence..."));
+    GTUtilsSequenceView::openPopupMenuOnSequenceViewArea(os);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     checkQualifierRegionsShift(os, 0);
@@ -627,8 +655,9 @@ GUI_TEST_CLASS_DEFINITION(test_0015_2) {
     GTUtilsSequenceView::selectSequenceRegion(os, 1050, 1050);
 
     GTUtilsDialog::waitForDialog(os, new ReplaceSubsequenceDialogFiller(os, "AAA", true));
-    GTUtilsDialog::waitForDialog(os, new PopupChooserByText(os, QStringList() << "Edit" << "Replace subsequence..."));
-    GTWidget::click(os, GTUtilsSequenceView::getSeqWidgetByNumber(os), Qt::RightButton);
+    GTUtilsDialog::waitForDialog(os, new PopupChooserByText(os, QStringList() << "Edit"
+                                                                              << "Replace subsequence..."));
+    GTUtilsSequenceView::openPopupMenuOnSequenceViewArea(os);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     QTreeWidgetItem *annotationGroup = GTUtilsAnnotationsTreeView::findItem(os, "CDS  (0, 4)");
@@ -648,8 +677,10 @@ GUI_TEST_CLASS_DEFINITION(test_0015_2_neg) {
     GTUtilsSequenceView::selectSequenceRegion(os, 996, 1000);
 
     GTUtilsDialog::waitForDialog(os, new ReplaceSubsequenceDialogFiller(os, "AA", true));
-    GTUtilsDialog::waitForDialog(os, new PopupChooserByText(os, QStringList() << "Edit" << "Replace subsequence...", GTGlobals::UseMouse));
-    GTWidget::click(os, GTUtilsSequenceView::getSeqWidgetByNumber(os), Qt::RightButton);
+    GTUtilsDialog::waitForDialog(os, new PopupChooserByText(os, QStringList() << "Edit"
+                                                                              << "Replace subsequence...",
+                                                            GTGlobals::UseMouse));
+    GTUtilsSequenceView::openPopupMenuOnSequenceViewArea(os);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     QTreeWidgetItem *annotationGroup = GTUtilsAnnotationsTreeView::findItem(os, "CDS  (0, 4)");
@@ -665,11 +696,14 @@ GUI_TEST_CLASS_DEFINITION(test_0016_1) {
 
     GTFileDialog::openFile(os, testDir + "_common_data/genbank/qulifier_rebuilding.gb");
     GTUtilsTaskTreeView::waitTaskFinished(os);
-    doMagic(os); // for some reason annotation qualifiers are not found without actions done by this function
+    doMagic(os);    // for some reason annotation qualifiers are not found without actions done by this function
 
     GTUtilsDialog::waitForDialog(os, new RemovePartFromSequenceDialogFiller(os, "1..600", true));
     GTUtilsNotifications::waitForNotification(os, false);
-    GTMenu::clickMainMenuItem(os, QStringList() << "Actions" << "Edit" << "Remove subsequence...", GTGlobals::UseMouse);
+    GTMenu::clickMainMenuItem(os, QStringList() << "Actions"
+                                                << "Edit"
+                                                << "Remove subsequence...",
+                              GTGlobals::UseMouse);
 
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
@@ -683,14 +717,15 @@ GUI_TEST_CLASS_DEFINITION(test_0016_2) {
 
     GTFileDialog::openFile(os, testDir + "_common_data/genbank/qulifier_rebuilding.gb");
     GTUtilsTaskTreeView::waitTaskFinished(os);
-    doMagic(os); // for some reason annotation qualifiers are not found without actions done by this function
+    doMagic(os);    // for some reason annotation qualifiers are not found without actions done by this function
 
     GTUtilsSequenceView::selectSequenceRegion(os, 1, 600);
 
     GTUtilsDialog::waitForDialog(os, new ReplaceSubsequenceDialogFiller(os, "AAAAA", true));
-    GTUtilsDialog::waitForDialog(os, new PopupChooserByText(os, QStringList() << "Edit" << "Replace subsequence..."));
+    GTUtilsDialog::waitForDialog(os, new PopupChooserByText(os, QStringList() << "Edit"
+                                                                              << "Replace subsequence..."));
     GTUtilsNotifications::waitForNotification(os, false);
-    GTWidget::click(os, GTUtilsSequenceView::getSeqWidgetByNumber(os), Qt::RightButton);
+    GTUtilsSequenceView::openPopupMenuOnSequenceViewArea(os);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     GTUtilsMdi::activateWindow(os, "qulifier_rebuilding [s] human_T1");
@@ -698,6 +733,6 @@ GUI_TEST_CLASS_DEFINITION(test_0016_2) {
     checkQualifierRegionsShift(os, 0);
 }
 
-} // namespace
+}    // namespace GUITest_common_scenarios_sequence_edit
 
-} // namespace U2
+}    // namespace U2

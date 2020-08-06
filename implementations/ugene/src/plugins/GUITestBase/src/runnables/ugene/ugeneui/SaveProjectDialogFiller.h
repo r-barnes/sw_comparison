@@ -22,19 +22,22 @@
 #ifndef SAVEPROJECTDIALOGFILLER_H
 #define SAVEPROJECTDIALOGFILLER_H
 
-#include "utils/GTUtilsDialog.h"
 #include <QDialogButtonBox>
 
-namespace U2{
+#include "utils/GTUtilsDialog.h"
+
+namespace U2 {
 using namespace HI;
 
-class SaveProjectDialogFiller: public Filler{
+class SaveProjectDialogFiller : public Filler {
 public:
-    SaveProjectDialogFiller(HI::GUITestOpStatus &os, QDialogButtonBox::StandardButton _b):
-        Filler(os,"SaveProjectDialog"),b(_b){}
+    SaveProjectDialogFiller(HI::GUITestOpStatus &os, QDialogButtonBox::StandardButton _b)
+        : Filler(os, "SaveProjectDialog"), b(_b) {
+    }
     void commonScenario();
+
 private:
     QDialogButtonBox::StandardButton b;
 };
-}
-#endif // SAVEPROJECTDIALOGFILLER_H
+}    // namespace U2
+#endif    // SAVEPROJECTDIALOGFILLER_H

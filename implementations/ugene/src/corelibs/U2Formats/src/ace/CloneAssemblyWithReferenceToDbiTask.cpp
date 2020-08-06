@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CloneAssemblyWithReferenceToDbiTask.h"
+
 #include <QScopedPointer>
 
 #include <U2Core/AssemblyObject.h>
@@ -31,24 +33,21 @@
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/U2SequenceDbi.h>
 
-#include "CloneAssemblyWithReferenceToDbiTask.h"
-
 namespace U2 {
 
 CloneAssemblyWithReferenceToDbiTask::CloneAssemblyWithReferenceToDbiTask(const U2Assembly &assembly,
                                                                          const U2Sequence &reference,
                                                                          const U2DbiRef &srcDbiRef,
                                                                          const U2DbiRef &dstDbiRef,
-                                                                         const QVariantMap &hints) :
-    Task(tr("Clone assembly object to the destination database"), TaskFlags_FOSE_COSC),
-    assembly(assembly),
-    reference(reference),
-    srcDbiRef(srcDbiRef),
-    dstDbiRef(dstDbiRef),
-    dstFolder(hints.value(DocumentFormat::DBI_FOLDER_HINT, U2ObjectDbi::ROOT_FOLDER).toString()),
-    cloneAssemblyTask(NULL),
-    cloneReferenceTask(NULL)
-{
+                                                                         const QVariantMap &hints)
+    : Task(tr("Clone assembly object to the destination database"), TaskFlags_FOSE_COSC),
+      assembly(assembly),
+      reference(reference),
+      srcDbiRef(srcDbiRef),
+      dstDbiRef(dstDbiRef),
+      dstFolder(hints.value(DocumentFormat::DBI_FOLDER_HINT, U2ObjectDbi::ROOT_FOLDER).toString()),
+      cloneAssemblyTask(NULL),
+      cloneReferenceTask(NULL) {
     SAFE_POINT_EXT(assembly.hasValidId(), setError(tr("Invalid assembly ID")), );
     SAFE_POINT_EXT(reference.hasValidId(), setError(tr("Invalid assembly ID")), );
     SAFE_POINT_EXT(srcDbiRef.isValid(), setError(tr("Invalid source database reference")), );
@@ -93,4 +92,4 @@ void CloneAssemblyWithReferenceToDbiTask::run() {
     con.dbi->getAssemblyDbi()->updateAssemblyObject(clonedAssembly, stateInfo);
 }
 
-}   // namespace U2
+}    // namespace U2

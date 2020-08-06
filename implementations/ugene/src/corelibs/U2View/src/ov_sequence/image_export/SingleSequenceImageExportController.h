@@ -41,30 +41,29 @@ class SequenceExportSettingsWidget;
 class SingleSequenceImageExportController : public ImageExportController {
     Q_OBJECT
 public:
-    SingleSequenceImageExportController(ADVSingleSequenceWidget* sequenceWidget);
+    SingleSequenceImageExportController(ADVSingleSequenceWidget *sequenceWidget);
 
 protected:
     void initSettingsWidget();
 
-    Task* getExportToSvgTask(const ImageExportTaskSettings &imageSettings) const;
-    Task* getExportToPdfTask(const ImageExportTaskSettings &imageSettings) const;
-    Task* getExportToBitmapTask(const ImageExportTaskSettings &imageSettings) const;
+    Task *getExportToSvgTask(const ImageExportTaskSettings &imageSettings) const;
+    Task *getExportToPdfTask(const ImageExportTaskSettings &imageSettings) const;
+    Task *getExportToBitmapTask(const ImageExportTaskSettings &imageSettings) const;
 
 public slots:
-    void sl_onFormatChanged(const QString& format);
+    void sl_onFormatChanged(const QString &format);
     void sl_customSettingsChanged();
 
 private:
     void checkExportSettings();
-    ADVSingleSequenceWidget *               sequenceWidget;
-    SequenceExportSettingsWidget *          seqSettingsWidget;
-    QString                                 format;
+    ADVSingleSequenceWidget *sequenceWidget;
+    SequenceExportSettingsWidget *seqSettingsWidget;
+    QString format;
 
-    QSharedPointer<ExportImagePainter>      currentPainter;
-    QSharedPointer<CustomExportSettings>    customExportSettings;
+    QSharedPointer<ExportImagePainter> currentPainter;
+    QSharedPointer<CustomExportSettings> customExportSettings;
 };
 
+}    // namespace U2
 
-} // namespace
-
-#endif // _U2_SINGLE_SEQUENCE_IMAGE_EXPORT_CONTROLLER_H_
+#endif    // _U2_SINGLE_SEQUENCE_IMAGE_EXPORT_CONTROLLER_H_

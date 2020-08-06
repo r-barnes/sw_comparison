@@ -19,19 +19,18 @@
  * MA 02110-1301, USA.
  */
 
+#include "PrimerLineEdit.h"
+
 #include <QPainter>
 #include <QStyleOption>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/U2AlphabetUtils.h>
 
-#include "PrimerLineEdit.h"
-
 namespace U2 {
 
 PrimerLineEdit::PrimerLineEdit(QWidget *parent)
-: QLineEdit(parent)
-{
+    : QLineEdit(parent) {
     setValidator(new PrimerValidator(this));
 }
 
@@ -78,16 +77,15 @@ QRect PrimerLineEdit::placeHolderRect() const {
     int minLB = qMax(0, -fm.minLeftBearing());
     int minRB = qMax(0, -fm.minRightBearing());
     int vscroll = r.y() + (r.height() - fm.height() + 1) / 2;
-    static const int horizontalMargin = 2; // QLineEditPrivate::horizontalMargin
-    QRect lineRect(r.x() + horizontalMargin, vscroll, r.width() - 2*horizontalMargin, fm.height());
+    static const int horizontalMargin = 2;    // QLineEditPrivate::horizontalMargin
+    QRect lineRect(r.x() + horizontalMargin, vscroll, r.width() - 2 * horizontalMargin, fm.height());
     return lineRect.adjusted(minLB, 0, -minRB, 0);
 }
 
 PrimerValidator::PrimerValidator(QObject *parent, bool allowExtended)
-: QRegExpValidator(parent)
-{
-    const DNAAlphabet* alphabet = AppContext::getDNAAlphabetRegistry()->findById(
-                allowExtended ? BaseDNAAlphabetIds::NUCL_DNA_EXTENDED() : BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
+    : QRegExpValidator(parent) {
+    const DNAAlphabet *alphabet = AppContext::getDNAAlphabetRegistry()->findById(
+        allowExtended ? BaseDNAAlphabetIds::NUCL_DNA_EXTENDED() : BaseDNAAlphabetIds::NUCL_DNA_DEFAULT());
     QByteArray alphabetChars = alphabet->getAlphabetChars(true);
     // Gaps are not allowed
     alphabetChars.remove(alphabetChars.indexOf('-'), 1);
@@ -101,4 +99,4 @@ QValidator::State PrimerValidator::validate(QString &input, int &pos) const {
     return QRegExpValidator::validate(input, pos);
 }
 
-} // U2
+}    // namespace U2

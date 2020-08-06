@@ -29,28 +29,35 @@ using namespace HI;
 
 class DeleteGapsDialogFiller : public Filler {
 public:
-    DeleteGapsDialogFiller(HI::GUITestOpStatus &os, int _radioButNum=0) : Filler(os, "DeleteGapsDialog"),
-        radioButNum(_radioButNum){}
+    DeleteGapsDialogFiller(HI::GUITestOpStatus &os, int _radioButNum = 0)
+        : Filler(os, "DeleteGapsDialog"),
+          radioButNum(_radioButNum) {
+    }
     void commonScenario();
+
 private:
     int radioButNum;
 };
 
 class RemoveGapColsDialogFiller : public Filler {
 public:
-    enum Radio {Number, Percent, Column};
-    RemoveGapColsDialogFiller(HI::GUITestOpStatus &os, Radio _button, int _spinValue=1) : Filler(os, "DeleteGapsDialog"),
-        button(_button), spinValue(_spinValue){
+    enum Radio { Number,
+                 Percent,
+                 Column };
+    RemoveGapColsDialogFiller(HI::GUITestOpStatus &os, Radio _button, int _spinValue = 1)
+        : Filler(os, "DeleteGapsDialog"),
+          button(_button), spinValue(_spinValue) {
         radioMap[Number] = "absoluteRadioButton";
         radioMap[Percent] = "relativeRadioButton";
         radioMap[Column] = "allRadioButton";
     }
     void commonScenario();
+
 private:
     Radio button;
     int spinValue;
-    QMap<Radio,QString> radioMap;
+    QMap<Radio, QString> radioMap;
 };
-}
+}    // namespace U2
 
 #endif

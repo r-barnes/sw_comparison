@@ -47,8 +47,9 @@ public:
     static const QString WORKFLOW_OUTPUT_DIR;
 
 public:
-    WorkflowDesignerPlugin ();
-    ~WorkflowDesignerPlugin ();
+    WorkflowDesignerPlugin();
+    ~WorkflowDesignerPlugin();
+
 private:
     void registerCMDLineHelp();
     void registerWorkflowTasks();
@@ -64,10 +65,11 @@ class WorkflowDesignerService : public Service {
 public:
     WorkflowDesignerService();
     bool closeViews();
-protected:
-    virtual Task* createServiceEnablingTask();
 
-    virtual Task* createServiceDisablingTask();
+protected:
+    virtual Task *createServiceEnablingTask();
+
+    virtual Task *createServiceDisablingTask();
 
     virtual void serviceStateChangedCallback(ServiceState oldState, bool enabledStateChanged);
 
@@ -86,11 +88,10 @@ private:
     void initSampleActions();
 
 private:
-    QAction*        designerAction;
-    QAction*        managerAction;
-    QAction*        newWorkflowAction;
+    QAction *designerAction;
+    QAction *managerAction;
+    QAction *newWorkflowAction;
 };
-
 
 class WorkflowWelcomePageAction : public WelcomePageAction {
 public:
@@ -101,6 +102,6 @@ private:
     QPointer<WorkflowDesignerService> service;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

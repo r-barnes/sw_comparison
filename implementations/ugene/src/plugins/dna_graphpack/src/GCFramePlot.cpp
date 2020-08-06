@@ -21,35 +21,34 @@
 
 #include "GCFramePlot.h"
 
-#include <U2Core/DNAAlphabet.h>
-#include <U2Core/DNASequenceObject.h>
-#include "DNAGraphPackPlugin.h"
 #include <U2Algorithm/RollingArray.h>
 
+#include <U2Core/DNAAlphabet.h>
+#include <U2Core/DNASequenceObject.h>
+
+#include "DNAGraphPackPlugin.h"
 
 namespace U2 {
 
 #define OFFSET_NULL "Frame 1"
-#define OFFSET_ONE    "Frame 2"
-#define OFFSET_TWO  "Frame 3"
+#define OFFSET_ONE "Frame 2"
+#define OFFSET_TWO "Frame 3"
 
-GCFramePlotFactory::GCFramePlotFactory(QObject* p)
-: GSequenceGraphFactory("GC Frame Plot", p)
-{
-
+GCFramePlotFactory::GCFramePlotFactory(QObject *p)
+    : GSequenceGraphFactory("GC Frame Plot", p) {
 }
 
-bool GCFramePlotFactory::isEnabled(const U2SequenceObject* o) const {
-    const DNAAlphabet* al = o->getAlphabet();
+bool GCFramePlotFactory::isEnabled(const U2SequenceObject *o) const {
+    const DNAAlphabet *al = o->getAlphabet();
     return al->isNucleic();
 }
 
-QList<QSharedPointer<GSequenceGraphData> > GCFramePlotFactory::createGraphs(GSequenceGraphView* v) {
+QList<QSharedPointer<GSequenceGraphData>> GCFramePlotFactory::createGraphs(GSequenceGraphView *v) {
     Q_UNUSED(v);
 
     //TODO: All points should be calculated during one loop over the window.
 
-    QList<QSharedPointer<GSequenceGraphData> > res;
+    QList<QSharedPointer<GSequenceGraphData>> res;
     assert(isEnabled(v->getSequenceObject()));
     QSharedPointer<GSequenceGraphData> d = QSharedPointer<GSequenceGraphData>(new GSequenceGraphData(OFFSET_NULL));
     d->ga = new GCFramePlotAlgorithm(0);
@@ -66,8 +65,8 @@ QList<QSharedPointer<GSequenceGraphData> > GCFramePlotFactory::createGraphs(GSeq
     return res;
 }
 
-GSequenceGraphDrawer* GCFramePlotFactory::getDrawer(GSequenceGraphView* v) {
-    GSequenceGraphDrawer* d =  GSequenceGraphFactory::getDrawer(v);
+GSequenceGraphDrawer *GCFramePlotFactory::getDrawer(GSequenceGraphView *v) {
+    GSequenceGraphDrawer *d = GSequenceGraphFactory::getDrawer(v);
 
     QMap<QString, QColor> colors;
     colors.insert(OFFSET_NULL, Qt::red);
@@ -78,19 +77,15 @@ GSequenceGraphDrawer* GCFramePlotFactory::getDrawer(GSequenceGraphView* v) {
     return d;
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 // GCFramePlotAlgorithm
 
-GCFramePlotAlgorithm::GCFramePlotAlgorithm( int _offset )
-:map(256, false), offset(_offset)
-{
+GCFramePlotAlgorithm::GCFramePlotAlgorithm(int _offset)
+    : map(256, false), offset(_offset) {
     map['G'] = map['C'] = true;
 }
 
-void GCFramePlotAlgorithm::windowStrategyWithoutMemorize(QVector<float>& res, const QByteArray& seq, int startPos,
-    const GSequenceGraphWindowData* d, int nSteps, U2OpStatus &os)
-{
+void GCFramePlotAlgorithm::windowStrategyWithoutMemorize(QVector<float> &res, const QByteArray &seq, int startPos, const GSequenceGraphWindowData *d, int nSteps, U2OpStatus &os) {
     for (int i = 0; i < nSteps; i++) {
         int start = startPos + i * d->step;
         int end = start + d->window;
@@ -107,14 +102,12 @@ void GCFramePlotAlgorithm::windowStrategyWithoutMemorize(QVector<float>& res, co
                 base_count++;
             }
         }
-        res.append((base_count / (float)(d->window))*100*3);
+        res.append((base_count / (float)(d->window)) * 100 * 3);
     }
 }
 
-void GCFramePlotAlgorithm::calculate(QVector<float>& res, U2SequenceObject* o, const U2Region& vr,
-    const GSequenceGraphWindowData* d, U2OpStatus &os)
-{
-    assert(d!=NULL);
+void GCFramePlotAlgorithm::calculate(QVector<float> &res, U2SequenceObject *o, const U2Region &vr, const GSequenceGraphWindowData *d, U2OpStatus &os) {
+    assert(d != NULL);
     int nSteps = GSequenceGraphUtils::getNumSteps(vr, d->window, d->step);
     res.reserve(nSteps);
     const QByteArray &seq = getSequenceData(o, os);
@@ -123,5 +116,4 @@ void GCFramePlotAlgorithm::calculate(QVector<float>& res, U2SequenceObject* o, c
     windowStrategyWithoutMemorize(res, seq, startPos, d, nSteps, os);
 }
 
-} // namespace
-
+}    // namespace U2

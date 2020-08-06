@@ -23,6 +23,7 @@
 #define _U2_SIMPLE_SNP_VARIATION_FORMAT_H_
 
 #include <U2Core/BaseDocumentFormats.h>
+
 #include <U2Formats/AbstractVariationFormat.h>
 
 namespace U2 {
@@ -36,6 +37,6 @@ protected:
     virtual bool checkFormatByColumnCount(int columnCount) const;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_SIMPLE_SNP_VARIATION_FORMAT_H_
+#endif    // _U2_SIMPLE_SNP_VARIATION_FORMAT_H_

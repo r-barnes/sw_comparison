@@ -19,11 +19,11 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-
 #include <drivers/GTKeyboardDriver.h>
 #include <primitives/GTLineEdit.h>
 #include <primitives/GTWidget.h>
+
+#include <QApplication>
 
 #include "AddFolderDialogFiller.h"
 
@@ -31,9 +31,7 @@ namespace U2 {
 using namespace HI;
 
 AddFolderDialogFiller::AddFolderDialogFiller(HI::GUITestOpStatus &os, const QString &folderName, GTGlobals::UseMethod acceptMethod)
-    : Filler(os, "FolderNameDialog"), folderName(folderName), acceptMethod(acceptMethod)
-{
-
+    : Filler(os, "FolderNameDialog"), folderName(folderName), acceptMethod(acceptMethod) {
 }
 
 #define GT_CLASS_NAME "U2::AddFolderDialogFiller"
@@ -43,17 +41,17 @@ void AddFolderDialogFiller::commonScenario() {
     QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "active modal widget is invalid");
 
-    QLineEdit *nameEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "nameEdit", dialog));
+    QLineEdit *nameEdit = qobject_cast<QLineEdit *>(GTWidget::findWidget(os, "nameEdit", dialog));
     GT_CHECK(nameEdit, "Folder name line edit is invalid");
     GTLineEdit::setText(os, nameEdit, folderName);
 
     switch (acceptMethod) {
-    case GTGlobals::UseMouse :
+    case GTGlobals::UseMouse:
         GTWidget::click(os, GTWidget::findButtonByText(os, "OK", dialog));
         break;
-    case GTGlobals::UseKey :
-    case GTGlobals::UseKeyBoard :
-        GTKeyboardDriver::keyClick( Qt::Key_Enter);
+    case GTGlobals::UseKey:
+    case GTGlobals::UseKeyBoard:
+        GTKeyboardDriver::keyClick(Qt::Key_Enter);
         break;
     }
 }
@@ -61,4 +59,4 @@ void AddFolderDialogFiller::commonScenario() {
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-} // namespace U2
+}    // namespace U2

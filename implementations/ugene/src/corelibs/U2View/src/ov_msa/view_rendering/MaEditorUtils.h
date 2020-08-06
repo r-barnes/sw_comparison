@@ -26,7 +26,6 @@
 #include <QSplitter>
 #include <QWidget>
 
-
 namespace U2 {
 
 class MaEditorWgt;
@@ -41,9 +40,9 @@ public:
     MaSplitterController();
     MaSplitterController(QSplitter *spliter);
 
-    void setSequenceArea(MSAEditorSequenceArea* _seqArea);
+    void setSequenceArea(MSAEditorSequenceArea *_seqArea);
 
-    QSplitter* getSplitter();
+    QSplitter *getSplitter();
 
     void addWidget(QWidget *wgt, int index, qreal coef);
     void addWidget(QWidget *neighboringWidget, QWidget *wgt, qreal coef, int neighboringShift = 0);
@@ -51,11 +50,11 @@ public:
     void removeWidget(QWidget *wgt);
 
 private:
-    MSAEditorSequenceArea* seqArea;
-    QSplitter*             splitter;
+    MSAEditorSequenceArea *seqArea;
+    QSplitter *splitter;
 
-    QList<QWidget *>       widgets;
-    QList<int>             widgetSizes;
+    QList<QWidget *> widgets;
+    QList<int> widgetSizes;
 };
 
 /************************************************************************/
@@ -64,9 +63,10 @@ private:
 class MaUtilsWidget : public QWidget {
     Q_OBJECT
 public:
-    MaUtilsWidget(MaEditorWgt* _ui, QWidget* heightWidget);
-    virtual ~MaUtilsWidget() {}
-    const QFont& getMsaEditorFont();
+    MaUtilsWidget(MaEditorWgt *_ui, QWidget *heightWidget);
+    virtual ~MaUtilsWidget() {
+    }
+    const QFont &getMsaEditorFont();
     void setHeightMargin(int _heightMargin);
 
 protected slots:
@@ -76,9 +76,9 @@ protected:
     virtual void mousePressEvent(QMouseEvent *e);
     virtual void paintEvent(QPaintEvent *e);
 
-    MaEditorWgt*    ui;
-    QWidget*        heightWidget;
-    int             heightMargin;
+    MaEditorWgt *ui;
+    QWidget *heightWidget;
+    int heightMargin;
 };
 
 /************************************************************************/
@@ -88,7 +88,7 @@ class MaLabelWidget : public MaUtilsWidget {
     Q_OBJECT
 public:
     // SANGER_TODO: rename the class and reconsider the usage of it and its parent
-    MaLabelWidget(MaEditorWgt* _ui, QWidget* heightWidget, const QString & _t, Qt::Alignment _a);
+    MaLabelWidget(MaEditorWgt *ui, QWidget *heightWidget, const QString &text, Qt::Alignment alignment, bool proxyMouseEventsToNameList = true);
 
 protected:
     void paintEvent(QPaintEvent *e);
@@ -97,10 +97,12 @@ protected:
     void mouseMoveEvent(QMouseEvent *e);
 
 private:
-    QLabel* label;
+    void sendEventToNameList(QMouseEvent *e) const;
+
+    QLabel *label;
+    bool proxyMouseEventsToNameList;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_MA_EDITOR_UTILS_H_
-
+#endif    // _U2_MA_EDITOR_UTILS_H_

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DatatypeSerializeUtilsUnitTest.h"
+
 #include <U2Core/BioStruct3DObject.h>
 #include <U2Core/DatatypeSerializeUtils.h>
 #include <U2Core/U2OpStatusUtils.h>
@@ -27,8 +29,6 @@
 #include <U2Formats/PDBFormat.h>
 
 #include "../gobjects/BioStruct3DObjectUnitTests.h"
-
-#include "DatatypeSerializeUtilsUnitTest.h"
 
 namespace U2 {
 
@@ -51,15 +51,33 @@ IMPLEMENT_TEST(DatatypeSerializeUtilsUnitTest, DNAChromatogramSerializer_true) {
     DNAChromatogram src;
     src.traceLength = 1;
     src.seqLength = -2;
-    src.baseCalls << 3; src.baseCalls << -4; src.baseCalls << 5;
-    src.A << -6; src.A << 7; src.A << -8;
-    src.C << 9; src.C << -10; src.C << 11;
-    src.G << -12; src.G << 13; src.G << -14;
-    src.T << 15; src.T << -16; src.T << 17;
-    src.prob_A << 'a'; src.prob_A << -'b'; src.prob_A << 'c';
-    src.prob_C << -'d'; src.prob_C << 'e'; src.prob_C << -'f';
-    src.prob_G << 'g'; src.prob_G << -'h'; src.prob_G << 'i';
-    src.prob_T << -'j'; src.prob_T << 'k'; src.prob_T << -'l';
+    src.baseCalls << 3;
+    src.baseCalls << -4;
+    src.baseCalls << 5;
+    src.A << -6;
+    src.A << 7;
+    src.A << -8;
+    src.C << 9;
+    src.C << -10;
+    src.C << 11;
+    src.G << -12;
+    src.G << 13;
+    src.G << -14;
+    src.T << 15;
+    src.T << -16;
+    src.T << 17;
+    src.prob_A << 'a';
+    src.prob_A << -'b';
+    src.prob_A << 'c';
+    src.prob_C << -'d';
+    src.prob_C << 'e';
+    src.prob_C << -'f';
+    src.prob_G << 'g';
+    src.prob_G << -'h';
+    src.prob_G << 'i';
+    src.prob_T << -'j';
+    src.prob_T << 'k';
+    src.prob_T << -'l';
     src.hasQV = true;
     QByteArray binary = DNAChromatogramSerializer::serialize(src);
 
@@ -124,10 +142,7 @@ IMPLEMENT_TEST(DatatypeSerializeUtilsUnitTest, BioStruct3DSerializer_failed) {
 
 IMPLEMENT_TEST(DatatypeSerializeUtilsUnitTest, WMatrixSerializer) {
     QVarLengthArray<float> data;
-    data << 0.000000000000000f << 2.854232788085938f << 7.135581970214844f << 0.000000000000000f << 1.427116394042969f << 0.000000000000000 << 0.000000000000000f << 5.708465576171875f << 0.000000000000000f << 0.000000000000000f <<
-    0.000000000000000f << 3.932225704193115f << 0.000000000000000f << 0.000000000000000f << 1.966112852096558f << 3.932225704193115f << 0.000000000000000f << 0.000000000000000f << 3.932225704193115f << 0.000000000000000f <<
-    0.000000000000000f << 0.000000000000000f << 0.000000000000000f << 11.512926101684570 << 0.000000000000000f << 0.000000000000000f << 0.000000000000000f << 0.000000000000000f << 0.000000000000000f << 0.000000000000000f <<
-    3.269632339477539f << 0.653926491737366f << 0.000000000000000f << 0.000000000000000f << 1.961779475212097f << 1.961779475212097f << 3.269632339477539f << 0.653926491737366f << 1.961779475212097f << 3.269632339477539f;
+    data << 0.000000000000000f << 2.854232788085938f << 7.135581970214844f << 0.000000000000000f << 1.427116394042969f << 0.000000000000000 << 0.000000000000000f << 5.708465576171875f << 0.000000000000000f << 0.000000000000000f << 0.000000000000000f << 3.932225704193115f << 0.000000000000000f << 0.000000000000000f << 1.966112852096558f << 3.932225704193115f << 0.000000000000000f << 0.000000000000000f << 3.932225704193115f << 0.000000000000000f << 0.000000000000000f << 0.000000000000000f << 0.000000000000000f << 11.512926101684570 << 0.000000000000000f << 0.000000000000000f << 0.000000000000000f << 0.000000000000000f << 0.000000000000000f << 0.000000000000000f << 3.269632339477539f << 0.653926491737366f << 0.000000000000000f << 0.000000000000000f << 1.961779475212097f << 1.961779475212097f << 3.269632339477539f << 0.653926491737366f << 1.961779475212097f << 3.269632339477539f;
 
     PWMatrix m1(data, PWM_MONONUCLEOTIDE);
     QMap<QString, QString> props;
@@ -153,22 +168,7 @@ IMPLEMENT_TEST(DatatypeSerializeUtilsUnitTest, WMatrixSerializer_failed) {
 
 IMPLEMENT_TEST(DatatypeSerializeUtilsUnitTest, FMatrixSerializer) {
     QVarLengthArray<int> data;
-    data << 0 << 2 << 0 << 0 << 0 << 0 << 0 << 0 << 0 <<
-    0 << 0 << 0 << 0 << 1 << 0 << 0 << 1 << 0 <<
-    0 << 0 << 5 << 0 << 0 << 0 << 0 << 0 << 0 <<
-    0 << 0 << 0 << 0 << 0 << 0 << 0 << 3 << 0 <<
-    0 << 2 << 0 << 0 << 0 << 0 << 0 << 0 << 0 <<
-    0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 <<
-    0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 <<
-    0 << 0 << 0 << 0 << 1 << 2 << 0 << 0 << 2 <<
-    0 << 0 << 0 << 1 << 0 << 0 << 0 << 0 << 0 <<
-    0 << 0 << 0 << 1 << 0 << 0 << 0 << 0 << 0 <<
-    0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 <<
-    0 << 0 << 0 << 3 << 0 << 0 << 0 << 0 << 0 <<
-    2 << 1 << 0 << 0 << 0 << 0 << 4 << 0 << 0 <<
-    2 << 0 << 0 << 0 << 1 << 0 << 0 << 1 << 0 <<
-    0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 <<
-    1 << 0 << 0 << 0 << 2 << 3 << 1 << 0 << 3;
+    data << 0 << 2 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 1 << 0 << 0 << 1 << 0 << 0 << 0 << 5 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 3 << 0 << 0 << 2 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 1 << 2 << 0 << 0 << 2 << 0 << 0 << 0 << 1 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 1 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 3 << 0 << 0 << 0 << 0 << 0 << 2 << 1 << 0 << 0 << 0 << 0 << 4 << 0 << 0 << 2 << 0 << 0 << 0 << 1 << 0 << 0 << 1 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 1 << 0 << 0 << 0 << 2 << 3 << 1 << 0 << 3;
 
     PFMatrix m1(data, PFM_DINUCLEOTIDE);
     QMap<QString, QString> props;
@@ -195,4 +195,4 @@ IMPLEMENT_TEST(DatatypeSerializeUtilsUnitTest, FMatrixSerializer_failed) {
     CHECK_TRUE(os.hasError(), "no error");
 }
 
-} // U2
+}    // namespace U2

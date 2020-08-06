@@ -20,7 +20,6 @@
  */
 
 #include "SimpleTextObjectViewTasks.h"
-#include "SimpleTextObjectView.h"
 
 #include <U2Core/AppContext.h>
 #include <U2Core/BaseDocumentFormats.h>
@@ -30,18 +29,19 @@
 #include <U2Core/TextObject.h>
 #include <U2Core/U2SafePoints.h>
 
+#include "SimpleTextObjectView.h"
+
 namespace U2 {
 
 //////////////////////////////////////////////////////////////////////////
 //open view task
 
 OpenSimpleTextObjectViewTask::OpenSimpleTextObjectViewTask(const QList<GObject *> &_objects)
-    : ObjectViewTask(SimpleTextObjectViewFactory::ID), objects(_objects)
-{
+    : ObjectViewTask(SimpleTextObjectViewFactory::ID), objects(_objects) {
     foreach (GObject *obj, objects) {
         CHECK_EXT(NULL != obj, stateInfo.setError(tr("Invalid object detected!")), );
         CHECK_EXT(GObjectTypes::TEXT == obj->getGObjectType(),
-            stateInfo.setError(tr("Invalid object type detected!")), );
+                  stateInfo.setError(tr("Invalid object type detected!")), );
 
         Document *doc = obj->getDocument();
         CHECK_EXT(NULL != doc, stateInfo.setError(tr("Invalid document detected!")), );
@@ -51,9 +51,8 @@ OpenSimpleTextObjectViewTask::OpenSimpleTextObjectViewTask(const QList<GObject *
     }
 }
 
-OpenSavedTextObjectViewTask::OpenSavedTextObjectViewTask(const QString& vname, const QVariantMap& stateData)
-: ObjectViewTask(SimpleTextObjectViewFactory::ID, vname, stateData), doc(NULL)
-{
+OpenSavedTextObjectViewTask::OpenSavedTextObjectViewTask(const QString &vname, const QVariantMap &stateData)
+    : ObjectViewTask(SimpleTextObjectViewFactory::ID, vname, stateData), doc(NULL) {
     QString documentUrl = SimpleTextObjectView::getDocumentUrl(stateData);
     doc = AppContext::getProject()->findDocumentByURL(documentUrl);
     if (doc.isNull()) {
@@ -67,7 +66,6 @@ OpenSavedTextObjectViewTask::OpenSavedTextObjectViewTask(const QString& vname, c
     if (!doc->isLoaded()) {
         documentsToLoad.append(doc);
     }
-
 }
 
 void OpenSavedTextObjectViewTask::open() {
@@ -76,16 +74,16 @@ void OpenSavedTextObjectViewTask::open() {
     }
     assert(doc->isLoaded());
     QString objName = SimpleTextObjectView::getObjectName(stateData);
-    GObject* obj = doc->findGObjectByName(objName);
-    TextObject* to = qobject_cast<TextObject*>(obj);
+    GObject *obj = doc->findGObjectByName(objName);
+    TextObject *to = qobject_cast<TextObject *>(obj);
     if (!to) {
         stateInfo.setError(tr("Text object '%1' is not found").arg(objName));
         stateIsIllegal = true;
         return;
     }
-    SimpleTextObjectView* v = new SimpleTextObjectView(viewName, to, stateData);
-    GObjectViewWindow* w = new GObjectViewWindow(v, viewName, !stateData.isEmpty());
-    MWMDIManager* mdiManager =  AppContext::getMainWindow()->getMDIManager();
+    SimpleTextObjectView *v = new SimpleTextObjectView(viewName, to, stateData);
+    GObjectViewWindow *w = new GObjectViewWindow(v, viewName, !stateData.isEmpty());
+    MWMDIManager *mdiManager = AppContext::getMainWindow()->getMDIManager();
     mdiManager->addMDIWindow(w);
 }
 
@@ -97,43 +95,39 @@ void OpenSimpleTextObjectViewTask::open() {
         Document *doc = obj->getDocument();
         CHECK_EXT(doc->isLoaded(), stateInfo.setError(tr("Document is not loaded!")), );
 
-        TextObject *to = qobject_cast<TextObject*>(obj);
+        TextObject *to = qobject_cast<TextObject *>(obj);
         CHECK_EXT(NULL != obj, stateInfo.setError(tr("Invalid object detected!")), );
 
         const QString viewName = GObjectViewUtils::genUniqueViewName(doc, to);
-        SimpleTextObjectView* v = new SimpleTextObjectView(viewName, to, stateData);
-        GObjectViewWindow* w = new GObjectViewWindow(v, viewName, !stateData.isEmpty());
+        SimpleTextObjectView *v = new SimpleTextObjectView(viewName, to, stateData);
+        GObjectViewWindow *w = new GObjectViewWindow(v, viewName, !stateData.isEmpty());
         if (NULL == v->parent()) {
             stateInfo.setError("Could not open view");
             delete v;
             delete w;
             continue;
         }
-        MWMDIManager* mdiManager =  AppContext::getMainWindow()->getMDIManager();
+        MWMDIManager *mdiManager = AppContext::getMainWindow()->getMDIManager();
         mdiManager->addMDIWindow(w);
     }
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 // update view task
 
-UpdateSimpleTextObjectViewTask::UpdateSimpleTextObjectViewTask(GObjectView* v, const QString& stateName, const QVariantMap& stateData)
-: ObjectViewTask(v, stateName, stateData)
-{
+UpdateSimpleTextObjectViewTask::UpdateSimpleTextObjectViewTask(GObjectView *v, const QString &stateName, const QVariantMap &stateData)
+    : ObjectViewTask(v, stateName, stateData) {
 }
 
 void UpdateSimpleTextObjectViewTask::update() {
     if (view.isNull()) {
         return;
     }
-    SimpleTextObjectView* tv = qobject_cast<SimpleTextObjectView*>(view);
+    SimpleTextObjectView *tv = qobject_cast<SimpleTextObjectView *>(view);
     if (tv == NULL) {
         return;
     }
     tv->updateView(stateData);
-
 }
 
-
-} // namespace
+}    // namespace U2

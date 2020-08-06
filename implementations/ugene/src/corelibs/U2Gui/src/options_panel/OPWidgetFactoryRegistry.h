@@ -22,35 +22,31 @@
 #ifndef _U2_OP_WIDGET_FACTORY_REGISTRY_H_
 #define _U2_OP_WIDGET_FACTORY_REGISTRY_H_
 
-#include "OPWidgetFactory.h"
+#include <QMutex>
 
 #include <U2Core/global.h>
 
-#include <QMutex>
-
+#include "OPWidgetFactory.h"
 
 namespace U2 {
 
-
-class U2GUI_EXPORT OPWidgetFactoryRegistry : public QObject
-{
+class U2GUI_EXPORT OPWidgetFactoryRegistry : public QObject {
     Q_OBJECT
 
 public:
-    OPWidgetFactoryRegistry(QObject* parent = NULL);
+    OPWidgetFactoryRegistry(QObject *parent = NULL);
     ~OPWidgetFactoryRegistry();
 
-    bool registerFactory(OPWidgetFactory* factory);
+    bool registerFactory(OPWidgetFactory *factory);
 
-    QList<OPWidgetFactory*> getRegisteredFactories(const QList<OPFactoryFilterVisitorInterface*>& filters);
+    QList<OPWidgetFactory *> getRegisteredFactories(const QList<OPFactoryFilterVisitorInterface *> &filters);
 
 private:
-    QList<OPWidgetFactory*> opWidgetFactories;
+    QList<OPWidgetFactory *> opWidgetFactories;
     QMutex mutex;
 };
 
-class U2GUI_EXPORT OPCommonWidgetFactoryRegistry : public QObject
-{
+class U2GUI_EXPORT OPCommonWidgetFactoryRegistry : public QObject {
     Q_OBJECT
 
 public:
@@ -59,14 +55,13 @@ public:
 
     bool registerFactory(OPCommonWidgetFactory *factory);
 
-    QList<OPCommonWidgetFactory*> getRegisteredFactories(QString groupId);
+    QList<OPCommonWidgetFactory *> getRegisteredFactories(QString groupId);
 
 private:
-    QList<OPCommonWidgetFactory*> factories;
+    QList<OPCommonWidgetFactory *> factories;
     QMutex mutex;
 };
 
-} // namespace
+}    // namespace U2
 
 #endif
-

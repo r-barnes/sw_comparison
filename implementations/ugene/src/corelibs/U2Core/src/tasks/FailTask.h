@@ -29,11 +29,12 @@ namespace U2 {
 class U2CORE_EXPORT FailTask : public Task {
     Q_OBJECT
 public:
-    FailTask(const QString& msg) : Task(tr("Failure"), TaskFlag_NoRun) {
+    FailTask(const QString &msg)
+        : Task(tr("Failure"), TaskFlag_NoRun) {
         stateInfo.setError(msg);
     }
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

@@ -42,21 +42,21 @@ public:
     ~StructuralAlignmentAlgorithmRegistry();
 
     void registerAlgorithmFactory(StructuralAlignmentAlgorithmFactory *factory, const QString &id);
-    StructuralAlignmentAlgorithmFactory* getAlgorithmFactory(const QString &id);
+    StructuralAlignmentAlgorithmFactory *getAlgorithmFactory(const QString &id);
 
-    StructuralAlignmentAlgorithm* createStructuralAlignmentAlgorithm(const QString &algorithm);
-    StructuralAlignmentTask* createStructuralAlignmentTask(const QString &algorithm, const StructuralAlignmentTaskSettings &settings);
+    StructuralAlignmentAlgorithm *createStructuralAlignmentAlgorithm(const QString &algorithm);
+    StructuralAlignmentTask *createStructuralAlignmentTask(const QString &algorithm, const StructuralAlignmentTaskSettings &settings);
 
     QList<QString> getFactoriesIds() const;
 
 private:
-    StructuralAlignmentAlgorithmRegistry(const StructuralAlignmentAlgorithmRegistry&);
-    StructuralAlignmentAlgorithmRegistry& operator= (const StructuralAlignmentAlgorithmRegistry&);
+    StructuralAlignmentAlgorithmRegistry(const StructuralAlignmentAlgorithmRegistry &);
+    StructuralAlignmentAlgorithmRegistry &operator=(const StructuralAlignmentAlgorithmRegistry &);
 
 private:
-    QMap<QString, StructuralAlignmentAlgorithmFactory*> factories;
-};  // class StructuralAlignmentAlgorithmRegistry
+    QMap<QString, StructuralAlignmentAlgorithmFactory *> factories;
+};    // class StructuralAlignmentAlgorithmRegistry
 
-}   // namespace U2
+}    // namespace U2
 
-#endif  // #ifndef _U2_STRUCTURAL_ALIGNMENT_ALGORITHM_REGISTRY_H_
+#endif    // #ifndef _U2_STRUCTURAL_ALIGNMENT_ALGORITHM_REGISTRY_H_

@@ -34,21 +34,21 @@ namespace U2 {
 */
 #define U2_ASSEMBLY_COVERAGE_ATTRIBUTE_LOWER "assembly-coverage-1m"
 
-
 /**
     U2Assembly and related structures utility functions
 */
 class U2CORE_EXPORT U2AssemblyUtils : public QObject {
     Q_OBJECT
 private:
-    U2AssemblyUtils(){}
-public:
+    U2AssemblyUtils() {
+    }
 
+public:
     /**
         Returns CIGAR operation for the given char, case insensitive
         If failed, error text is stored in 'err'
     */
-    static U2CigarOp char2Cigar(char c, QString& err);
+    static U2CigarOp char2Cigar(char c, QString &err);
 
     /**
         Returns char representation of the given CIGAR op
@@ -60,31 +60,30 @@ public:
         Returns the result as a set of U2CigarTokens.
         If parsing is failed, the fail reason is stored in 'err' parameter
     */
-    static QList<U2CigarToken> parseCigar(const QByteArray& cigarString, QString& err);
+    static QList<U2CigarToken> parseCigar(const QByteArray &cigarString, QString &err);
 
     /**
         Returns string representation of the CIGAR
     */
-    static QByteArray cigar2String(const QList<U2CigarToken>& cigar);
-
+    static QByteArray cigar2String(const QList<U2CigarToken> &cigar);
 
     /**
         Returns extra read length produced by CIGAR. Can be negative.
     */
-    static qint64 getCigarExtraLength(const QList<U2CigarToken>& cigar);
+    static qint64 getCigarExtraLength(const QList<U2CigarToken> &cigar);
 
     /** Returns read effective length: sequence length + CIGAR */
-    static qint64 getEffectiveReadLength(const U2AssemblyRead& read);
+    static qint64 getEffectiveReadLength(const U2AssemblyRead &read);
 
     /**
         Serializes Coverage Statistics to byte array for storing in dbi attribute
     */
-    static QByteArray serializeCoverageStat(const U2AssemblyCoverageStat& coverageStat);
+    static QByteArray serializeCoverageStat(const U2AssemblyCoverageStat &coverageStat);
 
     /**
         Deserializes Coverage Statistics that was serialized with serializeCoverageStat function
     */
-    static void deserializeCoverageStat(QByteArray data, U2AssemblyCoverageStat& res, U2OpStatus &os);
+    static void deserializeCoverageStat(QByteArray data, U2AssemblyCoverageStat &res, U2OpStatus &os);
 
     /**
         Size of array of cached coverage
@@ -92,7 +91,6 @@ public:
     static const int MAX_COVERAGE_VECTOR_SIZE;
 };
 
-} //namespace
-
+}    // namespace U2
 
 #endif

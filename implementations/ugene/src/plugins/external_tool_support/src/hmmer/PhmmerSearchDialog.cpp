@@ -39,40 +39,38 @@
 #include <U2View/ADVSequenceObjectContext.h>
 #include <U2View/AnnotatedDNAView.h>
 
-#include "PhmmerSearchTask.h"
 #include "PhmmerSearchDialog.h"
+#include "PhmmerSearchTask.h"
 
 namespace U2 {
 
-const QString PhmmerSearchDialog::QUERY_FILES_DIR            = "uhmm3_phmmer_query_files_dir";
-const QString PhmmerSearchDialog::DOM_E_PLUS_PREFIX          = "1E+";
-const QString PhmmerSearchDialog::DOM_E_MINUS_PREFIX         = "1E";
-const QString PhmmerSearchDialog::ANNOTATIONS_DEFAULT_NAME   = "signal";
+const QString PhmmerSearchDialog::QUERY_FILES_DIR = "uhmm3_phmmer_query_files_dir";
+const QString PhmmerSearchDialog::DOM_E_PLUS_PREFIX = "1E+";
+const QString PhmmerSearchDialog::DOM_E_MINUS_PREFIX = "1E";
+const QString PhmmerSearchDialog::ANNOTATIONS_DEFAULT_NAME = "signal";
 
 PhmmerSearchDialog::PhmmerSearchDialog(U2SequenceObject *seqObj, QWidget *parent)
-    : QDialog(parent), seqCtx(NULL)
-{
+    : QDialog(parent), seqCtx(NULL) {
     init(seqObj);
 }
 
 PhmmerSearchDialog::PhmmerSearchDialog(ADVSequenceObjectContext *seqCtx, QWidget *parent)
-    : QDialog(parent), seqCtx(seqCtx)
-{
+    : QDialog(parent), seqCtx(seqCtx) {
     init(seqCtx->getSequenceObject());
 }
 
-void PhmmerSearchDialog::init(U2SequenceObject *seqObj){
+void PhmmerSearchDialog::init(U2SequenceObject *seqObj) {
     assert(NULL != seqObj);
     setupUi(this);
 
-    new HelpButton(this, buttonBox, "24742595");
+    new HelpButton(this, buttonBox, "46501174");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Search"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
     U2OpStatusImpl os;
     model.dbSequence = seqObj;
     SAFE_POINT_EXT(!os.hasError(), QMessageBox::critical(QApplication::activeWindow(), L10N::errorTitle(), os.getError()), );
-    setModelValues(); // default model here
+    setModelValues();    // default model here
 
     // Annotations widget
     CreateAnnotationModel annModel;
@@ -121,8 +119,7 @@ void PhmmerSearchDialog::setModelValues() {
 
 void PhmmerSearchDialog::sl_queryToolButtonClicked() {
     LastUsedDirHelper helper(QUERY_FILES_DIR);
-    helper.url = U2FileDialog::getOpenFileName(this, tr("Select query sequence file"),
-        helper, DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::SEQUENCE, true));
+    helper.url = U2FileDialog::getOpenFileName(this, tr("Select query sequence file"), helper, DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::SEQUENCE, true));
     if (!helper.url.isEmpty()) {
         queryLineEdit->setText(helper.url);
     }
@@ -197,7 +194,7 @@ void PhmmerSearchDialog::accept() {
         QMessageBox::critical(this, tr("Error: bad arguments!"), err);
         return;
     }
-    if(seqCtx != NULL){
+    if (seqCtx != NULL) {
         seqCtx->getAnnotatedDNAView()->tryAddObject(annotationsWidgetController->getModel().getAnnotationObject());
     }
 
@@ -232,8 +229,8 @@ void PhmmerSearchDialog::sl_maxCheckBoxChanged(int state) {
 }
 
 void PhmmerSearchDialog::sl_domESpinBoxChanged(int newVal) {
-    const QString & prefix = (0 <= newVal ? DOM_E_PLUS_PREFIX : DOM_E_MINUS_PREFIX);
+    const QString &prefix = (0 <= newVal ? DOM_E_PLUS_PREFIX : DOM_E_MINUS_PREFIX);
     domESpinBox->setPrefix(prefix);
 }
 
-}   // namespace U2
+}    // namespace U2

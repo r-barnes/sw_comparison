@@ -38,71 +38,88 @@ class IOAdapter;
 
 class U2CORE_EXPORT IOAdapterFactory : public QObject {
 public:
-    IOAdapterFactory(QObject* p) : QObject(p) {}
+    IOAdapterFactory(QObject *p)
+        : QObject(p) {
+    }
 
-    virtual IOAdapter* createIOAdapter() = 0;
+    virtual IOAdapter *createIOAdapter() = 0;
 
     virtual IOAdapterId getAdapterId() const = 0;
 
-    virtual const QString& getAdapterName() const = 0;
+    virtual const QString &getAdapterName() const = 0;
 
     virtual bool isIOModeSupported(IOAdapterMode m) const = 0;
 
     /** Returns YES if resource exists and available to read */
-    virtual TriState isResourceAvailable(const GUrl& url) const = 0;
-
+    virtual TriState isResourceAvailable(const GUrl &url) const = 0;
 };
 
 class U2CORE_EXPORT IOAdapter : public QObject {
     Q_OBJECT
 public:
-    IOAdapter(IOAdapterFactory* f, QObject* o = NULL) : QObject(o), formatMode(BinaryMode), factory(f) {}
+    IOAdapter(IOAdapterFactory *f, QObject *o = NULL)
+        : QObject(o), formatMode(BinaryMode), factory(f) {
+    }
 
-    virtual ~IOAdapter() {}
+    virtual ~IOAdapter() {
+    }
 
-    IOAdapterId getAdapterId() const { return factory->getAdapterId(); }
+    IOAdapterId getAdapterId() const {
+        return factory->getAdapterId();
+    }
 
-    virtual const QString& getAdapterName() const { return factory->getAdapterName(); }
+    virtual const QString &getAdapterName() const {
+        return factory->getAdapterName();
+    }
 
-    virtual bool isIOModeSupported(IOAdapterMode m) const { return factory->isIOModeSupported(m); }
+    virtual bool isIOModeSupported(IOAdapterMode m) const {
+        return factory->isIOModeSupported(m);
+    }
 
-    IOAdapterFactory* getFactory() const { return factory; }
+    IOAdapterFactory *getFactory() const {
+        return factory;
+    }
 
-    virtual bool open(const GUrl& url, IOAdapterMode m) = 0;
+    virtual bool open(const GUrl &url, IOAdapterMode m) = 0;
 
     virtual bool isOpen() const = 0;
 
     virtual void close() = 0;
 
     enum TerminatorHandling {
-        Term_Exclude,   // stop before terminators
-        Term_Include,   // include all terminators into result
-        Term_Skip       // do not include terminators to the result, but skip to after last terminator
+        Term_Exclude,    // stop before terminators
+        Term_Include,    // include all terminators into result
+        Term_Skip    // do not include terminators to the result, but skip to after last terminator
     };
 
     enum FormatMode {
         TextMode,    //Format is represented by text
-        BinaryMode   //Format is represented by binary data
+        BinaryMode    //Format is represented by binary data
     };
 
     //if format is represented by text (not by binary data) you need to call this func
-    virtual void setFormatMode(FormatMode mode) { formatMode = mode; }
+    virtual void setFormatMode(FormatMode mode) {
+        formatMode = mode;
+    }
 
     //return 0 if at the end of file, -1 if error
-    virtual qint64 readUntil(char* buff, qint64 maxSize, const QBitArray& readTerminators,
-        TerminatorHandling th, bool* terminatorFound = 0);
+    virtual qint64 readUntil(char *buff, qint64 maxSize, const QBitArray &readTerminators, TerminatorHandling th, bool *terminatorFound = 0);
 
-    virtual bool getChar(char* buff) { return 1 == readBlock(buff, 1); }
+    virtual bool getChar(char *buff) {
+        return 1 == readBlock(buff, 1);
+    }
 
     //If an error occurs, this function returns -1
-    virtual qint64 readBlock(char* buff, qint64 maxSize) = 0;
+    virtual qint64 readBlock(char *buff, qint64 maxSize) = 0;
 
     //read a single line of text and skips one EOL, returns length of line w/o terminator or -1
-    virtual qint64 readLine(char* buff, qint64 maxSize, bool* terminatorFound = 0);
+    virtual qint64 readLine(char *buff, qint64 maxSize, bool *terminatorFound = 0);
 
-    virtual qint64 writeBlock(const char* buff, qint64 size) = 0;
+    virtual qint64 writeBlock(const char *buff, qint64 size) = 0;
 
-    qint64 writeBlock(const QByteArray& a) { return writeBlock(a.data(), a.size()); }
+    qint64 writeBlock(const QByteArray &a) {
+        return writeBlock(a.data(), a.size());
+    }
 
     /**
      * Both positive and negative values are accepted.
@@ -118,38 +135,46 @@ public:
 
     virtual bool isEof();
 
-    virtual qint64 bytesRead() const { return -1; }
+    virtual qint64 bytesRead() const {
+        return -1;
+    }
 
     virtual GUrl getURL() const = 0;
 
-    virtual QString toString() const { return getURL().getURLString(); }
+    virtual QString toString() const {
+        return getURL().getURLString();
+    }
 
     /* Returns a human-readable description of the last device error that occurred */
     virtual QString errorString() const = 0;
 
-    bool hasError() const { return !errorString().isEmpty(); }
+    bool hasError() const {
+        return !errorString().isEmpty();
+    }
 
 protected:
-    static void cutByteOrderMarks(char* data, QString& errorString, qint64& length);
+    static void cutByteOrderMarks(char *data, QString &errorString, qint64 &length);
 
     FormatMode formatMode;
     QString errorMessage;
 
 private:
-    IOAdapterFactory* factory;
+    IOAdapterFactory *factory;
 };
 
 class U2CORE_EXPORT IOAdapterRegistry : public QObject {
 public:
-    IOAdapterRegistry(QObject* p = NULL) : QObject(p) {}
+    IOAdapterRegistry(QObject *p = NULL)
+        : QObject(p) {
+    }
 
-    virtual bool registerIOAdapter(IOAdapterFactory* io) = 0;
+    virtual bool registerIOAdapter(IOAdapterFactory *io) = 0;
 
-    virtual bool unregisterIOAdapter(IOAdapterFactory* io) = 0;
+    virtual bool unregisterIOAdapter(IOAdapterFactory *io) = 0;
 
-    virtual const QList<IOAdapterFactory*>& getRegisteredIOAdapters() const = 0;
+    virtual const QList<IOAdapterFactory *> &getRegisteredIOAdapters() const = 0;
 
-    virtual IOAdapterFactory* getIOAdapterFactoryById(IOAdapterId id) const = 0;
+    virtual IOAdapterFactory *getIOAdapterFactoryById(IOAdapterId id) const = 0;
 };
 
 class U2CORE_EXPORT BaseIOAdapters {
@@ -163,8 +188,6 @@ public:
     static const IOAdapterId DATABASE_CONNECTION;
 };
 
-
-}//namespace
+}    // namespace U2
 
 #endif
-

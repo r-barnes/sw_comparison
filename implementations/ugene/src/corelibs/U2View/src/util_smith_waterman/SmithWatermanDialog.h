@@ -29,9 +29,9 @@ namespace U2 {
 class ADVSequenceObjectContext;
 class CreateAnnotationWidgetController;
 
-#define DEF_PERCENT_OF_SCORE    90
-#define DEF_GAP_OPEN_SCORE      (-10)
-#define DEF_GAP_EXTD_SCORE      (-1)
+#define DEF_PERCENT_OF_SCORE 90
+#define DEF_GAP_OPEN_SCORE (-10)
+#define DEF_GAP_EXTD_SCORE (-1)
 
 enum SmithWatermanRangeType {
     SmithWatermanRangeType_noRange,
@@ -59,9 +59,9 @@ struct SWDialogConfig {
 
         minScoreInPercent = DEF_PERCENT_OF_SCORE;
 
-        searchType  = SmithWatermanSearchType_noSearch;
-        strand      = StrandOption_DirectOnly;
-        rangeType   = SmithWatermanRangeType_noRange;
+        searchType = SmithWatermanSearchType_noSearch;
+        strand = StrandOption_DirectOnly;
+        rangeType = SmithWatermanRangeType_noRange;
 
         resultView = SmithWatermanSettings::ANNOTATIONS;
 
@@ -81,11 +81,11 @@ struct SWDialogConfig {
     GapModel gm;
     QString resultFilter;
 
-    int minScoreInPercent;      // c {0, 1, ..., 100}
+    int minScoreInPercent;    // c {0, 1, ..., 100}
 
     SmithWatermanSearchType searchType;
     StrandOption strand;
-    SmithWatermanRangeType  rangeType;
+    SmithWatermanRangeType rangeType;
 
     SmithWatermanSettings::SWResultView resultView;
 
@@ -101,10 +101,9 @@ struct SWDialogConfig {
 
 class U2VIEW_EXPORT SmithWatermanDialogController {
 public:
-    static void run(QWidget* p, ADVSequenceObjectContext* ctx, SWDialogConfig* dialogConfig);
+    static void run(QWidget *p, ADVSequenceObjectContext *ctx, SWDialogConfig *dialogConfig);
 };
 
-} // namespace
+}    // namespace U2
 
 #endif
-

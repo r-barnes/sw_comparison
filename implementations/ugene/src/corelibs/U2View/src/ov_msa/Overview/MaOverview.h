@@ -22,10 +22,9 @@
 #ifndef _U2_MSA_OVERVIEW_H_
 #define _U2_MSA_OVERVIEW_H_
 
-#include <U2Core/global.h>
-
 #include <QWidget>
 
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -37,52 +36,60 @@ class MaEditorSequenceArea;
 #define SELECTION_COLOR QColor(80, 160, 200, 180)
 #define VISIBLE_RANGE_CRITICAL_SIZE 5
 
-
 class U2VIEW_EXPORT MaOverview : public QWidget {
     Q_OBJECT
 public:
     MaOverview(MaEditorWgt *_ui);
-    virtual bool isValid() const { return false; }
-    virtual QPixmap getView() { return QPixmap(); }
+    virtual bool isValid() const {
+        return false;
+    }
+    virtual QPixmap getView() {
+        return QPixmap();
+    }
     MaEditor *getEditor() const;
 
 public slots:
     void sl_visibleRangeChanged();
-    virtual void sl_selectionChanged() {}
+    virtual void sl_selectionChanged() {
+    }
     virtual void sl_redraw();
 
 protected:
-    void mousePressEvent(QMouseEvent* );
-    void mouseMoveEvent(QMouseEvent* );
-    void mouseReleaseEvent(QMouseEvent* );
+    void mousePressEvent(QMouseEvent *);
+    void mouseMoveEvent(QMouseEvent *);
+    void mouseReleaseEvent(QMouseEvent *);
 
-    virtual void drawOverview(QPainter&){}
-    virtual void drawVisibleRange(QPainter&){}
-    virtual void drawSelection(QPainter&){}
+    virtual void drawOverview(QPainter &) {
+    }
+    virtual void drawVisibleRange(QPainter &) {
+    }
+    virtual void drawSelection(QPainter &) {
+    }
 
     void setVisibleRangeForEmptyAlignment();
 
-    virtual void moveVisibleRange(QPoint){}
+    virtual void moveVisibleRange(QPoint) {
+    }
 
     void recalculateScale();
 
     virtual int getContentWidgetWidth() const;
     virtual int getContentWidgetHeight() const;
 
-    MaEditor*       editor;
-    MaEditorWgt*    ui;
-    MaEditorSequenceArea*  sequenceArea;
+    MaEditor *editor;
+    MaEditorWgt *ui;
+    MaEditorSequenceArea *sequenceArea;
 
     QPixmap cachedView;
-    QRect   cachedSelection;
-    QRect   cachedVisibleRange;
+    QRect cachedSelection;
+    QRect cachedVisibleRange;
 
     bool visibleRangeIsMoving;
 
-    double  stepX;
-    double  stepY;
+    double stepX;
+    double stepY;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_MSA_OVERVIEW_H_
+#endif    // _U2_MSA_OVERVIEW_H_

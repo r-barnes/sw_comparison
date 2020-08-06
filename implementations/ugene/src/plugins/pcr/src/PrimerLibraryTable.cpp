@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "PrimerLibraryTable.h"
+
 #include <QPainter>
 
 #include <U2Core/L10n.h>
@@ -27,8 +29,6 @@
 
 #include "PrimerGroupBox.h"
 #include "PrimerLibrary.h"
-
-#include "PrimerLibraryTable.h"
 #include "PrimerStatistics.h"
 
 namespace U2 {
@@ -37,8 +37,7 @@ namespace U2 {
 /* PrimerLibraryModel */
 /************************************************************************/
 PrimerLibraryModel::PrimerLibraryModel(QObject *parent)
-: QAbstractItemModel(parent)
-{
+    : QAbstractItemModel(parent) {
     U2OpStatus2Log os;
     PrimerLibrary *primerLibrary = PrimerLibrary::getInstance(os);
     SAFE_POINT_OP(os, );
@@ -64,18 +63,18 @@ QVariant PrimerLibraryModel::headerData(int section, Qt::Orientation /*orientati
     CHECK(Qt::DisplayRole == role, QVariant());
 
     switch (section) {
-        case 0:
-            return tr("Name");
-        case 1:
-            return tr("GC-content (%)");
-        case 2:
-            return PrimersPairStatistics::TmString;
-        case 3:
-            return tr("Length (bp)");
-        case 4:
-            return tr("Sequence");
-        default:
-            return QVariant();
+    case 0:
+        return tr("Name");
+    case 1:
+        return tr("GC-content (%)");
+    case 2:
+        return PrimersPairStatistics::TmString;
+    case 3:
+        return tr("Length (bp)");
+    case 4:
+        return tr("Sequence");
+    default:
+        return QVariant();
     }
 }
 
@@ -128,18 +127,18 @@ void PrimerLibraryModel::removePrimer(const U2DataId &primerId, U2OpStatus &os) 
 QVariant PrimerLibraryModel::displayData(const QModelIndex &index) const {
     Primer primer = primers[index.row()];
     switch (index.column()) {
-        case 0:
-            return primer.name;
-        case 1:
-            return primer.gc != Primer::INVALID_GC ? PrimerStatistics::getDoubleStringValue(primer.gc) : tr("N/A");
-        case 2:
-            return primer.tm != Primer::INVALID_TM ? PrimerStatistics::getDoubleStringValue(primer.tm) : tr("N/A");
-        case 3:
-            return primer.sequence.length();
-        case 4:
-            return primer.sequence;
-        default:
-            return QVariant();
+    case 0:
+        return primer.name;
+    case 1:
+        return primer.gc != Primer::INVALID_GC ? PrimerStatistics::getDoubleStringValue(primer.gc) : tr("N/A");
+    case 2:
+        return primer.tm != Primer::INVALID_TM ? PrimerStatistics::getDoubleStringValue(primer.tm) : tr("N/A");
+    case 3:
+        return primer.sequence.length();
+    case 4:
+        return primer.sequence;
+    default:
+        return QVariant();
     }
 }
 
@@ -168,8 +167,7 @@ void PrimerLibraryModel::onPrimerChanged(const Primer &newPrimer) {
 /* PrimerLibraryTable */
 /************************************************************************/
 PrimerLibraryTable::PrimerLibraryTable(QWidget *parent)
-: QTableView(parent), mode(Browser)
-{
+    : QTableView(parent), mode(Browser) {
     model = new PrimerLibraryModel(this);
     setModel(model);
 
@@ -221,4 +219,4 @@ void PrimerLibraryTable::setMode(Mode value) {
     mode = value;
 }
 
-} // U2
+}    // namespace U2

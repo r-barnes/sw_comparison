@@ -29,18 +29,18 @@ namespace U2 {
 class U2ALGORITHM_EXPORT AlignSequencesToAlignmentTaskSettings : public AbstractAlignmentTaskSettings {
 public:
     AlignSequencesToAlignmentTaskSettings();
-    AlignSequencesToAlignmentTaskSettings(const U2EntityRef& msaRef, const U2AlphabetId& newAlphabet, bool addAsFragments = false);
+    AlignSequencesToAlignmentTaskSettings(const U2EntityRef &msaRef, const U2AlphabetId &newAlphabet, bool addAsFragments = false);
     AlignSequencesToAlignmentTaskSettings(const AlignSequencesToAlignmentTaskSettings &s);
 
     virtual bool isValid() const;
 
     QList<U2EntityRef> addedSequencesRefs;
-    QStringList        addedSequencesNames;
+    QStringList addedSequencesNames;
     bool addAsFragments;
     bool reorderSequences;
     int referenceRowId;
     qint64 maxSequenceLength;
 };
-}   //namespace
+}    // namespace U2
 
-#endif // _U2_PAIRWISE_ALIGNMENT_TASK_H_
+#endif    // _U2_PAIRWISE_ALIGNMENT_TASK_H_

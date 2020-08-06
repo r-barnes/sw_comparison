@@ -34,10 +34,9 @@ static const char *ROWS_SEQS_COUNT_MISMATCH_ERROR = "Different number of rows an
 namespace U2 {
 
 MultipleSequenceAlignmentExporter::MultipleSequenceAlignmentExporter() {
-
 }
 
-MultipleSequenceAlignment MultipleSequenceAlignmentExporter::getAlignment(const U2DbiRef& dbiRef, const U2DataId& msaId, U2OpStatus& os) const {
+MultipleSequenceAlignment MultipleSequenceAlignmentExporter::getAlignment(const U2DbiRef &dbiRef, const U2DataId &msaId, U2OpStatus &os) const {
     SAFE_POINT(!con.isOpen(), OPENED_DBI_CONNECTION_ERROR, MultipleSequenceAlignment());
     con.open(dbiRef, false, os);
     CHECK_OP(os, MultipleSequenceAlignment());
@@ -67,7 +66,7 @@ MultipleSequenceAlignment MultipleSequenceAlignmentExporter::getAlignment(const 
     U2Msa msa = exportAlignmentObject(msaId, os);
     CHECK_OP(os, MultipleSequenceAlignment());
 
-    const DNAAlphabet* alphabet = U2AlphabetUtils::getById(msa.alphabet);
+    const DNAAlphabet *alphabet = U2AlphabetUtils::getById(msa.alphabet);
     al->setAlphabet(alphabet);
     al->setName(msa.visualName);
     al->setLength(msa.length);
@@ -85,8 +84,10 @@ U2Msa MultipleSequenceAlignmentExporter::getAlignmentObject(const U2DbiRef &dbiR
     return msa;
 }
 
-QList<MsaRowReplacementData> MultipleSequenceAlignmentExporter::getAlignmentRows(const U2DbiRef& dbiRef,
-    const U2DataId& msaId, const QList<qint64> rowIds, U2OpStatus& os) const {
+QList<MsaRowReplacementData> MultipleSequenceAlignmentExporter::getAlignmentRows(const U2DbiRef &dbiRef,
+                                                                                 const U2DataId &msaId,
+                                                                                 const QList<qint64> rowIds,
+                                                                                 U2OpStatus &os) const {
     SAFE_POINT(!con.isOpen(), OPENED_DBI_CONNECTION_ERROR, QList<MsaRowReplacementData>());
     con.open(dbiRef, false, os);
     CHECK_OP(os, QList<MsaRowReplacementData>());
@@ -98,42 +99,39 @@ QList<MsaRowReplacementData> MultipleSequenceAlignmentExporter::getAlignmentRows
     CHECK_OP(os, QList<MsaRowReplacementData>());
 
     QList<MsaRowReplacementData> result;
-    SAFE_POINT(rows.count() == sequences.count(), ROWS_SEQS_COUNT_MISMATCH_ERROR,
-        QList<MsaRowReplacementData>());
+    SAFE_POINT(rows.count() == sequences.count(), ROWS_SEQS_COUNT_MISMATCH_ERROR, QList<MsaRowReplacementData>());
     for (int i = 0; i < rows.length(); ++i) {
         result << MsaRowReplacementData(sequences.at(i), rows.at(i));
     }
     return result;
 }
 
-QList<U2MsaRow> MultipleSequenceAlignmentExporter::exportRows(const U2DataId& msaId, U2OpStatus& os) const {
-    U2MsaDbi* msaDbi = con.dbi->getMsaDbi();
+QList<U2MsaRow> MultipleSequenceAlignmentExporter::exportRows(const U2DataId &msaId, U2OpStatus &os) const {
+    U2MsaDbi *msaDbi = con.dbi->getMsaDbi();
     SAFE_POINT(NULL != msaDbi, NULL_MSA_DBI_ERROR, QList<U2MsaRow>());
 
     return msaDbi->getRows(msaId, os);
 }
 
-QList<U2MsaRow> MultipleSequenceAlignmentExporter::exportRows(const U2DataId &msaId, const QList<qint64> rowIds,
-    U2OpStatus &os) const {
-    U2MsaDbi* msaDbi = con.dbi->getMsaDbi();
+QList<U2MsaRow> MultipleSequenceAlignmentExporter::exportRows(const U2DataId &msaId, const QList<qint64> rowIds, U2OpStatus &os) const {
+    U2MsaDbi *msaDbi = con.dbi->getMsaDbi();
     SAFE_POINT(NULL != msaDbi, NULL_MSA_DBI_ERROR, QList<U2MsaRow>());
     QList<U2MsaRow> result;
-    foreach(qint64 rowId, rowIds) {
+    foreach (qint64 rowId, rowIds) {
         result.append(msaDbi->getRow(msaId, rowId, os));
         SAFE_POINT_OP(os, QList<U2MsaRow>());
     }
     return result;
 }
 
-
-QList<DNASequence> MultipleSequenceAlignmentExporter::exportSequencesOfRows(QList<U2MsaRow> rows, U2OpStatus& os) const {
-    U2SequenceDbi* sequenceDbi = con.dbi->getSequenceDbi();
+QList<DNASequence> MultipleSequenceAlignmentExporter::exportSequencesOfRows(QList<U2MsaRow> rows, U2OpStatus &os) const {
+    U2SequenceDbi *sequenceDbi = con.dbi->getSequenceDbi();
     SAFE_POINT(NULL != sequenceDbi, "NULL Sequence Dbi during exporting rows sequences!", QList<DNASequence>());
 
     QList<DNASequence> sequences;
     sequences.reserve(rows.count());
     for (int i = 0, n = rows.count(); i < n; ++i) {
-        const U2DataId& sequenceId = rows[i].sequenceId;
+        const U2DataId &sequenceId = rows[i].sequenceId;
         qint64 gstart = rows[i].gstart;
         qint64 gend = rows[i].gend;
         U2Region regionInSequence(gstart, gend - gstart);
@@ -151,8 +149,8 @@ QList<DNASequence> MultipleSequenceAlignmentExporter::exportSequencesOfRows(QLis
     return sequences;
 }
 
-QVariantMap MultipleSequenceAlignmentExporter::exportAlignmentInfo(const U2DataId& msaId, U2OpStatus& os) const {
-    U2AttributeDbi* attrDbi = con.dbi->getAttributeDbi();
+QVariantMap MultipleSequenceAlignmentExporter::exportAlignmentInfo(const U2DataId &msaId, U2OpStatus &os) const {
+    U2AttributeDbi *attrDbi = con.dbi->getAttributeDbi();
     SAFE_POINT(NULL != attrDbi, "NULL Attribute Dbi during exporting an alignment info!", QVariantMap());
 
     // Get all MSA attributes
@@ -160,7 +158,7 @@ QVariantMap MultipleSequenceAlignmentExporter::exportAlignmentInfo(const U2DataI
     QList<U2DataId> attributeIds = attrDbi->getObjectAttributes(msaId, "", os);
     CHECK_OP(os, QVariantMap());
 
-    foreach(U2DataId attributeId, attributeIds) {
+    foreach (U2DataId attributeId, attributeIds) {
         U2StringAttribute attr = attrDbi->getStringAttribute(attributeId, os);
         CHECK_OP(os, QVariantMap());
 
@@ -173,11 +171,11 @@ QVariantMap MultipleSequenceAlignmentExporter::exportAlignmentInfo(const U2DataI
     return alInfo;
 }
 
-U2Msa MultipleSequenceAlignmentExporter::exportAlignmentObject(const U2DataId& msaId, U2OpStatus& os) const {
-    U2MsaDbi* msaDbi = con.dbi->getMsaDbi();
+U2Msa MultipleSequenceAlignmentExporter::exportAlignmentObject(const U2DataId &msaId, U2OpStatus &os) const {
+    U2MsaDbi *msaDbi = con.dbi->getMsaDbi();
     SAFE_POINT(NULL != msaDbi, "NULL MSA Dbi during exporting an alignment object!", U2Msa());
 
     return msaDbi->getMsaObject(msaId, os);
 }
 
-} // namespace
+}    // namespace U2

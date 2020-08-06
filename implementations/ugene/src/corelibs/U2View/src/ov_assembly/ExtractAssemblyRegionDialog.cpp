@@ -19,30 +19,30 @@
 * MA 02110-1301, USA.
 */
 
+#include "ExtractAssemblyRegionDialog.h"
+
 #include <QDir>
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QPushButton>
 
-#include "ExtractAssemblyRegionDialog.h"
-
 #include <U2Core/U2OpStatusUtils.h>
 
-#include <U2View/AssemblyModel.h>
-
+#include <U2Gui/HelpButton.h>
 #include <U2Gui/RegionSelector.h>
 #include <U2Gui/SaveDocumentController.h>
-#include <U2Gui/HelpButton.h>
+
+#include <U2View/AssemblyModel.h>
 
 #include "ExtractAssemblyRegionDialog.h"
 
 namespace U2 {
 
-ExtractAssemblyRegionDialog::ExtractAssemblyRegionDialog(QWidget * p, ExtractAssemblyRegionTaskSettings *settings) : QDialog(p)
-, settings(settings) {
+ExtractAssemblyRegionDialog::ExtractAssemblyRegionDialog(QWidget *p, ExtractAssemblyRegionTaskSettings *settings)
+    : QDialog(p), settings(settings) {
     setupUi(this);
 
-    new HelpButton(this, buttonBox, "24742518");
+    new HelpButton(this, buttonBox, "46500200");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Export"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -55,10 +55,10 @@ ExtractAssemblyRegionDialog::ExtractAssemblyRegionDialog(QWidget * p, ExtractAss
     regionSelectorWidget->layout()->addWidget(regionSelector);
 
     setMaximumHeight(layout()->minimumSize().height());
-    connect(regionSelector, SIGNAL(si_regionChanged(const U2Region&)), SLOT(sl_regionChanged(const U2Region&)));
+    connect(regionSelector, SIGNAL(si_regionChanged(const U2Region &)), SLOT(sl_regionChanged(const U2Region &)));
 }
 
-void ExtractAssemblyRegionDialog::sl_regionChanged(const U2Region& newRegion) {
+void ExtractAssemblyRegionDialog::sl_regionChanged(const U2Region &newRegion) {
     QString filePath = saveController->getSaveFileName();
     QFileInfo fi(filePath);
     U2Region prevRegion = settings->regionToExtract;
@@ -115,4 +115,4 @@ void ExtractAssemblyRegionDialog::accept() {
     QDialog::accept();
 }
 
-}
+}    // namespace U2

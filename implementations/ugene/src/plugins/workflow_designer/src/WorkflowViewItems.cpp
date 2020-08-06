@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "WorkflowViewItems.h"
+
 #include <QBitmap>
 #include <QDomElement>
 #include <QGraphicsItem>
@@ -46,12 +48,11 @@
 #include "ItemViewStyle.h"
 #include "WorkflowEditor.h"
 #include "WorkflowViewController.h"
-#include "WorkflowViewItems.h"
 
 namespace U2 {
 
-
-WorkflowProcessItem::WorkflowProcessItem(Actor* prc) : process(prc), hasBreakpoint(false), highlighting(NULL)/*, inspectionItem(NULL)*/ {
+WorkflowProcessItem::WorkflowProcessItem(Actor *prc)
+    : process(prc), hasBreakpoint(false), highlighting(NULL) /*, inspectionItem(NULL)*/ {
     setToolTip(process->getProto()->getDocumentation());
     setFlag(QGraphicsItem::ItemIsSelectable, true);
     setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -68,33 +69,32 @@ WorkflowProcessItem::WorkflowProcessItem(Actor* prc) : process(prc), hasBreakpoi
     connect(prc, SIGNAL(si_descriptionChanged()), SLOT(sl_descriptionChanged()));
 }
 
-WorkflowProcessItem::~WorkflowProcessItem()
-{
+WorkflowProcessItem::~WorkflowProcessItem() {
     qDeleteAll(styles.values());
     qDeleteAll(ports);
     delete highlighting;
 }
 
-ItemViewStyle* WorkflowProcessItem::getStyleByIdSafe(StyleId id) const {
+ItemViewStyle *WorkflowProcessItem::getStyleByIdSafe(StyleId id) const {
     if (!styles.contains(id)) {
         uiLog.trace(QString("Unknown workflow item style: %1").arg(id));
         id = ItemStyles::EXTENDED;
     }
-    ItemViewStyle* result = styles.value(id);
-    assert(result!=NULL);
+    ItemViewStyle *result = styles.value(id);
+    assert(result != NULL);
     return result;
 }
 
-ItemViewStyle* WorkflowProcessItem::getStyleById(const StyleId & id) const {
+ItemViewStyle *WorkflowProcessItem::getStyleById(const StyleId &id) const {
     return styles.value(id);
 }
 
-bool WorkflowProcessItem::containsStyle(const StyleId & id) const {
+bool WorkflowProcessItem::containsStyle(const StyleId &id) const {
     return styles.contains(id);
 }
 
-WorkflowPortItem * WorkflowProcessItem::getPort(const QString& id) const {
-    foreach(WorkflowPortItem* pit, ports) {
+WorkflowPortItem *WorkflowProcessItem::getPort(const QString &id) const {
+    foreach (WorkflowPortItem *pit, ports) {
         if (pit->getPort()->getId() == id) {
             return pit;
         }
@@ -106,27 +106,27 @@ void WorkflowProcessItem::createPorts() {
     assert(ports.isEmpty());
 
     int num = process->getInputPorts().size() + 1;
-    qreal pie = 180/num;
+    qreal pie = 180 / num;
     int i = 1;
-    QGraphicsScene* sc = scene();
-    foreach(Port* port, process->getInputPorts()) {
-        WorkflowPortItem* pit = new WorkflowPortItem(this, port);
+    QGraphicsScene *sc = scene();
+    foreach (Port *port, process->getInputPorts()) {
+        WorkflowPortItem *pit = new WorkflowPortItem(this, port);
         connect(port, SIGNAL(si_enabledChanged(bool)), pit, SLOT(sl_onVisibleChanged(bool)));
         ports << pit;
-        pit->setOrientation(90 + pie*i++);
+        pit->setOrientation(90 + pie * i++);
         if (sc) {
             sc->addItem(pit);
         }
         pit->sl_onVisibleChanged(port->isEnabled());
     }
     num = process->getOutputPorts().size() + 1;
-    pie = 180/num;
+    pie = 180 / num;
     i = 1;
-    foreach(Port* port, process->getOutputPorts()) {
-        WorkflowPortItem* pit = new WorkflowPortItem(this, port);
+    foreach (Port *port, process->getOutputPorts()) {
+        WorkflowPortItem *pit = new WorkflowPortItem(this, port);
         connect(port, SIGNAL(si_enabledChanged(bool)), pit, SLOT(sl_onVisibleChanged(bool)));
         ports << pit;
-        pit->setOrientation(270 + pie*i++);
+        pit->setOrientation(270 + pie * i++);
         if (sc) {
             sc->addItem(pit);
         }
@@ -137,7 +137,7 @@ void WorkflowProcessItem::createPorts() {
 void WorkflowProcessItem::sl_update() {
     prepareGeometryChange();
     currentStyle->refresh();
-    foreach(WorkflowPortItem* pit, ports) {
+    foreach (WorkflowPortItem *pit, ports) {
         pit->adaptOwnerShape();
     }
     update();
@@ -153,7 +153,7 @@ void WorkflowProcessItem::setStyle(StyleId s) {
     currentStyle = getStyleByIdSafe(s);
     currentStyle->setVisible(true);
     currentStyle->refresh();
-    foreach(WorkflowPortItem* pit, ports) {
+    foreach (WorkflowPortItem *pit, ports) {
         pit->setStyle(s);
     }
     assert(currentStyle);
@@ -162,13 +162,13 @@ void WorkflowProcessItem::setStyle(StyleId s) {
 
 QRectF WorkflowProcessItem::boundingRect(void) const {
     QRectF brect = currentStyle->boundingRect();
-    brect.setTop(brect.top() - QFontMetrics(QFont()).height()*2 - 2);
+    brect.setTop(brect.top() - QFontMetrics(QFont()).height() * 2 - 2);
     return brect;
 }
 
 QRectF WorkflowProcessItem::portsBoundingRect() const {
-    QRectF rect; // null rect
-    foreach(WorkflowPortItem* p, getPortItems()) {
+    QRectF rect;    // null rect
+    foreach (WorkflowPortItem *p, getPortItems()) {
         QRectF pBound = p->boundingRect();
         QPointF pCenter = pBound.center();
         pCenter = p->mapToItem(this, pCenter);
@@ -178,16 +178,16 @@ QRectF WorkflowProcessItem::portsBoundingRect() const {
     return rect;
 }
 
-QPainterPath WorkflowProcessItem::shape () const {
+QPainterPath WorkflowProcessItem::shape() const {
     return currentStyle->shape();
 }
 
 void WorkflowProcessItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
-    WorkflowAbstractRunner* rt = getWorkflowScene()->getRunner();
+    WorkflowAbstractRunner *rt = getWorkflowScene()->getRunner();
     if (rt) {
         //{WorkerWaiting, WorkerReady, WorkerRunning, WorkerDone};
-        static QColor rsColors[5] = {QColor(234,143,7),"#04AA04", "#AA0404", "#0404AA", "#9B30FF"};
-            //{QColor(234,143,7),QColor(Qt::red),QColor(Qt::green),QColor(0,0,255)};
+        static QColor rsColors[5] = {QColor(234, 143, 7), "#04AA04", "#AA0404", "#0404AA", "#9B30FF"};
+        //{QColor(234,143,7),QColor(Qt::red),QColor(Qt::green),QColor(0,0,255)};
         static QString rsNames[5] = {("Waiting"), ("Ready"), ("Running"), ("Done"), ("Paused")};
 
         const QList<WorkerState> rsList = rt->getState(this->process);
@@ -209,121 +209,115 @@ void WorkflowProcessItem::paint(QPainter *painter, const QStyleOptionGraphicsIte
         qreal fh = QFontMetrics(QFont()).height();
 
         if (rsList.size() == 1) {
-            brect.setTop(brect.top()+2+fh);
+            brect.setTop(brect.top() + 2 + fh);
         }
 
         painter->drawRoundedRect(brect, 5, 5);
         painter->drawText(brect, Qt::AlignHCenter, stateName);
         if (rsList.size() == 1) {
-
         } else {
-            uint vals[4] = {0,0,0,0};
-            for (int i = rsList.size();i>0;)
-            {
+            uint vals[4] = {0, 0, 0, 0};
+            for (int i = rsList.size(); i > 0;) {
                 vals[rsList.at(--i)]++;
             }
 
             // draw progress bar
             if (state != WorkerDone) {
-
-                QRectF textRect(brect.topLeft()+QPointF(0,fh-1),QSizeF(brect.width(), 3));
-                textRect.setLeft(brect.left()+1);
-                textRect.setRight(brect.right()-1);
-                QColor fc = /*rsColors[WorkerDone];//*/ QColor(0,80,222);
+                QRectF textRect(brect.topLeft() + QPointF(0, fh - 1), QSizeF(brect.width(), 3));
+                textRect.setLeft(brect.left() + 1);
+                textRect.setRight(brect.right() - 1);
+                QColor fc = /*rsColors[WorkerDone];//*/ QColor(0, 80, 222);
                 fc.setAlpha(90);
                 painter->setPen(fc);
                 painter->drawRect(textRect);
-                qreal done = (qreal)vals[WorkerDone]/rsList.size();
+                qreal done = (qreal)vals[WorkerDone] / rsList.size();
                 QBrush brush(fc);
-//                 QLinearGradient lg(textRect.topLeft(),textRect.topRight());
-//                 lg.setColorAt(0, fc);
-//                 lg.setColorAt(done, fc.lighter(128));
-//                 lg.setColorAt(done + 1./rsList.size(), QColor(Qt::white));
+                //                 QLinearGradient lg(textRect.topLeft(),textRect.topRight());
+                //                 lg.setColorAt(0, fc);
+                //                 lg.setColorAt(done, fc.lighter(128));
+                //                 lg.setColorAt(done + 1./rsList.size(), QColor(Qt::white));
                 //lg.setColorAt(1, QColor(Qt::white));
                 //brush = QBrush(lg);
-                textRect.setRight(textRect.left() + textRect.width()*done);
+                textRect.setRight(textRect.left() + textRect.width() * done);
                 painter->fillRect(textRect, brush);
             }
 
             // draw extended text
             painter->save();
             QTextDocument d;
-            d.setHtml("<center><font size='-1'>"
-                + QString("<font color='%1'>%2/</font>"
-                " <!--font color='%3'>%4/</font-->"
-                " <font color='%5'>%6/</font>"
-                " <font color='%7'>%8/</font>"
-                " <font color='black'>%9</font>")
-                .arg(rsColors[WorkerWaiting].name()).arg(vals[WorkerWaiting])
-                .arg(rsColors[WorkerReady].name()).arg(vals[WorkerReady])
-                .arg(rsColors[WorkerRunning].name()).arg(vals[WorkerRunning])
-                .arg(rsColors[WorkerDone].name()).arg(vals[WorkerDone])
-                .arg(rsList.size())
-                + "</font></center>");
+            d.setHtml("<center><font size='-1'>" + QString("<font color='%1'>%2/</font>"
+                                                           " <!--font color='%3'>%4/</font-->"
+                                                           " <font color='%5'>%6/</font>"
+                                                           " <font color='%7'>%8/</font>"
+                                                           " <font color='black'>%9</font>")
+                                                       .arg(rsColors[WorkerWaiting].name())
+                                                       .arg(vals[WorkerWaiting])
+                                                       .arg(rsColors[WorkerReady].name())
+                                                       .arg(vals[WorkerReady])
+                                                       .arg(rsColors[WorkerRunning].name())
+                                                       .arg(vals[WorkerRunning])
+                                                       .arg(rsColors[WorkerDone].name())
+                                                       .arg(vals[WorkerDone])
+                                                       .arg(rsList.size()) +
+                      "</font></center>");
             //d.setTextWidth(brect.width());
-            painter->translate(brect.center().x() - d.idealWidth()/2, brect.top() + fh);
-            d.drawContents(painter/*, brect*/);
+            painter->translate(brect.center().x() - d.idealWidth() / 2, brect.top() + fh);
+            d.drawContents(painter /*, brect*/);
             painter->restore();
 
-//             qreal unit = brect.width()/rsList.size();
-//             qreal step = 3;
-//             qreal w = 10;
-//             QPointF base(brect.topLeft());
-//             base.ry() += 5;
+            //             qreal unit = brect.width()/rsList.size();
+            //             qreal step = 3;
+            //             qreal w = 10;
+            //             QPointF base(brect.topLeft());
+            //             base.ry() += 5;
 
-//             for (int i = 3; i>=0; i--) {
-//  //             base.ry() -= step;
-//  //             painter->setPen(rsColors[i]); painter->drawLine(base, base + QPointF(unit*vals[i],0));
-//                 QRectF rt(base, base + QPointF(unit*vals[i],w)); base = rt.topRight();
-//                 painter->setPen(rsColors[i]);
-//                 QColor fc = rsColors[i]; fc.setAlpha(128);
-//                 painter->fillRect(rt, QBrush(fc));
-//                 painter->drawText(rt, Qt::AlignJustify|Qt::AlignVCenter, rsNames[i]);
-//             }
+            //             for (int i = 3; i>=0; i--) {
+            //  //             base.ry() -= step;
+            //  //             painter->setPen(rsColors[i]); painter->drawLine(base, base + QPointF(unit*vals[i],0));
+            //                 QRectF rt(base, base + QPointF(unit*vals[i],w)); base = rt.topRight();
+            //                 painter->setPen(rsColors[i]);
+            //                 QColor fc = rsColors[i]; fc.setAlpha(128);
+            //                 painter->fillRect(rt, QBrush(fc));
+            //                 painter->drawText(rt, Qt::AlignJustify|Qt::AlignVCenter, rsNames[i]);
+            //             }
         }
     }
 }
 
-void WorkflowProcessItem::updatePorts(){
-    foreach(WorkflowPortItem* pit, ports) {
+void WorkflowProcessItem::updatePorts() {
+    foreach (WorkflowPortItem *pit, ports) {
         pit->setPos(pos());
-        foreach(WorkflowBusItem*bit, pit->getDataFlows()) {
+        foreach (WorkflowBusItem *bit, pit->getDataFlows()) {
             bit->updatePos();
         }
     }
 }
 
-QVariant WorkflowProcessItem::itemChange ( GraphicsItemChange change, const QVariant & value )
-{
-    switch(change) {
-    case ItemSelectedHasChanged:
-    {
+QVariant WorkflowProcessItem::itemChange(GraphicsItemChange change, const QVariant &value) {
+    switch (change) {
+    case ItemSelectedHasChanged: {
         currentStyle->update();
-    }
-        break;
-    case ItemZValueHasChanged:
-    {
+    } break;
+    case ItemZValueHasChanged: {
         qreal z = value.value<qreal>();
-        foreach(WorkflowPortItem* pit, ports) {
+        foreach (WorkflowPortItem *pit, ports) {
             pit->setZValue(z);
         }
-    }
-        break;
-    case ItemPositionChange:
-    {
+    } break;
+    case ItemPositionChange: {
         // value is the new position.
         QPointF newPos = value.toPointF();
-        if (scene() && pos() != QPointF(0,0)) {
+        if (scene() && pos() != QPointF(0, 0)) {
             QRectF bound = boundingRect() | childrenBoundingRect() | portsBoundingRect();
             QRectF sceneRect = scene()->sceneRect();
 
             qreal x0 = sceneRect.left() - bound.left();
-            qreal x1 = sceneRect.left() + sceneRect.width() - bound.right() - 10; //extra space for scroll bars
+            qreal x1 = sceneRect.left() + sceneRect.width() - bound.right() - 10;    //extra space for scroll bars
             qreal y0 = sceneRect.top() - bound.top();
             qreal y1 = sceneRect.top() + sceneRect.height() - bound.bottom() - 10;
 
-            newPos.setX( qBound(x0, newPos.x(), x1) );
-            newPos.setY( qBound(y0, newPos.y(), y1) );
+            newPos.setX(qBound(x0, newPos.x(), x1));
+            newPos.setY(qBound(y0, newPos.y(), y1));
         }
         if (WorkflowSettings::snap2Grid()) {
             newPos.setX(round(newPos.x(), GRID_STEP));
@@ -335,63 +329,56 @@ QVariant WorkflowProcessItem::itemChange ( GraphicsItemChange change, const QVar
         bit->prepareGeometryChange();
         }
         }*/
-    }
-        break;
-    case ItemPositionHasChanged:
-        {
+    } break;
+    case ItemPositionHasChanged: {
+        updatePorts();
 
-            updatePorts();
-
-            WorkflowScene * sc = qobject_cast<WorkflowScene*>(scene());
-            if (sc != NULL) {
-                if (!sc->views().isEmpty()) {
-                    foreach(QGraphicsView* view, sc->views()) {
-                        QRectF itemRect = boundingRect() | childrenBoundingRect();
-                        // ports are not the child items atm
-                        // unite with their bounds
-                        itemRect |= portsBoundingRect();
-                        QPointF itemCenter = itemRect.center();
-                        itemCenter = mapToScene(itemCenter);
-                        itemRect.moveCenter(itemCenter);
-                        view->ensureVisible(itemRect, 0, 0);
-                    }
+        WorkflowScene *sc = qobject_cast<WorkflowScene *>(scene());
+        if (sc != NULL) {
+            if (!sc->views().isEmpty()) {
+                foreach (QGraphicsView *view, sc->views()) {
+                    QRectF itemRect = boundingRect() | childrenBoundingRect();
+                    // ports are not the child items atm
+                    // unite with their bounds
+                    itemRect |= portsBoundingRect();
+                    QPointF itemCenter = itemRect.center();
+                    itemCenter = mapToScene(itemCenter);
+                    itemRect.moveCenter(itemCenter);
+                    view->ensureVisible(itemRect, 0, 0);
                 }
-                sc->setModified(true);
             }
-            if (scene()) {
-                scene()->update();
+            sc->setModified(true);
+        }
+        if (scene()) {
+            scene()->update();
+        }
+    } break;
+    case ItemSceneHasChanged: {
+        WorkflowScene *ws = getWorkflowScene();
+        if (ws) {
+            ItemViewStyle *viewStyle = styles.value(ItemStyles::EXTENDED);
+            ExtendedProcStyle *extStyle = qgraphicsitem_cast<ExtendedProcStyle *>(viewStyle);
+            assert(extStyle);
+            WorkflowView *view = ws->getController();
+            if (view) {
+                connect(extStyle, SIGNAL(linkActivated(const QString &)), view->getPropertyEditor(), SLOT(sl_linkActivated(const QString &)));
+            }
+
+            foreach (WorkflowPortItem *pit, ports) {
+                ws->addItem(pit);
             }
         }
-        break;
-    case ItemSceneHasChanged:
-        {
-            WorkflowScene* ws = getWorkflowScene();
-            if (ws) {
-                ItemViewStyle* viewStyle = styles.value(ItemStyles::EXTENDED);
-                ExtendedProcStyle* extStyle = qgraphicsitem_cast<ExtendedProcStyle*>(viewStyle);
-                assert(extStyle);
-                WorkflowView* view = ws->getController();
-                if (view) {
-                    connect(extStyle, SIGNAL(linkActivated(const QString&)),
-                    view->getPropertyEditor(), SLOT(sl_linkActivated(const QString&)));
-                }
-
-                foreach(WorkflowPortItem* pit, ports) {
-                    ws->addItem(pit);
-                }
-            }
-        }
-        break;
+    } break;
     case ItemSceneChange:
-        if ((value.value<QGraphicsScene*>()) == NULL) {
-            foreach(WorkflowPortItem* pit, ports) {
+        if ((value.value<QGraphicsScene *>()) == NULL) {
+            foreach (WorkflowPortItem *pit, ports) {
                 scene()->removeItem(pit);
             }
             //scene()->removeItem(inspectionItem);
             //delete inspectionItem;
         }
         break;
-/*    case ItemSelectedChange:
+        /*    case ItemSelectedChange:
         if (NULL != inspectionItem) {
             inspectionItem->setPermanent(!inspectionItem->isPermanent());
             if (!inspectionItem->isPermanent()) {
@@ -405,22 +392,21 @@ QVariant WorkflowProcessItem::itemChange ( GraphicsItemChange change, const QVar
     return QGraphicsItem::itemChange(change, value);
 }
 
-bool WorkflowProcessItem::sceneEvent( QEvent * event ) {
+bool WorkflowProcessItem::sceneEvent(QEvent *event) {
     if (currentStyle->sceneEventFilter(this, event)) {
         return true;
     }
     return QGraphicsItem::sceneEvent(event);
 }
 
-QList<QAction*> WorkflowProcessItem::getContextMenuActions() const
-{
+QList<QAction *> WorkflowProcessItem::getContextMenuActions() const {
     return currentStyle->getContextMenuActions();
 }
 
-void WorkflowProcessItem::saveState(QDomElement& el) const {
+void WorkflowProcessItem::saveState(QDomElement &el) const {
     el.setAttribute("pos", QVariantUtils::var2String(pos()));
     el.setAttribute("style", styles.key(currentStyle));
-    foreach(ItemViewStyle* style, styles) {
+    foreach (ItemViewStyle *style, styles) {
         QDomElement stel = el.ownerDocument().createElement(style->getId());
         style->saveState(stel);
         if (stel.hasAttributes() || stel.hasChildNodes()) {
@@ -429,15 +415,16 @@ void WorkflowProcessItem::saveState(QDomElement& el) const {
     }
 }
 
-void WorkflowProcessItem::loadState(QDomElement& el) {
+void WorkflowProcessItem::loadState(QDomElement &el) {
     const QString posS = el.attribute("pos");
     const QPointF pos = QVariantUtils::String2Var(posS).toPointF();
     assert(!pos.isNull());
     setPos(pos);
 
-    foreach(ItemViewStyle* style, styles) {
+    foreach (ItemViewStyle *style, styles) {
         QDomElement stel = el.elementsByTagName(style->getId()).item(0).toElement();
-        if (stel.isNull()) continue;
+        if (stel.isNull())
+            continue;
         style->loadState(stel);
     }
     QString key = el.attribute("style");
@@ -446,13 +433,13 @@ void WorkflowProcessItem::loadState(QDomElement& el) {
     }
 }
 
-void WorkflowProcessItem::mouseMoveEvent( QGraphicsSceneMouseEvent *event ) {
+void WorkflowProcessItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     if (event->buttons() & Qt::LeftButton) {
         if (initialPositions.isEmpty()) {
             if (isSelected()) {
                 QList<QGraphicsItem *> selectedItems = scene()->selectedItems();
-                foreach(QGraphicsItem* item, selectedItems) {
-                    if (item->type()==WorkflowProcessItemType) {
+                foreach (QGraphicsItem *item, selectedItems) {
+                    if (item->type() == WorkflowProcessItemType) {
                         initialPositions[item] = item->scenePos();
                     }
                 }
@@ -467,7 +454,7 @@ void WorkflowProcessItem::mouseMoveEvent( QGraphicsSceneMouseEvent *event ) {
             view = qobject_cast<QGraphicsView *>(event->widget()->parentWidget());
         }
 
-        for (int i=0, n=initialPositions.keys().size(); i<n; i++) {
+        for (int i = 0, n = initialPositions.keys().size(); i < n; i++) {
             QGraphicsItem *item = initialPositions.keys().at(i);
 
             QPointF currentParentPos = view->mapToScene(view->mapFromGlobal(event->screenPos()));
@@ -480,18 +467,17 @@ void WorkflowProcessItem::mouseMoveEvent( QGraphicsSceneMouseEvent *event ) {
     }
 }
 
-void WorkflowProcessItem::mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) {
+void WorkflowProcessItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     initialPositions.clear();
     QGraphicsItem::mouseReleaseEvent(event);
 }
 
 void WorkflowProcessItem::toggleBreakpoint() {
     hasBreakpoint = !hasBreakpoint;
-    if(!hasBreakpoint) {
+    if (!hasBreakpoint) {
         hasEnabledBreakpoint = false;
-    }
-    else {
-        if(NULL == highlighting) {
+    } else {
+        if (NULL == highlighting) {
             highlighting = new WorkflowHighlightItem(this);
         }
         hasEnabledBreakpoint = true;
@@ -517,14 +503,14 @@ void WorkflowProcessItem::highlightItem() {
 
 ///////////// PIO /////////////
 
-WorkflowPortItem* WorkflowPortItem::findNearbyBindingCandidate(const QPointF& pos) const {
+WorkflowPortItem *WorkflowPortItem::findNearbyBindingCandidate(const QPointF &pos) const {
     QPainterPath neighbourhood;
-    neighbourhood.addEllipse(pos, R/2, R/2);
+    neighbourhood.addEllipse(pos, R / 2, R / 2);
     //QRectF neighbourhood(pos.x() - R/2, pos.y() + R/2, R, R);
-    WorkflowPortItem* candidate = NULL;
-    qreal distance = R*2;
-    foreach(QGraphicsItem* it, scene()->items(neighbourhood, Qt::IntersectsItemBoundingRect)) {
-        WorkflowPortItem* next = qgraphicsitem_cast<WorkflowPortItem*>(it);
+    WorkflowPortItem *candidate = NULL;
+    qreal distance = R * 2;
+    foreach (QGraphicsItem *it, scene()->items(neighbourhood, Qt::IntersectsItemBoundingRect)) {
+        WorkflowPortItem *next = qgraphicsitem_cast<WorkflowPortItem *>(it);
         if (next) {
             if (bindCandidates.contains(next)) {
                 QLineF l(pos, next->headToScene());
@@ -541,29 +527,26 @@ WorkflowPortItem* WorkflowPortItem::findNearbyBindingCandidate(const QPointF& po
 
 //static const QCursor portRotationCursor = QCursor(QBitmap(":workflow_designer/images/rot_cur.png")); //FIXME
 static const int portRotationModifier = Qt::AltModifier;
-static const int bl = (int) A/4;
+static const int bl = (int)A / 4;
 
-WorkflowPortItem::WorkflowPortItem(WorkflowProcessItem* owner, Port* p)
-    : /*StyledItem(owner), */ currentStyle(owner->getStyle()),port(p),owner(owner),orientation(0), dragging(false), rotating(false),
-    sticky(false), highlight(false), mouseMoveIsBeingProcessed(false)
-{
+WorkflowPortItem::WorkflowPortItem(WorkflowProcessItem *owner, Port *p)
+    : /*StyledItem(owner), */ currentStyle(owner->getStyle()), port(p), owner(owner), orientation(0), dragging(false), rotating(false),
+      sticky(false), highlight(false), mouseMoveIsBeingProcessed(false) {
     setFlags(ItemIsSelectable | ItemIsFocusable);
     setAcceptHoverEvents(true);
     QString tt = p->isInput() ? "Input port (" : "Output port (";
     tt += p->getDocumentation();
     tt += ").\nDrag it to connect to other process/port."
-        "\nHold Alt key while dragging to change port orientation";
+          "\nHold Alt key while dragging to change port orientation";
     setToolTip(tt);
 
     setPos(owner->pos());
     setZValue(owner->zValue());
 }
 
-WorkflowPortItem::~WorkflowPortItem()
-{
+WorkflowPortItem::~WorkflowPortItem() {
     assert(flows.isEmpty());
 }
-
 
 void WorkflowPortItem::setStyle(StyleId s) {
     Q_UNUSED(s);
@@ -587,12 +570,12 @@ void WorkflowPortItem::setOrientation(qreal angle) {
         resetTransform();
         setTransform(QTransform::fromTranslate(x, y), true);
         setRotation(angle);
-    } else { // EXTENDED STYLE
+    } else {    // EXTENDED STYLE
         resetTransform();
         QRectF rec = owner->boundingRect();
         QPolygonF pol(owner->shape().toFillPolygon());
         qreal radius = qMax(rec.width(), rec.height()) * 2;
-        QLineF centerLine(0,0,radius, 0);
+        QLineF centerLine(0, 0, radius, 0);
         assert(pol.containsPoint(centerLine.p1(), Qt::WindingFill));
         assert(!pol.containsPoint(centerLine.p2(), Qt::WindingFill));
         centerLine.setAngle(angle);
@@ -618,7 +601,7 @@ void WorkflowPortItem::setOrientation(qreal angle) {
         setRotation(-norm);
     }
     if (oldOrientation != orientation) {
-        WorkflowScene * sc = qobject_cast<WorkflowScene*>(owner->scene());
+        WorkflowScene *sc = qobject_cast<WorkflowScene *>(owner->scene());
         if (sc != NULL) {
             sc->setModified(true);
             sc->update();
@@ -626,8 +609,8 @@ void WorkflowPortItem::setOrientation(qreal angle) {
     }
 }
 
-WorkflowBusItem* WorkflowPortItem::getDataFlow(const WorkflowPortItem* otherPit) const {
-    foreach(WorkflowBusItem* dit, flows) {
+WorkflowBusItem *WorkflowPortItem::getDataFlow(const WorkflowPortItem *otherPit) const {
+    foreach (WorkflowBusItem *dit, flows) {
         if ((port->isInput() ? dit->getOutPort() : dit->getInPort()) == otherPit) {
             return dit;
         }
@@ -635,14 +618,15 @@ WorkflowBusItem* WorkflowPortItem::getDataFlow(const WorkflowPortItem* otherPit)
     return NULL;
 }
 
-static bool checkTypes(Port* p1, Port* p2) {
-    Port* ip = p1->isInput() ? p1 : p2;
-    Port* op = p1->isInput() ? p2 : p1;
+static bool checkTypes(Port *p1, Port *p2) {
+    Port *ip = p1->isInput() ? p1 : p2;
+    Port *op = p1->isInput() ? p2 : p1;
     DataTypePtr idt = ip->getType();
     DataTypePtr odt = op->getType();
     if (idt->isSingle() && odt->isMap()) {
-        foreach(Descriptor d, odt->getAllDescriptors()) {
-            if (idt == odt->getDatatypeByDescriptor(d)) return true;
+        foreach (Descriptor d, odt->getAllDescriptors()) {
+            if (idt == odt->getDatatypeByDescriptor(d))
+                return true;
         }
     }
     if (idt->isMap() && odt->isMap()) {
@@ -650,48 +634,44 @@ static bool checkTypes(Port* p1, Port* p2) {
             ActorPrototype *proto = ip->owner()->getProto();
             return proto->isAllowsEmptyPorts();
         }
-        foreach(Descriptor d1, idt->getAllDescriptors()) {
-            foreach(Descriptor d2, odt->getAllDescriptors()) {
-                if (idt->getDatatypeByDescriptor(d1) == odt->getDatatypeByDescriptor(d2)) return true;
+        foreach (Descriptor d1, idt->getAllDescriptors()) {
+            foreach (Descriptor d2, odt->getAllDescriptors()) {
+                if (idt->getDatatypeByDescriptor(d1) == odt->getDatatypeByDescriptor(d2))
+                    return true;
             }
         }
     }
     return odt == idt;
 }
 
-WorkflowPortItem* WorkflowPortItem::checkBindCandidate(const QGraphicsItem* it) const
-{
+WorkflowPortItem *WorkflowPortItem::checkBindCandidate(const QGraphicsItem *it) const {
     switch (it->type()) {
-        case WorkflowProcessItemType:
-            {
-                const WorkflowProcessItem* receiver = static_cast<const WorkflowProcessItem*>(it);
-                // try best matches first
-                foreach(WorkflowPortItem* otherPit, receiver->getPortItems()) {
-                    if (port->canBind(otherPit->getPort()) && checkTypes(port, otherPit->getPort())) {
-                        return otherPit;
-                    }
-                }
-                // take first free port
-                foreach(WorkflowPortItem* otherPit, receiver->getPortItems()) {
-                    if (port->canBind(otherPit->getPort())) {
-                        return otherPit;
-                    }
-                }
+    case WorkflowProcessItemType: {
+        const WorkflowProcessItem *receiver = static_cast<const WorkflowProcessItem *>(it);
+        // try best matches first
+        foreach (WorkflowPortItem *otherPit, receiver->getPortItems()) {
+            if (port->canBind(otherPit->getPort()) && checkTypes(port, otherPit->getPort())) {
+                return otherPit;
             }
-            break;
-        case WorkflowPortItemType:
-            {
-                WorkflowPortItem* otherPit = (WorkflowPortItem*)(it);
-                if (port->canBind(otherPit->getPort())) {
-                    return otherPit;
-                }
+        }
+        // take first free port
+        foreach (WorkflowPortItem *otherPit, receiver->getPortItems()) {
+            if (port->canBind(otherPit->getPort())) {
+                return otherPit;
             }
-            break;
+        }
+    } break;
+    case WorkflowPortItemType: {
+        WorkflowPortItem *otherPit = (WorkflowPortItem *)(it);
+        if (port->canBind(otherPit->getPort())) {
+            return otherPit;
+        }
+    } break;
     }
     return NULL;
 }
 
-void WorkflowPortItem::removeDataFlow(WorkflowBusItem* flow) {
+void WorkflowPortItem::removeDataFlow(WorkflowBusItem *flow) {
     assert(flows.contains(flow));
     flows.removeOne(flow);
     assert(!flows.contains(flow));
@@ -701,20 +681,20 @@ void WorkflowPortItem::addDataFlow(WorkflowBusItem *flow) {
     flows << flow;
 }
 
-QPointF WorkflowPortItem::head(const QGraphicsItem* item) const {
-    return mapToItem(item, A/2 + bl, 0);
+QPointF WorkflowPortItem::head(const QGraphicsItem *item) const {
+    return mapToItem(item, A / 2 + bl, 0);
 }
 
 QPointF WorkflowPortItem::headToScene() const {
     return mapToScene(A, 0);
 }
 
-QLineF WorkflowPortItem::arrow(const QGraphicsItem* item) const {
-    return QLineF(mapToItem(item, 0,0),mapToItem(item, A,0));
+QLineF WorkflowPortItem::arrow(const QGraphicsItem *item) const {
+    return QLineF(mapToItem(item, 0, 0), mapToItem(item, A, 0));
 }
 
 QRectF WorkflowPortItem::boundingRect(void) const {
-    QRectF rect(0, -A, A+A/2, 2*A);
+    QRectF rect(0, -A, A + A / 2, 2 * A);
     if (dragging) {
         rect |= QRectF(QPointF(A, 0), dragPoint);
         //FIXME arrow tip inclusion
@@ -722,7 +702,7 @@ QRectF WorkflowPortItem::boundingRect(void) const {
     return rect;
 }
 
-static void drawArrow(QPainter *painter, const QPen& pen, const QPointF& p1, const QPointF& p2) {
+static void drawArrow(QPainter *painter, const QPen &pen, const QPointF &p1, const QPointF &p2) {
     painter->setPen(pen);
     QLineF l(p1, p2);
     painter->drawLine(l);
@@ -730,23 +710,20 @@ static void drawArrow(QPainter *painter, const QPen& pen, const QPointF& p1, con
     painter->save();
     painter->translate(p2);
     painter->rotate(-l.angle());
-    QRectF rf(-3*A, -A/2, A*1.5, A);
-    QPainterPath tip(QPointF(0,0));
+    QRectF rf(-3 * A, -A / 2, A * 1.5, A);
+    QPainterPath tip(QPointF(0, 0));
     tip.arcTo(rf, -50, 100);
     tip.closeSubpath();
     painter->fillPath(tip, QBrush(pen.color()));
     painter->restore();
 }
 
-static QList<WorkflowPortItem*> getCandidates(WorkflowPortItem* port) {
-    QList<WorkflowPortItem*> l;
-    foreach(QGraphicsItem* it, port->scene()->items()) {
+static QList<WorkflowPortItem *> getCandidates(WorkflowPortItem *port) {
+    QList<WorkflowPortItem *> l;
+    foreach (QGraphicsItem *it, port->scene()->items()) {
         if (it->type() == WorkflowPortItemType) {
-            WorkflowPortItem* next = qgraphicsitem_cast<WorkflowPortItem*>(it);
-            if (port->getPort()->canBind(next->getPort())
-                && checkTypes(next->getPort(), port->getPort())
-                && !WorkflowUtils::isPathExist(port->getPort(), next->getPort()))
-            {
+            WorkflowPortItem *next = qgraphicsitem_cast<WorkflowPortItem *>(it);
+            if (port->getPort()->canBind(next->getPort()) && checkTypes(next->getPort(), port->getPort()) && !WorkflowUtils::isPathExist(port->getPort(), next->getPort())) {
                 l.append(next);
             }
         }
@@ -755,13 +732,12 @@ static QList<WorkflowPortItem*> getCandidates(WorkflowPortItem* port) {
 }
 
 void WorkflowPortItem::paint(QPainter *painter,
-                                const QStyleOptionGraphicsItem *option,
-                                QWidget *widget)
-{
+                             const QStyleOptionGraphicsItem *option,
+                             QWidget *widget) {
     Q_UNUSED(widget);
-    QPointF p1(A/2 + bl, 0);
-    QColor greenLight(0,0x99,0x33, 128);
-    QColor stickyLight(0,0x77,0x33);
+    QPointF p1(A / 2 + bl, 0);
+    QColor greenLight(0, 0x99, 0x33, 128);
+    QColor stickyLight(0, 0x77, 0x33);
 
     if (highlight) {
         QPen pen;
@@ -776,18 +752,18 @@ void WorkflowPortItem::paint(QPainter *painter,
     if (port->isInput()) {
         if (highlight) {
             QPainterPath path;
-            path.addEllipse(bl, -A/2, A, A);
+            path.addEllipse(bl, -A / 2, A, A);
             painter->fillPath(path, QBrush(greenLight));
         } else {
-            painter->drawArc(QRectF(bl, -A/2, A, A), 90*16, 180*16);
+            painter->drawArc(QRectF(bl, -A / 2, A, A), 90 * 16, 180 * 16);
         }
     } else {
         if (highlight) {
             QPainterPath path;
-            path.addEllipse(p1, A/2, A/2);
+            path.addEllipse(p1, A / 2, A / 2);
             painter->fillPath(path, QBrush(greenLight));
         } else {
-            painter->drawEllipse(p1, A/2, A/2);
+            painter->drawEllipse(p1, A / 2, A / 2);
         }
     }
     if (0 && port->getWidth() == 0) {
@@ -808,7 +784,8 @@ void WorkflowPortItem::paint(QPainter *painter,
 
         painter->drawRoundedRect(htb, 30, 30, Qt::RelativeSize);
         painter->drawText(approx, Qt::AlignCenter, port->getDisplayName());
-        painter->setPen(Qt::red);painter->drawPoint(0,0);
+        painter->setPen(Qt::red);
+        painter->drawPoint(0, 0);
         painter->restore();
     }
     if (dragging) {
@@ -823,12 +800,12 @@ void WorkflowPortItem::paint(QPainter *painter,
         QRectF scRect = scene()->sceneRect();
         QList<QLineF> sceneEdges;
         sceneEdges << QLineF(scRect.topLeft(), scRect.topRight())
-            << QLineF(scRect.topRight(), scRect.bottomRight())
-            << QLineF(scRect.bottomLeft(), scRect.bottomRight())
-            << QLineF(scRect.topLeft(), scRect.bottomLeft());
+                   << QLineF(scRect.topRight(), scRect.bottomRight())
+                   << QLineF(scRect.bottomLeft(), scRect.bottomRight())
+                   << QLineF(scRect.topLeft(), scRect.bottomLeft());
         QLineF arr(mapToScene(dragPoint), mapToScene(p1));
         QPointF crossPt;
-        foreach(QLineF scEdge, sceneEdges) {
+        foreach (QLineF scEdge, sceneEdges) {
             if (scEdge.intersect(arr, &crossPt) == QLineF::BoundedIntersection) {
                 pp = mapFromScene(crossPt);
                 break;
@@ -839,8 +816,7 @@ void WorkflowPortItem::paint(QPainter *painter,
             drawArrow(painter, pen, pp, p1);
         else
             drawArrow(painter, pen, p1, pp);
-    }
-    else if (option->state & QStyle::State_Selected) {
+    } else if (option->state & QStyle::State_Selected) {
         QPen pen;
         //pen.setWidthF(2);
         pen.setStyle(Qt::DotLine);
@@ -850,7 +826,7 @@ void WorkflowPortItem::paint(QPainter *painter,
 }
 
 void WorkflowPortItem::focusOutEvent(QFocusEvent * /*event*/) {
-    if(dragging) {
+    if (dragging) {
         dragging = false;
         scene()->update();
     }
@@ -861,8 +837,7 @@ namespace {
 class ScopedFlagFlipper {
 public:
     ScopedFlagFlipper(bool &flag)
-        : flag(flag)
-    {
+        : flag(flag) {
         flag = true;
     }
 
@@ -874,16 +849,17 @@ private:
     bool &flag;
 };
 
-}
+}    // namespace
 
-void WorkflowPortItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event ) {
+void WorkflowPortItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     CHECK(!mouseMoveIsBeingProcessed, );
 
     ScopedFlagFlipper guard(mouseMoveIsBeingProcessed);
     Q_UNUSED(guard);
     if (!dragging && !rotating && (event->buttons() & Qt::LeftButton) && !dragPoint.isNull()) {
         //log.debug("port grabbed mouse");
-        if ((event->pos().toPoint() - dragPoint.toPoint()).manhattanLength() < 10) return;
+        if ((event->pos().toPoint() - dragPoint.toPoint()).manhattanLength() < 10)
+            return;
         event->accept();
         //grabMouse();
         if (event->modifiers() & portRotationModifier) {
@@ -894,7 +870,7 @@ void WorkflowPortItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event ) {
             dragging = true;
             setCursor(Qt::ClosedHandCursor);
             bindCandidates = getCandidates(this);
-            foreach(WorkflowPortItem* it, bindCandidates) {
+            foreach (WorkflowPortItem *it, bindCandidates) {
                 it->setHighlight(true);
                 it->update(it->boundingRect());
             }
@@ -913,14 +889,14 @@ void WorkflowPortItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event ) {
         setOrientation(angle);
     }
     if (dragging) {
-        foreach(QGraphicsView* v, scene()->views()) {
-            QRectF r(0,0,5,5);
+        foreach (QGraphicsView *v, scene()->views()) {
+            QRectF r(0, 0, 5, 5);
             r.moveCenter(mapToScene(dragPoint));
-            v->ensureVisible(r,0,0);
+            v->ensureVisible(r, 0, 0);
         }
         dragPoint += event->pos() - event->lastPos();
 
-        WorkflowPortItem* preferable = findNearbyBindingCandidate(event->scenePos());
+        WorkflowPortItem *preferable = findNearbyBindingCandidate(event->scenePos());
         if (preferable) {
             dragPoint = preferable->head(this);
             sticky = true;
@@ -928,7 +904,7 @@ void WorkflowPortItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event ) {
     }
 }
 
-void WorkflowPortItem::mousePressEvent ( QGraphicsSceneMouseEvent * event ) {
+void WorkflowPortItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     dragPoint = QPointF();
     if ((event->buttons() & Qt::LeftButton) && !getWorkflowScene()->isLocked()) {
         dragPoint = event->pos();
@@ -938,15 +914,12 @@ void WorkflowPortItem::mousePressEvent ( QGraphicsSceneMouseEvent * event ) {
         } else {
             setCursor(Qt::ClosedHandCursor);
         }
-    }
-    else
-    {
+    } else {
         QGraphicsItem::mousePressEvent(event);
     }
 }
 
-
-void WorkflowPortItem::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) {
+void WorkflowPortItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     ungrabMouse();
     unsetCursor();
     QGraphicsItem::mouseReleaseEvent(event);
@@ -955,15 +928,15 @@ void WorkflowPortItem::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) {
         event->accept();
         QList<QGraphicsItem *> li = scene()->items(/*event->scenePos()*/ mapToScene(dragPoint));
         //bool done = false;
-        WorkflowPortItem* otherPit = NULL;
-        foreach(QGraphicsItem * it, li) {
+        WorkflowPortItem *otherPit = NULL;
+        foreach (QGraphicsItem *it, li) {
             WorkflowView *ctl = getWorkflowScene()->getController();
             if (ctl) {
                 otherPit = checkBindCandidate(it);
-                WorkflowBusItem* dit;
+                WorkflowBusItem *dit;
                 if (otherPit && (dit = ctl->tryBind(this, otherPit))) {
                     scene()->clearSelection();
-                    IntegralBusPort* bp = qobject_cast<IntegralBusPort*>(dit->getInPort()->getPort());
+                    IntegralBusPort *bp = qobject_cast<IntegralBusPort *>(dit->getInPort()->getPort());
                     if (bp) {
                         bp->setupBusMap();
                     }
@@ -975,7 +948,7 @@ void WorkflowPortItem::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) {
         prepareGeometryChange();
         dragging = false;
         dragPoint = QPointF();
-        foreach(WorkflowPortItem* it, bindCandidates) {
+        foreach (WorkflowPortItem *it, bindCandidates) {
             it->setHighlight(false);
         }
         scene()->update();
@@ -983,31 +956,31 @@ void WorkflowPortItem::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) {
     }
 }
 
-void WorkflowPortItem::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
+void WorkflowPortItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
     if (getWorkflowScene()->isLocked()) {
         return;
     }
     setCursor((event->modifiers() & portRotationModifier) ? QCursor(QPixmap(":workflow_designer/images/rot_cur.png")) :
-                                                                                                    QCursor(Qt::OpenHandCursor));
+                                                            QCursor(Qt::OpenHandCursor));
 }
 
 void WorkflowPortItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
     unsetCursor();
 }
 
-QVariant WorkflowPortItem::itemChange ( GraphicsItemChange change, const QVariant & value ) {
+QVariant WorkflowPortItem::itemChange(GraphicsItemChange change, const QVariant &value) {
     if (change == ItemPositionChange || change == ItemTransformChange) {
-        foreach(WorkflowBusItem* dit, flows) {
+        foreach (WorkflowBusItem *dit, flows) {
             dit->prepareGeometryChange();
         }
     } else if (change == ItemPositionHasChanged || change == ItemTransformHasChanged) {
-        foreach(WorkflowBusItem* dit, flows) {
+        foreach (WorkflowBusItem *dit, flows) {
             //TODO correct update
             //dit->update(dit->boundingRect());
             dit->updatePos();
         }
-    } else if (change == ItemSceneChange && (value.value<QGraphicsScene*>()) == NULL) {
-        foreach(WorkflowBusItem* dit, flows) {
+    } else if (change == ItemSceneChange && (value.value<QGraphicsScene *>()) == NULL) {
+        foreach (WorkflowBusItem *dit, flows) {
             scene()->removeItem(dit);
             delete dit;
         }
@@ -1018,11 +991,11 @@ QVariant WorkflowPortItem::itemChange ( GraphicsItemChange change, const QVarian
 
 void WorkflowPortItem::sl_onVisibleChanged(bool isVisible) {
     setVisible(isVisible);
-    if(false == isVisible) {
-        foreach(WorkflowBusItem* flow, flows) {
-            WorkflowScene* ws = getWorkflowScene();
-            if(NULL != ws) {
-                WorkflowView* view = ws->getController();
+    if (false == isVisible) {
+        foreach (WorkflowBusItem *flow, flows) {
+            WorkflowScene *ws = getWorkflowScene();
+            if (NULL != ws) {
+                WorkflowView *view = ws->getController();
                 view->removeBusItem(flow);
             }
         }
@@ -1031,9 +1004,8 @@ void WorkflowPortItem::sl_onVisibleChanged(bool isVisible) {
 
 ////////////////// Flow //////////////
 
-WorkflowBusItem::WorkflowBusItem(WorkflowPortItem* p1, WorkflowPortItem* p2, Link *link)
-: bus(link)
-{
+WorkflowBusItem::WorkflowBusItem(WorkflowPortItem *p1, WorkflowPortItem *p2, Link *link)
+    : bus(link) {
     if (p1->getPort()->isInput()) {
         assert(!p2->getPort()->isInput());
         dst = p1;
@@ -1052,21 +1024,19 @@ WorkflowBusItem::WorkflowBusItem(WorkflowPortItem* p1, WorkflowPortItem* p2, Lin
     connect(dst->getPort(), SIGNAL(bindingChanged()), this, SLOT(sl_update()));
 }
 
-WorkflowBusItem::~WorkflowBusItem()
-{
+WorkflowBusItem::~WorkflowBusItem() {
     assert(bus == NULL);
 }
-
 
 void WorkflowBusItem::updatePos() {
     QPointF p1 = dst->headToScene();
     QPointF p2 = src->headToScene();
 
-    setPos((p1.x() + p2.x())/2, (p1.y() + p2.y())/2);
+    setPos((p1.x() + p2.x()) / 2, (p1.y() + p2.y()) / 2);
 }
 
-QVariant WorkflowBusItem::itemChange ( GraphicsItemChange change, const QVariant & value ) {
-    if (change == ItemSceneChange && (value.value<QGraphicsScene*>()) == NULL) {
+QVariant WorkflowBusItem::itemChange(GraphicsItemChange change, const QVariant &value) {
+    if (change == ItemSceneChange && (value.value<QGraphicsScene *>()) == NULL) {
         dst->removeDataFlow(this);
         src->removeDataFlow(this);
         disconnect(dst->getPort(), SIGNAL(bindingChanged()), this, SLOT(sl_update()));
@@ -1083,11 +1053,11 @@ QVariant WorkflowBusItem::itemChange ( GraphicsItemChange change, const QVariant
     return QGraphicsItem::itemChange(change, value);
 }
 
-void WorkflowBusItem::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
+void WorkflowBusItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
     Q_UNUSED(event);
     setCursor(QCursor(Qt::PointingHandCursor));
 }
-void WorkflowBusItem::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event ) {
+void WorkflowBusItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
     Q_UNUSED(event);
     unsetCursor();
 }
@@ -1101,25 +1071,25 @@ QRectF WorkflowBusItem::boundingRect(void) const {
     return brect | trect;
 }
 
-QPainterPath WorkflowBusItem::shape () const {
+QPainterPath WorkflowBusItem::shape() const {
     QPainterPath p;
     QPointF p1 = dst->head(this);
     QPointF p2 = src->head(this);
-    QLineF direct(p2,p1);
+    QLineF direct(p2, p1);
     QLineF n = direct.normalVector();
-    n.setLength(A/2);
+    n.setLength(A / 2);
     p.moveTo(n.p2());
-    p.lineTo(n.translated(p1-p2).p2());
+    p.lineTo(n.translated(p1 - p2).p2());
     QLineF rn(n.p2(), n.p1());
-    rn.translate(n.p1()-n.p2());
-    p.lineTo(rn.translated(p1-p2).p2());
+    rn.translate(n.p1() - n.p2());
+    p.lineTo(rn.translated(p1 - p2).p2());
     p.lineTo(rn.p2());
     p.closeSubpath();
     p.addRect(text->boundingRect().translated(text->pos()));
     return p;
 }
 
-void WorkflowBusItem::paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget) {
+void WorkflowBusItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     Q_UNUSED(widget);
     painter->setRenderHint(QPainter::Antialiasing);
     QColor baseColor(0x66, 0x66, 0x66);
@@ -1128,10 +1098,9 @@ void WorkflowBusItem::paint ( QPainter * painter, const QStyleOptionGraphicsItem
     QPointF p1 = dst->head(this);
     QPointF p2 = src->head(this);
 
-
     QPainterPath path;
-    path.addEllipse(p2, A/2 - 2, A/2 - 2);
-    path.addEllipse(p1, A/2 - 2, A/2 - 2);
+    path.addEllipse(p2, A / 2 - 2, A / 2 - 2);
+    path.addEllipse(p1, A / 2 - 2, A / 2 - 2);
     painter->fillPath(path, QBrush(baseColor));
 
     QPen pen = painter->pen();
@@ -1147,12 +1116,13 @@ void WorkflowBusItem::paint ( QPainter * painter, const QStyleOptionGraphicsItem
     //update();
 
     painter->setRenderHint(QPainter::NonCosmeticDefaultPen);
-    QColor yc = QColor(Qt::yellow).lighter();yc.setAlpha(127);
+    QColor yc = QColor(Qt::yellow).lighter();
+    yc.setAlpha(127);
     QRectF textRec = text->boundingRect().translated(text->pos());
     painter->fillRect(textRec, QBrush(yc));
     painter->drawRect(textRec);
 
-    WorkflowAbstractRunner* rt = getWorkflowScene()->getRunner();
+    WorkflowAbstractRunner *rt = getWorkflowScene()->getRunner();
     if (rt) {
         int msgsInQueue = rt->getMsgNum(this->bus);
         int passed = rt->getMsgPassed(this->bus);
@@ -1168,7 +1138,7 @@ void WorkflowBusItem::paint ( QPainter * painter, const QStyleOptionGraphicsItem
         }
         qreal dx = (p2.x() - p1.x()) / msgsInQueue;
         qreal dy = (p2.y() - p1.y()) / msgsInQueue;
-        QPointF dp(dx,dy);
+        QPointF dp(dx, dy);
         QColor c1("#AA0404");
         painter->setPen(c1);
         c1.setAlphaF(0.8);
@@ -1176,14 +1146,14 @@ void WorkflowBusItem::paint ( QPainter * painter, const QStyleOptionGraphicsItem
         c2.setAlphaF(0.8);
         while (msgsInQueue-- > 0) {
             QPainterPath p;
-            p.addEllipse(p1, 3,3);
-            QRadialGradient rg(p1+QPointF(1.,-1.), 3);
+            p.addEllipse(p1, 3, 3);
+            QRadialGradient rg(p1 + QPointF(1., -1.), 3);
 
             rg.setColorAt(1, c1);
             rg.setColorAt(0, c2);
             QBrush br(rg);
 
-            painter->fillPath(p,br);
+            painter->fillPath(p, br);
             //painter->drawEllipse(p1, 3,3);
             p1 += dp;
         }
@@ -1199,10 +1169,10 @@ bool WorkflowBusItem::validate() {
     return dst->getPort()->validate(lst);
 }
 
-void WorkflowBusItem::saveState(QDomElement& el) const {
+void WorkflowBusItem::saveState(QDomElement &el) const {
     el.setAttribute("hint-pos", QVariantUtils::var2String(text->pos()));
 }
-void WorkflowBusItem::loadState(QDomElement& el) {
+void WorkflowBusItem::loadState(QDomElement &el) {
     if (el.hasAttribute("hint-pos")) {
         QPointF pos = QVariantUtils::String2Var(el.attribute("hint-pos")).toPointF();
         if (!pos.isNull()) {
@@ -1211,9 +1181,8 @@ void WorkflowBusItem::loadState(QDomElement& el) {
     }
 }
 
-WorkflowScene* StyledItem::getWorkflowScene() const
-{
-    return qobject_cast<WorkflowScene*>(scene());
+WorkflowScene *StyledItem::getWorkflowScene() const {
+    return qobject_cast<WorkflowScene *>(scene());
 }
 
 ///////////////// WorkflowHighlightItem /////////////////////////////////////////////////////////
@@ -1233,20 +1202,18 @@ WorkflowHighlightItem::WorkflowHighlightItem(WorkflowProcessItem *owner)
 QRectF WorkflowHighlightItem::boundingRect() const {
     WorkflowProcessItem *owner = dynamic_cast<WorkflowProcessItem *>(parentItem());
     const QRectF parentBoundary = owner->getStyleById(owner->getStyle())->boundingRect();
-    const qreal sizeFactor = HALVED_MAXIMUM_SIZE_RELATION_TO_PROCESS_ITEM_SIZE
-        * countOfAnimationStepsLeft / INIT_ANIMATION_STEPS_NUMBER;
+    const qreal sizeFactor = HALVED_MAXIMUM_SIZE_RELATION_TO_PROCESS_ITEM_SIZE * countOfAnimationStepsLeft / INIT_ANIMATION_STEPS_NUMBER;
 
-    return parentBoundary.adjusted(-parentBoundary.width() * sizeFactor, -parentBoundary.height()
-        * sizeFactor, parentBoundary.width() * sizeFactor, parentBoundary.height() * sizeFactor);
+    return parentBoundary.adjusted(-parentBoundary.width() * sizeFactor, -parentBoundary.height() * sizeFactor, parentBoundary.width() * sizeFactor, parentBoundary.height() * sizeFactor);
 }
 
-void WorkflowHighlightItem::paint(QPainter * painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/) {
-    if(0 != countOfAnimationStepsLeft) {
+void WorkflowHighlightItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/) {
+    if (0 != countOfAnimationStepsLeft) {
         painter->setPen(BORDER_COLOR);
         painter->drawRoundedRect(boundingRect(), 5, 5);
         prepareGeometryChange();
         --countOfAnimationStepsLeft;
-        if(0 == countOfAnimationStepsLeft) {
+        if (0 == countOfAnimationStepsLeft) {
             setVisible(false);
         }
     }
@@ -1258,4 +1225,4 @@ void WorkflowHighlightItem::replay() {
     update();
 }
 
-}//namespace
+}    // namespace U2

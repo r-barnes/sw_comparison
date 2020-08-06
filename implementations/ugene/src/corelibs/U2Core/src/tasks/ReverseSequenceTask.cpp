@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ReverseSequenceTask.h"
+
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/DNASequenceSelection.h>
@@ -29,21 +31,17 @@
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "ReverseSequenceTask.h"
-
 namespace U2 {
 
-const int CHUNK_SIZE = 1024*256;
+const int CHUNK_SIZE = 1024 * 256;
 
-ReverseComplementSequenceTask::ReverseComplementSequenceTask(U2SequenceObject *dObj, const QList<AnnotationTableObject *> &annotations,
-    DNASequenceSelection *s, DNATranslation *transl)
+ReverseComplementSequenceTask::ReverseComplementSequenceTask(U2SequenceObject *dObj, const QList<AnnotationTableObject *> &annotations, DNASequenceSelection *s, DNATranslation *transl)
     : Task(tr("Reverse Complement Sequence Task"), TaskFlags_NR_FOSE_COSC),
       seqObj(dObj),
       aObjs(annotations),
       selection(s),
-      complTT(transl)
-{
-    SAFE_POINT_EXT(seqObj != NULL, setError(L10N::nullPointerError("sequence object")),);
+      complTT(transl) {
+    SAFE_POINT_EXT(seqObj != NULL, setError(L10N::nullPointerError("sequence object")), );
     addSubTask(new ReverseSequenceTask(seqObj, aObjs, selection));
     addSubTask(new ComplementSequenceTask(seqObj, aObjs, selection, complTT));
 }
@@ -52,9 +50,8 @@ ReverseSequenceTask::ReverseSequenceTask(U2SequenceObject *seqObj, const QList<A
     : Task(tr("Reverse Sequence Task"), TaskFlags_NR_FOSE_COSC),
       seqObj(seqObj),
       aObjs(annotations),
-      selection(selection)
-{
-    SAFE_POINT_EXT(seqObj != NULL, setError(L10N::nullPointerError("sequence object")),);
+      selection(selection) {
+    SAFE_POINT_EXT(seqObj != NULL, setError(L10N::nullPointerError("sequence object")), );
 }
 
 Task::ReportResult ReverseSequenceTask::report() {
@@ -63,15 +60,22 @@ Task::ReportResult ReverseSequenceTask::report() {
     }
 
     QVector<U2Region> regionsForward = SequenceWalkerTask::splitRange(U2Region(0, seqObj->getSequenceLength()),
-                                                               CHUNK_SIZE, 0, 0, false);
+                                                                      CHUNK_SIZE,
+                                                                      0,
+                                                                      0,
+                                                                      false);
     QVector<U2Region> regionsReverse = SequenceWalkerTask::splitRange(U2Region(0, seqObj->getSequenceLength()),
-                                                               CHUNK_SIZE, 0, 0, true);
+                                                                      CHUNK_SIZE,
+                                                                      0,
+                                                                      0,
+                                                                      true);
     SAFE_POINT_EXT(regionsForward.size() == regionsReverse.size(),
-                   setError("Splitting sequence range worked wrong"), ReportResult_Finished);
+                   setError("Splitting sequence range worked wrong"),
+                   ReportResult_Finished);
 
     int size = regionsForward.size();
     U2Region middleRegion = regionsForward.first();
-    for (int i = 0 ; i < (size - 1)/2; i++) {
+    for (int i = 0; i < (size - 1) / 2; i++) {
         QByteArray buffer = seqObj->getSequenceData(regionsForward[i]);
 
         QByteArray revSeq = seqObj->getSequenceData(regionsReverse[size - 1 - i]);
@@ -88,8 +92,8 @@ Task::ReportResult ReverseSequenceTask::report() {
             return ReportResult_Finished;
         }
     }
-    if(middleRegion.length > 1) {
-        if(middleRegion.length <= CHUNK_SIZE) {
+    if (middleRegion.length > 1) {
+        if (middleRegion.length <= CHUNK_SIZE) {
             QByteArray revSeq = seqObj->getSequenceData(middleRegion);
             TextUtils::reverse(revSeq.data(), revSeq.size());
             seqObj->replaceRegion(middleRegion, DNASequence(revSeq), stateInfo);
@@ -143,11 +147,10 @@ ComplementSequenceTask::ComplementSequenceTask(U2SequenceObject *seqObj,
       seqObj(seqObj),
       aObjs(annotations),
       selection(selection),
-      complTT(complTT)
-{
-    SAFE_POINT_EXT(seqObj != NULL, setError(L10N::nullPointerError("sequence object")),);
+      complTT(complTT) {
+    SAFE_POINT_EXT(seqObj != NULL, setError(L10N::nullPointerError("sequence object")), );
     SAFE_POINT_EXT(complTT != NULL,
-                   setError(L10N::nullPointerError("DNA translation table")),);
+                   setError(L10N::nullPointerError("DNA translation table")), );
 }
 
 Task::ReportResult ComplementSequenceTask::report() {
@@ -157,7 +160,7 @@ Task::ReportResult ComplementSequenceTask::report() {
 
     QVector<U2Region> regions = SequenceWalkerTask::splitRange(U2Region(0, seqObj->getSequenceLength()), CHUNK_SIZE, 0, 0, false);
     U2OpStatusImpl os;
-    foreach(const U2Region& r, regions) {
+    foreach (const U2Region &r, regions) {
         QByteArray chunk = seqObj->getSequenceData(r);
         complTT->translate(chunk.data(), chunk.size());
         seqObj->replaceRegion(r, DNASequence(chunk), os);
@@ -178,5 +181,4 @@ Task::ReportResult ComplementSequenceTask::report() {
     return ReportResult_Finished;
 }
 
-
-}//namespace
+}    // namespace U2

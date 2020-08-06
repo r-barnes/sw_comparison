@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CreatePhyTreeDialogController.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 
@@ -45,26 +47,24 @@
 
 #include <U2View/LicenseDialog.h>
 
-#include "CreatePhyTreeDialogController.h"
 #include "CreatePhyTreeWidget.h"
 #include "ui_CreatePhyTreeDialog.h"
 
 namespace U2 {
 
-CreatePhyTreeDialogController::CreatePhyTreeDialogController(QWidget* parent, const MultipleSequenceAlignmentObject* mobj, CreatePhyTreeSettings& _settings) :
-    QDialog(parent),
-    msa(mobj->getMsaCopy()),
-    settings(_settings),
-    settingsWidget(NULL),
-    ui(new Ui_CreatePhyTree),
-    saveController(NULL)
-{
+CreatePhyTreeDialogController::CreatePhyTreeDialogController(QWidget *parent, const MultipleSequenceAlignmentObject *mobj, CreatePhyTreeSettings &_settings)
+    : QDialog(parent),
+      msa(mobj->getMsaCopy()),
+      settings(_settings),
+      settingsWidget(NULL),
+      ui(new Ui_CreatePhyTree),
+      saveController(NULL) {
     ui->setupUi(this);
 
     QMap<QString, QString> helpPagesMap;
-    helpPagesMap.insert("PHYLIP Neighbor Joining","24742488");
-    helpPagesMap.insert("MrBayes","24742489");
-    helpPagesMap.insert("PhyML Maximum Likelihood","24742487");
+    helpPagesMap.insert("PHYLIP Neighbor Joining", "46500062");
+    helpPagesMap.insert("MrBayes", "46500065");
+    helpPagesMap.insert("PhyML Maximum Likelihood", "46500059");
     new ComboboxDependentHelpButton(this, ui->buttonBox, ui->algorithmBox, helpPagesMap);
 
     ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Build"));
@@ -118,7 +118,7 @@ CreatePhyTreeDialogController::~CreatePhyTreeDialogController() {
 void CreatePhyTreeDialogController::sl_onStoreSettings() {
     settingsWidget->storeSettings();
 }
-void CreatePhyTreeDialogController::sl_onRestoreDefault(){
+void CreatePhyTreeDialogController::sl_onRestoreDefault() {
     settingsWidget->restoreDefault();
 }
 
@@ -160,7 +160,7 @@ bool CreatePhyTreeDialogController::checkMemory() {
     const bool memCheckOk = settingsWidget->checkMemoryEstimation(msg, msa, settings);
 
     if (!memCheckOk) {
-        QObjectScopedPointer<QMessageBox> mb = new QMessageBox(QMessageBox::Warning, tr("Warning"), msg, QMessageBox::Ok|QMessageBox::Cancel, this);
+        QObjectScopedPointer<QMessageBox> mb = new QMessageBox(QMessageBox::Warning, tr("Warning"), msg, QMessageBox::Ok | QMessageBox::Cancel, this);
         mb->exec();
         CHECK(!mb.isNull(), false);
 
@@ -184,4 +184,4 @@ void CreatePhyTreeDialogController::initSaveController(const MultipleSequenceAli
     saveController = new SaveDocumentController(config, formats, this);
 }
 
-}   // namespace U2
+}    // namespace U2

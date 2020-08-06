@@ -37,10 +37,10 @@ public:
     void addPortMapping(const PortMapping &value);
     void setName(const QString &value);
 
-    const QString & getValue() const;
-    const QString & getProtoId() const;
-    const QString & getName() const;
-    const QList<PortMapping> & getMappings() const;
+    const QString &getValue() const;
+    const QString &getProtoId() const;
+    const QString &getName() const;
+    const QList<PortMapping> &getMappings() const;
 
     void validate(Actor *actor, U2OpStatus &os) const;
 
@@ -52,17 +52,20 @@ private:
 
 private:
     /** Returns found port or NULL */
-    Port * validateSrcPort(const PortMapping &mapping, Actor *actor, U2OpStatus &os) const;
+    Port *validateSrcPort(const PortMapping &mapping, Actor *actor, U2OpStatus &os) const;
     /** Returns found port descriptor or NULL */
-    PortDescriptor * validateDstPort(const PortMapping &mapping,
-        const QList<PortDescriptor*> &descs, U2OpStatus &os) const;
+    PortDescriptor *validateDstPort(const PortMapping &mapping,
+                                    const QList<PortDescriptor *> &descs,
+                                    U2OpStatus &os) const;
     void validateDuplicates(const PortMapping &mapping,
-        const QSet<QString> &srcIdSet, U2OpStatus &os) const;
-    void validatePortsCount(const QList<Port*> &src,
-        const QList<PortDescriptor*> &dst, U2OpStatus &os) const;
-    void validateMappingsCount(const QList<Port*> &srcPorts, U2OpStatus &os) const;
+                            const QSet<QString> &srcIdSet,
+                            U2OpStatus &os) const;
+    void validatePortsCount(const QList<Port *> &src,
+                            const QList<PortDescriptor *> &dst,
+                            U2OpStatus &os) const;
+    void validateMappingsCount(const QList<Port *> &srcPorts, U2OpStatus &os) const;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_SELECTORVALUE_H_
+#endif    // _U2_SELECTORVALUE_H_

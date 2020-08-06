@@ -19,9 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
-
 #include "WizardPage.h"
+
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
@@ -29,15 +29,14 @@ namespace U2 {
 * WizardPage
 *********************************/
 WizardPage::WizardPage(const QString &_id, const QString &_title)
-: id(_id), title(_title)
-{
+    : id(_id), title(_title) {
 }
 
 WizardPage::~WizardPage() {
     delete content;
 }
 
-void WizardPage::validate(const QList<Workflow::Actor*> &actors, U2OpStatus &os) const {
+void WizardPage::validate(const QList<Workflow::Actor *> &actors, U2OpStatus &os) const {
     if (NULL == content) {
         os.setError(QObject::tr("NULL page content"));
         return;
@@ -76,11 +75,11 @@ bool WizardPage::isFinal() const {
     return (nextId.isEmpty() && nextIds.isEmpty());
 }
 
-const QString & WizardPage::getId() const {
+const QString &WizardPage::getId() const {
     return id;
 }
 
-const QString & WizardPage::getTitle() const {
+const QString &WizardPage::getTitle() const {
     return title;
 }
 
@@ -88,16 +87,16 @@ void WizardPage::setContent(TemplatedPageContent *value) {
     content = value;
 }
 
-TemplatedPageContent * WizardPage::getContent() {
+TemplatedPageContent *WizardPage::getContent() {
     return content;
 }
 
 /** for serializing */
-const QMap<Predicate, QString> & WizardPage::nextIdMap() const {
+const QMap<Predicate, QString> &WizardPage::nextIdMap() const {
     return nextIds;
 }
 
-const QString & WizardPage::plainNextId() const {
+const QString &WizardPage::plainNextId() const {
     return nextId;
 }
 
@@ -105,20 +104,17 @@ const QString & WizardPage::plainNextId() const {
 * TemplatedPage
 *********************************/
 TemplatedPageContent::TemplatedPageContent(const QString &_templateId)
-: templateId(_templateId)
-{
-
+    : templateId(_templateId) {
 }
 
 TemplatedPageContent::~TemplatedPageContent() {
-
 }
 
-const QString & TemplatedPageContent::getTemplateId() const {
+const QString &TemplatedPageContent::getTemplateId() const {
     return templateId;
 }
 
-TemplatedPageContent * PageContentFactory::createContent(const QString &id, U2OpStatus &os) {
+TemplatedPageContent *PageContentFactory::createContent(const QString &id, U2OpStatus &os) {
     if (DefaultPageContent::ID == id) {
         return new DefaultPageContent();
     }
@@ -135,8 +131,7 @@ const int DefaultPageContent::HEIGHT = 400;
 const int DefaultPageContent::WIDTH = 720;
 
 DefaultPageContent::DefaultPageContent()
-: TemplatedPageContent(ID)
-{
+    : TemplatedPageContent(ID) {
     logoArea = new LogoWidget();
     paramsArea = new WidgetsArea(PARAMETERS);
 }
@@ -150,7 +145,7 @@ void DefaultPageContent::accept(TemplatedPageVisitor *visitor) {
     visitor->visit(this);
 }
 
-void DefaultPageContent::validate(const QList<Workflow::Actor*> &actors, U2OpStatus &os) const {
+void DefaultPageContent::validate(const QList<Workflow::Actor *> &actors, U2OpStatus &os) const {
     if (NULL == logoArea) {
         os.setError(QObject::tr("NULL logo area"));
         return;
@@ -174,11 +169,11 @@ void DefaultPageContent::setLogoPath(const QString &path) {
     logoArea->setLogoPath(path);
 }
 
-LogoWidget * DefaultPageContent::getLogoArea() {
+LogoWidget *DefaultPageContent::getLogoArea() {
     return logoArea;
 }
 
-WidgetsArea * DefaultPageContent::getParamsArea() {
+WidgetsArea *DefaultPageContent::getParamsArea() {
     return paramsArea;
 }
 
@@ -190,4 +185,4 @@ int DefaultPageContent::getPageWidth() const {
     return WIDTH;
 }
 
-} // U2
+}    // namespace U2

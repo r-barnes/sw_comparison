@@ -52,21 +52,26 @@ class ClassificationReportPrompter;
 typedef PrompterBase<ClassificationReportPrompter> ClassificationReportBase;
 
 class ClassificationReportPrompter : public ClassificationReportBase {
-     Q_DECLARE_TR_FUNCTIONS(ClassificationReportPrompter)
+    Q_DECLARE_TR_FUNCTIONS(ClassificationReportPrompter)
 public:
-    ClassificationReportPrompter(Actor* p = 0) : ClassificationReportBase(p) {}
+    ClassificationReportPrompter(Actor *p = 0)
+        : ClassificationReportBase(p) {
+    }
+
 protected:
     QString composeRichDoc();
 };
 
-class ClassificationReportWorker: public BaseWorker {
+class ClassificationReportWorker : public BaseWorker {
     Q_OBJECT
 public:
     ClassificationReportWorker(Actor *a);
+
 protected:
     void init();
-    Task * tick();
-    void cleanup() {}
+    Task *tick();
+    void cleanup() {
+    }
 
 private:
     IntegralBus *input;
@@ -81,11 +86,16 @@ private slots:
 class ClassificationReportWorkerFactory : public DomainFactory {
     Q_DECLARE_TR_FUNCTIONS(ClassificationReportWorkerFactory)
     static const QString ACTOR_ID;
+
 public:
     static void init();
     static void cleanup();
-    ClassificationReportWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    Worker* createWorker(Actor* a) { return new ClassificationReportWorker(a); }
+    ClassificationReportWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    Worker *createWorker(Actor *a) {
+        return new ClassificationReportWorker(a);
+    }
 };
 
 class ClassificationReportTask : public Task {
@@ -95,20 +105,22 @@ public:
         NUMBER_OF_READS,
         TAX_ID
     };
-    ClassificationReportTask(const QMap<TaxID,uint> &data, uint totalCount, const QString &reportUrl, bool allTaxa, SortBy sortBy);
-    QString getUrl() const {return url;}
+    ClassificationReportTask(const QMap<TaxID, uint> &data, uint totalCount, const QString &reportUrl, bool allTaxa, SortBy sortBy);
+    QString getUrl() const {
+        return url;
+    }
 
 private:
     void run();
 
-    QMap<TaxID,uint> data;
+    QMap<TaxID, uint> data;
     const uint totalCount;
     QString url;
     bool allTaxa;
     SortBy sortBy;
 };
 
-} //LocalWorkflow
-} //U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

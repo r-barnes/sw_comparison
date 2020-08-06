@@ -24,12 +24,11 @@
 
 namespace U2 {
 
-PWMConversionAlgorithmFactoryNLG::PWMConversionAlgorithmFactoryNLG(QObject* p)
-: PWMConversionAlgorithmFactory(BuiltInPWMConversionAlgorithms::NLG_ALGO, p)
-{
+PWMConversionAlgorithmFactoryNLG::PWMConversionAlgorithmFactoryNLG(QObject *p)
+    : PWMConversionAlgorithmFactory(BuiltInPWMConversionAlgorithms::NLG_ALGO, p) {
 }
 
-PWMConversionAlgorithm* PWMConversionAlgorithmFactoryNLG::createAlgorithm(QObject* p){
+PWMConversionAlgorithm *PWMConversionAlgorithmFactoryNLG::createAlgorithm(QObject *p) {
     return new PWMConversionAlgorithmNLG(this, p);
 }
 
@@ -41,10 +40,10 @@ QString PWMConversionAlgorithmFactoryNLG::getDescription() const {
     return tr("NLG weight function");
 }
 
-PWMatrix PWMConversionAlgorithmNLG::convert(const PFMatrix& matrix) {
+PWMatrix PWMConversionAlgorithmNLG::convert(const PFMatrix &matrix) {
     int size = (matrix.getType() == PFM_MONONUCLEOTIDE) ? 4 : 16;
     int sum[16];
-    memset(sum, 0, size*sizeof(int));
+    memset(sum, 0, size * sizeof(int));
     int all_hits = 0;
     for (int i = 0; i < size; i++) {
         for (int j = 0, n = matrix.getLength(); j < n; j++) {
@@ -64,10 +63,10 @@ PWMatrix PWMConversionAlgorithmNLG::convert(const PFMatrix& matrix) {
         }
     }
 
-    QVarLengthArray<float> res(size*matrix.getLength());
+    QVarLengthArray<float> res(size * matrix.getLength());
     for (int i = 0; i < size; i++) {
         for (int j = 0, n = matrix.getLength(); j < n; j++) {
-            res[matrix.index(i, j)] = -matrix.getValue(i, j)*log(p[i]);
+            res[matrix.index(i, j)] = -matrix.getValue(i, j) * log(p[i]);
         }
     }
 
@@ -76,9 +75,8 @@ PWMatrix PWMConversionAlgorithmNLG::convert(const PFMatrix& matrix) {
     return w;
 }
 
-PWMConversionAlgorithmNLG::PWMConversionAlgorithmNLG(PWMConversionAlgorithmFactory* factory, QObject* p)
-: PWMConversionAlgorithm(factory, p)
-{
+PWMConversionAlgorithmNLG::PWMConversionAlgorithmNLG(PWMConversionAlgorithmFactory *factory, QObject *p)
+    : PWMConversionAlgorithm(factory, p) {
 }
 
-}
+}    // namespace U2

@@ -21,20 +21,18 @@
 
 #include "PairedFastqComparator.h"
 
-#include <U2Core/U2SafePoints.h>
-#include <U2Core/IOAdapterUtils.h>
 #include <U2Core/IOAdapter.h>
+#include <U2Core/IOAdapterUtils.h>
+#include <U2Core/U2SafePoints.h>
 
 #include <U2Formats/FastqFormat.h>
-
 
 namespace U2 {
 
 const int UNPAIRED_LIMIT = 100000;
 
-FastqSequenceInfo::FastqSequenceInfo(const DNASequence& seq)
+FastqSequenceInfo::FastqSequenceInfo(const DNASequence &seq)
     : seq(seq) {
-
 }
 
 bool FastqSequenceInfo::isValid() const {
@@ -45,29 +43,25 @@ QString FastqSequenceInfo::getSeqName() const {
     return seq.getName();
 }
 
-bool FastqSequenceInfo::operator ==(const FastqSequenceInfo& other) const {
+bool FastqSequenceInfo::operator==(const FastqSequenceInfo &other) const {
     return seq.getName() == other.getSeqName();
 }
 
-bool FastqSequenceInfo::operator !=(const FastqSequenceInfo& other) const {
+bool FastqSequenceInfo::operator!=(const FastqSequenceInfo &other) const {
     return !(*this == other);
 }
 
-PairedFastqComparator::PairedFastqComparator(const QString &inputFile_1, const QString &inputFile_2,
-                                             const QString &outputFile_1, const QString &outputFile_2,
-                                             U2OpStatus &os)
+PairedFastqComparator::PairedFastqComparator(const QString &inputFile_1, const QString &inputFile_2, const QString &outputFile_1, const QString &outputFile_2, U2OpStatus &os)
     : it_1(inputFile_1, os),
       it_2(inputFile_2, os),
-      out_1(qobject_cast<LocalFileAdapter*>(IOAdapterUtils::open(GUrl(outputFile_1), os, IOAdapterMode_Write))),
-      out_2(qobject_cast<LocalFileAdapter*>(IOAdapterUtils::open(GUrl(outputFile_2), os, IOAdapterMode_Write))),
+      out_1(qobject_cast<LocalFileAdapter *>(IOAdapterUtils::open(GUrl(outputFile_1), os, IOAdapterMode_Write))),
+      out_2(qobject_cast<LocalFileAdapter *>(IOAdapterUtils::open(GUrl(outputFile_2), os, IOAdapterMode_Write))),
       pairsCounter(0),
-      droppedCounter(0)
-{
+      droppedCounter(0) {
     SAFE_POINT_OP(os, );
 }
 
 void PairedFastqComparator::compare(U2OpStatus &os) {
-
     QList<FastqSequenceInfo> unpaired_1;
     QList<FastqSequenceInfo> unpaired_2;
 
@@ -120,7 +114,7 @@ void PairedFastqComparator::compare(U2OpStatus &os) {
     out_2->close();
 }
 
-void PairedFastqComparator::dropUntilItem(U2OpStatus& /*os*/, QList<FastqSequenceInfo>& list, const FastqSequenceInfo& untilItem) {
+void PairedFastqComparator::dropUntilItem(U2OpStatus & /*os*/, QList<FastqSequenceInfo> &list, const FastqSequenceInfo &untilItem) {
     CHECK(!list.isEmpty(), );
 
     FastqSequenceInfo item;
@@ -128,10 +122,10 @@ void PairedFastqComparator::dropUntilItem(U2OpStatus& /*os*/, QList<FastqSequenc
         item = list.takeFirst();
         droppedCounter++;
     } while (item != untilItem && !list.isEmpty());
-    droppedCounter--; // the sequence that is in the pair was count
+    droppedCounter--;    // the sequence that is in the pair was count
 }
 
-const FastqSequenceInfo PairedFastqComparator::tryToFindPair(U2OpStatus& os, QList<FastqSequenceInfo>& initializer, const FastqSequenceInfo& info, QList<FastqSequenceInfo>& searchIn) {
+const FastqSequenceInfo PairedFastqComparator::tryToFindPair(U2OpStatus &os, QList<FastqSequenceInfo> &initializer, const FastqSequenceInfo &info, QList<FastqSequenceInfo> &searchIn) {
     int index = searchIn.indexOf(info);
     if (index != -1) {
         FastqSequenceInfo result = searchIn.at(index);
@@ -144,8 +138,7 @@ const FastqSequenceInfo PairedFastqComparator::tryToFindPair(U2OpStatus& os, QLi
     return FastqSequenceInfo();
 }
 
-void PairedFastqComparator::tryToFindPairInTail(U2OpStatus& os, FASTQIterator& reads,
-                                                 QList<FastqSequenceInfo>& unpaired, bool iteratorContentIsFirst) {
+void PairedFastqComparator::tryToFindPairInTail(U2OpStatus &os, FASTQIterator &reads, QList<FastqSequenceInfo> &unpaired, bool iteratorContentIsFirst) {
     QList<FastqSequenceInfo> emptyList;
     while (reads.hasNext() && !os.isCoR()) {
         const FastqSequenceInfo seqInfo_1(reads.next());
@@ -164,7 +157,7 @@ void PairedFastqComparator::tryToFindPairInTail(U2OpStatus& os, FASTQIterator& r
     }
 }
 
-void writeSequence(U2OpStatus& os, const DNASequence& seq, IOAdapter* ioAdapter) {
+void writeSequence(U2OpStatus &os, const DNASequence &seq, IOAdapter *ioAdapter) {
     FastqFormat::writeEntry(seq.getName(), seq, ioAdapter, "Writing error", os);
 }
 
@@ -180,4 +173,4 @@ void PairedFastqComparator::writePair(U2OpStatus &os, const FastqSequenceInfo &s
     pairsCounter++;
 }
 
-} // namespace
+}    // namespace U2

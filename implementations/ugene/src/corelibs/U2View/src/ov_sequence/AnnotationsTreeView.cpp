@@ -928,7 +928,7 @@ void AnnotationsTreeView::sl_onBuildPopupMenu(GObjectView *, QMenu *m) {
 
     QList<QAction *> copySubmenuActions;
     copySubmenuActions << copyQualifierURLAction << copyColumnTextAction
-        << copyColumnURLAction;
+                       << copyColumnURLAction;
 
     QMenu *copyMenu = GUIUtils::findSubMenu(m, ADV_MENU_COPY);
     SAFE_POINT(copyMenu != NULL, "copyMenu", );
@@ -1694,8 +1694,8 @@ void AnnotationsTreeView::sl_annotationDoubleClicked(Annotation *annotation, int
     QList<U2Region> annotationRegions = annotation->getRegions().toList();
     SAFE_POINT(0 <= regionIndex && regionIndex < annotationRegions.size(), "Unexpected region index", );
 
-    const U2Region& indexRegion = annotationRegions[regionIndex];
-    QList<U2Region> regionsToSelect = { indexRegion };
+    const U2Region &indexRegion = annotationRegions[regionIndex];
+    QList<U2Region> regionsToSelect = {indexRegion};
     AnnotationTableObject *tableObject = annotation->getGObject();
     SAFE_POINT(nullptr != tableObject, "AnnotationTableObject isn't found", );
 

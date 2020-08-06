@@ -22,11 +22,11 @@
 #ifndef _U2_LOG_SETTINGS_H_
 #define _U2_LOG_SETTINGS_H_
 
-#include <U2Core/global.h>
-#include <U2Core/Log.h>
-#include <U2Core/AppContext.h>
-
 #include <QHash>
+
+#include <U2Core/AppContext.h>
+#include <U2Core/Log.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -35,13 +35,12 @@ struct U2PRIVATE_EXPORT LoggerSettings {
         qFill(activeLevelFlag, activeLevelFlag + LogLevel_NumLevels, 0);
     }
 
-    bool operator==(const LoggerSettings& other) const {
+    bool operator==(const LoggerSettings &other) const {
         return categoryName == other.categoryName && activeLevelFlag == other.activeLevelFlag;
     }
 
     QString categoryName;
-    bool    activeLevelFlag[LogLevel_NumLevels];
-
+    bool activeLevelFlag[LogLevel_NumLevels];
 };
 
 class U2PRIVATE_EXPORT LogCategories : QObject {
@@ -51,6 +50,7 @@ public:
     static const QString getLocalizedLevelName(LogLevel l) {
         return localizedLevelNames[l];
     }
+
 protected:
     static QString localizedLevelNames[LogLevel_NumLevels];
 };
@@ -59,15 +59,17 @@ class U2PRIVATE_EXPORT LogSettings {
 public:
     LogSettings();
 
-    void removeCategory(const QString& name);
+    void removeCategory(const QString &name);
 
-    void addCategory(const LoggerSettings& newcs);
+    void addCategory(const LoggerSettings &newcs);
 
-    const LoggerSettings& getLoggerSettings(const QString& cName);
+    const LoggerSettings &getLoggerSettings(const QString &cName);
 
-    const QHash<QString, LoggerSettings> getLoggerSettings() const {return categories;}
+    const QHash<QString, LoggerSettings> getLoggerSettings() const {
+        return categories;
+    }
 
-    bool operator==(const LogSettings& other) const;
+    bool operator==(const LogSettings &other) const;
 
     void save();
 
@@ -75,7 +77,7 @@ public:
     void reinitCategories();
 
     QString levelColors[LogLevel_NumLevels];
-    bool    activeLevelGlobalFlag[LogLevel_NumLevels];
+    bool activeLevelGlobalFlag[LogLevel_NumLevels];
     QString logPattern;
 
     bool showDate;
@@ -85,21 +87,22 @@ public:
     bool toFile;
     QString outputFile;
 
-//private:
+    //private:
     QHash<QString, LoggerSettings> categories;
 };
 
 class U2PRIVATE_EXPORT LogSettingsHolder {
 public:
-    const LogSettings& getSettings() const {return settings;}
+    const LogSettings &getSettings() const {
+        return settings;
+    }
 
-    virtual void setSettings(const LogSettings& s);
+    virtual void setSettings(const LogSettings &s);
 
 protected:
     mutable LogSettings settings;
-
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

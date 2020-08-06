@@ -20,29 +20,30 @@
  */
 
 #include "EMBLPlainTextFormat.h"
-#include "GenbankLocationParser.h"
-#include "DocumentFormatUtils.h"
 
-#include <U2Core/DNASequenceObject.h>
-#include <U2Core/GObjectUtils.h>
-
-#include <U2Core/IOAdapter.h>
-#include <U2Core/U2OpStatus.h>
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/DNAInfo.h>
+#include <U2Core/DNASequenceObject.h>
+#include <U2Core/GObjectUtils.h>
+#include <U2Core/IOAdapter.h>
 #include <U2Core/QVariantUtils.h>
 #include <U2Core/TextUtils.h>
+#include <U2Core/U2OpStatus.h>
 #include <U2Core/U2SafePoints.h>
+
+#include "DocumentFormatUtils.h"
+#include "GenbankLocationParser.h"
 
 namespace U2 {
 
 /* TRANSLATOR U2::EMBLPlainTextFormat */
 /* TRANSLATOR U2::EMBLGenbankAbstractDocument */
 
-EMBLPlainTextFormat::EMBLPlainTextFormat(QObject* p)
-: EMBLGenbankAbstractDocument(BaseDocumentFormats::PLAIN_EMBL, tr("EMBL"), 80, DocumentFormatFlag_SupportStreaming, p)
-{
-    fileExtensions << "em" << "emb" << "embl";
+EMBLPlainTextFormat::EMBLPlainTextFormat(QObject *p)
+    : EMBLGenbankAbstractDocument(BaseDocumentFormats::PLAIN_EMBL, tr("EMBL"), 80, DocumentFormatFlag_SupportStreaming, p) {
+    fileExtensions << "em"
+                   << "emb"
+                   << "embl";
     formatDescription = tr("EMBL Flat File Format is a rich format for storing sequences and associated annotations");
     sequenceStartPrefix = "SQ";
     fPrefix = "FT";
@@ -55,10 +56,10 @@ EMBLPlainTextFormat::EMBLPlainTextFormat(QObject* p)
     tagMap["CO"] = DNAInfo::CONTIG;
 }
 
-FormatCheckResult EMBLPlainTextFormat::checkRawTextData(const QByteArray& rawData, const GUrl&) const {
+FormatCheckResult EMBLPlainTextFormat::checkRawTextData(const QByteArray &rawData, const GUrl &) const {
     //TODO: improve format checking
 
-    const char* data = rawData.constData();
+    const char *data = rawData.constData();
     int size = rawData.size();
 
     bool textOnly = !TextUtils::contains(TextUtils::BINARY, data, size);
@@ -67,7 +68,7 @@ FormatCheckResult EMBLPlainTextFormat::checkRawTextData(const QByteArray& rawDat
     }
     bool tokenMatched = TextUtils::equals("ID   ", data, 5);
     if (tokenMatched) {
-        if(QString(rawData).contains(QRegExp("\\d+ AA."))){
+        if (QString(rawData).contains(QRegExp("\\d+ AA."))) {
             return FormatDetection_NotMatched;
         }
         return FormatDetection_HighSimilarity;
@@ -78,13 +79,13 @@ FormatCheckResult EMBLPlainTextFormat::checkRawTextData(const QByteArray& rawDat
 //////////////////////////////////////////////////////////////////////////
 // loading
 
-bool EMBLPlainTextFormat::readIdLine(ParserState* s) {
+bool EMBLPlainTextFormat::readIdLine(ParserState *s) {
     if (!s->hasKey("ID", 2)) {
         s->si.setError(EMBLPlainTextFormat::tr("ID is not the first line"));
         return false;
     }
 
-    QString idLineStr= s->value();
+    QString idLineStr = s->value();
     QStringList tokens = idLineStr.split(";");
     if (idLineStr.length() < 6 || tokens.isEmpty()) {
         s->si.setError(EMBLPlainTextFormat::tr("Error parsing ID line"));
@@ -128,8 +129,8 @@ bool EMBLPlainTextFormat::readIdLine(ParserState* s) {
     return true;
 }
 
-bool EMBLPlainTextFormat::readEntry(ParserState* st,U2SequenceImporter& seqImporter, int& sequenceLen,int& fullSequenceLen, bool merge, int gapSize,U2OpStatus& os) {
-    U2OpStatus& si = st->si;
+bool EMBLPlainTextFormat::readEntry(ParserState *st, U2SequenceImporter &seqImporter, int &sequenceLen, int &fullSequenceLen, bool merge, int gapSize, U2OpStatus &os) {
+    U2OpStatus &si = st->si;
     QString lastTagName;
     bool hasLine = false;
     while (hasLine || st->readNextLine(false)) {
@@ -181,8 +182,7 @@ bool EMBLPlainTextFormat::readEntry(ParserState* st,U2SequenceImporter& seqImpor
             continue;
         }
         if (st->hasKey("RF") || st->hasKey("RN")) {
-            while (st->readNextLine() && st->buff[0] == 'R')
-            {
+            while (st->readNextLine() && st->buff[0] == 'R') {
                 //TODO
             }
             hasLine = true;
@@ -198,14 +198,13 @@ bool EMBLPlainTextFormat::readEntry(ParserState* st,U2SequenceImporter& seqImpor
         if (st->hasKey("//", 2)) {
             // end of entry
             return true;
-        }
-        else if (st->hasKey("SQ", 2)) {
+        } else if (st->hasKey("SQ", 2)) {
             //reading sequence
-            if(merge && gapSize){
-                seqImporter.addDefaultSymbolsBlock(gapSize,os);
-                CHECK_OP(os,false);
+            if (merge && gapSize) {
+                seqImporter.addDefaultSymbolsBlock(gapSize, os);
+                CHECK_OP(os, false);
             }
-            readSequence(st,seqImporter,sequenceLen,fullSequenceLen,os);
+            readSequence(st, seqImporter, sequenceLen, fullSequenceLen, os);
             if (fullSequenceLen != st->entry->seqLen && !si.getWarnings().contains(EMBLGenbankAbstractDocument::SEQ_LEN_WARNING_MESSAGE)) {
                 si.addWarning(EMBLGenbankAbstractDocument::SEQ_LEN_WARNING_MESSAGE);
             }
@@ -232,4 +231,4 @@ bool EMBLPlainTextFormat::readEntry(ParserState* st,U2SequenceImporter& seqImpor
     return false;
 }
 
-}//namespace
+}    // namespace U2

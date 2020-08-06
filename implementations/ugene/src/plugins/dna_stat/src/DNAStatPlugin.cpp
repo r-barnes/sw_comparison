@@ -19,15 +19,17 @@
  * MA 02110-1301, USA.
  */
 
+#include "DNAStatPlugin.h"
+
 #include <QAction>
 #include <QMap>
 #include <QMenu>
 
 #include <U2Core/AppContext.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/GUIUtils.h>
-#include <U2Core/QObjectScopedPointer.h>
 
 #include <U2View/AnnotatedDNAView.h>
 #include <U2View/AnnotatedDNAViewFactory.h>
@@ -35,21 +37,20 @@
 #include <U2View/MaEditorFactory.h>
 
 #include "DNAStatMSAProfileDialog.h"
-#include "DNAStatPlugin.h"
 #include "DistanceMatrixMSAProfileDialog.h"
 
 namespace U2 {
 
-extern "C" Q_DECL_EXPORT Plugin* U2_PLUGIN_INIT_FUNC() {
+extern "C" Q_DECL_EXPORT Plugin *U2_PLUGIN_INIT_FUNC() {
     if (AppContext::getMainWindow()) {
-        DNAStatPlugin* plug = new DNAStatPlugin();
+        DNAStatPlugin *plug = new DNAStatPlugin();
         return plug;
     }
     return NULL;
 }
 
-DNAStatPlugin::DNAStatPlugin() : Plugin(tr("DNA Statistics"), tr("Provides statistical reports for sequences and alignments"))
-{
+DNAStatPlugin::DNAStatPlugin()
+    : Plugin(tr("DNA Statistics"), tr("Provides statistical reports for sequences and alignments")) {
     statViewCtx = new DNAStatMSAEditorContext(this);
     statViewCtx->init();
 
@@ -59,76 +60,77 @@ DNAStatPlugin::DNAStatPlugin() : Plugin(tr("DNA Statistics"), tr("Provides stati
 
 //////////////////////////////////////////////////////////////////////////
 
-DNAStatMSAEditorContext::DNAStatMSAEditorContext(QObject* p) :
-GObjectViewWindowContext(p, MsaEditorFactory::ID) {}
+DNAStatMSAEditorContext::DNAStatMSAEditorContext(QObject *p)
+    : GObjectViewWindowContext(p, MsaEditorFactory::ID) {
+}
 
-void DNAStatMSAEditorContext::initViewContext(GObjectView* v) {
-    MSAEditor* msaed = qobject_cast<MSAEditor*>(v);
+void DNAStatMSAEditorContext::initViewContext(GObjectView *v) {
+    MSAEditor *msaed = qobject_cast<MSAEditor *>(v);
     if (msaed != NULL && !msaed->getMaObject())
         return;
 
-    GObjectViewAction* profileAction = new GObjectViewAction(this, v, tr("Generate grid profile..."));
+    GObjectViewAction *profileAction = new GObjectViewAction(this, v, tr("Generate grid profile..."));
     profileAction->setObjectName("Generate grid profile");
     connect(profileAction, SIGNAL(triggered()), SLOT(sl_showMSAProfileDialog()));
 
     addViewAction(profileAction);
 }
 
-void DNAStatMSAEditorContext::buildMenu(GObjectView* v, QMenu* m) {
-    MSAEditor* msaed = qobject_cast<MSAEditor*>(v);
+void DNAStatMSAEditorContext::buildMenu(GObjectView *v, QMenu *m) {
+    MSAEditor *msaed = qobject_cast<MSAEditor *>(v);
     if (msaed != NULL && !msaed->getMaObject())
         return;
 
     QList<GObjectViewAction *> actions = getViewActions(v);
-    QMenu* statMenu = GUIUtils::findSubMenu(m, MSAE_MENU_STATISTICS);
+    QMenu *statMenu = GUIUtils::findSubMenu(m, MSAE_MENU_STATISTICS);
     SAFE_POINT(statMenu != NULL, "statMenu", );
-    foreach(GObjectViewAction* a, actions) {
+    foreach (GObjectViewAction *a, actions) {
         statMenu->addAction(a);
     }
 }
 
 void DNAStatMSAEditorContext::sl_showMSAProfileDialog() {
-    GObjectViewAction* viewAction = qobject_cast<GObjectViewAction*>(sender());
-    MSAEditor* msaEd = qobject_cast<MSAEditor*>(viewAction->getObjectView());
+    GObjectViewAction *viewAction = qobject_cast<GObjectViewAction *>(sender());
+    MSAEditor *msaEd = qobject_cast<MSAEditor *>(viewAction->getObjectView());
     QObjectScopedPointer<DNAStatMSAProfileDialog> d = new DNAStatMSAProfileDialog(msaEd->getWidget(), msaEd);
     d->exec();
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-DistanceMatrixMSAEditorContext::DistanceMatrixMSAEditorContext(QObject* p) :
-GObjectViewWindowContext(p, MsaEditorFactory::ID) {}
+DistanceMatrixMSAEditorContext::DistanceMatrixMSAEditorContext(QObject *p)
+    : GObjectViewWindowContext(p, MsaEditorFactory::ID) {
+}
 
-void DistanceMatrixMSAEditorContext::initViewContext(GObjectView* v) {
-    MSAEditor* msaed = qobject_cast<MSAEditor*>(v);
+void DistanceMatrixMSAEditorContext::initViewContext(GObjectView *v) {
+    MSAEditor *msaed = qobject_cast<MSAEditor *>(v);
     if (msaed != NULL && !msaed->getMaObject())
         return;
 
-    GObjectViewAction* profileAction = new GObjectViewAction(this, v, tr("Generate distance matrix..."));
+    GObjectViewAction *profileAction = new GObjectViewAction(this, v, tr("Generate distance matrix..."));
     profileAction->setObjectName("Generate distance matrix");
     connect(profileAction, SIGNAL(triggered()), SLOT(sl_showDistanceMatrixDialog()));
     addViewAction(profileAction);
 }
 
-void DistanceMatrixMSAEditorContext::buildMenu(GObjectView* v, QMenu* m) {
-    MSAEditor* msaed = qobject_cast<MSAEditor*>(v);
+void DistanceMatrixMSAEditorContext::buildMenu(GObjectView *v, QMenu *m) {
+    MSAEditor *msaed = qobject_cast<MSAEditor *>(v);
     if (msaed != NULL && !msaed->getMaObject())
         return;
 
     QList<GObjectViewAction *> actions = getViewActions(v);
-    QMenu* statMenu = GUIUtils::findSubMenu(m, MSAE_MENU_STATISTICS);
+    QMenu *statMenu = GUIUtils::findSubMenu(m, MSAE_MENU_STATISTICS);
     SAFE_POINT(statMenu != NULL, "statMenu", );
-    foreach(GObjectViewAction* a, actions) {
+    foreach (GObjectViewAction *a, actions) {
         statMenu->addAction(a);
     }
 }
 
 void DistanceMatrixMSAEditorContext::sl_showDistanceMatrixDialog() {
-    GObjectViewAction* viewAction = qobject_cast<GObjectViewAction*>(sender());
-    MSAEditor* msaEd = qobject_cast<MSAEditor*>(viewAction->getObjectView());
+    GObjectViewAction *viewAction = qobject_cast<GObjectViewAction *>(sender());
+    MSAEditor *msaEd = qobject_cast<MSAEditor *>(viewAction->getObjectView());
     QObjectScopedPointer<DistanceMatrixMSAProfileDialog> d = new DistanceMatrixMSAProfileDialog(msaEd->getWidget(), msaEd);
     d->exec();
 }
 
-}//namespace
-
+}    // namespace U2

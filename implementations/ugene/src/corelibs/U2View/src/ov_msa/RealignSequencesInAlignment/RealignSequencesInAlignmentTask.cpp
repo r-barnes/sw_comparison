@@ -18,6 +18,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
+#include "RealignSequencesInAlignmentTask.h"
+
 #include <QDirIterator>
 #include <QUuid>
 
@@ -29,22 +31,20 @@
 #include <U2Core/GUrlUtils.h>
 #include <U2Core/StateLockableDataModel.h>
 #include <U2Core/U2Dbi.h>
-#include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2Mod.h>
+#include <U2Core/U2ObjectDbi.h>
 #include <U2Core/UserApplicationsSettings.h>
 
-#include "RealignSequencesInAlignmentTask.h"
 #include "../AlignSequencesToAlignment/AlignSequencesToAlignmentTask.h"
 #include "../ExportSequencesTask.h"
 
 namespace U2 {
 
-RealignSequencesInAlignmentTask::RealignSequencesInAlignmentTask(MultipleSequenceAlignmentObject* msaObjectToClone, const QSet<qint64>& _rowsToAlignIds, bool forceUseUgeneNativeAligner)
+RealignSequencesInAlignmentTask::RealignSequencesInAlignmentTask(MultipleSequenceAlignmentObject *msaObjectToClone, const QSet<qint64> &_rowsToAlignIds, bool forceUseUgeneNativeAligner)
     : Task(tr("Realign sequences in this alignment"), TaskFlags_NR_FOSE_COSC),
-    originalMsaObject(msaObjectToClone),
-    msaObject(nullptr),
-    rowsToAlignIds(_rowsToAlignIds)
-{
+      originalMsaObject(msaObjectToClone),
+      msaObject(nullptr),
+      rowsToAlignIds(_rowsToAlignIds) {
     locker = new StateLocker(originalMsaObject);
     msaObject = msaObjectToClone->clone(msaObjectToClone->getEntityRef().dbiRef, stateInfo);
     CHECK_OP(stateInfo, );
@@ -60,7 +60,7 @@ RealignSequencesInAlignmentTask::RealignSequencesInAlignmentTask(MultipleSequenc
 
     QList<qint64> rowsToKeepIds = msaObject->getMultipleAlignment()->getRowsIds();
     QSet<qint64> clonedObjectRowsToAlignIds;
-    foreach(const qint64 idToRemove, rowsToAlignIds) {
+    foreach (const qint64 idToRemove, rowsToAlignIds) {
         int rowPos = msaObjectToClone->getRowPosById(idToRemove);
         qint64 id = msaObject->getRow(rowPos)->getRowId();
         rowsToKeepIds.removeAll(id);
@@ -95,7 +95,7 @@ U2::Task::ReportResult RealignSequencesInAlignmentTask::report() {
     CHECK_OP(stateInfo, Task::ReportResult_Finished);
     originalMsaObject->updateGapModel(msaObject->getMsa()->getMsaRows());
     QDir tmpDir(extractedSequencesDirUrl);
-    foreach(const QString & file, tmpDir.entryList(QDir::NoDotAndDotDot | QDir::AllEntries)) {
+    foreach (const QString &file, tmpDir.entryList(QDir::NoDotAndDotDot | QDir::AllEntries)) {
         tmpDir.remove(file);
     }
     tmpDir.rmdir(tmpDir.absolutePath());
@@ -108,18 +108,18 @@ U2::Task::ReportResult RealignSequencesInAlignmentTask::report() {
     return Task::ReportResult_Finished;
 }
 
-QList<Task*> RealignSequencesInAlignmentTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> res;
+QList<Task *> RealignSequencesInAlignmentTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> res;
     CHECK_OP(stateInfo, res);
 
     if (subTask == extractSequences) {
         QList<int> rowPosToRemove;
-        foreach(qint64 idToRemove, rowsToAlignIds) {
+        foreach (qint64 idToRemove, rowsToAlignIds) {
             rowPosToRemove.append(originalMsaObject->getRowPosById(idToRemove));
         }
         qSort(rowPosToRemove);
         std::reverse(rowPosToRemove.begin(), rowPosToRemove.end());
-        foreach(int rowPos, rowPosToRemove) {
+        foreach (int rowPos, rowPosToRemove) {
             msaObject->removeRow(rowPos);
         }
         QStringList sequenceFilesToAlign;
@@ -128,11 +128,11 @@ QList<Task*> RealignSequencesInAlignmentTask::onSubTaskFinished(Task* subTask) {
             sequenceFilesToAlign.append(it.next());
         }
 
-        LoadSequencesAndAlignToAlignmentTask* task = new LoadSequencesAndAlignToAlignmentTask(msaObject, sequenceFilesToAlign);
+        LoadSequencesAndAlignToAlignmentTask *task = new LoadSequencesAndAlignToAlignmentTask(msaObject, sequenceFilesToAlign);
         res.append(task);
     }
 
     return res;
 }
 
-}
+}    // namespace U2

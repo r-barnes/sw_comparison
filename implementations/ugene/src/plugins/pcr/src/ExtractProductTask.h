@@ -32,7 +32,9 @@ class AnnotationTableObject;
 
 class ExtractProductSettings {
 public:
-    enum AnnotationsExtraction {Inner, All, None};
+    enum AnnotationsExtraction { Inner,
+                                 All,
+                                 None };
 
     ExtractProductSettings();
 
@@ -53,8 +55,8 @@ public:
     void run();
 
     /* Moves the document to the main thread */
-    Document * takeResult();
-    const InSilicoPcrProduct & getProduct() const;
+    Document *takeResult();
+    const InSilicoPcrProduct &getProduct() const;
 
     static QString getProductName(const QString &sequenceName, qint64 sequenceLength, const U2Region &region, bool fileName = false);
 
@@ -81,7 +83,7 @@ public:
 
     // Task
     void prepare();
-    QList<Task*> onSubTaskFinished(Task *subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
     ReportResult report();
 
 private:
@@ -92,6 +94,6 @@ private:
     ExtractProductSettings settings;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_EXTRACT_PRODUCT_TASK_H_
+#endif    // _U2_EXTRACT_PRODUCT_TASK_H_

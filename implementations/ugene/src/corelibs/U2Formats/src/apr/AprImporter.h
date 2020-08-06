@@ -29,7 +29,6 @@ namespace U2 {
 
 class LoadDocumentTask;
 
-
 ///////////////////////////////////
 //// AprImporterTask
 ///////////////////////////////////
@@ -37,14 +36,14 @@ class LoadDocumentTask;
 class U2FORMATS_EXPORT AprImporterTask : public DocumentProviderTask {
     Q_OBJECT
 public:
-    AprImporterTask(const GUrl& url, const QVariantMap &_settings);
+    AprImporterTask(const GUrl &url, const QVariantMap &_settings);
 
     virtual void prepare();
-    virtual QList<Task*> onSubTaskFinished(Task* subTask);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
 
 private:
-    QVariantMap              settings;
-    GUrl                     srcUrl;
+    QVariantMap settings;
+    GUrl srcUrl;
 };
 
 ///////////////////////////////////
@@ -56,14 +55,14 @@ class U2FORMATS_EXPORT AprImporter : public DocumentImporter {
 public:
     AprImporter();
 
-    virtual FormatCheckResult checkRawData(const QByteArray& rawData, const GUrl& url);
-    virtual DocumentProviderTask* createImportTask(const FormatDetectionResult& res, bool showGui, const QVariantMap &hints);
+    virtual FormatCheckResult checkRawData(const QByteArray &rawData, const GUrl &url);
+    virtual DocumentProviderTask *createImportTask(const FormatDetectionResult &res, bool showGui, const QVariantMap &hints);
     virtual QString getRadioButtonText() const;
 
     static const QString ID;
     static const QString SRC_URL;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_APR_IMPORTER_H_
+#endif    // _U2_APR_IMPORTER_H_

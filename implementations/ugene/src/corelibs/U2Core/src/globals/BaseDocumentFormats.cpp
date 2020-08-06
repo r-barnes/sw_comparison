@@ -19,11 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "BaseDocumentFormats.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/StrPackUtils.h>
-
-#include "BaseDocumentFormats.h"
 
 namespace U2 {
 
@@ -64,7 +64,7 @@ const DocumentFormatId BaseDocumentFormats::VCF4("vcf");
 const DocumentFormatId BaseDocumentFormats::VECTOR_NTI_ALIGNX("Vector_nti_alignx");
 const DocumentFormatId BaseDocumentFormats::VECTOR_NTI_SEQUENCE("vector_nti_sequence");
 
-DocumentFormat* BaseDocumentFormats::get(const DocumentFormatId& formatId) {
+DocumentFormat *BaseDocumentFormats::get(const DocumentFormatId &formatId) {
     return AppContext::getDocumentFormatRegistry()->getFormatById(formatId);
 }
 
@@ -162,7 +162,7 @@ StrStrMap initFormatIdsMap() {
     return anyIds2trueIds;
 }
 
-}
+}    // namespace
 
 bool BaseDocumentFormats::equal(const DocumentFormatId &first, const DocumentFormatId &second) {
     // After UGENE-5719 fix format IDs were occasionally changed
@@ -181,4 +181,4 @@ DocumentFormatId BaseDocumentFormats::toValidId(const DocumentFormatId &invalidF
     return invalidIds.value(invalidFormatId, invalidFormatId);
 }
 
-}   // namespace U2
+}    // namespace U2

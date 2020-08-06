@@ -24,13 +24,13 @@
 
 #include <QFile>
 
+#include <U2Core/ExternalToolRunTask.h>
+#include <U2Core/MultipleSequenceAlignmentObject.h>
+
 #include <U2Formats/StreamSequenceReader.h>
 #include <U2Formats/StreamSequenceWriter.h>
 
 #include "utils/ExportTasks.h"
-
-#include <U2Core/ExternalToolRunTask.h>
-#include <U2Core/MultipleSequenceAlignmentObject.h>
 
 namespace U2 {
 
@@ -39,8 +39,7 @@ class DocumentProviderTask;
 
 class CAP3SupportTaskSettings {
 public:
-    CAP3SupportTaskSettings()
-    {
+    CAP3SupportTaskSettings() {
         openView = true;
         bandExpansionSize = defaultBandExpansionSize;
         baseQualityDiffCutoff = defaultBaseQualityDiffCutoff;
@@ -100,13 +99,18 @@ public:
 class PrepareInputForCAP3Task : public Task {
     Q_OBJECT
 public:
-    PrepareInputForCAP3Task(const QStringList& inputFiles, const QString& outputDirPath);
+    PrepareInputForCAP3Task(const QStringList &inputFiles, const QString &outputDirPath);
     void prepare();
     void run();
-    bool onlyCopyInputFiles() { return onlyCopyFiles; }
-    const QString& getPreparedPath() const { return preparedPath; }
+    bool onlyCopyInputFiles() {
+        return onlyCopyFiles;
+    }
+    const QString &getPreparedPath() const {
+        return preparedPath;
+    }
+
 private:
-    QList<CopyDataTask*> copyTasks;
+    QList<CopyDataTask *> copyTasks;
     QStringList inputUrls;
     QStringList filesToCopy;
     StreamSequenceReader seqReader;
@@ -115,11 +119,10 @@ private:
     bool onlyCopyFiles;
 };
 
-
 class CAP3SupportTask : public ExternalToolSupportTask {
     Q_OBJECT
 public:
-    CAP3SupportTask(const CAP3SupportTaskSettings& settings);
+    CAP3SupportTask(const CAP3SupportTaskSettings &settings);
     void prepare();
 
     /**
@@ -129,29 +132,29 @@ public:
     QString getOutputFile() const;
 
     Task::ReportResult report();
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
 private:
-    QString                     tmpDirUrl;
-    QString                     tmpOutputUrl;
-    PrepareInputForCAP3Task*    prepareDataForCAP3Task;
-    ExternalToolRunTask*        cap3Task;
-    CopyDataTask*               copyResultTask;
-    CAP3SupportTaskSettings     settings;
-    QString                     outputFile;
+    QString tmpDirUrl;
+    QString tmpOutputUrl;
+    PrepareInputForCAP3Task *prepareDataForCAP3Task;
+    ExternalToolRunTask *cap3Task;
+    CopyDataTask *copyResultTask;
+    CAP3SupportTaskSettings settings;
+    QString outputFile;
 };
 
 class RunCap3AndOpenResultTask : public Task {
     Q_OBJECT
 public:
-    RunCap3AndOpenResultTask(const CAP3SupportTaskSettings& settings);
+    RunCap3AndOpenResultTask(const CAP3SupportTaskSettings &settings);
 
     virtual void prepare();
-    virtual QList<Task*> onSubTaskFinished(Task *subTask);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
 
 private:
-    CAP3SupportTask*        cap3Task;
-    bool                    openView;
+    CAP3SupportTask *cap3Task;
+    bool openView;
 };
 
 class CAP3LogParser : public ExternalToolLogParser {
@@ -159,9 +162,9 @@ class CAP3LogParser : public ExternalToolLogParser {
 public:
     CAP3LogParser();
     int getProgress();
-//private:
-//    int countSequencesInMSA;
+    //private:
+    //    int countSequencesInMSA;
 };
 
-}//namespace
-#endif // _U2_CAP3_SUPPORT_TASK_H_
+}    // namespace U2
+#endif    // _U2_CAP3_SUPPORT_TASK_H_

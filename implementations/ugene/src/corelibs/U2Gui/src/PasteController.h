@@ -22,44 +22,48 @@
 #ifndef _U2_PASTE_CONTROLLER_H_
 #define _U2_PASTE_CONTROLLER_H_
 
+#include <QClipboard>
+
 #include <U2Core/ClipboardController.h>
 #include <U2Core/DocumentUtils.h>
 #include <U2Core/IOAdapter.h>
 #include <U2Core/LoadDocumentTask.h>
-#include <U2Core/U2OpStatus.h>
 #include <U2Core/Task.h>
-
-#include <QClipboard>
+#include <U2Core/U2OpStatus.h>
 
 namespace U2 {
 
-class U2GUI_EXPORT PasteTaskImpl : public PasteTask{
+class U2GUI_EXPORT PasteTaskImpl : public PasteTask {
     Q_OBJECT
 public:
     PasteTaskImpl(bool addToProject);
     void run();
 
-    QList<GUrl>getUrls() const {return urls;}
-    QList<Document*> getDocuments() const {return documents;}
+    QList<GUrl> getUrls() const {
+        return urls;
+    }
+    QList<Document *> getDocuments() const {
+        return documents;
+    }
 
 protected:
-   QList<GUrl> urls;
-   bool addToProject;
-   QList<Document*> documents;
+    QList<GUrl> urls;
+    bool addToProject;
+    QList<Document *> documents;
 
 protected:
-   QList<Task*> onSubTaskFinished(Task* task);
+    QList<Task *> onSubTaskFinished(Task *task);
 };
 
 class U2GUI_EXPORT PasteFactoryImpl : public PasteFactory {
     Q_OBJECT
 public:
-    PasteFactoryImpl(QObject *parent=0);
+    PasteFactoryImpl(QObject *parent = 0);
 
-    PasteTask* pasteTask(bool addToProject);
+    PasteTask *pasteTask(bool addToProject);
 
 protected:
-    void connectExclude(PasteTask* task);
+    void connectExclude(PasteTask *task);
 
 protected:
     QSet<QString> excludedFilenames;
@@ -68,7 +72,7 @@ protected slots:
     void sl_excludeBack();
 };
 
-class PasteUrlsTask : public PasteTaskImpl{
+class PasteUrlsTask : public PasteTaskImpl {
     Q_OBJECT
 public:
     PasteUrlsTask(const QList<QUrl> &urls, bool addToProject);
@@ -77,9 +81,9 @@ public:
 class PasteTextTask : public PasteTaskImpl {
     Q_OBJECT
 public:
-    PasteTextTask(const QClipboard* clipboard, QSet<QString>& excludedFilenames, bool addToProject);
+    PasteTextTask(const QClipboard *clipboard, QSet<QString> &excludedFilenames, bool addToProject);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_PASTE_CONTROLLER_H_
+#endif    // _U2_PASTE_CONTROLLER_H_

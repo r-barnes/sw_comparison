@@ -22,9 +22,9 @@
 #ifndef _U2_SEQUENCE_CONTENT_FILTER_TASK_H_
 #define _U2_SEQUENCE_CONTENT_FILTER_TASK_H_
 
-#include <U2Core/AbstractProjectFilterTask.h>
-
 #include <U2Algorithm/FindAlgorithm.h>
+
+#include <U2Core/AbstractProjectFilterTask.h>
 
 namespace U2 {
 
@@ -37,7 +37,7 @@ class U2SequenceObject;
 class SequenceContentFilterTask : public AbstractProjectFilterTask, public FindAlgorithmResultsListener {
     Q_OBJECT
 public:
-    SequenceContentFilterTask(const ProjectTreeControllerModeSettings &settings, const QList<QPointer<Document> > &docs);
+    SequenceContentFilterTask(const ProjectTreeControllerModeSettings &settings, const QList<QPointer<Document>> &docs);
 
     void onResult(const FindAlgorithmResult &r);
 
@@ -46,8 +46,7 @@ protected:
 
 private:
     bool sequenceContainsPattern(U2SequenceObject *seqObject, const QString &pattern, const FindAlgorithmSettings &findSettings);
-    void searchThroughRegion(U2SequenceObject *seqObject, const U2Region &searchRegion, const QString &pattern,
-        const FindAlgorithmSettings &findSettings);
+    void searchThroughRegion(U2SequenceObject *seqObject, const U2Region &searchRegion, const QString &pattern, const FindAlgorithmSettings &findSettings);
 
     static bool patternFitsSequenceAlphabet(U2SequenceObject *seqObject, const QString &pattern);
     static bool initFindAlgorithmSettings(U2SequenceObject *seqObject, FindAlgorithmSettings &findSettings);
@@ -63,10 +62,10 @@ private:
 
 class U2ALGORITHM_EXPORT SequenceContentFilterTaskFactory : public ProjectFilterTaskFactory {
 protected:
-    AbstractProjectFilterTask * createNewTask(const ProjectTreeControllerModeSettings &settings,
-        const QList<QPointer<Document> > &docs) const;
+    AbstractProjectFilterTask *createNewTask(const ProjectTreeControllerModeSettings &settings,
+                                             const QList<QPointer<Document>> &docs) const;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_SEQUENCE_CONTENT_FILTER_TASK_H_
+#endif    // _U2_SEQUENCE_CONTENT_FILTER_TASK_H_

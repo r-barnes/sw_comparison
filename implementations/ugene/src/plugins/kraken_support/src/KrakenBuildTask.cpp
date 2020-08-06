@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "KrakenBuildTask.h"
+
 #include <QFileInfo>
 
 #include <U2Core/AppContext.h>
@@ -29,9 +31,8 @@
 #include <U2Core/MultiTask.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "KrakenBuildTask.h"
-#include "KrakenSupport.h"
 #include "../../ngs_reads_classification/src/NgsReadsClassificationPlugin.h"
+#include "KrakenSupport.h"
 
 namespace U2 {
 
@@ -48,15 +49,12 @@ KrakenBuildTaskSettings::KrakenBuildTaskSettings()
       clean(true),
       workOnDisk(false),
       jellyfishHashSize(0),
-      threadsNumber(1)
-{
-
+      threadsNumber(1) {
 }
 
 KrakenBuildTask::KrakenBuildTask(const KrakenBuildTaskSettings &settings)
     : ExternalToolSupportTask(tr("%1 Kraken database"), TaskFlags_NR_FOSE_COSC),
-      settings(settings)
-{
+      settings(settings) {
     GCOUNTER(cvar, tvar, "KrakenBuildTask");
     setTaskName(getTaskName().arg(settings.mode == KrakenBuildTaskSettings::BUILD ? tr("Build") : tr("Shrink")));
 
@@ -209,4 +207,4 @@ QStringList KrakenBuildTask::getShrinkArguments() const {
     return arguments;
 }
 
-}   // namespace U2
+}    // namespace U2

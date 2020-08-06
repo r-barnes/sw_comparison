@@ -20,44 +20,41 @@
  */
 
 #include "SimpleTextObjectView.h"
-#include "SimpleTextObjectViewTasks.h"
 
-#include <U2Core/BaseDocumentFormats.h>
-#include <U2Core/ProjectModel.h>
-#include <U2Core/AppContext.h>
-#include <U2Core/DocumentModel.h>
-#include <U2Core/Counter.h>
-
-#include <U2Core/TextObject.h>
-#include <U2Core/SelectionUtils.h>
-
-#include <QVBoxLayout>
 #include <QScrollBar>
+#include <QVBoxLayout>
+
+#include <U2Core/AppContext.h>
+#include <U2Core/BaseDocumentFormats.h>
+#include <U2Core/Counter.h>
+#include <U2Core/DocumentModel.h>
+#include <U2Core/ProjectModel.h>
+#include <U2Core/SelectionUtils.h>
+#include <U2Core/TextObject.h>
+
+#include "SimpleTextObjectViewTasks.h"
 
 namespace U2 {
 
 /* TRANSLATOR U2::SimpleTextObjectViewFactory */
 
-
 //////////////////////////////////////////////////////////////////////////
 /// Factory
 const GObjectViewFactoryId SimpleTextObjectViewFactory::ID(GObjectViewFactory::SIMPLE_TEXT_FACTORY);
 
-
-SimpleTextObjectViewFactory::SimpleTextObjectViewFactory(QObject* p)
-: GObjectViewFactory(ID, tr("Text editor"), p)
-{
+SimpleTextObjectViewFactory::SimpleTextObjectViewFactory(QObject *p)
+    : GObjectViewFactory(ID, tr("Text editor"), p) {
 }
 
-bool SimpleTextObjectViewFactory::canCreateView(const MultiGSelection& multiSelection) {
+bool SimpleTextObjectViewFactory::canCreateView(const MultiGSelection &multiSelection) {
     bool hasTextDocuments = !SelectionUtils::findDocumentsWithObjects(GObjectTypes::TEXT, &multiSelection, UOF_LoadedAndUnloaded, true).isEmpty();
     return hasTextDocuments;
 }
 
-bool SimpleTextObjectViewFactory::isStateInSelection(const MultiGSelection& multiSelection, const QVariantMap& stateData) {
+bool SimpleTextObjectViewFactory::isStateInSelection(const MultiGSelection &multiSelection, const QVariantMap &stateData) {
     QString documentURL = SimpleTextObjectView::getDocumentUrl(stateData);
-    QSet<Document*> documents = SelectionUtils::findDocumentsWithObjects(GObjectTypes::TEXT, &multiSelection, UOF_LoadedAndUnloaded, true);
-    foreach(Document* doc, documents) {
+    QSet<Document *> documents = SelectionUtils::findDocumentsWithObjects(GObjectTypes::TEXT, &multiSelection, UOF_LoadedAndUnloaded, true);
+    foreach (Document *doc, documents) {
         if (doc->getURL() == documentURL) {
             return true;
         }
@@ -65,7 +62,7 @@ bool SimpleTextObjectViewFactory::isStateInSelection(const MultiGSelection& mult
     return false;
 }
 
-Task* SimpleTextObjectViewFactory::createViewTask(const MultiGSelection& multiSelection, bool single) {
+Task *SimpleTextObjectViewFactory::createViewTask(const MultiGSelection &multiSelection, bool single) {
     const QList<GObject *> objects = SelectionUtils::findObjects(GObjectTypes::TEXT, &multiSelection, UOF_LoadedAndUnloaded);
     if (objects.isEmpty()) {
         return NULL;
@@ -84,19 +81,16 @@ Task* SimpleTextObjectViewFactory::createViewTask(const MultiGSelection& multiSe
     return result;
 }
 
-Task* SimpleTextObjectViewFactory::createViewTask(const QString& viewName, const QVariantMap& state) {
+Task *SimpleTextObjectViewFactory::createViewTask(const QString &viewName, const QVariantMap &state) {
     return new OpenSavedTextObjectViewTask(viewName, state);
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 /// Simple Text View
 
-
-SimpleTextObjectView::SimpleTextObjectView(const QString& name, TextObject* to, const QVariantMap& _state)
-: GObjectView(SimpleTextObjectViewFactory::ID, name), textObject(to), openState(_state), selection(to)
-{
-    GCOUNTER( cvar, tvar, "SimpleTextView" );
+SimpleTextObjectView::SimpleTextObjectView(const QString &name, TextObject *to, const QVariantMap &_state)
+    : GObjectView(SimpleTextObjectViewFactory::ID, name), textObject(to), openState(_state), selection(to) {
+    GCOUNTER(cvar, tvar, "SimpleTextView");
     textEdit = NULL;
     firstShow = true;
     assert(to);
@@ -104,14 +98,14 @@ SimpleTextObjectView::SimpleTextObjectView(const QString& name, TextObject* to, 
     requiredObjects.append(to);
 }
 
-QWidget* SimpleTextObjectView::createWidget() {
+QWidget *SimpleTextObjectView::createWidget() {
     assert(textEdit == NULL);
     textEdit = new QPlainTextEdit();
     textEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
     textEdit->setWordWrapMode(QTextOption::NoWrap);
     try {
         textEdit->setPlainText(textObject->getText());
-    } catch(std::bad_alloc &) {
+    } catch (std::bad_alloc &) {
         coreLog.error("Not enough memory for loading text data");
         return NULL;
     }
@@ -125,7 +119,7 @@ QWidget* SimpleTextObjectView::createWidget() {
     return textEdit;
 }
 
-bool SimpleTextObjectView::eventFilter(QObject* o, QEvent *e) {
+bool SimpleTextObjectView::eventFilter(QObject *o, QEvent *e) {
     if (firstShow && o == textEdit && e->type() == QEvent::ShowToParent) {
         firstShow = false;
         updateView(openState);
@@ -141,37 +135,34 @@ void SimpleTextObjectView::sl_onTextObjStateLockChanged() {
     textEdit->setReadOnly(textObject->isStateLocked());
 }
 
-
-Task* SimpleTextObjectView::updateViewTask(const QString& stateName, const QVariantMap& state) {
+Task *SimpleTextObjectView::updateViewTask(const QString &stateName, const QVariantMap &state) {
     return new UpdateSimpleTextObjectViewTask(this, stateName, state);
 }
 
-bool SimpleTextObjectView::checkAddToView(const MultiGSelection& s) {
+bool SimpleTextObjectView::checkAddToView(const MultiGSelection &s) {
     Q_UNUSED(s);
     return false;
 }
 
-Task* SimpleTextObjectView::addToViewTask(const MultiGSelection& s) {
+Task *SimpleTextObjectView::addToViewTask(const MultiGSelection &s) {
     Q_UNUSED(s);
     assert(0);
     return NULL;
 }
 
-#define URL_KEY         "url"
-#define OBJ_KEY         "obj"
-#define CURS_POS_KEY    "cursor_pos"
-#define HBAR_POS_KEY    "hbar_pos"
-#define VBAR_POS_KEY    "vbar_pos"
+#define URL_KEY "url"
+#define OBJ_KEY "obj"
+#define CURS_POS_KEY "cursor_pos"
+#define HBAR_POS_KEY "hbar_pos"
+#define VBAR_POS_KEY "vbar_pos"
 
-
-void SimpleTextObjectView::updateView(const QVariantMap& data) {
-    int cursPos=  data.value(CURS_POS_KEY, 0).toInt();
+void SimpleTextObjectView::updateView(const QVariantMap &data) {
+    int cursPos = data.value(CURS_POS_KEY, 0).toInt();
     int hScrollPos = data.value(HBAR_POS_KEY, 0).toInt();
     int vScrollPos = data.value(VBAR_POS_KEY, 0).toInt();
 
-
     QTextCursor c = textEdit->textCursor();
-    c.setPosition(cursPos);//, QTextCursor::KeepAnchor
+    c.setPosition(cursPos);    //, QTextCursor::KeepAnchor
     textEdit->setTextCursor(c);
     textEdit->verticalScrollBar()->setSliderPosition(vScrollPos);
     textEdit->horizontalScrollBar()->setSliderPosition(hScrollPos);
@@ -191,17 +182,16 @@ QVariantMap SimpleTextObjectView::saveState() {
     return data;
 }
 
-QString SimpleTextObjectView::getDocumentUrl(const QVariantMap& savedState) {
+QString SimpleTextObjectView::getDocumentUrl(const QVariantMap &savedState) {
     return savedState.value(URL_KEY).toString();
 }
 
-void SimpleTextObjectView::setDocumentUrl(QVariantMap& savedState, const QString& url) {
+void SimpleTextObjectView::setDocumentUrl(QVariantMap &savedState, const QString &url) {
     savedState[URL_KEY] = url;
 }
 
-QString SimpleTextObjectView::getObjectName( const QVariantMap& savedState )
-{
+QString SimpleTextObjectView::getObjectName(const QVariantMap &savedState) {
     return savedState.value(OBJ_KEY).toString();
 }
 
-}//namespace
+}    // namespace U2

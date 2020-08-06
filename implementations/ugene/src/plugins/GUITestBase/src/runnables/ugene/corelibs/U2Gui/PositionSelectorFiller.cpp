@@ -20,9 +20,9 @@
  */
 
 #include "PositionSelectorFiller.h"
+#include <drivers/GTKeyboardDriver.h>
 #include <primitives/GTLineEdit.h>
 #include <primitives/GTWidget.h>
-#include <drivers/GTKeyboardDriver.h>
 
 #include <QApplication>
 #include <QPushButton>
@@ -31,12 +31,11 @@ namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::GoToDialogFiller"
 #define GT_METHOD_NAME "commonScenario"
-void GoToDialogFiller::commonScenario()
-{
+void GoToDialogFiller::commonScenario() {
     QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog != NULL, "dialog not found");
 
-    QLineEdit *posEdit = dialog->findChild<QLineEdit*>("go_to_pos_line_edit");
+    QLineEdit *posEdit = dialog->findChild<QLineEdit *>("go_to_pos_line_edit");
     GT_CHECK(posEdit != NULL, "Line edit not found");
 
     GTLineEdit::setText(os, posEdit, QString::number(goTo));
@@ -46,4 +45,4 @@ void GoToDialogFiller::commonScenario()
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

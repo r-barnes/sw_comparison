@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ImportCustomToolsTask.h"
+
 #include <QDir>
 #include <QDomDocument>
 #include <QFile>
@@ -36,7 +38,6 @@
 #include <U2Core/UserApplicationsSettings.h>
 
 #include "CustomToolConfigParser.h"
-#include "ImportCustomToolsTask.h"
 #include "RegisterCustomToolTask.h"
 
 namespace U2 {
@@ -44,10 +45,9 @@ namespace U2 {
 const QString ImportCustomToolsTask::SETTINGS_PATH = "external_tools/custom_tool_configs";
 
 ImportCustomToolsTask::ImportCustomToolsTask(const QString &_url)
-    : Task(tr("Import custom external tools configuration"), TaskFlags_FOSE_COSC|TaskFlag_CollectChildrenWarnings),
+    : Task(tr("Import custom external tools configuration"), TaskFlags_FOSE_COSC | TaskFlag_CollectChildrenWarnings),
       url(_url),
-      registerTask(nullptr)
-{
+      registerTask(nullptr) {
     GCOUNTER(cvar, tvar, "ImportCustomToolsTask");
 }
 
@@ -78,4 +78,4 @@ void ImportCustomToolsTask::saveToolConfig(CustomExternalTool *tool) {
     tool->setConfigFilePath(url);
 }
 
-}   // namespace U2
+}    // namespace U2

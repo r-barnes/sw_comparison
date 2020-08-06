@@ -46,7 +46,7 @@ private:
 class U2LANG_EXPORT PortAlias {
 public:
     PortAlias(const Port *sourcePort, const QString &alias, const QString &description);
-    bool operator ==(const PortAlias &another);
+    bool operator==(const PortAlias &another);
 
     // these return true if adding is successful
     bool addSlot(const SlotAlias &slot);
@@ -69,7 +69,7 @@ private:
     QList<SlotAlias> slotAliases;
 };
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2
 
-#endif // _U2_WORKFLOW_ALIASING_H_
+#endif    // _U2_WORKFLOW_ALIASING_H_

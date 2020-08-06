@@ -33,31 +33,34 @@ namespace U2 {
 class McaEditor;
 class SequenceObjectContext;
 
-#define     MCAE_MENU_ALIGNMENT     "MCAE_MENU_ALIGNMENT"
-#define     MCAE_MENU_APPEARANCE    "MCAE_MENU_APPEARANCE"
-#define     MCAE_MENU_NAVIGATION    "MCAE_MENU_NAVIGATION"
-#define     MCAE_MENU_EDIT          "MCAE_MENU_EDIT"
+#define MCAE_MENU_ALIGNMENT "MCAE_MENU_ALIGNMENT"
+#define MCAE_MENU_APPEARANCE "MCAE_MENU_APPEARANCE"
+#define MCAE_MENU_NAVIGATION "MCAE_MENU_NAVIGATION"
+#define MCAE_MENU_EDIT "MCAE_MENU_EDIT"
 
-#define MCAE_SETTINGS_SHOW_CHROMATOGRAMS    "show_chromatograms"
-#define MCAE_SETTINGS_SHOW_OVERVIEW         "show_overview"
-#define MCAE_SETTINGS_PEAK_HEIGHT           "peak_height"
-#define MCAE_SETTINGS_CONSENSUS_TYPE        "consensus_type"
+#define MCAE_SETTINGS_SHOW_CHROMATOGRAMS "show_chromatograms"
+#define MCAE_SETTINGS_SHOW_OVERVIEW "show_overview"
+#define MCAE_SETTINGS_PEAK_HEIGHT "peak_height"
+#define MCAE_SETTINGS_CONSENSUS_TYPE "consensus_type"
 
 class U2VIEW_EXPORT McaEditor : public MaEditor {
     Q_OBJECT
     friend class McaEditorSequenceArea;
+
 public:
-    McaEditor(const QString& viewName,
-              MultipleChromatogramAlignmentObject* obj);
+    McaEditor(const QString &viewName,
+              MultipleChromatogramAlignmentObject *obj);
 
-    QString getSettingsRoot() const { return MCAE_SETTINGS_ROOT; }
+    QString getSettingsRoot() const {
+        return MCAE_SETTINGS_ROOT;
+    }
 
-    MultipleChromatogramAlignmentObject* getMaObject() const;
+    MultipleChromatogramAlignmentObject *getMaObject() const;
     McaEditorWgt *getUI() const;
 
-    virtual void buildStaticToolbar(QToolBar* tb);
+    virtual void buildStaticToolbar(QToolBar *tb);
 
-    virtual void buildStaticMenu(QMenu* menu);
+    virtual void buildStaticMenu(QMenu *menu);
 
     virtual int getRowContentIndent(int rowId) const;
 
@@ -69,10 +72,10 @@ public:
 
     char getReferenceCharAt(int pos) const;
 
-    SequenceObjectContext* getReferenceContext() const;
+    SequenceObjectContext *getReferenceContext() const;
 
 protected slots:
-    void sl_onContextMenuRequested(const QPoint & pos);
+    void sl_onContextMenuRequested(const QPoint &pos);
     void sl_showHideChromatograms(bool show);
 
 private slots:
@@ -83,16 +86,16 @@ private slots:
     void sl_saveChromatogramState();
 
 protected:
-    QWidget* createWidget();
+    QWidget *createWidget();
     void initActions();
 
-    QAction*          showChromatogramsAction;
-    QAction*          showGeneralTabAction;
-    QAction*          showConsensusTabAction;
+    QAction *showChromatogramsAction;
+    QAction *showGeneralTabAction;
+    QAction *showConsensusTabAction;
 
-    QMap<qint64, bool>  chromVisibility;
+    QMap<qint64, bool> chromVisibility;
 
-    SequenceObjectContext*  referenceCtx;
+    SequenceObjectContext *referenceCtx;
 
 private:
     void addAlignmentMenu(QMenu *menu);
@@ -101,6 +104,6 @@ private:
     void addEditMenu(QMenu *menu);
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MCA_EDITOR_H_
+#endif    // _U2_MCA_EDITOR_H_

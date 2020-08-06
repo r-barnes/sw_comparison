@@ -19,44 +19,39 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Algorithm/SecStructPredictTask.h>
 #include "SecStructPredictAlgRegistry.h"
+
 #include <QStringList>
+
+#include <U2Algorithm/SecStructPredictTask.h>
 
 namespace U2 {
 
-SecStructPredictAlgRegistry::SecStructPredictAlgRegistry( QObject* pOwn /* = 0*/ ) : QObject(pOwn)
-{
-
-
+SecStructPredictAlgRegistry::SecStructPredictAlgRegistry(QObject *pOwn /* = 0*/)
+    : QObject(pOwn) {
 }
 
-SecStructPredictAlgRegistry::~SecStructPredictAlgRegistry()
-{
-    foreach( SecStructPredictTaskFactory* factory, algMap.values()) {
+SecStructPredictAlgRegistry::~SecStructPredictAlgRegistry() {
+    foreach (SecStructPredictTaskFactory *factory, algMap.values()) {
         delete factory;
     }
 }
 
-bool SecStructPredictAlgRegistry::registerAlgorithm( SecStructPredictTaskFactory* alg, const QString& algId )
-{
+bool SecStructPredictAlgRegistry::registerAlgorithm(SecStructPredictTaskFactory *alg, const QString &algId) {
     QMutexLocker locker(&mutex);
 
-    if (algMap.contains(algId)){
+    if (algMap.contains(algId)) {
         return false;
     }
     algMap.insert(algId, alg);
     return true;
-
 }
 
-bool SecStructPredictAlgRegistry::hadRegistered( const QString& algId )
-{
+bool SecStructPredictAlgRegistry::hadRegistered(const QString &algId) {
     return algMap.contains(algId);
 }
 
-SecStructPredictTaskFactory* SecStructPredictAlgRegistry::getAlgorithm( const QString& algId )
-{
+SecStructPredictTaskFactory *SecStructPredictAlgRegistry::getAlgorithm(const QString &algId) {
     if (algMap.contains(algId)) {
         return algMap.value(algId);
     } else {
@@ -64,12 +59,8 @@ SecStructPredictTaskFactory* SecStructPredictAlgRegistry::getAlgorithm( const QS
     }
 }
 
-QStringList SecStructPredictAlgRegistry::getAlgNameList()
-{
+QStringList SecStructPredictAlgRegistry::getAlgNameList() {
     return algMap.keys();
 }
 
-
-}
-
-
+}    // namespace U2

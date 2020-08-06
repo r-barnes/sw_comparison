@@ -23,8 +23,9 @@
 #define _U2_COLUMNDATAPARSER_H_
 
 #include <QStringList>
-#include <U2Core/global.h>
+
 #include <U2Core/U2OpStatus.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -37,17 +38,17 @@ public:
     };
     struct Column {
         Column(const QString &name);
-        Column(const QString &name, ColumnType type,
-            const QString defaultValue = "-", bool required = false);
+        Column(const QString &name, ColumnType type, const QString defaultValue = "-", bool required = false);
         QString name;
         ColumnType type;
         QString defaultValue;
         bool required;
 
-        bool operator == (const Column &other) const;
+        bool operator==(const Column &other) const;
     };
     class Iterator {
         friend class ColumnDataParser;
+
     public:
         bool isEnded() const;
         ColumnType currentType() const;
@@ -57,6 +58,7 @@ public:
         double takeDouble(U2OpStatus &os);
         QString getPrevious() const;
         QString look() const;
+
     private:
         Iterator(const QList<Column> &columns, const QStringList &values);
         QString take();
@@ -71,10 +73,10 @@ public:
         QString previous;
     };
 
-ColumnDataParser(const QList<Column> &formatColumns, const QString &separator);
+    ColumnDataParser(const QList<Column> &formatColumns, const QString &separator);
     void init(const QString &headerLine, U2OpStatus &os);
     Iterator parseLine(const QString &line, U2OpStatus &os) const;
-    const QList<Column> & getCurrentColumns() const;
+    const QList<Column> &getCurrentColumns() const;
 
 private:
     bool inited;
@@ -83,6 +85,6 @@ private:
     QList<Column> currentColumns;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_COLUMNDATAPARSER_H_
+#endif    // _U2_COLUMNDATAPARSER_H_

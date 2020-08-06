@@ -19,14 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "CloneObjectTask.h"
+
 #include <QCoreApplication>
 
 #include <U2Core/DocumentModel.h>
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2SafePoints.h>
-
-#include "CloneObjectTask.h"
 
 namespace U2 {
 
@@ -36,21 +36,19 @@ CloneObjectTask::CloneObjectTask(GObject *srcObj, Document *dstDoc, const QStrin
       dstDoc(dstDoc),
       dstDbiRef(NULL != dstDoc ? dstDoc->getDbiRef() : U2DbiRef()),
       dstFolder(dstFolder),
-      dstObj(NULL)
-{
+      dstObj(NULL) {
     CHECK_EXT(NULL != srcObj, setError(tr("Invalid source object")), );
     CHECK_EXT(NULL != dstDoc, setError(tr("Invalid destination document")), );
     setTaskName(getTaskName() + ": " + srcObj->getGObjectName());
     tpm = Progress_Manual;
 }
 
-CloneObjectTask::CloneObjectTask(GObject *srcObj, const U2DbiRef &dstDbiRef, const QString &dstFolder) :
-    Task(tr("Copy object %1").arg(NULL != srcObj ? srcObj->getGObjectName() : "") , TaskFlag_None),
-    srcObj(srcObj),
-    dstDbiRef(dstDbiRef),
-    dstFolder(dstFolder),
-    dstObj(NULL)
-{
+CloneObjectTask::CloneObjectTask(GObject *srcObj, const U2DbiRef &dstDbiRef, const QString &dstFolder)
+    : Task(tr("Copy object %1").arg(NULL != srcObj ? srcObj->getGObjectName() : ""), TaskFlag_None),
+      srcObj(srcObj),
+      dstDbiRef(dstDbiRef),
+      dstFolder(dstFolder),
+      dstObj(NULL) {
     CHECK_EXT(dstDbiRef.isValid(), setError(tr("Invalid destination database reference")), );
     tpm = Progress_Manual;
 }
@@ -73,13 +71,13 @@ void CloneObjectTask::run() {
     dstObj->moveToThread(QCoreApplication::instance()->thread());
 }
 
-GObject * CloneObjectTask::takeResult() {
+GObject *CloneObjectTask::takeResult() {
     GObject *result = dstObj;
     dstObj = NULL;
     return result;
 }
 
-const QString & CloneObjectTask::getFolder() const {
+const QString &CloneObjectTask::getFolder() const {
     return dstFolder;
 }
 
@@ -87,8 +85,8 @@ GObject *CloneObjectTask::getSourceObject() const {
     return srcObj.data();
 }
 
-Document * CloneObjectTask::getDocument() const {
+Document *CloneObjectTask::getDocument() const {
     return dstDoc.data();
 }
 
-} // U2
+}    // namespace U2

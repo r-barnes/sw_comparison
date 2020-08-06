@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "WorkflowRunTask.h"
+
 #include <QCoreApplication>
 
 #include <U2Core/AppContext.h>
@@ -32,34 +34,29 @@
 #include <U2Lang/WorkflowMonitor.h>
 
 #include "WorkflowDebugStatus.h"
-#include "WorkflowRunTask.h"
 
 namespace U2 {
 
 WorkflowAbstractRunner::WorkflowAbstractRunner(const QString &name, TaskFlags flags)
-: CmdlineTask(name, flags)
-{
-
+    : CmdlineTask(name, flags) {
 }
 
-const QList<WorkflowMonitor*> & WorkflowAbstractRunner::getMonitors() const {
+const QList<WorkflowMonitor *> &WorkflowAbstractRunner::getMonitors() const {
     return monitors;
 }
 
 WorkflowAbstractIterationRunner::WorkflowAbstractIterationRunner(const QString &name, TaskFlags flags)
-: Task(name, flags)
-{
-
+    : Task(name, flags) {
 }
 
 /*******************************************
  * WorkflowRunTask
  *******************************************/
-WorkflowRunTask::WorkflowRunTask(const Schema& sh, const QMap<ActorId, ActorId>& remap, WorkflowDebugStatus *debugInfo)
-: WorkflowAbstractRunner(tr("Execute workflow"),
-    TaskFlags(TaskFlag_NoRun) | TaskFlag_ReportingIsSupported | TaskFlag_OnlyNotificationReport), rmap(remap), flows(sh.getFlows())
-{
-    GCOUNTER( cvar, tvar, "WorkflowRunTask" );
+WorkflowRunTask::WorkflowRunTask(const Schema &sh, const QMap<ActorId, ActorId> &remap, WorkflowDebugStatus *debugInfo)
+    : WorkflowAbstractRunner(tr("Execute workflow"),
+                             TaskFlags(TaskFlag_NoRun) | TaskFlag_ReportingIsSupported | TaskFlag_OnlyNotificationReport),
+      rmap(remap), flows(sh.getFlows()) {
+    GCOUNTER(cvar, tvar, "WorkflowRunTask");
     if (NULL == debugInfo) {
         debugInfo = new WorkflowDebugStatus;
     }
@@ -67,7 +64,7 @@ WorkflowRunTask::WorkflowRunTask(const Schema& sh, const QMap<ActorId, ActorId>&
         debugInfo->setParent(this);
     }
 
-    WorkflowIterationRunTask* t = new WorkflowIterationRunTask(sh, debugInfo);
+    WorkflowIterationRunTask *t = new WorkflowIterationRunTask(sh, debugInfo);
     WorkflowMonitor *m = t->getMonitor();
     if (NULL != m) {
         monitors << m;
@@ -90,28 +87,28 @@ inline bool isValidFile(const QString &link, const qint64 &processStartTime) {
     return false;
 }
 
-QList<WorkerState> WorkflowRunTask::getState( Actor* actor) {
+QList<WorkerState> WorkflowRunTask::getState(Actor *actor) {
     QList<WorkerState> ret;
-    foreach(const QPointer<Task> &t, getSubtasks()) {
-        WorkflowIterationRunTask* rt = qobject_cast<WorkflowIterationRunTask*>(t.data());
+    foreach (const QPointer<Task> &t, getSubtasks()) {
+        WorkflowIterationRunTask *rt = qobject_cast<WorkflowIterationRunTask *>(t.data());
         ret << rt->getState(actor->getId());
     }
     return ret;
 }
 
-int WorkflowRunTask::getMsgNum(const Link* l) {
+int WorkflowRunTask::getMsgNum(const Link *l) {
     int ret = 0;
-    foreach(const QPointer<Task> &t, getSubtasks()) {
-        WorkflowIterationRunTask* rt = qobject_cast<WorkflowIterationRunTask*>(t.data());
+    foreach (const QPointer<Task> &t, getSubtasks()) {
+        WorkflowIterationRunTask *rt = qobject_cast<WorkflowIterationRunTask *>(t.data());
         ret += rt->getMsgNum(l);
     }
     return ret;
 }
 
-int WorkflowRunTask::getMsgPassed(const Link* l) {
+int WorkflowRunTask::getMsgPassed(const Link *l) {
     int ret = 0;
-    foreach(const QPointer<Task> &t, getSubtasks()) {
-        ret += qobject_cast<WorkflowIterationRunTask*>(t.data())->getMsgPassed(l);
+    foreach (const QPointer<Task> &t, getSubtasks()) {
+        ret += qobject_cast<WorkflowIterationRunTask *>(t.data())->getMsgPassed(l);
     }
     return ret;
 }
@@ -119,7 +116,7 @@ int WorkflowRunTask::getMsgPassed(const Link* l) {
 QString WorkflowRunTask::generateReport() const {
     QString report;
     foreach (WorkflowMonitor *monitor, getMonitors()) {
-        const QMap<QString, QMultiMap<QString, QString> > workersReports = monitor->getWorkersReports();
+        const QMap<QString, QMultiMap<QString, QString>> workersReports = monitor->getWorkersReports();
         foreach (const QString &worker, workersReports.keys()) {
             const QMultiMap<QString, QString> tasksReports = workersReports[worker];
             QString workerReport;
@@ -141,8 +138,8 @@ QString WorkflowRunTask::getTaskError() const {
         return getError();
     }
 
-    foreach(WorkflowMonitor *monitor, monitors) {
-        foreach(const WorkflowNotification &notification, monitor->getNotifications()) {
+    foreach (WorkflowMonitor *monitor, monitors) {
+        foreach (const WorkflowNotification &notification, monitor->getNotifications()) {
             if (WorkflowNotification::U2_ERROR == notification.type) {
                 return notification.message;
             }
@@ -155,71 +152,63 @@ QString WorkflowRunTask::getTaskError() const {
 * WorkflowIterationRunTask
 *******************************************/
 namespace {
-    const int UPDATE_PROGRESS_INTERVAL = 500;
+const int UPDATE_PROGRESS_INTERVAL = 500;
 }
 
-WorkflowIterationRunTask::WorkflowIterationRunTask(const Schema& sh,
-    WorkflowDebugStatus *initDebugInfo)
+WorkflowIterationRunTask::WorkflowIterationRunTask(const Schema &sh,
+                                                   WorkflowDebugStatus *initDebugInfo)
     : WorkflowAbstractIterationRunner(tr("Workflow run"),
-    (getAdditionalFlags() | TaskFlag_CancelOnSubtaskCancel | TaskFlag_FailOnSubtaskError)),
-    context(NULL), schema(new Schema()), scheduler(NULL), debugInfo(initDebugInfo),
-    nextTickRestoring(false), contextInitialized(false)
-{
-
+                                      (getAdditionalFlags() | TaskFlag_CancelOnSubtaskCancel | TaskFlag_FailOnSubtaskError)),
+      context(NULL), schema(new Schema()), scheduler(NULL), debugInfo(initDebugInfo),
+      nextTickRestoring(false), contextInitialized(false) {
     rmap = HRSchemaSerializer::deepCopy(sh, schema, stateInfo);
     SAFE_POINT_OP(stateInfo, );
 
-    if(schema->getDomain().isEmpty()) {
-        QList<DomainFactory*> factories = WorkflowEnv::getDomainRegistry()->getAllEntries();
+    if (schema->getDomain().isEmpty()) {
+        QList<DomainFactory *> factories = WorkflowEnv::getDomainRegistry()->getAllEntries();
         assert(!factories.isEmpty());
         schema->setDomain(factories.isEmpty() ? "" : factories.at(0)->getId());
     }
-    DomainFactory* df = WorkflowEnv::getDomainRegistry()->getById(schema->getDomain());
+    DomainFactory *df = WorkflowEnv::getDomainRegistry()->getById(schema->getDomain());
     if (!df) {
-        stateInfo.setError(  tr("Unknown domain %1").arg(schema->getDomain()) );
+        stateInfo.setError(tr("Unknown domain %1").arg(schema->getDomain()));
         return;
     }
 
     connect(debugInfo, SIGNAL(si_pauseStateChanged(bool)), SLOT(sl_pauseStateChanged(bool)));
     connect(debugInfo, SIGNAL(si_singleStepIsRequested(const ActorId &)), SLOT(sl_singleStepIsRequested(const ActorId &)));
-    connect(debugInfo, SIGNAL(si_busInvestigationIsRequested(const Workflow::Link *, int)),
-        SLOT(sl_busInvestigationIsRequested(const Workflow::Link *, int)));
-    connect(debugInfo, SIGNAL(si_busCountOfMessagesIsRequested(const Workflow::Link *)),
-        SLOT(sl_busCountOfMessagesRequested(const Workflow::Link *)));
-    connect(debugInfo, SIGNAL(si_convertMessages2Documents(const Workflow::Link *,
-        const QString &, int, const QString &)), SLOT(sl_convertMessages2Documents(
-        const Workflow::Link *, const QString &, int, const QString &)));
+    connect(debugInfo, SIGNAL(si_busInvestigationIsRequested(const Workflow::Link *, int)), SLOT(sl_busInvestigationIsRequested(const Workflow::Link *, int)));
+    connect(debugInfo, SIGNAL(si_busCountOfMessagesIsRequested(const Workflow::Link *)), SLOT(sl_busCountOfMessagesRequested(const Workflow::Link *)));
+    connect(debugInfo, SIGNAL(si_convertMessages2Documents(const Workflow::Link *, const QString &, int, const QString &)), SLOT(sl_convertMessages2Documents(const Workflow::Link *, const QString &, int, const QString &)));
 
     WorkflowMonitor *m = new WorkflowMonitor(this, schema);
     context = new WorkflowContext(schema->getProcesses(), m);
 
-    QTimer * timer = new QTimer(this);
+    QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), SIGNAL(si_updateProducers()));
     timer->start(UPDATE_PROGRESS_INTERVAL);
 }
 
 TaskFlags WorkflowIterationRunTask::getAdditionalFlags() {
-    TaskFlags result = (AppContext::isGUIMode())
-        ? (TaskFlags(TaskFlag_RunMessageLoopOnly) | TaskFlag_RunBeforeSubtasksFinished)
-        : TaskFlag_NoRun;
+    TaskFlags result = (AppContext::isGUIMode()) ? (TaskFlags(TaskFlag_RunMessageLoopOnly) | TaskFlag_RunBeforeSubtasksFinished) : TaskFlag_NoRun;
     return result;
 }
 
 WorkflowIterationRunTask::~WorkflowIterationRunTask() {
     lmap.clear();
-    DomainFactory* df = WorkflowEnv::getDomainRegistry()->getById(schema->getDomain());
+    DomainFactory *df = WorkflowEnv::getDomainRegistry()->getById(schema->getDomain());
     if (df) {
         df->destroy(scheduler, schema);
     }
     scheduler = NULL;
-// make all signals to be delivered to GUI before the scheme is destroyed
+    // make all signals to be delivered to GUI before the scheme is destroyed
     QCoreApplication::processEvents();
     delete schema;
     delete context;
 }
 
 void WorkflowIterationRunTask::prepare() {
-    if( hasError() || isCanceled() ) {
+    if (hasError() || isCanceled()) {
         return;
     }
 
@@ -228,20 +217,22 @@ void WorkflowIterationRunTask::prepare() {
         stateInfo.setError(tr("Failed to preprocess the workflow. Some of included files are broken"));
         return;
     }
-    DomainFactory* df = WorkflowEnv::getDomainRegistry()->getById(schema->getDomain());
-    assert( df != NULL ); // checked in constructor
-    foreach(Actor* a, schema->getProcesses()) {
-        Worker* w = df->createWorker(a);
+    DomainFactory *df = WorkflowEnv::getDomainRegistry()->getById(schema->getDomain());
+    assert(df != NULL);    // checked in constructor
+    foreach (Actor *a, schema->getProcesses()) {
+        Worker *w = df->createWorker(a);
         if (!w) {
-            stateInfo.setError( tr("Failed to create worker %1 %2 in domain %3")\
-                .arg(a->getProto()->getId()).arg(a->getId()).arg(schema->getDomain()) );
+            stateInfo.setError(tr("Failed to create worker %1 %2 in domain %3")
+                                   .arg(a->getProto()->getId())
+                                   .arg(a->getId())
+                                   .arg(schema->getDomain()));
             return;
         }
     }
-    foreach(Link* l, schema->getFlows()) {
-        CommunicationChannel* cc = df->createConnection(l);
+    foreach (Link *l, schema->getFlows()) {
+        CommunicationChannel *cc = df->createConnection(l);
         if (!cc) {
-            stateInfo.setError(  tr("Failed to create connection %1 %2 in domain %3") ); //fixme
+            stateInfo.setError(tr("Failed to create connection %1 %2 in domain %3"));    //fixme
             return;
         }
         QStringList lst;
@@ -261,15 +252,15 @@ void WorkflowIterationRunTask::prepare() {
     debugInfo->setContext(context);
     scheduler = df->createScheduler(schema);
     if (!scheduler) {
-        stateInfo.setError(  tr("Failed to create scheduler in domain %1").arg(df->getDisplayName()) );
+        stateInfo.setError(tr("Failed to create scheduler in domain %1").arg(df->getDisplayName()));
         return;
     }
     scheduler->setContext(context);
     scheduler->init();
     scheduler->setDebugInfo(debugInfo);
     context->getMonitor()->start();
-    while(scheduler->isReady() && !isCanceled()) {
-        Task* t = scheduler->tick();
+    while (scheduler->isReady() && !isCanceled()) {
+        Task *t = scheduler->tick();
         if (t) {
             addSubTask(t);
             break;
@@ -277,16 +268,16 @@ void WorkflowIterationRunTask::prepare() {
     }
 }
 
-QList<Task*> WorkflowIterationRunTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> tasks;
+QList<Task *> WorkflowIterationRunTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> tasks;
     // handle the situation when pause signal was not delivered to the current thread
-    while(debugInfo->isPaused() && !isCanceled()) {
+    while (debugInfo->isPaused() && !isCanceled()) {
         QCoreApplication::processEvents();
     }
-    if(scheduler->isReady() && nextTickRestoring) {
+    if (scheduler->isReady() && nextTickRestoring) {
         Task *replayingTask = scheduler->replayLastWorkerTick();
         nextTickRestoring = false;
-        if(NULL != replayingTask) {
+        if (NULL != replayingTask) {
             tasks << replayingTask;
             emit si_ticked();
             return tasks;
@@ -299,8 +290,8 @@ QList<Task*> WorkflowIterationRunTask::onSubTaskFinished(Task* subTask) {
     if (subTask->hasWarning()) {
         getMonitor()->addTaskWarning(subTask);
     }
-    while(scheduler->isReady() && !isCanceled()) {
-        Task* t = scheduler->tick();
+    while (scheduler->isReady() && !isCanceled()) {
+        Task *t = scheduler->tick();
         if (t) {
             tasks << t;
             break;
@@ -319,7 +310,7 @@ Task::ReportResult WorkflowIterationRunTask::report() {
     if (scheduler) {
         scheduler->cleanup();
         if (!scheduler->isDone()) {
-            if(!hasError() && !isCanceled()) {
+            if (!hasError() && !isCanceled()) {
                 setError(tr("No workers are ready, while not all workers are done. Workflow is broken?"));
                 algoLog.error(stateInfo.getError());
             }
@@ -327,8 +318,8 @@ Task::ReportResult WorkflowIterationRunTask::report() {
     }
 
     // add unregistered output files
-    qint64 startTimeSec = getTimeInfo().startTime/1000000;
-    foreach(Actor *a, schema->getProcesses()) {
+    qint64 startTimeSec = getTimeInfo().startTime / 1000000;
+    foreach (Actor *a, schema->getProcesses()) {
         LocalWorkflow::BaseWorker *bw = a->castPeer<LocalWorkflow::BaseWorker>();
         QStringList urls = bw->getOutputFiles();
         foreach (const QString &url, urls) {
@@ -343,17 +334,17 @@ Task::ReportResult WorkflowIterationRunTask::report() {
     return ReportResult_Finished;
 }
 
-WorkerState WorkflowIterationRunTask::getState(const ActorId& id)
-{
+WorkerState WorkflowIterationRunTask::getState(const ActorId &id) {
     if (scheduler) {
         const WorkerState currentState = scheduler->getWorkerState(rmap.value(id));
         return (debugInfo->isPaused() && Workflow::WorkerRunning == currentState) ?
-            Workflow::WorkerPaused : currentState;
+                   Workflow::WorkerPaused :
+                   currentState;
     }
     return WorkerWaiting;
 }
 
-static QString getKey(const Link * l) {
+static QString getKey(const Link *l) {
     QStringList lst;
     lst << (l->source()->owner()->getId());
     lst << (l->source()->getId());
@@ -368,32 +359,32 @@ inline static bool isSourceActor(const QString &actor, const QString &key) {
     return lst.first() == actor;
 }
 
-WorkflowMonitor * WorkflowIterationRunTask::getMonitor() const {
+WorkflowMonitor *WorkflowIterationRunTask::getMonitor() const {
     CHECK(NULL != context, NULL);
     return context->getMonitor();
 }
 
 int WorkflowIterationRunTask::getMsgNum(const Link *l) {
-    CommunicationChannel* cc = lmap.value(getKey(l));
+    CommunicationChannel *cc = lmap.value(getKey(l));
     if (cc) {
         return cc->hasMessage();
     }
     return 0;
 }
 
-int WorkflowIterationRunTask::getMsgPassed(const Link* l) {
-    CommunicationChannel * cc = lmap.value(getKey(l));
-    if(cc != NULL) {
+int WorkflowIterationRunTask::getMsgPassed(const Link *l) {
+    CommunicationChannel *cc = lmap.value(getKey(l));
+    if (cc != NULL) {
         return cc->takenMessages();
     }
     return 0;
 }
 
-QList<CommunicationChannel*> WorkflowIterationRunTask::getActorLinks(const QString &actor) {
-    QList<CommunicationChannel*> result;
+QList<CommunicationChannel *> WorkflowIterationRunTask::getActorLinks(const QString &actor) {
+    QList<CommunicationChannel *> result;
 
-    QMap<QString, CommunicationChannel*>::ConstIterator i = lmap.constBegin();
-    for (; i!= lmap.constEnd(); i++) {
+    QMap<QString, CommunicationChannel *>::ConstIterator i = lmap.constBegin();
+    for (; i != lmap.constEnd(); i++) {
         if (isSourceActor(actor, i.key())) {
             result << i.value();
         }
@@ -424,17 +415,16 @@ void WorkflowIterationRunTask::sl_pauseStateChanged(bool isPaused) {
     }
 }
 
-void WorkflowIterationRunTask::sl_busInvestigationIsRequested( const Workflow::Link *bus,
-    int messageNumber )
-{
-    CommunicationChannel *channel = lmap.value( getKey( bus ) );
-    if ( NULL != channel && debugInfo->isPaused( ) ) {
-        QQueue<Message> messages = channel->getMessages( messageNumber, messageNumber );
-        WorkflowDebugMessageParser *parser = debugInfo->getMessageParser( );
-        SAFE_POINT( NULL != parser, "Invalid debug message parser!", );
-        parser->setSourceData( messages );
-        WorkflowInvestigationData data = parser->getAllMessageValues( );
-        debugInfo->respondToInvestigator( data, bus );
+void WorkflowIterationRunTask::sl_busInvestigationIsRequested(const Workflow::Link *bus,
+                                                              int messageNumber) {
+    CommunicationChannel *channel = lmap.value(getKey(bus));
+    if (NULL != channel && debugInfo->isPaused()) {
+        QQueue<Message> messages = channel->getMessages(messageNumber, messageNumber);
+        WorkflowDebugMessageParser *parser = debugInfo->getMessageParser();
+        SAFE_POINT(NULL != parser, "Invalid debug message parser!", );
+        parser->setSourceData(messages);
+        WorkflowInvestigationData data = parser->getAllMessageValues();
+        debugInfo->respondToInvestigator(data, bus);
     }
 }
 
@@ -443,24 +433,25 @@ void WorkflowIterationRunTask::sl_busCountOfMessagesRequested(const Workflow::Li
 }
 
 void WorkflowIterationRunTask::sl_singleStepIsRequested(const ActorId &actor) {
-    if(debugInfo->isPaused()) {
+    if (debugInfo->isPaused()) {
         scheduler->makeOneTick(actor);
     }
 }
 
-void WorkflowIterationRunTask::sl_convertMessages2Documents( const Workflow::Link *bus,
-    const QString &messageType, int messageNumber, const QString &schemeName )
-{
-    CommunicationChannel *channel = lmap.value( getKey( bus ) );
-    if ( NULL != channel && debugInfo->isPaused( ) ) {
-        QQueue<Message> messages = channel->getMessages( messageNumber, messageNumber );
-        if ( !messages.isEmpty( ) ) {
-            WorkflowDebugMessageParser *parser = debugInfo->getMessageParser( );
-            SAFE_POINT( NULL != parser, "Invalid debug message parser!", );
-            parser->setSourceData( messages );
-            parser->convertMessagesToDocuments( messageType, schemeName, messageNumber );
+void WorkflowIterationRunTask::sl_convertMessages2Documents(const Workflow::Link *bus,
+                                                            const QString &messageType,
+                                                            int messageNumber,
+                                                            const QString &schemeName) {
+    CommunicationChannel *channel = lmap.value(getKey(bus));
+    if (NULL != channel && debugInfo->isPaused()) {
+        QQueue<Message> messages = channel->getMessages(messageNumber, messageNumber);
+        if (!messages.isEmpty()) {
+            WorkflowDebugMessageParser *parser = debugInfo->getMessageParser();
+            SAFE_POINT(NULL != parser, "Invalid debug message parser!", );
+            parser->setSourceData(messages);
+            parser->convertMessagesToDocuments(messageType, schemeName, messageNumber);
         }
     }
 }
 
-}//namespace
+}    // namespace U2

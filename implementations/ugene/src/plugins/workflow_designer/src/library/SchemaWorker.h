@@ -43,20 +43,25 @@ public:
 
 class SchemaWorkerFactory : public DomainFactory {
 public:
-    SchemaWorkerFactory(QString name) : DomainFactory(name) {}
+    SchemaWorkerFactory(QString name)
+        : DomainFactory(name) {
+    }
     static bool init(Schema *schema, const QString &name, const QString &actorFilePath);
-    virtual Worker* createWorker(Actor* a) {return new SchemaWorker(a);}
+    virtual Worker *createWorker(Actor *a) {
+        return new SchemaWorker(a);
+    }
 };
 
 class SchemaWorkerPrompter : public PrompterBase<SchemaWorkerPrompter> {
     Q_OBJECT
 public:
-    SchemaWorkerPrompter(Actor *p = NULL): PrompterBase<SchemaWorkerPrompter>(p) {}
+    SchemaWorkerPrompter(Actor *p = NULL)
+        : PrompterBase<SchemaWorkerPrompter>(p) {
+    }
     QString composeRichDoc();
 };
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-
-#endif // _SCHEMA_WORKER_H_
+#endif    // _SCHEMA_WORKER_H_

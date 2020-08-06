@@ -39,7 +39,7 @@ public:
     MsaHighlightingScheme(QObject *parent, const MsaHighlightingSchemeFactory *factory, MultipleAlignmentObject *maObj);
 
     virtual void process(const char refChar, char &seqChar, QColor &color, bool &highlight, int refCharColumn, int refCharRow) const;
-    const MsaHighlightingSchemeFactory * getFactory() const;
+    const MsaHighlightingSchemeFactory *getFactory() const;
 
     void setUseDots(bool use);
     bool getUseDots() const;
@@ -67,22 +67,22 @@ protected:
 class U2ALGORITHM_EXPORT MsaHighlightingSchemeFactory : public QObject {
     Q_OBJECT
 public:
-    MsaHighlightingSchemeFactory(QObject *parent, const QString &id, const QString &name, const AlphabetFlags &supportedAlphabets,
-                                 bool refFree = false, bool needThreshold = false);
+    MsaHighlightingSchemeFactory(QObject *parent, const QString &id, const QString &name, const AlphabetFlags &supportedAlphabets, bool refFree = false, bool needThreshold = false);
 
-    virtual MsaHighlightingScheme * create(QObject *parent, MultipleAlignmentObject *maObj) const = 0;
+    virtual MsaHighlightingScheme *create(QObject *parent, MultipleAlignmentObject *maObj) const = 0;
 
-    const QString & getId() const;
-    const QString& getName() const;
+    const QString &getId() const;
+    const QString &getName() const;
     bool isRefFree() const;
     bool isNeedThreshold() const;
     bool isAlphabetTypeSupported(DNAAlphabetType alphabetType) const;
-    const AlphabetFlags& getSupportedAlphabets() const;
+    const AlphabetFlags &getSupportedAlphabets() const;
+
 private:
-    QString         id;
-    QString         name;
-    bool            refFree;
-    bool            needThreshold;
+    QString id;
+    QString name;
+    bool refFree;
+    bool needThreshold;
     AlphabetFlags supportedAlphabets;
 };
 
@@ -92,14 +92,15 @@ public:
     MsaHighlightingSchemeRegistry();
     ~MsaHighlightingSchemeRegistry();
 
-    MsaHighlightingSchemeFactory * getSchemeFactoryById(const QString &id) const;
+    MsaHighlightingSchemeFactory *getSchemeFactoryById(const QString &id) const;
     MsaHighlightingSchemeFactory *getEmptySchemeFactory() const;
     QList<MsaHighlightingSchemeFactory *> getAllSchemes(DNAAlphabetType alphabetType) const;
-    QMap<AlphabetFlags, QList<MsaHighlightingSchemeFactory*> > getAllSchemesGrouped() const;
+    QMap<AlphabetFlags, QList<MsaHighlightingSchemeFactory *>> getAllSchemesGrouped() const;
+
 private:
     QList<MsaHighlightingSchemeFactory *> schemes;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MSA_HIGHLIGHTING_SCHEME_H_
+#endif    // _U2_MSA_HIGHLIGHTING_SCHEME_H_

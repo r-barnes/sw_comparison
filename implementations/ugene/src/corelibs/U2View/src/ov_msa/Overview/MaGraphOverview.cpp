@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "MaGraphOverview.h"
+
 #include <QMouseEvent>
 #include <QPainter>
 
@@ -32,11 +34,10 @@
 #include <U2View/MSAEditor.h>
 #include <U2View/MSAEditorConsensusArea.h>
 #include <U2View/MSAEditorConsensusCache.h>
-#include <U2View/MaEditorNameList.h>
 #include <U2View/MSAEditorSequenceArea.h>
+#include <U2View/MaEditorNameList.h>
 
 #include "MaGraphCalculationTask.h"
-#include "MaGraphOverview.h"
 #include "ov_msa/helpers/ScrollController.h"
 
 namespace U2 {
@@ -47,8 +48,7 @@ MaGraphOverview::MaGraphOverview(MaEditorWgt *ui)
       isBlocked(false),
       lastDrawnVersion(-1),
       method(Strict),
-      graphCalculationTask(NULL)
-{
+      graphCalculationTask(NULL) {
     setFixedHeight(FIXED_HEIGHT);
 
     displaySettings = new MaGraphOverviewDisplaySettings();
@@ -56,7 +56,7 @@ MaGraphOverview::MaGraphOverview(MaEditorWgt *ui)
     Settings *s = AppContext::getSettings();
     CHECK(s != NULL, );
     if (s->contains(MSA_GRAPH_OVERVIEW_COLOR_KEY)) {
-        displaySettings->color = s->getValue(MSA_GRAPH_OVERVIEW_COLOR_KEY).value<QColor>( );
+        displaySettings->color = s->getValue(MSA_GRAPH_OVERVIEW_COLOR_KEY).value<QColor>();
     }
 
     if (s->contains(MSA_GRAPH_OVERVIEW_TYPE_KEY)) {
@@ -67,16 +67,12 @@ MaGraphOverview::MaGraphOverview(MaEditorWgt *ui)
         displaySettings->orientation = (MaGraphOverviewDisplaySettings::OrientationMode)s->getValue(MSA_GRAPH_OVERVIEW_ORIENTAION_KEY).toInt();
     }
 
-    connect(&graphCalculationTaskRunner,    SIGNAL(si_finished()),
-                                            SLOT(sl_redraw()));
+    connect(&graphCalculationTaskRunner, SIGNAL(si_finished()), SLOT(sl_redraw()));
 
-    connect(editor->getMaObject(), SIGNAL(si_alignmentChanged(MultipleAlignment,MaModificationInfo)),
-                                    SLOT(sl_drawGraph()));
+    connect(editor->getMaObject(), SIGNAL(si_alignmentChanged(MultipleAlignment, MaModificationInfo)), SLOT(sl_drawGraph()));
 
-    connect(ui, SIGNAL(si_startMaChanging()),
-                SLOT(sl_blockRendering()));
-    connect(ui, SIGNAL(si_stopMaChanging(bool)),
-                SLOT(sl_unblockRendering(bool)));
+    connect(ui, SIGNAL(si_startMaChanging()), SLOT(sl_blockRendering()));
+    connect(ui, SIGNAL(si_stopMaChanging(bool)), SLOT(sl_unblockRendering(bool)));
 
     sl_drawGraph();
 }
@@ -94,7 +90,6 @@ void MaGraphOverview::sl_redraw() {
 }
 
 void MaGraphOverview::paintEvent(QPaintEvent *e) {
-
     QPainter p(this);
     if (!isValid()) {
         GUIUtils::showMessage(this, p, tr("Multiple sequence alignment is too big. Overview is unavailable."));
@@ -174,33 +169,37 @@ void MaGraphOverview::sl_drawGraph() {
     switch (method) {
     case Strict:
         graphCalculationTask = new MaConsensusOverviewCalculationTask(editor->getMaObject(),
-                                                                       width(), FIXED_HEIGHT);
+                                                                      width(),
+                                                                      FIXED_HEIGHT);
         break;
     case Gaps:
         graphCalculationTask = new MaGapOverviewCalculationTask(editor->getMaObject(),
-                                                                 width(), FIXED_HEIGHT);
+                                                                width(),
+                                                                FIXED_HEIGHT);
         break;
     case Clustal:
         graphCalculationTask = new MaClustalOverviewCalculationTask(editor->getMaObject(),
-                                                                     width(), FIXED_HEIGHT);
+                                                                    width(),
+                                                                    FIXED_HEIGHT);
         break;
     case Highlighting:
-        MsaHighlightingScheme* hScheme = sequenceArea->getCurrentHighlightingScheme();
+        MsaHighlightingScheme *hScheme = sequenceArea->getCurrentHighlightingScheme();
         QString hSchemeId = hScheme->getFactory()->getId();
 
-        MsaColorScheme* cScheme = sequenceArea->getCurrentColorScheme();
+        MsaColorScheme *cScheme = sequenceArea->getCurrentColorScheme();
         QString cSchemeId = cScheme->getFactory()->getId();
 
         graphCalculationTask = new MaHighlightingOverviewCalculationTask(editor,
-                                                                          cSchemeId,
-                                                                          hSchemeId,
-                                                                          width(), FIXED_HEIGHT);
+                                                                         cSchemeId,
+                                                                         hSchemeId,
+                                                                         width(),
+                                                                         FIXED_HEIGHT);
         break;
     }
 
     connect(graphCalculationTask, SIGNAL(si_calculationStarted()), SLOT(sl_startRendering()));
     connect(graphCalculationTask, SIGNAL(si_calculationStoped()), SLOT(sl_stopRendering()));
-    graphCalculationTaskRunner.run( graphCalculationTask );
+    graphCalculationTaskRunner.run(graphCalculationTask);
 
     sl_redraw();
 }
@@ -275,14 +274,13 @@ void MaGraphOverview::sl_unblockRendering(bool update) {
         this->update();
     }
 
-    connect(editor->getMaObject(), SIGNAL(si_alignmentChanged(MultipleAlignment,MaModificationInfo)),
-            SLOT(sl_drawGraph()));
+    connect(editor->getMaObject(), SIGNAL(si_alignmentChanged(MultipleAlignment, MaModificationInfo)), SLOT(sl_drawGraph()));
 }
 
 void MaGraphOverview::drawOverview(QPainter &p) {
     if (displaySettings->orientation == MaGraphOverviewDisplaySettings::FromTopToBottom) {
         // transform coordinate system
-        p.translate( 0, height());
+        p.translate(0, height());
         p.scale(1, -1);
     }
 
@@ -308,12 +306,12 @@ void MaGraphOverview::drawOverview(QPainter &p) {
 
     // area graph
     if (displaySettings->type == MaGraphOverviewDisplaySettings::Area) {
-        p.drawPolygon( resultPolygon );
+        p.drawPolygon(resultPolygon);
     }
 
     // line graph
     if (displaySettings->type == MaGraphOverviewDisplaySettings::Line) {
-        p.drawPolyline( resultPolygon );
+        p.drawPolyline(resultPolygon);
     }
 
     // hystogram
@@ -328,23 +326,19 @@ void MaGraphOverview::drawOverview(QPainter &p) {
                 nextPoint = QPointF(width(), point.y());
             }
 
-            p.drawRect( point.x(), point.y(),
-                        static_cast<int>(nextPoint.x() - point.x()) - 2 * (width() > 2 * size),
-                        height() - point.y());
+            p.drawRect(point.x(), point.y(), static_cast<int>(nextPoint.x() - point.x()) - 2 * (width() > 2 * size), height() - point.y());
         }
     }
 
     // gray frame
     p.setPen(Qt::gray);
     p.setBrush(Qt::transparent);
-    p.drawRect( rect().adjusted( 0, (displaySettings->orientation == MaGraphOverviewDisplaySettings::FromTopToBottom),
-                                 -1, -1 * (displaySettings->orientation == MaGraphOverviewDisplaySettings::FromBottomToTop)));
-
+    p.drawRect(rect().adjusted(0, (displaySettings->orientation == MaGraphOverviewDisplaySettings::FromTopToBottom), -1, -1 * (displaySettings->orientation == MaGraphOverviewDisplaySettings::FromBottomToTop)));
 }
 
 void MaGraphOverview::moveVisibleRange(QPoint _pos) {
     QRect newVisibleRange(cachedVisibleRange);
-    const QPoint newPos(qBound((cachedVisibleRange.width() - 1) / 2, _pos.x(), width() - (cachedVisibleRange.width() - 1 ) / 2), height() / 2);
+    const QPoint newPos(qBound((cachedVisibleRange.width() - 1) / 2, _pos.x(), width() - (cachedVisibleRange.width() - 1) / 2), height() / 2);
 
     newVisibleRange.moveCenter(newPos);
 
@@ -354,4 +348,4 @@ void MaGraphOverview::moveVisibleRange(QPoint _pos) {
     update();
 }
 
-} // namespace
+}    // namespace U2

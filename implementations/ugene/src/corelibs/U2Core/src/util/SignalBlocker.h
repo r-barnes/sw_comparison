@@ -28,14 +28,14 @@ namespace U2 {
 
 class U2CORE_EXPORT SignalBlocker {
 public:
-    SignalBlocker(QObject * const object);
+    SignalBlocker(QObject *const object);
     ~SignalBlocker();
 
 private:
-    QObject * const object;
+    QObject *const object;
     bool previousState;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_SIGNAL_BLOCKER_H_
+#endif    // _U2_SIGNAL_BLOCKER_H_

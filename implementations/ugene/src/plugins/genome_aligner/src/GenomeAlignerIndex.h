@@ -22,12 +22,15 @@
 #ifndef _U2_GENOME_ALIGNER_INDEX_H_
 #define _U2_GENOME_ALIGNER_INDEX_H_
 
-#include <U2Core/Task.h>
-#include <U2Algorithm/BitsTable.h>
 #include <QFile>
+
+#include <U2Algorithm/BitsTable.h>
+
+#include <U2Core/Task.h>
+
+#include "GenomeAlignerFindTask.h"
 #include "GenomeAlignerIndexPart.h"
 #include "GenomeAlignerSettingsWidget.h"
-#include "GenomeAlignerFindTask.h"
 
 namespace U2 {
 
@@ -39,6 +42,7 @@ class GenomeAlignerIndex {
     friend class GenomeAlignerIndexTask;
     friend class GenomeAlignerSettingsWidget;
     friend class GenomeAlignerFindTask;
+
 public:
     GenomeAlignerIndex();
     ~GenomeAlignerIndex();
@@ -50,35 +54,49 @@ public:
 #ifdef OPENCL_SUPPORT
     BinarySearchResult *bitMaskBinarySearchOpenCL(const BMType *bitValues, int size, const int *windowSizes);
 #endif
-    const QString& getFirstSequenceObjectName() const {return firstSequenceObjectName;}
-    int getNumberOfSequencesInIndex() const {return objCount;}
-    int getPartCount() const {return indexPart.partCount;}
-    SAType getSArraySize() const {return indexPart.saLengths[currentPart];}
-    SAType getSeqLength() const {return seqLength;}
-    IndexPart& getLoadedPart() { return indexPart; }
+    const QString &getFirstSequenceObjectName() const {
+        return firstSequenceObjectName;
+    }
+    int getNumberOfSequencesInIndex() const {
+        return objCount;
+    }
+    int getPartCount() const {
+        return indexPart.partCount;
+    }
+    SAType getSArraySize() const {
+        return indexPart.saLengths[currentPart];
+    }
+    SAType getSeqLength() const {
+        return seqLength;
+    }
+    IndexPart &getLoadedPart() {
+        return indexPart;
+    }
 
-    void setBaseFileName(const QString& baseName) {baseFileName = baseName;}
+    void setBaseFileName(const QString &baseName) {
+        baseFileName = baseName;
+    }
 
 private:
-    quint32         seqLength;      //reference sequence's length
-    int             seqPartSize;    //in Mb
-    int             w;              //window size
-    QString         baseFileName;   //base of the file name
-    quint32         *memIdx;
-    quint64         *memBM;
-    BitsTable       bt;
-    const quint32*  bitTable;
-    int             bitCharLen;
-    BMType          bitFilter;
-    int             partsInMemCache;
-    quint32         *objLens;
-    int             objCount;
-    QString         firstSequenceObjectName;
-    QString         sequenceObjectName;
-    int             currentPart;
-    IndexPart       indexPart;
-    bool            build;
-    char            unknownChar;
+    quint32 seqLength;    //reference sequence's length
+    int seqPartSize;    //in Mb
+    int w;    //window size
+    QString baseFileName;    //base of the file name
+    quint32 *memIdx;
+    quint64 *memBM;
+    BitsTable bt;
+    const quint32 *bitTable;
+    int bitCharLen;
+    BMType bitFilter;
+    int partsInMemCache;
+    quint32 *objLens;
+    int objCount;
+    QString firstSequenceObjectName;
+    QString sequenceObjectName;
+    int currentPart;
+    IndexPart indexPart;
+    bool build;
+    char unknownChar;
 
     void serialize(const QString &refFileName);
     bool deserialize(QByteArray &error);
@@ -92,8 +110,8 @@ private:
     static const QString PARAMETERS;
 
     /*build*/
-    SAType          *sArray;
-    BMType          *bitMask;
+    SAType *sArray;
+    BMType *bitMask;
     void buildPart(SAType start, SAType length, SAType &arrLen);
     void initSArray(SAType start, SAType length, SAType &arrLen);
     void sort(BMType *x, int off, int len);
@@ -110,6 +128,6 @@ public:
     static const int overlapSize;
 };
 
-} //U2
+}    // namespace U2
 
 #endif

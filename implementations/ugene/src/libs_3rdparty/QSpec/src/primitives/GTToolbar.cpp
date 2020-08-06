@@ -38,20 +38,24 @@ namespace HI {
 
 #define GT_METHOD_NAME "getWidgetForAction"
     QWidget* GTToolbar::getWidgetForAction(GUITestOpStatus &os, const QToolBar *toolbar, QAction *action) {
-        QString toolbarTypeCheck = "QToolBar";
-        GT_CHECK_RESULT((toolbar != NULL) && (0 == toolbarTypeCheck.compare(toolbar->metaObject()->className())), "Toolbar not found", NULL); //the found widget is not a qtoolbar or doesn't exist
+        QString toolbarClassName = "QToolBar";
+        GT_CHECK_RESULT((toolbar != nullptr) && (toolbarClassName.compare(toolbar->metaObject()->className()) == 0), "Toolbar not found", nullptr); //the found widget is not a qtoolbar or doesn't exist
+
         QWidget *widget = toolbar->widgetForAction(action);
-        GT_CHECK_RESULT(widget != NULL, "No widget for action", NULL);
+        GT_CHECK_RESULT(widget != nullptr, "No widget for action", nullptr);
+
         return widget;
     }
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "getWidgetForActionName"
     QWidget* GTToolbar::getWidgetForActionName(GUITestOpStatus &os, const QToolBar *toolbar, const QString &actionName) {
-        QString toolbarTypeCheck = "QToolBar";
-        GT_CHECK_RESULT((toolbar != NULL) && (0 == toolbarTypeCheck.compare(toolbar->metaObject()->className())), "Toolbar not found", NULL); //the found widget is not a qtoolbar or doesn't exist
+        QString toolbarClassName = "QToolBar";
+        GT_CHECK_RESULT((toolbar != nullptr) && (toolbarClassName.compare(toolbar->metaObject()->className()) == 0), "Toolbar not found", nullptr); //the found widget is not a qtoolbar or doesn't exist
+
         QAction *action = GTToolbar::getToolbarAction(os, actionName, toolbar);
-        GT_CHECK_RESULT(action != NULL, "No such action:" + actionName, NULL);
+        GT_CHECK_RESULT(action != nullptr, "No such action:" + actionName, nullptr);
+
         return GTToolbar::getWidgetForAction(os, toolbar, action);
     }
 #undef GT_METHOD_NAME

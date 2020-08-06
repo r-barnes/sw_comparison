@@ -26,7 +26,6 @@
 #include <primitives/GTAction.h>
 #include <primitives/GTMenu.h>
 #include <primitives/GTTreeWidget.h>
-#include <primitives/GTTreeWidget.h>
 #include <primitives/GTWidget.h>
 #include <primitives/PopupChooser.h>
 #include <system/GTClipboard.h>
@@ -47,424 +46,409 @@
 #include "runnables/ugene/plugins_3rdparty/kalign/KalignDialogFiller.h"
 #include "runnables/ugene/plugins_3rdparty/umuscle/MuscleDialogFiller.h"
 
-namespace U2{
+namespace U2 {
 
-namespace GUITest_common_scenarios_undo_redo{
+namespace GUITest_common_scenarios_undo_redo {
 using namespace HI;
 
-GUI_TEST_CLASS_DEFINITION(test_0001){//DIFFERENCE: lock document is checked
-//Check Undo/Redo functional
-//1. Open document COI.aln
+GUI_TEST_CLASS_DEFINITION(test_0001) {    //DIFFERENCE: lock document is checked
+    //Check Undo/Redo functional
+    //1. Open document COI.aln
     GTFileDialog::openFile(os, dataDir + "samples/CLUSTALW", "COI.aln");
     GTUtilsTaskTreeView::waitTaskFinished(os);
-//2. Insert seversl spaces somewhere
-    GTUtilsMSAEditorSequenceArea::click(os, QPoint(0,0));
-    for(int i=0; i<6; i++){
-        GTKeyboardDriver::keyClick( Qt::Key_Space);
+    //2. Insert seversl spaces somewhere
+    GTUtilsMSAEditorSequenceArea::click(os, QPoint(0, 0));
+    for (int i = 0; i < 6; i++) {
+        GTKeyboardDriver::keyClick(Qt::Key_Space);
         GTGlobals::sleep(200);
     }
 
-    QAbstractButton *undo= GTAction::button(os,"msa_action_undo");
-    QAbstractButton *redo= GTAction::button(os,"msa_action_redo");
-//3. Undo this
-    for (int i=0; i<3; i++){
-        GTWidget::click(os,undo);
+    QAbstractButton *undo = GTAction::button(os, "msa_action_undo");
+    QAbstractButton *redo = GTAction::button(os, "msa_action_redo");
+    //3. Undo this
+    for (int i = 0; i < 3; i++) {
+        GTWidget::click(os, undo);
         GTGlobals::sleep(200);
     }
-//4. lock document
-    GTMouseDriver::moveTo(GTUtilsProjectTreeView::getItemCenter(os,"COI.aln"));
-    GTUtilsDialog::waitForDialog(os, new PopupChooser(os,QStringList() << ACTION_DOCUMENT__LOCK));
+    //4. lock document
+    GTMouseDriver::moveTo(GTUtilsProjectTreeView::getItemCenter(os, "COI.aln"));
+    GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << ACTION_DOCUMENT__LOCK));
     GTMouseDriver::click(Qt::RightButton);
 
-//Expected state: Undo and redo buttons are disabled
-    CHECK_SET_ERR(!undo->isEnabled(),"Undo button is enebled after locking document");
-    CHECK_SET_ERR(!redo->isEnabled(),"Redo button is enebled after locking document");
+    //Expected state: Undo and redo buttons are disabled
+    CHECK_SET_ERR(!undo->isEnabled(), "Undo button is enebled after locking document");
+    CHECK_SET_ERR(!redo->isEnabled(), "Redo button is enebled after locking document");
 
-//5. Unlock document
-    GTMouseDriver::moveTo(GTUtilsProjectTreeView::getItemCenter(os,"COI.aln"));
-    GTUtilsDialog::waitForDialog(os, new PopupChooser(os,QStringList() << ACTION_DOCUMENT__UNLOCK));
+    //5. Unlock document
+    GTMouseDriver::moveTo(GTUtilsProjectTreeView::getItemCenter(os, "COI.aln"));
+    GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << ACTION_DOCUMENT__UNLOCK));
     GTMouseDriver::click(Qt::RightButton);
 
-//Expected state: undo and redo buttons are enebled and work properly
-    CHECK_SET_ERR(undo->isEnabled(),"Undo button is disabled after unlocking document");
-    CHECK_SET_ERR(redo->isEnabled(),"Redo button is disabled after unlocking document");
+    //Expected state: undo and redo buttons are enebled and work properly
+    CHECK_SET_ERR(undo->isEnabled(), "Undo button is disabled after unlocking document");
+    CHECK_SET_ERR(redo->isEnabled(), "Redo button is disabled after unlocking document");
 
     //check undo
-    GTWidget::click(os,GTUtilsMdi::activeWindow(os));
+    GTWidget::click(os, GTUtilsMdi::activeWindow(os));
     GTWidget::click(os, undo);
-    GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0,0), QPoint(9,0));
-    GTKeyboardDriver::keyClick('c',Qt::ControlModifier);
+    GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0, 0), QPoint(9, 0));
+    GTKeyboardDriver::keyClick('c', Qt::ControlModifier);
     GTGlobals::sleep(500);
     QString clipboardText = GTClipboard::text(os);
-    CHECK_SET_ERR(clipboardText=="--TAAGACTT","Undo works wrong. Found text is: " + clipboardText);
+    CHECK_SET_ERR(clipboardText == "--TAAGACTT", "Undo works wrong. Found text is: " + clipboardText);
 
     //check redo
-    GTWidget::click(os,GTUtilsMdi::activeWindow(os));
+    GTWidget::click(os, GTUtilsMdi::activeWindow(os));
     GTWidget::click(os, redo);
     GTGlobals::sleep(200);
     GTWidget::click(os, redo);
-    GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0,0), QPoint(9,0));
-    GTKeyboardDriver::keyClick('c',Qt::ControlModifier);
+    GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0, 0), QPoint(9, 0));
+    GTKeyboardDriver::keyClick('c', Qt::ControlModifier);
     GTGlobals::sleep(500);
     clipboardText = GTClipboard::text(os);
-    CHECK_SET_ERR(clipboardText=="----TAAGAC", "Redo works wrong. Found text is: " + clipboardText);
+    CHECK_SET_ERR(clipboardText == "----TAAGAC", "Redo works wrong. Found text is: " + clipboardText);
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0002){//DIFFERENCE: delete sequence is checked
-//Check Undo/Redo functional
-//1. Open document COI.aln
+GUI_TEST_CLASS_DEFINITION(test_0002) {    //DIFFERENCE: delete sequence is checked
+    //Check Undo/Redo functional
+    //1. Open document COI.aln
     GTFileDialog::openFile(os, dataDir + "samples/CLUSTALW", "COI.aln");
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
-//2. Delete 4-th sequence
-    GTUtilsMSAEditorSequenceArea::moveTo(os, QPoint(-10,3));
+    //2. Delete 4-th sequence
+    GTUtilsMSAEditorSequenceArea::moveTo(os, QPoint(-10, 3));
     GTUtilsDialog::waitForDialog(os, new RenameSequenceFiller(os, "Roeseliana_roeseli", "Roeseliana_roeseli"));
     GTMouseDriver::doubleClick();
     GTGlobals::sleep(500);
-    GTKeyboardDriver::keyClick( Qt::Key_Delete);
+    GTKeyboardDriver::keyClick(Qt::Key_Delete);
 
-// Expected state: sequence deleted
-    GTUtilsMSAEditorSequenceArea::moveTo(os, QPoint(-10,3));
+    // Expected state: sequence deleted
+    GTUtilsMSAEditorSequenceArea::moveTo(os, QPoint(-10, 3));
     GTUtilsDialog::waitForDialog(os, new RenameSequenceFiller(os, "Montana_montana", "Montana_montana"));
     GTMouseDriver::doubleClick();
     GTGlobals::sleep(500);
 
-//3. undo deletion
-    QAbstractButton *undo = GTAction::button(os,"msa_action_undo");
-    QAbstractButton *redo = GTAction::button(os,"msa_action_redo");
+    //3. undo deletion
+    QAbstractButton *undo = GTAction::button(os, "msa_action_undo");
+    QAbstractButton *redo = GTAction::button(os, "msa_action_redo");
 
     GTWidget::click(os, undo);
 
-//Expected state: deletion undone
-    GTUtilsMSAEditorSequenceArea::moveTo(os, QPoint(-10,3));
+    //Expected state: deletion undone
+    GTUtilsMSAEditorSequenceArea::moveTo(os, QPoint(-10, 3));
     GTUtilsDialog::waitForDialog(os, new RenameSequenceFiller(os, "Roeseliana_roeseli", "Roeseliana_roeseli"));
     GTMouseDriver::doubleClick();
     GTGlobals::sleep(500);
 
-//4. Redo delition
+    //4. Redo delition
     GTWidget::click(os, redo);
 
-//Expected state: delition is redone
-    GTUtilsMSAEditorSequenceArea::moveTo(os, QPoint(-10,3));
+    //Expected state: delition is redone
+    GTUtilsMSAEditorSequenceArea::moveTo(os, QPoint(-10, 3));
     GTUtilsDialog::waitForDialog(os, new RenameSequenceFiller(os, "Montana_montana", "Montana_montana"));
     GTMouseDriver::doubleClick();
     GTGlobals::sleep(500);
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0003){//DIFFERENCE: add sequence is checked
+GUI_TEST_CLASS_DEFINITION(test_0003) {    //DIFFERENCE: add sequence is checked
     //Check Undo/Redo functional
-//1. Open document COI.aln
+    //1. Open document COI.aln
     GTFileDialog::openFile(os, dataDir + "samples/CLUSTALW", "COI.aln");
     GTUtilsTaskTreeView::waitTaskFinished(os);
-//2. add sequence to alignment
-    GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList()<<MSAE_MENU_LOAD<<"Sequence from file"));
+    //2. add sequence to alignment
+    GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << MSAE_MENU_LOAD << "Sequence from file"));
     GTFileDialogUtils *ob = new GTFileDialogUtils(os, dataDir + "/samples/Raw/", "raw.seq");
     GTUtilsDialog::waitForDialog(os, ob);
     GTMenu::showContextMenu(os, GTUtilsMdi::activeWindow(os));
 
-// Expected state: raw sequence appeared in alignment
+    // Expected state: raw sequence appeared in alignment
     CHECK_SET_ERR(GTUtilsMSAEditorSequenceArea::getNameList(os).contains("raw"), "raw is not added");
-    GTUtilsMSAEditorSequenceArea::moveTo(os, QPoint(-10,18));
+    GTUtilsMSAEditorSequenceArea::moveTo(os, QPoint(-10, 18));
     GTUtilsDialog::waitForDialog(os, new RenameSequenceFiller(os, "raw", "raw"));
     GTMouseDriver::doubleClick();
 
-//3. undo adding
-    QAbstractButton *undo= GTAction::button(os,"msa_action_undo");
-    QAbstractButton *redo= GTAction::button(os,"msa_action_redo");
+    //3. undo adding
+    QAbstractButton *undo = GTAction::button(os, "msa_action_undo");
+    QAbstractButton *redo = GTAction::button(os, "msa_action_redo");
 
     GTWidget::click(os, undo);
 
-//Expected state: raw doesn't present in namelist
+    //Expected state: raw doesn't present in namelist
     QStringList nameList = GTUtilsMSAEditorSequenceArea::getNameList(os);
     CHECK_SET_ERR(!nameList.contains("raw"), "adding raw is not undone");
 
-//4. Redo delition
+    //4. Redo delition
     GTWidget::click(os, redo);
 
-//Expected state: delition is redone
+    //Expected state: delition is redone
     CHECK_SET_ERR(GTUtilsMSAEditorSequenceArea::getNameList(os).contains("raw"), "Adding raw is not redone");
-    GTUtilsMSAEditorSequenceArea::moveTo(os, QPoint(-10,18));
+    GTUtilsMSAEditorSequenceArea::moveTo(os, QPoint(-10, 18));
     GTUtilsDialog::waitForDialog(os, new RenameSequenceFiller(os, "raw", "raw"));
     GTMouseDriver::doubleClick();
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0004){//DIFFERENCE: add sequence is checked
-//Check Undo/Redo functional
-//1. Open document COI.aln
+GUI_TEST_CLASS_DEFINITION(test_0004) {    //DIFFERENCE: add sequence is checked
+    //Check Undo/Redo functional
+    //1. Open document COI.aln
     GTFileDialog::openFile(os, dataDir + "samples/CLUSTALW", "COI.aln");
     GTUtilsTaskTreeView::waitTaskFinished(os);
-//2. insert gap->undo->insert gap->undo->redo
-    QAbstractButton *undo= GTAction::button(os,"msa_action_undo");
-    QAbstractButton *redo= GTAction::button(os,"msa_action_redo");
+    //2. insert gap->undo->insert gap->undo->redo
+    QAbstractButton *undo = GTAction::button(os, "msa_action_undo");
+    QAbstractButton *redo = GTAction::button(os, "msa_action_redo");
 
-    GTUtilsMSAEditorSequenceArea::click(os, QPoint(0,0));
-    GTKeyboardDriver::keyClick( Qt::Key_Space);
+    GTUtilsMSAEditorSequenceArea::click(os, QPoint(0, 0));
+    GTKeyboardDriver::keyClick(Qt::Key_Space);
     GTWidget::click(os, undo);
 
-    GTUtilsMSAEditorSequenceArea::click(os, QPoint(0,0));
-    GTKeyboardDriver::keyClick( Qt::Key_Space);
+    GTUtilsMSAEditorSequenceArea::click(os, QPoint(0, 0));
+    GTKeyboardDriver::keyClick(Qt::Key_Space);
     GTWidget::click(os, undo);
 
     GTWidget::click(os, redo);
 
-// Expected state: redo button is disabled
+    // Expected state: redo button is disabled
     CHECK_SET_ERR(!redo->isEnabled(), "Redo button is enebled");
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0005){//undo remove selection
+GUI_TEST_CLASS_DEFINITION(test_0005) {    //undo remove selection
     //open file
     GTFileDialog::openFile(os, dataDir + "samples/CLUSTALW", "COI.aln");
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     //remove selection
-    GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0,0), QPoint(3,1));
-    GTKeyboardDriver::keyClick( Qt::Key_Delete);
+    GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0, 0), QPoint(3, 1));
+    GTKeyboardDriver::keyClick(Qt::Key_Delete);
 
     //Expected state: selection removed
-    GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0,0), QPoint(3,1));
-    GTKeyboardDriver::keyClick( 'c', Qt::ControlModifier);
+    GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0, 0), QPoint(3, 1));
+    GTKeyboardDriver::keyClick('c', Qt::ControlModifier);
     GTGlobals::sleep(500);
     QString clipdoardText = GTClipboard::text(os);
-    CHECK_SET_ERR(clipdoardText=="ACTT\nCTTA", QString("Expected ACTT\nCTTA, found: %1").arg(clipdoardText));
+    CHECK_SET_ERR(clipdoardText == "ACTT\nCTTA", QString("Expected ACTT\nCTTA, found: %1").arg(clipdoardText));
 
     //undo
-    QAbstractButton *undo= GTAction::button(os,"msa_action_undo");
+    QAbstractButton *undo = GTAction::button(os, "msa_action_undo");
     GTWidget::click(os, undo);
 
     //Expected state: delition undone
-    GTWidget::click(os,GTUtilsMdi::activeWindow(os));
-    GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0,0), QPoint(3,1));
-    GTKeyboardDriver::keyClick( 'c', Qt::ControlModifier);
+    GTWidget::click(os, GTUtilsMdi::activeWindow(os));
+    GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0, 0), QPoint(3, 1));
+    GTKeyboardDriver::keyClick('c', Qt::ControlModifier);
     GTGlobals::sleep(500);
     clipdoardText = GTClipboard::text(os);
-    CHECK_SET_ERR(clipdoardText=="TAAG\nTAAG", QString("Expected TAAG\nTAAG, found: %1").arg(clipdoardText));
+    CHECK_SET_ERR(clipdoardText == "TAAG\nTAAG", QString("Expected TAAG\nTAAG, found: %1").arg(clipdoardText));
 
     //redo
-    QAbstractButton *redo= GTAction::button(os,"msa_action_redo");
+    QAbstractButton *redo = GTAction::button(os, "msa_action_redo");
     GTWidget::click(os, redo);
 
     //Expected state: delition redone
-    GTWidget::click(os,GTUtilsMdi::activeWindow(os));
-    GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0,0), QPoint(3,1));
-    GTKeyboardDriver::keyClick( 'c', Qt::ControlModifier);
+    GTWidget::click(os, GTUtilsMdi::activeWindow(os));
+    GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0, 0), QPoint(3, 1));
+    GTKeyboardDriver::keyClick('c', Qt::ControlModifier);
     GTGlobals::sleep(500);
     clipdoardText = GTClipboard::text(os);
-    CHECK_SET_ERR(clipdoardText=="ACTT\nCTTA", QString("Expected ACTT\nCTTA, found: %1").arg(clipdoardText));
+    CHECK_SET_ERR(clipdoardText == "ACTT\nCTTA", QString("Expected ACTT\nCTTA, found: %1").arg(clipdoardText));
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0006){//undo replace_selected_rows_with_reverse-complement
-// In-place reverse complement replace in MSA Editor (0002425)
+GUI_TEST_CLASS_DEFINITION(test_0006) {    //undo replace_selected_rows_with_reverse-complement
+    // In-place reverse complement replace in MSA Editor (0002425)
 
-// 1. Open file _common_data\scenarios\msa\translations_nucl.aln
+    // 1. Open file _common_data\scenarios\msa\translations_nucl.aln
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/msa/", "translations_nucl.aln");
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
-// 2. Select first sequence and do context menu {Edit->Replace selected rows with reverce complement}
+    // 2. Select first sequence and do context menu {Edit->Replace selected rows with reverce complement}
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << MSAE_MENU_EDIT << "replace_selected_rows_with_reverse-complement"));
-    GTUtilsMSAEditorSequenceArea::selectArea( os, QPoint( 0, 0 ), QPoint( -1, 2 ) );
+    GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0, 0), QPoint(-1, 2));
     GTMouseDriver::click(Qt::RightButton);
 
-// Expected state: sequence changed from TTG -> CAA
+    // Expected state: sequence changed from TTG -> CAA
     GTGlobals::sleep(500);
-    GTKeyboardDriver::keyClick( 'c', Qt::ControlModifier);
+    GTKeyboardDriver::keyClick('c', Qt::ControlModifier);
 
     GTGlobals::sleep(500);
     QString clipboardText = GTClipboard::text(os);
     CHECK_SET_ERR(clipboardText == "CAA\nTGA\nATC",
-        "Clipboard string and expected MSA string differs");
+                  "Clipboard string and expected MSA string differs");
 
-//  sequence name changed from L -> L|revcompl
+    //  sequence name changed from L -> L|revcompl
     QStringList nameList = GTUtilsMSAEditorSequenceArea::getNameList(os);
-    CHECK_SET_ERR( nameList.size( ) >= 6, "nameList doesn't contain enough strings" );
-    CHECK_SET_ERR( ( nameList[0] == "L|revcompl" )
-        && ( nameList[1] == "S|revcompl" )
-        && ( nameList[2] == "D|revcompl" ), "Unexpected sequence names" );
+    CHECK_SET_ERR(nameList.size() >= 6, "nameList doesn't contain enough strings");
+    CHECK_SET_ERR((nameList[0] == "L|revcompl") && (nameList[1] == "S|revcompl") && (nameList[2] == "D|revcompl"), "Unexpected sequence names");
 
-// 3. Undo
-    QAbstractButton *undo= GTAction::button(os,"msa_action_undo");
+    // 3. Undo
+    QAbstractButton *undo = GTAction::button(os, "msa_action_undo");
     GTWidget::click(os, undo);
 
-// Expected state: sequence changed from CAA -> TTG
+    // Expected state: sequence changed from CAA -> TTG
     GTGlobals::sleep(500);
-    GTKeyboardDriver::keyClick( 'c', Qt::ControlModifier);
+    GTKeyboardDriver::keyClick('c', Qt::ControlModifier);
 
     GTGlobals::sleep(500);
     clipboardText = GTClipboard::text(os);
-    CHECK_SET_ERR( clipboardText == "TTG\nTCA\nGAT",
-        "Clipboard string and expected MSA string differs" );
+    CHECK_SET_ERR(clipboardText == "TTG\nTCA\nGAT",
+                  "Clipboard string and expected MSA string differs");
 
-//  sequence name changed from L|revcompl ->
+    //  sequence name changed from L|revcompl ->
     nameList = GTUtilsMSAEditorSequenceArea::getNameList(os);
-    CHECK_SET_ERR( nameList.size( ) >= 3, "nameList doesn't contain enough strings" );
-    CHECK_SET_ERR( ( nameList[0] == "L" ) && ( nameList[1] == "S" ) && ( nameList[2] == "D" ),
-        "There are unexpected names in nameList" );
+    CHECK_SET_ERR(nameList.size() >= 3, "nameList doesn't contain enough strings");
+    CHECK_SET_ERR((nameList[0] == "L") && (nameList[1] == "S") && (nameList[2] == "D"),
+                  "There are unexpected names in nameList");
 
     GTGlobals::sleep(500);
 
-// 4. Redo
-    QAbstractButton *redo= GTAction::button(os,"msa_action_redo");
+    // 4. Redo
+    QAbstractButton *redo = GTAction::button(os, "msa_action_redo");
     GTWidget::click(os, redo);
 
-// Expected state: sequence changed from TTG -> CAA
+    // Expected state: sequence changed from TTG -> CAA
     GTGlobals::sleep(500);
-    GTKeyboardDriver::keyClick( 'c', Qt::ControlModifier);
+    GTKeyboardDriver::keyClick('c', Qt::ControlModifier);
 
     GTGlobals::sleep(500);
     clipboardText = GTClipboard::text(os);
     CHECK_SET_ERR(clipboardText == "CAA\nTGA\nATC",
-        "Clipboard string and expected MSA string differs");
+                  "Clipboard string and expected MSA string differs");
 
-//  sequence name changed from L -> L|revcompl
+    //  sequence name changed from L -> L|revcompl
     nameList = GTUtilsMSAEditorSequenceArea::getNameList(os);
-    CHECK_SET_ERR( nameList.size( ) >= 6, "nameList doesn't contain enough strings" );
-    CHECK_SET_ERR( ( nameList[0] == "L|revcompl" )
-        && ( nameList[1] == "S|revcompl" )
-        && ( nameList[2] == "D|revcompl" ), "Unexpected sequence names" );
+    CHECK_SET_ERR(nameList.size() >= 6, "nameList doesn't contain enough strings");
+    CHECK_SET_ERR((nameList[0] == "L|revcompl") && (nameList[1] == "S|revcompl") && (nameList[2] == "D|revcompl"), "Unexpected sequence names");
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0006_1){//undo replace_selected_rows_with_reverse
-// In-place reverse complement replace in MSA Editor (0002425)
+GUI_TEST_CLASS_DEFINITION(test_0006_1) {    //undo replace_selected_rows_with_reverse
+    // In-place reverse complement replace in MSA Editor (0002425)
 
-// 1. Open file _common_data\scenarios\msa\translations_nucl.aln
+    // 1. Open file _common_data\scenarios\msa\translations_nucl.aln
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/msa/", "translations_nucl.aln");
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
-// 2. Select first sequence and do context menu {Edit->Replace selected rows with reverce complement}
+    // 2. Select first sequence and do context menu {Edit->Replace selected rows with reverce complement}
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << MSAE_MENU_EDIT << "replace_selected_rows_with_reverse"));
-    GTUtilsMSAEditorSequenceArea::selectArea( os, QPoint( 0, 0 ), QPoint( -1, 2 ) );
+    GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0, 0), QPoint(-1, 2));
     GTMouseDriver::click(Qt::RightButton);
 
-// Expected state: sequence changed from TTG -> GTT
+    // Expected state: sequence changed from TTG -> GTT
     GTGlobals::sleep(500);
-    GTKeyboardDriver::keyClick( 'c', Qt::ControlModifier);
+    GTKeyboardDriver::keyClick('c', Qt::ControlModifier);
 
     GTGlobals::sleep(500);
     QString clipboardText = GTClipboard::text(os);
-    CHECK_SET_ERR( clipboardText == "GTT\nACT\nTAG",
-        "Clipboard string and expected MSA string differs");
+    CHECK_SET_ERR(clipboardText == "GTT\nACT\nTAG",
+                  "Clipboard string and expected MSA string differs");
 
-// sequence name  changed from L -> L|revcompl
+    // sequence name  changed from L -> L|revcompl
     QStringList nameList = GTUtilsMSAEditorSequenceArea::getNameList(os);
-    CHECK_SET_ERR( nameList.size( ) >= 6, "nameList doesn't contain enough strings" );
-    CHECK_SET_ERR( ( nameList[0] == "L|rev" )
-        && ( nameList[1] == "S|rev" )
-        && ( nameList[2] == "D|rev" ), "Unexpected sequence names" );
+    CHECK_SET_ERR(nameList.size() >= 6, "nameList doesn't contain enough strings");
+    CHECK_SET_ERR((nameList[0] == "L|rev") && (nameList[1] == "S|rev") && (nameList[2] == "D|rev"), "Unexpected sequence names");
 
-// 3. Undo
-    QAbstractButton *undo= GTAction::button(os,"msa_action_undo");
+    // 3. Undo
+    QAbstractButton *undo = GTAction::button(os, "msa_action_undo");
     GTWidget::click(os, undo);
 
-// Expected state: sequence changed from GTT -> TTG
+    // Expected state: sequence changed from GTT -> TTG
     GTGlobals::sleep(500);
-    GTKeyboardDriver::keyClick( 'c', Qt::ControlModifier);
+    GTKeyboardDriver::keyClick('c', Qt::ControlModifier);
 
     GTGlobals::sleep(500);
     clipboardText = GTClipboard::text(os);
-    CHECK_SET_ERR( clipboardText == "TTG\nTCA\nGAT",
-        "Clipboard string and expected MSA string differs" );
+    CHECK_SET_ERR(clipboardText == "TTG\nTCA\nGAT",
+                  "Clipboard string and expected MSA string differs");
 
-//  sequence name changed from L|rev ->
+    //  sequence name changed from L|rev ->
     nameList = GTUtilsMSAEditorSequenceArea::getNameList(os);
-    CHECK_SET_ERR( nameList.size( ) >= 3, "nameList doesn't contain enough strings" );
-    CHECK_SET_ERR( ( nameList[0] == "L" ) && ( nameList[1] == "S" ) && ( nameList[2] == "D" ),
-        "There are unexpected names in nameList" );
+    CHECK_SET_ERR(nameList.size() >= 3, "nameList doesn't contain enough strings");
+    CHECK_SET_ERR((nameList[0] == "L") && (nameList[1] == "S") && (nameList[2] == "D"),
+                  "There are unexpected names in nameList");
 
     GTGlobals::sleep(500);
 
-// 4. Redo
-    QAbstractButton *redo= GTAction::button(os,"msa_action_redo");
+    // 4. Redo
+    QAbstractButton *redo = GTAction::button(os, "msa_action_redo");
     GTWidget::click(os, redo);
 
-// Expected state: sequence changed from TTG -> GTT
+    // Expected state: sequence changed from TTG -> GTT
     GTGlobals::sleep(500);
-    GTKeyboardDriver::keyClick( 'c', Qt::ControlModifier);
+    GTKeyboardDriver::keyClick('c', Qt::ControlModifier);
 
     GTGlobals::sleep(500);
     clipboardText = GTClipboard::text(os);
-    CHECK_SET_ERR( clipboardText == "GTT\nACT\nTAG",
-        "Clipboard string and expected MSA string differs");
+    CHECK_SET_ERR(clipboardText == "GTT\nACT\nTAG",
+                  "Clipboard string and expected MSA string differs");
 
-//  sequence name changed from L -> L|revcompl
+    //  sequence name changed from L -> L|revcompl
     nameList = GTUtilsMSAEditorSequenceArea::getNameList(os);
-    CHECK_SET_ERR( nameList.size( ) >= 6, "nameList doesn't contain enough strings" );
-    CHECK_SET_ERR( ( nameList[0] == "L|rev" )
-        && ( nameList[1] == "S|rev" )
-        && ( nameList[2] == "D|rev" ), "Unexpected sequence names" );
+    CHECK_SET_ERR(nameList.size() >= 6, "nameList doesn't contain enough strings");
+    CHECK_SET_ERR((nameList[0] == "L|rev") && (nameList[1] == "S|rev") && (nameList[2] == "D|rev"), "Unexpected sequence names");
 }
 
-GUI_TEST_CLASS_DEFINITION( test_0006_2 )
-{
-//undo replace_selected_rows_with_complement
-// In-place reverse complement replace in MSA Editor (0002425)
+GUI_TEST_CLASS_DEFINITION(test_0006_2) {
+    //undo replace_selected_rows_with_complement
+    // In-place reverse complement replace in MSA Editor (0002425)
 
-// 1. Open file _common_data\scenarios\msa\translations_nucl.aln
-    GTFileDialog::openFile( os, testDir + "_common_data/scenarios/msa/", "translations_nucl.aln" );
+    // 1. Open file _common_data\scenarios\msa\translations_nucl.aln
+    GTFileDialog::openFile(os, testDir + "_common_data/scenarios/msa/", "translations_nucl.aln");
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
-// 2. Select first sequence and do context menu {Edit->Replace selected rows with reverce complement}
-    GTUtilsDialog::waitForDialog( os, new PopupChooser( os, QStringList( ) << MSAE_MENU_EDIT
-        << "replace_selected_rows_with_complement" ) );
-    GTUtilsMSAEditorSequenceArea::selectArea( os, QPoint( 0, 0 ), QPoint( -1, 2 ) );
-    GTMouseDriver::click(Qt::RightButton );
+    // 2. Select first sequence and do context menu {Edit->Replace selected rows with reverce complement}
+    GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << MSAE_MENU_EDIT << "replace_selected_rows_with_complement"));
+    GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0, 0), QPoint(-1, 2));
+    GTMouseDriver::click(Qt::RightButton);
 
-// Expected state: sequence changed from TTG -> AAC
-    GTGlobals::sleep( 500 );
-    GTKeyboardDriver::keyClick('c', Qt::ControlModifier );
+    // Expected state: sequence changed from TTG -> AAC
+    GTGlobals::sleep(500);
+    GTKeyboardDriver::keyClick('c', Qt::ControlModifier);
 
-    GTGlobals::sleep( 500 );
-    QString clipboardText = GTClipboard::text( os );
-    CHECK_SET_ERR( clipboardText == "AAC\nAGT\nCTA",
-        "Clipboard string and expected MSA string differs. Clipboard string is: "
-        + clipboardText );
+    GTGlobals::sleep(500);
+    QString clipboardText = GTClipboard::text(os);
+    CHECK_SET_ERR(clipboardText == "AAC\nAGT\nCTA",
+                  "Clipboard string and expected MSA string differs. Clipboard string is: " + clipboardText);
 
-//  sequence name  changed from L -> L|compl
-    QStringList nameList = GTUtilsMSAEditorSequenceArea::getNameList( os );
-    CHECK_SET_ERR( nameList.size( ) >= 6, "nameList doesn't contain enough strings" );
-    CHECK_SET_ERR( ( nameList[0] == "L|compl" )
-        && ( nameList[1] == "S|compl" )
-        && ( nameList[2] == "D|compl" ), "Unexpected sequence names" );
+    //  sequence name  changed from L -> L|compl
+    QStringList nameList = GTUtilsMSAEditorSequenceArea::getNameList(os);
+    CHECK_SET_ERR(nameList.size() >= 6, "nameList doesn't contain enough strings");
+    CHECK_SET_ERR((nameList[0] == "L|compl") && (nameList[1] == "S|compl") && (nameList[2] == "D|compl"), "Unexpected sequence names");
 
-// 3. Undo
-    QAbstractButton *undo = GTAction::button( os, "msa_action_undo" );
-    GTWidget::click( os, undo );
+    // 3. Undo
+    QAbstractButton *undo = GTAction::button(os, "msa_action_undo");
+    GTWidget::click(os, undo);
 
-// Expected state: sequence changed from AAC -> TTG
-    GTGlobals::sleep( 500 );
-    GTKeyboardDriver::keyClick('c', Qt::ControlModifier );
+    // Expected state: sequence changed from AAC -> TTG
+    GTGlobals::sleep(500);
+    GTKeyboardDriver::keyClick('c', Qt::ControlModifier);
 
-    GTGlobals::sleep( 500 );
-    clipboardText = GTClipboard::text( os );
-    CHECK_SET_ERR( clipboardText == "TTG\nTCA\nGAT",
-        "Clipboard string and expected MSA string differs" );
+    GTGlobals::sleep(500);
+    clipboardText = GTClipboard::text(os);
+    CHECK_SET_ERR(clipboardText == "TTG\nTCA\nGAT",
+                  "Clipboard string and expected MSA string differs");
 
-//  sequence name changed from L|rev ->
-    nameList = GTUtilsMSAEditorSequenceArea::getNameList( os );
-    CHECK_SET_ERR( nameList.size( ) >= 3, "nameList doesn't contain enough strings" );
-    CHECK_SET_ERR( ( nameList[0] == "L" ) && ( nameList[1] == "S" ) && ( nameList[2] == "D" ),
-        "There are unexpected names in nameList" );
+    //  sequence name changed from L|rev ->
+    nameList = GTUtilsMSAEditorSequenceArea::getNameList(os);
+    CHECK_SET_ERR(nameList.size() >= 3, "nameList doesn't contain enough strings");
+    CHECK_SET_ERR((nameList[0] == "L") && (nameList[1] == "S") && (nameList[2] == "D"),
+                  "There are unexpected names in nameList");
 
-    GTGlobals::sleep( 500 );
+    GTGlobals::sleep(500);
 
-// 4. Redo
-    QAbstractButton *redo = GTAction::button( os, "msa_action_redo" );
-    GTWidget::click( os, redo );
+    // 4. Redo
+    QAbstractButton *redo = GTAction::button(os, "msa_action_redo");
+    GTWidget::click(os, redo);
 
-// Expected state: sequence changed from TTG -> AAC
-    GTGlobals::sleep( 500 );
-    GTKeyboardDriver::keyClick('c', Qt::ControlModifier );
+    // Expected state: sequence changed from TTG -> AAC
+    GTGlobals::sleep(500);
+    GTKeyboardDriver::keyClick('c', Qt::ControlModifier);
 
-    GTGlobals::sleep( 500 );
-    clipboardText = GTClipboard::text( os );
-    CHECK_SET_ERR( clipboardText == "AAC\nAGT\nCTA",
-        "Clipboard string and expected MSA string differs" );
+    GTGlobals::sleep(500);
+    clipboardText = GTClipboard::text(os);
+    CHECK_SET_ERR(clipboardText == "AAC\nAGT\nCTA",
+                  "Clipboard string and expected MSA string differs");
 
-//  sequence name  changed from L -> L|revcompl
-    nameList = GTUtilsMSAEditorSequenceArea::getNameList( os );
-    CHECK_SET_ERR( nameList.size( ) >= 6, "nameList doesn't contain enough strings" );
-    CHECK_SET_ERR( ( nameList[0] == "L|compl" )
-        && ( nameList[1] == "S|compl" )
-        && ( nameList[2] == "D|compl" ),
-       "There are unexpected names in nameList" );
+    //  sequence name  changed from L -> L|revcompl
+    nameList = GTUtilsMSAEditorSequenceArea::getNameList(os);
+    CHECK_SET_ERR(nameList.size() >= 6, "nameList doesn't contain enough strings");
+    CHECK_SET_ERR((nameList[0] == "L|compl") && (nameList[1] == "S|compl") && (nameList[2] == "D|compl"),
+                  "There are unexpected names in nameList");
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0007) {
@@ -815,5 +799,5 @@ GUI_TEST_CLASS_DEFINITION(test_0012) {
     CHECK_SET_ERR(redoneMsa == expectedChangedMsa, "Redo works wrong:\n" + redoneMsa.join("\n"));
 }
 
-}   // namespace GUITest_common_scenarios_undo_redo
-}   // namespace U2
+}    // namespace GUITest_common_scenarios_undo_redo
+}    // namespace U2

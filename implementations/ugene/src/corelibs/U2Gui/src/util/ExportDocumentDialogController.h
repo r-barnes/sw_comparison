@@ -24,8 +24,8 @@
 
 #include <QDialog>
 
-#include <U2Core/global.h>
 #include <U2Core/DocumentModel.h>
+#include <U2Core/global.h>
 
 class Ui_ExportDocumentDialog;
 
@@ -37,12 +37,12 @@ class U2GUI_EXPORT ExportDocumentDialogController : public QDialog {
     Q_OBJECT
     Q_DISABLE_COPY(ExportDocumentDialogController)
 public:
-    ExportDocumentDialogController(Document* d, QWidget* p);
+    ExportDocumentDialogController(Document *d, QWidget *p);
     ExportDocumentDialogController(GObject *object, QWidget *parent, const QString &initUrl = "");
     ~ExportDocumentDialogController();
 
     QString getDocumentURL() const;
-    
+
     bool getAddToProjectFlag() const;
     void setAddToProjectFlag(bool checked);
 
@@ -55,14 +55,14 @@ private:
     void initSaveController(const QList<GObject *> &objects, const QString &fileUrl);
     static DocumentFormatConstraints getAcceptableConstraints(const QList<GObject *> &objects);
 
-    SaveDocumentController* saveController;
-    Ui_ExportDocumentDialog* ui;
+    SaveDocumentController *saveController;
+    Ui_ExportDocumentDialog *ui;
     // the following fields are used to determine whether the object was used for
     // creating a Document from single GObeject or another Document
     Document *sourceDoc;
     GObject *sourceObject;
 };
 
-} // _U2_EXPORT_DOCUMENT_DIALOG_CONTROLLER_H_
+}    // namespace U2
 
 #endif

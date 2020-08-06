@@ -19,32 +19,30 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
-
 #include "ColumnDataParser.h"
+
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
 ColumnDataParser::Column::Column(const QString &_name,
-    ColumnDataParser::ColumnType _type, const QString _defaultValue, bool _required)
-: name(_name), type(_type), defaultValue(_defaultValue), required(_required)
-{
-
+                                 ColumnDataParser::ColumnType _type,
+                                 const QString _defaultValue,
+                                 bool _required)
+    : name(_name), type(_type), defaultValue(_defaultValue), required(_required) {
 }
 
 ColumnDataParser::Column::Column(const QString &_name)
-: name(_name), type(STRING)
-{
+    : name(_name), type(STRING) {
     required = false;
 }
 
-bool ColumnDataParser::Column::operator == (const ColumnDataParser::Column &other) const {
+bool ColumnDataParser::Column::operator==(const ColumnDataParser::Column &other) const {
     return name == other.name;
 }
 
 ColumnDataParser::Iterator::Iterator(const QList<Column> &_columns, const QStringList &_values)
-: columns(_columns), values(_values)
-{
+    : columns(_columns), values(_values) {
     currentNum = 0;
     end = columns.size();
     if (columns.size() != values.size()) {
@@ -113,9 +111,7 @@ QString ColumnDataParser::Iterator::look() const {
 }
 
 ColumnDataParser::ColumnDataParser(const QList<Column> &_formatColumns, const QString &_separator)
-: inited(false), formatColumns(_formatColumns), separator(_separator)
-{
-
+    : inited(false), formatColumns(_formatColumns), separator(_separator) {
 }
 
 void ColumnDataParser::init(const QString &headerLine, U2OpStatus &os) {
@@ -152,8 +148,8 @@ ColumnDataParser::Iterator ColumnDataParser::parseLine(const QString &line, U2Op
     return Iterator(currentColumns, values);
 }
 
-const QList<ColumnDataParser::Column> & ColumnDataParser::getCurrentColumns() const {
+const QList<ColumnDataParser::Column> &ColumnDataParser::getCurrentColumns() const {
     return currentColumns;
 }
 
-} // U2
+}    // namespace U2

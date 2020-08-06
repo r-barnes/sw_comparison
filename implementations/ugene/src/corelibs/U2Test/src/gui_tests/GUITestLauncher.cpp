@@ -19,34 +19,36 @@
  * MA 02110-1301, USA.
  */
 
+#include "GUITestLauncher.h"
+
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QDir>
 #include <QMap>
 #include <QTextStream>
+#include <QThread>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/CMDLineCoreOptions.h>
 #include <U2Core/CmdlineTaskRunner.h>
 #include <U2Core/ExternalToolRegistry.h>
 #include <U2Core/Timer.h>
+#include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include <U2Gui/MainWindow.h>
-
-#include "UGUITestBase.h"
-#include "GUITestLauncher.h"
-#include "GUITestService.h"
 #include "GUITestTeamcityLogger.h"
+#include "UGUITestBase.h"
 
-#define TIMEOUT 480000
+#define GUI_TEST_TIMEOUT_MILLIS 240000
 
 #ifdef Q_OS_MAC
-#define NUMBER_OF_TESTS_IN_SUITE 750
-#elif defined(Q_OS_UNIX)
-#define NUMBER_OF_TESTS_IN_SUITE 550
+#    define NUMBER_OF_TEST_SUITES 4
+#elif defined(Q_OS_LINUX)
+#    define NUMBER_OF_TEST_SUITES 5
 #elif defined(Q_OS_WIN)
-#define NUMBER_OF_TESTS_IN_SUITE 850
+#    define NUMBER_OF_TEST_SUITES 3
+#else
+#    define NUMBER_OF_TEST_SUITES 1
 #endif
 
 #define GUITESTING_REPORT_PREFIX "GUITesting"
@@ -56,12 +58,11 @@ namespace U2 {
 GUITestLauncher::GUITestLauncher(int _suiteNumber, bool _noIgnored, QString _iniFileTemplate)
     : Task("gui_test_launcher", TaskFlags(TaskFlag_ReportingIsSupported) | TaskFlag_ReportingIsEnabled),
       suiteNumber(_suiteNumber), noIgnored(_noIgnored), pathToSuite(""), iniFileTemplate(_iniFileTemplate) {
-
     tpm = Task::Progress_Manual;
     testOutDir = getTestOutDir();
 
     QWidget *splashScreen = QApplication::activeWindow();
-    if (NULL != splashScreen) {
+    if (splashScreen != nullptr) {
         splashScreen->hide();
     }
 }
@@ -69,12 +70,11 @@ GUITestLauncher::GUITestLauncher(int _suiteNumber, bool _noIgnored, QString _ini
 GUITestLauncher::GUITestLauncher(QString _pathToSuite, bool _noIgnored, QString _iniFileTemplate)
     : Task("gui_test_launcher", TaskFlags(TaskFlag_ReportingIsSupported) | TaskFlag_ReportingIsEnabled),
       suiteNumber(0), noIgnored(_noIgnored), pathToSuite(_pathToSuite), iniFileTemplate(_iniFileTemplate) {
-
     tpm = Task::Progress_Manual;
     testOutDir = getTestOutDir();
 }
 
-bool GUITestLauncher::renameTestLog(const QString& testName) {
+bool GUITestLauncher::renameTestLog(const QString &testName) {
     QString outFileName = testOutFile(testName);
     QString outFilePath = testOutDir + QString("/logs/");
 
@@ -83,30 +83,36 @@ bool GUITestLauncher::renameTestLog(const QString& testName) {
 }
 
 void GUITestLauncher::run() {
-
     if (!initGUITestBase()) {
+        // FIXME: if test suite can't run for some reason UGENE runs shutdown task that asserts that startup is in progress.
+        //  Workaround: wait 3 seconds to ensure that startup is complete & GUI test base error message is printed.
+        QThread::currentThread()->sleep(3);
         return;
     }
 
+    qint64 suiteStartMicros = GTimer::currentTimeMicros();
+
     int finishedCount = 0;
-    foreach(HI::GUITest* t, tests) {
+    foreach (HI::GUITest *test, tests) {
         if (isCanceled()) {
             return;
         }
+        if (test == nullptr) {
+            updateProgress(finishedCount++);
+            continue;
+        }
+        QString testName = test->getFullName();
+        QString testNameForTeamCity = test->getSuite() + "_" + test->getName();
+        results[testName] = "";
 
-        Q_ASSERT(t);
-        if (t) {
-            QString testName = t->getFullName();
-            QString testNameForTeamCity = t->getSuite() +"_"+ t->getName();
-            results[testName] = "";
+        firstTestRunCheck(testName);
 
-            firstTestRunCheck(testName);
+        if (!test->isIgnored()) {
+            qint64 startTime = GTimer::currentTimeMicros();
+            GUITestTeamcityLogger::testStarted(testNameForTeamCity);
 
-            if (!t->isIgnored()) {
-                qint64 startTime = GTimer::currentTimeMicros();
-                GUITestTeamcityLogger::testStarted(testNameForTeamCity);
-
-                QString testResult = performTest(testName);
+            try {
+                QString testResult = runTest(testName);
                 results[testName] = testResult;
                 if (GUITestTeamcityLogger::testFailed(testResult)) {
                     renameTestLog(testName);
@@ -114,73 +120,112 @@ void GUITestLauncher::run() {
 
                 qint64 finishTime = GTimer::currentTimeMicros();
                 GUITestTeamcityLogger::teamCityLogResult(testNameForTeamCity, testResult, GTimer::millisBetween(startTime, finishTime));
+            } catch (const std::exception &exc) {
+                coreLog.error("Got exception while running test: " + testName);
+                coreLog.error("Exception text: " + QString(exc.what()));
             }
-            else if(t->getReason() == HI::GUITest::Bug){
-                GUITestTeamcityLogger::testIgnored(testNameForTeamCity, t->getIgnoreMessage());
-            }
+        } else if (test->getReason() == HI::GUITest::Bug) {
+            GUITestTeamcityLogger::testIgnored(testNameForTeamCity, test->getIgnoreMessage());
         }
 
         updateProgress(finishedCount++);
     }
+    qint64 suiteEndMicros = GTimer::currentTimeMicros();
+    qint64 suiteTimeMinutes = ((suiteEndMicros - suiteStartMicros) / 1000000) / 60;
+    coreLog.info(QString("Suite %1 finished in %2 minutes").arg(suiteNumber).arg(suiteTimeMinutes));
 }
 
-void GUITestLauncher::firstTestRunCheck(const QString& testName) {
-
+void GUITestLauncher::firstTestRunCheck(const QString &testName) {
     QString testResult = results[testName];
     Q_ASSERT(testResult.isEmpty());
 }
 
+/** Returns ideal tests list for the given suite or an empty list if there is no ideal configuration is found. */
+QList<HI::GUITest *> getIdealTestsSplit(int suiteIndex, int suiteCount, const QList<HI::GUITest *> &allTests) {
+    QList<int> testsPerSuite;
+    if (suiteCount == 3) {
+        testsPerSuite << 900 << 840 << -1;
+    } else if (suiteCount == 4) {
+        testsPerSuite << 640 << 680 << 640 << -1;
+    }
+    QList<HI::GUITest *> tests;
+    if (testsPerSuite.size() == suiteCount) {
+        SAFE_POINT(testsPerSuite.size() == suiteCount, QString("Illegal testsPerSuite size: %1").arg(testsPerSuite.size()), tests);
+        int offset = 0;
+        for (int i = 0; i < suiteIndex; i++) {
+            offset += testsPerSuite[i];
+        }
+        int testCount = testsPerSuite[suiteIndex];    // last index is -1 => list.mid(x, -1) returns a tail.
+        tests << allTests.mid(offset, testCount);
+    }
+    return tests;
+}
+
 bool GUITestLauncher::initGUITestBase() {
-    UGUITestBase* b = AppContext::getGUITestBase();
-    SAFE_POINT(NULL != b, "Test base is NULL", false);
+    UGUITestBase *b = AppContext::getGUITestBase();
+    SAFE_POINT(b != nullptr, "Test base is NULL", false);
     QString label = qgetenv("UGENE_GUI_TEST_LABEL");
-    QList<HI::GUITest *> list = b->getTests(UGUITestBase::Normal, label);
-    if (list.isEmpty()) {
+    QList<HI::GUITest *> allTestList = b->getTests(UGUITestBase::Normal, label);
+    if (allTestList.isEmpty()) {
         setError(tr("No tests to run"));
         return false;
     }
 
-    QList<QList<HI::GUITest *> > suiteList;
-    if(suiteNumber){
-        for(int i=0; i<(list.length()/NUMBER_OF_TESTS_IN_SUITE + 1);i++){
-            suiteList << list.mid(i*NUMBER_OF_TESTS_IN_SUITE,NUMBER_OF_TESTS_IN_SUITE);
-        }
-        if(suiteNumber<0 || suiteNumber>suiteList.size()){
-            setError(tr("Invalid suite number: %1. There are %2 suites").arg(suiteNumber).arg(suiteList.size()));
+    tests.clear();
+    if (suiteNumber != 0) {
+        if (suiteNumber < 1 || suiteNumber > NUMBER_OF_TEST_SUITES) {
+            setError(QString("Invalid suite number: %1. There are %2 suites").arg(suiteNumber).arg(NUMBER_OF_TEST_SUITES));
             return false;
         }
-        tests = suiteList.takeAt(suiteNumber - 1);
-    }else if(!pathToSuite.isEmpty()){
+        tests = getIdealTestsSplit(suiteNumber - 1, NUMBER_OF_TEST_SUITES, allTestList);
+        if (tests.isEmpty()) {
+            // Distribute tests between suites evenly.
+            for (int i = suiteNumber - 1; i < allTestList.length(); i += NUMBER_OF_TEST_SUITES) {
+                tests << allTestList[i];
+            }
+        }
+        coreLog.info(QString("Running suite %1, Tests in the suite: %2, total tests: %3")
+                         .arg(suiteNumber)
+                         .arg(tests.size())
+                         .arg(allTestList.length()));
+    } else if (!pathToSuite.isEmpty()) {
         QString absPath = QDir().absoluteFilePath(pathToSuite);
         QFile suite(absPath);
-        SAFE_POINT(suite.exists(), "file " + absPath + " does not exists", false);
-        if(suite.open(QFile::ReadOnly)){
-            char buf[1024];
-            while(suite.readLine(buf, sizeof(buf)) != -1){
-                QString testName(buf);
-                testName.remove('\n');
-                testName.remove('\t');
-                testName.remove(' ');
-                bool added = false;
-                foreach (HI::GUITest* t, list) {
-                    if((t->getFullName()) == testName){
-                        tests<<t;
-                        added = true;
-                        break;
-                    }
-                }
-                SAFE_POINT(added, "test " + testName + " not found", false)
-            }
-        }else{
-            SAFE_POINT(0, "can not open file " + absPath, false);
+        if (!suite.open(QFile::ReadOnly)) {
+            setError("Can't open suite file: " + absPath);
+            return false;
         }
-    }
-    else{
-        tests = list;
+        char buf[1024];
+        while (suite.readLine(buf, sizeof(buf)) != -1) {
+            QString testName = QString(buf).remove('\n').remove('\t').remove(' ');
+            if (testName.startsWith("#") || testName.isEmpty()) {
+                continue;    // comment line or empty line.
+            }
+            bool added = false;
+            foreach (HI::GUITest *test, allTestList) {
+                QString fullTestName = test->getFullName();
+                QString fullTestNameInTeamcityFormat = fullTestName.replace(':', '_');
+                if (testName == fullTestName || testName == fullTestNameInTeamcityFormat) {
+                    tests << test;
+                    added = true;
+                    break;
+                }
+                if (testName == test->getSuite()) {
+                    tests << test;
+                    added = true;
+                }
+            }
+            if (!added) {
+                setError("Test not found: " + testName);
+                return false;
+            }
+        }
+    } else {
+        tests = allTestList;
     }
 
-    if(noIgnored){
-        foreach(HI::GUITest* test, tests){
+    if (noIgnored) {
+        foreach (HI::GUITest *test, tests) {
             test->setIgnored(false);
         }
     }
@@ -188,36 +233,82 @@ bool GUITestLauncher::initGUITestBase() {
 }
 
 void GUITestLauncher::updateProgress(int finishedCount) {
-
     int testsSize = tests.size();
     if (testsSize) {
-        stateInfo.progress = finishedCount*100/testsSize;
+        stateInfo.progress = finishedCount * 100 / testsSize;
     }
 }
 
 QString GUITestLauncher::testOutFile(const QString &testName) {
-    return QString("ugene_"+testName+".out").replace(':', '_');
+    return QString("ugene_" + testName + ".out").replace(':', '_');
 }
 
-QString GUITestLauncher::getTestOutDir(){
+QString GUITestLauncher::getTestOutDir() {
     QString date = QDate::currentDate().toString("dd.MM.yyyy");
     QString guiTestOutputDirectory = qgetenv("GUI_TESTING_OUTPUT");
     QString initPath;
-    if(guiTestOutputDirectory.isEmpty()){
+    if (guiTestOutputDirectory.isEmpty()) {
         initPath = QDir::homePath() + "/gui_testing_output/" + date;
-    }else{
+    } else {
         initPath = guiTestOutputDirectory + "/gui_testing_output/" + date;
     }
     QDir d(initPath);
     int i = 1;
-    while(d.exists()){
+    while (d.exists()) {
         d = QDir(initPath + QString("_%1").arg(i));
         i++;
     }
     return d.absolutePath();
 }
 
-QProcessEnvironment GUITestLauncher::getProcessEnvironment(QString testName) {
+static bool restoreTestDirWithExternalScript(const QString &pathToShellScript) {
+    QDir testsDir(qgetenv("UGENE_TESTS_PATH"));
+    if (!testsDir.exists()) {
+        coreLog.error("UGENE_TESTS_PATH is not set!");
+        return false;
+    }
+    QDir dataDir(qgetenv("UGENE_DATA_PATH"));
+    if (!dataDir.exists()) {
+        coreLog.error("UGENE_DATA_PATH is not set!");
+        return false;
+    }
+
+    QProcessEnvironment processEnv = QProcessEnvironment::systemEnvironment();
+    processEnv.insert("UGENE_TESTS_DIR_NAME", testsDir.dirName());
+    processEnv.insert("UGENE_DATA_DIR_NAME", dataDir.dirName());
+    qint64 startTimeMicros = GTimer::currentTimeMicros();
+    QProcess process;
+    process.setProcessEnvironment(processEnv);
+    QString restoreProcessWorkDir = QFileInfo(testsDir.absolutePath() + "/../").absolutePath();
+    process.setWorkingDirectory(restoreProcessWorkDir);    // Parent dir of the test dir.
+    coreLog.info("Running restore process, work dir: " + restoreProcessWorkDir +
+                 ", tests dir: " + testsDir.dirName() +
+                 ", data dir: " + dataDir.dirName() +
+                 ", script: " + pathToShellScript);
+    process.start("/bin/bash", QStringList() << pathToShellScript);
+    qint64 processId = process.processId();
+    bool isStarted = process.waitForStarted();
+    if (!isStarted) {
+        coreLog.error("An error occurred while running restore script: " + process.errorString());
+        return false;
+    } else {
+    }
+    bool isFinished = process.waitForFinished(5000);
+
+    qint64 endTimeMicros = GTimer::currentTimeMicros();
+    qint64 runTimeMillis = (endTimeMicros - startTimeMicros) / 1000;
+    coreLog.info("Backup and restore run time (millis): " + QString::number(runTimeMillis));
+
+    QProcess::ExitStatus exitStatus = process.exitStatus();
+    if (!isFinished || exitStatus != QProcess::NormalExit) {
+        CmdlineTaskRunner::killChildrenProcesses(processId);
+        coreLog.error("Backup restore script was killed/exited with bad status: " + QString::number(exitStatus));
+        return false;
+    }
+    return true;
+}
+
+QProcessEnvironment GUITestLauncher::prepareTestRunEnvironment(const QString &testName, int testRunIteration) {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
     QDir().mkpath(testOutDir + "/logs");
@@ -226,19 +317,45 @@ QProcessEnvironment GUITestLauncher::getProcessEnvironment(QString testName) {
     env.insert(ENV_USE_NATIVE_DIALOGS, "0");
     env.insert(U2_PRINT_TO_FILE, testOutDir + "/logs/" + testOutFile(testName));
 
-    QString iniFileName = testOutDir + "/inis/" + testName.replace(':', '_') + "_UGENE.ini";
+    QString iniFileName = testOutDir + "/inis/" + QString(testName).replace(':', '_') + "_run_" + QString::number(testRunIteration) + "_UGENE.ini";
     if (!iniFileTemplate.isEmpty() && QFile::exists(iniFileTemplate)) {
         QFile::copy(iniFileTemplate, iniFileName);
     }
     env.insert(U2_USER_INI, iniFileName);
 
+    QString externalScriptToRestore = qgetenv("UGENE_TEST_EXTERNAL_SCRIPT_TO_RESTORE");
+    if (!externalScriptToRestore.isEmpty()) {
+        if (restoreTestDirWithExternalScript(externalScriptToRestore)) {
+            env.insert("UGENE_TEST_SKIP_BACKUP_AND_RESTORE", "1");
+        }
+    }
+
     return env;
 }
 
-QString GUITestLauncher::performTest(const QString& testName) {
+QString GUITestLauncher::runTest(const QString &testName) {
+    int maxReruns = qMax(qgetenv("UGENE_TEST_NUMBER_RERUN_FAILED_TEST").toInt(), 0);
+    QString testOutput;
+    bool isVideoRecordingOn = qgetenv("UGENE_TEST_ENABLE_VIDEO_RECORDING") == "1";
+    for (int iteration = 0; iteration < 1 + maxReruns; iteration++) {
+        if (iteration >= 1) {
+            coreLog.error(QString("Re-running the test. Current re-run: %1, max re-runs: %2").arg(iteration).arg(maxReruns));
+        }
+        U2OpStatusImpl os;
+        testOutput = runTestOnce(os, testName, iteration, isVideoRecordingOn && iteration > 0);
+        bool isFailed = os.hasError() || GUITestTeamcityLogger::testFailed(testOutput);
+        if (!isFailed) {
+            break;
+        }
+        coreLog.error(QString("Test failed with error: '%1'. Test output is '%2'.").arg(os.getError()).arg(testOutput));
+    }
+    return testOutput;
+}
+
+QString GUITestLauncher::runTestOnce(U2OpStatus &os, const QString &testName, int iteration, bool enableVideoRecording) {
+    QProcessEnvironment environment = prepareTestRunEnvironment(testName, iteration);
 
     QString path = QCoreApplication::applicationFilePath();
-    QProcessEnvironment environment = getProcessEnvironment(testName);
     QStringList arguments = getTestProcessArguments(testName);
 
     // ~QProcess is killing the process, will not return until the process is terminated.
@@ -247,65 +364,69 @@ QString GUITestLauncher::performTest(const QString& testName) {
     process.start(path, arguments);
     qint64 processId = process.processId();
 
-    QProcess screenRecorder;
-    if(qgetenv("UGENE_SKIP_TEST_RECORDING").toInt() != 1){
-        screenRecorder.start(getScreenRecorderString(testName));
+    QProcess screenRecorderProcess;
+    if (enableVideoRecording) {
+        screenRecorderProcess.start(getScreenRecorderString(testName));
     }
 
-    bool started = process.waitForStarted();
-    if (!started) {
-        return tr("An error occurred while starting UGENE: ") + process.errorString();
+    bool isStarted = process.waitForStarted();
+    if (!isStarted) {
+        QString error = QString("An error occurred while starting UGENE: %1").arg(process.errorString());
+        os.setError(error);
+        return error;
     }
-    bool finished;
-    finished = process.waitForFinished(TIMEOUT);
+    bool isFinished = process.waitForFinished(GUI_TEST_TIMEOUT_MILLIS);
     QProcess::ExitStatus exitStatus = process.exitStatus();
 
-    if (!finished || exitStatus != QProcess::NormalExit) {
+    if (!isFinished || exitStatus != QProcess::NormalExit) {
         CmdlineTaskRunner::killChildrenProcesses(processId);
     }
 
 #ifdef Q_OS_WIN
-    QProcess::execute("closeErrorReport.exe"); //this exe file, compiled Autoit script
+    QProcess::execute("closeErrorReport.exe");    //this exe file, compiled Autoit script
 #endif
 
     QString testResult = readTestResult(process.readAllStandardOutput());
 
-    if (qgetenv("UGENE_SKIP_TEST_RECORDING").toInt() != 1) {
-        screenRecorder.close();
-        screenRecorder.waitForFinished(2000);
+    if (enableVideoRecording) {
+        screenRecorderProcess.close();
+        bool isScreenRecorderFinished = screenRecorderProcess.waitForFinished(2000);
+        if (!isScreenRecorderFinished) {
+            screenRecorderProcess.kill();
+            screenRecorderProcess.waitForFinished(2000);
+        }
         if (!GUITestTeamcityLogger::testFailed(testResult)) {
             QFile(getVideoPath(testName)).remove();
         }
     }
 
-    if (finished && (exitStatus == QProcess::NormalExit)) {
+    if (isFinished && exitStatus == QProcess::NormalExit) {
         return testResult;
     }
 #ifdef Q_OS_WIN
     CmdlineTaskRunner::killProcessTree(process.processId());
+    process.kill();    // to avoid QProcess: Destroyed while process is still running.
+    process.waitForFinished(2000);
 #endif
-    if (finished) {
-        return tr("An error occurred while finishing UGENE: ") + process.errorString() + '\n' + testResult;
-    } else {
-        return tr("Test fails because of timeout.");
-    }
+    QString error = isFinished ? QString("An error occurred while finishing UGENE: %1\n%2").arg(process.errorString()).arg(testResult) :
+                                 QString("Test fails because of timeout.");
+    os.setError(error);
+    return error;
 }
 
 QStringList GUITestLauncher::getTestProcessArguments(const QString &testName) {
-
     return QStringList() << QString("--") + CMDLineCoreOptions::LAUNCH_GUI_TEST + "=" + testName;
 }
 
-QString GUITestLauncher::readTestResult(const QByteArray& output) {
-
+QString GUITestLauncher::readTestResult(const QByteArray &output) {
     QString msg;
     QTextStream stream(output, QIODevice::ReadOnly);
 
-    while(!stream.atEnd()) {
+    while (!stream.atEnd()) {
         QString str = stream.readLine();
 
         if (str.contains(GUITESTING_REPORT_PREFIX)) {
-            msg =str.remove(0, str.indexOf(':')+1);
+            msg = str.remove(0, str.indexOf(':') + 1);
             if (!msg.isEmpty()) {
                 break;
             }
@@ -316,7 +437,6 @@ QString GUITestLauncher::readTestResult(const QByteArray& output) {
 }
 
 QString GUITestLauncher::generateReport() const {
-
     QString res;
     res += "<table width=\"100%\">";
     res += QString("<tr><th>%1</th><th>%2</th></tr>").arg(tr("Test name")).arg(tr("Status"));
@@ -329,12 +449,12 @@ QString GUITestLauncher::generateReport() const {
         }
         res += QString("<tr><th><font color='%3'>%1</font></th><th><font color='%3'>%2</font></th></tr>").arg(i.key()).arg(i.value()).arg(color);
     }
-    res+="</table>";
+    res += "</table>";
 
     return res;
 }
 
-QString GUITestLauncher::getScreenRecorderString(QString testName){
+QString GUITestLauncher::getScreenRecorderString(QString testName) {
     QString result;
 #ifdef Q_OS_LINUX
     QRect rec = QApplication::desktop()->screenGeometry();
@@ -351,9 +471,9 @@ QString GUITestLauncher::getScreenRecorderString(QString testName){
     return result;
 }
 
-QString GUITestLauncher::getVideoPath(const QString &testName){
+QString GUITestLauncher::getVideoPath(const QString &testName) {
     QDir().mkpath(QDir::currentPath() + "/videos");
     QString result = QDir::currentPath() + "/videos/" + testName + ".avi";
     return result;
 }
-}
+}    // namespace U2

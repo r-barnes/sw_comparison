@@ -19,14 +19,16 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/DbiConnection.h>
+#include "MultipleChromatogramAlignmentObject.h"
+
 #include <U2Core/DNASequenceObject.h>
+#include <U2Core/DbiConnection.h>
 #include <U2Core/GHints.h>
 #include <U2Core/GObjectTypes.h>
 #include <U2Core/GObjectUtils.h>
+#include <U2Core/MSAUtils.h>
 #include <U2Core/McaDbiUtils.h>
 #include <U2Core/MsaDbiUtils.h>
-#include <U2Core/MSAUtils.h>
 #include <U2Core/MultipleChromatogramAlignmentExporter.h>
 #include <U2Core/MultipleChromatogramAlignmentImporter.h>
 #include <U2Core/U2AlphabetUtils.h>
@@ -37,23 +39,22 @@
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/U2SequenceUtils.h>
 
-#include "MultipleChromatogramAlignmentObject.h"
-
 namespace U2 {
 
 const QString MultipleChromatogramAlignmentObject::MCAOBJECT_REFERENCE = "MCAOBJECT_REFERENCE";
 
 MultipleChromatogramAlignmentObject::MultipleChromatogramAlignmentObject(const QString &name,
-    const U2EntityRef &mcaRef,
-    const QVariantMap &hintsMap,
-    const MultipleChromatogramAlignment &mca)
-    : MultipleAlignmentObject(GObjectTypes::MULTIPLE_CHROMATOGRAM_ALIGNMENT, name, mcaRef, hintsMap, mca), referenceObj(NULL) {}
+                                                                         const U2EntityRef &mcaRef,
+                                                                         const QVariantMap &hintsMap,
+                                                                         const MultipleChromatogramAlignment &mca)
+    : MultipleAlignmentObject(GObjectTypes::MULTIPLE_CHROMATOGRAM_ALIGNMENT, name, mcaRef, hintsMap, mca), referenceObj(NULL) {
+}
 
 MultipleChromatogramAlignmentObject::~MultipleChromatogramAlignmentObject() {
     delete referenceObj;
 }
 
-GObject * MultipleChromatogramAlignmentObject::clone(const U2DbiRef &dstDbiRef, U2OpStatus &os, const QVariantMap &hints) const {
+GObject *MultipleChromatogramAlignmentObject::clone(const U2DbiRef &dstDbiRef, U2OpStatus &os, const QVariantMap &hints) const {
     DbiOperationsBlock opBlock(dstDbiRef, os);
     Q_UNUSED(opBlock);
     CHECK_OP(os, NULL);
@@ -92,7 +93,7 @@ GObject * MultipleChromatogramAlignmentObject::clone(const U2DbiRef &dstDbiRef, 
     return p.take();
 }
 
-U2SequenceObject* MultipleChromatogramAlignmentObject::getReferenceObj() const {
+U2SequenceObject *MultipleChromatogramAlignmentObject::getReferenceObj() const {
     if (referenceObj == NULL) {
         U2OpStatus2Log status;
         DbiConnection con(getEntityRef().dbiRef, status);
@@ -101,9 +102,9 @@ U2SequenceObject* MultipleChromatogramAlignmentObject::getReferenceObj() const {
         U2ByteArrayAttribute attribute = U2AttributeUtils::findByteArrayAttribute(con.dbi->getAttributeDbi(), getEntityRef().entityId, MCAOBJECT_REFERENCE, status);
         CHECK_OP(status, NULL);
 
-        GObject* obj = GObjectUtils::createObject(con.dbi->getDbiRef(), attribute.value, "reference object");
+        GObject *obj = GObjectUtils::createObject(con.dbi->getDbiRef(), attribute.value, "reference object");
 
-        referenceObj = qobject_cast<U2SequenceObject*> (obj);
+        referenceObj = qobject_cast<U2SequenceObject *>(obj);
         connect(this, SIGNAL(si_alignmentChanged(const MultipleAlignment &, const MaModificationInfo &)), referenceObj, SLOT(sl_resetDataCaches()));
         connect(this, SIGNAL(si_alignmentChanged(const MultipleAlignment &, const MaModificationInfo &)), referenceObj, SIGNAL(si_sequenceChanged()));
     }
@@ -184,6 +185,10 @@ void MultipleChromatogramAlignmentObject::insertGap(const U2Region &rows, int po
     MultipleAlignmentObject::insertGap(rows, pos, nGaps, true);
 }
 
+void MultipleChromatogramAlignmentObject::insertGapByRowIndexList(const QList<int> &rowIndexes, int pos, int nGaps) {
+    MultipleAlignmentObject::insertGapByRowIndexList(rowIndexes, pos, nGaps, true);
+}
+
 QList<U2Region> MultipleChromatogramAlignmentObject::getColumnsWithGaps(int requiredGapsCount) const {
     assert(-1 == requiredGapsCount || requiredGapsCount == getNumRows() + 1);
     U2MsaListGapModel gapModel = getGapModel();
@@ -228,7 +233,7 @@ void MultipleChromatogramAlignmentObject::deleteColumnsWithGaps(U2OpStatus &os, 
     updateCachedMultipleAlignment();
 }
 
-void MultipleChromatogramAlignmentObject::trimRow(const int rowIndex, int currentPos, U2OpStatus& os, TrimEdge edge) {
+void MultipleChromatogramAlignmentObject::trimRow(const int rowIndex, int currentPos, U2OpStatus &os, TrimEdge edge) {
     U2EntityRef entityRef = getEntityRef();
     MultipleAlignmentRow row = getRow(rowIndex);
     int rowId = row->getRowId();
@@ -249,7 +254,6 @@ void MultipleChromatogramAlignmentObject::trimRow(const int rowIndex, int curren
     U2Region region(rowIndex, 1);
     if (edge == Left) {
         insertGap(region, 0, count);
-
     }
 
     MaModificationInfo modificationInfo;
@@ -269,7 +273,7 @@ void MultipleChromatogramAlignmentObject::updateCachedRows(U2OpStatus &os, const
     MultipleChromatogramAlignmentExporter mcaExporter;
     QMap<qint64, McaRowMemoryData> mcaRowsMemoryData = mcaExporter.getMcaRowMemoryData(os, entityRef.dbiRef, entityRef.entityId, rowIds);
     SAFE_POINT_OP(os, );
-    foreach(const qint64 rowId, mcaRowsMemoryData.keys()) {
+    foreach (const qint64 rowId, mcaRowsMemoryData.keys()) {
         const int rowIndex = cachedMca->getRowIndexByRowId(rowId, os);
         SAFE_POINT_OP(os, );
         cachedMca->setRowContent(rowIndex, mcaRowsMemoryData[rowId]);
@@ -287,22 +291,20 @@ void MultipleChromatogramAlignmentObject::removeRowPrivate(U2OpStatus &os, const
     McaDbiUtils::removeRow(mcaRef, rowId, os);
 }
 
-void MultipleChromatogramAlignmentObject::removeRegionPrivate(U2OpStatus &os, const U2EntityRef &maRef,
-    const QList<qint64> &rows, int startPos, int nBases) {
+void MultipleChromatogramAlignmentObject::removeRegionPrivate(U2OpStatus &os, const U2EntityRef &maRef, const QList<qint64> &rows, int startPos, int nBases) {
     McaDbiUtils::removeCharacters(maRef, rows, startPos, nBases, os);
 }
-
 
 int MultipleChromatogramAlignmentObject::getReferenceLengthWithGaps() const {
     int lengthWithoutGaps = getLength();
 
     U2MsaRowGapModel refGapModel = getReferenceGapModel();
     int gapLength = 0;
-    foreach(const U2MsaGap gap, refGapModel) {
+    foreach (const U2MsaGap gap, refGapModel) {
         gapLength += gap.gap;
     }
 
     return lengthWithoutGaps + gapLength;
 }
 
-}   // namespace U2
+}    // namespace U2

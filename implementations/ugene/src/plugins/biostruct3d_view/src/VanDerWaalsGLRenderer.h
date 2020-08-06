@@ -28,22 +28,26 @@ namespace U2 {
 
 class VanDerWaalsGLRenderer : public BioStruct3DGLRenderer {
 protected:
-    VanDerWaalsGLRenderer(const BioStruct3D& struc, const BioStruct3DColorScheme* s, const QList<int> &shownModels, const BioStruct3DRendererSettings *settings);
+    VanDerWaalsGLRenderer(const BioStruct3D &struc, const BioStruct3DColorScheme *s, const QList<int> &shownModels, const BioStruct3DRendererSettings *settings);
 
 public:
     void drawBioStruct3D();
-    virtual void create() {}
+    virtual void create() {
+    }
 
-    virtual void updateColorScheme() {}
-    virtual void updateShownModels() {}
-    virtual void updateSettings() {}
+    virtual void updateColorScheme() {
+    }
+    virtual void updateShownModels() {
+    }
+    virtual void updateSettings() {
+    }
 
 private:
-    void drawAtoms(const BioStruct3DColorScheme* s);
+    void drawAtoms(const BioStruct3DColorScheme *s);
 
     RENDERER_FACTORY(VanDerWaalsGLRenderer)
 };
 
-} //namespace
+}    // namespace U2
 
-#endif // _U2_BIOSTRUCT3D_VANDERWAALS_RENDERER_H_
+#endif    // _U2_BIOSTRUCT3D_VANDERWAALS_RENDERER_H_

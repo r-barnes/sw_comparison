@@ -21,15 +21,13 @@
 
 #include "ORFMarkerTests.h"
 
-#include <U2Core/DNASequence.h>
-
-#include <U2Core/DocumentModel.h>
 #include <U2Core/BaseDocumentFormats.h>
-#include <U2Core/GObject.h>
-#include <U2Core/U2SafePoints.h>
-
-#include <U2Core/GObjectTypes.h>
+#include <U2Core/DNASequence.h>
 #include <U2Core/DNASequenceObject.h>
+#include <U2Core/DocumentModel.h>
+#include <U2Core/GObject.h>
+#include <U2Core/GObjectTypes.h>
+#include <U2Core/U2SafePoints.h>
 
 /* TRANSLATOR U2::GTest */
 
@@ -43,20 +41,21 @@ namespace U2 {
 #define START_WITH_INIT_ATTR "starts_with_init_codon"
 #define ALT_INIT_ATTR "allow_alt_init_codons"
 #define TRANSLATION_ID_ATTR "translation_id"
-#define EXPECTED_RESULTS_ATTR  "expected_results"
+#define EXPECTED_RESULTS_ATTR "expected_results"
 
-Translator::Translator(const U2SequenceObject *s, const QString& tid) : seq(s), complTransl(NULL), aminoTransl(NULL) {
-    const DNAAlphabet* al = seq->getAlphabet();
-    DNATranslationRegistry* tr = AppContext::getDNATranslationRegistry();
+Translator::Translator(const U2SequenceObject *s, const QString &tid)
+    : seq(s), complTransl(NULL), aminoTransl(NULL) {
+    const DNAAlphabet *al = seq->getAlphabet();
+    DNATranslationRegistry *tr = AppContext::getDNATranslationRegistry();
     aminoTransl = tr->lookupTranslation(al, DNATranslationType_NUCL_2_AMINO, ("NCBI-GenBank #" + tid));
     assert(aminoTransl);
-    DNATranslation* complT = tr->lookupComplementTranslation(al);
+    DNATranslation *complT = tr->lookupComplementTranslation(al);
     if (complT != NULL) {
-        complTransl = complT ;
+        complTransl = complT;
     }
 }
 
-void GTest_ORFMarkerTask::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_ORFMarkerTask::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     seqName = el.attribute(SEQ_ATTR);
@@ -67,17 +66,17 @@ void GTest_ORFMarkerTask::init(XMLTestFormat *tf, const QDomElement& el) {
 
     QString expected = el.attribute(EXPECTED_RESULTS_ATTR);
     if (!expected.isEmpty()) {
-        QStringList expectedList = expected.split(QRegExp("\\,")); //may be QRegExp("\\,")
-        foreach(QString region, expectedList) {
+        QStringList expectedList = expected.split(QRegExp("\\,"));    //may be QRegExp("\\,")
+        foreach (QString region, expectedList) {
             QStringList bounds = region.split(QRegExp("\\.."));
             if (bounds.size() != 2) {
-                stateInfo.setError(  QString("wrong value for %1").arg(EXPECTED_RESULTS_ATTR) );
+                stateInfo.setError(QString("wrong value for %1").arg(EXPECTED_RESULTS_ATTR));
                 return;
             }
             bool startOk, finishOk;
             int start = bounds.first().toInt(&startOk), finish = bounds.last().toInt(&finishOk);
             if (startOk && finishOk != true) {
-                stateInfo.setError(  QString("wrong value for %1").arg(EXPECTED_RESULTS_ATTR) );
+                stateInfo.setError(QString("wrong value for %1").arg(EXPECTED_RESULTS_ATTR));
                 return;
             }
             start--;
@@ -86,14 +85,14 @@ void GTest_ORFMarkerTask::init(XMLTestFormat *tf, const QDomElement& el) {
     }
 
     QString strand = el.attribute(STRAND_ATTR);
-    if(strand == "direct"){
+    if (strand == "direct") {
         settings.strand = ORFAlgorithmStrand_Direct;
-    }else if(strand == "compliment"){
+    } else if (strand == "compliment") {
         settings.strand = ORFAlgorithmStrand_Complement;
-    }else if(strand == "both"){
+    } else if (strand == "both") {
         settings.strand = ORFAlgorithmStrand_Both;
-    }else{
-        stateInfo.setError(  QString("value not correct %1").arg(STRAND_ATTR) );
+    } else {
+        stateInfo.setError(QString("value not correct %1").arg(STRAND_ATTR));
         return;
     }
 
@@ -105,7 +104,7 @@ void GTest_ORFMarkerTask::init(XMLTestFormat *tf, const QDomElement& el) {
     bool isOk;
     int length = strLength.toInt(&isOk);
     if (!isOk) {
-        stateInfo.setError(  QString("Unable to convert. Value wrong %1").arg(MIN_LENGTH_ATTR) );
+        stateInfo.setError(QString("Unable to convert. Value wrong %1").arg(MIN_LENGTH_ATTR));
         return;
     }
     settings.minLen = length;
@@ -117,10 +116,10 @@ void GTest_ORFMarkerTask::init(XMLTestFormat *tf, const QDomElement& el) {
     }
     if (strTerminates == "true") {
         settings.mustFit = true;
-    } else if (strTerminates == "false"){
+    } else if (strTerminates == "false") {
         settings.mustFit = false;
     } else {
-        stateInfo.setError(  QString("Unable to convert. Value wrong %1").arg(TERMINATES_ATTR) );
+        stateInfo.setError(QString("Unable to convert. Value wrong %1").arg(TERMINATES_ATTR));
         return;
     }
 
@@ -131,10 +130,10 @@ void GTest_ORFMarkerTask::init(XMLTestFormat *tf, const QDomElement& el) {
     }
     if (strStartWithCodon == "true") {
         settings.mustInit = true;
-    } else if (strStartWithCodon == "false"){
+    } else if (strStartWithCodon == "false") {
         settings.mustInit = false;
     } else {
-        stateInfo.setError(  QString("Unable to convert. Value wrong %1").arg(START_WITH_INIT_ATTR) );
+        stateInfo.setError(QString("Unable to convert. Value wrong %1").arg(START_WITH_INIT_ATTR));
         return;
     }
 
@@ -152,10 +151,10 @@ void GTest_ORFMarkerTask::init(XMLTestFormat *tf, const QDomElement& el) {
     }
     if (strAltStart == "true") {
         settings.allowAltStart = true;
-    } else if (strAltStart == "false"){
+    } else if (strAltStart == "false") {
         settings.allowAltStart = false;
     } else {
-        stateInfo.setError(  QString("Unable to convert. Value wrong %1").arg(ALT_INIT_ATTR) );
+        stateInfo.setError(QString("Unable to convert. Value wrong %1").arg(ALT_INIT_ATTR));
         return;
     }
 
@@ -168,14 +167,14 @@ void GTest_ORFMarkerTask::init(XMLTestFormat *tf, const QDomElement& el) {
     }
     translationId = strTranslationId.toInt(&isOk);
     if (!isOk) {
-        stateInfo.setError(  QString("Unable to convert. Value wrong %1").arg(TRANSLATION_ID_ATTR) );
+        stateInfo.setError(QString("Unable to convert. Value wrong %1").arg(TRANSLATION_ID_ATTR));
         return;
     }
     translationId = strTranslationId;
 }
 
 void GTest_ORFMarkerTask::prepare() {
-    U2SequenceObject * mySequence = getContext<U2SequenceObject>(this, seqName);
+    U2SequenceObject *mySequence = getContext<U2SequenceObject>(this, seqName);
     CHECK_EXT(mySequence != NULL, setError("Can't cast to sequence from GObject"), );
 
     Translator tr(mySequence, translationId);
@@ -189,24 +188,24 @@ void GTest_ORFMarkerTask::prepare() {
 
 Task::ReportResult GTest_ORFMarkerTask::report() {
     QVector<U2Region> actualResults;
-    foreach(ORFFindResult i, task->popResults()){
+    foreach (ORFFindResult i, task->popResults()) {
         actualResults.append(i.region);
-        if(i.isJoined){
+        if (i.isJoined) {
             actualResults.append(i.joinedRegion);
         }
     }
     int actualSize = actualResults.size(), expectedSize = expectedResults.size();
     if (actualSize != expectedSize) {
-        stateInfo.setError(  QString("Expected and Actual lists of regions are different: %1 %2").arg(expectedSize).arg(actualSize) );
+        stateInfo.setError(QString("Expected and Actual lists of regions are different: %1 %2").arg(expectedSize).arg(actualSize));
         return ReportResult_Finished;
     }
-    qSort(actualResults); qSort(expectedResults);
+    qSort(actualResults);
+    qSort(expectedResults);
     if (actualResults != expectedResults) {
-        stateInfo.setError(  QString("One of the expected regions not found in results") );
+        stateInfo.setError(QString("One of the expected regions not found in results"));
         return ReportResult_Finished;
     }
     return ReportResult_Finished;
 }
 
-} //namespace
-
+}    // namespace U2

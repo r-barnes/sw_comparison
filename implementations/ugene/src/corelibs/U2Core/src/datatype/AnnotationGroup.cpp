@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "AnnotationGroup.h"
+
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/L10n.h>
 #include <U2Core/TextUtils.h>
@@ -27,8 +29,6 @@
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "AnnotationGroup.h"
-
 namespace U2 {
 
 const QString AnnotationGroup::ROOT_GROUP_NAME("/");
@@ -36,7 +36,6 @@ const QChar AnnotationGroup::GROUP_PATH_SEPARATOR('/');
 
 AnnotationGroup::AnnotationGroup()
     : U2Entity(), parentObject(NULL), parentGroup(NULL) {
-
 }
 
 AnnotationGroup::AnnotationGroup(const U2DataId &featureId, const QString &name, AnnotationGroup *parentGroup, AnnotationTableObject *parentObject)
@@ -74,12 +73,12 @@ bool AnnotationGroup::isValidGroupName(const QString &name, bool pathMode) {
 }
 
 void AnnotationGroup::findAllAnnotationsInGroupSubTree(QList<Annotation *> &set) const {
-    foreach(Annotation *a, annotations) {
+    foreach (Annotation *a, annotations) {
         if (!set.contains(a)) {
             set.append(a);
         }
     }
-    foreach(AnnotationGroup *subgroup, subgroups) {
+    foreach (AnnotationGroup *subgroup, subgroups) {
         subgroup->findAllAnnotationsInGroupSubTree(set);
     }
 }
@@ -87,7 +86,7 @@ void AnnotationGroup::findAllAnnotationsInGroupSubTree(QList<Annotation *> &set)
 QList<Annotation *> AnnotationGroup::getAnnotations(bool recurcively) const {
     QList<Annotation *> result = annotations;
     if (recurcively) {
-        foreach(AnnotationGroup *subgroup, subgroups) {
+        foreach (AnnotationGroup *subgroup, subgroups) {
             result.append(subgroup->getAnnotations(true));
         }
     }
@@ -98,7 +97,7 @@ bool AnnotationGroup::hasAnnotations() const {
     if (!annotations.isEmpty()) {
         return true;
     }
-    foreach(AnnotationGroup *subgroup, subgroups) {
+    foreach (AnnotationGroup *subgroup, subgroups) {
         if (subgroup->hasAnnotations()) {
             return true;
         }
@@ -115,15 +114,14 @@ QList<Annotation *> AnnotationGroup::addAnnotations(const QList<SharedAnnotation
     Q_UNUSED(opBlock);
     CHECK_OP(os, result);
 
-    foreach(const SharedAnnotationData &d, anns) {
-        const U2Feature feature = U2FeatureUtils::exportAnnotationDataToFeatures(d, parentObject->getRootFeatureId(), id,
-            parentObject->getEntityRef().dbiRef, os);
+    foreach (const SharedAnnotationData &d, anns) {
+        const U2Feature feature = U2FeatureUtils::exportAnnotationDataToFeatures(d, parentObject->getRootFeatureId(), id, parentObject->getEntityRef().dbiRef, os);
 
         result.append(new Annotation(feature.id, d, this, parentObject));
         SAFE_POINT_OP(os, result);
     }
 
-    foreach(Annotation *a, result) {
+    foreach (Annotation *a, result) {
         annotationById[a->id] = a;
     }
     annotations.append(result);
@@ -136,12 +134,12 @@ QList<Annotation *> AnnotationGroup::addAnnotations(const QList<SharedAnnotation
 
 void AnnotationGroup::addShallowAnnotations(const QList<Annotation *> &anns, bool newAnnotations) {
 #ifdef _DEBUG
-    foreach(Annotation *a, anns) {
+    foreach (Annotation *a, anns) {
         SAFE_POINT(a->getGroup() == this, "Unexpected annotation group", );
     }
 #endif
 
-    foreach(Annotation *a, anns) {
+    foreach (Annotation *a, anns) {
         annotationById[a->id] = a;
     }
     annotations.append(anns);
@@ -157,14 +155,14 @@ void AnnotationGroup::removeAnnotations(const QList<Annotation *> &anns) {
     U2OpStatusImpl os;
 
     QList<U2DataId> annotationsIds;
-    foreach(Annotation *a, anns) {
+    foreach (Annotation *a, anns) {
         SAFE_POINT(NULL != a && a->getGroup() == this, "Unexpected annotation group", );
         annotationsIds.append(a->id);
     }
     U2FeatureUtils::removeFeatures(annotationsIds, parentObject->getEntityRef().dbiRef, os);
     SAFE_POINT_OP(os, );
 
-    foreach(Annotation *a, anns) {
+    foreach (Annotation *a, anns) {
         annotationById.remove(a->id);
         annotations.removeOne(a);
         delete a;
@@ -222,24 +220,23 @@ QString AnnotationGroup::getGroupPath() const {
     }
 }
 
-AnnotationTableObject * AnnotationGroup::getGObject() const {
+AnnotationTableObject *AnnotationGroup::getGObject() const {
     return parentObject;
 }
 
-AnnotationGroup * AnnotationGroup::getParentGroup() {
+AnnotationGroup *AnnotationGroup::getParentGroup() {
     return parentGroup;
 }
 
-AnnotationGroup * AnnotationGroup::getSubgroup(const QString &path, bool create) {
+AnnotationGroup *AnnotationGroup::getSubgroup(const QString &path, bool create) {
     if (path.isEmpty()) {
         return this;
     }
     const int separatorFirstPosition = path.indexOf(GROUP_PATH_SEPARATOR);
-    const QString subgroupName = (0 > separatorFirstPosition) ? path
-        : ((0 == separatorFirstPosition) ? path.mid(1) : path.left(separatorFirstPosition));
+    const QString subgroupName = (0 > separatorFirstPosition) ? path : ((0 == separatorFirstPosition) ? path.mid(1) : path.left(separatorFirstPosition));
 
     AnnotationGroup *subgroup = NULL;
-    foreach(AnnotationGroup *g, subgroups) {
+    foreach (AnnotationGroup *g, subgroups) {
         if (g->getName() == subgroupName) {
             subgroup = g;
             break;
@@ -250,7 +247,10 @@ AnnotationGroup * AnnotationGroup::getSubgroup(const QString &path, bool create)
         U2OpStatusImpl os;
         const U2DbiRef dbiRef = parentObject->getEntityRef().dbiRef;
         const U2Feature subgroupFeature = U2FeatureUtils::exportAnnotationGroupToFeature(subgroupName,
-            parentObject->getRootFeatureId(), id, dbiRef, os);
+                                                                                         parentObject->getRootFeatureId(),
+                                                                                         id,
+                                                                                         dbiRef,
+                                                                                         os);
         SAFE_POINT_OP(os, subgroup);
 
         subgroup = new AnnotationGroup(subgroupFeature.id, subgroupName, this, parentObject);
@@ -264,7 +264,7 @@ AnnotationGroup * AnnotationGroup::getSubgroup(const QString &path, bool create)
     return subgroup->getSubgroup(path.mid(separatorFirstPosition + 1), create);
 }
 
-AnnotationGroup * AnnotationGroup::addSubgroup(const U2Feature &feature) {
+AnnotationGroup *AnnotationGroup::addSubgroup(const U2Feature &feature) {
     SAFE_POINT(feature.hasValidId() && feature.featureClass == U2Feature::Group, "Unexpected feature provided", NULL);
 
     if (feature.parentFeatureId == id) {
@@ -279,13 +279,13 @@ AnnotationGroup * AnnotationGroup::addSubgroup(const U2Feature &feature) {
     }
 }
 
-Annotation * AnnotationGroup::findAnnotationById(const U2DataId &featureId) const {
+Annotation *AnnotationGroup::findAnnotationById(const U2DataId &featureId) const {
     SAFE_POINT(!featureId.isEmpty(), "Unexpected feature provided", NULL);
 
     if (annotationById.contains(featureId)) {
         return annotationById[featureId];
     } else {
-        foreach(AnnotationGroup *g, subgroups) {
+        foreach (AnnotationGroup *g, subgroups) {
             Annotation *result = g->findAnnotationById(featureId);
             if (NULL != result) {
                 return result;
@@ -295,10 +295,10 @@ Annotation * AnnotationGroup::findAnnotationById(const U2DataId &featureId) cons
     return NULL;
 }
 
-AnnotationGroup * AnnotationGroup::findSubgroupById(const U2DataId &featureId) const {
+AnnotationGroup *AnnotationGroup::findSubgroupById(const U2DataId &featureId) const {
     SAFE_POINT(!featureId.isEmpty(), "Unexpected feature provided", NULL);
 
-    foreach(AnnotationGroup *g, subgroups) {
+    foreach (AnnotationGroup *g, subgroups) {
         if (g->id == featureId) {
             return g;
         }
@@ -315,7 +315,7 @@ void AnnotationGroup::getSubgroupPaths(QStringList &res) const {
     if (!isRootGroup()) {
         res.append(getGroupPath());
     }
-    foreach(const AnnotationGroup *g, subgroups) {
+    foreach (const AnnotationGroup *g, subgroups) {
         g->getSubgroupPaths(res);
     }
 }
@@ -353,7 +353,7 @@ bool AnnotationGroup::isTopLevelGroup() const {
     return parentGroup != NULL && parentGroup->isRootGroup();
 }
 
-bool AnnotationGroup::operator ==(const AnnotationGroup &other) const {
+bool AnnotationGroup::operator==(const AnnotationGroup &other) const {
     return id == other.id && parentObject == other.getGObject();
 }
 
@@ -364,8 +364,8 @@ bool registerAnnotationGroupMeta() {
     return true;
 }
 
-}
+}    // namespace
 
 const bool AnnotationGroup::annotationGroupMetaRegistered = registerAnnotationGroupMeta();
 
-} // namespace U2
+}    // namespace U2

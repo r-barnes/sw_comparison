@@ -20,12 +20,15 @@
  */
 
 #include "GTRandomGUIActionFactory.h"
-#include <primitives/GTWidget.h>
 #include <base_dialogs/GTFileDialog.h>
 #include <core/GUITest.h>
-#include <QFileDialog>
+#include <primitives/GTWidget.h>
+
 #include <QDirIterator>
+#include <QFileDialog>
+
 #include <U2Core/U2SafePoints.h>
+
 #include <U2Test/UGUITest.h>
 
 namespace U2 {
@@ -36,16 +39,16 @@ int randInt(int low, int high) {
     return qrand() % ((high + 1) - low) + low;
 }
 
-GTAbstractGUIAction* GTRandomGUIActionFactory::create(QObject* obj) {
+GTAbstractGUIAction *GTRandomGUIActionFactory::create(QObject *obj) {
     SAFE_POINT(NULL != obj, "", NULL);
 
-    GTAbstractGUIAction* action = NULL;
-    for (const QMetaObject* metaObj = obj->metaObject(); metaObj != NULL; metaObj = metaObj->superClass()) {
+    GTAbstractGUIAction *action = NULL;
+    for (const QMetaObject *metaObj = obj->metaObject(); metaObj != NULL; metaObj = metaObj->superClass()) {
         QString className = metaObj->className();
         uiLog.trace(QString("Searching GTAbstractGUIAction for %1").arg(className));
 
         GTAbstractGUIActionMap::const_iterator mappedIterator = actionMap.constFind(className);
-        const GTAbstractGUIAction* mappedAction = actionMap.constEnd() == mappedIterator ? NULL : actionMap[className];
+        const GTAbstractGUIAction *mappedAction = actionMap.constEnd() == mappedIterator ? NULL : actionMap[className];
         if (NULL != mappedAction) {
             uiLog.trace(QString("Found GUIAction for %1").arg(className));
             action = mappedAction->clone();
@@ -60,20 +63,21 @@ GTAbstractGUIAction* GTRandomGUIActionFactory::create(QObject* obj) {
     return action;
 }
 
-
-QMap<QString, const GTAbstractGUIAction*> GTRandomGUIActionFactory::actionMap;
+QMap<QString, const GTAbstractGUIAction *> GTRandomGUIActionFactory::actionMap;
 
 class GTAbstractGUIAction_QWidget : public GTAbstractGUIAction {
 public:
-    GTAbstractGUIAction_QWidget(Priority priority) : GTAbstractGUIAction(priority) {}
+    GTAbstractGUIAction_QWidget(Priority priority)
+        : GTAbstractGUIAction(priority) {
+    }
     virtual void run() {
-        QWidget* objCasted = qobject_cast<QWidget*>(obj);
+        QWidget *objCasted = qobject_cast<QWidget *>(obj);
         SAFE_POINT(NULL != objCasted, "", );
 
         GTWidget::click(os, objCasted);
     }
 
-    virtual GTAbstractGUIAction_QWidget* clone() const {
+    virtual GTAbstractGUIAction_QWidget *clone() const {
         return new GTAbstractGUIAction_QWidget(*this);
     }
 };
@@ -81,9 +85,11 @@ GTAbstractGUIActionMap::const_iterator it_QWidget = GTRandomGUIActionFactory::ac
 
 class GTAbstractGUIAction_QFileDialog : public GTAbstractGUIAction {
 public:
-    GTAbstractGUIAction_QFileDialog(Priority priority) : GTAbstractGUIAction(priority) {}
+    GTAbstractGUIAction_QFileDialog(Priority priority)
+        : GTAbstractGUIAction(priority) {
+    }
     virtual void run() {
-        QFileDialog* objCasted = qobject_cast<QFileDialog*>(obj);
+        QFileDialog *objCasted = qobject_cast<QFileDialog *>(obj);
         SAFE_POINT(NULL != objCasted, "", );
 
         QString findPath = UGUITest::dataDir;
@@ -98,19 +104,19 @@ public:
             }
         }
 
-        int filesListId = randInt(0, files.size()-1);
+        int filesListId = randInt(0, files.size() - 1);
         QString randomFilePath = files[filesListId];
 
         GTFileDialogUtils *u = new GTFileDialogUtils(os, randomFilePath);
         u->run();
     }
 
-    virtual GTAbstractGUIAction_QFileDialog* clone() const {
+    virtual GTAbstractGUIAction_QFileDialog *clone() const {
         return new GTAbstractGUIAction_QFileDialog(*this);
     }
 };
 GTAbstractGUIActionMap::const_iterator it_QFileDialog = GTRandomGUIActionFactory::actionMap.insert("QFileDialog", new GTAbstractGUIAction_QFileDialog(GTAbstractGUIAction::Priority_High));
 
-}
+}    // namespace GUITest_crazy_user
 
-}
+}    // namespace U2

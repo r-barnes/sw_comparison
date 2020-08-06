@@ -22,21 +22,21 @@
 #ifndef _U2_BGZIP_TASK_H_
 #define _U2_BGZIP_TASK_H_
 
-#include <U2Core/Task.h>
 #include <U2Core/GUrl.h>
-
+#include <U2Core/Task.h>
 
 namespace U2 {
 
 class U2FORMATS_EXPORT BgzipTask : public Task {
     Q_OBJECT
 public:
-    BgzipTask(const GUrl& fileUrl, const GUrl& bgzfUrl = GUrl());
+    BgzipTask(const GUrl &fileUrl, const GUrl &bgzfUrl = GUrl());
     void run();
     QString generateReport() const;
     ReportResult report();
 
     static bool checkBgzf(const GUrl &fileUrl);
+
 private:
     GUrl fileUrl;
     GUrl bgzfUrl;
@@ -45,17 +45,18 @@ private:
 class U2FORMATS_EXPORT GzipDecompressTask : public Task {
     Q_OBJECT
 public:
-    GzipDecompressTask(const GUrl& zippedUrl, const GUrl& unzippedUrl = GUrl());
+    GzipDecompressTask(const GUrl &zippedUrl, const GUrl &unzippedUrl = GUrl());
     void run();
     QString generateReport() const;
     ReportResult report();
 
     static bool checkZipped(const GUrl &fileUrl);
+
 private:
     GUrl zippedUrl;
     GUrl unzippedUrl;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_BGZIP_TASK_H_
+#endif    // _U2_BGZIP_TASK_H_

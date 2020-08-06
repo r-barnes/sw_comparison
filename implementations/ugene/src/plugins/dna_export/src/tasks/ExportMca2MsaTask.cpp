@@ -19,13 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportMca2MsaTask.h"
+
 #include <U2Core/Counter.h>
 #include <U2Core/GHints.h>
 #include <U2Core/L10n.h>
 #include <U2Core/MultipleSequenceAlignmentExporter.h>
 
 #include "ConvertMca2MsaTask.h"
-#include "ExportMca2MsaTask.h"
 #include "ExportTasks.h"
 
 namespace U2 {
@@ -40,8 +41,7 @@ ExportMca2MsaTask::ExportMca2MsaTask(MultipleChromatogramAlignmentObject *mcaObj
       formatId(formatId),
       includeReference(includeReference),
       convertTask(NULL),
-      exportTask(NULL)
-{
+      exportTask(NULL) {
     GCOUNTER(cvar, tvar, "ExportMca2MsaTask");
     SAFE_POINT_EXT(NULL != mcaObject, setError(L10N::nullPointerError("MCA object")), );
 }
@@ -66,4 +66,4 @@ QList<Task *> ExportMca2MsaTask::onSubTaskFinished(Task *subTask) {
     return newSubTasks;
 }
 
-}   // namespace U2
+}    // namespace U2

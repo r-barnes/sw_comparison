@@ -19,39 +19,45 @@
  * MA 02110-1301, USA.
  */
 
+#include "GTTestsAnnotationsQualifiers.h"
+#include <base_dialogs/GTFileDialog.h>
+#include <drivers/GTKeyboardDriver.h>
+#include <drivers/GTMouseDriver.h>
+#include <primitives/GTTreeWidget.h>
+#include <primitives/GTWidget.h>
+#include <utils/GTThread.h>
+
 #include <QHeaderView>
 #include <QTreeWidgetItem>
 
 #include <U2View/ADVConstants.h>
 #include <U2View/AnnotationsTreeView.h>
 
-#include "GTTestsAnnotationsQualifiers.h"
 #include "GTUtilsAnnotationsTreeView.h"
-#include "utils/GTUtilsApp.h"
 #include "GTUtilsDocument.h"
 #include "GTUtilsMdi.h"
 #include "GTUtilsProjectTreeView.h"
 #include "GTUtilsSequenceView.h"
 #include "GTUtilsTaskTreeView.h"
-#include "system/GTFile.h"
-#include <base_dialogs/GTFileDialog.h>
-#include <drivers/GTKeyboardDriver.h>
 #include "primitives/GTMenu.h"
-#include <drivers/GTMouseDriver.h>
-#include <primitives/GTTreeWidget.h>
-#include <primitives/GTWidget.h>
 #include "primitives/PopupChooser.h"
 #include "runnables/ugene/corelibs/U2Gui/CreateAnnotationWidgetFiller.h"
 #include "runnables/ugene/corelibs/U2Gui/EditQualifierDialogFiller.h"
+#include "system/GTFile.h"
+#include "utils/GTUtilsApp.h"
 
 namespace U2 {
 
 namespace GUITest_common_scenarios_annotations_qualifiers {
 using namespace HI;
 GUI_TEST_CLASS_DEFINITION(test_0001) {
-    GTFileDialog::openFile(os, testDir + "_common_data/scenarios/project/", "proj2.uprj");
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/proj2.uprj", sandBoxDir + "proj2.uprj");
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/1.gb", sandBoxDir + "1.gb");
+
+    GTFileDialog::openFile(os, sandBoxDir, "proj2.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTUtilsDocument::checkDocument(os, "1.gb");
+    GTThread::waitForMainThread();
 
     GTMouseDriver::moveTo(GTUtilsProjectTreeView::getItemCenter(os, "NC_001363 features"));
     GTMouseDriver::doubleClick();
@@ -59,18 +65,17 @@ GUI_TEST_CLASS_DEFINITION(test_0001) {
 
     Runnable *filler = new EditQualifierFiller(os, "qual", "val");
     GTUtilsDialog::waitForDialog(os, filler);
-    GTGlobals::sleep(1000);
-
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << ADV_MENU_ADD << "add_qualifier_action"));
     GTMouseDriver::moveTo(GTUtilsAnnotationsTreeView::getItemCenter(os, "B"));
     GTMouseDriver::click(Qt::RightButton);
 
     GTUtilsAnnotationsTreeView::findItem(os, "qual");
-    GTGlobals::sleep(1000);
-
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0001_1) {
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/proj2.uprj", sandBoxDir + "proj2.uprj");
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/1.gb", sandBoxDir + "1.gb");
+
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/project/", "proj2.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTUtilsDocument::checkDocument(os, "1.gb");
@@ -100,9 +105,12 @@ GUI_TEST_CLASS_DEFINITION(test_0001_1) {
 
     GTUtilsAnnotationsTreeView::findItem(os, "qual1");
     GTGlobals::sleep(1000);
-    }
+}
 
 GUI_TEST_CLASS_DEFINITION(test_0001_2) {
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/proj2.uprj", sandBoxDir + "proj2.uprj");
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/1.gb", sandBoxDir + "1.gb");
+
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/project/", "proj2.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTUtilsDocument::checkDocument(os, "1.gb");
@@ -132,10 +140,11 @@ GUI_TEST_CLASS_DEFINITION(test_0001_2) {
 
     GTUtilsAnnotationsTreeView::findItem(os, "qual1");
     GTGlobals::sleep(1000);
-    }
-
+}
 
 GUI_TEST_CLASS_DEFINITION(test_0002) {
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/proj2.uprj", sandBoxDir + "proj2.uprj");
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/1.gb", sandBoxDir + "1.gb");
 
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/project/", "proj2.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -151,7 +160,7 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
 
     Runnable *filler = new EditQualifierFiller(os, "qu");
     GTUtilsDialog::waitForDialog(os, filler);
-    GTKeyboardDriver::keyClick( Qt::Key_F2);
+    GTKeyboardDriver::keyClick(Qt::Key_F2);
     GTGlobals::sleep();
 
     GTGlobals::sleep();
@@ -159,6 +168,8 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0002_1) {
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/proj2.uprj", sandBoxDir + "proj2.uprj");
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/1.gb", sandBoxDir + "1.gb");
 
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/project/", "proj2.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -174,47 +185,49 @@ GUI_TEST_CLASS_DEFINITION(test_0002_1) {
 
     Runnable *filler = new EditQualifierFiller(os, "qu");
     GTUtilsDialog::waitForDialog(os, filler);
-    GTKeyboardDriver::keyClick( Qt::Key_F2);
+    GTKeyboardDriver::keyClick(Qt::Key_F2);
     GTGlobals::sleep();
 
     GTGlobals::sleep();
     CHECK_SET_ERR(GTUtilsAnnotationsTreeView::findItem(os, "qu") != NULL, "Item qu not found in tree widget");
-    }
+}
 
 GUI_TEST_CLASS_DEFINITION(test_0002_2) {
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/proj2.uprj", sandBoxDir + "proj2.uprj");
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/1.gb", sandBoxDir + "1.gb");
 
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/project/", "proj2.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
+
+    GTUtilsProjectTreeView::checkProjectViewIsOpened(os);
     GTUtilsDocument::checkDocument(os, "1.gb");
 
     GTMouseDriver::moveTo(GTUtilsProjectTreeView::getItemCenter(os, "NC_001363 features"));
     GTMouseDriver::doubleClick();
-    GTGlobals::sleep();
+    GTUtilsSequenceView::checkSequenceViewWindowIsActive(os);
 
     GTUtilsAnnotationsTreeView::getItemCenter(os, "B");
     GTMouseDriver::moveTo(GTUtilsAnnotationsTreeView::getItemCenter(os, "qual"));
     GTMouseDriver::click();
 
-    Runnable *filler = new EditQualifierFiller(os, "qu");
-    GTUtilsDialog::waitForDialog(os, filler);
-    GTKeyboardDriver::keyClick( Qt::Key_F2);
-    GTGlobals::sleep();
+    GTUtilsDialog::waitForDialog(os, new EditQualifierFiller(os, "qu"));
+    GTKeyboardDriver::keyClick(Qt::Key_F2);
+    GTUtilsDialog::waitAllFinished(os);
 
     GTUtilsAnnotationsTreeView::getItemCenter(os, "C");
     GTMouseDriver::moveTo(GTUtilsAnnotationsTreeView::getItemCenter(os, "qual1"));
     GTMouseDriver::click();
 
-    Runnable *filler1 = new EditQualifierFiller(os, "qu1");
-    GTUtilsDialog::waitForDialog(os, filler1);
-    GTKeyboardDriver::keyClick( Qt::Key_F2);
-    GTGlobals::sleep();
+    GTUtilsDialog::waitForDialog(os, new EditQualifierFiller(os, "qu1"));
+    GTKeyboardDriver::keyClick(Qt::Key_F2);
+    GTUtilsDialog::waitAllFinished(os);
 
-    GTGlobals::sleep();
-    CHECK_SET_ERR(GTUtilsAnnotationsTreeView::findItem(os, "qu") != NULL, "Item qu not found in tree widget");
-
-    }
+    GTUtilsAnnotationsTreeView::findItem(os, "qu");
+}
 
 GUI_TEST_CLASS_DEFINITION(test_0003) {
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/proj2.uprj", sandBoxDir + "proj2.uprj");
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/1.gb", sandBoxDir + "1.gb");
 
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/project/", "proj2.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -237,6 +250,8 @@ GUI_TEST_CLASS_DEFINITION(test_0003) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0003_1) {
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/proj2.uprj", sandBoxDir + "proj2.uprj");
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/1.gb", sandBoxDir + "1.gb");
 
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/project/", "proj2.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -254,9 +269,11 @@ GUI_TEST_CLASS_DEFINITION(test_0003_1) {
     GTMouseDriver::doubleClick();
 
     CHECK_SET_ERR(GTUtilsAnnotationsTreeView::findItem(os, "qu") != NULL, "Item qu not found in tree widget");
-    }
+}
 
 GUI_TEST_CLASS_DEFINITION(test_0003_2) {
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/proj2.uprj", sandBoxDir + "proj2.uprj");
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/1.gb", sandBoxDir + "1.gb");
 
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/project/", "proj2.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -287,6 +304,9 @@ GUI_TEST_CLASS_DEFINITION(test_0003_2) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0004) {
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/proj2.uprj", sandBoxDir + "proj2.uprj");
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/1.gb", sandBoxDir + "1.gb");
+
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/project/", "proj2.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTUtilsDocument::checkDocument(os, "1.gb");
@@ -302,10 +322,12 @@ GUI_TEST_CLASS_DEFINITION(test_0004) {
 
     QTreeWidgetItem *qual1 = GTUtilsAnnotationsTreeView::findItem(os, "qual1", GTGlobals::FindOptions(false));
     CHECK_SET_ERR(qual1 == NULL, "There is annotation qual1, expected state there is no annotation qual1");
-
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0004_1) {
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/proj2.uprj", sandBoxDir + "proj2.uprj");
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/1.gb", sandBoxDir + "1.gb");
+
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/project/", "proj2.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTUtilsDocument::checkDocument(os, "1.gb");
@@ -323,10 +345,12 @@ GUI_TEST_CLASS_DEFINITION(test_0004_1) {
 
     QTreeWidgetItem *qual = GTUtilsAnnotationsTreeView::findItem(os, "qual", GTGlobals::FindOptions(false));
     CHECK_SET_ERR(qual == NULL, "There is annotation qual1, expected state there is no annotation qual");
-
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0004_2) {
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/proj2.uprj", sandBoxDir + "proj2.uprj");
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/1.gb", sandBoxDir + "1.gb");
+
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/project/", "proj2.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTUtilsDocument::checkDocument(os, "1.gb");
@@ -345,7 +369,7 @@ GUI_TEST_CLASS_DEFINITION(test_0004_2) {
     CHECK_SET_ERR(qual1 == NULL, "There is annotation qual1, expected state there is no annotation qual1");
     GTUtilsAnnotationsTreeView::getItemCenter(os, "B");
     GTMouseDriver::moveTo(GTUtilsAnnotationsTreeView::getItemCenter(os, "qual"));
-    GTKeyboardDriver::keyClick( Qt::Key_Delete);
+    GTKeyboardDriver::keyClick(Qt::Key_Delete);
     GTGlobals::sleep();
 
     GTGlobals::sleep();
@@ -354,6 +378,8 @@ GUI_TEST_CLASS_DEFINITION(test_0004_2) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0005) {
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/proj2.uprj", sandBoxDir + "proj2.uprj");
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/1.gb", sandBoxDir + "1.gb");
 
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/project/", "proj2.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -372,9 +398,10 @@ GUI_TEST_CLASS_DEFINITION(test_0005) {
 
     GTGlobals::sleep();
     CHECK_SET_ERR(GTUtilsAnnotationsTreeView::findItem(os, "qual") != NULL, "Item qu not found in tree widget");
-
 }
 GUI_TEST_CLASS_DEFINITION(test_0005_1) {
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/proj2.uprj", sandBoxDir + "proj2.uprj");
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/1.gb", sandBoxDir + "1.gb");
 
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/project/", "proj2.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -393,9 +420,10 @@ GUI_TEST_CLASS_DEFINITION(test_0005_1) {
 
     GTGlobals::sleep();
     CHECK_SET_ERR(GTUtilsAnnotationsTreeView::findItem(os, "qual1") != NULL, "Item qu not found in tree widget");
-
 }
 GUI_TEST_CLASS_DEFINITION(test_0005_2) {
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/proj2.uprj", sandBoxDir + "proj2.uprj");
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/1.gb", sandBoxDir + "1.gb");
 
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/project/", "proj2.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -424,7 +452,6 @@ GUI_TEST_CLASS_DEFINITION(test_0005_2) {
 
     GTGlobals::sleep();
     CHECK_SET_ERR(GTUtilsAnnotationsTreeView::findItem(os, "qual1") != NULL, "Item qu not found in tree widget");
-
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0006) {
@@ -443,8 +470,7 @@ GUI_TEST_CLASS_DEFINITION(test_0006) {
     QWidget *activeWindow = GTUtilsMdi::activeWindow(os);
     CHECK_SET_ERR(NULL != activeWindow, "Active window is NULL");
     QString expectedTitle = "P03334 [s] GAG_MSVMO";
-    CHECK_SET_ERR(expectedTitle == activeWindow->windowTitle(), QString("An unexpected window is active: expect '%1', got '%2'")
-            .arg(expectedTitle).arg(activeWindow->windowTitle()));
+    CHECK_SET_ERR(expectedTitle == activeWindow->windowTitle(), QString("An unexpected window is active: expect '%1', got '%2'").arg(expectedTitle).arg(activeWindow->windowTitle()));
 
     // Open "test_6_murine.gb" view and click the same qualifier value again.
     GTUtilsProjectTreeView::doubleClickItem(os, "test_6_murine.gb");
@@ -452,8 +478,7 @@ GUI_TEST_CLASS_DEFINITION(test_0006) {
     activeWindow = GTUtilsMdi::activeWindow(os);
     CHECK_SET_ERR(NULL != activeWindow, "Active window is NULL");
     expectedTitle = "test_6_murine [s] NC_001363";
-    CHECK_SET_ERR(expectedTitle == activeWindow->windowTitle(), QString("An unexpected window is active: expect '%1', got '%2'")
-            .arg(expectedTitle).arg(activeWindow->windowTitle()));
+    CHECK_SET_ERR(expectedTitle == activeWindow->windowTitle(), QString("An unexpected window is active: expect '%1', got '%2'").arg(expectedTitle).arg(activeWindow->windowTitle()));
 
     GTTreeWidget::click(os, GTUtilsAnnotationsTreeView::findItem(os, "db_xref"), AnnotationsTreeView::COLUMN_VALUE);
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -461,11 +486,13 @@ GUI_TEST_CLASS_DEFINITION(test_0006) {
     // Expected state: nothing happens, the original view is still active.
     activeWindow = GTUtilsMdi::activeWindow(os);
     CHECK_SET_ERR(NULL != activeWindow, "Active window is NULL");
-    CHECK_SET_ERR(expectedTitle == activeWindow->windowTitle(), QString("An unexpected window is active: expect '%1', got '%2'")
-            .arg(expectedTitle).arg(activeWindow->windowTitle()));
+    CHECK_SET_ERR(expectedTitle == activeWindow->windowTitle(), QString("An unexpected window is active: expect '%1', got '%2'").arg(expectedTitle).arg(activeWindow->windowTitle()));
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0007) {
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/proj2.uprj", sandBoxDir + "proj2.uprj");
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/1.gb", sandBoxDir + "1.gb");
+
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/project/", "proj2.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTUtilsDocument::checkDocument(os, "1.gb");
@@ -493,10 +520,12 @@ GUI_TEST_CLASS_DEFINITION(test_0007) {
 
     GTGlobals::sleep();
     CHECK_SET_ERR(GTUtilsAnnotationsTreeView::findItem(os, "new_qualifier") != NULL, "Item qu not found in tree widget");
-
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0007_1) {
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/proj2.uprj", sandBoxDir + "proj2.uprj");
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/1.gb", sandBoxDir + "1.gb");
+
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/project/", "proj2.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTUtilsDocument::checkDocument(os, "1.gb");
@@ -524,10 +553,12 @@ GUI_TEST_CLASS_DEFINITION(test_0007_1) {
 
     GTGlobals::sleep();
     CHECK_SET_ERR(GTUtilsAnnotationsTreeView::findItem(os, "new_qualifier") != NULL, "Item qu not found in tree widget");
-
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0007_2) {
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/proj2.uprj", sandBoxDir + "proj2.uprj");
+    GTFile::copy(os, testDir + "_common_data/scenarios/project/1.gb", sandBoxDir + "1.gb");
+
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/project/", "proj2.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
     GTUtilsDocument::checkDocument(os, "1.gb");
@@ -577,10 +608,10 @@ GUI_TEST_CLASS_DEFINITION(test_0008) {
     GTGlobals::sleep();
 
     QString longQualifierValueNoSpaces =
-            QString("Most qualifier values will be a descriptive text phrase which must be enclosed ") +
-            QString("in double quotation marks. When the text occupies more than one line, a single ") +
-            QString("set of quotation marks is required at the beginning and at the end of the ") +
-            QString("text");
+        QString("Most qualifier values will be a descriptive text phrase which must be enclosed ") +
+        QString("in double quotation marks. When the text occupies more than one line, a single ") +
+        QString("set of quotation marks is required at the beginning and at the end of the ") +
+        QString("text");
 
     Runnable *filler = new EditQualifierFiller(os, "long", longQualifierValueNoSpaces);
     GTUtilsDialog::waitForDialog(os, filler);
@@ -590,7 +621,7 @@ GUI_TEST_CLASS_DEFINITION(test_0008) {
     GTGlobals::sleep(1000);
     GTMouseDriver::click(Qt::RightButton);
 
-    GTUtilsDialog::waitForDialogClosed();
+    GTUtilsDialog::waitAllFinished(os);
     CHECK_SET_ERR(GTUtilsAnnotationsTreeView::findItem(os, "long") != NULL, "Item long not found in tree widget1");
 
     GTUtilsDocument::saveDocument(os, "1anot_1seq.gen");
@@ -602,7 +633,7 @@ GUI_TEST_CLASS_DEFINITION(test_0008) {
     GTMouseDriver::moveTo(GTUtilsAnnotationsTreeView::getItemCenter(os, "CDS"));
     GTMouseDriver::click();
 
-    QTreeWidgetItem* qualifierTreeItem = GTUtilsAnnotationsTreeView::findItem(os, "long");
+    QTreeWidgetItem *qualifierTreeItem = GTUtilsAnnotationsTreeView::findItem(os, "long");
     CHECK_SET_ERR(qualifierTreeItem->text(AnnotationsTreeView::COLUMN_VALUE) == longQualifierValueNoSpaces, "Different qualifier value!");
 
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << ADV_MENU_REMOVE << "Selected annotations and qualifiers"));
@@ -630,7 +661,7 @@ GUI_TEST_CLASS_DEFINITION(test_0009) {
     GTMouseDriver::moveTo(GTUtilsAnnotationsTreeView::getItemCenter(os, "CDS"));
     GTMouseDriver::click(Qt::RightButton);
 
-    GTUtilsDialog::waitForDialogClosed();
+    GTUtilsDialog::waitAllFinished(os);
     CHECK_SET_ERR(GTUtilsAnnotationsTreeView::findItem(os, "noSpaces") != NULL, "Item long not found in tree widget1");
 
     GTUtilsDocument::saveDocument(os, "1anot_1seq.gen");
@@ -642,7 +673,7 @@ GUI_TEST_CLASS_DEFINITION(test_0009) {
     GTMouseDriver::moveTo(GTUtilsAnnotationsTreeView::getItemCenter(os, "CDS"));
     GTMouseDriver::click();
 
-    QTreeWidgetItem* qualifierTreeItem = GTUtilsAnnotationsTreeView::findItem(os, "noSpaces");
+    QTreeWidgetItem *qualifierTreeItem = GTUtilsAnnotationsTreeView::findItem(os, "noSpaces");
     CHECK_SET_ERR(qualifierTreeItem->text(AnnotationsTreeView::COLUMN_VALUE) == longQualifierValueNoSpaces, "Different qualifier value!");
 
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << ADV_MENU_REMOVE << "Selected annotations and qualifiers"));
@@ -650,5 +681,5 @@ GUI_TEST_CLASS_DEFINITION(test_0009) {
     GTMouseDriver::click(Qt::RightButton);
 }
 
-} // namespace GUITest_common_scenarios_annotations_qualifiers
-} // namespace U2
+}    // namespace GUITest_common_scenarios_annotations_qualifiers
+}    // namespace U2

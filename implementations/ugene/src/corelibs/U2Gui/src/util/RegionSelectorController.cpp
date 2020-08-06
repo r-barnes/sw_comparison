@@ -20,15 +20,14 @@
  */
 
 #include "RegionSelectorController.h"
+#include <math.h>
+
+#include <QApplication>
 
 #include <U2Core/DNASequenceSelection.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/GUIUtils.h>
-
-#include <QApplication>
-#include <math.h>
-
 
 namespace U2 {
 
@@ -36,10 +35,9 @@ const QString RegionSelectorSettings::WHOLE_SEQUENCE = QApplication::translate("
 const QString RegionSelectorSettings::SELECTED_REGION = QApplication::translate("RegionSelectorController", "Selected region");
 const QString RegionSelectorSettings::CUSTOM_REGION = QApplication::translate("RegionSelectorController", "Custom region");
 
-
 RegionSelectorSettings::RegionSelectorSettings(qint64 maxLen,
                                                bool isCircularSelectionAvailable,
-                                               DNASequenceSelection* selection,
+                                               DNASequenceSelection *selection,
                                                QList<RegionPreset> _presetRegions,
                                                QString defaultPreset)
     : maxLen(maxLen),
@@ -47,7 +45,6 @@ RegionSelectorSettings::RegionSelectorSettings(qint64 maxLen,
       circular(isCircularSelectionAvailable),
       presetRegions(_presetRegions),
       defaultPreset(defaultPreset) {
-
     if (selection != NULL && !selection->isEmpty()) {
         U2Region region = getOneRegionFromSelection();
         presetRegions.prepend(RegionPreset(SELECTED_REGION, region));
@@ -57,13 +54,10 @@ RegionSelectorSettings::RegionSelectorSettings(qint64 maxLen,
 }
 
 U2Region RegionSelectorSettings::getOneRegionFromSelection() const {
-    U2Region region = selection->getSelectedRegions().isEmpty()
-            ? U2Region(0, maxLen)
-            : selection->getSelectedRegions().first();
+    U2Region region = selection->getSelectedRegions().isEmpty() ? U2Region(0, maxLen) : selection->getSelectedRegions().first();
     if (selection->getSelectedRegions().size() == 2) {
         U2Region secondReg = selection->getSelectedRegions().last();
-        bool circularSelection = (region.startPos == 0 && secondReg.endPos() == maxLen)
-                || (region.endPos() == maxLen && secondReg.startPos == 0);
+        bool circularSelection = (region.startPos == 0 && secondReg.endPos() == maxLen) || (region.endPos() == maxLen && secondReg.startPos == 0);
         if (circularSelection) {
             if (secondReg.startPos == 0) {
                 region.length += secondReg.length;
@@ -77,11 +71,10 @@ U2Region RegionSelectorSettings::getOneRegionFromSelection() const {
     return region;
 }
 
-RegionSelectorController::RegionSelectorController(RegionSelectorGui gui, RegionSelectorSettings settings, QObject* parent)
+RegionSelectorController::RegionSelectorController(RegionSelectorGui gui, RegionSelectorSettings settings, QObject *parent)
     : QObject(parent),
       gui(gui),
       settings(settings) {
-
     init();
     setupPresets();
     connectSlots();
@@ -109,7 +102,7 @@ U2Region RegionSelectorController::getRegion(bool *_ok) const {
         return U2Region();
     }
 
-    if (v1 > v2 && !settings.circular) { // start > end
+    if (v1 > v2 && !settings.circular) {    // start > end
         if (_ok != NULL) {
             *_ok = false;
         }
@@ -129,7 +122,7 @@ U2Region RegionSelectorController::getRegion(bool *_ok) const {
 
 void RegionSelectorController::setRegion(const U2Region &region) {
     CHECK(region != getRegion(), );
-    SAFE_POINT(region.startPos >=0 && region.startPos < settings.maxLen && region.length <= settings.maxLen, tr("Region is not in sequence range"), );
+    SAFE_POINT(region.startPos >= 0 && region.startPos < settings.maxLen && region.length <= settings.maxLen, tr("Region is not in sequence range"), );
 
     qint64 end = region.endPos();
     if (end > settings.maxLen) {
@@ -151,12 +144,12 @@ QString RegionSelectorController::getPresetName() const {
     return gui.presetsComboBox->currentText();
 }
 
-void RegionSelectorController::setPreset(const QString& preset) {
+void RegionSelectorController::setPreset(const QString &preset) {
     SAFE_POINT(gui.presetsComboBox != NULL, tr("Cannot set preset, ComboBox is NULL"), );
     gui.presetsComboBox->setCurrentText(preset);
 }
 
-void RegionSelectorController::removePreset(const QString& preset) {
+void RegionSelectorController::removePreset(const QString &preset) {
     gui.presetsComboBox->removeItem(gui.presetsComboBox->findText(preset));
     RegionPreset settingsPreset;
     foreach (const RegionPreset &r, settings.presetRegions) {
@@ -181,7 +174,7 @@ namespace {
 const QString START_IS_INVALID = QApplication::translate("RegionSelectorController", "Invalid Start position of region");
 const QString END_IS_INVALID = QApplication::translate("RegionSelectorController", "Invalid End position of region");
 const QString REGION_IS_INVALID = QApplication::translate("RegionSelectorController", "Start position is greater than End position");
-}
+}    // namespace
 
 QString RegionSelectorController::getErrorMessage() const {
     bool ok = false;
@@ -195,7 +188,7 @@ QString RegionSelectorController::getErrorMessage() const {
         return END_IS_INVALID;
     }
 
-    if (v1 > v2 && !settings.circular) { // start > end
+    if (v1 > v2 && !settings.circular) {    // start > end
         return REGION_IS_INVALID;
     }
 
@@ -255,7 +248,7 @@ void RegionSelectorController::sl_onRegionChanged() {
 }
 
 void RegionSelectorController::sl_onSelectionChanged(GSelection *selection) {
-    CHECK(gui.presetsComboBox != NULL, ); // no combobox - no selection dependency
+    CHECK(gui.presetsComboBox != NULL, );    // no combobox - no selection dependency
 
     SAFE_POINT(settings.selection == selection, "Invalid sequence selection", );
     int selectedRegionIndex = gui.presetsComboBox->findText(RegionSelectorSettings::SELECTED_REGION);
@@ -290,7 +283,7 @@ void RegionSelectorController::sl_onValueEdited() {
 void RegionSelectorController::init() {
     SAFE_POINT(gui.startLineEdit != NULL && gui.endLineEdit != NULL, tr("Region lineEdit is NULL"), );
 
-    int w = qMax(((int)log10((double)settings.maxLen))*10, 50);
+    int w = qMax(((int)log10((double)settings.maxLen)) * 10, 50);
 
     gui.startLineEdit->setValidator(new QIntValidator(1, settings.maxLen, gui.startLineEdit));
     gui.startLineEdit->setMinimumWidth(w);
@@ -307,7 +300,7 @@ void RegionSelectorController::setupPresets() {
     CHECK(gui.presetsComboBox != NULL, );
 
     bool foundDefaultPreset = false;
-    foreach(const RegionPreset &presetRegion, settings.presetRegions) {
+    foreach (const RegionPreset &presetRegion, settings.presetRegions) {
         gui.presetsComboBox->addItem(presetRegion.text, QVariant::fromValue(presetRegion.region));
         if (presetRegion.text == settings.defaultPreset) {
             foundDefaultPreset = true;
@@ -325,13 +318,13 @@ void RegionSelectorController::setupPresets() {
 void RegionSelectorController::connectSlots() {
     SAFE_POINT(gui.startLineEdit != NULL && gui.endLineEdit != NULL, tr("Region lineEdit is NULL"), );
 
-    connect(gui.startLineEdit, SIGNAL(editingFinished()),                  SLOT(sl_onRegionChanged()));
-    connect(gui.startLineEdit, SIGNAL(textEdited(const QString &)),        SLOT(sl_onValueEdited()));
-    connect(gui.startLineEdit, SIGNAL(textChanged(QString)),               SLOT(sl_onRegionChanged()));
+    connect(gui.startLineEdit, SIGNAL(editingFinished()), SLOT(sl_onRegionChanged()));
+    connect(gui.startLineEdit, SIGNAL(textEdited(const QString &)), SLOT(sl_onValueEdited()));
+    connect(gui.startLineEdit, SIGNAL(textChanged(QString)), SLOT(sl_onRegionChanged()));
 
-    connect(gui.endLineEdit,   SIGNAL(editingFinished()),                  SLOT(sl_onRegionChanged()));
-    connect(gui.endLineEdit,   SIGNAL(textEdited(const QString &)),        SLOT(sl_onValueEdited()));
-    connect(gui.endLineEdit,   SIGNAL(textChanged(QString)),               SLOT(sl_onRegionChanged()));
+    connect(gui.endLineEdit, SIGNAL(editingFinished()), SLOT(sl_onRegionChanged()));
+    connect(gui.endLineEdit, SIGNAL(textEdited(const QString &)), SLOT(sl_onValueEdited()));
+    connect(gui.endLineEdit, SIGNAL(textChanged(QString)), SLOT(sl_onRegionChanged()));
 
     if (gui.presetsComboBox != NULL) {
         connect(gui.presetsComboBox, SIGNAL(currentIndexChanged(int)), SLOT(sl_onPresetChanged(int)));
@@ -339,9 +332,8 @@ void RegionSelectorController::connectSlots() {
     }
 
     if (settings.selection != NULL) {
-        connect(settings.selection, SIGNAL(si_onSelectionChanged(GSelection*)), SLOT(sl_onSelectionChanged(GSelection*)));
+        connect(settings.selection, SIGNAL(si_onSelectionChanged(GSelection *)), SLOT(sl_onSelectionChanged(GSelection *)));
     }
 }
 
-
-} // namespace
+}    // namespace U2

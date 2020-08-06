@@ -20,12 +20,13 @@
  */
 
 #include "SeqPosSupport.h"
-#include "python/PythonSupport.h"
-#include "R/RSupport.h"
-#include "utils/ExternalToolUtils.h"
 
 #include <U2Core/AppContext.h>
 #include <U2Core/Settings.h>
+
+#include "R/RSupport.h"
+#include "python/PythonSupport.h"
+#include "utils/ExternalToolUtils.h"
 
 namespace U2 {
 
@@ -34,9 +35,8 @@ const QString SeqPosSupport::ET_SEQPOS_ID = "USUPP_SEQPOS";
 const QString SeqPosSupport::ASSEMBLY_DIR_NAME = "genomes";
 const QString SeqPosSupport::ASSEMBLY_DIR = "Assembly dir";
 
-SeqPosSupport::SeqPosSupport(const QString& id, const QString &name)
-: ExternalTool(id, name, "")
-{
+SeqPosSupport::SeqPosSupport(const QString &id, const QString &name)
+    : ExternalTool(id, name, "") {
     initialize();
 }
 
@@ -62,7 +62,7 @@ void SeqPosSupport::initialize() {
     validMessage = "mdseqpos \\(official trunk\\):";
     validationArguments << "-v";
 
-    versionRegExp=QRegExp("Version (\\d+\\.\\d+)");
+    versionRegExp = QRegExp("Version (\\d+\\.\\d+)");
 
     ExternalToolUtils::addDefaultCistromeDirToSettings();
     ExternalToolUtils::addCistromeDataPath(ASSEMBLY_DIR, ASSEMBLY_DIR_NAME, true);
@@ -70,4 +70,4 @@ void SeqPosSupport::initialize() {
     muted = true;
 }
 
-} // U2
+}    // namespace U2

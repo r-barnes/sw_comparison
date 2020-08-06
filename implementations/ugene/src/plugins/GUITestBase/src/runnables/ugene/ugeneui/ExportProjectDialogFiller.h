@@ -27,33 +27,28 @@
 namespace U2 {
 using namespace HI;
 
-    class ExportProjectDialogFiller : public Filler {
-    public:
-        ExportProjectDialogFiller(HI::GUITestOpStatus &_os, const QString &_projectFolder, const QString &_projectName = "")
-            :Filler(_os, "ExportProjectDialog"), projectFolder(_projectFolder), projectName(_projectName){}
-        void commonScenario();
-    private:
-        const QString projectFolder;
-        const QString projectName;
-    };
+class ExportProjectDialogFiller : public Filler {
+public:
+    ExportProjectDialogFiller(HI::GUITestOpStatus &_os, const QString &_projectName = "")
+        : Filler(_os, "ExportProjectDialog"), projectName(_projectName) {
+    }
+    void commonScenario();
 
-    class ExportProjectDialogChecker : public Filler {
-    public:
-        ExportProjectDialogChecker(HI::GUITestOpStatus &_os, const QString &_projectName)
-            :Filler(_os, "ExportProjectDialog"), projectName(_projectName){}
-        void commonScenario();
-    private:
-        const QString projectName;
-    };
+private:
+    const QString projectName;
+};
 
-    class ExportProjectDialogSizeChecker : public Filler {
-    public:
-        ExportProjectDialogSizeChecker(HI::GUITestOpStatus &_os, const QString &_projectName)
-            :Filler(_os, "ExportProjectDialog"), projectName(_projectName){}
-        void commonScenario();
-    private:
-        const QString projectName;
-    };
-}
+class ExportProjectDialogChecker : public Filler {
+public:
+    ExportProjectDialogChecker(HI::GUITestOpStatus &_os, const QString &_projectName)
+        : Filler(_os, "ExportProjectDialog"), projectName(_projectName) {
+    }
+    void commonScenario();
+
+private:
+    const QString projectName;
+};
+
+}    // namespace U2
 
 #endif

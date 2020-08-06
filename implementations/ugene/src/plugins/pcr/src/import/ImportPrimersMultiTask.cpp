@@ -19,15 +19,14 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/L10n.h>
-
 #include "ImportPrimersMultiTask.h"
+
+#include <U2Core/L10n.h>
 
 namespace U2 {
 
-ImportPrimersMultiTask::ImportPrimersMultiTask(const QList<Task *> &importSubtasks) :
-    MultiTask(tr("Import primers"), importSubtasks, false,
-              TaskFlags(TaskFlag_NoRun | TaskFlag_ReportingIsEnabled | TaskFlag_ReportingIsSupported)) {
+ImportPrimersMultiTask::ImportPrimersMultiTask(const QList<Task *> &importSubtasks)
+    : MultiTask(tr("Import primers"), importSubtasks, false, TaskFlags(TaskFlag_NoRun | TaskFlag_ReportingIsEnabled | TaskFlag_ReportingIsSupported)) {
 }
 
 QString ImportPrimersMultiTask::generateReport() const {
@@ -38,4 +37,4 @@ QString ImportPrimersMultiTask::generateReport() const {
     return report;
 }
 
-}   // namespace U2
+}    // namespace U2

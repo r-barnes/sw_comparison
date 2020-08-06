@@ -19,33 +19,33 @@
 * MA 02110-1301, USA.
 */
 
+#include "FindAlgorithmTests.h"
+
 #include <QDomElement>
 
 #include <U2Core/DocumentModel.h>
 #include <U2Core/GObjectUtils.h>
 #include <U2Core/U2OpStatusUtils.h>
 
-#include "FindAlgorithmTests.h"
-
 namespace U2 {
 
 //musthave attributes
-#define DOC_ATTR                    "document"
-#define SEQUENCE_ATTR               "sequence"
-#define STRAND_ATTR                 "strand"
-#define PATTERN_ATTR                "pattern"
-#define RANGE_ATTR                  "range"
-#define MAX_ERR_ATTR                "max_error"
-#define ALGORITHM_ATTR              "algorithm"
-#define EXPECTED_ATTR               "expected"
+#define DOC_ATTR "document"
+#define SEQUENCE_ATTR "sequence"
+#define STRAND_ATTR "strand"
+#define PATTERN_ATTR "pattern"
+#define RANGE_ATTR "range"
+#define MAX_ERR_ATTR "max_error"
+#define ALGORITHM_ATTR "algorithm"
+#define EXPECTED_ATTR "expected"
 //flags
-#define SOURCE_ATTR                 "source"
-#define AMBIG_ATTR                  "ambig"
-#define MAXLEN_ATTR                 "max_len"
+#define SOURCE_ATTR "source"
+#define AMBIG_ATTR "ambig"
+#define MAXLEN_ATTR "max_len"
 
-#define CIRCULAR_LABEL              "circular"
+#define CIRCULAR_LABEL "circular"
 
-U2Region stringToRegion(const QString& regionStr) {
+U2Region stringToRegion(const QString &regionStr) {
     int region[2];
     QStringList regStrList = regionStr.split("..", QString::SkipEmptyParts);
     if (regStrList.size() != 2) {
@@ -54,126 +54,121 @@ U2Region stringToRegion(const QString& regionStr) {
     bool ok;
     for (int i = 0; i < 2; i++) {
         region[i] = regStrList[i].toInt(&ok);
-        if(!ok){
+        if (!ok) {
             return U2Region();
         }
     }
     return U2Region(region[0], region[1] - region[0]);
 }
 
-void GTest_FindAlgorithmTest::init(XMLTestFormat *tf, const QDomElement& el){
+void GTest_FindAlgorithmTest::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
     QString buf = el.attribute(STRAND_ATTR);
-    if(buf.isEmpty()){
+    if (buf.isEmpty()) {
         stateInfo.setError(GTest::tr("value not set %1").arg(STRAND_ATTR));
         return;
     }
-    if(buf == "direct"){
+    if (buf == "direct") {
         settings.strand = FindAlgorithmStrand_Direct;
-    }else if(buf == "both"){
+    } else if (buf == "both") {
         settings.strand = FindAlgorithmStrand_Both;
-    }else if(buf == "complement"){
+    } else if (buf == "complement") {
         settings.strand = FindAlgorithmStrand_Complement;
-    }else{
+    } else {
         stateInfo.setError(GTest::tr("value for %1 is incorrect").arg(STRAND_ATTR));
         return;
     }
 
     buf = el.attribute(PATTERN_ATTR);
-    if(buf.isEmpty()){
+    if (buf.isEmpty()) {
         stateInfo.setError(GTest::tr("value not set %1").arg(PATTERN_ATTR));
         return;
     }
     settings.pattern = buf.toLatin1();
 
     buf = el.attribute(SOURCE_ATTR);
-    if(buf == "translation"){
+    if (buf == "translation") {
         translatetoAmino = true;
-    }else{
+    } else {
         translatetoAmino = false;
     }
 
     buf = el.attribute(DOC_ATTR);
-    if(buf.isEmpty()){
+    if (buf.isEmpty()) {
         stateInfo.setError(GTest::tr("value not set %1").arg(DOC_ATTR));
         return;
     }
     docName = buf;
 
     buf = el.attribute(SEQUENCE_ATTR);
-    if(buf.isEmpty()){
+    if (buf.isEmpty()) {
         stateInfo.setError(GTest::tr("value not set %1").arg(SEQUENCE_ATTR));
         return;
     }
     sequenceName = buf;
 
-
     buf = el.attribute(RANGE_ATTR);
     QStringList regionStr = buf.split("..", QString::SkipEmptyParts);
     bool ok;
     int region[2];
-    if(regionStr.size() != 2){
+    if (regionStr.size() != 2) {
         stateInfo.setError(GTest::tr("value incorrect for %1").arg(RANGE_ATTR));
         return;
     }
-    for(int i = 0; i < 2;i++){
+    for (int i = 0; i < 2; i++) {
         region[i] = regionStr[i].toInt(&ok);
-        if(!ok){
+        if (!ok) {
             stateInfo.setError(GTest::tr("value incorrect for %1").arg(RANGE_ATTR));
             return;
         }
     }
 
-    settings.searchRegion = U2Region(region[0],region[1] - region[0]);
+    settings.searchRegion = U2Region(region[0], region[1] - region[0]);
 
     buf = el.attribute(MAX_ERR_ATTR);
     settings.maxErr = buf.toInt(&ok);
-    if(!ok){
+    if (!ok) {
         stateInfo.setError(GTest::tr("value incorrect for %1").arg(MAX_ERR_ATTR));
         return;
     }
-    if(settings.maxErr >= settings.pattern.length()){
+    if (settings.maxErr >= settings.pattern.length()) {
         stateInfo.setError(GTest::tr("%1 attribute value greater or equal pattern length").arg(MAX_ERR_ATTR));
         return;
     }
 
-
     buf = el.attribute(ALGORITHM_ATTR);
-    if(buf.isEmpty()){
+    if (buf.isEmpty()) {
         stateInfo.setError(GTest::tr("value not set %1").arg(ALGORITHM_ATTR));
         return;
     }
     if (buf == "exact") {
         settings.patternSettings = FindAlgorithmPatternSettings_Exact;
-    } else if(buf == "subst"){
+    } else if (buf == "subst") {
         settings.patternSettings = FindAlgorithmPatternSettings_Subst;
-    }else if(buf == "insdel"){
+    } else if (buf == "insdel") {
         settings.patternSettings = FindAlgorithmPatternSettings_InsDel;
-    }
-    else if(buf == "regexp"){
+    } else if (buf == "regexp") {
         settings.patternSettings = FindAlgorithmPatternSettings_RegExp;
-        settings.maxRegExpResultLength =  el.attribute(MAXLEN_ATTR).toInt(&ok);
-        if(!ok){
+        settings.maxRegExpResultLength = el.attribute(MAXLEN_ATTR).toInt(&ok);
+        if (!ok) {
             stateInfo.setError(GTest::tr("value incorrect for %1").arg(MAXLEN_ATTR));
             return;
         }
-    }
-    else{
+    } else {
         stateInfo.setError(GTest::tr("value for %1 incorrect").arg(ALGORITHM_ATTR));
     }
 
     buf = el.attribute(AMBIG_ATTR);
-    if(buf == "true"){
+    if (buf == "true") {
         settings.useAmbiguousBases = true;
-    }else{
+    } else {
         settings.useAmbiguousBases = false;
     }
 
     buf = el.attribute(EXPECTED_ATTR);
     QStringList splittedToRegions = buf.split(";", QString::SkipEmptyParts);
     U2Region r;
-    foreach(QString regStr, splittedToRegions){
-
+    foreach (QString regStr, splittedToRegions) {
         if (regStr.startsWith(QString(CIRCULAR_LABEL))) {
             regStr.chop(1);
             regStr.remove(QString(CIRCULAR_LABEL) + "(");
@@ -197,23 +192,23 @@ void GTest_FindAlgorithmTest::init(XMLTestFormat *tf, const QDomElement& el){
     }
 }
 
-void GTest_FindAlgorithmTest::prepare(){
-    Document* doc = getContext<Document>(this, docName);
+void GTest_FindAlgorithmTest::prepare() {
+    Document *doc = getContext<Document>(this, docName);
     if (doc == NULL) {
         stateInfo.setError(GTest::tr("context not found %1").arg(docName));
         return;
     }
-    QList<GObject*> list = doc->findGObjectByType(GObjectTypes::SEQUENCE);
+    QList<GObject *> list = doc->findGObjectByType(GObjectTypes::SEQUENCE);
     if (list.size() == 0) {
         stateInfo.setError(GTest::tr("container of object with type \"%1\" is empty").arg(GObjectTypes::SEQUENCE));
         return;
     }
 
-    foreach(GObject *go, list){
-       if(go->getGObjectName() == sequenceName){
-           se = qobject_cast<U2SequenceObject *>(go);
-           break;
-       }
+    foreach (GObject *go, list) {
+        if (go->getGObjectName() == sequenceName) {
+            se = qobject_cast<U2SequenceObject *>(go);
+            break;
+        }
     }
 
     U2OpStatusImpl os;
@@ -221,30 +216,29 @@ void GTest_FindAlgorithmTest::prepare(){
     SAFE_POINT_OP(os, );
     settings.searchIsCircular = se->isCircular();
     settings.complementTT = GObjectUtils::findComplementTT(se->getAlphabet());
-    if(translatetoAmino){
+    if (translatetoAmino) {
         settings.proteinTT = GObjectUtils::findAminoTT(se, false);
     }
     t = new FindAlgorithmTask(settings);
     addSubTask(t);
 }
 
-
-Task::ReportResult GTest_FindAlgorithmTest::report(){
+Task::ReportResult GTest_FindAlgorithmTest::report() {
     QList<FindAlgorithmResult> actualResults = t->popResults();
-    if(actualResults.size() != expectedResults.size()){
+    if (actualResults.size() != expectedResults.size()) {
         stateInfo.setError(GTest::tr("Expected and actual result sizes are different: %1 , %2")
-            .arg(expectedResults.size())
-            .arg(actualResults.size()));
+                               .arg(expectedResults.size())
+                               .arg(actualResults.size()));
         return ReportResult_Finished;
     }
 
-    for(int i = 0; i < actualResults.size(); i++){
-        if(!expectedResults.contains(actualResults[i].region)){
+    for (int i = 0; i < actualResults.size(); i++) {
+        if (!expectedResults.contains(actualResults[i].region)) {
             stateInfo.setError(GTest::tr("Expected and actual regions are different: %1..%2 , %3..%4")
-                .arg(expectedResults[i].startPos)
-                .arg(expectedResults[i].endPos())
-                .arg(actualResults[i].region.startPos)
-                .arg(actualResults[i].region.endPos()));
+                                   .arg(expectedResults[i].startPos)
+                                   .arg(expectedResults[i].endPos())
+                                   .arg(actualResults[i].region.startPos)
+                                   .arg(actualResults[i].region.endPos()));
             return ReportResult_Finished;
         }
     }
@@ -252,11 +246,11 @@ Task::ReportResult GTest_FindAlgorithmTest::report(){
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-QList<XMLTestFactory*> FindAlgorithmTests::createTestFactories(){
-    QList<XMLTestFactory*> res;
+QList<XMLTestFactory *> FindAlgorithmTests::createTestFactories() {
+    QList<XMLTestFactory *> res;
     res.append(GTest_FindAlgorithmTest::createFactory());
 
     return res;
 }
 
-}
+}    // namespace U2

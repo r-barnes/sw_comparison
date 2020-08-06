@@ -19,9 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
-
 #include "Variable.h"
+
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
@@ -30,20 +30,18 @@ Variable::Variable() {
 }
 
 Variable::Variable(const QString &_name)
-: name(_name)
-{
+    : name(_name) {
     assigned = false;
 }
 
 Variable::~Variable() {
-
 }
 
-const QString & Variable::getName() const {
+const QString &Variable::getName() const {
     return name;
 }
 
-const QString & Variable::getValue() const {
+const QString &Variable::getValue() const {
     SAFE_POINT(assigned, QObject::tr("Retrieving value of unassigned variable: %1").arg(name), value);
     return value;
 }
@@ -57,7 +55,7 @@ bool Variable::isAssigned() const {
     return assigned;
 }
 
-bool Variable::operator == (const Variable &other) const {
+bool Variable::operator==(const Variable &other) const {
     CHECK(name == other.name, false);
     SAFE_POINT(assigned, QObject::tr("Unassigned variable: %1").arg(name), false);
     SAFE_POINT(other.assigned, QObject::tr("Unassigned variable: %1").arg(other.name), false);
@@ -65,12 +63,10 @@ bool Variable::operator == (const Variable &other) const {
 }
 
 Predicate::Predicate() {
-
 }
 
 Predicate::Predicate(const Variable &v, const QString &value)
-: var(v)
-{
+    : var(v) {
     var.setValue(value);
 }
 
@@ -88,7 +84,7 @@ QString Predicate::toString() const {
 }
 
 Predicate Predicate::fromString(const QString &string, U2OpStatus &os) {
-    QStringList token = string.split("."); // var.value
+    QStringList token = string.split(".");    // var.value
     if (2 != token.size()) {
         os.setError(QObject::tr("Can not parse predicate from the string: %1").arg(string));
         return Predicate();
@@ -96,8 +92,8 @@ Predicate Predicate::fromString(const QString &string, U2OpStatus &os) {
     return Predicate(Variable(token[0]), token[1]);
 }
 
-bool Predicate::operator < (const Predicate &other) const {
+bool Predicate::operator<(const Predicate &other) const {
     return (toString() < other.toString());
 }
 
-} // U2
+}    // namespace U2

@@ -19,14 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "ToolsMenu.h"
+
 #include <QMenu>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/MainWindow.h>
-
-#include "ToolsMenu.h"
 
 namespace U2 {
 
@@ -215,11 +215,11 @@ void ToolsMenu::init() {
     subMenuAction[TOOLS] << GUI_TEST_RUNNER;
 }
 
-QMenu * ToolsMenu::getToolsMenu() {
+QMenu *ToolsMenu::getToolsMenu() {
     return AppContext::getMainWindow()->getTopLevelMenu(MWMENU_TOOLS);
 }
 
-QMenu * ToolsMenu::getMenu(const QString &menuName) {
+QMenu *ToolsMenu::getMenu(const QString &menuName) {
     QMenu *tools = getToolsMenu();
     CHECK(NULL != tools, NULL);
 
@@ -227,14 +227,14 @@ QMenu * ToolsMenu::getMenu(const QString &menuName) {
         return tools;
     }
 
-    QMenu *subMenu = tools->findChild<QMenu*>(menuName);
+    QMenu *subMenu = tools->findChild<QMenu *>(menuName);
     if (NULL == subMenu) {
         subMenu = createMenu(tools, menuName);
     }
     return subMenu;
 }
 
-QMenu * ToolsMenu::createMenu(QMenu *tools, const QString &menuName) {
+QMenu *ToolsMenu::createMenu(QMenu *tools, const QString &menuName) {
     SAFE_POINT(actionText.contains(menuName), "Unknown tool sub menu " + menuName, NULL);
     QMenu *result = new QMenu(actionText[menuName], tools);
     if (actionIcon.contains(menuName)) {
@@ -249,30 +249,30 @@ QMenu * ToolsMenu::createMenu(QMenu *tools, const QString &menuName) {
 }
 
 namespace {
-    QAction * findAction(const QMenu *menu, const QString &actionName) {
-        foreach (QAction *action, menu->actions()) {
-            if (action->objectName() == actionName) {
-                return action;
-            }
+QAction *findAction(const QMenu *menu, const QString &actionName) {
+    foreach (QAction *action, menu->actions()) {
+        if (action->objectName() == actionName) {
+            return action;
         }
-        return NULL;
     }
-    QAction * getSeparator(const QMenu *menu, QAction *action1, QAction *action2) {
-        bool foundAction1 = (NULL == action1);
-        foreach (QAction *action, menu->actions()) {
-            if (action1 == action) {
-                foundAction1 = true;
-            }
-            if (action2 == action) {
-                return NULL;
-            }
-            if (foundAction1 && action->isSeparator()) {
-                return action;
-            }
-        }
-        return NULL;
-    }
+    return NULL;
 }
+QAction *getSeparator(const QMenu *menu, QAction *action1, QAction *action2) {
+    bool foundAction1 = (NULL == action1);
+    foreach (QAction *action, menu->actions()) {
+        if (action1 == action) {
+            foundAction1 = true;
+        }
+        if (action2 == action) {
+            return NULL;
+        }
+        if (foundAction1 && action->isSeparator()) {
+            return action;
+        }
+    }
+    return NULL;
+}
+}    // namespace
 
 bool ToolsMenu::mustHaveSeparator(const QString &menuName, const QString &actionName1, const QString &actionName2) {
     bool foundAction1 = ("" == actionName1);
@@ -290,12 +290,12 @@ bool ToolsMenu::mustHaveSeparator(const QString &menuName, const QString &action
     return false;
 }
 
-QAction * ToolsMenu::getPrevAction(QMenu *menu, const QString &menuName, const QString &actionName) {
+QAction *ToolsMenu::getPrevAction(QMenu *menu, const QString &menuName, const QString &actionName) {
     QStringList actionNames = subMenuAction[menuName];
     int pos = actionNames.indexOf(actionName);
     SAFE_POINT(-1 != pos, "Unknown Tools menu action " + actionName, NULL);
 
-    for (int i=pos-1; i>=0; i--) {
+    for (int i = pos - 1; i >= 0; i--) {
         QAction *action = findAction(menu, actionNames[i]);
         if (NULL != action) {
             return action;
@@ -305,12 +305,12 @@ QAction * ToolsMenu::getPrevAction(QMenu *menu, const QString &menuName, const Q
     return NULL;
 }
 
-QAction * ToolsMenu::getNextAction(QMenu *menu, const QString &menuName, const QString &actionName) {
+QAction *ToolsMenu::getNextAction(QMenu *menu, const QString &menuName, const QString &actionName) {
     QStringList actionNames = subMenuAction[menuName];
     int pos = actionNames.indexOf(actionName);
     SAFE_POINT(-1 != pos, "Unknown Tools menu action " + actionName, NULL);
 
-    for (int i=pos+1; i<actionNames.size(); i++) {
+    for (int i = pos + 1; i < actionNames.size(); i++) {
         QAction *action = findAction(menu, actionNames[i]);
         if (NULL != action) {
             return action;
@@ -357,4 +357,4 @@ void ToolsMenu::addAction(const QString &menuName, QAction *action) {
     insertAction(menu, menuName, action);
 }
 
-} // U2
+}    // namespace U2

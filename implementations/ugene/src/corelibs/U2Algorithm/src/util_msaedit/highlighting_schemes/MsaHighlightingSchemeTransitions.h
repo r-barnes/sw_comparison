@@ -38,9 +38,9 @@ class U2ALGORITHM_EXPORT MsaHighlightingSchemeTransitionsFactory : public MsaHig
 public:
     MsaHighlightingSchemeTransitionsFactory(QObject *parent, const QString &id, const QString &name, const AlphabetFlags &supportedAlphabets);
 
-    MsaHighlightingScheme * create(QObject *parent, MultipleAlignmentObject *maObj) const;
+    MsaHighlightingScheme *create(QObject *parent, MultipleAlignmentObject *maObj) const;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MSA_HIGHLIGHTING_SCHEME_TRANSITIONS_H_
+#endif    // _U2_MSA_HIGHLIGHTING_SCHEME_TRANSITIONS_H_

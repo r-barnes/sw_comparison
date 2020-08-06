@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DockWidgetPainter.h"
+
 #include <QAction>
 #include <QApplication>
 #include <QLabel>
@@ -27,7 +29,6 @@
 #include <U2Core/U2SafePoints.h>
 
 #include "DockManagerImpl.h"
-#include "DockWidgetPainter.h"
 
 namespace U2 {
 
@@ -59,8 +60,8 @@ void DockWidgetPainter::updateLabel(DockData *d, bool active) {
     QPoint textPoint = paintData.calculateTextPoint(widgetSize);
     drawText(keyPrefix, text, textPoint, painter);
     if (paintData.getHasIcon()) {
-       QPoint iconPoint = paintData.calculateIconPoint(textPoint, widgetSize);
-       drawIcon(icon, iconPoint, paintData.getIconSize(), painter);
+        QPoint iconPoint = paintData.calculateIconPoint(textPoint, widgetSize);
+        drawIcon(icon, iconPoint, paintData.getIconSize(), painter);
     }
     painter.end();
 
@@ -70,7 +71,7 @@ void DockWidgetPainter::updateLabel(DockData *d, bool active) {
 }
 
 QString DockWidgetPainter::findKeyPrefix(const QAction *action) {
-    const QKeySequence ks = action == NULL ? QKeySequence(): action->shortcut();
+    const QKeySequence ks = action == NULL ? QKeySequence() : action->shortcut();
     if (ks.count() == 1) {
         for (int k = (int)Qt::Key_0; k <= (int)Qt::Key_9; k++) {
             if (ks[0] == (k | (int)Qt::ALT)) {
@@ -108,7 +109,7 @@ void DockWidgetPainter::drawBorder(bool active, const QSize &widgetSize, const Q
     const QColor innerColor = getInnerColor(active, backgroundColor);
     painter.setPen(Qt::black);
     painter.fillRect(roundedRect, innerColor);
-    painter.drawLine((int) roundedRect.left() + 1, (int)roundedRect.top(), (int)roundedRect.right() - 1, (int)roundedRect.top());
+    painter.drawLine((int)roundedRect.left() + 1, (int)roundedRect.top(), (int)roundedRect.right() - 1, (int)roundedRect.top());
     painter.drawLine((int)roundedRect.left() + 1, (int)roundedRect.bottom(), (int)roundedRect.right() - 1, (int)roundedRect.bottom());
     painter.drawLine((int)roundedRect.left(), (int)roundedRect.top() + 1, (int)roundedRect.left(), (int)roundedRect.bottom() - 1);
     painter.drawLine((int)roundedRect.right(), (int)roundedRect.top() + 1, (int)roundedRect.right(), (int)roundedRect.bottom() - 1);
@@ -131,7 +132,7 @@ void DockWidgetPainter::drawText(const QString &keyPrefix, const QString &text, 
     int prefixDx = 0;
     QString plainText = text;
     if (!keyPrefix.isEmpty()) {
-        QFont font; //app default
+        QFont font;    //app default
         font.setUnderline(true);
 
         painter.setFont(font);
@@ -146,8 +147,8 @@ void DockWidgetPainter::drawText(const QString &keyPrefix, const QString &text, 
 }
 
 DockWidgetPaintData::DockWidgetPaintData(const QIcon &icon, const QString &text, MWDockArea area)
-: area(area),
-  fm(QFontMetrics(QFont())) //app default
+    : area(area),
+      fm(QFontMetrics(QFont()))    //app default
 {
     hasIcon = !icon.isNull();
     iconSize = hasIcon ? ICON_SIZE : 0;
@@ -161,7 +162,7 @@ QSize DockWidgetPaintData::calculateWidgetSize() const {
     const bool horizontal = (area == MWDockArea_Bottom);
     const int width = qMax(textWidth + iconSize + iconTextDist, MAX_LABEL_BASE_WIDTH) + MAX_LABEL_EXTRA_WIDTH;
     const int height = qMax(IDEAL_LABEL_HEIGHT, textHeight + MIN_LABEL_EXTRA_HEIGHT);
-    return QSize(horizontal ? width : height, horizontal ? height: width);
+    return QSize(horizontal ? width : height, horizontal ? height : width);
 }
 
 QPoint DockWidgetPaintData::calculateTextPoint(const QSize &widgetSize) const {
@@ -169,11 +170,11 @@ QPoint DockWidgetPaintData::calculateTextPoint(const QSize &widgetSize) const {
     const int fontYOffset = fm.ascent() / 2;
     const int fontXOffset = (widgetWidth - textWidth - iconSize - iconTextDist) / 2 + iconSize + iconTextDist;
     if (area == MWDockArea_Left) {
-        return QPoint(fontXOffset - widgetWidth, widgetSize.width()/2 + fontYOffset);
+        return QPoint(fontXOffset - widgetWidth, widgetSize.width() / 2 + fontYOffset);
     } else if (area == MWDockArea_Right) {
-        return QPoint(fontXOffset, -widgetSize.width()/2 + fontYOffset);
+        return QPoint(fontXOffset, -widgetSize.width() / 2 + fontYOffset);
     } else {
-        return QPoint(fontXOffset, widgetSize.height()/2 + fontYOffset);
+        return QPoint(fontXOffset, widgetSize.height() / 2 + fontYOffset);
     }
 }
 
@@ -198,4 +199,4 @@ int DockWidgetPaintData::getIconSize() const {
     return iconSize;
 }
 
-} // U2
+}    // namespace U2

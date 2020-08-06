@@ -22,9 +22,9 @@
 #ifndef _U2_ILLUMINA_CLIP_STEP_H_
 #define _U2_ILLUMINA_CLIP_STEP_H_
 
+#include "trimmomatic/TrimmomaticStep.h"
 #include "ui_IlluminaClipAdditionalSettingsDialog.h"
 #include "ui_IlluminaClipSettingsWidget.h"
-#include "trimmomatic/TrimmomaticStep.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -34,7 +34,7 @@ class IlluminaClipStep : public TrimmomaticStep {
 public:
     IlluminaClipStep();
 
-    TrimmomaticStepSettingsWidget* createWidget() const;
+    TrimmomaticStepSettingsWidget *createWidget() const;
 
 private:
     QString serializeState(const QVariantMap &widgetState) const;
@@ -70,7 +70,7 @@ private:
 class IlluminaClipAdditionalSettingsDialog : public QDialog, public Ui_IlluminaClipAdditionalSettingsDialog {
     Q_OBJECT
 public:
-    IlluminaClipAdditionalSettingsDialog(const QVariantMap &widgetState, QWidget* parent = NULL);
+    IlluminaClipAdditionalSettingsDialog(const QVariantMap &widgetState, QWidget *parent = NULL);
 
     static QVariantMap extractState(const QVariantMap &fromState);
     QVariantMap getState() const;
@@ -89,7 +89,7 @@ public:
     IlluminaClipStep *createStep() const;
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_ILLUMINA_CLIP_STEP_H_
+#endif    // _U2_ILLUMINA_CLIP_STEP_H_

@@ -19,13 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "UdrRecord.h"
+
 #include <QSet>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/UdrSchemaRegistry.h>
-
-#include "UdrRecord.h"
 
 namespace U2 {
 
@@ -33,9 +33,7 @@ namespace U2 {
 /* UdrRecordId */
 /************************************************************************/
 UdrRecordId::UdrRecordId(const UdrSchemaId &schemaId, const U2DataId &recordId)
-: schemaId(schemaId), recordId(recordId)
-{
-
+    : schemaId(schemaId), recordId(recordId) {
 }
 
 const UdrSchemaId &UdrRecordId::getSchemaId() const {
@@ -116,15 +114,14 @@ U2DataId UdrValue::getDataId(U2OpStatus &os) const {
 /* UdrRecord */
 /************************************************************************/
 UdrRecord::UdrRecord(const UdrRecordId &id, const QList<UdrValue> &data, U2OpStatus &os)
-: id(id), data(data)
-{
+    : id(id), data(data) {
     UdrSchemaRegistry *udrRegistry = AppContext::getUdrSchemaRegistry();
     SAFE_POINT_EXT(NULL != udrRegistry, os.setError("NULL UDR registry"), );
     schema = udrRegistry->getSchemaById(id.getSchemaId());
     SAFE_POINT_EXT(NULL != schema, os.setError("Unknown schema id: " + QString(id.getSchemaId())), );
 }
 
-const UdrRecordId & UdrRecord::getId() const {
+const UdrRecordId &UdrRecord::getId() const {
     return id;
 }
 
@@ -155,4 +152,4 @@ bool UdrRecord::checkNum(int fieldNum, U2OpStatus &os) const {
     return true;
 }
 
-} // U2
+}    // namespace U2

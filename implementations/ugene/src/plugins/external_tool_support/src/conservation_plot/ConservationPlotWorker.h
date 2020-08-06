@@ -27,8 +27,8 @@
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
 
-#include "ConservationPlotTask.h"
 #include "ConservationPlotSettings.h"
+#include "ConservationPlotTask.h"
 #include "utils/CistromeDelegate.h"
 
 namespace U2 {
@@ -52,40 +52,48 @@ private:
 
 private slots:
     void sl_taskFinished();
-}; // ConservationPlotWorker
+};    // ConservationPlotWorker
 
 class ConservationPlotComboBoxWithUrlsDelegate : public CistromeComboBoxWithUrlsDelegate {
 public:
-    ConservationPlotComboBoxWithUrlsDelegate(const QVariantMap& items, bool _isPath = false, QObject *parent = 0) : CistromeComboBoxWithUrlsDelegate(items, _isPath, parent) {}
+    ConservationPlotComboBoxWithUrlsDelegate(const QVariantMap &items, bool _isPath = false, QObject *parent = 0)
+        : CistromeComboBoxWithUrlsDelegate(items, _isPath, parent) {
+    }
 
 private:
     virtual void updateUgeneSettings();
 
     virtual QString getDataPathName();
     virtual QString getAttributeName();
-    virtual QString getDefaultValue() { return "hg19"; }
-}; // ConservationPlotComboBoxWithUrlsDelegate
+    virtual QString getDefaultValue() {
+        return "hg19";
+    }
+};    // ConservationPlotComboBoxWithUrlsDelegate
 
 class ConservationPlotWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
 
-    ConservationPlotWorkerFactory() : DomainFactory(ACTOR_ID) {}
+    ConservationPlotWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
     static void init();
     virtual Worker *createWorker(Actor *a);
-}; // ConservationPlotWorkerFactory
+};    // ConservationPlotWorkerFactory
 
 class ConservationPlotPrompter : public PrompterBase<ConservationPlotPrompter> {
     Q_OBJECT
 public:
-    ConservationPlotPrompter(Actor *p = NULL) : PrompterBase<ConservationPlotPrompter>(p) {}
+    ConservationPlotPrompter(Actor *p = NULL)
+        : PrompterBase<ConservationPlotPrompter>(p) {
+    }
 
 protected:
     QString composeRichDoc();
 
-}; // ConservationPlotPrompter
+};    // ConservationPlotPrompter
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_CONSERVATION_PLOT_SUPPORT_WORKER_
+#endif    // _U2_CONSERVATION_PLOT_SUPPORT_WORKER_

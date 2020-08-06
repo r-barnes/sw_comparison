@@ -22,10 +22,10 @@
 #ifndef _U2_EXPORT_QUALITY_SCORES_TASK_H_
 #define _U2_EXPORT_QUALITY_SCORES_TASK_H_
 
-#include <U2Core/Task.h>
-#include <U2Core/DNAQuality.h>
-
 #include <QPointer>
+
+#include <U2Core/DNAQuality.h>
+#include <U2Core/Task.h>
 
 namespace U2 {
 
@@ -33,23 +33,24 @@ class U2SequenceObject;
 
 class ExportQualityScoresConfig {
 public:
-    ExportQualityScoresConfig() : appendData(true) {}
-    QString             dstFilePath;
-    bool                appendData;
+    ExportQualityScoresConfig()
+        : appendData(true) {
+    }
+    QString dstFilePath;
+    bool appendData;
 };
-
 
 class ExportPhredQualityScoresTask : public Task {
     Q_OBJECT
 public:
-    ExportPhredQualityScoresTask(const U2SequenceObject* seqObj, const ExportQualityScoresConfig& config);
+    ExportPhredQualityScoresTask(const U2SequenceObject *seqObj, const ExportQualityScoresConfig &config);
     void run();
+
 private:
-    const U2SequenceObject* seqObj;
+    const U2SequenceObject *seqObj;
     ExportQualityScoresConfig config;
 };
 
+}    // namespace U2
 
-} // namespace U2
-
-#endif // _U2_EXPORT_QUALITY_SCORES_TASK_H_
+#endif    // _U2_EXPORT_QUALITY_SCORES_TASK_H_

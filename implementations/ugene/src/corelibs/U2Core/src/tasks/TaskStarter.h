@@ -24,8 +24,7 @@
 
 #include <U2Core/Task.h>
 
-namespace U2
-{
+namespace U2 {
 /**
 * Intended for deferred task run, triggered by a signal.
 */
@@ -37,14 +36,17 @@ public:
         NoProject
     };
 
-    TaskStarter(Task* t, StartCondition condition = NoCondition) : QObject(t), t(t), condition(condition) {}
+    TaskStarter(Task *t, StartCondition condition = NoCondition)
+        : QObject(t), t(t), condition(condition) {
+    }
 public slots:
     void registerTask();
+
 private:
-    Task* t;
+    Task *t;
     StartCondition condition;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

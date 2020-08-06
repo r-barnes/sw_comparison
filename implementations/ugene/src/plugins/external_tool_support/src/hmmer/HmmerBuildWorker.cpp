@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "HmmerBuildWorker.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/FailTask.h>
 #include <U2Core/Log.h>
@@ -38,7 +40,6 @@
 #include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/WorkflowMonitor.h>
 
-#include "HmmerBuildWorker.h"
 #include "HmmerBuildFromMsaTask.h"
 #include "HmmerSupport.h"
 
@@ -59,8 +60,7 @@ void HmmerBuildWorkerFactory::init() {
     QList<PortDescriptor *> p;
     QList<Attribute *> a;
     {
-        Descriptor id(BasePorts::IN_MSA_PORT_ID(), HmmerBuildWorker::tr("Input MSA"),
-            HmmerBuildWorker::tr("Input multiple sequence alignment for building statistical model."));
+        Descriptor id(BasePorts::IN_MSA_PORT_ID(), HmmerBuildWorker::tr("Input MSA"), HmmerBuildWorker::tr("Input multiple sequence alignment for building statistical model."));
         Descriptor od(OUT_HMM_URL_PORT_ID, HmmerBuildWorker::tr("HMM3 profile"), HmmerBuildWorker::tr("Produced HMM3 profile URL"));
 
         QMap<Descriptor, DataTypePtr> inM;
@@ -76,9 +76,9 @@ void HmmerBuildWorkerFactory::init() {
     a << new Attribute(sed, BaseTypes::NUM_TYPE(), false, QVariant(42));
 
     Descriptor desc(HmmerBuildWorkerFactory::ACTOR, HmmerBuildWorker::tr("HMM3 Build"), HmmerBuildWorker::tr("Builds a HMM3 profile from a multiple sequence alignment."
-        "<p>The HMM3 profile is a statistical model which captures position-specific information"
-        " about how conserved each column of the alignment is, and which residues are likely."));
-    ActorPrototype* proto = new IntegralBusActorPrototype(desc, p, a);
+                                                                                                             "<p>The HMM3 profile is a statistical model which captures position-specific information"
+                                                                                                             " about how conserved each column of the alignment is, and which residues are likely."));
+    ActorPrototype *proto = new IntegralBusActorPrototype(desc, p, a);
     QMap<QString, PropertyDelegate *> delegates;
 
     {
@@ -93,7 +93,7 @@ void HmmerBuildWorkerFactory::init() {
     proto->addExternalTool(HmmerSupport::BUILD_TOOL_ID);
     WorkflowEnv::getProtoRegistry()->registerProto(Descriptor("hmmer3", HmmerBuildWorker::tr("HMMER3 Tools"), ""), proto);
 
-    DomainFactory* localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
+    DomainFactory *localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
     localDomain->registerEntry(new HmmerBuildWorkerFactory());
 }
 
@@ -104,12 +104,10 @@ void HmmerBuildWorkerFactory::cleanup() {
 }
 
 HmmerBuildWorkerFactory::HmmerBuildWorkerFactory()
-    : DomainFactory(ACTOR)
-{
-
+    : DomainFactory(ACTOR) {
 }
 
-Worker * HmmerBuildWorkerFactory::createWorker(Actor *a) {
+Worker *HmmerBuildWorkerFactory::createWorker(Actor *a) {
     return new HmmerBuildWorker(a);
 }
 
@@ -117,9 +115,7 @@ Worker * HmmerBuildWorkerFactory::createWorker(Actor *a) {
  * HmmerBuildPrompter
  ******************************/
 HmmerBuildPrompter::HmmerBuildPrompter(Actor *p)
-    : PrompterBase<HmmerBuildPrompter>(p)
-{
-
+    : PrompterBase<HmmerBuildPrompter>(p) {
 }
 
 QString HmmerBuildPrompter::composeRichDoc() {
@@ -139,8 +135,7 @@ QString HmmerBuildPrompter::composeRichDoc() {
 HmmerBuildWorker::HmmerBuildWorker(Actor *a)
     : BaseWorker(a),
       input(NULL),
-      output(NULL)
-{
+      output(NULL) {
 }
 
 void HmmerBuildWorker::init() {
@@ -156,7 +151,7 @@ bool HmmerBuildWorker::isReady() const {
     return input->hasMessage() || input->isEnded();
 }
 
-Task * HmmerBuildWorker::tick() {
+Task *HmmerBuildWorker::tick() {
     if (input->hasMessage()) {
         Message inputMessage = getMessageAndSetupScriptValues(input);
         if (inputMessage.isEmpty()) {
@@ -183,7 +178,7 @@ Task * HmmerBuildWorker::tick() {
     return NULL;
 }
 
-void HmmerBuildWorker::sl_taskFinished(Task* task) {
+void HmmerBuildWorker::sl_taskFinished(Task *task) {
     HmmerBuildFromMsaTask *buildTask = qobject_cast<HmmerBuildFromMsaTask *>(task);
     SAFE_POINT(NULL != task, "Invalid task is encountered", );
     if (task->isCanceled()) {
@@ -196,8 +191,7 @@ void HmmerBuildWorker::sl_taskFinished(Task* task) {
 }
 
 void HmmerBuildWorker::cleanup() {
-
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

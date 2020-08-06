@@ -36,7 +36,7 @@ class SaveDocumentController;
 class ExportChromatogramDialog : public QDialog, Ui_ExportChromatogramDialog {
     Q_OBJECT
 public:
-    ExportChromatogramDialog(QWidget* p, const GUrl& fileName);
+    ExportChromatogramDialog(QWidget *p, const GUrl &fileName);
 
     void accept();
 
@@ -52,6 +52,6 @@ private:
     SaveDocumentController *saveController;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

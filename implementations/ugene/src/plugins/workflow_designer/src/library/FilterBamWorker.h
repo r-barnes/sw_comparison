@@ -22,10 +22,11 @@
 #ifndef _U2_FILTER_BAM_WORKER_H_
 #define _U2_FILTER_BAM_WORKER_H_
 
+#include <U2Core/ExternalToolRunTask.h>
+#include <U2Core/GUrl.h>
+
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
-#include <U2Core/GUrl.h>
-#include <U2Core/ExternalToolRunTask.h>
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -36,17 +37,20 @@ typedef PrompterBase<FilterBamPrompter> FilterBamBase;
 class FilterBamPrompter : public FilterBamBase {
     Q_OBJECT
 public:
-    FilterBamPrompter(Actor* p = 0) : FilterBamBase(p) {}
+    FilterBamPrompter(Actor *p = 0)
+        : FilterBamBase(p) {
+    }
+
 protected:
     QString composeRichDoc();
-}; //FilterBamPrompter
+};    //FilterBamPrompter
 
-class FilterBamWorker: public BaseWorker {
+class FilterBamWorker : public BaseWorker {
     Q_OBJECT
 public:
     FilterBamWorker(Actor *a);
     void init();
-    Task * tick();
+    Task *tick();
     void cleanup();
 
 private:
@@ -54,33 +58,40 @@ private:
     IntegralBus *outputUrlPort;
     QStringList outUrls;
 public slots:
-    void sl_taskFinished( Task *task );
+    void sl_taskFinished(Task *task);
 
 private:
     QString takeUrl();
     void sendResult(const QString &url);
-    QString getTargetName(const QString& fileUrl, const QString& outDir);
+    QString getTargetName(const QString &fileUrl, const QString &outDir);
 
-}; //FilterBamWorker
+};    //FilterBamWorker
 
 class FilterBamWorkerFactory : public DomainFactory {
     static const QString ACTOR_ID;
+
 public:
     static void init();
-    FilterBamWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    Worker* createWorker(Actor* a) { return new FilterBamWorker(a); }
-}; //FilterBamWorkerFactory
+    FilterBamWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    Worker *createWorker(Actor *a) {
+        return new FilterBamWorker(a);
+    }
+};    //FilterBamWorkerFactory
 
-class BamFilterSetting{
+class BamFilterSetting {
 public:
-    BamFilterSetting(): outDir(""), outName(""),inputUrl(""), inputFormat(""), outputFormat(""),mapq(0), acceptFilter(""), skipFilter(""),regionFilter(""){}
+    BamFilterSetting()
+        : outDir(""), outName(""), inputUrl(""), inputFormat(""), outputFormat(""), mapq(0), acceptFilter(""), skipFilter(""), regionFilter("") {
+    }
 
     QString outDir;
     QString outName;
     QString inputUrl;
     QString inputFormat;
     QString outputFormat;
-    int     mapq;
+    int mapq;
     QString acceptFilter;
     QString skipFilter;
     QString regionFilter;
@@ -96,7 +107,9 @@ public:
     void prepare();
     void run();
 
-    QString getResult(){return resultUrl;}
+    QString getResult() {
+        return resultUrl;
+    }
 
 private:
     void start(const ProcessRun &pRun, const QString &toolName);
@@ -106,10 +119,10 @@ private:
     BamFilterSetting settings;
     QString resultUrl;
 
-   static const QString SAMTOOLS_ID;
+    static const QString SAMTOOLS_ID;
 };
 
-} //LocalWorkflow
-} //U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif //_U2_FILTER_BAM_WORKER_H_
+#endif    //_U2_FILTER_BAM_WORKER_H_

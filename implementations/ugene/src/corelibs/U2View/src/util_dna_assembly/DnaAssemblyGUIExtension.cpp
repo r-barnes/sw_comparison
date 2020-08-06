@@ -19,17 +19,17 @@
  * MA 02110-1301, USA.
  */
 
+#include "DnaAssemblyGUIExtension.h"
+
 #include <QMessageBox>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/ExternalToolRegistry.h>
 #include <U2Core/L10n.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/AppSettingsGUI.h>
-#include <U2Core/QObjectScopedPointer.h>
-
-#include "DnaAssemblyGUIExtension.h"
 
 namespace U2 {
 
@@ -37,22 +37,17 @@ namespace U2 {
 /* DnaAssemblyAlgorithmBaseWidget */
 /************************************************************************/
 DnaAssemblyAlgorithmBaseWidget::DnaAssemblyAlgorithmBaseWidget(QWidget *parent)
-: QWidget(parent)
-{
-
+    : QWidget(parent) {
 }
 
 void DnaAssemblyAlgorithmBaseWidget::validateReferenceSequence(const GUrl &) const {
-
 }
 
 /************************************************************************/
 /* DnaAssemblyAlgorithmMainWidget */
 /************************************************************************/
 DnaAssemblyAlgorithmMainWidget::DnaAssemblyAlgorithmMainWidget(QWidget *parent)
-: DnaAssemblyAlgorithmBaseWidget(parent)
-{
-
+    : DnaAssemblyAlgorithmBaseWidget(parent) {
 }
 
 bool DnaAssemblyAlgorithmMainWidget::isParametersOk(QString & /*error*/) const {
@@ -119,25 +114,20 @@ bool DnaAssemblyAlgorithmMainWidget::requiredToolsAreOk() const {
 /* DnaAssemblyAlgorithmBuildIndexWidget */
 /************************************************************************/
 DnaAssemblyAlgorithmBuildIndexWidget::DnaAssemblyAlgorithmBuildIndexWidget(QWidget *parent)
-: DnaAssemblyAlgorithmBaseWidget(parent)
-{
-
+    : DnaAssemblyAlgorithmBaseWidget(parent) {
 }
 
 /************************************************************************/
 /* DnaAssemblyGUIExtensionsFactory */
 /************************************************************************/
 DnaAssemblyGUIExtensionsFactory::~DnaAssemblyGUIExtensionsFactory() {
-
 }
 
 /************************************************************************/
 /* GenomeAssemblyAlgorithmMainWidget */
 /************************************************************************/
 GenomeAssemblyAlgorithmMainWidget::GenomeAssemblyAlgorithmMainWidget(QWidget *parent)
-: QWidget(parent)
-{
-
+    : QWidget(parent) {
 }
 
-} // U2
+}    // namespace U2

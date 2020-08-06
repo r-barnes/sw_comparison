@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExtractAssemblyCoverageWorker.h"
+
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/FailTask.h>
 #include <U2Core/FormatUtils.h>
@@ -41,8 +43,6 @@
 
 #include <U2View/ExportCoverageTask.h>
 
-#include "ExtractAssemblyCoverageWorker.h"
-
 namespace U2 {
 namespace LocalWorkflow {
 
@@ -54,11 +54,10 @@ namespace {
 const QString FORMAT_ATTR_ID("format");
 const QString EXPORT_TYPE_ATTR_ID("export-type");
 const QString THRESHOLD_ATTR_ID("threshold");
-}
+}    // namespace
 
-ExtractAssemblyCoverageWorker::ExtractAssemblyCoverageWorker(Actor *actor) :
-    BaseWorker(actor)
-{
+ExtractAssemblyCoverageWorker::ExtractAssemblyCoverageWorker(Actor *actor)
+    : BaseWorker(actor) {
 }
 
 void ExtractAssemblyCoverageWorker::init() {
@@ -152,9 +151,8 @@ void ExtractAssemblyCoverageWorker::finish() {
 /************************************************************************/
 /* ExportAssemblyCoverageWorkerFactory */
 /************************************************************************/
-ExtractAssemblyCoverageWorkerFactory::ExtractAssemblyCoverageWorkerFactory() :
-    DomainFactory(ACTOR_ID)
-{
+ExtractAssemblyCoverageWorkerFactory::ExtractAssemblyCoverageWorkerFactory()
+    : DomainFactory(ACTOR_ID) {
 }
 
 Worker *ExtractAssemblyCoverageWorkerFactory::createWorker(Actor *actor) {
@@ -163,10 +161,10 @@ Worker *ExtractAssemblyCoverageWorkerFactory::createWorker(Actor *actor) {
 
 void ExtractAssemblyCoverageWorkerFactory::init() {
     const Descriptor desc(ACTOR_ID,
-        ExtractAssemblyCoverageWorker::tr("Extract Coverage from Assembly"),
-        ExtractAssemblyCoverageWorker::tr("Extract the coverage and bases quantity from the incoming assembly."));
+                          ExtractAssemblyCoverageWorker::tr("Extract Coverage from Assembly"),
+                          ExtractAssemblyCoverageWorker::tr("Extract the coverage and bases quantity from the incoming assembly."));
 
-    QList<PortDescriptor*> ports;
+    QList<PortDescriptor *> ports;
     {
         QMap<Descriptor, DataTypePtr> inData;
         inData[BaseSlots::ASSEMBLY_SLOT()] = BaseTypes::ASSEMBLY_TYPE();
@@ -174,11 +172,11 @@ void ExtractAssemblyCoverageWorkerFactory::init() {
         ports << new PortDescriptor(BasePorts::IN_ASSEMBLY_PORT_ID(), inType, true);
     }
 
-    QList<Attribute*> attrs;
+    QList<Attribute *> attrs;
     {
         const Descriptor formatDesc(FORMAT_ATTR_ID,
-                                        ExtractAssemblyCoverageWorker::tr("Format"),
-                                        ExtractAssemblyCoverageWorker::tr("Format to store the output."));
+                                    ExtractAssemblyCoverageWorker::tr("Format"),
+                                    ExtractAssemblyCoverageWorker::tr("Format to store the output."));
         const Descriptor exportTypeDesc(EXPORT_TYPE_ATTR_ID,
                                         ExtractAssemblyCoverageWorker::tr("Export"),
                                         ExtractAssemblyCoverageWorker::tr("Data type to export."));
@@ -198,7 +196,7 @@ void ExtractAssemblyCoverageWorkerFactory::init() {
         attrs << new Attribute(thresholdDesc, BaseTypes::NUM_TYPE(), false, 1);
     }
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
         const QString filter = FormatUtils::prepareFileFilter(ExportCoverageSettings::BEDGRAPH, QStringList() << ExportCoverageSettings::BEDGRAPH_EXTENSION, true);
         DelegateTags tags;
@@ -235,9 +233,8 @@ void ExtractAssemblyCoverageWorkerFactory::init() {
 /************************************************************************/
 /* ExportAssemblyCoverageWorkerPrompter */
 /************************************************************************/
-ExtractAssemblyCoverageWorkerPrompter::ExtractAssemblyCoverageWorkerPrompter(Actor *actor) :
-    PrompterBase<ExtractAssemblyCoverageWorkerPrompter>(actor)
-{
+ExtractAssemblyCoverageWorkerPrompter::ExtractAssemblyCoverageWorkerPrompter(Actor *actor)
+    : PrompterBase<ExtractAssemblyCoverageWorkerPrompter>(actor) {
 }
 
 QString ExtractAssemblyCoverageWorkerPrompter::composeRichDoc() {
@@ -252,7 +249,7 @@ QString ExtractAssemblyCoverageWorkerPrompter::composeRichDoc() {
             exportString = getHyperlink(EXPORT_TYPE_ATTR_ID, tr("nothing"));
         } else {
             exportTypeValue.replace(",", ", ");
-            exportString =  exportTypeValue + " " + getHyperlink(FORMAT_ATTR_ID, ExportCoverageSettings::PER_BASE.toLower());
+            exportString = exportTypeValue + " " + getHyperlink(FORMAT_ATTR_ID, ExportCoverageSettings::PER_BASE.toLower());
         }
         break;
     }
@@ -264,15 +261,11 @@ QString ExtractAssemblyCoverageWorkerPrompter::composeRichDoc() {
     const QString threshold = getParameter(THRESHOLD_ATTR_ID).toString();
     const QString outputFile = getParameter(BaseAttributes::URL_OUT_ATTRIBUTE().getId()).toString();
 
-    return tr("Exports %1 from the incoming assembly with threshold %2 to %3 in tab delimited plain text format.").
-            arg(exportString).
-            arg(getHyperlink(THRESHOLD_ATTR_ID, threshold)).
-            arg(getHyperlink(BaseAttributes::URL_OUT_ATTRIBUTE().getId(), outputFile));
+    return tr("Exports %1 from the incoming assembly with threshold %2 to %3 in tab delimited plain text format.").arg(exportString).arg(getHyperlink(THRESHOLD_ATTR_ID, threshold)).arg(getHyperlink(BaseAttributes::URL_OUT_ATTRIBUTE().getId(), outputFile));
 }
 
-ExtractAssemblyCoverageFileExtensionRelation::ExtractAssemblyCoverageFileExtensionRelation(const QString &relatedAttrId) :
-    AttributeRelation(relatedAttrId)
-{
+ExtractAssemblyCoverageFileExtensionRelation::ExtractAssemblyCoverageFileExtensionRelation(const QString &relatedAttrId)
+    : AttributeRelation(relatedAttrId) {
 }
 
 QVariant ExtractAssemblyCoverageFileExtensionRelation::getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue, DelegateTags * /*infTags*/, DelegateTags *depTags) const {
@@ -294,8 +287,8 @@ QVariant ExtractAssemblyCoverageFileExtensionRelation::getAffectResult(const QVa
 
     const QString currentExtension = urlStr.mid(urlStr.lastIndexOf('.') + 1);
     if (currentExtension == ExportCoverageSettings::HISTOGRAM_EXTENSION ||
-            currentExtension == ExportCoverageSettings::PER_BASE_EXTENSION ||
-            currentExtension == ExportCoverageSettings::BEDGRAPH_EXTENSION) {
+        currentExtension == ExportCoverageSettings::PER_BASE_EXTENSION ||
+        currentExtension == ExportCoverageSettings::BEDGRAPH_EXTENSION) {
         urlStr.chop(currentExtension.size());
     }
 
@@ -320,5 +313,5 @@ ExtractAssemblyCoverageFileExtensionRelation *ExtractAssemblyCoverageFileExtensi
     return new ExtractAssemblyCoverageFileExtensionRelation(*this);
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportProjectDialogController.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 
@@ -31,35 +33,32 @@
 #include <U2Gui/LastUsedDirHelper.h>
 #include <U2Gui/U2FileDialog.h>
 
-#include "ExportProjectDialogController.h"
+namespace U2 {
 
-namespace U2{
-
-static QString fixProjectFile(const QString& name) {
+static QString fixProjectFile(const QString &name) {
     QString result = name;
     if (result.isEmpty()) {
-        result =  "project" + PROJECTFILE_EXT;
+        result = "project" + PROJECTFILE_EXT;
     } else if (!result.endsWith(PROJECTFILE_EXT)) {
-        result+=PROJECTFILE_EXT;
+        result += PROJECTFILE_EXT;
     }
     return result;
 }
 
-ExportProjectDialogController::ExportProjectDialogController(QWidget *p, const QString& defaultProjectFileName) 
-: QDialog(p) 
-{
+ExportProjectDialogController::ExportProjectDialogController(QWidget *p, const QString &defaultProjectFilePath)
+    : QDialog(p) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742289");
+    new HelpButton(this, buttonBox, "46499674");
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
     setModal(true);
-    projectFile = fixProjectFile(defaultProjectFileName);
-    projectFileEdit->setText(projectFile);
-    Project* proj = AppContext::getProject();
+    projectFilePath = fixProjectFile(defaultProjectFilePath);
+    projectFilePathEdit->setText(projectFilePath);
+    Project *proj = AppContext::getProject();
     if (proj == NULL || !proj->isItemModified() || proj->getProjectURL().isEmpty()) {
         warningLabel->setVisible(false);
     }
-    connect(browseButton, SIGNAL(clicked()), this, SLOT(sl_onBrowseButton()));
+    connect(fileSelectButton, SIGNAL(clicked()), this, SLOT(sl_onFileSelectButton()));
 
     SAFE_POINT(buttonBox, "buttonBox not initialized", );
     QPushButton *b = buttonBox->button(QDialogButtonBox::Ok);
@@ -67,27 +66,37 @@ ExportProjectDialogController::ExportProjectDialogController(QWidget *p, const Q
     b->setText(tr("Export"));
 }
 
-void ExportProjectDialogController::accept(){
-    QString dirPath = exportFolderEdit->text();
-    projectFile = fixProjectFile(projectFileEdit->text());
-    
+void ExportProjectDialogController::accept() {
+    projectFilePath = fixProjectFile(projectFilePathEdit->text());
+    QFileInfo fi(projectFilePath = fixProjectFile(projectFilePathEdit->text()));
     U2OpStatus2Log os;
-    exportDir = GUrlUtils::prepareDirLocation(dirPath, os);
+    QString exportDir = GUrlUtils::prepareDirLocation(fi.absoluteDir().absolutePath(), os);
     if (exportDir.isEmpty()) {
         assert(os.hasError());
         QMessageBox::critical(this, this->windowTitle(), os.getError());
         return;
     }
-	QDialog::accept();
+    QDialog::accept();
 }
 
-void ExportProjectDialogController::sl_onBrowseButton(){
-	LastUsedDirHelper h;
-	QString folder = U2FileDialog::getExistingDirectory(this, tr("Choose Folder"), h.dir);
-    if (folder.isEmpty()) {
+const QString ExportProjectDialogController::getDirToSave() const {
+    QFileInfo fi(projectFilePath);
+    return fi.absoluteDir().absolutePath();
+}
+
+const QString ExportProjectDialogController::getProjectFile() const {
+    QFileInfo fi(projectFilePath);
+    return fi.fileName();
+}
+
+void ExportProjectDialogController::sl_onFileSelectButton() {
+    LastUsedDirHelper h;
+    QString path = U2FileDialog::getSaveFileName(this, tr("Save file"), h.dir, 
+        tr("Project files") + DIALOG_FILTER_PROJECT_EXT);
+    if (path.isEmpty()) {
         return;
     }
-	exportFolderEdit->setText(folder);
+    projectFilePathEdit->setText(path);
 }
 
-}
+}    // namespace U2

@@ -27,17 +27,17 @@
 namespace U2 {
 namespace BAM {
 
-class Exception
-{
+class Exception {
 public:
     Exception(const QString &message);
     virtual ~Exception();
-    const QString &getMessage()const;
+    const QString &getMessage() const;
+
 private:
     QString message;
 };
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2
 
-#endif // _U2_BAM_EXCEPTION_H_
+#endif    // _U2_BAM_EXCEPTION_H_

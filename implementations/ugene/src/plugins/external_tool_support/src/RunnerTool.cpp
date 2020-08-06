@@ -19,15 +19,14 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/ScriptingToolRegistry.h>
-
 #include "RunnerTool.h"
+
+#include <U2Core/ScriptingToolRegistry.h>
 
 namespace U2 {
 
-RunnerTool::RunnerTool(const QStringList& _runParameters, const QString& id, const QString& name, const QString& path)
-    : ExternalTool(id, name, path), runParameters(_runParameters)
-{
+RunnerTool::RunnerTool(const QStringList &_runParameters, const QString &id, const QString &name, const QString &path)
+    : ExternalTool(id, name, path), runParameters(_runParameters) {
     isRunnerTool = true;
     connect(this, SIGNAL(si_toolValidationStatusChanged(bool)), SLOT(sl_toolValidationStatusChanged(bool)));
 }
@@ -41,4 +40,4 @@ void RunnerTool::sl_toolValidationStatusChanged(bool isValid) {
     ScriptingTool::onPathChanged(this, runParameters);
 }
 
-}
+}    // namespace U2

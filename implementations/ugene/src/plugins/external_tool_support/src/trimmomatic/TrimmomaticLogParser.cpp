@@ -24,15 +24,13 @@
 namespace U2 {
 
 const QStringList TrimmomaticLogParser::wellKnownErrors = QStringList()
-        << "Exception"
-        << "Unable to determine input files"
-        << "Unable to determine output files"
-        << "Unknown option";
+                                                          << "Exception"
+                                                          << "Unable to determine input files"
+                                                          << "Unable to determine output files"
+                                                          << "Unknown option";
 
 TrimmomaticLogParser::TrimmomaticLogParser()
-    : ExternalToolLogParser()
-{
-
+    : ExternalToolLogParser() {
 }
 
 bool TrimmomaticLogParser::isError(const QString &line) const {
@@ -44,4 +42,4 @@ bool TrimmomaticLogParser::isError(const QString &line) const {
     return false;
 }
 
-} // namespace U2
+}    // namespace U2

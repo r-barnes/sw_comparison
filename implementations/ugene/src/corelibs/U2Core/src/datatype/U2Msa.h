@@ -38,7 +38,7 @@ typedef QList<U2MsaGap> U2MsaRowGapModel;
 typedef QList<U2MsaRowGapModel> U2MsaListGapModel;
 typedef QMap<qint64, U2MsaRowGapModel> U2MsaMapGapModel;
 
-class U2CORE_EXPORT U2MsaGap  {
+class U2CORE_EXPORT U2MsaGap {
 public:
     U2MsaGap();
     U2MsaGap(qint64 off, qint64 gap);
@@ -74,22 +74,22 @@ public:
     bool isValid() const;
 
     /** Id of the row in the database */
-    qint64          rowId;
+    qint64 rowId;
 
     /** Id of the sequence of the row in the database */
-    U2DataId        sequenceId;
+    U2DataId sequenceId;
 
     /** Start of the row in the sequence */
-    qint64          gstart;         // TODO: rename or remove, if it is not used
+    qint64 gstart;    // TODO: rename or remove, if it is not used
 
     /** End of the row in the sequence */
-    qint64          gend;
+    qint64 gend;
 
     /** A gap model for the row */
     QList<U2MsaGap> gaps;
 
     /** Length of the sequence characters and gaps of the row (without trailing) */
-    qint64          length;
+    qint64 length;
 
     static const qint64 INVALID_ROW_ID;
 };
@@ -105,15 +105,15 @@ public:
     U2DataType getType() const;
 
     /** Alignment alphabet. All sequence in alignment must have alphabet that fits into alignment alphabet */
-    U2AlphabetId    alphabet;
+    U2AlphabetId alphabet;
 
     /** Length of the alignment */
-    qint64          length;
+    qint64 length;
 
     static const char GAP_CHAR;
     static const char INVALID_CHAR;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MSA_H_
+#endif    // _U2_MSA_H_

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "GraphicsUnrootedBranchItem.h"
+
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QPainter>
@@ -31,13 +33,12 @@
 
 #include "GraphicsButtonItem.h"
 #include "GraphicsRectangularBranchItem.h"
-#include "GraphicsUnrootedBranchItem.h"
 #include "TreeViewerUtils.h"
 
 namespace U2 {
 
-GraphicsUnrootedBranchItem::GraphicsUnrootedBranchItem(QGraphicsItem* parent, qreal angle, GraphicsRectangularBranchItem* from, double nodeValue)
-: GraphicsBranchItem(true, nodeValue) {
+GraphicsUnrootedBranchItem::GraphicsUnrootedBranchItem(QGraphicsItem *parent, qreal angle, GraphicsRectangularBranchItem *from, double nodeValue)
+    : GraphicsBranchItem(true, nodeValue) {
     setParentItem(parent);
     qreal w = from->getWidth();
     settings = from->getSettings();
@@ -46,8 +47,8 @@ GraphicsUnrootedBranchItem::GraphicsUnrootedBranchItem(QGraphicsItem* parent, qr
     setPos(w, 0);
     angle = from->getDirection() == GraphicsBranchItem::up ? angle : -angle;
     setTransform(QTransform().translate(-w, 0).rotate(angle).translate(w, 0));
-//    setTransformOriginPoint(-w, 0);
-//    setRotation(angle);
+    //    setTransformOriginPoint(-w, 0);
+    //    setRotation(angle);
 
     if (from->getNameText() != NULL) {
         nameText = new QGraphicsSimpleTextItem(from->getNameText()->text(), this);
@@ -64,7 +65,7 @@ GraphicsUnrootedBranchItem::GraphicsUnrootedBranchItem(QGraphicsItem* parent, qr
 }
 
 void GraphicsUnrootedBranchItem::setLabelPositions() {
-    if(nameText != NULL) {
+    if (nameText != NULL) {
         QRectF rect = nameText->boundingRect();
         qreal h = rect.height();
         nameText->setPos(GraphicsBranchItem::TextSpace, -h * 0.5);
@@ -73,14 +74,13 @@ void GraphicsUnrootedBranchItem::setLabelPositions() {
             nameText->setTransform(QTransform().translate(p.x(), p.y()).rotate(180).translate(-p.x(), -p.y()));
         }
     }
-    if(distanceText != NULL) {
+    if (distanceText != NULL) {
         QRectF rect = distanceText->boundingRect();
         if (distanceText->scenePos().x() < 0) {
             QPointF p(rect.center().x(), rect.height());
             distanceText->setTransform(QTransform().translate(p.x(), p.y()).rotate(180).translate(-p.x(), -p.y()));
         }
         distanceText->setPos(-0.5 * (width + rect.width()), -rect.height());
-
     }
 }
 
@@ -89,9 +89,9 @@ QRectF GraphicsUnrootedBranchItem::boundingRect() const {
     return QRectF(-width, -penWidth * 0.5, width, penWidth);
 }
 
-void GraphicsUnrootedBranchItem::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWidget*) {
+void GraphicsUnrootedBranchItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
     painter->setPen(pen());
     painter->drawLine(0, 0, -width, 0);
 }
 
-}//namespace
+}    // namespace U2

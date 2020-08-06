@@ -19,15 +19,14 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
-
 #include "ConnectionHelper.h"
+
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
 ConnectionHelper::ConnectionHelper(const U2DbiRef &dbiRef, U2OpStatus &os)
-: con(NULL), dbi(NULL), oDbi(NULL)
-{
+    : con(NULL), dbi(NULL), oDbi(NULL) {
     con = new DbiConnection(dbiRef, os);
     CHECK_OP(os, );
 
@@ -42,4 +41,4 @@ ConnectionHelper::~ConnectionHelper() {
     delete con;
 }
 
-} // U2
+}    // namespace U2

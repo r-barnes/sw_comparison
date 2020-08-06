@@ -19,10 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "DrawHelper.h"
+
 #include "U2Core/U2SafePoints.h"
 
 #include "BaseWidthController.h"
-#include "DrawHelper.h"
 #include "RowHeightController.h"
 #include "ScrollController.h"
 #include "ov_msa/MaCollapseModel.h"
@@ -31,12 +32,10 @@
 
 namespace U2 {
 
-DrawHelper::DrawHelper(MaEditorWgt *maEditorWgt) :
-    ui(maEditorWgt),
-    scrollController(maEditorWgt->getScrollController()),
-    collapsibleModel(maEditorWgt->getCollapseModel())
-{
-
+DrawHelper::DrawHelper(MaEditorWgt *maEditorWgt)
+    : ui(maEditorWgt),
+      scrollController(maEditorWgt->getScrollController()),
+      collapsibleModel(maEditorWgt->getCollapseModel()) {
 }
 
 U2Region DrawHelper::getVisibleBases(int widgetWidth, bool countFirstClippedBase, bool countLastClippedBase) const {
@@ -47,7 +46,7 @@ U2Region DrawHelper::getVisibleBases(int widgetWidth, bool countFirstClippedBase
 
 U2Region DrawHelper::getVisibleViewRowsRegion(int widgetHeight, bool countFirstClippedRow, bool countLastClippedRow) const {
     const int firstVisibleRowNumber = scrollController->getFirstVisibleViewRowIndex(countFirstClippedRow);
-    const int lastVisibleRowNumber= scrollController->getLastVisibleViewRowIndex(widgetHeight, countLastClippedRow);
+    const int lastVisibleRowNumber = scrollController->getLastVisibleViewRowIndex(widgetHeight, countLastClippedRow);
     return U2Region(firstVisibleRowNumber, lastVisibleRowNumber - firstVisibleRowNumber + 1);
 }
 
@@ -59,7 +58,7 @@ QList<int> DrawHelper::getVisibleMaRowIndexes(int widgetHeight, bool countFirstC
 }
 
 int DrawHelper::getVisibleBasesCount(int widgetWidth, bool countFirstClippedBase, bool countLastClippedBase) const {
-    return getVisibleBases(widgetWidth, countFirstClippedBase,countLastClippedBase).length;
+    return getVisibleBases(widgetWidth, countFirstClippedBase, countLastClippedBase).length;
 }
 
 QRect DrawHelper::getSelectionScreenRect(const MaEditorSelection &selection) const {
@@ -70,4 +69,4 @@ QRect DrawHelper::getSelectionScreenRect(const MaEditorSelection &selection) con
     return QRect(xRange.startPos, yRange.startPos, xRange.length, yRange.length);
 }
 
-}   // namespace U2
+}    // namespace U2

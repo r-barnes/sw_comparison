@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExternalToolSupportSettings.h"
+
 #include <QApplication>
 #include <QFile>
 #include <QMessageBox>
@@ -29,15 +31,13 @@
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/ExternalToolRegistry.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/Settings.h>
 #include <U2Core/U2OpStatus.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/UserApplicationsSettings.h>
 
 #include <U2Gui/AppSettingsGUI.h>
-#include <U2Core/QObjectScopedPointer.h>
-
-#include "ExternalToolSupportSettings.h"
 
 namespace U2 {
 
@@ -50,7 +50,7 @@ namespace U2 {
 #define PREFIX_EXTERNAL_TOOL_ADDITIONAL_INFO SETTINGS + "exToolAdditionalInfo"
 #define TEMPORY_DIRECTORY SETTINGS + "temporyDirectory"
 
-Watcher* const ExternalToolSupportSettings::watcher = new Watcher;
+Watcher *const ExternalToolSupportSettings::watcher = new Watcher;
 
 int ExternalToolSupportSettings::prevNumberExternalTools = 0;
 
@@ -58,7 +58,7 @@ int ExternalToolSupportSettings::getNumberExternalTools() {
     return AppContext::getSettings()->getValue(NUMBER_EXTERNAL_TOOL, 0, true).toInt();
 }
 
-void ExternalToolSupportSettings::setNumberExternalTools( int v ) {
+void ExternalToolSupportSettings::setNumberExternalTools(int v) {
     AppContext::getSettings()->setValue(NUMBER_EXTERNAL_TOOL, v, true);
     emit watcher->changed();
 }
@@ -84,7 +84,7 @@ void ExternalToolSupportSettings::loadExternalTools() {
         isValid = AppContext::getSettings()->getValue(PREFIX_EXTERNAL_TOOL_IS_VALID + QString::number(i), QVariant(false), true).toBool();
         version = AppContext::getSettings()->getValue(PREFIX_EXTERNAL_TOOL_VERSION + QString::number(i), QVariant("unknown"), true).toString();
         additionalInfo = AppContext::getSettings()->getValue(PREFIX_EXTERNAL_TOOL_ADDITIONAL_INFO + QString::number(i), QVariant::fromValue<StrStrMap>(StrStrMap()), true).value<StrStrMap>();
-        ExternalTool* tool = !id.isEmpty() ? AppContext::getExternalToolRegistry()->getById(id) : AppContext::getExternalToolRegistry()->getByName(name);
+        ExternalTool *tool = !id.isEmpty() ? AppContext::getExternalToolRegistry()->getById(id) : AppContext::getExternalToolRegistry()->getByName(name);
         if (tool != nullptr) {
             tool->setPath(path);
             tool->setVersion(version);
@@ -97,7 +97,7 @@ void ExternalToolSupportSettings::loadExternalTools() {
 }
 
 void ExternalToolSupportSettings::setExternalTools() {
-    QList<ExternalTool*> ExternalToolList = AppContext::getExternalToolRegistry()->getAllEntries();
+    QList<ExternalTool *> ExternalToolList = AppContext::getExternalToolRegistry()->getAllEntries();
     int numberExternalTools = ExternalToolList.length();
     setNumberExternalTools(numberExternalTools);
     QString id;
@@ -131,8 +131,8 @@ void ExternalToolSupportSettings::setExternalTools() {
     prevNumberExternalTools = numberExternalTools;
 }
 
-void ExternalToolSupportSettings::checkTemporaryDir(U2OpStatus& os){
-    if (AppContext::getAppSettings()->getUserAppsSettings()->getUserTemporaryDirPath().isEmpty()){
+void ExternalToolSupportSettings::checkTemporaryDir(U2OpStatus &os) {
+    if (AppContext::getAppSettings()->getUserAppsSettings()->getUserTemporaryDirPath().isEmpty()) {
         QObjectScopedPointer<QMessageBox> msgBox = new QMessageBox;
         msgBox->setWindowTitle(QObject::tr("Path for temporary files"));
         msgBox->setText(QObject::tr("Path for temporary files not selected."));
@@ -153,21 +153,19 @@ void ExternalToolSupportSettings::checkTemporaryDir(U2OpStatus& os){
 
 //////////////////////////////////////////////////////////////////////////
 //LimitedDirIterator
-LimitedDirIterator::LimitedDirIterator( const QDir &dir, int deepLevels )
-:deepLevel(deepLevels)
-,curPath("")
-{
-    if (deepLevel < 0){
+LimitedDirIterator::LimitedDirIterator(const QDir &dir, int deepLevels)
+    : deepLevel(deepLevels), curPath("") {
+    if (deepLevel < 0) {
         deepLevel = 0;
     }
     data.enqueue(qMakePair(dir.absolutePath(), 0));
 }
 
-bool LimitedDirIterator::hasNext(){
+bool LimitedDirIterator::hasNext() {
     return !data.isEmpty();
 }
 
-QString LimitedDirIterator::next(){
+QString LimitedDirIterator::next() {
     QString res = curPath;
 
     fetchNext();
@@ -175,22 +173,22 @@ QString LimitedDirIterator::next(){
     return res;
 }
 
-QString LimitedDirIterator::filePath(){
+QString LimitedDirIterator::filePath() {
     return curPath;
 }
 
-void LimitedDirIterator::fetchNext(){
-    if (!data.isEmpty()){
+void LimitedDirIterator::fetchNext() {
+    if (!data.isEmpty()) {
         QPair<QString, int> nextPath = data.dequeue();
         curPath = nextPath.first;
-        if (deepLevel > nextPath.second){
+        if (deepLevel > nextPath.second) {
             QDir curDir(curPath);
             QStringList subdirs = curDir.entryList(QDir::NoDotAndDotDot | QDir::Dirs);
-            foreach(const QString& subdir, subdirs){
-                data.enqueue(qMakePair(curPath+ "/" + subdir, nextPath.second + 1));
+            foreach (const QString &subdir, subdirs) {
+                data.enqueue(qMakePair(curPath + "/" + subdir, nextPath.second + 1));
             }
         }
     }
 }
 
-}//namespace
+}    // namespace U2

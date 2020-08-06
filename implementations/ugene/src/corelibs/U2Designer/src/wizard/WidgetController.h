@@ -22,12 +22,12 @@
 #ifndef _U2_WIDGETCONTROLLER_H_
 #define _U2_WIDGETCONTROLLER_H_
 
+#include <QLabel>
+#include <QWidget>
+
 #include <U2Core/U2OpStatus.h>
 
 #include <U2Lang/ConfigurationEditor.h>
-
-#include <QLabel>
-#include <QWidget>
 
 namespace U2 {
 
@@ -38,7 +38,7 @@ public:
     WidgetController(WizardController *wc);
     virtual ~WidgetController();
 
-    virtual QWidget * createGUI(U2OpStatus &os) = 0;
+    virtual QWidget *createGUI(U2OpStatus &os) = 0;
 
 protected:
     WizardController *wc;
@@ -54,6 +54,6 @@ private:
     QLabel *label;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_WIDGETCONTROLLER_H_
+#endif    // _U2_WIDGETCONTROLLER_H_

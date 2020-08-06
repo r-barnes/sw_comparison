@@ -20,18 +20,19 @@
  */
 
 #include "VcfConsensusSupportTask.h"
-#include "VcfConsensusSupport.h"
+
+#include <QDir>
+#include <QProcess>
+#include <QProcessEnvironment>
 
 #include "samtools/TabixSupport.h"
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
-#include <U2Core/UserApplicationsSettings.h>
 #include <U2Core/U2SafePoints.h>
+#include <U2Core/UserApplicationsSettings.h>
 
-#include <QDir>
-#include <QProcess>
-#include <QProcessEnvironment>
+#include "VcfConsensusSupport.h"
 
 namespace U2 {
 
@@ -41,22 +42,21 @@ VcfConsensusSupportTask::VcfConsensusSupportTask(const GUrl &inputFA, const GUrl
       inputVcf(inputVcf),
       output(output),
       tabixTask(NULL),
-      vcfTask(NULL)
-{
+      vcfTask(NULL) {
 }
 
 void VcfConsensusSupportTask::prepare() {
     algoLog.details(tr("VcfConsensus started"));
 
     SAFE_POINT_EXT(AppContext::getAppSettings() != NULL, setError(tr("AppSettings is NULL")), );
-    const UserAppsSettings* userAS = AppContext::getAppSettings()->getUserAppsSettings();
+    const UserAppsSettings *userAS = AppContext::getAppSettings()->getUserAppsSettings();
     SAFE_POINT_EXT(userAS != NULL, setError(tr("UserAppsSettings is NULL")), );
-    QString tmpDirPath( userAS->getCurrentProcessTemporaryDirPath(VcfConsensusSupport::VCF_CONSENSUS_TMP_DIR) );
+    QString tmpDirPath(userAS->getCurrentProcessTemporaryDirPath(VcfConsensusSupport::VCF_CONSENSUS_TMP_DIR));
     SAFE_POINT_EXT(!tmpDirPath.isEmpty(), setError(tr("Temporary folder is not set!")), );
-    GUrl tmp( tmpDirPath + "/" + inputVcf.fileName() + ".gz");
+    GUrl tmp(tmpDirPath + "/" + inputVcf.fileName() + ".gz");
 
-    QDir tmpDir( tmpDirPath );
-    if (!tmpDir.mkpath(tmpDirPath)){
+    QDir tmpDir(tmpDirPath);
+    if (!tmpDir.mkpath(tmpDirPath)) {
         stateInfo.setError(tr("Can not create folder for temporary files."));
         return;
     }
@@ -64,13 +64,13 @@ void VcfConsensusSupportTask::prepare() {
     algoLog.info(tr("Saving temporary data to file '%1'").arg(tmp.getURLString()));
 
     tabixTask = new TabixSupportTask(inputVcf, tmp);
-    tabixTask->addListeners(QList <ExternalToolListener*>() << getListener(0));
+    tabixTask->addListeners(QList<ExternalToolListener *>() << getListener(0));
 
     addSubTask(tabixTask);
 }
 
-QList<Task*> VcfConsensusSupportTask::onSubTaskFinished(Task *subTask) {
-    QList<Task*> res;
+QList<Task *> VcfConsensusSupportTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> res;
 
     if (hasError() || isCanceled()) {
         return res;
@@ -79,7 +79,7 @@ QList<Task*> VcfConsensusSupportTask::onSubTaskFinished(Task *subTask) {
         return res;
     }
 
-    ExternalToolRegistry* extToolReg = AppContext::getExternalToolRegistry();
+    ExternalToolRegistry *extToolReg = AppContext::getExternalToolRegistry();
     SAFE_POINT_EXT(extToolReg, setError(tr("ExternalToolRegistry is NULL")), res);
 
     ExternalTool *vcfToolsET = extToolReg->getById(VcfConsensusSupport::ET_VCF_CONSENSUS_ID);
@@ -87,13 +87,12 @@ QList<Task*> VcfConsensusSupportTask::onSubTaskFinished(Task *subTask) {
     SAFE_POINT_EXT(vcfToolsET, setError(tr("There is no VcfConsensus external tool registered")), res);
     SAFE_POINT_EXT(tabixET, setError(tr("There is no Tabix external tool registered")), res);
 
-    QMap <QString, QString> envVariables;
+    QMap<QString, QString> envVariables;
     envVariables["PERL5LIB"] = getPath(vcfToolsET);
 
-    vcfTask = new ExternalToolRunTask(VcfConsensusSupport::ET_VCF_CONSENSUS_ID, QStringList() << tabixTask->getOutputBgzf().getURLString(),
-        new ExternalToolLogParser(), "", QStringList() << getPath(tabixET));
-    vcfTask->setStandartInputFile( inputFA.getURLString() );
-    vcfTask->setStandartOutputFile( output.getURLString() );
+    vcfTask = new ExternalToolRunTask(VcfConsensusSupport::ET_VCF_CONSENSUS_ID, QStringList() << tabixTask->getOutputBgzf().getURLString(), new ExternalToolLogParser(), "", QStringList() << getPath(tabixET));
+    vcfTask->setStandartInputFile(inputFA.getURLString());
+    vcfTask->setStandartOutputFile(output.getURLString());
     vcfTask->setAdditionalEnvVariables(envVariables);
 
     setListenerForTask(vcfTask, 1);
@@ -101,7 +100,7 @@ QList<Task*> VcfConsensusSupportTask::onSubTaskFinished(Task *subTask) {
     return res;
 }
 
-const GUrl& VcfConsensusSupportTask::getResultUrl() {
+const GUrl &VcfConsensusSupportTask::getResultUrl() {
     return output;
 }
 
@@ -110,7 +109,7 @@ QString VcfConsensusSupportTask::getPath(ExternalTool *et) {
         setError(tr("Trying to get path of NULL external tool"));
         return QString();
     }
-    if ( et->getPath().isEmpty() ) {
+    if (et->getPath().isEmpty()) {
         setError(tr("Path to %1").arg(et->getName()));
         return QString();
     }
@@ -118,4 +117,4 @@ QString VcfConsensusSupportTask::getPath(ExternalTool *et) {
     return fileInfo.absolutePath();
 }
 
-} // namespace U2
+}    // namespace U2

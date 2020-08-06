@@ -35,9 +35,9 @@ class PhyTreeDisplayOptionsWidget;
 
 class U2VIEW_EXPORT CreatePhyTreeWidget : public QWidget {
 public:
-    CreatePhyTreeWidget(QWidget* parent);
+    CreatePhyTreeWidget(QWidget *parent);
 
-    virtual void fillSettings(CreatePhyTreeSettings& settings) = 0;
+    virtual void fillSettings(CreatePhyTreeSettings &settings) = 0;
     virtual void storeSettings() = 0;
     virtual void restoreDefault() = 0;
     virtual bool checkSettings(QString &message, const CreatePhyTreeSettings &settings);
@@ -47,6 +47,6 @@ public:
     static QString settingsPath();
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_CREATE_PHY_TREE_WIDGET_H_
+#endif    // _U2_CREATE_PHY_TREE_WIDGET_H_

@@ -20,24 +20,25 @@
  */
 
 #include "VcfConsensusWorker.h"
-#include "VcfConsensusSupport.h"
-#include "VcfConsensusSupportTask.h"
+
 #include "samtools/TabixSupport.h"
 
-#include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/FailTask.h>
+#include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Designer/DelegateEditors.h>
 
-#include <U2Lang/BaseTypes.h>
-#include <U2Lang/BasePorts.h>
-#include <U2Lang/BaseSlots.h>
-#include <U2Lang/WorkflowEnv.h>
-#include <U2Lang/WorkflowMonitor.h>
 #include <U2Lang/ActorPrototypeRegistry.h>
 #include <U2Lang/BaseActorCategories.h>
+#include <U2Lang/BasePorts.h>
+#include <U2Lang/BaseSlots.h>
+#include <U2Lang/BaseTypes.h>
+#include <U2Lang/WorkflowEnv.h>
+#include <U2Lang/WorkflowMonitor.h>
 
+#include "VcfConsensusSupport.h"
+#include "VcfConsensusSupportTask.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -54,8 +55,7 @@ VcfConsensusWorker::VcfConsensusWorker(Actor *a)
     : BaseWorker(a),
       inputFA(NULL),
       inputVcfBgzip(NULL),
-      outputFA(NULL)
-{
+      outputFA(NULL) {
 }
 
 void VcfConsensusWorker::init() {
@@ -64,7 +64,7 @@ void VcfConsensusWorker::init() {
     outputFA = ports.value(OUT_PORT_ID);
 }
 
-Task* VcfConsensusWorker::tick() {
+Task *VcfConsensusWorker::tick() {
     if (inputFA->hasMessage()) {
         const Message inputMessage = getMessageAndSetupScriptValues(inputFA);
         if (inputMessage.isEmpty()) {
@@ -72,10 +72,10 @@ Task* VcfConsensusWorker::tick() {
             return NULL;
         }
         const QVariantMap data = inputMessage.getData().toMap();
-        if ( !data.contains(IN_FASTA_URL_SLOT_ID) ) {
+        if (!data.contains(IN_FASTA_URL_SLOT_ID)) {
             return new FailTask(tr("Input fasta slot is empty"));
         }
-        if ( !data.contains(IN_VCF_URL_SLOT_ID) ) {
+        if (!data.contains(IN_VCF_URL_SLOT_ID)) {
             return new FailTask(tr("Input vcf slot is empty"));
         }
 
@@ -89,8 +89,7 @@ Task* VcfConsensusWorker::tick() {
         connect(t, SIGNAL(si_stateChanged()), SLOT(sl_taskFinished()));
 
         return t;
-    }
-    else {
+    } else {
         setDone();
         outputFA->setEnded();
     }
@@ -101,7 +100,7 @@ void VcfConsensusWorker::cleanup() {
 }
 
 void VcfConsensusWorker::sl_taskFinished() {
-    VcfConsensusSupportTask *t = dynamic_cast<VcfConsensusSupportTask*>(sender());
+    VcfConsensusSupportTask *t = dynamic_cast<VcfConsensusSupportTask *>(sender());
     CHECK(t != NULL, );
     CHECK(t->isFinished() && !t->hasError(), );
 
@@ -122,7 +121,7 @@ void VcfConsensusWorker::sl_taskFinished() {
 const QString VcfConsensusWorkerFactory::ACTOR_ID("vcf-consensus");
 
 void VcfConsensusWorkerFactory::init() {
-    QList<PortDescriptor*> ports;
+    QList<PortDescriptor *> ports;
     {
         Descriptor inDesc(IN_PORT_ID, VcfConsensusWorker::tr("Input FASTA and VCF"), VcfConsensusWorker::tr("Input FASTA and VCF"));
         Descriptor inFastaDesc(IN_FASTA_URL_SLOT_ID, VcfConsensusWorker::tr("FASTA url"), VcfConsensusWorker::tr("FASTA url"));
@@ -130,25 +129,23 @@ void VcfConsensusWorkerFactory::init() {
         QMap<Descriptor, DataTypePtr> inM;
         inM[inFastaDesc] = BaseTypes::STRING_TYPE();
         inM[inVcfDesc] = BaseTypes::STRING_TYPE();
-        ports << new PortDescriptor(inDesc, DataTypePtr(new MapDataType("in.fasta_vcf", inM)), true/*input*/);
-
+        ports << new PortDescriptor(inDesc, DataTypePtr(new MapDataType("in.fasta_vcf", inM)), true /*input*/);
 
         Descriptor outDesc(OUT_PORT_ID, VcfConsensusWorker::tr("Fasta consensus url"), VcfConsensusWorker::tr("Fasta consensus url"));
         QMap<Descriptor, DataTypePtr> outM;
         outM[OUT_PORT_ID] = BaseTypes::STRING_TYPE();
-        ports << new PortDescriptor(outDesc, DataTypePtr(new MapDataType("out.fasta", outM)), false/*input*/, true/*multi*/);
+        ports << new PortDescriptor(outDesc, DataTypePtr(new MapDataType("out.fasta", outM)), false /*input*/, true /*multi*/);
     }
 
-    QList<Attribute*> attrs;
+    QList<Attribute *> attrs;
     {
-        Descriptor outAttDesc(OUT_FASTA_URL_ID, VcfConsensusWorker::tr("Output FASTA consensus"),
-                              VcfConsensusWorker::tr("The path to the output file with the result consensus."));
+        Descriptor outAttDesc(OUT_FASTA_URL_ID, VcfConsensusWorker::tr("Output FASTA consensus"), VcfConsensusWorker::tr("The path to the output file with the result consensus."));
         attrs << new Attribute(outAttDesc, BaseTypes::STRING_TYPE(), true);
     }
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
-        delegates[OUT_FASTA_URL_ID] = new URLDelegate("", "", false/*multi*/, false/*isPath*/, true/*save*/);
+        delegates[OUT_FASTA_URL_ID] = new URLDelegate("", "", false /*multi*/, false /*isPath*/, true /*save*/);
     }
 
     Descriptor desc(ACTOR_ID,
@@ -160,27 +157,26 @@ void VcfConsensusWorkerFactory::init() {
     proto->addExternalTool(VcfConsensusSupport::ET_VCF_CONSENSUS_ID);
     proto->addExternalTool(TabixSupport::ET_TABIX_ID);
 
-
     SAFE_POINT(WorkflowEnv::getProtoRegistry() != NULL, "Workflow proto registry is NULL", );
     WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_VARIATION_ANALYSIS(), proto);
 
     SAFE_POINT(WorkflowEnv::getDomainRegistry() != NULL, "Workflow domain registry is NULL", );
-    DomainFactory* localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
+    DomainFactory *localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
     localDomain->registerEntry(new VcfConsensusWorkerFactory());
 }
 
 QString VcfConsensusPrompter::composeRichDoc() {
-    IntegralBusPort *in = qobject_cast<IntegralBusPort*>(target->getPort(IN_PORT_ID));
-    SAFE_POINT( in != NULL, "NULL input port", "");
+    IntegralBusPort *in = qobject_cast<IntegralBusPort *>(target->getPort(IN_PORT_ID));
+    SAFE_POINT(in != NULL, "NULL input port", "");
     QString fasta = getProducersOrUnset(IN_PORT_ID, IN_FASTA_URL_SLOT_ID);
     QString vcf = getProducersOrUnset(IN_PORT_ID, IN_VCF_URL_SLOT_ID);
     QString out = getHyperlink(OUT_FASTA_URL_ID, getURL(OUT_FASTA_URL_ID));
 
     return tr("Apply VCF variants from <u>%1</u> to fasta file <u>%2</u> and save consensus sequence to <u>%3</u>.")
-              .arg(vcf)
-              .arg(fasta)
-              .arg(out);
+        .arg(vcf)
+        .arg(fasta)
+        .arg(out);
 }
 
-} // namesapce LocalWorkflow
-} // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

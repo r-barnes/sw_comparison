@@ -49,20 +49,21 @@ public:
 
     virtual ~MultipleAlignment();
 
-    MultipleAlignmentData * data() const;
-    template <class Derived> inline Derived dynamicCast() const;
+    MultipleAlignmentData *data() const;
+    template<class Derived>
+    inline Derived dynamicCast() const;
 
-    MultipleAlignmentData & operator*();
-    const MultipleAlignmentData & operator*() const;
+    MultipleAlignmentData &operator*();
+    const MultipleAlignmentData &operator*() const;
 
-    MultipleAlignmentData * operator->();
-    const MultipleAlignmentData * operator->() const;
+    MultipleAlignmentData *operator->();
+    const MultipleAlignmentData *operator->() const;
 
 protected:
     QSharedPointer<MultipleAlignmentData> maData;
 };
 
-template <class Derived>
+template<class Derived>
 Derived MultipleAlignment::dynamicCast() const {
     return Derived(*this);
 }
@@ -80,8 +81,8 @@ protected:
      * The name must be provided if this is not default alignment.
      */
     MultipleAlignmentData(const QString &name = QString(),
-        const DNAAlphabet *alphabet = NULL,
-        const QList<MultipleAlignmentRow> &rows = QList<MultipleAlignmentRow>());
+                          const DNAAlphabet *alphabet = NULL,
+                          const QList<MultipleAlignmentRow> &rows = QList<MultipleAlignmentRow>());
     MultipleAlignmentData(const MultipleAlignmentData &multipleAlignment);
 
 public:
@@ -103,7 +104,7 @@ public:
     void setName(const QString &newName);
 
     /** Returns the alphabet of the alignment */
-    const DNAAlphabet * getAlphabet() const;
+    const DNAAlphabet *getAlphabet() const;
 
     /**
      * Sets the alphabet of the alignment, the value can't be NULL.
@@ -129,25 +130,27 @@ public:
     /** Returns the number of rows in the alignment */
     int getNumRows() const;
 
-    U2MsaMapGapModel getMapGapModel() const;
     U2MsaListGapModel getGapModel() const;
 
     /** Sorts rows by name */
     void sortRowsByName(MultipleAlignment::Order order = MultipleAlignment::Ascending);
 
+    /** Sort rows by un-gapped sequence length. */
+    void sortRowsByLength(MultipleAlignment::Order order = MultipleAlignment::Ascending);
+
     /** Returns row of the alignment */
     MultipleAlignmentRow getRow(int row);
-    const MultipleAlignmentRow & getRow(int row) const;
-    const MultipleAlignmentRow & getRow(const QString &name) const;
+    const MultipleAlignmentRow &getRow(int row) const;
+    const MultipleAlignmentRow &getRow(const QString &name) const;
 
     /** Returns all rows in the alignment */
-    const QList<MultipleAlignmentRow> & getRows() const;
+    const QList<MultipleAlignmentRow> &getRows() const;
 
     /** Returns IDs of the alignment rows in the database */
     QList<qint64> getRowsIds() const;
 
     /** Returns row ids by row indexes. */
-    QList<qint64> getRowIdsByRowIndexes(const QList<int>& rowIndexes) const;
+    QList<qint64> getRowIdsByRowIndexes(const QList<int> &rowIndexes) const;
 
     MultipleAlignmentRow getRowByRowId(qint64 rowId, U2OpStatus &os) const;
 
@@ -220,13 +223,25 @@ protected:
     QVariantMap info;
 };
 
-inline bool	operator!=(const MultipleAlignment &ptr1, const MultipleAlignment &ptr2) { return *ptr1 != *ptr2; }
-inline bool	operator!=(const MultipleAlignment &ptr1, const MultipleAlignmentData *ptr2) { return *ptr1 != *ptr2; }
-inline bool	operator!=(const MultipleAlignmentData *ptr1, const MultipleAlignment &ptr2) { return *ptr1 != *ptr2; }
-inline bool	operator==(const MultipleAlignment &ptr1, const MultipleAlignment &ptr2) { return *ptr1 == *ptr2; }
-inline bool	operator==(const MultipleAlignment &ptr1, const MultipleAlignmentData *ptr2) { return *ptr1 == *ptr2; }
-inline bool	operator==(const MultipleAlignmentData *ptr1, const MultipleAlignment &ptr2) { return *ptr1 == *ptr2; }
+inline bool operator!=(const MultipleAlignment &ptr1, const MultipleAlignment &ptr2) {
+    return *ptr1 != *ptr2;
+}
+inline bool operator!=(const MultipleAlignment &ptr1, const MultipleAlignmentData *ptr2) {
+    return *ptr1 != *ptr2;
+}
+inline bool operator!=(const MultipleAlignmentData *ptr1, const MultipleAlignment &ptr2) {
+    return *ptr1 != *ptr2;
+}
+inline bool operator==(const MultipleAlignment &ptr1, const MultipleAlignment &ptr2) {
+    return *ptr1 == *ptr2;
+}
+inline bool operator==(const MultipleAlignment &ptr1, const MultipleAlignmentData *ptr2) {
+    return *ptr1 == *ptr2;
+}
+inline bool operator==(const MultipleAlignmentData *ptr1, const MultipleAlignment &ptr2) {
+    return *ptr1 == *ptr2;
+}
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MULTIPLE_ALIGNMENT_H_
+#endif    // _U2_MULTIPLE_ALIGNMENT_H_

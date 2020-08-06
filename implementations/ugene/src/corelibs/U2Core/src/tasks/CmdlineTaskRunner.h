@@ -23,6 +23,7 @@
 #define _U2_CMDLINE_TASK_RUNNER_H_
 
 #include <QProcess>
+
 #include <U2Core/Task.h>
 
 namespace U2 {
@@ -31,19 +32,19 @@ class U2CORE_EXPORT CmdlineTaskConfig {
 public:
     CmdlineTaskConfig();
 
-    QString             command;
-    QStringList         arguments;
-    LogLevel            logLevel;
-    bool                withPluginList;
-    QStringList         pluginList;
-    QString             reportFile;
+    QString command;
+    QStringList arguments;
+    LogLevel logLevel;
+    bool withPluginList;
+    QStringList pluginList;
+    QString reportFile;
 };
 
 class U2CORE_EXPORT CmdlineTaskRunner : public Task {
     Q_OBJECT
 public:
-    static QList<long> getChildrenProcesses(qint64 processId, bool fullTree=true);
-    static int killChildrenProcesses(qint64 processId, bool fullTree=true);
+    static QList<long> getChildrenProcesses(qint64 processId, bool fullTree = true);
+    static int killChildrenProcesses(qint64 processId, bool fullTree = true);
     static int killProcessTree(QProcess *process);
     static int killProcessTree(qint64 processId);
     static int killProcess(qint64 processId);
@@ -69,9 +70,9 @@ private slots:
     void sl_onFinish(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:
-    CmdlineTaskConfig       config;
-    QProcess*               process;
-    QString                 processLogPrefix;
+    CmdlineTaskConfig config;
+    QProcess *process;
+    QString processLogPrefix;
 };
 
 class U2CORE_EXPORT CmdlineTask : public Task {
@@ -87,6 +88,6 @@ private slots:
     void sl_outputProgressAndState();
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_CMDLINE_TASK_RUNNER_H_
+#endif    // _U2_CMDLINE_TASK_RUNNER_H_

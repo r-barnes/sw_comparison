@@ -57,12 +57,8 @@ bool DataConfig::isText() const {
     return (BaseTypes::STRING_TYPE()->getId() == type) && (BaseDocumentFormats::PLAIN_TEXT == format);
 }
 
-bool DataConfig::operator ==(const DataConfig &other) const {
-    return attributeId == other.attributeId
-            && attrName == other.attrName
-            && type == other.type
-            && format == other.format
-            && description == other.description;
+bool DataConfig::operator==(const DataConfig &other) const {
+    return attributeId == other.attributeId && attrName == other.attrName && type == other.type && format == other.format && description == other.description;
 }
 
 const QString AttributeConfig::NUMBER_DEPRECATED_TYPE = "Number";
@@ -78,9 +74,7 @@ const QString AttributeConfig::INPUT_FOLDER_URL_TYPE = "Input_dir_URL";
 const QString AttributeConfig::OUTPUT_FOLDER_URL_TYPE = "Output_dir_URL";
 
 AttributeConfig::AttributeConfig()
-    : flags(None)
-{
-
+    : flags(None) {
 }
 
 void AttributeConfig::fixTypes() {
@@ -103,27 +97,20 @@ bool AttributeConfig::isFolder() const {
     return type == INPUT_FOLDER_URL_TYPE || type == OUTPUT_FOLDER_URL_TYPE;
 }
 
-bool AttributeConfig::operator ==(const AttributeConfig &other) const {
-    return attributeId == other.attributeId
-            && attrName == other.attrName
-            && type == other.type
-            && defaultValue == other.defaultValue
-            && description == other.description
-            && flags == other.flags;
+bool AttributeConfig::operator==(const AttributeConfig &other) const {
+    return attributeId == other.attributeId && attrName == other.attrName && type == other.type && defaultValue == other.defaultValue && description == other.description && flags == other.flags;
 }
 
 ExternalProcessConfig::ExternalProcessConfig()
-    : useIntegratedTool(false)
-{
-
+    : useIntegratedTool(false) {
 }
 
 #define CHECK_EQ(expr1, expr2) \
-    if (!(expr1 == expr2)) {\
-    return false;\
+    if (!(expr1 == expr2)) { \
+        return false; \
     }
 
-bool ExternalProcessConfig::operator ==(const ExternalProcessConfig &other) const {
+bool ExternalProcessConfig::operator==(const ExternalProcessConfig &other) const {
     CHECK_EQ(inputs.size(), other.inputs.size());
     CHECK_EQ(outputs.size(), other.outputs.size());
     CHECK_EQ(attrs.size(), other.attrs.size());
@@ -149,14 +136,12 @@ bool ExternalProcessConfig::operator ==(const ExternalProcessConfig &other) cons
     return true;
 }
 
-bool ExternalProcessConfig::operator !=(const ExternalProcessConfig &other) const {
+bool ExternalProcessConfig::operator!=(const ExternalProcessConfig &other) const {
     return !operator==(other);
 }
 
 ExternalToolCfgRegistry::ExternalToolCfgRegistry(QObject *_parent)
-    : QObject(_parent)
-{
-
+    : QObject(_parent) {
 }
 
 bool ExternalToolCfgRegistry::registerExternalTool(ExternalProcessConfig *cfg) {
@@ -181,4 +166,4 @@ QList<ExternalProcessConfig *> ExternalToolCfgRegistry::getConfigs() const {
     return configs.values();
 }
 
-} // U2
+}    // namespace U2

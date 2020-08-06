@@ -21,11 +21,12 @@
 
 #include "DeviationGraph.h"
 
-#include <U2Core/DNAAlphabet.h>
-#include <U2Core/DNASequenceObject.h>
-#include "DNAGraphPackPlugin.h"
 #include <U2Algorithm/RollingArray.h>
 
+#include <U2Core/DNAAlphabet.h>
+#include <U2Core/DNASequenceObject.h>
+
+#include "DNAGraphPackPlugin.h"
 
 /* TRANSLATOR U2::DeviationGraphFactory */
 
@@ -35,30 +36,30 @@ static QString nameByType(DeviationGraphFactory::GDeviationType t) {
         return DeviationGraphFactory::tr("AT Deviation (A-T)/(A+T)");
     }
     return DeviationGraphFactory::tr("GC Deviation (G-C)/(G+C)");
-
 }
 
-DeviationGraphFactory::DeviationGraphFactory(GDeviationType t, QObject* p)
-: GSequenceGraphFactory(nameByType(t), p)
-{
-    if ( t == DeviationGraphFactory::AT) {
-        devPair.first = 'A'; devPair.second = 'T';
+DeviationGraphFactory::DeviationGraphFactory(GDeviationType t, QObject *p)
+    : GSequenceGraphFactory(nameByType(t), p) {
+    if (t == DeviationGraphFactory::AT) {
+        devPair.first = 'A';
+        devPair.second = 'T';
     } else {
-        devPair.first = 'G'; devPair.second = 'C';
+        devPair.first = 'G';
+        devPair.second = 'C';
     }
 }
 
-bool DeviationGraphFactory::isEnabled(const U2SequenceObject* o) const {
-    const DNAAlphabet* al = o->getAlphabet();
-    if(al->isRNA() && (devPair.first == 'T' || devPair.second == 'T')){
+bool DeviationGraphFactory::isEnabled(const U2SequenceObject *o) const {
+    const DNAAlphabet *al = o->getAlphabet();
+    if (al->isRNA() && (devPair.first == 'T' || devPair.second == 'T')) {
         return false;
     }
     return al->isNucleic();
 }
 
-QList<QSharedPointer<GSequenceGraphData> > DeviationGraphFactory::createGraphs(GSequenceGraphView* v) {
+QList<QSharedPointer<GSequenceGraphData>> DeviationGraphFactory::createGraphs(GSequenceGraphView *v) {
     Q_UNUSED(v);
-    QList<QSharedPointer<GSequenceGraphData> > res;
+    QList<QSharedPointer<GSequenceGraphData>> res;
     assert(isEnabled(v->getSequenceObject()));
     QSharedPointer<GSequenceGraphData> d = QSharedPointer<GSequenceGraphData>(new GSequenceGraphData(getGraphName()));
     d->ga = new DeviationGraphAlgorithm(devPair);
@@ -66,19 +67,17 @@ QList<QSharedPointer<GSequenceGraphData> > DeviationGraphFactory::createGraphs(G
     return res;
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 // DeviationGraphAlgorithm
 
-DeviationGraphAlgorithm::DeviationGraphAlgorithm(const QPair<char, char>& _p)  :  p(_p)
-{
+DeviationGraphAlgorithm::DeviationGraphAlgorithm(const QPair<char, char> &_p)
+    : p(_p) {
 }
-void DeviationGraphAlgorithm::windowStrategyWithoutMemorize(QVector<float>& res, const QByteArray& seqArr, int startPos, const GSequenceGraphWindowData* d, int nSteps, U2OpStatus &os)
-{
-    assert(startPos>=0);
-    const char* seq = seqArr.constData();
+void DeviationGraphAlgorithm::windowStrategyWithoutMemorize(QVector<float> &res, const QByteArray &seqArr, int startPos, const GSequenceGraphWindowData *d, int nSteps, U2OpStatus &os) {
+    assert(startPos >= 0);
+    const char *seq = seqArr.constData();
 
-    for (int i = 0; i < nSteps; i++)    {
+    for (int i = 0; i < nSteps; i++) {
         int start = startPos + i * d->step;
         int end = start + d->window;
         assert(end <= seqArr.size());
@@ -88,7 +87,8 @@ void DeviationGraphAlgorithm::windowStrategyWithoutMemorize(QVector<float>& res,
             CHECK_OP(os, );
             char c = seq[x];
             if (c == p.first) {
-                first++; continue;
+                first++;
+                continue;
             }
             if (c == p.second) {
                 second++;
@@ -97,13 +97,12 @@ void DeviationGraphAlgorithm::windowStrategyWithoutMemorize(QVector<float>& res,
         res.append((first - second) / qMax(0.001f, (float)(first + second)));
     }
 }
-QPair<int, int> DeviationGraphAlgorithm::matchOnStep(const QByteArray& seqArr, int begin, int end)
-{
-    const char* seq = seqArr.constData();
-    assert(begin >=0 && end <= seqArr.size());
+QPair<int, int> DeviationGraphAlgorithm::matchOnStep(const QByteArray &seqArr, int begin, int end) {
+    const char *seq = seqArr.constData();
+    assert(begin >= 0 && end <= seqArr.size());
 
     QPair<int, int> res(0, 0);
-    for (int j = begin; j < end; ++j)    {
+    for (int j = begin; j < end; ++j) {
         char c = seq[j];
         if (c == p.first) {
             res.first++;
@@ -115,9 +114,7 @@ QPair<int, int> DeviationGraphAlgorithm::matchOnStep(const QByteArray& seqArr, i
     }
     return res;
 }
-void DeviationGraphAlgorithm::sequenceStrategyWithMemorize(QVector<float>& res, const QByteArray& seq,
-    const U2Region& vr, const GSequenceGraphWindowData* d, U2OpStatus &os)
-{
+void DeviationGraphAlgorithm::sequenceStrategyWithMemorize(QVector<float> &res, const QByteArray &seq, const U2Region &vr, const GSequenceGraphWindowData *d, U2OpStatus &os) {
     int rsize = d->window / d->step;
     RollingArray<int> raF(rsize);
     RollingArray<int> raS(rsize);
@@ -126,7 +123,7 @@ void DeviationGraphAlgorithm::sequenceStrategyWithMemorize(QVector<float>& res, 
     int globalCountS = 0;
     int nextI = 0;
     int firstValue = vr.startPos + d->window - d->step;
-    for (int i = vr.startPos; i < endPos; i = nextI)    {
+    for (int i = vr.startPos; i < endPos; i = nextI) {
         CHECK_OP(os, );
         nextI = i + d->step;
         QPair<int, int> result = matchOnStep(seq, i, nextI);
@@ -134,7 +131,7 @@ void DeviationGraphAlgorithm::sequenceStrategyWithMemorize(QVector<float>& res, 
         globalCountS += result.second;
         raF.push_back_pop_front(result.first);
         raS.push_back_pop_front(result.second);
-        if (i >= firstValue)    {
+        if (i >= firstValue) {
             int vF = raF.get(0);
             int vS = raS.get(0);
             res.append((globalCountF - globalCountS) / qMax(0.001f, (float)(globalCountF + globalCountS)));
@@ -144,10 +141,8 @@ void DeviationGraphAlgorithm::sequenceStrategyWithMemorize(QVector<float>& res, 
     }
 }
 
-void DeviationGraphAlgorithm::calculate(QVector<float>& res, U2SequenceObject* o, const U2Region& vr,
-    const GSequenceGraphWindowData* d, U2OpStatus &os)
-{
-    assert(d!=NULL);
+void DeviationGraphAlgorithm::calculate(QVector<float> &res, U2SequenceObject *o, const U2Region &vr, const GSequenceGraphWindowData *d, U2OpStatus &os) {
+    assert(d != NULL);
     int nSteps = GSequenceGraphUtils::getNumSteps(vr, d->window, d->step);
     res.reserve(nSteps);
 
@@ -162,5 +157,4 @@ void DeviationGraphAlgorithm::calculate(QVector<float>& res, U2SequenceObject* o
     }
 }
 
-} // namespace
-
+}    // namespace U2

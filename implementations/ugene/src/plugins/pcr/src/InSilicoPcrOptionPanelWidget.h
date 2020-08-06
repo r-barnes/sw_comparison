@@ -23,7 +23,6 @@
 #define _U2_IN_SILICO_PCR_OPTION_PANEL_WIDGET_H_
 
 #include "PcrOptionsPanelSavableTab.h"
-
 #include "ui_InSilicoPcrOptionPanelWidget.h"
 
 namespace U2 {
@@ -39,7 +38,7 @@ public:
     InSilicoPcrOptionPanelWidget(AnnotatedDNAView *annotatedDnaView);
     ~InSilicoPcrOptionPanelWidget();
 
-    AnnotatedDNAView * getDnaView() const;
+    AnnotatedDNAView *getDnaView() const;
 
     bool isResultTableShown() const;
     void setResultTableShown(bool show);
@@ -66,6 +65,6 @@ private:
     PcrOptionsPanelSavableTab savableWidget;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_IN_SILICO_PCR_OPTION_PANEL_WIDGET_H_
+#endif    // _U2_IN_SILICO_PCR_OPTION_PANEL_WIDGET_H_

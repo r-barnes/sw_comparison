@@ -22,8 +22,9 @@
 #ifndef _U2_GUI_DOCUMENT_UTILS_H_
 #define _U2_GUI_DOCUMENT_UTILS_H_
 
-#include "GTGlobals.h"
 #include <U2Core/U2IdTypes.h>
+
+#include "GTGlobals.h"
 
 namespace U2 {
 using namespace HI;
@@ -40,26 +41,26 @@ public:
 
     static void removeDocument(HI::GUITestOpStatus &os, const QString &documentName, GTGlobals::UseMethod method = GTGlobals::UseKey);
 
-    static Document* getDocument(HI::GUITestOpStatus &os, const QString& documentName);
+    static Document *getDocument(HI::GUITestOpStatus &os, const QString &documentName);
 
-    static bool isDocumentLoaded(HI::GUITestOpStatus &os, const QString& documentName);
+    static bool isDocumentLoaded(HI::GUITestOpStatus &os, const QString &documentName);
 
-    static void saveDocument(HI::GUITestOpStatus &os, const QString& documentName);
-    static void unloadDocument(HI::GUITestOpStatus &os, const QString& documentName, bool waitForMessageBox = true);
-    static void loadDocument(HI::GUITestOpStatus &os, const QString& documentName);
+    static void saveDocument(HI::GUITestOpStatus &os, const QString &documentName);
+    static void unloadDocument(HI::GUITestOpStatus &os, const QString &documentName, bool waitForMessageBox = true);
+    static void loadDocument(HI::GUITestOpStatus &os, const QString &documentName);
 
-    static void lockDocument(HI::GUITestOpStatus &os, const QString& documentName);
-    static void unlockDocument(HI::GUITestOpStatus &os, const QString& documentName);
+    static void lockDocument(HI::GUITestOpStatus &os, const QString &documentName);
+    static void unlockDocument(HI::GUITestOpStatus &os, const QString &documentName);
 
     static void checkIfDocumentIsLocked(HI::GUITestOpStatus &os, const QString &documentName, bool isLocked);
 
 protected:
-    static GObjectView* getDocumentGObjectView(HI::GUITestOpStatus &os, Document* d);
+    static GObjectView *getDocumentGObjectView(HI::GUITestOpStatus &os, Document *d);
 
 private:
-    static QList<GObjectView*> getAllGObjectViews();
+    static QList<GObjectView *> getAllGObjectViews();
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

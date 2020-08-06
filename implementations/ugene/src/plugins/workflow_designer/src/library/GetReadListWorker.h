@@ -35,11 +35,12 @@ namespace LocalWorkflow {
 class GetReadsListPrompter : public PrompterBase<GetReadsListPrompter> {
     Q_OBJECT
 public:
-    GetReadsListPrompter(Actor *p = NULL) : PrompterBase<GetReadsListPrompter>(p) {}
+    GetReadsListPrompter(Actor *p = NULL)
+        : PrompterBase<GetReadsListPrompter>(p) {
+    }
 
 protected:
     QString composeRichDoc();
-
 };
 
 class GetReadsListWorker : public BaseWorker {
@@ -48,14 +49,13 @@ public:
     GetReadsListWorker(Actor *p);
 
     virtual void init();
-    virtual Task * tick();
+    virtual Task *tick();
     virtual void cleanup();
 
 private:
     IntegralBus *outChannel;
     DatasetFilesIterator *files;
     DatasetFilesIterator *pairedFiles;
-
 };
 
 class GetReadsListWorkerFactory : public DomainFactory {
@@ -69,7 +69,9 @@ public:
     static const Descriptor SE_SLOT();
     static const Descriptor PE_SLOT();
 
-    GetReadsListWorkerFactory(const QString &id) : DomainFactory(id) {}
+    GetReadsListWorkerFactory(const QString &id)
+        : DomainFactory(id) {
+    }
     static void init();
     static void cleanup();
     virtual Worker *createWorker(Actor *a);
@@ -99,8 +101,7 @@ private:
     bool isMain(const QString &candidateSlotId);
 };
 
-
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

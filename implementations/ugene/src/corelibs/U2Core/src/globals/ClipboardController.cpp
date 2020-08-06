@@ -21,49 +21,47 @@
 
 #include "ClipboardController.h"
 
-#include <U2Core/MultipleSequenceAlignmentObject.h>
 #include <U2Core/DNASequenceObject.h>
+#include <U2Core/MultipleSequenceAlignmentObject.h>
 
 namespace U2 {
 
 ///////////////////
 ///PasteFactory
 PasteFactory::PasteFactory(QObject *parent)
-    :QObject(parent){
+    : QObject(parent) {
 }
 
 ///////////////////
 ///PasteTask
 PasteTask::PasteTask()
-    :Task(tr("Paste data"), TaskFlag_None){
+    : Task(tr("Paste data"), TaskFlag_None) {
 }
 
 void PasteTask::processDocument(Document *) {
-
 }
 
 ///////////////////
 ///PasteUtils
-QList<DNASequence> PasteUtils::getSequences(const QList<Document*>& docs, U2OpStatus& os){
+QList<DNASequence> PasteUtils::getSequences(const QList<Document *> &docs, U2OpStatus &os) {
     QList<DNASequence> res;
 
-    foreach (Document* doc, docs){
-        foreach(GObject *seqObj, doc->findGObjectByType(GObjectTypes::SEQUENCE)) {
-            U2SequenceObject *casted = qobject_cast<U2SequenceObject*>(seqObj);
-            if (casted == NULL){
+    foreach (Document *doc, docs) {
+        foreach (GObject *seqObj, doc->findGObjectByType(GObjectTypes::SEQUENCE)) {
+            U2SequenceObject *casted = qobject_cast<U2SequenceObject *>(seqObj);
+            if (casted == NULL) {
                 continue;
             }
             DNASequence seq = casted->getWholeSequence(os);
-            if (os.hasError()){
+            if (os.hasError()) {
                 continue;
             }
             seq.alphabet = casted->getAlphabet();
             res.append(seq);
-
         }
-        foreach(GObject *msaObj, doc->findGObjectByType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT)) {
-            MultipleSequenceAlignmentObject* casted = qobject_cast<MultipleSequenceAlignmentObject*>(msaObj);
-            if (casted == NULL){
+        foreach (GObject *msaObj, doc->findGObjectByType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT)) {
+            MultipleSequenceAlignmentObject *casted = qobject_cast<MultipleSequenceAlignmentObject *>(msaObj);
+            if (casted == NULL) {
                 continue;
             }
             foreach (const MultipleSequenceAlignmentRow &row, casted->getMsa()->getMsaRows()) {
@@ -72,11 +70,10 @@ QList<DNASequence> PasteUtils::getSequences(const QList<Document*>& docs, U2OpSt
                 seq.alphabet = casted->getAlphabet();
                 res.append(seq);
             }
-
         }
     }
 
     return res;
 }
 
-} // U2
+}    // namespace U2

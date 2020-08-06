@@ -23,8 +23,10 @@
 #define _IMPORT_PHRED_QUALITY_WORKER_H_
 
 #include <U2Core/DNASequence.h>
+
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
+
 #include "ImportQualityScoresTask.h"
 
 namespace U2 {
@@ -36,7 +38,10 @@ namespace LocalWorkflow {
 class ImportPhredQualityPrompter : public PrompterBase<ImportPhredQualityPrompter> {
     Q_OBJECT
 public:
-    ImportPhredQualityPrompter(Actor* p = 0) : PrompterBase<ImportPhredQualityPrompter>(p) {}
+    ImportPhredQualityPrompter(Actor *p = 0)
+        : PrompterBase<ImportPhredQualityPrompter>(p) {
+    }
+
 protected:
     QString composeRichDoc();
 };
@@ -44,29 +49,33 @@ protected:
 class ImportPhredQualityWorker : public BaseWorker {
     Q_OBJECT
 public:
-    ImportPhredQualityWorker(Actor* a);
+    ImportPhredQualityWorker(Actor *a);
 
     virtual void init();
-    virtual Task* tick();
+    virtual Task *tick();
     virtual void cleanup();
 
 protected:
     CommunicationChannel *input, *output;
-    ReadQualityScoresTask* readTask;
-    QString             fileName;
-    DNAQualityType      type;
-    DNAQualityFormat    format;
+    ReadQualityScoresTask *readTask;
+    QString fileName;
+    DNAQualityType type;
+    DNAQualityFormat format;
 };
 
 class ImportPhredQualityWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
     static void init();
-    ImportPhredQualityWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    virtual Worker* createWorker(Actor* a) {return new ImportPhredQualityWorker(a);}
+    ImportPhredQualityWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    virtual Worker *createWorker(Actor *a) {
+        return new ImportPhredQualityWorker(a);
+    }
 };
 
-} // Workflow namespace
-} // U2 namespace
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _IMPORT_PHRED_QUALITY_WORKER_H_
+#endif    // _IMPORT_PHRED_QUALITY_WORKER_H_

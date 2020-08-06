@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "GenbankLocationParser.h"
+
 #include <QCoreApplication>
 
 #include <U2Core/Log.h>
@@ -26,8 +28,6 @@
 #include <U2Core/U2Location.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/U2Type.h>
-
-#include "GenbankLocationParser.h"
 
 namespace U2 {
 
@@ -37,21 +37,20 @@ namespace {
 
 class CharacterStream {
 public:
-    CharacterStream(const QByteArray &input):
-        input(input),
-        position(0)
-    {
+    CharacterStream(const QByteArray &input)
+        : input(input),
+          position(0) {
     }
 
     char peek() {
-        if(input.size() == position) {
+        if (input.size() == position) {
             return '\0';
         }
         return input[position];
     }
 
     char next() {
-        if(input.size() == position) {
+        if (input.size() == position) {
             return '\0';
         }
         char result = input[position];
@@ -59,7 +58,7 @@ public:
         return result;
     }
     char prev() {
-        if(0 == position) {
+        if (0 == position) {
             return '\0';
         }
         char result = input[position];
@@ -94,10 +93,9 @@ public:
         NAME
     };
 
-    Token(const QByteArray &string, Type type):
-        string(string),
-        type(type)
-    {
+    Token(const QByteArray &string, Type type)
+        : string(string),
+          type(type) {
     }
 
     const QByteArray &getString() const {
@@ -114,21 +112,20 @@ private:
 };
 
 bool isNameCharacter(char c) {
-    const QBitArray& digitOrAlpha = TextUtils::ALPHA_NUMS;
+    const QBitArray &digitOrAlpha = TextUtils::ALPHA_NUMS;
     return (digitOrAlpha.testBit(c) || ('_' == c) || ('-' == c) || ('\'' == c) || ('*' == c));
 }
 
 class Lexer {
 public:
-    Lexer(const QByteArray &input):
-        input(input),
-        nextToken("", Token::INVALID),
-        nextTokenValid(false)
-    {
+    Lexer(const QByteArray &input)
+        : input(input),
+          nextToken("", Token::INVALID),
+          nextTokenValid(false) {
     }
 
     Token peek() {
-        if(!nextTokenValid) {
+        if (!nextTokenValid) {
             nextToken = readNext();
             nextTokenValid = true;
         }
@@ -136,7 +133,7 @@ public:
     }
 
     Token next() {
-        if(nextTokenValid) {
+        if (nextTokenValid) {
             nextTokenValid = false;
             return nextToken;
         }
@@ -145,15 +142,15 @@ public:
 
 private:
     Token readNext() {
-        const QBitArray& WHITES = TextUtils::WHITES;
+        const QBitArray &WHITES = TextUtils::WHITES;
         char inputChar = input.peek();
         //while(isspace(inputChar)) {       //exclude the locale-specific function
-        while(WHITES.testBit(inputChar)) {
+        while (WHITES.testBit(inputChar)) {
             ioLog.trace(QString("GENBANK LOCATION PARSER: Space token (ascii code): %1").arg(static_cast<int>(input.peek())));
             input.next();
             inputChar = input.peek();
         }
-        switch(input.peek()) {
+        switch (input.peek()) {
         case '\0':
             return Token("<end>", Token::END_OF_INPUT);
         case '(':
@@ -170,48 +167,45 @@ private:
             return Token(QByteArray(1, input.next()), Token::COLON);
         case ',':
             return Token(QByteArray(1, input.next()), Token::COMMA);
-        case '.':
-        {
+        case '.': {
             QByteArray tokenString(1, input.next());
-            if('.' == input.peek()) {
+            if ('.' == input.peek()) {
                 tokenString.append(input.next());
                 return Token(tokenString, Token::DOUBLE_PERIOD);
             }
             return Token(tokenString, Token::PERIOD);
         }
-        default:
-        {
-            const QBitArray& NUMS = TextUtils::NUMS;
+        default: {
+            const QBitArray &NUMS = TextUtils::NUMS;
             QByteArray tokenString;
-            if(NUMS.testBit(input.peek()) || '-' == input.peek()) {
-                if('-' == input.peek()) {
+            if (NUMS.testBit(input.peek()) || '-' == input.peek()) {
+                if ('-' == input.peek()) {
                     tokenString.append(input.next());
                 }
-                while(NUMS.testBit(input.peek())) {
+                while (NUMS.testBit(input.peek())) {
                     tokenString.append(input.next());
                 }
-                if("-" == QString(tokenString)) {
+                if ("-" == QString(tokenString)) {
                     tokenString = "";
                     input.prev();
-                }
-                else if(!isNameCharacter(input.peek())) {
+                } else if (!isNameCharacter(input.peek())) {
                     return Token(tokenString, Token::NUMBER);
                 }
             }
-            if(isNameCharacter(input.peek())) {
-                while(isNameCharacter(input.peek())) {
+            if (isNameCharacter(input.peek())) {
+                while (isNameCharacter(input.peek())) {
                     tokenString.append(input.next());
                 }
-                if("join" == tokenString) {
+                if ("join" == tokenString) {
                     return Token(tokenString, Token::JOIN);
                 }
-                if("order" == tokenString) {
+                if ("order" == tokenString) {
                     return Token(tokenString, Token::ORDER);
                 }
-                if("complement" == tokenString) {
+                if ("complement" == tokenString) {
                     return Token(tokenString, Token::COMPLEMENT);
                 }
-                if("bond" == tokenString) {
+                if ("bond" == tokenString) {
                     return Token(tokenString, Token::BOND);
                 }
                 return Token(tokenString, Token::NAME);
@@ -239,12 +233,11 @@ U2Region toRegion(quint64 firstBase, quint64 secondBase) {
 //ioLog added to trace an error which occurred on user's OS only
 class Parser {
 public:
-    Parser(const QByteArray &input):
-        lexer(input),
-        join(false),
-        order(false),
-        bond(false)
-    {
+    Parser(const QByteArray &input)
+        : lexer(input),
+          join(false),
+          order(false),
+          bond(false) {
         seqLenForCircular = -1;
     }
 
@@ -254,24 +247,26 @@ public:
         return parseLocation(result, messages);
     }
 
-    void setSeqLenForCircular(qint64 val) { seqLenForCircular = val; }
+    void setSeqLenForCircular(qint64 val) {
+        seqLenForCircular = val;
+    }
+
 private:
     qint64 seqLenForCircular;
 
-
     bool parseNumber(qint64 &result) {
-        if(lexer.peek().getType() != Token::NUMBER) {
+        if (lexer.peek().getType() != Token::NUMBER) {
             return false;
         }
         QByteArray string = lexer.next().getString();
         result = 0;
 
         int sign = 1;
-        if('-' == string.at(0)) {
+        if ('-' == string.at(0)) {
             sign = -1;
             string = string.right(1);
         }
-        foreach(char c, string) {
+        foreach (char c, string) {
             result *= 10;
             result += (quint64)c - '0';
         }
@@ -295,11 +290,11 @@ private:
         FAIL("An unexpected parsing result", LocationParser::Failure);
     }
 
-    LocationParser::ParsingResult parseLocationDescriptor(U2Location &location, QStringList& messages) {
+    LocationParser::ParsingResult parseLocationDescriptor(U2Location &location, QStringList &messages) {
         LocationParser::ParsingResult parsingResult = LocationParser::Success;
         bool remoteEntry = false;
         Token token = lexer.peek();
-        if (token.getType() == Token::NAME) { // remote entries
+        if (token.getType() == Token::NAME) {    // remote entries
             remoteEntry = true;
             QByteArray accession = lexer.next().getString();
             if (!match(Token::PERIOD)) {
@@ -318,8 +313,8 @@ private:
                 ioLog.trace(messages.last());
                 return LocationParser::Failure;
             }
-            messages <<  LocationParser::REMOTE_ENTRY_WARNING + ": " + QString(accession) + "." + QString::number(version);
-            parsingResult =  LocationParser::ParsedWithWarnings;
+            messages << LocationParser::REMOTE_ENTRY_WARNING + ": " + QString(accession) + "." + QString::number(version);
+            parsingResult = LocationParser::ParsedWithWarnings;
         }
 
         if (token.getType() == Token::COMPLEMENT) {
@@ -329,14 +324,13 @@ private:
 
         qint64 firstBase = 0;
         bool firstBaseIsFromRange = false;
-        if (match(Token::LEFT_PARENTHESIS)) { // cases like (1.2)..
+        if (match(Token::LEFT_PARENTHESIS)) {    // cases like (1.2)..
             firstBaseIsFromRange = true;
-            if (!parseNumber(firstBase)) { // use the first number as a region boundary
+            if (!parseNumber(firstBase)) {    // use the first number as a region boundary
                 messages << QString("GENBANK LOCATION PARSER: can't parse Number. Token: %1").arg(lexer.peek().getString().data());
                 ioLog.trace(messages.last());
                 return LocationParser::Failure;
-            }
-            else if (firstBase < 0) {
+            } else if (firstBase < 0) {
                 messages << QString("GENBANK LOCATION PARSER: region boundary can not be less then zero. Token: %1%2").arg(firstBase).arg(lexer.peek().getString().data());
                 ioLog.trace(messages.last());
                 return LocationParser::Failure;
@@ -346,7 +340,7 @@ private:
                 ioLog.trace(messages.last());
                 return LocationParser::Failure;
             }
-            if (!match(Token::NUMBER)) { // ignore the second number
+            if (!match(Token::NUMBER)) {    // ignore the second number
                 messages << QString("GENBANK LOCATION PARSER: Must be NUMBER instead of %1").arg(lexer.peek().getString().data());
                 ioLog.trace(messages.last());
                 return LocationParser::Failure;
@@ -365,15 +359,14 @@ private:
                 messages << QString("GENBANK LOCATION PARSER: can't parse Number. Token: %1").arg(lexer.peek().getString().data());
                 ioLog.trace(messages.last());
                 return LocationParser::Failure;
-            }
-            else if (firstBase < 0) {
+            } else if (firstBase < 0) {
                 messages << QString("Region boundary can not be less then zero: %1%2").arg(firstBase).arg(lexer.peek().getString().data());
                 ioLog.trace("GENBANK LOCATION PARSER:" + messages.last());
                 return LocationParser::Failure;
             }
         }
         if (match(Token::PERIOD)) {
-            if (firstBaseIsFromRange) { // ranges are only allowed in spans
+            if (firstBaseIsFromRange) {    // ranges are only allowed in spans
                 messages << QString("GENBANK LOCATION PARSER: ranges are only allowed in spans. Token: %1").arg(lexer.peek().getString().data());
                 ioLog.trace(messages.last());
                 return LocationParser::Failure;
@@ -383,8 +376,7 @@ private:
                 messages << QString("GENBANK LOCATION PARSER: can't parse Number. Token: %1").arg(lexer.peek().getString().data());
                 ioLog.trace(messages.last());
                 return LocationParser::Failure;
-            }
-            else if (secondNumber < 0) {
+            } else if (secondNumber < 0) {
                 messages << QString("Region boundary can not be less then zero: %1%2").arg(secondNumber).arg(lexer.peek().getString().data());
                 ioLog.trace("GENBANK LOCATION PARSER:" + messages.last());
                 return LocationParser::Failure;
@@ -394,7 +386,7 @@ private:
                 ioLog.trace(messages.last());
                 return LocationParser::Failure;
             }
-            if (!remoteEntry) { // ignore remote entries
+            if (!remoteEntry) {    // ignore remote entries
                 location->regions.append(toRegion(firstBase, secondNumber));
                 location->regionType = U2LocationRegionType_SingleBase;
                 messages << QString("GENBANK LOCATION PARSER: remote entries are not supported").arg(lexer.peek().getString().data());
@@ -402,8 +394,8 @@ private:
             }
         } else if (match(Token::DOUBLE_PERIOD)) {
             qint64 secondNumber = 0;
-            if (match(Token::LEFT_PARENTHESIS)) { // cases like ..(1.2)
-                if (!match(Token::NUMBER)) { // ignore the first number
+            if (match(Token::LEFT_PARENTHESIS)) {    // cases like ..(1.2)
+                if (!match(Token::NUMBER)) {    // ignore the first number
                     messages << QString("GENBANK LOCATION PARSER: Must be NUMBER instead of %1").arg(lexer.peek().getString().data());
                     ioLog.trace(messages.last());
                     return LocationParser::Failure;
@@ -413,12 +405,11 @@ private:
                     ioLog.trace(messages.last());
                     return LocationParser::Failure;
                 }
-                if(!parseNumber(secondNumber)) { // use the second number as a region boudary
+                if (!parseNumber(secondNumber)) {    // use the second number as a region boudary
                     messages << QString("GENBANK LOCATION PARSER: can't parse Number. Token: %1").arg(lexer.peek().getString().data());
                     ioLog.trace(messages.last());
                     return LocationParser::Failure;
-                }
-                else if (secondNumber < 0) {
+                } else if (secondNumber < 0) {
                     messages << QString("Region boundary can not be less then zero: %1%2").arg(secondNumber).arg(lexer.peek().getString().data());
                     ioLog.trace("GENBANK LOCATION PARSER:" + messages.last());
                     return LocationParser::Failure;
@@ -437,15 +428,14 @@ private:
                     messages << QString("GENBANK LOCATION PARSER: can't parse Number. Token: %1").arg(lexer.peek().getString().data());
                     ioLog.trace(messages.last());
                     return LocationParser::Failure;
-                }
-                else if (secondNumber < 0) {
+                } else if (secondNumber < 0) {
                     messages << QString("Region boundary can not be less then zero: %1%2").arg(secondNumber).arg(lexer.peek().getString().data());
                     ioLog.trace("GENBANK LOCATION PARSER:" + messages.last());
                     return LocationParser::Failure;
                 }
             }
 
-            if (!remoteEntry) { // ignore remote entries
+            if (!remoteEntry) {    // ignore remote entries
                 if (seqLenForCircular != -1 && firstBase > secondNumber) {
                     location->regions.append(toRegion(1, secondNumber));
                     location->regions.append(toRegion(firstBase, seqLenForCircular));
@@ -457,7 +447,7 @@ private:
                 }
             }
         } else if (match(Token::CARET)) {
-            if (firstBaseIsFromRange) { // ranges are only allowed in spans
+            if (firstBaseIsFromRange) {    // ranges are only allowed in spans
                 return LocationParser::Failure;
             }
             qint64 secondBase = 0;
@@ -467,7 +457,7 @@ private:
             if (!location->isEmpty()) {
                 return LocationParser::Failure;
             }
-            if (!remoteEntry) { // ignore remote entries
+            if (!remoteEntry) {    // ignore remote entries
                 if (seqLenForCircular != -1 && firstBase > secondBase) {
                     location->regions.append(toRegion(1, secondBase));
                     location->regions.append(toRegion(firstBase, seqLenForCircular));
@@ -479,10 +469,10 @@ private:
                 }
             }
         } else {
-            if (firstBaseIsFromRange) { // ranges are only allowed in spans
+            if (firstBaseIsFromRange) {    // ranges are only allowed in spans
                 return LocationParser::Failure;
             }
-            if (!remoteEntry) { // ignore remote entries
+            if (!remoteEntry) {    // ignore remote entries
                 location->regions.append(toRegion(firstBase, firstBase));
                 location->regionType = U2LocationRegionType_Default;
             }
@@ -616,7 +606,7 @@ private:
     }
 
     bool match(Token::Type type) {
-        if(lexer.peek().getType() == type) {
+        if (lexer.peek().getType() == type) {
             lexer.next();
             return true;
         }
@@ -630,17 +620,17 @@ private:
     bool bond;
 };
 
-}
+}    // namespace
 
 const QString LocationParser::REMOTE_ENTRY_WARNING = QCoreApplication::translate("LocationParser", "Ignoring remote entry");
 const QString LocationParser::JOIN_COMPLEMENT_WARNING = QCoreApplication::translate("LocationParser", "Ignoring different strands in JOIN");
 
 LocationParser::ParsingResult LocationParser::parseLocation(const char *str, int len, U2Location &location, qint64 seqlenForCircular) {
     QStringList messages;
-    return parseLocation(str, len,location, messages, seqlenForCircular);
+    return parseLocation(str, len, location, messages, seqlenForCircular);
 }
 
-LocationParser::ParsingResult LocationParser::parseLocation(const char* str, int len, U2Location& location, QStringList &messages, qint64 seqlenForCircular) {
+LocationParser::ParsingResult LocationParser::parseLocation(const char *str, int len, U2Location &location, QStringList &messages, qint64 seqlenForCircular) {
     Parser parser(QByteArray(str, len));
     parser.setSeqLenForCircular(seqlenForCircular);
 
@@ -651,6 +641,6 @@ LocationParser::ParsingResult LocationParser::parseLocation(const char* str, int
     return parsingResult;
 }
 
-}
+}    // namespace Genbank
 
-}//namespace
+}    // namespace U2

@@ -21,31 +21,30 @@
 
 #include "ORFAlgorithmTask.h"
 
-#include <U2Core/TextUtils.h>
-#include <U2Core/DNATranslation.h>
 #include <U2Core/Counter.h>
+#include <U2Core/DNATranslation.h>
+#include <U2Core/TextUtils.h>
 
 namespace U2 {
 
-ORFFindTask::ORFFindTask(const ORFAlgorithmSettings& s,const U2EntityRef& _entityRef)
-: Task (tr("ORF find"), TaskFlag_None),config(s),entityRef(_entityRef)
-{
-    GCOUNTER( cvar, tvar, "ORFFindTask" );
+ORFFindTask::ORFFindTask(const ORFAlgorithmSettings &s, const U2EntityRef &_entityRef)
+    : Task(tr("ORF find"), TaskFlag_None), config(s), entityRef(_entityRef) {
+    GCOUNTER(cvar, tvar, "ORFFindTask");
     tpm = Progress_Manual;
     assert(config.proteinTT && config.proteinTT->isThree2One());
 }
 
-void ORFFindTask::run(){
-    ORFFindAlgorithm::find(dynamic_cast<ORFFindResultsListener*>(this),
-    config,
-    entityRef,
-    stateInfo.cancelFlag,
-    stateInfo.progress);
+void ORFFindTask::run() {
+    ORFFindAlgorithm::find(dynamic_cast<ORFFindResultsListener *>(this),
+                           config,
+                           entityRef,
+                           stateInfo.cancelFlag,
+                           stateInfo.progress);
 }
 
-void ORFFindTask::onResult(const ORFFindResult& r, U2OpStatus& os) {
+void ORFFindTask::onResult(const ORFFindResult &r, U2OpStatus &os) {
     QMutexLocker locker(&lock);
-    if(config.isResultsLimited){
+    if (config.isResultsLimited) {
         if (newResults.size() >= config.maxResult2Search) {
             os.setCanceled(true);
             algoLog.info(QString("Max result {%1} is achieved").arg(config.maxResult2Search));
@@ -64,5 +63,4 @@ QList<ORFFindResult> ORFFindTask::popResults() {
     return res;
 }
 
-} //namespace
-
+}    // namespace U2

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "SQLiteUdrDbi.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/RawDataUdrSchema.h>
 #include <U2Core/U2DbiPackUtils.h>
@@ -29,22 +31,18 @@
 #include "SQLiteBlobOutputStream.h"
 #include "SQLiteObjectDbi.h"
 
-#include "SQLiteUdrDbi.h"
-
 namespace U2 {
 
 namespace {
-    const QString TABLE_PREFIX = "UdrSchema_";
+const QString TABLE_PREFIX = "UdrSchema_";
 
-    QString tableName(const UdrSchemaId &schemaId) {
-        return TABLE_PREFIX + schemaId;
-    }
+QString tableName(const UdrSchemaId &schemaId) {
+    return TABLE_PREFIX + schemaId;
 }
+}    // namespace
 
 SQLiteUdrDbi::SQLiteUdrDbi(SQLiteDbi *dbi)
-: UdrDbi(dbi), SQLiteChildDBICommon(dbi)
-{
-
+    : UdrDbi(dbi), SQLiteChildDBICommon(dbi) {
 }
 
 void SQLiteUdrDbi::undo(const U2SingleModStep &modStep, U2OpStatus &os) {
@@ -185,14 +183,14 @@ void SQLiteUdrDbi::removeRecord(const UdrRecordId &recordId, U2OpStatus &os) {
     q.execute();
 }
 
-InputStream * SQLiteUdrDbi::createInputStream(const UdrRecordId &recordId, int fieldNum, U2OpStatus &os) {
+InputStream *SQLiteUdrDbi::createInputStream(const UdrRecordId &recordId, int fieldNum, U2OpStatus &os) {
     UdrSchema::FieldDesc field = getBlobField(recordId.getSchemaId(), fieldNum, os);
     CHECK_OP(os, NULL);
 
     return new SQLiteBlobInputStream(db, tableName(recordId.getSchemaId()).toLatin1(), field.getName(), recordId.getRecordId(), os);
 }
 
-OutputStream * SQLiteUdrDbi::createOutputStream(const UdrRecordId &recordId, int fieldNum, qint64 size, U2OpStatus &os) {
+OutputStream *SQLiteUdrDbi::createOutputStream(const UdrRecordId &recordId, int fieldNum, qint64 size, U2OpStatus &os) {
     CHECK_EXT(size >= 0, os.setError("Negative stream size"), NULL);
     CHECK_EXT(size <= INT_MAX, os.setError("Too big stream size"), NULL);
     UdrSchema::FieldDesc field = getBlobField(recordId.getSchemaId(), fieldNum, os);
@@ -201,7 +199,7 @@ OutputStream * SQLiteUdrDbi::createOutputStream(const UdrRecordId &recordId, int
     return new SQLiteBlobOutputStream(db, tableName(recordId.getSchemaId()).toLatin1(), field.getName(), recordId.getRecordId(), (int)size, os);
 }
 
-ModificationAction* SQLiteUdrDbi::getModificationAction(const U2DataId& id) {
+ModificationAction *SQLiteUdrDbi::getModificationAction(const U2DataId &id) {
     return new SQLiteModificationAction(dbi, id);
 }
 
@@ -236,7 +234,7 @@ void SQLiteUdrDbi::createTable(const UdrSchema *schema, U2OpStatus &os) {
 
     QString query = tableStartDef(schema->getId());
     CHECK_OP(os, );
-    for (int i=0; i<schema->size(); i++) {
+    for (int i = 0; i < schema->size(); i++) {
         UdrSchema::FieldDesc field = schema->getField(i, os);
         CHECK_OP(os, );
         query += ", " + fieldDef(field);
@@ -250,12 +248,7 @@ void SQLiteUdrDbi::createTable(const UdrSchema *schema, U2OpStatus &os) {
 }
 
 void SQLiteUdrDbi::createIndex(const UdrSchemaId &schemaId, const QStringList &fields, U2OpStatus &os) {
-    QString query = "CREATE INDEX "
-        + tableName(schemaId) + "_" + fields.join("_") + " "
-        + "on " + tableName(schemaId)
-        + "("
-        + fields.join(", ")
-        + ")";
+    QString query = "CREATE INDEX " + tableName(schemaId) + "_" + fields.join("_") + " " + "on " + tableName(schemaId) + "(" + fields.join(", ") + ")";
 
     SQLiteWriteQuery(query, db, os).execute();
 }
@@ -263,7 +256,7 @@ void SQLiteUdrDbi::createIndex(const UdrSchemaId &schemaId, const QStringList &f
 /************************************************************************/
 /* Utilities */
 /************************************************************************/
-const UdrSchema * SQLiteUdrDbi::udrSchema(const UdrSchemaId &schemaId, U2OpStatus &os) {
+const UdrSchema *SQLiteUdrDbi::udrSchema(const UdrSchemaId &schemaId, U2OpStatus &os) {
     UdrSchemaRegistry *udrRegistry = AppContext::getUdrSchemaRegistry();
     SAFE_POINT_EXT(NULL != udrRegistry, os.setError("NULL UDR registry"), NULL);
 
@@ -274,26 +267,22 @@ const UdrSchema * SQLiteUdrDbi::udrSchema(const UdrSchemaId &schemaId, U2OpStatu
 
 QString SQLiteUdrDbi::insertDef(const UdrSchema *schema, U2OpStatus &os) {
     QStringList nums;
-    for (int i=0; i<schema->size(); i++) {
-        nums << QString("?%1").arg(i+1);
+    for (int i = 0; i < schema->size(); i++) {
+        nums << QString("?%1").arg(i + 1);
     }
 
-    return "INSERT INTO " + tableName(schema->getId())
-        + "(" + UdrSchema::fieldNames(schema, os).join(", ") + ") "
-        + "VALUES(" + nums.join(", ") + ")";
+    return "INSERT INTO " + tableName(schema->getId()) + "(" + UdrSchema::fieldNames(schema, os).join(", ") + ") " + "VALUES(" + nums.join(", ") + ")";
 }
 
 QString SQLiteUdrDbi::updateDef(const UdrSchema *schema, U2OpStatus &os) {
     QStringList assignments;
-    for (int i=0; i<schema->size(); i++) {
+    for (int i = 0; i < schema->size(); i++) {
         UdrSchema::FieldDesc field = schema->getField(i, os);
         CHECK_OP(os, "");
-        assignments << QString("%1 = ?%2").arg(field.getName().constData()).arg(i+1);
+        assignments << QString("%1 = ?%2").arg(field.getName().constData()).arg(i + 1);
     }
 
-    return "UPDATE " + tableName(schema->getId())
-        + " SET " + assignments.join(", ")
-        + " WHERE " + UdrSchema::RECORD_ID_FIELD_NAME + QString(" = ?%1").arg(schema->size() + 1);
+    return "UPDATE " + tableName(schema->getId()) + " SET " + assignments.join(", ") + " WHERE " + UdrSchema::RECORD_ID_FIELD_NAME + QString(" = ?%1").arg(schema->size() + 1);
 }
 
 QString SQLiteUdrDbi::selectAllDef(const UdrSchema *schema, U2OpStatus &os) {
@@ -302,43 +291,38 @@ QString SQLiteUdrDbi::selectAllDef(const UdrSchema *schema, U2OpStatus &os) {
 
     const bool isObjectReferenced = schema->hasObjectReference();
 
-    return "SELECT " + UdrSchema::RECORD_ID_FIELD_NAME + ", "
-        + UdrSchema::fieldNames(schema, os, directFields).join(", ")
-        + (isObjectReferenced ? ", o.type" : "")
-        + " FROM " + tableName(schema->getId())
-        + (isObjectReferenced ? " AS udr INNER JOIN Object AS o ON o.id = udr." + UdrSchema::OBJECT_FIELD_NAME : "");
+    return "SELECT " + UdrSchema::RECORD_ID_FIELD_NAME + ", " + UdrSchema::fieldNames(schema, os, directFields).join(", ") + (isObjectReferenced ? ", o.type" : "") + " FROM " + tableName(schema->getId()) + (isObjectReferenced ? " AS udr INNER JOIN Object AS o ON o.id = udr." + UdrSchema::OBJECT_FIELD_NAME : "");
 }
 
 QString SQLiteUdrDbi::selectDef(const UdrSchema *schema, U2OpStatus &os) {
-    return selectAllDef(schema, os)
-        + " WHERE " + UdrSchema::RECORD_ID_FIELD_NAME + " = ?1";
+    return selectAllDef(schema, os) + " WHERE " + UdrSchema::RECORD_ID_FIELD_NAME + " = ?1";
 }
 
 QString SQLiteUdrDbi::tableStartDef(const UdrSchemaId &schemaId) {
     return "CREATE TABLE " + tableName(schemaId) + " (" +
-        UdrSchema::RECORD_ID_FIELD_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT";
+           UdrSchema::RECORD_ID_FIELD_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT";
 }
 
 QString SQLiteUdrDbi::fieldDef(const UdrSchema::FieldDesc &field) {
     QString def = field.getName() + " ";
     switch (field.getDataType()) {
-        case UdrSchema::INTEGER:
-            def += "INTEGER";
-            break;
-        case UdrSchema::DOUBLE:
-            def += "REAL";
-            break;
-        case UdrSchema::STRING:
-            def += "TEXT";
-            break;
-        case UdrSchema::BLOB:
-            def += "BLOB";
-            break;
-        case UdrSchema::ID:
-            def += "INTEGER NOT NULL";
-            break;
-        default:
-            FAIL("Unknown UDR data type detected!", QString());
+    case UdrSchema::INTEGER:
+        def += "INTEGER";
+        break;
+    case UdrSchema::DOUBLE:
+        def += "REAL";
+        break;
+    case UdrSchema::STRING:
+        def += "TEXT";
+        break;
+    case UdrSchema::BLOB:
+        def += "BLOB";
+        break;
+    case UdrSchema::ID:
+        def += "INTEGER NOT NULL";
+        break;
+    default:
+        FAIL("Unknown UDR data type detected!", QString());
     }
     return def;
 }
@@ -346,7 +330,7 @@ QString SQLiteUdrDbi::fieldDef(const UdrSchema::FieldDesc &field) {
 QString SQLiteUdrDbi::foreignKeysDef(const UdrSchema *schema, U2OpStatus &os) {
     QString result;
 
-    for (int i=0; i<schema->size(); i++) {
+    for (int i = 0; i < schema->size(); i++) {
         const UdrSchema::FieldDesc field = schema->getField(i, os);
         CHECK_OP(os, "");
 
@@ -358,11 +342,11 @@ QString SQLiteUdrDbi::foreignKeysDef(const UdrSchema *schema, U2OpStatus &os) {
     return result;
 }
 
-QList< QStringList > SQLiteUdrDbi::indexes(const UdrSchema *schema, U2OpStatus &os) {
-    QList< QStringList > result;
+QList<QStringList> SQLiteUdrDbi::indexes(const UdrSchema *schema, U2OpStatus &os) {
+    QList<QStringList> result;
 
     // single column indexes
-    for (int i=0; i<schema->size(); i++) {
+    for (int i = 0; i < schema->size(); i++) {
         UdrSchema::FieldDesc field = schema->getField(i, os);
         CHECK_OP(os, result);
         if (UdrSchema::INDEXED == field.getIndexType()) {
@@ -382,29 +366,29 @@ QList< QStringList > SQLiteUdrDbi::indexes(const UdrSchema *schema, U2OpStatus &
 }
 
 void SQLiteUdrDbi::bindData(const QList<UdrValue> &data, const UdrSchema *schema, SQLiteQuery &q, U2OpStatus &os) {
-    for (int i=0; i<data.size(); i++) {
+    for (int i = 0; i < data.size(); i++) {
         const UdrValue &value = data[i];
         UdrSchema::FieldDesc field = schema->getField(i, os);
         CHECK_OP(os, );
 
         switch (field.getDataType()) {
-            case UdrSchema::INTEGER:
-                q.bindInt64(i+1, value.getInt(os));
-                break;
-            case UdrSchema::DOUBLE:
-                q.bindDouble(i+1, value.getDouble(os));
-                break;
-            case UdrSchema::STRING:
-                q.bindString(i+1, value.getString(os));
-                break;
-            case UdrSchema::BLOB:
-                q.bindBlob(i+1, "");
-                break;
-            case UdrSchema::ID:
-                q.bindDataId(i+1, value.getDataId(os));
-                break;
-            default:
-                FAIL("Unknown UDR data type detected!", );
+        case UdrSchema::INTEGER:
+            q.bindInt64(i + 1, value.getInt(os));
+            break;
+        case UdrSchema::DOUBLE:
+            q.bindDouble(i + 1, value.getDouble(os));
+            break;
+        case UdrSchema::STRING:
+            q.bindString(i + 1, value.getString(os));
+            break;
+        case UdrSchema::BLOB:
+            q.bindBlob(i + 1, "");
+            break;
+        case UdrSchema::ID:
+            q.bindDataId(i + 1, value.getDataId(os));
+            break;
+        default:
+            FAIL("Unknown UDR data type detected!", );
         }
         CHECK_OP(os, );
     }
@@ -414,7 +398,7 @@ void SQLiteUdrDbi::retreiveData(QList<UdrValue> &data, const UdrSchema *schema, 
     QList<int> fields = UdrSchema::notBinary(schema, os);
     CHECK_OP(os, );
 
-    for (int i=0; i<schema->size(); i++) {
+    for (int i = 0; i < schema->size(); i++) {
         UdrSchema::FieldDesc field = schema->getField(i, os);
         CHECK_OP(os, );
         int colNum = -1;
@@ -422,22 +406,22 @@ void SQLiteUdrDbi::retreiveData(QList<UdrValue> &data, const UdrSchema *schema, 
             colNum = fields.lastIndexOf(i) + 1;
         }
         switch (field.getDataType()) {
-            case UdrSchema::INTEGER:
-                data << UdrValue(q.getInt64(colNum));
-                break;
-            case UdrSchema::DOUBLE:
-                data << UdrValue(q.getDouble(colNum));
-                break;
-            case UdrSchema::STRING:
-                data << UdrValue(q.getString(colNum));
-                break;
-            case UdrSchema::BLOB:
-                data << UdrValue();
-                break;
-            case UdrSchema::ID:
-                const U2DataType objectType = q.getInt32(schema->size() + 1); // type is selected in the additional column
-                data << UdrValue(q.getDataId(colNum, objectType));
-                break;
+        case UdrSchema::INTEGER:
+            data << UdrValue(q.getInt64(colNum));
+            break;
+        case UdrSchema::DOUBLE:
+            data << UdrValue(q.getDouble(colNum));
+            break;
+        case UdrSchema::STRING:
+            data << UdrValue(q.getString(colNum));
+            break;
+        case UdrSchema::BLOB:
+            data << UdrValue();
+            break;
+        case UdrSchema::ID:
+            const U2DataType objectType = q.getInt32(schema->size() + 1);    // type is selected in the additional column
+            data << UdrValue(q.getDataId(colNum, objectType));
+            break;
         }
         CHECK_OP(os, );
     }
@@ -455,4 +439,4 @@ UdrSchema::FieldDesc SQLiteUdrDbi::getBlobField(const UdrSchemaId &schemaId, int
     return field;
 }
 
-} // U2
+}    // namespace U2

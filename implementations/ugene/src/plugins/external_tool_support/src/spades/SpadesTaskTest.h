@@ -62,12 +62,13 @@ public:
 
     static const QString DESIRED_PARAMETERS;
     static const QString OUTPUT_DIR;
+
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_SpadesTaskTest, "spades-task-input-type", TaskFlags(TaskFlag_NoRun) | TaskFlag_FailOnSubtaskCancel);
     //SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_SpadesTaskTest, "spades-task-input-type");
 
     void prepare();
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
 private:
     void setAndCheckArgs();
@@ -87,6 +88,7 @@ public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CheckYAMLFile, "check-yaml-file");
 
     void prepare();
+
 private:
     QStringList desiredStrings;
     QString fileToCheck;
@@ -94,8 +96,8 @@ private:
 
 class SpadesTaskTest {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-}
+}    // namespace U2
 #endif

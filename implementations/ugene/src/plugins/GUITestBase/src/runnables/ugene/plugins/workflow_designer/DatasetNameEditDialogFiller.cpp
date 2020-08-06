@@ -19,11 +19,11 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-
 #include <drivers/GTKeyboardDriver.h>
 #include <primitives/GTLineEdit.h>
 #include <primitives/GTWidget.h>
+
+#include <QApplication>
 
 #include "DatasetNameEditDialogFiller.h"
 
@@ -32,12 +32,12 @@ using namespace HI;
 
 #define GT_CLASS_NAME "DatasetNameEditDialogFiller"
 #define GT_METHOD_NAME "commonScenario"
-void DatasetNameEditDialogFiller::commonScenario(){
-    QWidget* dialog = QApplication::activeModalWidget();
+void DatasetNameEditDialogFiller::commonScenario() {
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
-    if(!datasetName.isEmpty()){
-        QLineEdit* line = dialog->findChild<QLineEdit*>();
+    if (!datasetName.isEmpty()) {
+        QLineEdit *line = dialog->findChild<QLineEdit *>();
         GT_CHECK(line, "lineEdit not found");
         GTLineEdit::setText(os, line, datasetName);
     }
@@ -46,4 +46,4 @@ void DatasetNameEditDialogFiller::commonScenario(){
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

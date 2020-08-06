@@ -22,9 +22,10 @@
 #ifndef _U2_SORT_BAM_WORKER_H_
 #define _U2_SORT_BAM_WORKER_H_
 
+#include <U2Core/GUrl.h>
+
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
-#include <U2Core/GUrl.h>
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -35,17 +36,20 @@ typedef PrompterBase<SortBamPrompter> SortBamBase;
 class SortBamPrompter : public SortBamBase {
     Q_OBJECT
 public:
-    SortBamPrompter(Actor* p = 0) : SortBamBase(p) {}
+    SortBamPrompter(Actor *p = 0)
+        : SortBamBase(p) {
+    }
+
 protected:
     QString composeRichDoc();
-}; //SortBamPrompter
+};    //SortBamPrompter
 
-class SortBamWorker: public BaseWorker {
+class SortBamWorker : public BaseWorker {
     Q_OBJECT
 public:
     SortBamWorker(Actor *a);
     void init();
-    Task * tick();
+    Task *tick();
     void cleanup();
 
 private:
@@ -53,30 +57,37 @@ private:
     IntegralBus *outputUrlPort;
     QStringList outUrls;
 public slots:
-    void sl_taskFinished( Task *task );
+    void sl_taskFinished(Task *task);
 
 private:
     QString takeUrl();
-    QString getTargetName(const QString& fileUrl, const QString& outDir);
+    QString getTargetName(const QString &fileUrl, const QString &outDir);
     void sendResult(const QString &url);
-}; //SortBamWorker
+};    //SortBamWorker
 
 class SortBamWorkerFactory : public DomainFactory {
     static const QString ACTOR_ID;
+
 public:
     static void init();
-    SortBamWorkerFactory() : DomainFactory(ACTOR_ID) {}
-    Worker* createWorker(Actor* a) { return new SortBamWorker(a); }
-}; //SortBamWorkerFactory
+    SortBamWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
+    Worker *createWorker(Actor *a) {
+        return new SortBamWorker(a);
+    }
+};    //SortBamWorkerFactory
 
-class BamSortSetting{
+class BamSortSetting {
 public:
-    BamSortSetting(): outDir(""), outName(""),inputUrl(""), index(true){}
+    BamSortSetting()
+        : outDir(""), outName(""), inputUrl(""), index(true) {
+    }
 
     QString outDir;
     QString outName;
     QString inputUrl;
-    bool    index;
+    bool index;
 };
 
 class SamtoolsSortTask : public Task {
@@ -87,15 +98,16 @@ public:
     void prepare();
     void run();
 
-    QString getResult(){return resultUrl;}
+    QString getResult() {
+        return resultUrl;
+    }
 
 private:
     BamSortSetting settings;
     QString resultUrl;
 };
 
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-} //LocalWorkflow
-} //U2
-
-#endif //_U2_SORT_BAM_WORKER_H_
+#endif    //_U2_SORT_BAM_WORKER_H_

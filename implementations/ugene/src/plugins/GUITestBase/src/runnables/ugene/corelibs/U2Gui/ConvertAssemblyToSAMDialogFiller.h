@@ -22,24 +22,28 @@
 #ifndef _U2_GT_CONVERT_ASSEMBLY_TO_SAM_DIALOG_FILLER_H
 #define _U2_GT_CONVERT_ASSEMBLY_TO_SAM_DIALOG_FILLER_H
 
-#include "utils/GTUtilsDialog.h"
 #include <base_dialogs/GTFileDialog.h>
+
+#include "utils/GTUtilsDialog.h"
 
 namespace U2 {
 using namespace HI;
 
-    class ConvertAssemblyToSAMDialogFiller : public Filler {
-    public:
-        ConvertAssemblyToSAMDialogFiller(HI::GUITestOpStatus &_os,
-                                         const QString &_dbPath, const QString &_dbFileName):
-            Filler(_os, "AssemblyToSamDialog"),
-            databasePath(_dbPath),
-            databaseFileName(_dbFileName){}
-        void commonScenario();
-    private:
-        const QString databasePath;
-        const QString databaseFileName;
-    };
-}
+class ConvertAssemblyToSAMDialogFiller : public Filler {
+public:
+    ConvertAssemblyToSAMDialogFiller(HI::GUITestOpStatus &_os,
+                                     const QString &_dbPath,
+                                     const QString &_dbFileName)
+        : Filler(_os, "AssemblyToSamDialog"),
+          databasePath(_dbPath),
+          databaseFileName(_dbFileName) {
+    }
+    void commonScenario();
 
-#endif // _U2_GT_CONVERT_ASSEMBLY_TO_SAM_DIALOG_FILLER_H
+private:
+    const QString databasePath;
+    const QString databaseFileName;
+};
+}    // namespace U2
+
+#endif    // _U2_GT_CONVERT_ASSEMBLY_TO_SAM_DIALOG_FILLER_H

@@ -20,26 +20,24 @@
  */
 
 #include "ExportDocumentDialogFiller.h"
-#include <primitives/GTWidget.h>
-#include <primitives/GTLineEdit.h>
-#include <primitives/GTComboBox.h>
 #include <primitives/GTCheckBox.h>
+#include <primitives/GTComboBox.h>
+#include <primitives/GTLineEdit.h>
+#include <primitives/GTWidget.h>
 
-#include <QDir>
 #include <QApplication>
-#include <QPushButton>
 #include <QDialogButtonBox>
+#include <QDir>
+#include <QPushButton>
 
 namespace U2 {
 
 QString ExportDocumentDialogFiller::defaultExportString = "";
 
 #define GT_CLASS_NAME "ExportDocumentDialogFiller"
-ExportDocumentDialogFiller::ExportDocumentDialogFiller(HI::GUITestOpStatus &_os, const QString &_path, const QString &_name,
-                         ExportDocumentDialogFiller::FormatToUse _format, bool compressFile,
-                         bool addToProject, GTGlobals::UseMethod method):
-Filler(_os, "ExportDocumentDialog"),
-path(_path), name(_name), useMethod(method), format(_format), compressFile(compressFile), addToProject(addToProject) {
+ExportDocumentDialogFiller::ExportDocumentDialogFiller(HI::GUITestOpStatus &_os, const QString &_path, const QString &_name, ExportDocumentDialogFiller::FormatToUse _format, bool compressFile, bool addToProject, GTGlobals::UseMethod method)
+    : Filler(_os, "ExportDocumentDialog"),
+      path(_path), name(_name), useMethod(method), format(_format), compressFile(compressFile), addToProject(addToProject) {
     QString __path = QDir::cleanPath(QDir::currentPath() + "/" + _path);
     if (__path.at(__path.count() - 1) != '/') {
         __path += '/';
@@ -64,31 +62,30 @@ path(_path), name(_name), useMethod(method), format(_format), compressFile(compr
 }
 
 #define GT_METHOD_NAME "commonScenario"
-void ExportDocumentDialogFiller::commonScenario()
-{
+void ExportDocumentDialogFiller::commonScenario() {
     QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog != NULL, "dialog not found");
 
     if (!path.isEmpty()) {
-        QLineEdit *lineEdit = dialog->findChild<QLineEdit*>("fileNameEdit");
+        QLineEdit *lineEdit = dialog->findChild<QLineEdit *>("fileNameEdit");
         GT_CHECK(lineEdit != NULL, "line edit not found");
         defaultExportString = GTLineEdit::copyText(os, lineEdit);
         GTLineEdit::setText(os, lineEdit, path + name);
 
-        QComboBox *comboBox = dialog->findChild<QComboBox*>("formatCombo");
+        QComboBox *comboBox = dialog->findChild<QComboBox *>("formatCombo");
         GT_CHECK(comboBox != NULL, "ComboBox not found");
         int index = comboBox->findText(comboBoxItems[format]);
 
         GT_CHECK(index != -1, QString("item \"%1\" in combobox not found").arg(comboBoxItems[format]));
-        if (comboBox->currentIndex() != index){
+        if (comboBox->currentIndex() != index) {
             GTComboBox::setCurrentIndex(os, comboBox, index, true, useMethod);
         }
 
-        QCheckBox *compressCheckBox = dialog->findChild<QCheckBox*>(QString::fromUtf8("compressCheck"));
+        QCheckBox *compressCheckBox = dialog->findChild<QCheckBox *>(QString::fromUtf8("compressCheck"));
         GT_CHECK(compressCheckBox != NULL, "Check box not found");
         GTCheckBox::setChecked(os, compressCheckBox, compressFile);
 
-        QCheckBox *addCheckBox = dialog->findChild<QCheckBox*>(QString::fromUtf8("addToProjCheck"));
+        QCheckBox *addCheckBox = dialog->findChild<QCheckBox *>(QString::fromUtf8("addToProjCheck"));
         GT_CHECK(addCheckBox != NULL, "Check box not found");
         GTCheckBox::setChecked(os, addCheckBox, addToProject);
     }
@@ -98,4 +95,4 @@ void ExportDocumentDialogFiller::commonScenario()
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-}
+}    // namespace U2

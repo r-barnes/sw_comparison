@@ -24,47 +24,48 @@
 
 #include <QMutex>
 
-#include <U2Core/GObject.h>
 #include <U2Core/DNAChromatogram.h>
+#include <U2Core/GObject.h>
 #include <U2Core/U2RawData.h>
 
 namespace U2 {
 
 class U2CORE_EXPORT U2Chromatogram : public U2RawData {
 public:
-                        U2Chromatogram();
-                        U2Chromatogram(const U2DbiRef &dbiRef);
-                        U2Chromatogram(const U2RawData &rawData);
+    U2Chromatogram();
+    U2Chromatogram(const U2DbiRef &dbiRef);
+    U2Chromatogram(const U2RawData &rawData);
 
-    U2DataType          getType() const;
+    U2DataType getType() const;
 };
 
-class  U2CORE_EXPORT DNAChromatogramObject: public GObject {
+class U2CORE_EXPORT DNAChromatogramObject : public GObject {
     Q_OBJECT
 public:
-    static DNAChromatogramObject *  createInstance(const DNAChromatogram &chroma,
-                                        const QString &objectName, const U2DbiRef &dbiRef,
-                                        U2OpStatus &os, const QVariantMap &hintsMap = QVariantMap());
+    static DNAChromatogramObject *createInstance(const DNAChromatogram &chroma,
+                                                 const QString &objectName,
+                                                 const U2DbiRef &dbiRef,
+                                                 U2OpStatus &os,
+                                                 const QVariantMap &hintsMap = QVariantMap());
 
-                                    DNAChromatogramObject(const QString &objectName,
-                                        const U2EntityRef &chromaRef,
-                                        const QVariantMap &hintsMap = QVariantMap());
+    DNAChromatogramObject(const QString &objectName,
+                          const U2EntityRef &chromaRef,
+                          const QVariantMap &hintsMap = QVariantMap());
 
-    const DNAChromatogram &         getChromatogram() const;
-    void                            setChromatogram(U2OpStatus &os, const DNAChromatogram &chromatogram);
+    const DNAChromatogram &getChromatogram() const;
+    void setChromatogram(U2OpStatus &os, const DNAChromatogram &chromatogram);
 
-    GObject *                       clone(const U2DbiRef &dstRef, U2OpStatus &os, const QVariantMap &hints = QVariantMap()) const;
+    GObject *clone(const U2DbiRef &dstRef, U2OpStatus &os, const QVariantMap &hints = QVariantMap()) const;
 
 protected:
-    void                            loadDataCore(U2OpStatus &os);
+    void loadDataCore(U2OpStatus &os);
 
 private:
-    mutable QMutex                  mutex;
-    mutable bool                    cached;
-    mutable DNAChromatogram         cache;
+    mutable QMutex mutex;
+    mutable bool cached;
+    mutable DNAChromatogram cache;
 };
 
-}//namespace
-
+}    // namespace U2
 
 #endif

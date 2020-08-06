@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "MarkerEditorWidget.h"
+
 #include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/U2SafePoints.h>
 
@@ -28,13 +30,10 @@
 #include <U2Lang/Marker.h>
 #include <U2Lang/MarkerUtils.h>
 
-#include "MarkerEditorWidget.h"
-
 namespace U2 {
 
 MarkerEditorWidget::MarkerEditorWidget(QAbstractTableModel *markerModel, QWidget *parent)
-: QWidget(parent), markerModel(markerModel)
-{
+    : QWidget(parent), markerModel(markerModel) {
     setupUi(this);
     {
         markerTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
@@ -54,11 +53,10 @@ MarkerEditorWidget::MarkerEditorWidget(QAbstractTableModel *markerModel, QWidget
     connect(removeButton, SIGNAL(clicked()), SLOT(sl_onRemoveButtonClicked()));
     connect(markerTable, SIGNAL(entered(const QModelIndex &)), SLOT(sl_onItemEntered(const QModelIndex &)));
     connect(markerTable, SIGNAL(pressed(const QModelIndex &)), SLOT(sl_onItemSelected(const QModelIndex &)));
-
 }
 
 void MarkerEditorWidget::sl_onAddButtonClicked() {
-    Workflow::MarkerGroupListCfgModel *model = dynamic_cast<Workflow::MarkerGroupListCfgModel*>(markerTable->model());
+    Workflow::MarkerGroupListCfgModel *model = dynamic_cast<Workflow::MarkerGroupListCfgModel *>(markerTable->model());
     QObjectScopedPointer<EditMarkerGroupDialog> dlg = new EditMarkerGroupDialog(true, NULL, model, this);
     const int dialogResult = dlg->exec();
     CHECK(!dlg.isNull(), );
@@ -76,7 +74,7 @@ void MarkerEditorWidget::sl_onEditButtonClicked() {
         return;
     }
 
-    Workflow::MarkerGroupListCfgModel *model = dynamic_cast<Workflow::MarkerGroupListCfgModel*>(markerTable->model());
+    Workflow::MarkerGroupListCfgModel *model = dynamic_cast<Workflow::MarkerGroupListCfgModel *>(markerTable->model());
     QObjectScopedPointer<EditMarkerGroupDialog> dlg = new EditMarkerGroupDialog(false, model->getMarker(selected.first().row()), model, this);
     const int dialogResult = dlg->exec();
     CHECK(!dlg.isNull(), );
@@ -97,7 +95,7 @@ void MarkerEditorWidget::sl_onRemoveButtonClicked() {
     markerModel->removeRows(selected.first().row(), 1, selected.first());
 
     SAFE_POINT(markerTable->model(), "cant retrieve table model count", );
-    if(markerTable->model()->rowCount() == 0){
+    if (markerTable->model()->rowCount() == 0) {
         editButton->setEnabled(false);
         removeButton->setEnabled(false);
     }
@@ -116,9 +114,8 @@ void MarkerEditorWidget::sl_onItemSelected(const QModelIndex &) {
 }
 
 bool MarkerEditorWidget::checkEditMarkerGroupResult(const QString &oldName, Marker *newMarker, QString &message) {
-    Workflow::MarkerGroupListCfgModel *model = dynamic_cast<Workflow::MarkerGroupListCfgModel*>(markerTable->model());
-    QList<Marker*> &markers = model->getMarkers();
-
+    Workflow::MarkerGroupListCfgModel *model = dynamic_cast<Workflow::MarkerGroupListCfgModel *>(markerTable->model());
+    QList<Marker *> &markers = model->getMarkers();
 
     if (oldName != newMarker->getName()) {
         foreach (Marker *m, markers) {
@@ -133,8 +130,8 @@ bool MarkerEditorWidget::checkEditMarkerGroupResult(const QString &oldName, Mark
 }
 
 bool MarkerEditorWidget::checkAddMarkerGroupResult(Marker *newMarker, QString &message) {
-    Workflow::MarkerGroupListCfgModel *model = dynamic_cast<Workflow::MarkerGroupListCfgModel*>(markerTable->model());
-    QList<Marker*> &markers = model->getMarkers();
+    Workflow::MarkerGroupListCfgModel *model = dynamic_cast<Workflow::MarkerGroupListCfgModel *>(markerTable->model());
+    QList<Marker *> &markers = model->getMarkers();
 
     foreach (Marker *m, markers) {
         if (m->getName() == newMarker->getName()) {
@@ -152,4 +149,4 @@ bool MarkerEditorWidget::checkAddMarkerGroupResult(Marker *newMarker, QString &m
     return true;
 }
 
-} // U2
+}    // namespace U2

@@ -25,10 +25,8 @@
 
 namespace U2 {
 
-MSADistanceAlgorithmFactoryHamming::MSADistanceAlgorithmFactoryHamming(QObject* p)
-: MSADistanceAlgorithmFactory(BuiltInDistanceAlgorithms::HAMMING_ALGO, DistanceAlgorithmFlags_NuclAmino, p)
-{
-
+MSADistanceAlgorithmFactoryHamming::MSADistanceAlgorithmFactoryHamming(QObject *p)
+    : MSADistanceAlgorithmFactory(BuiltInDistanceAlgorithms::HAMMING_ALGO, DistanceAlgorithmFlags_NuclAmino, p) {
 }
 
 QString MSADistanceAlgorithmFactoryHamming::getDescription() const {
@@ -39,14 +37,13 @@ QString MSADistanceAlgorithmFactoryHamming::getName() const {
     return tr("Hamming dissimilarity");
 }
 
-
-MSADistanceAlgorithm* MSADistanceAlgorithmFactoryHamming::createAlgorithm(const MultipleSequenceAlignment& ma, QObject* ) {
-    MSADistanceAlgorithm* res = new MSADistanceAlgorithmHamming(this, ma);
-     if(flags.testFlag(DistanceAlgorithmFlag_ExcludeGaps)){
+MSADistanceAlgorithm *MSADistanceAlgorithmFactoryHamming::createAlgorithm(const MultipleSequenceAlignment &ma, QObject *) {
+    MSADistanceAlgorithm *res = new MSADistanceAlgorithmHamming(this, ma);
+    if (flags.testFlag(DistanceAlgorithmFlag_ExcludeGaps)) {
         res->setExcludeGaps(true);
-    }else{
-         res->setExcludeGaps(false);
-     }
+    } else {
+        res->setExcludeGaps(false);
+    }
     return res;
 }
 
@@ -64,10 +61,12 @@ void MSADistanceAlgorithmHamming::run() {
                 }
                 bool dissimilar = (ma->charAt(i, k) != ma->charAt(j, k));
 
-                if(!excludeGaps){
-                    if (dissimilar) sim++;
-                }else{
-                    if (dissimilar && (ma->charAt(i, k)!=U2Msa::GAP_CHAR && ma->charAt(j, k)!=U2Msa::GAP_CHAR)) sim++;
+                if (!excludeGaps) {
+                    if (dissimilar)
+                        sim++;
+                } else {
+                    if (dissimilar && (ma->charAt(i, k) != U2Msa::GAP_CHAR && ma->charAt(j, k) != U2Msa::GAP_CHAR))
+                        sim++;
                 }
             }
             lock.lock();
@@ -78,4 +77,4 @@ void MSADistanceAlgorithmHamming::run() {
     }
 }
 
-} //namespace
+}    // namespace U2

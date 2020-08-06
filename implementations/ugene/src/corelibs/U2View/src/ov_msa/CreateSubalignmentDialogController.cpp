@@ -19,7 +19,10 @@
  * MA 02110-1301, USA.
  */
 
+#include "CreateSubalignmentDialogController.h"
+
 #include <QMessageBox>
+#include <QPalette>
 
 #include <U2Algorithm/CreateSubalignmentTask.h>
 
@@ -33,7 +36,6 @@
 #include <U2Core/ProjectModel.h>
 #include <U2Core/TmpDirChecker.h>
 #include <U2Core/U2SafePoints.h>
-#include <QPalette>
 
 #include <U2Formats/GenbankLocationParser.h>
 
@@ -42,16 +44,14 @@
 #include <U2Gui/OpenViewTask.h>
 #include <U2Gui/SaveDocumentController.h>
 
-#include "CreateSubalignmentDialogController.h"
-
-namespace U2{
+namespace U2 {
 
 #define ROW_ID_PROPERTY "row-id"
 
-CreateSubalignmentDialogController::CreateSubalignmentDialogController(MultipleSequenceAlignmentObject *_mobj, const QRect& selection, QWidget *p)
-: QDialog(p), mobj(_mobj), saveController(NULL){
+CreateSubalignmentDialogController::CreateSubalignmentDialogController(MultipleSequenceAlignmentObject *_mobj, const QRect &selection, QWidget *p)
+    : QDialog(p), mobj(_mobj), saveController(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742477");
+    new HelpButton(this, buttonBox, "46500039");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Extract"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -62,9 +62,8 @@ CreateSubalignmentDialogController::CreateSubalignmentDialogController(MultipleS
     connect(noneButton, SIGNAL(clicked()), SLOT(sl_noneButtonClicked()));
     connect(invertButton, SIGNAL(clicked()), SLOT(sl_invertButtonClicked()));
 
-    connect(startLineEdit, SIGNAL(textEdited(const QString&)), SLOT(sl_regionChanged()));
-    connect(endLineEdit, SIGNAL(textEdited(const QString&)), SLOT(sl_regionChanged()));
-
+    connect(startLineEdit, SIGNAL(textEdited(const QString &)), SLOT(sl_regionChanged()));
+    connect(endLineEdit, SIGNAL(textEdited(const QString &)), SLOT(sl_regionChanged()));
 
     int rowNumber = mobj->getNumRows();
     int alignLength = mobj->getLength();
@@ -72,10 +71,10 @@ CreateSubalignmentDialogController::CreateSubalignmentDialogController(MultipleS
     sequencesTableWidget->clearContents();
     sequencesTableWidget->setRowCount(rowNumber);
     sequencesTableWidget->setColumnCount(1);
-    sequencesTableWidget->verticalHeader()->setHidden( true );
-    sequencesTableWidget->horizontalHeader()->setHidden( true );
+    sequencesTableWidget->verticalHeader()->setHidden(true);
+    sequencesTableWidget->horizontalHeader()->setHidden(true);
     sequencesTableWidget->setShowGrid(false);
-    sequencesTableWidget->horizontalHeader()->setSectionResizeMode( 0, QHeaderView::Stretch );
+    sequencesTableWidget->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
 
     initSaveController();
 
@@ -87,8 +86,8 @@ CreateSubalignmentDialogController::CreateSubalignmentDialogController(MultipleS
         startPos = 1;
         endPos = alignLength;
         startSeq = 0;
-        endSeq = rowNumber -1;
-     } else {
+        endSeq = rowNumber - 1;
+    } else {
         startSeq = selection.y();
         endSeq = selection.y() + selection.height() - 1;
         startPos = selection.x() + 1;
@@ -97,12 +96,12 @@ CreateSubalignmentDialogController::CreateSubalignmentDialogController(MultipleS
     startLineEdit->setText(QString::number(startPos));
     endLineEdit->setText(QString::number(endPos));
 
-    for (int i=0; i<rowNumber; i++) {
+    for (int i = 0; i < rowNumber; i++) {
         MultipleSequenceAlignmentRow row = mobj->getMsa()->getMsaRow(i);
         QCheckBox *cb = new QCheckBox(row->getName(), this);
         cb->setProperty(ROW_ID_PROPERTY, row.data()->getRowId());
-        cb->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
-        if ( (i >= startSeq) && (i <= endSeq)) {
+        cb->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        if ((i >= startSeq) && (i <= endSeq)) {
             cb->setChecked(true);
         }
         sequencesTableWidget->setCellWidget(i, 0, cb);
@@ -110,15 +109,15 @@ CreateSubalignmentDialogController::CreateSubalignmentDialogController(MultipleS
     }
 }
 
-QString CreateSubalignmentDialogController::getSavePath(){
-    if(NULL == saveController) {
+QString CreateSubalignmentDialogController::getSavePath() {
+    if (NULL == saveController) {
         return QString();
     }
     return saveController->getSaveFileName();
 }
 
 DocumentFormatId CreateSubalignmentDialogController::getFormatId() {
-    if(NULL == saveController) {
+    if (NULL == saveController) {
         return DocumentFormatId();
     }
     return saveController->getFormatIdToSave();
@@ -128,23 +127,23 @@ U2Region CreateSubalignmentDialogController::getRegion() {
     return window;
 }
 
-void CreateSubalignmentDialogController::sl_allButtonClicked(){
-    for (int i=0; i<sequencesTableWidget->rowCount(); i++) {
-        QCheckBox *cb = qobject_cast<QCheckBox*>(sequencesTableWidget->cellWidget(i, 0));
+void CreateSubalignmentDialogController::sl_allButtonClicked() {
+    for (int i = 0; i < sequencesTableWidget->rowCount(); i++) {
+        QCheckBox *cb = qobject_cast<QCheckBox *>(sequencesTableWidget->cellWidget(i, 0));
         cb->setChecked(true);
     }
 }
 
-void CreateSubalignmentDialogController::sl_invertButtonClicked(){
-    for (int i=0; i<sequencesTableWidget->rowCount(); i++) {
-        QCheckBox *cb = qobject_cast<QCheckBox*>(sequencesTableWidget->cellWidget(i, 0));
+void CreateSubalignmentDialogController::sl_invertButtonClicked() {
+    for (int i = 0; i < sequencesTableWidget->rowCount(); i++) {
+        QCheckBox *cb = qobject_cast<QCheckBox *>(sequencesTableWidget->cellWidget(i, 0));
         cb->setChecked(!cb->isChecked());
     }
 }
 
-void CreateSubalignmentDialogController::sl_noneButtonClicked(){
-    for (int i=0; i<sequencesTableWidget->rowCount(); i++) {
-        QCheckBox *cb = qobject_cast<QCheckBox*>(sequencesTableWidget->cellWidget(i, 0));
+void CreateSubalignmentDialogController::sl_noneButtonClicked() {
+    for (int i = 0; i < sequencesTableWidget->rowCount(); i++) {
+        QCheckBox *cb = qobject_cast<QCheckBox *>(sequencesTableWidget->cellWidget(i, 0));
         cb->setChecked(false);
     }
 }
@@ -159,12 +158,12 @@ void CreateSubalignmentDialogController::sl_regionChanged() {
 
     if (start <= 0) {
         QPalette p = startLineEdit->palette();
-        p.setColor(QPalette::Base, QColor(255,200,200));
+        p.setColor(QPalette::Base, QColor(255, 200, 200));
         startLineEdit->setPalette(p);
     }
     if (end <= start || end > mobj->getLength()) {
         QPalette p = endLineEdit->palette();
-        p.setColor(QPalette::Base, QColor(255,200,200));
+        p.setColor(QPalette::Base, QColor(255, 200, 200));
         endLineEdit->setPalette(p);
     }
 }
@@ -186,10 +185,10 @@ void CreateSubalignmentDialogController::initSaveController() {
     saveController = new SaveDocumentController(config, formatConstraints, this);
 }
 
-void CreateSubalignmentDialogController::accept(){
+void CreateSubalignmentDialogController::accept() {
     QFileInfo fi(saveController->getSaveFileName());
     QDir dirToSave(fi.dir());
-    if (!dirToSave.exists()){
+    if (!dirToSave.exists()) {
         QMessageBox::critical(this, this->windowTitle(), tr("Folder to save does not exist"));
         return;
     }
@@ -197,11 +196,11 @@ void CreateSubalignmentDialogController::accept(){
         QMessageBox::critical(this, this->windowTitle(), tr("No write permission to '%1' folder").arg(dirToSave.absolutePath()));
         return;
     }
-    if(saveController->getSaveFileName().isEmpty()){
+    if (saveController->getSaveFileName().isEmpty()) {
         QMessageBox::critical(this, this->windowTitle(), tr("No path specified"));
         return;
     }
-    if(fi.baseName().isEmpty()){
+    if (fi.baseName().isEmpty()) {
         QMessageBox::critical(this, this->windowTitle(), tr("Filename to save is empty"));
         return;
     }
@@ -215,13 +214,13 @@ void CreateSubalignmentDialogController::accept(){
     int end = endLineEdit->text().toInt() - 1;
     int seqLen = mobj->getLength();
 
-    if( start > end ) {
+    if (start > end) {
         QMessageBox::critical(this, windowTitle(), tr("Illegal region!"));
         return;
     }
 
     U2Region region(start, end - start + 1), sequence(0, seqLen);
-    if(!sequence.contains(region)){
+    if (!sequence.contains(region)) {
         QMessageBox::critical(this, this->windowTitle(), tr("Illegal region!"));
         return;
     }
@@ -245,37 +244,33 @@ bool CreateSubalignmentDialogController::getAddToProjFlag() {
 
 void CreateSubalignmentDialogController::updateSelectedRowIds() {
     selectedRowIds.clear();
-    for (int i=0; i<sequencesTableWidget->rowCount(); i++) {
-        QCheckBox *cb = qobject_cast<QCheckBox*>(sequencesTableWidget->cellWidget(i, 0));
-        if(cb->isChecked()){
-            qint64 rowId = (qint64) cb->property(ROW_ID_PROPERTY).toLongLong();
+    for (int i = 0; i < sequencesTableWidget->rowCount(); i++) {
+        QCheckBox *cb = qobject_cast<QCheckBox *>(sequencesTableWidget->cellWidget(i, 0));
+        if (cb->isChecked()) {
+            qint64 rowId = (qint64)cb->property(ROW_ID_PROPERTY).toLongLong();
             selectedRowIds << rowId;
         }
     }
 }
 
-
-CreateSubalignmentAndOpenViewTask::CreateSubalignmentAndOpenViewTask( MultipleSequenceAlignmentObject* maObj, const CreateSubalignmentSettings& settings )
-:Task(tr("Create sub-alignment and open view: %1").arg(maObj->getDocument()->getName()), TaskFlags_NR_FOSCOE)
-{
+CreateSubalignmentAndOpenViewTask::CreateSubalignmentAndOpenViewTask(MultipleSequenceAlignmentObject *maObj, const CreateSubalignmentSettings &settings)
+    : Task(tr("Create sub-alignment and open view: %1").arg(maObj->getDocument()->getName()), TaskFlags_NR_FOSCOE) {
     csTask = new CreateSubalignmentTask(maObj, settings);
     addSubTask(csTask);
     setMaxParallelSubtasks(1);
 }
 
-QList<Task*> CreateSubalignmentAndOpenViewTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> res;
+QList<Task *> CreateSubalignmentAndOpenViewTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> res;
     CHECK_OP(stateInfo, res);
 
     if ((subTask == csTask) && csTask->getSettings().addToProject) {
-        Document* doc = csTask->takeDocument();
+        Document *doc = csTask->takeDocument();
         assert(doc != NULL);
         res.append(new AddDocumentAndOpenViewTask(doc));
     }
 
     return res;
-
 }
 
-
-};
+};    // namespace U2

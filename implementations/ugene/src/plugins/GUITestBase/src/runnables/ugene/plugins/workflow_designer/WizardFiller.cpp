@@ -20,46 +20,46 @@
  */
 
 #include "WizardFiller.h"
-#include <primitives/GTWidget.h>
-#include <primitives/GTSpinBox.h>
-#include <primitives/GTDoubleSpinBox.h>
-#include <primitives/GTCheckBox.h>
-#include <primitives/GTLineEdit.h>
-#include <drivers/GTKeyboardDriver.h>
-#include <primitives/GTLineEdit.h>
-#include <primitives/GTComboBox.h>
-#include <drivers/GTMouseDriver.h>
 #include <base_dialogs/GTFileDialog.h>
-#include <primitives/GTRadioButton.h>
 #include <base_dialogs/MessageBoxFiller.h>
-#include "../../src/corelibs/U2Designer/src/wizard/WDWizardPage.h"
+#include <drivers/GTKeyboardDriver.h>
+#include <drivers/GTMouseDriver.h>
+#include <primitives/GTCheckBox.h>
+#include <primitives/GTComboBox.h>
+#include <primitives/GTDoubleSpinBox.h>
+#include <primitives/GTLineEdit.h>
+#include <primitives/GTRadioButton.h>
+#include <primitives/GTSpinBox.h>
+#include <primitives/GTWidget.h>
 
 #include <QApplication>
-#include <QLabel>
-#include <QRadioButton>
-#include <QToolButton>
-#include <QWizard>
-#include <QScrollArea>
 #include <QComboBox>
 #include <QDir>
+#include <QLabel>
+#include <QRadioButton>
+#include <QScrollArea>
+#include <QToolButton>
+#include <QWizard>
 
+#include "../../src/corelibs/U2Designer/src/wizard/WDWizardPage.h"
 #include "GTUtilsWizard.h"
 
 namespace U2 {
 using namespace HI;
 
-#define GET_ACTIVE_DIALOG QWidget* dialog = QApplication::activeModalWidget();\
-                          GT_CHECK(dialog, "activeModalWidget is NULL");\
-                          QWizard* wizard = qobject_cast<QWizard*>(dialog);\
-                          GT_CHECK(wizard, "activeModalWidget is not wizard");
+#define GET_ACTIVE_DIALOG \
+    QWidget *dialog = QApplication::activeModalWidget(); \
+    GT_CHECK(dialog, "activeModalWidget is NULL"); \
+    QWizard *wizard = qobject_cast<QWizard *>(dialog); \
+    GT_CHECK(wizard, "activeModalWidget is not wizard");
 
 #define GT_CLASS_NAME "GTUtilsDialog::WizardFiller"
 
 #define GT_METHOD_NAME "commonScenario"
 
-void WizardFiller::commonScenario(){
+void WizardFiller::commonScenario() {
     GTGlobals::sleep();
-    if(inputFiles.count() != 0 && !inputFiles.first().isEmpty()){
+    if (inputFiles.count() != 0 && !inputFiles.first().isEmpty()) {
         GTUtilsWizard::setInputFiles(os, inputFiles);
     }
     GTUtilsWizard::setAllParameters(os, map);
@@ -69,20 +69,19 @@ void WizardFiller::commonScenario(){
 
 #undef GT_METHOD_NAME
 
-
 #define GT_METHOD_NAME "WizardFiller::getExpandButton"
-QToolButton* WizardFiller::getExpandButton(HI::GUITestOpStatus &os){
-    QToolButton* expandButton = NULL;
-    QWidget* dialog = QApplication::activeModalWidget();
-    GT_CHECK_RESULT(dialog, "activeModalWidget is NULL",NULL);
-    QWizard* wizard = qobject_cast<QWizard*>(dialog);
-    GT_CHECK_RESULT(wizard, "activeModalWidget is not of wizard type",NULL);
+QToolButton *WizardFiller::getExpandButton(HI::GUITestOpStatus &os) {
+    QToolButton *expandButton = NULL;
+    QWidget *dialog = QApplication::activeModalWidget();
+    GT_CHECK_RESULT(dialog, "activeModalWidget is NULL", NULL);
+    QWizard *wizard = qobject_cast<QWizard *>(dialog);
+    GT_CHECK_RESULT(wizard, "activeModalWidget is not of wizard type", NULL);
 
-    QList<QWidget*> widList = wizard->currentPage()->findChildren<QWidget*>();
-    QList<QToolButton*> plusList;
-    foreach(QWidget* w, widList){
-        QToolButton* but = qobject_cast<QToolButton*>(w);
-        if (but && but->text()=="+" && abs(but->rect().width()-19)<2)
+    QList<QWidget *> widList = wizard->currentPage()->findChildren<QWidget *>();
+    QList<QToolButton *> plusList;
+    foreach (QWidget *w, widList) {
+        QToolButton *but = qobject_cast<QToolButton *>(w);
+        if (but && but->text() == "+" && abs(but->rect().width() - 19) < 2)
             plusList.append(but);
     }
     // there can be one or more '+' buttons at wizard page which are invisiable. TODO:detect them
@@ -93,4 +92,4 @@ QToolButton* WizardFiller::getExpandButton(HI::GUITestOpStatus &os){
 #undef GT_METHOD_NAME
 
 #undef GT_CLASS_NAME
-}
+}    // namespace U2

@@ -31,6 +31,7 @@ class WorkflowProcess;
 }
 
 class PrepareWevoteTaxonomyDataTask : public Task {
+    Q_OBJECT
 public:
     PrepareWevoteTaxonomyDataTask(FileStorage::WorkflowProcess &workflowProcess);
 
@@ -57,6 +58,6 @@ private:
     static const QString SCIENTIFIC_NAME;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_PREPARE_WEVOTE_TAXONOMY_DATA_TASK_H_
+#endif    // _U2_PREPARE_WEVOTE_TAXONOMY_DATA_TASK_H_

@@ -29,7 +29,6 @@
 #include <U2Gui/MainWindow.h>
 
 #include "Primer.h"
-
 #include "ui_PrimerLibraryWidget.h"
 
 namespace U2 {
@@ -56,6 +55,6 @@ private:
     QPushButton *exportPrimersButton;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_PRIMER_LIBRARY_WIDGET_H_
+#endif    // _U2_PRIMER_LIBRARY_WIDGET_H_

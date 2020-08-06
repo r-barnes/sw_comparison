@@ -29,12 +29,12 @@ namespace U2 {
 class SpadesSupport : public ExternalTool {
     Q_OBJECT
 public:
-    SpadesSupport(const QString& id, const QString &name, const QString &path = "");
+    SpadesSupport(const QString &id, const QString &name, const QString &path = "");
 
     static const QString ET_SPADES;
     static const QString ET_SPADES_ID;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_SPADES_SUPPORT_H_
+#endif    // _U2_SPADES_SUPPORT_H_

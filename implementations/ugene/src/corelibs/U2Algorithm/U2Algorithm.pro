@@ -93,6 +93,7 @@ HEADERS += src/misc/BinaryFindOpenCL.h \
            src/util_msaedit/color_schemes/MsaColorSchemePercentageIdententityGrayscale.h \
            src/util_msaedit/color_schemes/MsaColorSchemePercentageIdentity.h \
            src/util_msaedit/color_schemes/MsaColorSchemeStatic.h \
+           src/util_msaedit/color_schemes/MsaColorSchemeWeakSimilarities.h \
            src/util_msaedit/highlighting_schemes/MsaHighlightingScheme.h \
            src/util_msaedit/highlighting_schemes/MsaHighlightingSchemeAgreements.h \
            src/util_msaedit/highlighting_schemes/MsaHighlightingSchemeConservation.h \
@@ -196,6 +197,7 @@ SOURCES += src/misc/BinaryFindOpenCL.cpp \
            src/util_msaedit/color_schemes/MsaColorSchemePercentageIdententityGrayscale.cpp \
            src/util_msaedit/color_schemes/MsaColorSchemePercentageIdentity.cpp \
            src/util_msaedit/color_schemes/MsaColorSchemeStatic.cpp \
+           src/util_msaedit/color_schemes/MsaColorSchemeWeakSimilarities.cpp \
            src/util_msaedit/highlighting_schemes/MsaHighlightingScheme.cpp \
            src/util_msaedit/highlighting_schemes/MsaHighlightingSchemeAgreements.cpp \
            src/util_msaedit/highlighting_schemes/MsaHighlightingSchemeConservation.cpp \

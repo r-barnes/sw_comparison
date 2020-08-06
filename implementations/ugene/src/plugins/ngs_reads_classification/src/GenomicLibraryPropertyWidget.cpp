@@ -19,10 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "GenomicLibraryPropertyWidget.h"
+
 #include <U2Core/QObjectScopedPointer.h>
 
 #include "GenomicLibraryDialog.h"
-#include "GenomicLibraryPropertyWidget.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -31,8 +32,7 @@ const QString GenomicLibraryPropertyWidget::PLACEHOLDER = QObject::tr("Select ge
 const QString GenomicLibraryPropertyWidget::FILLED_VALUE = QObject::tr("Custom genomes");
 
 GenomicLibraryPropertyWidget::GenomicLibraryPropertyWidget(QWidget *parent, DelegateTags *tags)
-    : PropertyWidget(parent, tags)
-{
+    : PropertyWidget(parent, tags) {
     lineEdit = new QLineEdit(this);
     lineEdit->setPlaceholderText(PLACEHOLDER);
     lineEdit->setReadOnly(true);
@@ -52,12 +52,12 @@ GenomicLibraryPropertyWidget::GenomicLibraryPropertyWidget(QWidget *parent, Dele
 }
 
 QVariant GenomicLibraryPropertyWidget::value() {
-    return QVariant::fromValue<QList<Dataset> >(QList<Dataset>() << dataset);
+    return QVariant::fromValue<QList<Dataset>>(QList<Dataset>() << dataset);
 }
 
 void GenomicLibraryPropertyWidget::setValue(const QVariant &value) {
     lineEdit->clear();
-    const QList<Dataset> datasets = value.value<QList<Dataset> >();
+    const QList<Dataset> datasets = value.value<QList<Dataset>>();
     if (datasets.isEmpty()) {
         dataset = Dataset();
     } else {
@@ -76,5 +76,5 @@ void GenomicLibraryPropertyWidget::sl_showDialog() {
     }
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ClustalWSupportRunDialog.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 #include <QToolButton>
@@ -33,25 +35,22 @@
 #include <U2Gui/SaveDocumentController.h>
 #include <U2Gui/U2FileDialog.h>
 
-#include "ClustalWSupportRunDialog.h"
-
 namespace U2 {
 ////////////////////////////////////////
 //ClustalWSupportRunDialog
-ClustalWSupportRunDialog::ClustalWSupportRunDialog(const MultipleSequenceAlignment& _ma, ClustalWSupportTaskSettings& _settings, QWidget* _parent) :
-        QDialog(_parent), ma(_ma->getCopy()), settings(_settings)
-{
+ClustalWSupportRunDialog::ClustalWSupportRunDialog(const MultipleSequenceAlignment &_ma, ClustalWSupportTaskSettings &_settings, QWidget *_parent)
+    : QDialog(_parent), ma(_ma->getCopy()), settings(_settings) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742623");
+    new HelpButton(this, buttonBox, "46501187");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Align"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
     inputGroupBox->setVisible(false);
     this->adjustSize();
 
-    connect(this->iterationTypeCheckBox,SIGNAL(toggled(bool)),this,SLOT(sl_iterationTypeEnabled(bool)));
+    connect(this->iterationTypeCheckBox, SIGNAL(toggled(bool)), this, SLOT(sl_iterationTypeEnabled(bool)));
 
-    if(ma->getAlphabet()->isAmino()){
+    if (ma->getAlphabet()->isAmino()) {
         gapOpenSpinBox->setValue(10.0);
         gapExtSpinBox->setValue(0.2);
         proteinGapParamGroupBox->setEnabled(true);
@@ -63,49 +62,48 @@ ClustalWSupportRunDialog::ClustalWSupportRunDialog(const MultipleSequenceAlignme
     }
 }
 
-void ClustalWSupportRunDialog::sl_iterationTypeEnabled(bool checked){
-    if(checked){
+void ClustalWSupportRunDialog::sl_iterationTypeEnabled(bool checked) {
+    if (checked) {
         iterationTypeComboBox->removeItem(0);
-    }else{
-        iterationTypeComboBox->insertItem(0,"NONE");
+    } else {
+        iterationTypeComboBox->insertItem(0, "NONE");
         iterationTypeComboBox->setCurrentIndex(0);
     }
 }
 
-void ClustalWSupportRunDialog::accept(){
-    if(gapOpenCheckBox->isChecked()) {
+void ClustalWSupportRunDialog::accept() {
+    if (gapOpenCheckBox->isChecked()) {
         settings.gapOpenPenalty = gapOpenSpinBox->value();
     }
-    if(gapExtCheckBox->isChecked()) {
+    if (gapExtCheckBox->isChecked()) {
         settings.gapExtenstionPenalty = gapExtSpinBox->value();
     }
-    if(gapDistancesCheckBox->isChecked()){
+    if (gapDistancesCheckBox->isChecked()) {
         settings.gapDist = gapDistancesSpinBox->value();
     }
-    if(residueSpecificGapsOffCheckBox->isChecked()){
-        settings.noPGaps=true;
-
+    if (residueSpecificGapsOffCheckBox->isChecked()) {
+        settings.noPGaps = true;
     }
-    if(hydrophilicGapsOffCheckBox->isChecked()){
-        settings.noHGaps=true;
+    if (hydrophilicGapsOffCheckBox->isChecked()) {
+        settings.noHGaps = true;
     }
-    if(endGapsCheckBox->isChecked()){
-        settings.endGaps=true;
+    if (endGapsCheckBox->isChecked()) {
+        settings.endGaps = true;
     }
-    if(weightMatrixCheckBox->isChecked()){
-        settings.matrix=weightMatrixComboBox->currentText();
+    if (weightMatrixCheckBox->isChecked()) {
+        settings.matrix = weightMatrixComboBox->currentText();
     }
-    if(outOrderCheckBox->isChecked()){
-        if(outOrderComboBox->currentText() == "Input"){
-            settings.outOrderInput=true;
-        }else{
-            settings.outOrderInput=false;
+    if (outOrderCheckBox->isChecked()) {
+        if (outOrderComboBox->currentText() == "Input") {
+            settings.outOrderInput = true;
+        } else {
+            settings.outOrderInput = false;
         }
     }
-    if(iterationTypeCheckBox->isChecked()){
-        settings.iterationType=iterationTypeComboBox->currentText();
-        if(maxIterationsCheckBox->isChecked()){
-            settings.numIterations=maxIterationsSpinBox->value();
+    if (iterationTypeCheckBox->isChecked()) {
+        settings.iterationType = iterationTypeComboBox->currentText();
+        if (maxIterationsCheckBox->isChecked()) {
+            settings.numIterations = maxIterationsSpinBox->value();
         }
     }
     QDialog::accept();
@@ -113,13 +111,12 @@ void ClustalWSupportRunDialog::accept(){
 
 ////////////////////////////////////////
 //ClustalWWithExtFileSpecifySupportRunDialog
-ClustalWWithExtFileSpecifySupportRunDialog::ClustalWWithExtFileSpecifySupportRunDialog(ClustalWSupportTaskSettings& _settings, QWidget* _parent) :
-    QDialog(_parent),
-    settings(_settings),
-    saveController(NULL)
-{
+ClustalWWithExtFileSpecifySupportRunDialog::ClustalWWithExtFileSpecifySupportRunDialog(ClustalWSupportTaskSettings &_settings, QWidget *_parent)
+    : QDialog(_parent),
+      settings(_settings),
+      saveController(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742623");
+    new HelpButton(this, buttonBox, "46501187");
 
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Align"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -138,8 +135,7 @@ ClustalWWithExtFileSpecifySupportRunDialog::ClustalWWithExtFileSpecifySupportRun
 
 void ClustalWWithExtFileSpecifySupportRunDialog::sl_inputPathButtonClicked() {
     LastUsedDirHelper lod;
-    lod.url = U2FileDialog::getOpenFileName(this, tr("Open an alignment file"), lod.dir,
-        DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT, true));
+    lod.url = U2FileDialog::getOpenFileName(this, tr("Open an alignment file"), lod.dir, DialogUtils::prepareDocumentsFileFilterByObjType(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT, true));
     if (lod.url.isEmpty()) {
         return;
     }
@@ -160,55 +156,51 @@ void ClustalWWithExtFileSpecifySupportRunDialog::initSaveController() {
     saveController = new SaveDocumentController(config, formats, this);
 }
 
-void ClustalWWithExtFileSpecifySupportRunDialog::sl_iterationTypeEnabled(bool checked){
-    if(checked){
+void ClustalWWithExtFileSpecifySupportRunDialog::sl_iterationTypeEnabled(bool checked) {
+    if (checked) {
         iterationTypeComboBox->removeItem(0);
-    }else{
-        iterationTypeComboBox->insertItem(0,"NONE");
+    } else {
+        iterationTypeComboBox->insertItem(0, "NONE");
         iterationTypeComboBox->setCurrentIndex(0);
     }
 }
-void ClustalWWithExtFileSpecifySupportRunDialog::accept(){
-    if(gapOpenCheckBox->isChecked()) {
+void ClustalWWithExtFileSpecifySupportRunDialog::accept() {
+    if (gapOpenCheckBox->isChecked()) {
         settings.gapOpenPenalty = gapOpenSpinBox->value();
     }
-    if(gapExtCheckBox->isChecked()) {
+    if (gapExtCheckBox->isChecked()) {
         settings.gapExtenstionPenalty = gapExtSpinBox->value();
     }
-    if(gapDistancesCheckBox->isChecked()){
+    if (gapDistancesCheckBox->isChecked()) {
         settings.gapDist = gapDistancesSpinBox->value();
     }
-    if(residueSpecificGapsOffCheckBox->isChecked()){
-        settings.noPGaps=true;
-
+    if (residueSpecificGapsOffCheckBox->isChecked()) {
+        settings.noPGaps = true;
     }
-    if(hydrophilicGapsOffCheckBox->isChecked()){
-        settings.noHGaps=true;
+    if (hydrophilicGapsOffCheckBox->isChecked()) {
+        settings.noHGaps = true;
     }
-    if(endGapsCheckBox->isChecked()){
-        settings.endGaps=true;
+    if (endGapsCheckBox->isChecked()) {
+        settings.endGaps = true;
     }
-    if(weightMatrixCheckBox->isChecked()){
-        settings.matrix=weightMatrixComboBox->currentText();
+    if (weightMatrixCheckBox->isChecked()) {
+        settings.matrix = weightMatrixComboBox->currentText();
     }
-    if(iterationTypeCheckBox->isChecked()){
-        settings.iterationType=iterationTypeComboBox->currentText();
-        if(maxIterationsCheckBox->isChecked()){
-            settings.numIterations=maxIterationsSpinBox->value();
+    if (iterationTypeCheckBox->isChecked()) {
+        settings.iterationType = iterationTypeComboBox->currentText();
+        if (maxIterationsCheckBox->isChecked()) {
+            settings.numIterations = maxIterationsSpinBox->value();
         }
     }
-    if(inputFileLineEdit->text().isEmpty()){
-        QMessageBox::information(this, tr("Kalign with Align"),
-                                 tr("Input file is not set!") );
-    }else if(saveController->getSaveFileName().isEmpty()){
-        QMessageBox::information(this, tr("Kalign with Align"),
-                                 tr("Output file is not set!") );
-    }
-    else{
+    if (inputFileLineEdit->text().isEmpty()) {
+        QMessageBox::information(this, tr("Kalign with Align"), tr("Input file is not set!"));
+    } else if (saveController->getSaveFileName().isEmpty()) {
+        QMessageBox::information(this, tr("Kalign with Align"), tr("Output file is not set!"));
+    } else {
         settings.outputFilePath = saveController->getSaveFileName();
         settings.inputFilePath = inputFileLineEdit->text();
         QDialog::accept();
     }
 }
 
-}//namespace
+}    // namespace U2

@@ -20,9 +20,10 @@
  */
 
 #include "ColumnCharsCounter.h"
-#include "MsaColorSchemePercentageIdententityColored.h"
 
 #include <U2Core/U2SafePoints.h>
+
+#include "MsaColorSchemePercentageIdententityColored.h"
 
 namespace U2 {
 
@@ -30,12 +31,13 @@ namespace U2 {
 /*Nucleotide*/
 /******************************/
 
-Nucleotide::Nucleotide(const char c) : character(c),
-                                       frequency(1) {}
+Nucleotide::Nucleotide(const char c)
+    : character(c),
+      frequency(1) {
+}
 
-bool Nucleotide::operator<(const Nucleotide& other) const {
-    SAFE_POINT(MsaColorSchemePercentageIdententityColored::NUCLEOTIDE_LIST.contains(this->character)
-            && MsaColorSchemePercentageIdententityColored::NUCLEOTIDE_LIST.contains(other.character), "Unexpected nucleotide", false);
+bool Nucleotide::operator<(const Nucleotide &other) const {
+    SAFE_POINT(MsaColorSchemePercentageIdententityColored::NUCLEOTIDE_LIST.contains(this->character) && MsaColorSchemePercentageIdententityColored::NUCLEOTIDE_LIST.contains(other.character), "Unexpected nucleotide", false);
 
     bool result = false;
     if (this->frequency > other.frequency) {
@@ -49,7 +51,7 @@ bool Nucleotide::operator<(const Nucleotide& other) const {
     return result;
 }
 
-bool Nucleotide::operator==(const Nucleotide& other) const {
+bool Nucleotide::operator==(const Nucleotide &other) const {
     return this->character == other.character && this->frequency == other.frequency;
 }
 
@@ -57,7 +59,9 @@ bool Nucleotide::operator==(const Nucleotide& other) const {
 /*ColumnCharsCounter*/
 /******************************/
 
-ColumnCharsCounter::ColumnCharsCounter() : gapsNumber(0), nonAlphabetCharsNumber(0) {}
+ColumnCharsCounter::ColumnCharsCounter()
+    : gapsNumber(0), nonAlphabetCharsNumber(0) {
+}
 
 void ColumnCharsCounter::addNucleotide(const char nucleotide) {
     if (isNucleotideAlreadyInList(nucleotide)) {
@@ -100,7 +104,7 @@ bool ColumnCharsCounter::hasNonAlphabetCharsNumber() const {
     return nonAlphabetCharsNumber != 0;
 }
 
-bool ColumnCharsCounter::hasPercentageMoreThen(const double& threshold) const {
+bool ColumnCharsCounter::hasPercentageMoreThen(const double &threshold) const {
     return getTopCharacterPercentage() >= threshold;
 }
 
@@ -125,7 +129,7 @@ void ColumnCharsCounter::sortNucleotideList() {
 
 bool ColumnCharsCounter::isNucleotideAlreadyInList(const char character) const {
     bool result = false;
-    foreach(const Nucleotide& n, nucleotideList) {
+    foreach (const Nucleotide &n, nucleotideList) {
         CHECK_CONTINUE(n.character == character);
 
         result = true;
@@ -136,7 +140,7 @@ bool ColumnCharsCounter::isNucleotideAlreadyInList(const char character) const {
 }
 
 void ColumnCharsCounter::increaseNucleotideCounter(const char character) {
-    for (auto& n : nucleotideList) {
+    for (auto &n : nucleotideList) {
         CHECK_CONTINUE(n.character == character);
 
         n.frequency++;
@@ -146,7 +150,7 @@ void ColumnCharsCounter::increaseNucleotideCounter(const char character) {
 
 double ColumnCharsCounter::getTopCharacterPercentage() const {
     int charsNumber = gapsNumber + nonAlphabetCharsNumber;
-    foreach(const Nucleotide & nucl, nucleotideList) {
+    foreach (const Nucleotide &nucl, nucleotideList) {
         charsNumber += nucl.frequency;
     }
     SAFE_POINT(!nucleotideList.isEmpty(), "Nucleotide List is unexpected empty", 0.0);
@@ -157,4 +161,4 @@ double ColumnCharsCounter::getTopCharacterPercentage() const {
     return result;
 }
 
-}
+}    // namespace U2

@@ -29,7 +29,7 @@ namespace U2 {
 class KrakenSupport : public ExternalTool {
     Q_OBJECT
 public:
-    KrakenSupport(const QString& id, const QString &name);
+    KrakenSupport(const QString &id, const QString &name);
 
     QStringList getAdditionalPaths() const;
 
@@ -44,6 +44,6 @@ private:
     void initClassify();
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_KRAKEN_SUPPORT_H_
+#endif    // _U2_KRAKEN_SUPPORT_H_

@@ -19,8 +19,10 @@
  * MA 02110-1301, USA.
  */
 
-#include <QPushButton>
+#include "ExportConsensusDialog.h"
+
 #include <QMessageBox>
+#include <QPushButton>
 
 #include <U2Algorithm/AssemblyConsensusAlgorithmRegistry.h>
 
@@ -32,17 +34,14 @@
 #include <U2Gui/RegionSelector.h>
 #include <U2Gui/SaveDocumentController.h>
 
-#include "ExportConsensusDialog.h"
-
 namespace U2 {
 
-ExportConsensusDialog::ExportConsensusDialog(QWidget *p, const ExportConsensusTaskSettings &settings_, const U2Region & visibleRegion)
+ExportConsensusDialog::ExportConsensusDialog(QWidget *p, const ExportConsensusTaskSettings &settings_, const U2Region &visibleRegion)
     : QDialog(p),
       settings(settings_),
-      saveController(NULL)
-{
+      saveController(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742514");
+    new HelpButton(this, buttonBox, "46500193");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Export"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
     //hide for this dialog
@@ -86,24 +85,24 @@ void ExportConsensusDialog::accept() {
     settings.keepGaps = keepGapsCheckBox->isChecked();
 
     QString algoId = algorithmComboBox->currentText();
-    if(algoId != settings.consensusAlgorithm->getId()) {
-        AssemblyConsensusAlgorithmFactory * f = AppContext::getAssemblyConsensusAlgorithmRegistry()->getAlgorithmFactory(algoId);
-        SAFE_POINT(f != NULL, QString("ExportConsensusDialog: consensus algorithm factory %1 not found").arg(algoId),);
+    if (algoId != settings.consensusAlgorithm->getId()) {
+        AssemblyConsensusAlgorithmFactory *f = AppContext::getAssemblyConsensusAlgorithmRegistry()->getAlgorithmFactory(algoId);
+        SAFE_POINT(f != NULL, QString("ExportConsensusDialog: consensus algorithm factory %1 not found").arg(algoId), );
         settings.consensusAlgorithm = QSharedPointer<AssemblyConsensusAlgorithm>(f->createAlgorithm());
     }
 
-    if(!isRegionOk){
+    if (!isRegionOk) {
         regionSelector->showErrorMessage();
         regionSelector->setFocus(Qt::OtherFocusReason);
         return;
     }
     // TODO: check if exists
-    if(settings.fileName.isEmpty()) {
+    if (settings.fileName.isEmpty()) {
         QMessageBox::critical(this, tr("Error!"), tr("Select destination file"));
         filepathLineEdit->setFocus(Qt::OtherFocusReason);
         return;
     }
-    if(settings.seqObjName.isEmpty()) {
+    if (settings.seqObjName.isEmpty()) {
         QMessageBox::critical(this, tr("Error!"), tr("Sequence name cannot be empty"));
         sequenceNameLineEdit->setFocus(Qt::OtherFocusReason);
         return;
@@ -130,4 +129,4 @@ void ExportConsensusDialog::initSaveController() {
     saveController = new SaveDocumentController(conf, dfc, this);
 }
 
-} // namespace
+}    // namespace U2

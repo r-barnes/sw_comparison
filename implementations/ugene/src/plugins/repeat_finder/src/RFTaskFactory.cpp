@@ -20,13 +20,13 @@
  */
 
 #include "RFTaskFactory.h"
-#include "RFBase.h"
+
 #include "FindRepeatsTask.h"
+#include "RFBase.h"
 
 namespace U2 {
 
-Task* RFTaskFactory::getTaskInstance( const RepeatFinderSettings& c) const {
-
+Task *RFTaskFactory::getTaskInstance(const RepeatFinderSettings &c) const {
     if (c.inverted) {
         return new ReverseAndCreateTask(c);
     } else {
@@ -40,33 +40,29 @@ Task* RFTaskFactory::getTaskInstance( const RepeatFinderSettings& c) const {
             c.w,
             c.mismatches,
             c.alg,
-            c.nThreads
-        );
+            c.nThreads);
     }
 }
 
-void RFTaskFactory::setRFResultsListener(Task* b, RFResultsListener* l) {
-    RFAlgorithmBase* rfTask = qobject_cast<RFAlgorithmBase*>(b);
+void RFTaskFactory::setRFResultsListener(Task *b, RFResultsListener *l) {
+    RFAlgorithmBase *rfTask = qobject_cast<RFAlgorithmBase *>(b);
     if (rfTask) {
         rfTask->setRFResultsListener(l);
     }
 }
 
-ReverseAndCreateTask::ReverseAndCreateTask(const RepeatFinderSettings& c)
-: Task("Make reverse sequence and find repeats", TaskFlag_NoRun)
-{
+ReverseAndCreateTask::ReverseAndCreateTask(const RepeatFinderSettings &c)
+    : Task("Make reverse sequence and find repeats", TaskFlag_NoRun) {
     this->c = c;
 
     revTask = new RevComplSequenceTask(DNASequence(QByteArray(c.seqX), c.al), U2Region(0, c.sizeX));
     addSubTask(revTask);
 }
 
-QList<Task*> ReverseAndCreateTask::onSubTaskFinished(Task* subTask) {
-
-    QList<Task*> subTasks;
+QList<Task *> ReverseAndCreateTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> subTasks;
 
     if (revTask == subTask) {
-
         Task *rfBase = RFAlgorithmBase::createTask(
             c.l,
             revTask->complementSequence.constData(),
@@ -77,12 +73,11 @@ QList<Task*> ReverseAndCreateTask::onSubTaskFinished(Task* subTask) {
             c.w,
             c.mismatches,
             c.alg,
-            c.nThreads
-        );
+            c.nThreads);
         subTasks.append(rfBase);
     }
 
     return subTasks;
 }
 
-} // namespace
+}    // namespace U2

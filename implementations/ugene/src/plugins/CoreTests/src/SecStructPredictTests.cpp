@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "SecStructPredictTests.h"
+
 #include <QDomElement>
 
 #include <U2Algorithm/SecStructPredictAlgRegistry.h>
@@ -31,8 +33,6 @@
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "SecStructPredictTests.h"
-
 namespace U2 {
 
 #define SEQ_ATTR "seq"
@@ -41,8 +41,7 @@ namespace U2 {
 #define OUTPUT_SEQ_ATTR "output-seq"
 #define ALG_NAME_ATTR "algorithm-name"
 
-
-void GTest_SecStructPredictAlgorithm::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_SecStructPredictAlgorithm::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
     inputSeq = el.attribute(SEQ_ATTR);
     if (inputSeq.isEmpty()) {
@@ -61,27 +60,21 @@ void GTest_SecStructPredictAlgorithm::init(XMLTestFormat *tf, const QDomElement&
         failMissingValue(ALG_NAME_ATTR);
         return;
     }
-
 }
-
 
 void GTest_SecStructPredictAlgorithm::prepare() {
-
-    SecStructPredictAlgRegistry* sspr = AppContext::getSecStructPredictAlgRegistry();
+    SecStructPredictAlgRegistry *sspr = AppContext::getSecStructPredictAlgRegistry();
     if (!sspr->hadRegistered(algName)) {
-        stateInfo.setError( QString(tr("Algorithm named %1 not found")).arg(algName));
+        stateInfo.setError(QString(tr("Algorithm named %1 not found")).arg(algName));
         return;
     }
-    SecStructPredictTaskFactory* factory = sspr->getAlgorithm(algName);
+    SecStructPredictTaskFactory *factory = sspr->getAlgorithm(algName);
     task = factory->createTaskInstance(inputSeq.toLatin1());
     addSubTask(task);
-
 }
 
-
 Task::ReportResult GTest_SecStructPredictAlgorithm::report() {
-
-    const QByteArray& output = task->getSSFormatResults();
+    const QByteArray &output = task->getSSFormatResults();
 
     if (output != outputSeq) {
         stateInfo.setError(tr("Output sec struct sequence is incorrect"));
@@ -93,7 +86,7 @@ Task::ReportResult GTest_SecStructPredictAlgorithm::report() {
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-void GTest_SecStructPredictTask::init(XMLTestFormat *tf, const QDomElement& el) {
+void GTest_SecStructPredictTask::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
 
     seqName = el.attribute(SEQ_NAME_ATTR);
@@ -115,28 +108,26 @@ void GTest_SecStructPredictTask::init(XMLTestFormat *tf, const QDomElement& el) 
     }
 }
 
-void GTest_SecStructPredictTask::prepare()
-{
-    U2SequenceObject * mySequence = getContext<U2SequenceObject>(this, seqName);
-    if(mySequence==NULL){
-        stateInfo.setError( QString("error can't cast to sequence from GObject"));
+void GTest_SecStructPredictTask::prepare() {
+    U2SequenceObject *mySequence = getContext<U2SequenceObject>(this, seqName);
+    if (mySequence == NULL) {
+        stateInfo.setError(QString("error can't cast to sequence from GObject"));
         return;
     }
-    SecStructPredictAlgRegistry* sspr = AppContext::getSecStructPredictAlgRegistry();
+    SecStructPredictAlgRegistry *sspr = AppContext::getSecStructPredictAlgRegistry();
     if (!sspr->hadRegistered(algName)) {
-        stateInfo.setError( QString(tr("Algorithm named %1 not found")).arg(algName));
+        stateInfo.setError(QString(tr("Algorithm named %1 not found")).arg(algName));
         return;
     }
-    SecStructPredictTaskFactory* factory = sspr->getAlgorithm(algName);
+    SecStructPredictTaskFactory *factory = sspr->getAlgorithm(algName);
     QByteArray seqData = mySequence->getWholeSequenceData(stateInfo);
     task = factory->createTaskInstance(seqData);
     CHECK_OP(stateInfo, );
     addSubTask(task);
 }
 
-Task::ReportResult GTest_SecStructPredictTask::report()
-{
-    if (task!=NULL && task->hasError()) {
+Task::ReportResult GTest_SecStructPredictTask::report() {
+    if (task != NULL && task->hasError()) {
         stateInfo.setError(task->getError());
     } else if (!resultsTableContextName.isEmpty()) {
         QList<SharedAnnotationData> results = task->getResults();
@@ -152,8 +143,7 @@ Task::ReportResult GTest_SecStructPredictTask::report()
     return ReportResult_Finished;
 }
 
-void GTest_SecStructPredictTask::cleanup()
-{
+void GTest_SecStructPredictTask::cleanup() {
     if (contextAdded) {
         removeContext(resultsTableContextName);
     }
@@ -162,14 +152,11 @@ void GTest_SecStructPredictTask::cleanup()
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-
-QList<XMLTestFactory*> SecStructPredictTests::createTestFactories()
-{
-    QList<XMLTestFactory*> res;
+QList<XMLTestFactory *> SecStructPredictTests::createTestFactories() {
+    QList<XMLTestFactory *> res;
     res.append(GTest_SecStructPredictAlgorithm::createFactory());
     res.append(GTest_SecStructPredictTask::createFactory());
     return res;
 }
 
-} //namespace
-
+}    // namespace U2

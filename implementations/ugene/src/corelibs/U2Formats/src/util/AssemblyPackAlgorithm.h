@@ -31,18 +31,21 @@ class U2Region;
 
 class PackAlgorithmData {
 public:
-    PackAlgorithmData() : leftmostPos(0), effectiveLen(0){}
+    PackAlgorithmData()
+        : leftmostPos(0), effectiveLen(0) {
+    }
 
     U2DataId readId;
-    qint64   leftmostPos;
-    qint64   effectiveLen;
+    qint64 leftmostPos;
+    qint64 effectiveLen;
 };
 
 class PackAlgorithmAdapter {
 public:
-    virtual U2DbiIterator<PackAlgorithmData>* selectAllReads(U2OpStatus& os) = 0;
-    virtual void assignProw(const U2DataId& readId, qint64 prow, U2OpStatus& os) = 0;
-    virtual ~PackAlgorithmAdapter(){}
+    virtual U2DbiIterator<PackAlgorithmData> *selectAllReads(U2OpStatus &os) = 0;
+    virtual void assignProw(const U2DataId &readId, qint64 prow, U2OpStatus &os) = 0;
+    virtual ~PackAlgorithmAdapter() {
+    }
 };
 
 #define PACK_TAIL_SIZE 50000
@@ -51,22 +54,21 @@ class PackAlgorithmContext {
 public:
     PackAlgorithmContext();
 
-    int     maxProw;
-    qint64  nReads;
+    int maxProw;
+    qint64 nReads;
 
     // used to assign prow for reads when TAIL_SIZE is not enough
-    qint64          peakEnd;
-    qint64          peakRow;
+    qint64 peakEnd;
+    qint64 peakRow;
     QVector<qint64> tails;
 };
 
 class AssemblyPackAlgorithm {
 public:
-    static void pack(PackAlgorithmAdapter& adapter, U2AssemblyPackStat& stat, U2OpStatus& os);
-    static int packRead(const U2Region& reg, PackAlgorithmContext& ctx, U2OpStatus& os);
+    static void pack(PackAlgorithmAdapter &adapter, U2AssemblyPackStat &stat, U2OpStatus &os);
+    static int packRead(const U2Region &reg, PackAlgorithmContext &ctx, U2OpStatus &os);
 };
 
-
-} //namespace
+}    // namespace U2
 
 #endif

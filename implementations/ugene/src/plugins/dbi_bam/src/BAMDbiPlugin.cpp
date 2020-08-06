@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "BAMDbiPlugin.h"
+
 #include <QAction>
 #include <QDir>
 #include <QMainWindow>
@@ -38,6 +40,7 @@
 #include <U2Core/IOAdapterUtils.h>
 #include <U2Core/LoadDocumentTask.h>
 #include <U2Core/ProjectModel.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/TaskSignalMapper.h>
 #include <U2Core/TextUtils.h>
 #include <U2Core/TmpDirChecker.h>
@@ -51,9 +54,7 @@
 #include <U2Gui/LastUsedDirHelper.h>
 #include <U2Gui/MainWindow.h>
 #include <U2Gui/OpenViewTask.h>
-#include <U2Core/QObjectScopedPointer.h>
 
-#include "BAMDbiPlugin.h"
 #include "BAMFormat.h"
 #include "ConvertToSQLiteDialog.h"
 #include "ConvertToSQLiteTask.h"
@@ -65,13 +66,13 @@
 namespace U2 {
 namespace BAM {
 
-extern "C" Q_DECL_EXPORT Plugin* U2_PLUGIN_INIT_FUNC() {
-    BAMDbiPlugin* plug = new BAMDbiPlugin();
+extern "C" Q_DECL_EXPORT Plugin *U2_PLUGIN_INIT_FUNC() {
+    BAMDbiPlugin *plug = new BAMDbiPlugin();
     return plug;
 }
 
-BAMDbiPlugin::BAMDbiPlugin() : Plugin(tr("BAM format support"), tr("Interface for indexed read-only access to BAM files"))
-{
+BAMDbiPlugin::BAMDbiPlugin()
+    : Plugin(tr("BAM format support"), tr("Interface for indexed read-only access to BAM files")) {
     DocumentFormat *bamDbi = new BAMFormat();
     AppContext::getDocumentFormatRegistry()->registerFormat(bamDbi);
     AppContext::getDbiRegistry()->registerDbiFactory(new SamtoolsBasedDbiFactory());
@@ -79,10 +80,10 @@ BAMDbiPlugin::BAMDbiPlugin() : Plugin(tr("BAM format support"), tr("Interface fo
     AppContext::getDocumentFormatRegistry()->getImportSupport()->addDocumentImporter(new BAMImporter());
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 // BAM importer
-BAMImporter::BAMImporter() : DocumentImporter("bam-importer", tr("BAM/SAM file import")){
+BAMImporter::BAMImporter()
+    : DocumentImporter("bam-importer", tr("BAM/SAM file import")) {
     //prepare sorted extensions list
     QSet<QString> extsSet;
     BAMFormatUtils bam;
@@ -99,44 +100,42 @@ BAMImporter::BAMImporter() : DocumentImporter("bam-importer", tr("BAM/SAM file i
 
 #define SAM_HINT "bam-importer-sam-hint"
 
-FormatCheckResult BAMImporter::checkRawData(const QByteArray& rawData, const GUrl& url) {
+FormatCheckResult BAMImporter::checkRawData(const QByteArray &rawData, const GUrl &url) {
     BAMFormatUtils bamFormatUtils;
     FormatCheckResult bamScore = bamFormatUtils.checkRawData(rawData, url);
 
     SAMFormat samFormat;
     FormatCheckResult samScore = samFormat.checkRawData(rawData, url);
 
-    if (bamScore.score > samScore.score ) {
+    if (bamScore.score > samScore.score) {
         return bamScore;
     }
     samScore.properties[SAM_HINT] = true;
     return samScore;
 }
 
-DocumentProviderTask* BAMImporter::createImportTask(const FormatDetectionResult& res, bool showGui, const QVariantMap &hints) {
+DocumentProviderTask *BAMImporter::createImportTask(const FormatDetectionResult &res, bool showGui, const QVariantMap &hints) {
     bool sam = res.rawDataCheckResult.properties[SAM_HINT].toBool();
     QVariantMap fullHints(hints);
     fullHints[SAM_HINT] = sam;
     return new BAMImporterTask(res.url, showGui, fullHints);
 }
 
-
-BAMImporterTask::BAMImporterTask(const GUrl& url, bool _useGui, const QVariantMap &hints) :
-    DocumentProviderTask(tr("BAM/SAM file import: %1").arg(url.fileName()), TaskFlags_NR_FOSCOE),
-    loadInfoTask(NULL),
-    loadBamInfoTask(NULL),
-    prepareToImportTask(NULL),
-    convertTask(NULL),
-    loadDocTask(NULL),
-    isSqliteDbTransit(false),
-    useGui(_useGui),
-    sam(hints.value(SAM_HINT, false).toBool()),
-    hints(hints),
-    hintedDbiRef(hints.value(DocumentFormat::DBI_REF_HINT).value<U2DbiRef>()),
-    startTime(0)
-{
+BAMImporterTask::BAMImporterTask(const GUrl &url, bool _useGui, const QVariantMap &hints)
+    : DocumentProviderTask(tr("BAM/SAM file import: %1").arg(url.fileName()), TaskFlags_NR_FOSCOE),
+      loadInfoTask(NULL),
+      loadBamInfoTask(NULL),
+      prepareToImportTask(NULL),
+      convertTask(NULL),
+      loadDocTask(NULL),
+      isSqliteDbTransit(false),
+      useGui(_useGui),
+      sam(hints.value(SAM_HINT, false).toBool()),
+      hints(hints),
+      hintedDbiRef(hints.value(DocumentFormat::DBI_REF_HINT).value<U2DbiRef>()),
+      startTime(0) {
     documentDescription = url.fileName();
-    loadInfoTask = new LoadInfoTask( url, sam );
+    loadInfoTask = new LoadInfoTask(url, sam);
     addSubTask(loadInfoTask);
 }
 
@@ -145,13 +144,13 @@ void BAMImporterTask::prepare() {
 }
 
 namespace {
-    QString getDirUrl(const GUrl &fileUrl) {
-        return QFileInfo(fileUrl.getURLString()).dir().absolutePath();
-    }
+QString getDirUrl(const GUrl &fileUrl) {
+    return QFileInfo(fileUrl.getURLString()).dir().absolutePath();
 }
+}    // namespace
 
-QList<Task*> BAMImporterTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> res;
+QList<Task *> BAMImporterTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> res;
 
     if (subTask->hasError()) {
         propagateSubtaskError();
@@ -210,7 +209,7 @@ QList<Task*> BAMImporterTask::onSubTaskFinished(Task* subTask) {
 
 Task::ReportResult BAMImporterTask::report() {
     time_t totalTime = time(0) - startTime;
-    taskLog.info(QString("BAMImporter task total time is %1 sec").arg( totalTime ) );
+    taskLog.info(QString("BAMImporter task total time is %1 sec").arg(totalTime));
     return ReportResult_Finished;
 }
 
@@ -267,27 +266,27 @@ void BAMImporterTask::initPrepareToImportTask() {
                 dirUrl = getDirUrl(AppContext::getAppSettings()->getUserAppsSettings()->getUserTemporaryDirPath());
             }
         }
-        prepareToImportTask = new PrepareToImportTask( loadInfoTask->getSourceUrl(), loadInfoTask->isSam(), refUrl, dirUrl );
+        prepareToImportTask = new PrepareToImportTask(loadInfoTask->getSourceUrl(), loadInfoTask->isSam(), refUrl, dirUrl);
     }
 }
 
 void BAMImporterTask::initLoadBamInfoTask() {
     bool samFormat = false;
-    loadBamInfoTask = new LoadInfoTask( prepareToImportTask->getSourceUrl(), samFormat );
+    loadBamInfoTask = new LoadInfoTask(prepareToImportTask->getSourceUrl(), samFormat);
 }
 
 void BAMImporterTask::initConvertToSqliteTask() {
     bool samFormat = false;
     GUrl sourceURL;
     BAMInfo bamInfo;
-    if( prepareToImportTask->isNewURL() ) {
+    if (prepareToImportTask->isNewURL()) {
         sourceURL = loadBamInfoTask->getSourceUrl();
         bamInfo = loadBamInfoTask->getInfo();
     } else {
         sourceURL = prepareToImportTask->getSourceUrl();
         bamInfo = loadInfoTask->getInfo();
     }
-    convertTask = new ConvertToSQLiteTask( sourceURL, localDbiRef, bamInfo, samFormat );
+    convertTask = new ConvertToSQLiteTask(sourceURL, localDbiRef, bamInfo, samFormat);
 }
 
 void BAMImporterTask::initCloneObjectTasks() {
@@ -307,5 +306,5 @@ void BAMImporterTask::initLoadDocumentTask() {
     }
 }
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2

@@ -34,48 +34,47 @@ class U2Region;
 struct CommonSequenceViewMetrics {
     CommonSequenceViewMetrics();
 
-    QFont   sequenceFont;
-    QFont   smallSequenceFont;
-    QFont   rulerFont;
+    QFont sequenceFont;
+    QFont smallSequenceFont;
+    QFont rulerFont;
 
-    int     charWidth;
-    int     smallCharWidth;
+    int charWidth;
+    int smallCharWidth;
 
-    int     lineHeight;
-    int     yCharOffset;
-    int     xCharOffset;
+    int lineHeight;
+    int yCharOffset;
+    int xCharOffset;
 };
 
 /************************************************************************/
 /* SequenceViewRenderer */
 /************************************************************************/
-class U2VIEW_EXPORT SequenceViewRenderer {
+class U2VIEW_EXPORT SequenceViewRenderer : public QObject {
 public:
-    SequenceViewRenderer(SequenceObjectContext* ctx);
+    SequenceViewRenderer(SequenceObjectContext *ctx);
 
-    virtual qint64 coordToPos(const QPoint& p, const QSize& canvasSize, const U2Region& visibleRange) const = 0;
+    virtual qint64 coordToPos(const QPoint &p, const QSize &canvasSize, const U2Region &visibleRange) const = 0;
 
-    int posToXCoord(const qint64 p, const QSize& canvasSize, const U2Region& visibleRange) const;
-    virtual float posToXCoordF(const qint64 p, const QSize& canvasSize, const U2Region& visibleRange) const;
+    int posToXCoord(const qint64 p, const QSize &canvasSize, const U2Region &visibleRange) const;
+    virtual float posToXCoordF(const qint64 p, const QSize &canvasSize, const U2Region &visibleRange) const;
 
     virtual qint64 getRowLineHeight() const;
 
     virtual double getCurrentScale() const = 0;
 
-    virtual qint64 getContentIndentY(const QSize& canvasSize, const U2Region& visibleRange) const = 0;
+    virtual qint64 getContentIndentY(const QSize &canvasSize, const U2Region &visibleRange) const = 0;
     virtual qint64 getMinimumHeight() const = 0;
 
-    virtual void drawAll(QPainter& p, const QSize& canvasSize, const U2Region& visibleRange) = 0;
-    virtual void drawSelection(QPainter& p, const QSize& canvasSize, const U2Region& visibleRange) = 0;
+    virtual void drawAll(QPainter &p, const QSize &canvasSize, const U2Region &visibleRange) = 0;
+    virtual void drawSelection(QPainter &p, const QSize &canvasSize, const U2Region &visibleRange) = 0;
 
-    virtual QSize getBaseCanvasSize(const U2Region& visibleRange) const = 0;
+    virtual QSize getBaseCanvasSize(const U2Region &visibleRange) const = 0;
 
 protected:
-    SequenceObjectContext*      ctx;
-    CommonSequenceViewMetrics   commonMetrics;
-
+    SequenceObjectContext *ctx;
+    CommonSequenceViewMetrics commonMetrics;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_SEQUENCE_VIEW_RENDERER_H_
+#endif    // _U2_SEQUENCE_VIEW_RENDERER_H_

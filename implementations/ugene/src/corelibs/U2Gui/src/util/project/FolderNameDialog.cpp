@@ -19,18 +19,17 @@
  * MA 02110-1301, USA.
  */
 
+#include "FolderNameDialog.h"
+
 #include <QPushButton>
 
 #include <U2Core/Folder.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "FolderNameDialog.h"
-
 namespace U2 {
 
 FolderNameDialog::FolderNameDialog(const QString &name, QWidget *parent)
-    : QDialog(parent), okButton(NULL)
-{
+    : QDialog(parent), okButton(NULL) {
     setupUi(this);
     setWindowTitle(name.isEmpty() ? tr("Add Folder") : tr("Rename Folder"));
 
@@ -50,4 +49,4 @@ QString FolderNameDialog::getResult() const {
     return nameEdit->text();
 }
 
-} // U2
+}    // namespace U2

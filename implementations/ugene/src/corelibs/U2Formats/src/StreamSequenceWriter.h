@@ -25,12 +25,12 @@
 #include <QList>
 #include <QString>
 
-#include <U2Core/GUrl.h>
 #include <U2Core/DNASequenceObject.h>
+#include <U2Core/GUrl.h>
+
 #include <U2Formats/SAMFormat.h>
 
 namespace U2 {
-
 
 /**
 *
@@ -40,19 +40,25 @@ namespace U2 {
 */
 
 class U2FORMATS_EXPORT StreamShortReadsWriter {
-    IOAdapter*  io;
-    SAMFormat   format;
-    int         numSeqWritten;
-    int         refSeqLength;
-    QByteArray  refSeqName;
+    IOAdapter *io;
+    SAMFormat format;
+    int numSeqWritten;
+    int refSeqLength;
+    QByteArray refSeqName;
 
 public:
-    StreamShortReadsWriter(const GUrl& url, const QString& refName = QString(), int refLength = 0);
+    StreamShortReadsWriter(const GUrl &url, const QString &refName = QString(), int refLength = 0);
     ~StreamShortReadsWriter();
-    bool writeNextAlignedRead(int offset, const DNASequence& seq);
-    void setRefSeqLength(int l) { refSeqLength = l;}
-    void setRefSeqName(const QString& name ) { refSeqName = QString(name).replace(QRegExp("\\s|\\t"), "_").toLatin1(); }
-    int getNumSeqWritten() { return numSeqWritten; }
+    bool writeNextAlignedRead(int offset, const DNASequence &seq);
+    void setRefSeqLength(int l) {
+        refSeqLength = l;
+    }
+    void setRefSeqName(const QString &name) {
+        refSeqName = QString(name).replace(QRegExp("\\s|\\t"), "_").toLatin1();
+    }
+    int getNumSeqWritten() {
+        return numSeqWritten;
+    }
     void close();
 };
 
@@ -70,17 +76,19 @@ public:
     StreamShortReadWriter();
     virtual ~StreamShortReadWriter();
 
-    bool init(const GUrl& url);
-    bool writeNextSequence(const DNASequence& seq);
+    bool init(const GUrl &url);
+    bool writeNextSequence(const DNASequence &seq);
     bool writeNextSequence(const U2SequenceObject *seq);
-    const GUrl& getOutputPath() { return ouputPath; }
+    const GUrl &getOutputPath() {
+        return ouputPath;
+    }
     void close();
 
 protected:
-    IOAdapter* io;
+    IOAdapter *io;
 
 private:
-    FastaFormat* fastaFormat;
+    FastaFormat *fastaFormat;
     GUrl ouputPath;
 };
 
@@ -89,7 +97,6 @@ public:
     StreamGzippedShortReadWriter();
 };
 
+}    // namespace U2
 
-} //namespace
-
-#endif //_U2_STREAM_SEQUENCE_WRITER_H_
+#endif    //_U2_STREAM_SEQUENCE_WRITER_H_

@@ -19,22 +19,25 @@
  * MA 02110-1301, USA.
  */
 
+#include "AnnotationUtilsTests.h"
+
 #include <QDomElement>
+
 #include <U2Core/AppContext.h>
 #include <U2Core/U1AnnotationUtils.h>
 #include <U2Core/U2Location.h>
+
 #include <U2Formats/GenbankLocationParser.h>
-#include "AnnotationUtilsTests.h"
 
 namespace U2 {
 
-QList<XMLTestFactory*> AnnotationUtilsTests::createTestFactories() {
-    QList<XMLTestFactory*> res;
+QList<XMLTestFactory *> AnnotationUtilsTests::createTestFactories() {
+    QList<XMLTestFactory *> res;
     res.append(GTest_ShiftSequence::createFactory());
     return res;
 }
 
-void GTest_ShiftSequence::init(XMLTestFormat* tf, const QDomElement& el) {
+void GTest_ShiftSequence::init(XMLTestFormat *tf, const QDomElement &el) {
     Q_UNUSED(tf);
     bool isOk;
     locationStringBefore = el.attribute("location-before");
@@ -68,4 +71,4 @@ Task::ReportResult GTest_ShiftSequence::report() {
     return ReportResult_Finished;
 }
 
-}
+}    // namespace U2

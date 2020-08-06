@@ -22,8 +22,8 @@
 #ifndef _U2_ADD_DOCUMENT_TASK_H_
 #define _U2_ADD_DOCUMENT_TASK_H_
 
-#include <U2Core/Task.h>
 #include <U2Core/DocumentModel.h>
+#include <U2Core/Task.h>
 
 namespace U2 {
 
@@ -32,7 +32,9 @@ class DocumentProviderTask;
 
 class AddDocumentTaskConfig {
 public:
-    AddDocumentTaskConfig() : createProjectIfNeeded(true), unloadExistingDocument(false) {}
+    AddDocumentTaskConfig()
+        : createProjectIfNeeded(true), unloadExistingDocument(false) {
+    }
 
     bool createProjectIfNeeded;
     bool unloadExistingDocument;
@@ -41,21 +43,22 @@ public:
 class U2CORE_EXPORT AddDocumentTask : public Task {
     Q_OBJECT
 public:
-    AddDocumentTask(Document * d, const AddDocumentTaskConfig& c = AddDocumentTaskConfig());
-    AddDocumentTask(DocumentProviderTask* dp, const AddDocumentTaskConfig& c = AddDocumentTaskConfig());
+    AddDocumentTask(Document *d, const AddDocumentTaskConfig &c = AddDocumentTaskConfig());
+    AddDocumentTask(DocumentProviderTask *dp, const AddDocumentTaskConfig &c = AddDocumentTaskConfig());
 
     ReportResult report();
 
-    QList<Task*> onSubTaskFinished(Task* subTask);
-    Document* getDocument() { return document; }
-private:
+    QList<Task *> onSubTaskFinished(Task *subTask);
+    Document *getDocument() {
+        return document;
+    }
 
-    Document*               document;
-    DocumentProviderTask*   dpt;
-    AddDocumentTaskConfig   conf;
+private:
+    Document *document;
+    DocumentProviderTask *dpt;
+    AddDocumentTaskConfig conf;
 };
 
-
-}//namespace
+}    // namespace U2
 
 #endif

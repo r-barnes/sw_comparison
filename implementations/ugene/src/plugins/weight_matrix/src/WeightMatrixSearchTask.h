@@ -22,24 +22,25 @@
 #ifndef _U2_WEIGHT_MATRIX_SEARCH_TASK_H_
 #define _U2_WEIGHT_MATRIX_SEARCH_TASK_H_
 
-#include "WeightMatrixAlgorithm.h"
-
-#include <U2Core/U2Region.h>
-#include <U2Core/AnnotationData.h>
-#include <U2Core/SequenceWalkerTask.h>
-
 #include <QMutex>
 #include <QPair>
+
+#include <U2Core/AnnotationData.h>
+#include <U2Core/SequenceWalkerTask.h>
+#include <U2Core/U2Region.h>
+
+#include "WeightMatrixAlgorithm.h"
 
 namespace U2 {
 
 class WeightMatrixSearchResult {
 public:
-    WeightMatrixSearchResult() : strand(U2Strand::Direct), score(-1) {
+    WeightMatrixSearchResult()
+        : strand(U2Strand::Direct), score(-1) {
         qual = QMap<QString, QString>();
     }
 
-    SharedAnnotationData toAnnotation(U2FeatureType type, const QString& name) const {
+    SharedAnnotationData toAnnotation(U2FeatureType type, const QString &name) const {
         SharedAnnotationData data(new AnnotationData);
         data->type = type;
         data->name = name;
@@ -57,74 +58,75 @@ public:
         return data;
     }
 
-    static QList<SharedAnnotationData> toTable(const QList<WeightMatrixSearchResult>& res, U2FeatureType type, const QString& name) {
+    static QList<SharedAnnotationData> toTable(const QList<WeightMatrixSearchResult> &res, U2FeatureType type, const QString &name) {
         QList<SharedAnnotationData> list;
-        foreach (const WeightMatrixSearchResult& f, res) {
+        foreach (const WeightMatrixSearchResult &f, res) {
             list.append(f.toAnnotation(type, name));
         }
         return list;
     }
 
-
     U2Region region;
     U2Strand strand;
-    float   score;
+    float score;
     QString modelInfo;
     QMap<QString, QString> qual;
 };
 
 class WeightMatrixSearchCfg {
 public:
-    WeightMatrixSearchCfg() : minPSUM(0), modelName(""), complTT(NULL), complOnly(false), algo("") {}
+    WeightMatrixSearchCfg()
+        : minPSUM(0), modelName(""), complTT(NULL), complOnly(false), algo("") {
+    }
     int minPSUM;
     QString modelName;
-    DNATranslation* complTT;
-    bool complOnly; //FIXME use strand instead
+    DNATranslation *complTT;
+    bool complOnly;    //FIXME use strand instead
     QString algo;
 
     bool operator==(const WeightMatrixSearchCfg &c1) const {
         return c1.minPSUM == minPSUM &&
-                c1.modelName == modelName &&
-                c1.complOnly == complOnly &&
-                c1.algo == algo;
+               c1.modelName == modelName &&
+               c1.complOnly == complOnly &&
+               c1.algo == algo;
     }
 };
 
 class WeightMatrixSearchTask : public Task {
     Q_OBJECT
 public:
-    WeightMatrixSearchTask(const QList< QPair< PWMatrix, WeightMatrixSearchCfg > >& models, const QByteArray& seq, int resultsOffset);
+    WeightMatrixSearchTask(const QList<QPair<PWMatrix, WeightMatrixSearchCfg>> &models, const QByteArray &seq, int resultsOffset);
 
     QList<WeightMatrixSearchResult> takeResults();
 
 private:
-    void addResult(const WeightMatrixSearchResult& r);
+    void addResult(const WeightMatrixSearchResult &r);
 
-    QMutex                                              lock;
-    QList< QPair<PWMatrix, WeightMatrixSearchCfg> >     models;
-    QList<WeightMatrixSearchResult>                     results;
-    int                                                 resultsOffset;
+    QMutex lock;
+    QList<QPair<PWMatrix, WeightMatrixSearchCfg>> models;
+    QList<WeightMatrixSearchResult> results;
+    int resultsOffset;
 };
 
 class WeightMatrixSingleSearchTask : public Task, public SequenceWalkerCallback {
     Q_OBJECT
 public:
-    WeightMatrixSingleSearchTask(const PWMatrix& model, const QByteArray& seq, const WeightMatrixSearchCfg& cfg, int resultsOffset);
+    WeightMatrixSingleSearchTask(const PWMatrix &model, const QByteArray &seq, const WeightMatrixSearchCfg &cfg, int resultsOffset);
 
-    virtual void onRegion(SequenceWalkerSubtask* t, TaskStateInfo& ti);
+    virtual void onRegion(SequenceWalkerSubtask *t, TaskStateInfo &ti);
     QList<WeightMatrixSearchResult> takeResults();
 
 private:
-    void addResult(const WeightMatrixSearchResult& r);
+    void addResult(const WeightMatrixSearchResult &r);
 
-    QMutex                              lock;
-    PWMatrix                            model;
-    WeightMatrixSearchCfg               cfg;
-    QList<WeightMatrixSearchResult>     results;
-    int                                 resultsOffset;
-    QByteArray                          seq;
+    QMutex lock;
+    PWMatrix model;
+    WeightMatrixSearchCfg cfg;
+    QList<WeightMatrixSearchResult> results;
+    int resultsOffset;
+    QByteArray seq;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

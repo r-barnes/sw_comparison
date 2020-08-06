@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ExportChromatogramDialog.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 
@@ -33,19 +35,17 @@
 #include <U2Gui/LastUsedDirHelper.h>
 #include <U2Gui/SaveDocumentController.h>
 
-#include "ExportChromatogramDialog.h"
 #include "ExportUtils.h"
 
 #define SETTINGS_ROOT QString("dna_export/")
 
 namespace U2 {
 
-ExportChromatogramDialog::ExportChromatogramDialog(QWidget* p, const GUrl& fileUrl) :
-    QDialog(p),
-    saveController(NULL)
-{
+ExportChromatogramDialog::ExportChromatogramDialog(QWidget *p, const GUrl &fileUrl)
+    : QDialog(p),
+      saveController(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742423");
+    new HelpButton(this, buttonBox, "46499915");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Export"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -84,5 +84,4 @@ void ExportChromatogramDialog::accept() {
     QDialog::accept();
 }
 
-
-}//namespace
+}    // namespace U2

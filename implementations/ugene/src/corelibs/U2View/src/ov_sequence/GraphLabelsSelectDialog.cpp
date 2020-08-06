@@ -19,49 +19,51 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
-#include "ADVGraphModel.h"
+#include "GraphLabelsSelectDialog.h"
 
+#include <QCheckBox>
+#include <QHBoxLayout>
 #include <QLabel>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QSpinBox>
-#include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QCheckBox>
-#include <QMessageBox>
+
+#include <U2Core/U2SafePoints.h>
+
 #include <U2Gui/HelpButton.h>
 
-#include "GraphLabelsSelectDialog.h"
+#include "ADVGraphModel.h"
 
 #define BACKGROUND_COLOR "QPushButton { background-color : %1;}"
 
 namespace U2 {
 
-GraphLabelsSelectDialog::GraphLabelsSelectDialog(int maxWindowSize, QWidget* parent )
-:QDialog(parent) {
+GraphLabelsSelectDialog::GraphLabelsSelectDialog(int maxWindowSize, QWidget *parent)
+    : QDialog(parent) {
     stepSpinBox = new QSpinBox(this);
-    stepSpinBox->setRange(maxWindowSize/50, maxWindowSize);
+    stepSpinBox->setRange(maxWindowSize / 50, maxWindowSize);
     stepSpinBox->setObjectName("stepSpinBox");
     usedIntervalsCheck = new QCheckBox(this);
     usedIntervalsCheck->setObjectName("usedIntervalsCheck");
-    QVBoxLayout* mainLayout = new QVBoxLayout();
-    QHBoxLayout* buttonsLayout = new QHBoxLayout();
-    QHBoxLayout* spinLayout = new QHBoxLayout();
+    QVBoxLayout *mainLayout = new QVBoxLayout();
+    QHBoxLayout *buttonsLayout = new QHBoxLayout();
+    QHBoxLayout *spinLayout = new QHBoxLayout();
     buttonsLayout->addStretch(10);
 
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     buttonBox->setObjectName("buttonBox");
 
-    QLabel* spinLabel = new QLabel(tr("Window size"), this);
+    QLabel *spinLabel = new QLabel(tr("Window size"), this);
     buttonsLayout->addWidget(buttonBox);
     spinLayout->addWidget(spinLabel);
     spinLayout->addWidget(stepSpinBox);
     usedIntervalsCheck->setText(tr("Mark labels only in selected area"));
 
-    QPushButton* okButton = buttonBox->button(QDialogButtonBox::Ok);
-    QPushButton* cancelButton = buttonBox->button(QDialogButtonBox::Cancel);
+    QPushButton *okButton = buttonBox->button(QDialogButtonBox::Ok);
+    QPushButton *cancelButton = buttonBox->button(QDialogButtonBox::Cancel);
 
-    new HelpButton(this, buttonBox, "24742425");
+    new HelpButton(this, buttonBox, "46499922");
 
     mainLayout->addLayout(spinLayout);
     mainLayout->addWidget(usedIntervalsCheck);
@@ -98,4 +100,4 @@ void GraphLabelsSelectDialog::sl_onOkClicked() {
     return;
 }
 
-} // namespace
+}    // namespace U2

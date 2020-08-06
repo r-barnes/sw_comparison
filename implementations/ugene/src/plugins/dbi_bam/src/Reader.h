@@ -22,19 +22,23 @@
 #ifndef _U2_BAM_READER_H_
 #define _U2_BAM_READER_H_
 
-#include "Header.h"
 #include "Alignment.h"
 #include "BgzfReader.h"
+#include "Header.h"
 
 namespace U2 {
 namespace BAM {
 
 class Reader {
 public:
-    Reader(IOAdapter &_ioAdapter) : ioAdapter(_ioAdapter) {}
+    Reader(IOAdapter &_ioAdapter)
+        : ioAdapter(_ioAdapter) {
+    }
     virtual const Header &getHeader() const = 0;
     virtual bool isEof() const = 0;
-    virtual ~Reader() {}
+    virtual ~Reader() {
+    }
+
 protected:
     Header header;
     IOAdapter &ioAdapter;
@@ -46,17 +50,17 @@ protected:
 
 class BamReader : public Reader {
 public:
-
     class AlignmentReader {
     public:
-        AlignmentReader(BamReader* reader, int id, int blockSize);
+        AlignmentReader(BamReader *reader, int id, int blockSize);
         int getId();
         Alignment read();
         void skip();
+
     private:
         int id;
         int blockSize;
-        BamReader* r;
+        BamReader *r;
 
         /**
          * Returns true if a number was read
@@ -65,12 +69,13 @@ public:
     };
 
     BamReader(IOAdapter &ioAdapter);
-    const Header &getHeader()const;
+    const Header &getHeader() const;
     Alignment readAlignment();
     AlignmentReader getAlignmentReader();
-    bool isEof()const;
-    VirtualOffset getOffset()const;
+    bool isEof() const;
+    VirtualOffset getOffset() const;
     void seek(VirtualOffset offset);
+
 private:
     void readBytes(char *buffer, qint64 size);
     QByteArray readBytes(qint64 size);
@@ -86,10 +91,10 @@ private:
     void readHeader();
 
     BgzfReader reader;
-friend class AlignmentReader;
+    friend class AlignmentReader;
 };
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2
 
-#endif // _U2_BAM_READER_H_
+#endif    // _U2_BAM_READER_H_

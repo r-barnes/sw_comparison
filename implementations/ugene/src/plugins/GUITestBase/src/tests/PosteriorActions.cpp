@@ -49,7 +49,7 @@ namespace GUITest_posterior_actions {
 POSTERIOR_ACTION_DEFINITION(post_action_0000) {
     // Release all hold keyboard modifier keys
 
-    const Qt::KeyboardModifiers modifiers = QGuiApplication::queryKeyboardModifiers();
+    Qt::KeyboardModifiers modifiers = QGuiApplication::queryKeyboardModifiers();
     if (modifiers & Qt::ShiftModifier) {
         GTKeyboardDriver::keyRelease(Qt::Key_Shift);
     }
@@ -62,7 +62,9 @@ POSTERIOR_ACTION_DEFINITION(post_action_0000) {
         GTKeyboardDriver::keyRelease(Qt::Key_Alt);
     }
 
-    uiLog.trace(QString("post_action_0000: next keyboard modifiers are pressed after test: %1").arg(QGuiApplication::queryKeyboardModifiers()));
+    if (modifiers != 0) {
+        coreLog.info(QString("post_action_0000: next keyboard modifiers were pressed after the test: %1").arg(modifiers));
+    }
 }
 
 POSTERIOR_ACTION_DEFINITION(post_action_0001) {
@@ -70,13 +72,13 @@ POSTERIOR_ACTION_DEFINITION(post_action_0001) {
     // Close all modal widgets
     // Clear the clipboard
 
-    QWidget* popupWidget = QApplication::activePopupWidget();
+    QWidget *popupWidget = QApplication::activePopupWidget();
     while (popupWidget != NULL) {
         GTWidget::close(os, popupWidget);
         popupWidget = QApplication::activePopupWidget();
     }
 
-    QWidget* modalWidget = QApplication::activeModalWidget();
+    QWidget *modalWidget = QApplication::activeModalWidget();
     while (modalWidget != NULL) {
         GTWidget::close(os, modalWidget);
         modalWidget = QApplication::activeModalWidget();
@@ -91,9 +93,7 @@ POSTERIOR_ACTION_DEFINITION(post_action_0002) {
     // Close all MDI windows
     // Cancel all tasks
 
-    GTGlobals::sleep(1000);
-
-    if (AppContext::getProject() != NULL) {
+    if (AppContext::getProject() != nullptr) {
         GTWidget::click(os, GTUtilsProjectTreeView::getTreeView(os));
         GTKeyboardDriver::keyClick('a', Qt::ControlModifier);
         GTGlobals::sleep(100);
@@ -103,26 +103,27 @@ POSTERIOR_ACTION_DEFINITION(post_action_0002) {
         GTKeyboardDriver::keyClick(Qt::Key_Delete);
         GTGlobals::sleep(500);
 #ifdef Q_OS_MAC
-        GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Close project");
+        GTMenu::clickMainMenuItem(os, QStringList() << "File"
+                                                    << "Close project");
 #else
         GTKeyboardDriver::keyClick('q', Qt::ControlModifier);
-        GTGlobals::sleep(100);
 #endif
         GTGlobals::sleep(500);
 
         GTUtilsDialog::cleanup(os, GTUtilsDialog::NoFailOnUnfinished);
-        GTGlobals::sleep();
     }
 
     GTUtilsMdi::closeAllWindows(os);
 
     AppContext::getTaskScheduler()->cancelAllTasks();
-    GTUtilsTaskTreeView::waitTaskFinished(os, 60000);
+    GTUtilsTaskTreeView::waitTaskFinished(os, 10000);
 }
 
 POSTERIOR_ACTION_DEFINITION(post_action_0003) {
-    // Restore backuped files
-
+    if (qgetenv("UGENE_TEST_SKIP_BACKUP_AND_RESTORE") == "1") {    // Restored by the parent process
+        return;
+    }
+    // Restore backup files
     if (QDir(testDir).exists()) {
         GTFile::restore(os, testDir + "_common_data/scenarios/project/proj1.uprj");
         GTFile::restore(os, testDir + "_common_data/scenarios/project/proj2-1.uprj");
@@ -130,10 +131,16 @@ POSTERIOR_ACTION_DEFINITION(post_action_0003) {
         GTFile::restore(os, testDir + "_common_data/scenarios/project/proj3.uprj");
         GTFile::restore(os, testDir + "_common_data/scenarios/project/proj4.uprj");
         GTFile::restore(os, testDir + "_common_data/scenarios/project/proj5.uprj");
+
+        // Files from the projects above.
+        GTFile::restore(os, testDir + "_common_data/scenarios/project/1.gb");
     }
 }
 
 POSTERIOR_ACTION_DEFINITION(post_action_0004) {
+    if (qgetenv("UGENE_TEST_SKIP_BACKUP_AND_RESTORE") == "1") {    // Restored by the parent process
+        return;
+    }
     if (QDir(sandBoxDir).exists()) {
         GTFile::setReadWrite(os, sandBoxDir, true);
         QDir sandBox(sandBoxDir);
@@ -143,5 +150,5 @@ POSTERIOR_ACTION_DEFINITION(post_action_0004) {
     }
 }
 
-}   // namespace GUITest_posterior_actions
-}   // namespace U2
+}    // namespace GUITest_posterior_actions
+}    // namespace U2

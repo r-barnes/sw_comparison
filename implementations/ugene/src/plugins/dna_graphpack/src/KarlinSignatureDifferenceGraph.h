@@ -22,22 +22,22 @@
 #ifndef _U2_GRAPHPACK_KARLIN_H_
 #define _U2_GRAPHPACK_KARLIN_H_
 
-#include "DNAGraphPackPlugin.h"
+#include <QAction>
+#include <QBitArray>
+#include <QList>
 
 #include <U2View/GSequenceGraphView.h>
 
-#include <QAction>
-#include <QList>
-#include <QBitArray>
+#include "DNAGraphPackPlugin.h"
 
 namespace U2 {
 
 class KarlinGraphFactory : public GSequenceGraphFactory {
     Q_OBJECT
 public:
-    KarlinGraphFactory(QObject* p);
-    QList<QSharedPointer<GSequenceGraphData> > createGraphs(GSequenceGraphView* v);
-    bool isEnabled(const U2SequenceObject* o) const;
+    KarlinGraphFactory(QObject *p);
+    QList<QSharedPointer<GSequenceGraphData>> createGraphs(GSequenceGraphView *v);
+    bool isEnabled(const U2SequenceObject *o) const;
 };
 
 class KarlinGraphAlgorithm : public GSequenceGraphAlgorithm {
@@ -45,15 +45,15 @@ public:
     KarlinGraphAlgorithm();
     ~KarlinGraphAlgorithm();
 
-    void calculate(QVector<float>& res, U2SequenceObject* o, const U2Region& r, const GSequenceGraphWindowData* d, U2OpStatus &os);
+    void calculate(QVector<float> &res, U2SequenceObject *o, const U2Region &r, const GSequenceGraphWindowData *d, U2OpStatus &os);
 
 private:
-    float getValue (int start, int end, const QByteArray& s, U2OpStatus &os);
-    void calculateRelativeAbundance (const char* seq, int length, float* results, U2OpStatus &os);
+    float getValue(int start, int end, const QByteArray &s, U2OpStatus &os);
+    void calculateRelativeAbundance(const char *seq, int length, float *results, U2OpStatus &os);
 
     float *global_relative_abundance_values;
     QByteArray mapTrans;
 };
 
-} // namespace
+}    // namespace U2
 #endif

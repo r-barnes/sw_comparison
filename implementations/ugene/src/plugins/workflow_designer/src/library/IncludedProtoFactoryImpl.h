@@ -29,23 +29,22 @@ namespace Workflow {
 
 class IncludedProtoFactoryImpl : public IncludedProtoFactory {
 public:
-    virtual ActorPrototype *_getScriptProto(QList<DataTypePtr > input, QList<DataTypePtr > output, QList<Attribute*> attrs,
-        const QString &name,const QString &description, const QString &actorFilePath, bool isAliasName);
+    virtual ActorPrototype *_getScriptProto(QList<DataTypePtr> input, QList<DataTypePtr> output, QList<Attribute *> attrs, const QString &name, const QString &description, const QString &actorFilePath, bool isAliasName);
     virtual ActorPrototype *_getExternalToolProto(ExternalProcessConfig *cfg);
     virtual ActorPrototype *_getSchemaActorProto(Schema *schema, const QString &name, const QString &actorFilePath);
 
     virtual bool _registerExternalToolWorker(ExternalProcessConfig *cfg);
     virtual void _registerScriptWorker(const QString &actorName);
 
-    virtual ExternalProcessConfig* _getExternalToolWorker(const QString& id) override;
+    virtual ExternalProcessConfig *_getExternalToolWorker(const QString &id) override;
     virtual ExternalProcessConfig *_unregisterExternalToolWorker(const QString &id);
 
 private:
-    static Descriptor generateUniqueSlotDescriptor( const QList<Descriptor> &existingSlots,
-        const DataConfig &dcfg );
+    static Descriptor generateUniqueSlotDescriptor(const QList<Descriptor> &existingSlots,
+                                                   const DataConfig &dcfg);
 };
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2
 
-#endif // _SCRIPT_PROTO_MAKER_IMPL_H_
+#endif    // _SCRIPT_PROTO_MAKER_IMPL_H_

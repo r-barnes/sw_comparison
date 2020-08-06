@@ -22,8 +22,9 @@
 #ifndef _TLS_TASK_H_
 #define _TLS_TASK_H_
 
-#include <U2Core/Task.h>
 #include <QThreadStorage>
+
+#include <U2Core/Task.h>
 
 namespace U2 {
 /************************************************************************/
@@ -31,9 +32,13 @@ namespace U2 {
 /************************************************************************/
 
 class U2CORE_EXPORT TLSContext {
-friend class TLSUtils;
+    friend class TLSUtils;
+
 public:
-    TLSContext(QString _id) : id(_id) {}
+    TLSContext(QString _id)
+        : id(_id) {
+    }
+
 private:
     // class unique id
     const QString id;
@@ -41,45 +46,47 @@ private:
 
 class TLSContextRef {
 public:
-  TLSContextRef(TLSContext* _ctx) : ctx(_ctx){}
-  TLSContext* ctx;
- };
+    TLSContextRef(TLSContext *_ctx)
+        : ctx(_ctx) {
+    }
+    TLSContext *ctx;
+};
 
 class U2CORE_EXPORT TLSUtils {
 public:
-  // Gets task local context, assigned to current thread
-  static TLSContext* current(QString contextId);
+    // Gets task local context, assigned to current thread
+    static TLSContext *current(QString contextId);
 
-  // Creates TLSContextRef for current thread
-  static void bindToTLSContext(TLSContext *ctx);
+    // Creates TLSContextRef for current thread
+    static void bindToTLSContext(TLSContext *ctx);
 
-  // Deletes TLSContextRef for current thread
-  static void detachTLSContext();
+    // Deletes TLSContextRef for current thread
+    static void detachTLSContext();
 
 private:
-  static QThreadStorage<TLSContextRef*> tls;
+    static QThreadStorage<TLSContextRef *> tls;
 };
 
 class U2CORE_EXPORT TLSTask : public Task {
-Q_OBJECT
+    Q_OBJECT
 public:
-  TLSTask(const QString& _name, TaskFlags _flags = TaskFlags_FOSCOE, bool deleteContext = true);
-  ~TLSTask(); // tls context removed here
-  void run();
-  void prepare();
+    TLSTask(const QString &_name, TaskFlags _flags = TaskFlags_FOSCOE, bool deleteContext = true);
+    ~TLSTask();    // tls context removed here
+    void run();
+    void prepare();
+
 protected:
+    // Unsafe run. Use this method in derivate classes
+    virtual void _run() {
+    }
 
-  // Unsafe run. Use this method in derivate classes
-  virtual void _run() {}
+    // Creates instance of TLSContext. By default invokes in prepare()
+    virtual TLSContext *createContextInstance() = 0;
 
-  // Creates instance of TLSContext. By default invokes in prepare()
-  virtual TLSContext* createContextInstance()=0;
-
-  TLSContext* taskContext;
-  bool deleteContext;
+    TLSContext *taskContext;
+    bool deleteContext;
 };
 
-} //namespace
+}    // namespace U2
 
-
-#endif // _TLS_TASK_H_
+#endif    // _TLS_TASK_H_

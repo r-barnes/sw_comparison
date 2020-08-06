@@ -68,16 +68,16 @@ private:
     static void setupLogCache();
     static void setupPrivateHandler();
 
-    static void getSubTasks(Task *t, QString & list, int lvl);
+    static void getSubTasks(Task *t, QString &list, int lvl);
     static void runMonitorProcess(const CrashHandlerArgsHelper &helper);
     static QString generateReport(const QString &exceptionType, int maxReportSize);
 
     static CrashHandlerPrivate *crashHandlerPrivate;
-    static char *               buffer;
-    static LogCache *           crashLogCache;
-    static bool                 sendCrashReports;
+    static char *buffer;
+    static LogCache *crashLogCache;
+    static bool sendCrashReports;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_CRASH_HANDLER_H_
+#endif    // _U2_CRASH_HANDLER_H_

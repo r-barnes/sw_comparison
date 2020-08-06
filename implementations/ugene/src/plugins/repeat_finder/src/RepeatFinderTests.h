@@ -22,22 +22,20 @@
 #ifndef _U2_REPEAT_FINDER_TESTS_H_
 #define _U2_REPEAT_FINDER_TESTS_H_
 
-#include "RFBase.h"
+#include <QDomElement>
 
+#include <U2Algorithm/BitsTable.h>
+#include <U2Algorithm/RepeatFinderSettings.h>
+
+#include <U2Core/AppContext.h>
+#include <U2Core/DNAAlphabet.h>
+#include <U2Core/DNASequence.h>
+#include <U2Core/DNATranslation.h>
 #include <U2Core/U2Region.h>
 
 #include <U2Test/XMLTestUtils.h>
 
-#include <U2Core/DNAAlphabet.h>
-#include <U2Core/DNATranslation.h>
-#include <U2Core/DNASequence.h>
-#include <U2Core/AppContext.h>
-#include <U2Algorithm/BitsTable.h>
-#include <U2Algorithm/RepeatFinderSettings.h>
-
-
-#include <QDomElement>
-
+#include "RFBase.h"
 
 namespace U2 {
 
@@ -51,23 +49,22 @@ public:
 
     void prepare();
     void run();
-    U2Region parseRegion(const QString& n, const QDomElement& el);
+    U2Region parseRegion(const QString &n, const QDomElement &el);
 
-    QString     seq, seq2;
+    QString seq, seq2;
     RFAlgorithm alg;
 
-    U2Region     region;
+    U2Region region;
 
-    int         w, c, minD, maxD;
-    bool        inverted;
-    bool        reflect;
-    bool        filterNested;
-    bool        filterUnique;
-    RepeatsFilterAlgorithm	filter;
+    int w, c, minD, maxD;
+    bool inverted;
+    bool reflect;
+    bool filterNested;
+    bool filterUnique;
+    RepeatsFilterAlgorithm filter;
     QStringList excludeList;
 
-    QString     resultFile;
-
+    QString resultFile;
 };
 
 class GTest_FindTandemRepeatsTask : public XmlTest {
@@ -77,22 +74,21 @@ public:
 
     void prepare();
     void run();
-    U2Region parseRegion(const QString& n, const QDomElement& el);
+    U2Region parseRegion(const QString &n, const QDomElement &el);
 
-    U2Region         region;
+    U2Region region;
 
-    char*           string;
-    int             minD, maxD;
-    int             minSize, maxSize, repeatCount;
-    bool            inverted;
-    bool            reflect;
-    bool            filterNested;
-    bool            filterUnique;
-    RepeatsFilterAlgorithm	filter;
-    DNASequence*    seqObj;
-    QString         sequence;
-    QString         results;
-
+    char *string;
+    int minD, maxD;
+    int minSize, maxSize, repeatCount;
+    bool inverted;
+    bool reflect;
+    bool filterNested;
+    bool filterUnique;
+    RepeatsFilterAlgorithm filter;
+    DNASequence *seqObj;
+    QString sequence;
+    QString results;
 };
 
 class GTest_FindRealTandemRepeatsTask : public XmlTest {
@@ -102,22 +98,21 @@ public:
 
     void prepare();
     void run();
-    U2Region parseRegion(const QString& n, const QDomElement& el);
+    U2Region parseRegion(const QString &n, const QDomElement &el);
 
-    U2Region         region;
+    U2Region region;
 
-    char*           string;
-    int             minD, maxD;
-    int             minSize, repeatCount;
-    bool            inverted;
-    bool            reflect;
-    bool            filterNested;
-    bool            filterUnique;
-    RepeatsFilterAlgorithm	filter;
-    DNASequence*    seqObj;
-    QString         sequence;
-    QString         results;
-
+    char *string;
+    int minD, maxD;
+    int minSize, repeatCount;
+    bool inverted;
+    bool reflect;
+    bool filterNested;
+    bool filterUnique;
+    RepeatsFilterAlgorithm filter;
+    DNASequence *seqObj;
+    QString sequence;
+    QString results;
 };
 
 class SArrayIndex;
@@ -132,24 +127,22 @@ public:
     void run();
     void cleanup();
 
-    QString                 seqObjName;
-    QString                 query;
-    bool                    useBitMask;
-    BitsTable               bt;
-    int                     nMismatches;
-    DNASequence*            seqObj;
-    QByteArray              wholeSeq;
-    SArrayIndex*            index;
-    SArrayBasedFindTask*    findTask;
-    QList<int>              expectedResults;
+    QString seqObjName;
+    QString query;
+    bool useBitMask;
+    BitsTable bt;
+    int nMismatches;
+    DNASequence *seqObj;
+    QByteArray wholeSeq;
+    SArrayIndex *index;
+    SArrayBasedFindTask *findTask;
+    QList<int> expectedResults;
 };
 
 class RepeatFinderTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-
-} //namespace
+}    // namespace U2
 #endif
-

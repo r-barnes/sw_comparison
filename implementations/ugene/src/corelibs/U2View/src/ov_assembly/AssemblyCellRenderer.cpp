@@ -21,8 +21,8 @@
 
 #include "AssemblyCellRenderer.h"
 
-#include <QPainter>
 #include <QFont>
+#include <QPainter>
 
 #include <U2Core/Timer.h>
 #include <U2Core/U2SafePoints.h>
@@ -45,16 +45,16 @@ static QMap<char, QColor> initDefaultColorSheme() {
 
     // TODO: more meaningful colors
     colors['w'] = colors['W'] =
-    colors['r'] = colors['R'] =
-    colors['m'] = colors['M'] =
-    colors['k'] = colors['K'] =
-    colors['y'] = colors['Y'] =
-    colors['s'] = colors['S'] =
+        colors['r'] = colors['R'] =
+            colors['m'] = colors['M'] =
+                colors['k'] = colors['K'] =
+                    colors['y'] = colors['Y'] =
+                        colors['s'] = colors['S'] =
 
-    colors['b'] = colors['B'] =
-    colors['v'] = colors['V'] =
-    colors['d'] = colors['D'] =
-    colors['h'] = colors['H'] = QColor("#FFAA60");
+                            colors['b'] = colors['B'] =
+                                colors['v'] = colors['V'] =
+                                    colors['d'] = colors['D'] =
+                                        colors['h'] = colors['H'] = QColor("#FFAA60");
 
     colors['-'] = QColor("#FBFBFB");
     colors['N'] = QColor("#FBFBFB");
@@ -80,18 +80,18 @@ inline static bool isGap(char c) {
     return (c == '-' || c == 'N');
 }
 
-}   // namespace {
+}    // namespace
 
 static const QMap<char, QColor> nucleotideColorScheme = initDefaultColorSheme();
 static const QList<char> assemblyAlphabet = nucleotideColorScheme.keys();
 static const QMap<char, TwoChars> extendedPairs = initExtendedPairs();
 
-static void drawBackground(QPixmap &img, const QSize &size, const QColor & topColor, const QColor &bottomColor) {
+static void drawBackground(QPixmap &img, const QSize &size, const QColor &topColor, const QColor &bottomColor) {
     QPainter p(&img);
 
     //TODO invent something greater
-    QLinearGradient linearGrad( QPointF(0, 0), QPointF(size.width(), size.height()));
-    linearGrad.setColorAt(0, QColor::fromRgb(topColor.red()-70,topColor.green()-70,topColor.blue()-70));
+    QLinearGradient linearGrad(QPointF(0, 0), QPointF(size.width(), size.height()));
+    linearGrad.setColorAt(0, QColor::fromRgb(topColor.red() - 70, topColor.green() - 70, topColor.blue() - 70));
     linearGrad.setColorAt(1, bottomColor);
     QBrush br(linearGrad);
 
@@ -110,7 +110,7 @@ static void drawText(QPixmap &img, const QSize &size, char c, const QFont &font,
 void AssemblyCellRenderer::drawCell(QPixmap &img, const QSize &size, const QColor &topColor, const QColor &bottomColor, bool text, char c, const QFont &font, const QColor &textColor) {
     drawBackground(img, size, topColor, bottomColor);
 
-    if(text) {
+    if (text) {
         drawText(img, size, c, font, textColor);
     }
 }
@@ -119,8 +119,10 @@ class NucleotideColorsRenderer : public AssemblyCellRenderer {
 public:
     NucleotideColorsRenderer()
         : AssemblyCellRenderer(), colorScheme(nucleotideColorScheme),
-          images(), unknownChar(), size(), devicePixelRatio(0), text(false), font() {}
-    virtual ~NucleotideColorsRenderer() {}
+          images(), unknownChar(), size(), devicePixelRatio(0), text(false), font() {
+    }
+    virtual ~NucleotideColorsRenderer() {
+    }
 
     virtual void render(const QSize &size, int devicePixelRatio, bool text, const QFont &font);
 
@@ -158,11 +160,11 @@ void NucleotideColorsRenderer::render(const QSize &_size, int _devicePixelRatio,
 void NucleotideColorsRenderer::update() {
     images.clear();
 
-    foreach(char c, colorScheme.keys()) {
+    foreach (char c, colorScheme.keys()) {
         QPixmap img(size * devicePixelRatio);
         img.setDevicePixelRatio(devicePixelRatio);
         QColor textColor = isGap(c) ? Qt::red : Qt::black;
-        if(extendedPairs.contains(c)) {
+        if (extendedPairs.contains(c)) {
             // char from extended alphabet, draw gradient
             TwoChars pair = extendedPairs.value(c);
             drawCell(img, size, colorScheme.value(pair.first), colorScheme.value(pair.second), text, c, font, textColor);
@@ -183,11 +185,11 @@ QPixmap NucleotideColorsRenderer::cellImage(char c) {
     return images.value(c, unknownChar);
 }
 
-QPixmap NucleotideColorsRenderer::cellImage(const U2AssemblyRead&, char c) {
+QPixmap NucleotideColorsRenderer::cellImage(const U2AssemblyRead &, char c) {
     return cellImage(c);
 }
 
-QPixmap NucleotideColorsRenderer::cellImage(const U2AssemblyRead&, char c, char) {
+QPixmap NucleotideColorsRenderer::cellImage(const U2AssemblyRead &, char c, char) {
     return cellImage(c);
 }
 
@@ -196,9 +198,11 @@ public:
     ComplementColorsRenderer()
         : AssemblyCellRenderer(),
           directImages(), complementImages(), unknownChar(),
-          size(), devicePixelRatio(0), text(false), font() {}
+          size(), devicePixelRatio(0), text(false), font() {
+    }
 
-    virtual ~ComplementColorsRenderer() {}
+    virtual ~ComplementColorsRenderer() {
+    }
 
     virtual void render(const QSize &size, int devicePixelRatio, bool text, const QFont &font);
 
@@ -241,14 +245,14 @@ void ComplementColorsRenderer::update() {
     directImages.clear();
     complementImages.clear();
 
-    foreach(char c, assemblyAlphabet) {
+    foreach (char c, assemblyAlphabet) {
         QPixmap dimg(size * devicePixelRatio), cimg(size * devicePixelRatio);
         dimg.setDevicePixelRatio(devicePixelRatio);
         cimg.setDevicePixelRatio(devicePixelRatio);
         QColor dcolor = directColor, ccolor = complementColor, textColor = Qt::black;
 
         if (isGap(c)) {
-            dcolor = ccolor =  QColor("#FBFBFB");
+            dcolor = ccolor = QColor("#FBFBFB");
             textColor = Qt::red;
         }
 
@@ -274,8 +278,7 @@ QPixmap ComplementColorsRenderer::cellImage(const U2AssemblyRead &read, char c) 
 
     if (ReadFlagsUtils::isComplementaryRead(read->flags)) {
         return complementImages.value(c, unknownChar);
-    }
-    else {
+    } else {
         return directImages.value(c, unknownChar);
     }
 }
@@ -287,7 +290,8 @@ QPixmap ComplementColorsRenderer::cellImage(const U2AssemblyRead &read, char c, 
 class DiffNucleotideColorsRenderer : public AssemblyCellRenderer {
 public:
     DiffNucleotideColorsRenderer();
-    virtual ~DiffNucleotideColorsRenderer() {}
+    virtual ~DiffNucleotideColorsRenderer() {
+    }
 
     virtual void render(const QSize &size, int devicePixelRatio, bool text, const QFont &font);
 
@@ -318,9 +322,11 @@ public:
     PairedColorsRenderer()
         : AssemblyCellRenderer(),
           pairedImages(), unpairedImages(), unknownChar(),
-          size(), devicePixelRatio(0), text(false), font() {}
+          size(), devicePixelRatio(0), text(false), font() {
+    }
 
-    virtual ~PairedColorsRenderer() {}
+    virtual ~PairedColorsRenderer() {
+    }
 
     virtual void render(const QSize &size, int devicePixelRatio, bool text, const QFont &font);
 
@@ -363,14 +369,14 @@ void PairedColorsRenderer::update() {
     pairedImages.clear();
     unpairedImages.clear();
 
-    foreach(char c, assemblyAlphabet) {
+    foreach (char c, assemblyAlphabet) {
         QPixmap pimg(size * devicePixelRatio), npimg(size * devicePixelRatio);
         pimg.setDevicePixelRatio(devicePixelRatio);
         npimg.setDevicePixelRatio(devicePixelRatio);
         QColor pcolor = pairedColor, ucolor = unpairedColor, textColor = Qt::black;
 
         if (isGap(c)) {
-            pcolor = ucolor =  QColor("#FBFBFB");
+            pcolor = ucolor = QColor("#FBFBFB");
             textColor = Qt::red;
         }
 
@@ -407,7 +413,8 @@ QPixmap PairedColorsRenderer::cellImage(const U2AssemblyRead &read, char c, char
 
 DiffNucleotideColorsRenderer::DiffNucleotideColorsRenderer()
     : AssemblyCellRenderer(), colorScheme(nucleotideColorScheme),
-  highlightedImages(), normalImages(), unknownChar(), size(), devicePixelRatio(0), text(false), font() {}
+      highlightedImages(), normalImages(), unknownChar(), size(), devicePixelRatio(0), text(false), font() {
+}
 
 void DiffNucleotideColorsRenderer::render(const QSize &_size, int _devicePixelRatio, bool _text, const QFont &_font) {
     GTIMER(c1, t1, "DiffNucleotideColorsRenderer::render");
@@ -425,7 +432,7 @@ void DiffNucleotideColorsRenderer::update() {
 
     QColor normalColor("#BBBBBB");
 
-    foreach(char c, colorScheme.keys()) {
+    foreach (char c, colorScheme.keys()) {
         QPixmap himg(size * devicePixelRatio), nimg(size * devicePixelRatio);
         himg.setDevicePixelRatio(devicePixelRatio);
         nimg.setDevicePixelRatio(devicePixelRatio);
@@ -433,7 +440,7 @@ void DiffNucleotideColorsRenderer::update() {
         QColor textColor = isGap(c) ? Qt::white : Qt::black;
         QColor highlightColor = isGap(c) ? QColor("#CC4E4E") : colorScheme.value(c);
 
-        if(extendedPairs.contains(c)) {
+        if (extendedPairs.contains(c)) {
             // char from extended alphabet, draw gradient
             TwoChars pair = extendedPairs.value(c);
             drawCell(himg, size, colorScheme.value(pair.first), colorScheme.value(pair.second), text, c, font, textColor);
@@ -457,14 +464,14 @@ QPixmap DiffNucleotideColorsRenderer::cellImage(char c) {
     return highlightedImages.value(c, unknownChar);
 }
 
-QPixmap DiffNucleotideColorsRenderer::cellImage(const U2AssemblyRead&, char c) {
+QPixmap DiffNucleotideColorsRenderer::cellImage(const U2AssemblyRead &, char c) {
     return cellImage(c);
 }
 
-QPixmap DiffNucleotideColorsRenderer::cellImage(const U2AssemblyRead&, char c, char ref) {
+QPixmap DiffNucleotideColorsRenderer::cellImage(const U2AssemblyRead &, char c, char ref) {
     c = (!nucleotideColorScheme.contains(c)) ? 'N' : c;
 
-    if(c == ref) {
+    if (c == ref) {
         return normalImages.value(c, unknownChar);
     } else {
         return highlightedImages.value(c, unknownChar);
@@ -476,8 +483,8 @@ QPixmap DiffNucleotideColorsRenderer::cellImage(const U2AssemblyRead&, char c, c
 // factories
 
 AssemblyCellRendererFactory::AssemblyCellRendererFactory(const QString &_id, const QString &_name)
-    : id(_id), name(_name)
-{}
+    : id(_id), name(_name) {
+}
 
 QString AssemblyCellRendererFactory::ALL_NUCLEOTIDES = "ASSEMBLY_RENDERER_ALL_NUCLEOTIDES";
 QString AssemblyCellRendererFactory::DIFF_NUCLEOTIDES = "ASSEMBLY_RENDERER_DIFF_NUCLEOTIDES";
@@ -487,9 +494,10 @@ QString AssemblyCellRendererFactory::PAIRED = "ASSEMBLY_RENDERER_PAIRED";
 class NucleotideColorsRendererFactory : public AssemblyCellRendererFactory {
 public:
     NucleotideColorsRendererFactory(const QString &_id, const QString &_name)
-        : AssemblyCellRendererFactory(_id, _name) {}
+        : AssemblyCellRendererFactory(_id, _name) {
+    }
 
-    virtual AssemblyCellRenderer* create() {
+    virtual AssemblyCellRenderer *create() {
         return new NucleotideColorsRenderer();
     }
 };
@@ -497,9 +505,10 @@ public:
 class DiffNucleotideColorsRendererFactory : public AssemblyCellRendererFactory {
 public:
     DiffNucleotideColorsRendererFactory(const QString &_id, const QString &_name)
-        : AssemblyCellRendererFactory(_id, _name) {}
+        : AssemblyCellRendererFactory(_id, _name) {
+    }
 
-    virtual AssemblyCellRenderer* create() {
+    virtual AssemblyCellRenderer *create() {
         return new DiffNucleotideColorsRenderer();
     }
 };
@@ -507,9 +516,10 @@ public:
 class ComplementColorsRendererFactory : public AssemblyCellRendererFactory {
 public:
     ComplementColorsRendererFactory(const QString &_id, const QString &_name)
-        : AssemblyCellRendererFactory(_id, _name) {}
+        : AssemblyCellRendererFactory(_id, _name) {
+    }
 
-    virtual AssemblyCellRenderer* create() {
+    virtual AssemblyCellRenderer *create() {
         return new ComplementColorsRenderer();
     }
 };
@@ -517,9 +527,10 @@ public:
 class PairedColorsRendererFactory : public AssemblyCellRendererFactory {
 public:
     PairedColorsRendererFactory(const QString &_id, const QString &_name)
-        : AssemblyCellRendererFactory(_id, _name) {}
+        : AssemblyCellRendererFactory(_id, _name) {
+    }
 
-    virtual AssemblyCellRenderer* create() {
+    virtual AssemblyCellRenderer *create() {
         return new PairedColorsRenderer();
     }
 };
@@ -527,15 +538,14 @@ public:
 //////////////////////////////////////////////////////////////////////////
 // registry
 
-AssemblyCellRendererFactoryRegistry::AssemblyCellRendererFactoryRegistry(QObject * parent)
-    : QObject(parent)
-{
+AssemblyCellRendererFactoryRegistry::AssemblyCellRendererFactoryRegistry(QObject *parent)
+    : QObject(parent) {
     initBuiltInRenderers();
 }
 
-AssemblyCellRendererFactory* AssemblyCellRendererFactoryRegistry::getFactoryById(const QString &id) const {
-    foreach(AssemblyCellRendererFactory *f, factories) {
-        if(f->getId() == id) {
+AssemblyCellRendererFactory *AssemblyCellRendererFactoryRegistry::getFactoryById(const QString &id) const {
+    foreach (AssemblyCellRendererFactory *f, factories) {
+        if (f->getId() == id) {
             return f;
         }
     }
@@ -551,17 +561,17 @@ void AssemblyCellRendererFactoryRegistry::initBuiltInRenderers() {
     addFactory(new NucleotideColorsRendererFactory(AssemblyCellRendererFactory::ALL_NUCLEOTIDES,
                                                    tr("Nucleotide")));
     addFactory(new DiffNucleotideColorsRendererFactory(AssemblyCellRendererFactory::DIFF_NUCLEOTIDES,
-                                                   tr("Difference")));
+                                                       tr("Difference")));
     addFactory(new ComplementColorsRendererFactory(AssemblyCellRendererFactory::STRAND_DIRECTION,
                                                    tr("Strand direction")));
     addFactory(new PairedColorsRendererFactory(AssemblyCellRendererFactory::PAIRED,
-                                                   tr("Paired reads")));
+                                               tr("Paired reads")));
 }
 
 AssemblyCellRendererFactoryRegistry::~AssemblyCellRendererFactoryRegistry() {
-    foreach(AssemblyCellRendererFactory *f, factories) {
+    foreach (AssemblyCellRendererFactory *f, factories) {
         delete f;
     }
 }
 
-}   // namespace U2
+}    // namespace U2

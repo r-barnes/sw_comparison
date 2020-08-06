@@ -22,12 +22,13 @@
 #ifndef __U2_ASSEMBLY_BROWSER_MODEL_H__
 #define __U2_ASSEMBLY_BROWSER_MODEL_H__
 
-#include <QPointer>
+#include <QFile>
 #include <QMutex>
 #include <QMutexLocker>
-#include <QFile>
-#include <U2Core/U2DbiUtils.h>
+#include <QPointer>
+
 #include <U2Core/GObject.h>
+#include <U2Core/U2DbiUtils.h>
 
 namespace U2 {
 
@@ -40,59 +41,65 @@ class U2VIEW_EXPORT AssemblyModel : public QObject {
     Q_OBJECT
 public:
     //TODO refactor
-    AssemblyModel(const DbiConnection& dbiConnection);
+    AssemblyModel(const DbiConnection &dbiConnection);
     ~AssemblyModel();
 
     bool isEmpty() const;
 
-    QList<U2AssemblyRead> getReadsFromAssembly(const U2Region & r, qint64 minRow, qint64 maxRow, U2OpStatus & os);
-    U2DbiIterator<U2AssemblyRead> * getReads(const U2Region & r, U2OpStatus & os);
+    QList<U2AssemblyRead> getReadsFromAssembly(const U2Region &r, qint64 minRow, qint64 maxRow, U2OpStatus &os);
+    U2DbiIterator<U2AssemblyRead> *getReads(const U2Region &r, U2OpStatus &os);
 
-    void calculateCoverageStat(const U2Region & r, U2AssemblyCoverageStat& coverageStat, U2OpStatus & os);
+    void calculateCoverageStat(const U2Region &r, U2AssemblyCoverageStat &coverageStat, U2OpStatus &os);
 
-    const U2AssemblyCoverageStat &getCoverageStat(U2OpStatus & os);
+    const U2AssemblyCoverageStat &getCoverageStat(U2OpStatus &os);
 
     // returns true if calling getCoverageStat will not cause recomputation and is safe from main thread
     bool hasCachedCoverageStat();
 
     U2Region getGlobalRegion();
 
-    qint64 getModelLength(U2OpStatus & os);
+    qint64 getModelLength(U2OpStatus &os);
 
-    QByteArray getReferenceMd5(U2OpStatus & os);
+    QByteArray getReferenceMd5(U2OpStatus &os);
 
-    QByteArray getReferenceSpecies(U2OpStatus & os);
+    QByteArray getReferenceSpecies(U2OpStatus &os);
 
-    QString getReferenceUri(U2OpStatus & os);
+    QString getReferenceUri(U2OpStatus &os);
 
-    qint64 getModelHeight(U2OpStatus & os);
+    qint64 getModelHeight(U2OpStatus &os);
 
-    void setAssembly(U2AssemblyDbi * dbi, const U2Assembly & assm);
-    U2Assembly getAssembly() { return assembly; }
-    U2SequenceObject* getRefObj() const;
+    void setAssembly(U2AssemblyDbi *dbi, const U2Assembly &assm);
+    U2Assembly getAssembly() {
+        return assembly;
+    }
+    U2SequenceObject *getRefObj() const;
 
     bool hasReference() const;
-    bool referenceAssociated()const;
+    bool referenceAssociated() const;
 
-    void setReference(U2SequenceObject* seqObj);
+    void setReference(U2SequenceObject *seqObj);
     U2EntityRef getRefereneceEntityRef();
 
-    QByteArray getReferenceRegion(const U2Region& region, U2OpStatus& os);
-    QByteArray getReferenceRegionOrEmpty(const U2Region& region);
+    QByteArray getReferenceRegion(const U2Region &region, U2OpStatus &os);
+    QByteArray getReferenceRegionOrEmpty(const U2Region &region);
 
-    const DbiConnection& getDbiConnection() const {return dbiHandle;}
+    const DbiConnection &getDbiConnection() const {
+        return dbiHandle;
+    }
 
     void associateWithReference(const U2DataId &refId);
 
-    bool isLoadingReference()const { return loadingReference; }
+    bool isLoadingReference() const {
+        return loadingReference;
+    }
     void setLoadingReference(bool value);
 
-    qint64 getReadsNumber(U2OpStatus & os);
-    bool hasReads(U2OpStatus & os);
+    qint64 getReadsNumber(U2OpStatus &os);
+    bool hasReads(U2OpStatus &os);
 
-    QList<U2AssemblyRead> findMateReads(U2AssemblyRead read, U2OpStatus& os);
+    QList<U2AssemblyRead> findMateReads(U2AssemblyRead read, U2OpStatus &os);
 
-    const QList<VariantTrackObject*> &getTrackList() const;
+    const QList<VariantTrackObject *> &getTrackList() const;
     void addTrackObject(VariantTrackObject *trackObj);
     bool checkPermissions(QFile::Permission permission, bool showDialog = true) const;
     void dissociateReference();
@@ -105,10 +112,10 @@ private:
         association in ugenedb still exists
     */
     void unsetReference();
-    void startLoadReferenceTask(Task * t);
-    Task * createLoadReferenceAndAddToProjectTask(const U2CrossDatabaseReference& ref);
+    void startLoadReferenceTask(Task *t);
+    Task *createLoadReferenceAndAddToProjectTask(const U2CrossDatabaseReference &ref);
     void onReferenceRemoved();
-    void removeCrossDatabaseReference(const U2DataId& refId);
+    void removeCrossDatabaseReference(const U2DataId &refId);
 
 signals:
     void si_referenceChanged();
@@ -122,9 +129,9 @@ private slots:
     void sl_referenceLoaded();
     void sl_referenceLoadingFailed();
     void sl_referenceDocLoadedStateChanged();
-    void sl_docRemoved(Document*);
+    void sl_docRemoved(Document *);
     void sl_docAdded(Document *);
-    void sl_referenceObjRemoved(GObject* o);
+    void sl_referenceObjRemoved(GObject *o);
 
 private:
     const static qint64 NO_VAL = -1;
@@ -133,14 +140,13 @@ private:
     qint64 cachedModelLength;
     qint64 cachedModelHeight;
 
-
     U2Assembly assembly;
-    U2AssemblyDbi * assemblyDbi;
+    U2AssemblyDbi *assemblyDbi;
     DbiConnection dbiHandle;
 
     bool loadingReference;
-    U2SequenceObject* refObj;
-    QList<VariantTrackObject*> trackObjList;
+    U2SequenceObject *refObj;
+    QList<VariantTrackObject *> trackObjList;
 
     QByteArray referenceMd5;
     bool md5Retrieved;
@@ -156,8 +162,8 @@ private:
     U2AssemblyCoverageStat cachedCoverageStat;
 
     QMutex mutex;
-}; // AssemblyModel
+};    // AssemblyModel
 
-} // U2
+}    // namespace U2
 
-#endif // __U2_ASSEMBLY_BROWSER_MODEL_H__
+#endif    // __U2_ASSEMBLY_BROWSER_MODEL_H__

@@ -22,18 +22,19 @@
 #ifndef _U2_BUILT_IN_ASSEMBLY_CONSENSUS_ALGORITHMS_H_
 #define _U2_BUILT_IN_ASSEMBLY_CONSENSUS_ALGORITHMS_H_
 
-#include <U2Core/global.h>
 #include <QString>
+
+#include <U2Core/global.h>
 
 namespace U2 {
 
 class U2ALGORITHM_EXPORT BuiltInAssemblyConsensusAlgorithms {
 public:
-	static const QString DEFAULT_ALGO;
+    static const QString DEFAULT_ALGO;
     static const QString LEVITSKY_ALGO;
     static const QString SAMTOOLS_ALGO;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

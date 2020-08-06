@@ -19,9 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-#include <QFile>
-
 #include "SArrayIndexSerializer.h"
+
+#include <QFile>
 
 namespace U2 {
 
@@ -62,7 +62,6 @@ void SArrayIndexSerializer::serialize(const SArrayIndex *index, const QString &i
         writeArray(file, buff, index->l1bitMask, index->L1_SIZE);
     }
     file.close();
-
 }
 
 void SArrayIndexSerializer::writeArray(QFile &file, char *buff, quint32 *array, int len) {
@@ -83,7 +82,7 @@ void SArrayIndexSerializer::writeArray(QFile &file, char *buff, quint32 *array, 
             divider = 1;
             numberLength = 0;
             while (0 != tmpNum) {
-                tmpNum /=10;
+                tmpNum /= 10;
                 divider *= 10;
                 numberLength++;
             }
@@ -100,11 +99,11 @@ void SArrayIndexSerializer::writeArray(QFile &file, char *buff, quint32 *array, 
                 pos++;
                 break;
             } else {
-                tmpNum = number/divider;
+                tmpNum = number / divider;
                 c = tmpNum + '0';
                 buff[pos] = c;
                 pos++;
-                number = number - tmpNum*divider;
+                number = number - tmpNum * divider;
                 numberLength--;
                 divider /= 10;
             }
@@ -121,12 +120,12 @@ inline int getNextInt(QByteArray &data, bool &eol, bool &intErr) {
     }
 
     QByteArray result = data.left(commaIdx).trimmed();
-    data = data.mid(commaIdx+1).trimmed();
+    data = data.mid(commaIdx + 1).trimmed();
 
     char c = 0;
     for (int i = 0; i < result.length(); i++) {
         c = result[i];
-        if (c <'0' || c>'9') {
+        if (c < '0' || c > '9') {
             intErr = true;
             return -1;
         }
@@ -134,58 +133,58 @@ inline int getNextInt(QByteArray &data, bool &eol, bool &intErr) {
     return result.toInt();
 }
 
-void SArrayIndexSerializer::readArray(QFile &file, char *buff, int *len, int *pos, int *bytes,
-    int *lineIdx, quint32 *array, int arrLen, TaskStateInfo& ti) {
-        quint32 number = 0;
-        int numberLength = 0;
-        bool newLine = true; Q_UNUSED(newLine); //used only in assertions
-        for (int i = 0; i < arrLen; i++) {
-            number = 0;
-            numberLength = 0;
-            assert(newLine);
-            while (1) {
-                if (*pos == *len) {
-                    ti.progress = (int)(100 *(*bytes/(double)file.size()));
-                    *len = file.read(buff, BUFF_SIZE);
-                    *bytes += *len;
-                    *pos = 0;
-                    if (*len <= 0) {
-                        break;
-                    }
-                    if (ti.cancelFlag) {
-                        return;
-                    }
-                }
-                char c = buff[*pos];
-                if ('\n' == c || 0 == c) {
-                    (*pos)++;
-                    (*lineIdx)++;
-                    newLine = true;
+void SArrayIndexSerializer::readArray(QFile &file, char *buff, int *len, int *pos, int *bytes, int *lineIdx, quint32 *array, int arrLen, TaskStateInfo &ti) {
+    quint32 number = 0;
+    int numberLength = 0;
+    bool newLine = true;
+    Q_UNUSED(newLine);    //used only in assertions
+    for (int i = 0; i < arrLen; i++) {
+        number = 0;
+        numberLength = 0;
+        assert(newLine);
+        while (1) {
+            if (*pos == *len) {
+                ti.progress = (int)(100 * (*bytes / (double)file.size()));
+                *len = file.read(buff, BUFF_SIZE);
+                *bytes += *len;
+                *pos = 0;
+                if (*len <= 0) {
                     break;
-                } else if (c >='0'  && c<='9') {
-                    number = number*10+(c-'0');
-                    (*pos)++;
-                    numberLength++;
-                    newLine = false;
-                } else {
-                    ti.setError(QString("Not digit in the number at line %1").arg(*lineIdx));
+                }
+                if (ti.cancelFlag) {
                     return;
                 }
             }
-
-            if (0 == *len && (arrLen - 1) != i) {
-                ti.setError("There is not enough array's values it the file-index");
+            char c = buff[*pos];
+            if ('\n' == c || 0 == c) {
+                (*pos)++;
+                (*lineIdx)++;
+                newLine = true;
+                break;
+            } else if (c >= '0' && c <= '9') {
+                number = number * 10 + (c - '0');
+                (*pos)++;
+                numberLength++;
+                newLine = false;
+            } else {
+                ti.setError(QString("Not digit in the number at line %1").arg(*lineIdx));
                 return;
             }
-            if (0 == numberLength) {
-                ti.setError(QString("Empty array's value at line %1").arg(*lineIdx-1));
-                return;
-            }
-            array[i] = number;
         }
+
+        if (0 == *len && (arrLen - 1) != i) {
+            ti.setError("There is not enough array's values it the file-index");
+            return;
+        }
+        if (0 == numberLength) {
+            ti.setError(QString("Empty array's value at line %1").arg(*lineIdx - 1));
+            return;
+        }
+        array[i] = number;
+    }
 }
 
-void SArrayIndexSerializer::deserialize(SArrayIndex *index, const QString &indexFileName, TaskStateInfo& ti) {
+void SArrayIndexSerializer::deserialize(SArrayIndex *index, const QString &indexFileName, TaskStateInfo &ti) {
     QFile file(indexFileName);
     if (!file.open(QIODevice::ReadOnly)) {
         ti.setError("Can't open file-index");
@@ -256,4 +255,4 @@ void SArrayIndexSerializer::deserialize(SArrayIndex *index, const QString &index
     file.close();
 }
 
-} //namespace
+}    // namespace U2

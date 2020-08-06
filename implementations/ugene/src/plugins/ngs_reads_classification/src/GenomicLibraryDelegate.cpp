@@ -19,30 +19,29 @@
  * MA 02110-1301, USA.
  */
 
+#include "GenomicLibraryDelegate.h"
+
 #include <U2Core/L10n.h>
 
 #include <U2Lang/URLContainer.h>
 
-#include "GenomicLibraryDelegate.h"
 #include "GenomicLibraryPropertyWidget.h"
 
 namespace U2 {
 namespace LocalWorkflow {
 
 GenomicLibraryDelegate::GenomicLibraryDelegate(QObject *parent)
-    : PropertyDelegate(parent)
-{
-
+    : PropertyDelegate(parent) {
 }
 
 QVariant GenomicLibraryDelegate::getDisplayValue(const QVariant &value) const {
-    const QList<Dataset> datasets = value.value<QList<Dataset> >();
+    const QList<Dataset> datasets = value.value<QList<Dataset>>();
     const bool isEmpty = datasets.isEmpty() || datasets.first().getUrls().isEmpty();
     return isEmpty ? GenomicLibraryPropertyWidget::PLACEHOLDER : GenomicLibraryPropertyWidget::FILLED_VALUE;
 }
 
 QWidget *GenomicLibraryDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const {
-    GenomicLibraryPropertyWidget* editor = new GenomicLibraryPropertyWidget(parent);
+    GenomicLibraryPropertyWidget *editor = new GenomicLibraryPropertyWidget(parent);
     connect(editor, SIGNAL(si_valueChanged(QVariant)), SLOT(sl_commit()));
     return editor;
 }
@@ -68,10 +67,10 @@ PropertyDelegate *GenomicLibraryDelegate::clone() {
 }
 
 void GenomicLibraryDelegate::sl_commit() {
-    GenomicLibraryPropertyWidget* editor = qobject_cast<GenomicLibraryPropertyWidget *>(sender());
+    GenomicLibraryPropertyWidget *editor = qobject_cast<GenomicLibraryPropertyWidget *>(sender());
     CHECK(editor != NULL, );
     emit commitData(editor);
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

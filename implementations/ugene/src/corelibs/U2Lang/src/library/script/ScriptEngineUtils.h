@@ -26,8 +26,8 @@
 
 #define SCRIPT_CHECK(condition, ctx, error, result) \
     if (!(condition)) { \
-    ctx->throwError(error); \
-    return result; \
+        ctx->throwError(error); \
+        return result; \
     }
 
 namespace U2 {
@@ -37,15 +37,15 @@ using namespace Workflow;
 
 class U2LANG_EXPORT ScriptEngineUtils {
 public:
-    static WorkflowScriptEngine * workflowEngine(QScriptEngine *engine);
-    static DbiDataStorage * dataStorage(QScriptEngine *engine);
-    static SequenceScriptClass * getSequenceClass(QScriptEngine *engine);
+    static WorkflowScriptEngine *workflowEngine(QScriptEngine *engine);
+    static DbiDataStorage *dataStorage(QScriptEngine *engine);
+    static SequenceScriptClass *getSequenceClass(QScriptEngine *engine);
     static SharedDbiDataHandler getDbiId(QScriptEngine *engine, const QScriptValue &value, const QString &className);
     static SharedDbiDataHandler getDbiId(QScriptEngine *engine, const QScriptValue &value);
     static QScriptValue toScriptValue(QScriptEngine *engine, const QVariant &value, DataTypePtr type);
     static QVariant fromScriptValue(QScriptEngine *engine, const QScriptValue &value, DataTypePtr type);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_SCRIPTENGINEUTILS_H_
+#endif    // _U2_SCRIPTENGINEUTILS_H_

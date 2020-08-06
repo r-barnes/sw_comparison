@@ -47,7 +47,7 @@ public:
 
     void init();
     bool isReady() const;
-    Task * tick();
+    Task *tick();
     void cleanup();
 
 private slots:
@@ -68,10 +68,10 @@ public:
 
     static void init();
     HmmerSearchWorkerFactory();
-    Worker * createWorker(Actor *a);
+    Worker *createWorker(Actor *a);
 };
 
-} // namespace LocalWorkflow
-} // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif //_U2_HMMER_SEARCH_WORKER_H_
+#endif    //_U2_HMMER_SEARCH_WORKER_H_

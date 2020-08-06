@@ -29,30 +29,30 @@
 namespace U2 {
 
 class U2CORE_EXPORT U2ObjectRelation : public U2Entity {
-public :
-                            U2ObjectRelation( );
+public:
+    U2ObjectRelation();
 
-    bool                    operator ==( const U2ObjectRelation &other ) const;
+    bool operator==(const U2ObjectRelation &other) const;
 
-    U2DataId                referencedObject;
-    QString                 referencedName;
-    GObjectType             referencedType;
-    GObjectRelationRole     relationRole;
+    U2DataId referencedObject;
+    QString referencedName;
+    GObjectType referencedType;
+    GObjectRelationRole relationRole;
 };
 
 class U2CORE_EXPORT U2ObjectRelationsDbi : public U2ChildDbi {
-public :
-    virtual void                        createObjectRelation( U2ObjectRelation &relation, U2OpStatus &os ) = 0;
-    virtual QList<U2ObjectRelation>     getObjectRelations( const U2DataId &object, U2OpStatus &os ) = 0;
-    virtual QList<U2DataId>             getReferenceRelatedObjects( const U2DataId &reference, GObjectRelationRole relationRole, U2OpStatus &os ) = 0;
-    virtual void                        removeObjectRelation( U2ObjectRelation &relation, U2OpStatus &os ) = 0;
-    virtual void                        removeAllObjectRelations( const U2DataId &object, U2OpStatus &os ) = 0;
-    virtual void                        removeReferencesForObject( const U2DataId &object, U2OpStatus &os ) = 0;
+public:
+    virtual void createObjectRelation(U2ObjectRelation &relation, U2OpStatus &os) = 0;
+    virtual QList<U2ObjectRelation> getObjectRelations(const U2DataId &object, U2OpStatus &os) = 0;
+    virtual QList<U2DataId> getReferenceRelatedObjects(const U2DataId &reference, GObjectRelationRole relationRole, U2OpStatus &os) = 0;
+    virtual void removeObjectRelation(U2ObjectRelation &relation, U2OpStatus &os) = 0;
+    virtual void removeAllObjectRelations(const U2DataId &object, U2OpStatus &os) = 0;
+    virtual void removeReferencesForObject(const U2DataId &object, U2OpStatus &os) = 0;
 
-protected :
-                                        U2ObjectRelationsDbi( U2Dbi *rootDbi );
+protected:
+    U2ObjectRelationsDbi(U2Dbi *rootDbi);
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_OBJECT_RELATIONS_DBI_H_
+#endif    // _U2_OBJECT_RELATIONS_DBI_H_

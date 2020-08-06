@@ -19,9 +19,10 @@
  * MA 02110-1301, USA.
  */
 
-#include <QFileInfo>
+#include "BlastPPlusSupportTask.h"
 
 #include <QDomDocument>
+#include <QFileInfo>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppResources.h>
@@ -33,87 +34,83 @@
 #include <U2Core/ProjectModel.h>
 #include <U2Core/UserApplicationsSettings.h>
 
-#include "BlastPPlusSupportTask.h"
 #include "BlastPlusSupport.h"
 
 namespace U2 {
 
-ExternalToolRunTask* BlastPPlusSupportTask::createBlastPlusTask(){
-
+ExternalToolRunTask *BlastPPlusSupportTask::createBlastPlusTask() {
     QStringList arguments;
     //arguments <<"-p"<< settings.programName; //taskname
-//    if(!settings.filter.isEmpty()){
-//        arguments <<"-F"<<settings.filter;
-//    }
-    arguments <<"-db"<< settings.databaseNameAndPath;
-    arguments <<"-evalue"<< QString::number(settings.expectValue);
-//    arguments <<"-task"<< (settings.megablast ? "megablast" : "blastn");
-    if(settings.wordSize <= 0){
-        arguments <<"-word_size"<< "3";
-    }else{
-        arguments <<"-word_size"<< QString::number(settings.wordSize);
+    //    if(!settings.filter.isEmpty()){
+    //        arguments <<"-F"<<settings.filter;
+    //    }
+    arguments << "-db" << settings.databaseNameAndPath;
+    arguments << "-evalue" << QString::number(settings.expectValue);
+    //    arguments <<"-task"<< (settings.megablast ? "megablast" : "blastn");
+    if (settings.wordSize <= 0) {
+        arguments << "-word_size"
+                  << "3";
+    } else {
+        arguments << "-word_size" << QString::number(settings.wordSize);
     }
-    if(!settings.isDefaultCosts){
-        arguments <<"-gapopen"<< QString::number(settings.gapOpenCost);
-        arguments <<"-gapextend"<< QString::number(settings.gapExtendCost);
+    if (!settings.isDefaultCosts) {
+        arguments << "-gapopen" << QString::number(settings.gapOpenCost);
+        arguments << "-gapextend" << QString::number(settings.gapExtendCost);
     }
-    if(settings.isNucleotideSeq && (!settings.isDefautScores)){
+    if (settings.isNucleotideSeq && (!settings.isDefautScores)) {
         assert(false);
-        arguments <<"-penalty"<< QString::number(settings.mismatchPenalty);
-        arguments <<"-reward"<< QString::number(settings.matchReward);
-    }else{
-        if(!settings.isDefaultMatrix){
-            arguments <<"-matrix"<< settings.matrix;
+        arguments << "-penalty" << QString::number(settings.mismatchPenalty);
+        arguments << "-reward" << QString::number(settings.matchReward);
+    } else {
+        if (!settings.isDefaultMatrix) {
+            arguments << "-matrix" << settings.matrix;
         }
     }
-    if(settings.numberOfHits != 0){
-        arguments <<"-culling_limit" << QString::number(settings.numberOfHits); //???
+    if (settings.numberOfHits != 0) {
+        arguments << "-culling_limit" << QString::number(settings.numberOfHits);    //???
     }
-    if(!settings.isGappedAlignment){
+    if (!settings.isGappedAlignment) {
         arguments << "-ungapped";
     }
 
-    arguments <<"-query"<< url;
+    arguments << "-query" << url;
 
-    if(settings.xDropoffGA != 15)
-    {
+    if (settings.xDropoffGA != 15) {
         arguments << "-xdrop_gap" << QString::number(settings.xDropoffGA);
     }
-    if(settings.xDropoffFGA != 25)
-    {
+    if (settings.xDropoffFGA != 25) {
         arguments << "-xdrop_gap_final" << QString::number(settings.xDropoffFGA);
     }
 
-    if(settings.xDropoffUnGA != 7)
-    {
+    if (settings.xDropoffUnGA != 7) {
         arguments << "-xdrop_ungap" << QString::number(settings.xDropoffUnGA);
     }
-    if(!settings.isDefaultThreshold){
+    if (!settings.isDefaultThreshold) {
         arguments << "-threshold" << QString::number(settings.threshold);
     }
-    if(settings.windowSize !=40)
-    {
+    if (settings.windowSize != 40) {
         arguments << "-window_size" << QString::number(settings.windowSize);
     }
-    if(settings.programName == "gpu-blastp") {
-        arguments << "-gpu" << "t";
+    if (settings.programName == "gpu-blastp") {
+        arguments << "-gpu"
+                  << "t";
     }
     if (!settings.compStats.isEmpty()) {
         arguments << "-comp_based_stats" << settings.compStats;
     }
-    arguments <<"-num_threads"<< QString::number(settings.numberOfProcessors);
-    arguments <<"-outfmt"<< QString::number(settings.outputType);//"5";//Set output file format to xml
-    if(settings.outputOriginalFile.isEmpty()){
-        arguments <<"-out"<< url+".xml";
-        settings.outputOriginalFile = url+".xml";
-    }else{
-        arguments <<"-out"<< settings.outputOriginalFile;
+    arguments << "-num_threads" << QString::number(settings.numberOfProcessors);
+    arguments << "-outfmt" << QString::number(settings.outputType);    //"5";//Set output file format to xml
+    if (settings.outputOriginalFile.isEmpty()) {
+        arguments << "-out" << url + ".xml";
+        settings.outputOriginalFile = url + ".xml";
+    } else {
+        arguments << "-out" << settings.outputOriginalFile;
     }
 
-    algoLog.trace("BlastP+ arguments: "+arguments.join(" "));
+    algoLog.trace("BlastP+ arguments: " + arguments.join(" "));
     QString workingDirectory = QFileInfo(url).absolutePath();
-    ExternalToolRunTask* runTask = new ExternalToolRunTask(BlastPlusSupport::ET_BLASTP_ID, arguments, new ExternalToolLogParser(), workingDirectory);
+    ExternalToolRunTask *runTask = new ExternalToolRunTask(BlastPlusSupport::ET_BLASTP_ID, arguments, new ExternalToolLogParser(), workingDirectory);
     setListenerForTask(runTask);
     return runTask;
 }
-}//namespace
+}    // namespace U2

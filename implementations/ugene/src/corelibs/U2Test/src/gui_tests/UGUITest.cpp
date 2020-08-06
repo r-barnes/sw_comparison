@@ -19,14 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include <core/GUITestOpStatus.h>
+#include <system/GTFile.h>
+
 #include <QApplication>
 #include <QDate>
 #include <QDesktopWidget>
 #include <QDir>
 #include <QScreen>
-
-#include <core/GUITestOpStatus.h>
-#include <system/GTFile.h>
 
 #include <U2Core/GUrlUtils.h>
 #include <U2Core/Log.h>
@@ -35,7 +35,7 @@
 
 namespace U2 {
 
-QString getTestDir(){
+QString getTestDir() {
     const QString testDir = qgetenv("UGENE_TESTS_PATH");
     if (!testDir.isEmpty()) {
         if (!QFileInfo(testDir).exists()) {
@@ -48,15 +48,15 @@ QString getTestDir(){
     bool ok;
     int i = qgetenv("UGENE_GUI_TEST_SUITE_NUMBER").toInt(&ok);
 #ifdef Q_OS_MAC
-    if ( ok && i>1){
-        return QString("../../../../../../test%1/").arg(i-1);
-    }else{
+    if (ok && i > 1) {
+        return QString("../../../../../../test%1/").arg(i - 1);
+    } else {
         return QString("../../../../../../test/");
     }
 #else
-    if ( ok && i>1){
-        return QString("../../test%1/").arg(i-1);
-    }else{
+    if (ok && i > 1) {
+        return QString("../../test%1/").arg(i - 1);
+    } else {
         return QString("../../test/");
     }
 #endif
@@ -99,18 +99,18 @@ QString getDataDir() {
     return dataDir;
 }
 
-QString getScreenshotDir(){
+QString getScreenshotDir() {
     QString result;
 #ifdef Q_OS_MAC
     result = "../../../../../../screenshotFol/";
 #else
     QString guiTestOutputDirectory = qgetenv("GUI_TESTING_OUTPUT");
-    if(guiTestOutputDirectory.isEmpty()){
+    if (guiTestOutputDirectory.isEmpty()) {
         result = QDir::homePath() + "/gui_testing_output/" +
-                QDate::currentDate().toString("dd.MM.yyyy") + "/screenshots/";
-    }else{
+                 QDate::currentDate().toString("dd.MM.yyyy") + "/screenshots/";
+    } else {
         result = guiTestOutputDirectory + "/gui_testing_output/" +
-                QDate::currentDate().toString("dd.MM.yyyy") + "/screenshots/";
+                 QDate::currentDate().toString("dd.MM.yyyy") + "/screenshots/";
     }
 #endif
     return result;
@@ -121,4 +121,4 @@ const QString UGUITest::dataDir = getDataDir();
 const QString UGUITest::sandBoxDir = testDir + "_common_data/scenarios/sandbox/";
 const QString UGUITest::screenshotDir = getScreenshotDir();
 
-}   // namespace U2
+}    // namespace U2

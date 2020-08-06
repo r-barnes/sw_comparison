@@ -19,40 +19,39 @@
  * MA 02110-1301, USA.
  */
 
+#include "MSAHighlightingTabFactory.h"
+
 #include <QPixmap>
 
 #include <U2Core/U2SafePoints.h>
 
 #include "MSAHighlightingTab.h"
 
-#include "MSAHighlightingTabFactory.h"
-
 namespace U2 {
 
 const QString MSAHighlightingFactory::GROUP_ID = "OP_MSA_HIGHLIGHTING";
 const QString MSAHighlightingFactory::GROUP_ICON_STR = ":core/images/highlight.png";
-const QString MSAHighlightingFactory::GROUP_DOC_PAGE = "24742452";
+const QString MSAHighlightingFactory::GROUP_DOC_PAGE = "46499981";
 
 MSAHighlightingFactory::MSAHighlightingFactory() {
     objectViewOfWidget = ObjViewType_AlignmentEditor;
 }
 
-QWidget * MSAHighlightingFactory::createWidget(GObjectView* objView) {
-    SAFE_POINT(NULL != objView,
-        QString("Internal error: unable to create widget for group '%1', object view is NULL.").arg(GROUP_ID),
-        NULL);
+QWidget *MSAHighlightingFactory::createWidget(GObjectView *objView, const QVariantMap &options) {
+    SAFE_POINT(objView != nullptr,
+               QString("Internal error: unable to create widget for group '%1', object view is NULL.").arg(GROUP_ID),
+               nullptr);
 
-    MSAEditor* msa = qobject_cast<MSAEditor*>(objView);
-    SAFE_POINT(NULL != msa,
-        QString("Internal error: unable to cast object view to MSAEditor for group '%1'.").arg(GROUP_ID),
-        NULL);
+    MSAEditor *msa = qobject_cast<MSAEditor *>(objView);
+    SAFE_POINT(msa != nullptr,
+               QString("Internal error: unable to cast object view to MSAEditor for group '%1'.").arg(GROUP_ID),
+               nullptr);
 
-    MSAHighlightingTab *widget = new MSAHighlightingTab(msa);
-    return widget;
+    return new MSAHighlightingTab(msa);
 }
 
 OPGroupParameters MSAHighlightingFactory::getOPGroupParameters() {
     return OPGroupParameters(GROUP_ID, QPixmap(GROUP_ICON_STR), QObject::tr("Highlighting"), GROUP_DOC_PAGE);
 }
 
-} // namespace
+}    // namespace U2

@@ -22,11 +22,11 @@
 #ifndef _U2_HMMER_BUILD_TASK_TEST_H_
 #define _U2_HMMER_BUILD_TASK_TEST_H_
 
-#include "HmmerBuildTask.h"
-
 #include <U2Test/GTest.h>
 #include <U2Test/XMLTestFormat.h>
 #include <U2Test/XMLTestUtils.h>
+
+#include "HmmerBuildTask.h"
 
 namespace U2 {
 
@@ -43,7 +43,7 @@ public:
 
     static const QString RELATIVE_WEIGHTING_OPTION_TAG; /* --wgsc, --wblosum, --wpb, --wnone, --wgiven */
 
-    static const QString EFFECTIVE_WEIGHTING_OPTION_TAG;/* --eent, --eclust, --enone, --eset */
+    static const QString EFFECTIVE_WEIGHTING_OPTION_TAG; /* --eent, --eclust, --enone, --eset */
 
     static const QString E_VALUE_CALIBRATION_OPTION_TAG; /*  */
 
@@ -51,7 +51,7 @@ public:
                                                         --hand ( requires RF annotation )*/
     static const QString SEED_OPTION_TAG;
 
-    static void setBuildSettings(HmmerBuildSettings & settings, const QDomElement& el, TaskStateInfo & ti);
+    static void setBuildSettings(HmmerBuildSettings &settings, const QDomElement &el, TaskStateInfo &ti);
 
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_UHMMER3Build, "uhmmer3-build")
@@ -64,14 +64,14 @@ private:
     void setAndCheckArgs();
 
 private:
-    QString                 inFile;
-    QString                 outFile;
-    QString                 outputDir;
-    bool                    delOutFile;
-    HmmerBuildSettings      bldSettings;
-    HmmerBuildTask          *buildTask;
+    QString inFile;
+    QString outFile;
+    QString outputDir;
+    bool delOutFile;
+    HmmerBuildSettings bldSettings;
+    HmmerBuildTask *buildTask;
 
-}; // GTest_UHMMER3Build
+};    // GTest_UHMMER3Build
 
 /*****************************************
 * Totally compares two hmm files
@@ -94,11 +94,11 @@ private:
 private:
     QString filename1;
     QString filename2;
-    bool    file1Tmp;
-    bool    file2Tmp;
+    bool file1Tmp;
+    bool file2Tmp;
 
-}; // GTest_CompareHmmFiles
+};    // GTest_CompareHmmFiles
 
-}
+}    // namespace U2
 
 #endif

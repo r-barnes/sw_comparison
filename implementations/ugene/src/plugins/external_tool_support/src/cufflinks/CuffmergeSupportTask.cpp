@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CuffmergeSupportTask.h"
+
 #include <QDir>
 
 #include <U2Core/AnnotationTableObject.h>
@@ -37,19 +39,17 @@
 
 #include "CufflinksSupport.h"
 #include "CufflinksSupportTask.h"
-#include "CuffmergeSupportTask.h"
 #include "tophat/TopHatSettings.h"
 
 namespace U2 {
 
 const QString CuffmergeSupportTask::outSubDirBaseName("cuffmerge_out");
 
-CuffmergeSupportTask::CuffmergeSupportTask(const CuffmergeSettings &_settings) :
-    ExternalToolSupportTask(tr("Running Cuffmerge task"), TaskFlags_FOSE_COSC), settings(_settings),
-    fileNum(0),
-    mergeTask(NULL),
-    loadResultTask(NULL)
-{
+CuffmergeSupportTask::CuffmergeSupportTask(const CuffmergeSettings &_settings)
+    : ExternalToolSupportTask(tr("Running Cuffmerge task"), TaskFlags_FOSE_COSC), settings(_settings),
+      fileNum(0),
+      mergeTask(NULL),
+      loadResultTask(NULL) {
     SAFE_POINT_EXT(NULL != settings.storage, setError(tr("Workflow data storage is NULL")), );
     SAFE_POINT_EXT(!settings.annotationTables.isEmpty(), setError(tr("There are no annotations to process")), );
 }
@@ -63,8 +63,9 @@ void CuffmergeSupportTask::prepare() {
     setupWorkingDirPath();
 
     settings.outDir = GUrlUtils::createDirectory(
-                settings.outDir + "/" + outSubDirBaseName,
-                "_", stateInfo);
+        settings.outDir + "/" + outSubDirBaseName,
+        "_",
+        stateInfo);
     CHECK_OP(stateInfo, );
 
     foreach (const Workflow::SharedDbiDataHandler &annTableHandler, settings.annotationTables) {
@@ -74,12 +75,12 @@ void CuffmergeSupportTask::prepare() {
     }
 }
 
-QList<Task*> CuffmergeSupportTask::onSubTaskFinished(Task *subTask) {
+QList<Task *> CuffmergeSupportTask::onSubTaskFinished(Task *subTask) {
     if (writeTasks.contains(subTask)) {
         writeTasks.removeOne(subTask);
     }
 
-    QList<Task*> newSubTasks;
+    QList<Task *> newSubTasks;
     if (writeTasks.isEmpty() && NULL == mergeTask) {
         newSubTasks << createCuffmergeTask();
     }
@@ -149,7 +150,7 @@ void CuffmergeSupportTask::writeFileList() {
     file.close();
 }
 
-Task * CuffmergeSupportTask::createCuffmergeTask() {
+Task *CuffmergeSupportTask::createCuffmergeTask() {
     writeFileList();
     CHECK_OP(stateInfo, NULL);
 
@@ -171,8 +172,8 @@ Task * CuffmergeSupportTask::createCuffmergeTask() {
     {
         ExternalToolRegistry *registry = AppContext::getExternalToolRegistry();
 
-        ExternalTool *cm =registry->getById(CufflinksSupport::ET_CUFFMERGE_ID);
-        ExternalTool *cc =registry->getById(CufflinksSupport::ET_CUFFCOMPARE_ID);
+        ExternalTool *cm = registry->getById(CufflinksSupport::ET_CUFFMERGE_ID);
+        ExternalTool *cc = registry->getById(CufflinksSupport::ET_CUFFCOMPARE_ID);
         QFileInfo cmInfo(cm->getPath());
         QFileInfo ccInfo(cc->getPath());
 
@@ -221,17 +222,16 @@ Document *CuffmergeSupportTask::prepareDocument(const Workflow::SharedDbiDataHan
     return doc;
 }
 
-QStringList CuffmergeSupportTask::getOutputFiles( ) const {
+QStringList CuffmergeSupportTask::getOutputFiles() const {
     return outputFiles;
 }
 
 /************************************************************************/
 /* CuffmergeSettings */
 /************************************************************************/
-CuffmergeSettings::CuffmergeSettings() :
-    minIsoformFraction(0.05),
-    storage(NULL)
-{
+CuffmergeSettings::CuffmergeSettings()
+    : minIsoformFraction(0.05),
+      storage(NULL) {
 }
 
-} // U2
+}    // namespace U2

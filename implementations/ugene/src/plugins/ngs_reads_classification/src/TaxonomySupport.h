@@ -26,7 +26,6 @@
 #include <QMultiMap>
 #include <QSet>
 #include <QTreeView>
-
 #include <QtWidgets/QDialogButtonBox>
 #include <QtWidgets/QVBoxLayout>
 
@@ -77,6 +76,7 @@ public:
      * @return Closest match from the filter set or UNDEFINED_ID if the id does not belong to the specified taxonomy
      */
     TaxID match(TaxID id, QSet<TaxID> filter);
+
 private:
     TaxonomyTree();
 
@@ -93,12 +93,12 @@ private:
      * Index array of scientific taxon names.
      * List contains empty invalid entries, for performance purposes.
      */
-    QStringList  names;
+    QStringList names;
 
     /**
      * Names of ranks
      */
-    QStringList  ranks;
+    QStringList ranks;
 
     /**
      * Keeps parent-children relation for top-down traversal.
@@ -115,10 +115,8 @@ public:
     QVariant data(const QModelIndex &index, int role) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role);
     Qt::ItemFlags flags(const QModelIndex &index) const;
-    QVariant headerData(int section, Qt::Orientation orientation,
-        int role = Qt::DisplayRole) const;
-    QModelIndex index(int row, int column,
-        const QModelIndex &parent = QModelIndex()) const;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
     QModelIndex parent(const QModelIndex &index) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
@@ -186,6 +184,7 @@ private:
 };
 
 class TaxonSelectionDialog : public QDialog {
+    Q_OBJECT
 public:
     TaxonSelectionDialog(const QString &value, QWidget *parent);
 
@@ -198,8 +197,8 @@ private:
     TaxonomyTreeModel *treeModel;
 };
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 Q_DECLARE_METATYPE(U2::LocalWorkflow::TaxID)
 Q_DECLARE_METATYPE(U2::LocalWorkflow::TaxIDSet)

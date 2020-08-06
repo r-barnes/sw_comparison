@@ -19,35 +19,34 @@
  * MA 02110-1301, USA.
  */
 
+#include <base_dialogs/DefaultDialogFiller.h>
+#include <base_dialogs/GTFileDialog.h>
+#include <drivers/GTKeyboardDriver.h>
+#include <primitives/GTWebView.h>
+#include <primitives/GTWidget.h>
+
+#include "GTTestsStartPage.h"
+#include "GTUtilsLog.h"
 #include "GTUtilsMdi.h"
 #include "GTUtilsProject.h"
 #include "GTUtilsProjectTreeView.h"
 #include "GTUtilsStartPage.h"
-
-#include <base_dialogs/GTFileDialog.h>
+#include "GTUtilsTaskTreeView.h"
 #include "primitives/GTMenu.h"
-#include <drivers/GTKeyboardDriver.h>
-#include <primitives/GTWebView.h>
-
-#include <base_dialogs/DefaultDialogFiller.h>
 #include "primitives/PopupChooser.h"
 #include "runnables/ugene/plugins/workflow_designer/StartupDialogFiller.h"
 
-#include "GTTestsStartPage.h"
-#include "GTUtilsLog.h"
-#include "GTUtilsTaskTreeView.h"
-
 namespace U2 {
 
-namespace GUITest_common_scenarios_start_page{
+namespace GUITest_common_scenarios_start_page {
 using namespace HI;
-GUI_TEST_CLASS_DEFINITION(test_0001){
-//    Start UGENE
-//    Press "Open file(s)" button on start page
+GUI_TEST_CLASS_DEFINITION(test_0001) {
+    //    Start UGENE
+    //    Press "Open file(s)" button on start page
     GTLogTracer l;
     GTUtilsDialog::waitForDialog(os, new GTFileDialogUtils(os, dataDir + "samples/CLUSTALW/COI.aln"));
-    GTUtilsStartPage::clickButton(os, GTUtilsStartPage::OpenFile);
-//    Expected state: File dialog is opened.
+    GTWidget::click(os, GTWidget::findWidget(os, "openFilesButton"));
+    //    Expected state: File dialog is opened.
     GTGlobals::sleep(500);
     bool hasWindowsWarning = l.checkMessage("ShellExecute '#' failed");
     bool hasUnixWarning = l.checkMessage("gvfs-open: #: error opening location");
@@ -55,95 +54,95 @@ GUI_TEST_CLASS_DEFINITION(test_0001){
     CHECK_SET_ERR(!hasUnixWarning, "Unix warning");
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0002){
-//    Start UGENE
-//    Press "Create workflow button" button on start page
+GUI_TEST_CLASS_DEFINITION(test_0002) {
+    //    Start UGENE
+    //    Press "Create workflow button" button on start page
     GTUtilsDialog::waitForDialog(os, new StartupDialogFiller(os));
-    GTUtilsStartPage::clickButton(os, GTUtilsStartPage::CreateWorkflow);
-    GTGlobals::sleep(500);
-//    Expected state: WD opened.
-    GTUtilsMdi::waitWindowOpened(os, "Workflow Designer - New workflow", 20000);
+    GTWidget::click(os, GTWidget::findWidget(os, "createWorkflowButton"));
+    //    Expected state: WD opened.
+    GTUtilsMdi::checkWindowIsActive(os, "Workflow Designer - New workflow");
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0003){
-//    Start UGENE
-//    Press "Create sequence" button
-    GTUtilsDialog::waitForDialog(os, new DefaultDialogFiller(os, "CreateDocumentFromTextDialog",QDialogButtonBox::Cancel));
-    GTUtilsStartPage::clickButton(os, GTUtilsStartPage::CreateSequence);
-//    Expected: Create document from text dialog appeared
+GUI_TEST_CLASS_DEFINITION(test_0003) {
+    //    Start UGENE
+    //    Press "Create sequence" button
+    GTUtilsDialog::waitForDialog(os, new DefaultDialogFiller(os, "CreateDocumentFromTextDialog", QDialogButtonBox::Cancel));
+    GTWidget::click(os, GTWidget::findWidget(os, "createSequenceButton"));
+    //    Expected: Create document from text dialog appeared
     GTGlobals::sleep(500);
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0005){
-//    Start UGENE
-//    Open any file.
+GUI_TEST_CLASS_DEFINITION(test_0005) {
+    //    Start UGENE
+    //    Open any file.
     GTFileDialog::openFile(os, dataDir + "samples/CLUSTALW/COI.aln");
     GTUtilsTaskTreeView::waitTaskFinished(os);
-//    Go to Start page.
+    //    Go to Start page.
     GTUtilsStartPage::openStartPage(os);
-//    Expected state: File added to "Resent files" list
-//    Remove file from project
+    //    Expected state: File added to "Resent files" list
+    //    Remove file from project
     GTUtilsProjectTreeView::click(os, "COI.aln");
-    GTKeyboardDriver::keyClick( Qt::Key_Delete);
-//    Go to Start page
+    GTKeyboardDriver::keyClick(Qt::Key_Delete);
+    //    Go to Start page
     GTUtilsStartPage::openStartPage(os);
-//    Click file name in "Resent files" list
+    //    Click file name in "Resent files" list
     GTGlobals::sleep();
-    GTUtilsStartPage::clickResentDocument(os, "COI.aln");
-//    Expected state: file is opened
+    GTWidget::click(os, GTWidget::findLabelByText(os, "COI.aln").first());
+    //    Expected state: file is opened
     QString name = GTUtilsMdi::activeWindowTitle(os);
     CHECK_SET_ERR(name == "COI [m] COI", "unexpected window title " + name);
     GTUtilsProjectTreeView::checkItem(os, "COI.aln");
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0006){
-//    Start UGENE
-//    Open any project.
-    GTFileDialog::openFile(os, testDir+"_common_data/scenarios/project/", "proj1.uprj");
+GUI_TEST_CLASS_DEFINITION(test_0006) {
+    //    Start UGENE
+    //    Open any project.
+    GTFileDialog::openFile(os, testDir + "_common_data/scenarios/project/", "proj1.uprj");
     GTUtilsTaskTreeView::waitTaskFinished(os);
-//    Go to Start page.
-//    Expected state: project is added to "Resent files" list
-//    Close project
+    //    Go to Start page.
+    //    Expected state: project is added to "Resent files" list
+    //    Close project
     GTUtilsProject::closeProject(os);
-//    Go to Start page
+    //    Go to Start page
     GTUtilsStartPage::openStartPage(os);
-//    Click project name in "Resent projects" list
+    //    Click project name in "Resent projects" list
     GTGlobals::sleep();
-    GTUtilsStartPage::clickResentProject(os, "proj1.uprj");
-//    Expected state: project is opened
+    GTWidget::click(os, GTWidget::findLabelByText(os, "proj1.uprj").first());
+    //    Expected state: project is opened
     GTUtilsDocument::checkDocument(os, "1CF7.pdb");
-
     QString expectedTitle;
     expectedTitle = "proj1 UGENE";
     GTUtilsApp::checkUGENETitle(os, expectedTitle);
 }
 
-GUI_TEST_CLASS_DEFINITION(test_0008){
-//    Start UGENE
+GUI_TEST_CLASS_DEFINITION(test_0008) {
+    //    Start UGENE
     GTGlobals::sleep();
     QString title = GTUtilsMdi::activeWindowTitle(os);
     CHECK_SET_ERR(title == "Start Page", "unexpected window title: " + title);
 
-//    Use main menu: Help->Open start page
-    GTMenu::clickMainMenuItem(os, QStringList() << "Help" << "Open Start Page");
+    //    Use main menu: Help->Open start page
+    GTMenu::clickMainMenuItem(os, QStringList() << "Help"
+                                                << "Open Start Page");
     GTGlobals::sleep(500);
 
-//    Expected state: nothing happens
+    //    Expected state: nothing happens
     title = GTUtilsMdi::activeWindowTitle(os);
     CHECK_SET_ERR(title == "Start Page", "unexpected window title: " + title);
-//    Close Start page
+    //    Close Start page
     GTUtilsMdi::click(os, GTGlobals::Close);
     GTGlobals::sleep();
-    QWidget* window = GTUtilsMdi::activeWindow(os, GTGlobals::FindOptions(false));
+    QWidget *window = GTUtilsMdi::activeWindow(os, GTGlobals::FindOptions(false));
     CHECK_SET_ERR(window == NULL, "start page was not closed");
-//    Repeat step 2
-    GTMenu::clickMainMenuItem(os, QStringList() << "Help" << "Open Start Page");
+    //    Repeat step 2
+    GTMenu::clickMainMenuItem(os, QStringList() << "Help"
+                                                << "Open Start Page");
     GTGlobals::sleep(500);
-//    Expected state: Start page is opened
+    //    Expected state: Start page is opened
     title = GTUtilsMdi::activeWindowTitle(os);
     CHECK_SET_ERR(title == "Start Page", "unexpected window title: " + title);
 }
 
-}
+}    // namespace GUITest_common_scenarios_start_page
 
-}
+}    // namespace U2

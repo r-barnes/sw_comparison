@@ -40,6 +40,7 @@ class ShowHideSubgroupWidget;
 class CreateAnnotationWidget : public QWidget {
     Q_OBJECT
     friend class CreateAnnotationWidgetController;
+
 public:
     CreateAnnotationWidget(QWidget *parent = NULL);
 
@@ -88,8 +89,8 @@ public:
     virtual bool isAutoTableOptionSelected() const = 0;
 
     virtual void showSelectGroupMenu(QMenu &menu) = 0;
-    QPair<QWidget*, QWidget*> getTabOrderEntryAndExitPoints() const;
-    virtual GObjectComboBoxController * createGObjectComboBoxController(const GObjectComboBoxControllerConstraints &constraints) = 0;
+    QPair<QWidget *, QWidget *> getTabOrderEntryAndExitPoints() const;
+    virtual GObjectComboBoxController *createGObjectComboBoxController(const GObjectComboBoxControllerConstraints &constraints) = 0;
 
     virtual void countDescriptionUsage() const = 0;
     virtual void fillSaveDocumentControllerConfig(SaveDocumentControllerConfig &config) const = 0;
@@ -119,6 +120,6 @@ protected:
     static bool caseInsensitiveLessThan(const QString &first, const QString &second);
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_CREATE_ANNOTATION_WIDGET_H_
+#endif    // _U2_CREATE_ANNOTATION_WIDGET_H_

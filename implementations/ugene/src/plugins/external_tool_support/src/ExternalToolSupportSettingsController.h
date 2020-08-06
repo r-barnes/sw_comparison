@@ -22,11 +22,13 @@
 #ifndef _U2_EXTERNAL_TOOL_SUPPORT_SETTINGS_CONTROLLER_H
 #define _U2_EXTERNAL_TOOL_SUPPORT_SETTINGS_CONTROLLER_H
 
-#include <U2Gui/AppSettingsGUI.h>
-#include <U2Core/ExternalToolRegistry.h>
 #include <ui_ETSSettingsWidget.h>
 
 #include <QLineEdit>
+
+#include <U2Core/ExternalToolRegistry.h>
+
+#include <U2Gui/AppSettingsGUI.h>
 
 namespace U2 {
 
@@ -39,19 +41,19 @@ struct ExternalToolInfo {
     QString path;
     QString description;
     QString version;
-    bool    valid;
-    bool    isModule;
+    bool valid;
+    bool isModule;
 };
 
 class ExternalToolSupportSettingsPageController : public AppSettingsGUIPageController {
     Q_OBJECT
 public:
-    ExternalToolSupportSettingsPageController(QObject* p = NULL);
+    ExternalToolSupportSettingsPageController(QObject *p = NULL);
 
-    AppSettingsGUIPageState* getSavedState();
-    void saveState(AppSettingsGUIPageState* s);
-    AppSettingsGUIPageWidget* createWidget(AppSettingsGUIPageState* state);
-    const QString& getHelpPageId() const;
+    AppSettingsGUIPageState *getSavedState();
+    void saveState(AppSettingsGUIPageState *s);
+    AppSettingsGUIPageWidget *createWidget(AppSettingsGUIPageState *state);
+    const QString &getHelpPageId() const;
 
 private:
     static const QString helpPageId;
@@ -60,9 +62,9 @@ private:
 class ExternalToolSupportSettingsPageState : public AppSettingsGUIPageState {
     Q_OBJECT
 public:
-    ExternalToolSupportSettingsPageState(const QList<ExternalTool*>& ets);
+    ExternalToolSupportSettingsPageState(const QList<ExternalTool *> &ets);
 
-    QList<ExternalTool*> getExternalTools() const;
+    QList<ExternalTool *> getExternalTools() const;
 
 private:
     QList<ExternalTool *> externalTools;
@@ -71,24 +73,24 @@ private:
 class ExternalToolSupportSettingsPageWidget : public AppSettingsGUIPageWidget, public Ui_ETSSettingsWidget {
     Q_OBJECT
 public:
-    ExternalToolSupportSettingsPageWidget(ExternalToolSupportSettingsPageController* ctrl);
+    ExternalToolSupportSettingsPageWidget(ExternalToolSupportSettingsPageController *ctrl);
     ~ExternalToolSupportSettingsPageWidget() override;
 
-    virtual void setState(AppSettingsGUIPageState* state) override;
+    virtual void setState(AppSettingsGUIPageState *state) override;
 
-    virtual AppSettingsGUIPageState* getState(QString& err) const override;
+    virtual AppSettingsGUIPageState *getState(QString &err) const override;
 
 private:
-    QWidget* createPathEditor(QWidget *parent, const QString& path) const;
+    QWidget *createPathEditor(QWidget *parent, const QString &path) const;
     QTreeWidgetItem *findToolkitItem(QTreeWidget *treeWidget, const QString &toolkitName);
     QTreeWidgetItem *createToolkitItem(QTreeWidget *treeWidget, const QString &toolkitName, const QIcon &icon);
-    QTreeWidgetItem* insertChild(QTreeWidgetItem* rootItem, const QString& id, int pos, bool isModule = false);
-    static ExternalTool* isMasterWithModules(const QList<ExternalTool*>& toolsList);
-    void setToolState(ExternalTool* tool);
-    QString getToolStateDescription(ExternalTool* tool) const;
+    QTreeWidgetItem *insertChild(QTreeWidgetItem *rootItem, const QString &id, int pos, bool isModule = false);
+    static ExternalTool *isMasterWithModules(const QList<ExternalTool *> &toolsList);
+    void setToolState(ExternalTool *tool);
+    QString getToolStateDescription(ExternalTool *tool) const;
     void resetDescription();
-    void setDescription(ExternalTool* tool);
-    QString warn(const QString& text) const;
+    void setDescription(ExternalTool *tool);
+    QString warn(const QString &text) const;
     bool eventFilter(QObject *watched, QEvent *event) override;
     void saveShowHideSubgroupsState() const;
 
@@ -98,10 +100,10 @@ private slots:
     void sl_onPathEditWidgetClick();
     void sl_onBrowseToolKitPath();
     void sl_onBrowseToolPackPath();
-    void sl_linkActivated(const QString& url);
+    void sl_linkActivated(const QString &url);
     void sl_toolValidationStatusChanged(bool isValid);
     void sl_validationComplete();
-    void sl_onClickLink(const QUrl& url);
+    void sl_onClickLink(const QUrl &url);
     void sl_importCustomToolButtonClicked();
     void sl_deleteCustomToolButtonClicked();
     void sl_externalToolAdded(const QString &id);
@@ -113,9 +115,9 @@ private:
     QString getToolLink(const QString &toolName) const;
     mutable int buttonsWidth;
     QString defaultDescriptionText;
-    ShowHideSubgroupWidget* supportedToolsShowHideWidget;
-    ShowHideSubgroupWidget* customToolsShowHideWidget;
-    ShowHideSubgroupWidget* infoShowHideWidget;
+    ShowHideSubgroupWidget *supportedToolsShowHideWidget;
+    ShowHideSubgroupWidget *customToolsShowHideWidget;
+    ShowHideSubgroupWidget *infoShowHideWidget;
 
     static const QString INSTALLED;
     static const QString NOT_INSTALLED;
@@ -128,8 +130,9 @@ private:
 class PathLineEdit : public QLineEdit {
     Q_OBJECT
 public:
-    PathLineEdit(const QString& filter, const QString& type, bool multi, QWidget *parent)
-        : QLineEdit(parent), FileFilter(filter), type(type), multi(multi) {}
+    PathLineEdit(const QString &filter, const QString &type, bool multi, QWidget *parent)
+        : QLineEdit(parent), FileFilter(filter), type(type), multi(multi) {
+    }
 
 signals:
     void si_focusIn();
@@ -143,10 +146,10 @@ private:
 
     QString FileFilter;
     QString type;
-    bool    multi;
+    bool multi;
     QString path;
 };
 
-}//namespace
+}    // namespace U2
 
-#endif // _U2_EXTERNAL_TOOL_SUPPORT_SETTINGS_CONTROLLER_H
+#endif    // _U2_EXTERNAL_TOOL_SUPPORT_SETTINGS_CONTROLLER_H

@@ -29,33 +29,33 @@ const QString AbstractAlignmentTaskSettings::REALIZATION_NAME("realizationName")
 const QString AbstractAlignmentTaskSettings::IN_NEW_WINDOW("inNewWindow");
 const QString AbstractAlignmentTaskSettings::ALPHABET("alphabet");
 
-AbstractAlignmentTaskSettings::AbstractAlignmentTaskSettings() : inNewWindow(true) {
+AbstractAlignmentTaskSettings::AbstractAlignmentTaskSettings()
+    : inNewWindow(true) {
 }
 
-AbstractAlignmentTaskSettings::AbstractAlignmentTaskSettings(const QVariantMap& someSettings) : inNewWindow(true), customSettings(someSettings) {
+AbstractAlignmentTaskSettings::AbstractAlignmentTaskSettings(const QVariantMap &someSettings)
+    : inNewWindow(true), customSettings(someSettings) {
 }
 
-AbstractAlignmentTaskSettings::AbstractAlignmentTaskSettings(const AbstractAlignmentTaskSettings &s) :
-    algorithmName(s.algorithmName),
-    realizationName(s.realizationName),
-    inNewWindow(s.inNewWindow),
-    msaRef(s.msaRef),
-    alphabet(s.alphabet),
-    resultFileName(s.resultFileName),
-    customSettings(s.customSettings) {
+AbstractAlignmentTaskSettings::AbstractAlignmentTaskSettings(const AbstractAlignmentTaskSettings &s)
+    : algorithmName(s.algorithmName),
+      realizationName(s.realizationName),
+      inNewWindow(s.inNewWindow),
+      msaRef(s.msaRef),
+      alphabet(s.alphabet),
+      resultFileName(s.resultFileName),
+      customSettings(s.customSettings) {
 }
 
 AbstractAlignmentTaskSettings::~AbstractAlignmentTaskSettings() {
 }
 
-QVariant AbstractAlignmentTaskSettings::getCustomValue(const QString& optionName, const QVariant& defaultVal) const
-{
+QVariant AbstractAlignmentTaskSettings::getCustomValue(const QString &optionName, const QVariant &defaultVal) const {
     return customSettings.value(optionName, defaultVal);
 }
 
-void AbstractAlignmentTaskSettings::setCustomValue(const QString& optionName, const QVariant& val)
-{
-    customSettings.insert(optionName,val);
+void AbstractAlignmentTaskSettings::setCustomValue(const QString &optionName, const QVariant &val) {
+    customSettings.insert(optionName, val);
 }
 
 bool AbstractAlignmentTaskSettings::convertCustomSettings() {
@@ -78,33 +78,21 @@ bool AbstractAlignmentTaskSettings::convertCustomSettings() {
     return true;
 }
 
-bool AbstractAlignmentTaskSettings::containsValue(const QString& optionName) const {
-    return customSettings.contains(optionName);
-}
-
-void AbstractAlignmentTaskSettings::setResultFileName(const QString& newFileName) {
-    resultFileName = GUrl(newFileName);
-}
-
-void AbstractAlignmentTaskSettings::setCustomSettings(const QMap<QString, QVariant>& settings) {
-    customSettings = settings;
-}
-
-void AbstractAlignmentTaskSettings::appendCustomSettings(const QVariantMap& settings) {
-    foreach (const QString& key, settings.keys()) {
+void AbstractAlignmentTaskSettings::appendCustomSettings(const QVariantMap &settings) {
+    foreach (const QString &key, settings.keys()) {
         customSettings.insert(key, settings.value(key));
     }
 }
 
 bool AbstractAlignmentTaskSettings::isValid() const {
-    return msaRef.isValid() && alphabet.isValid() &&
-            (!resultFileName.isEmpty() || inNewWindow == false);
+    return msaRef.isValid() && alphabet.isValid() && (!resultFileName.isEmpty() || !inNewWindow);
 }
 
-AbstractAlignmentTask::AbstractAlignmentTask(const QString& taskName, TaskFlags flags) : Task(taskName, flags) {
+AbstractAlignmentTask::AbstractAlignmentTask(const QString &taskName, TaskFlags flags)
+    : Task(taskName, flags) {
 }
 
+AbstractAlignmentTaskFactory::~AbstractAlignmentTaskFactory() {
+}
 
-AbstractAlignmentTaskFactory::~AbstractAlignmentTaskFactory() {}
-
-}   //namespace
+}    // namespace U2

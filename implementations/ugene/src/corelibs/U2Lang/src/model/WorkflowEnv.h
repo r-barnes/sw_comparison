@@ -23,9 +23,11 @@
 #define _U2_WORKFLOW_ENV_H_
 
 #include <assert.h>
+
 #include <U2Lang/Datatype.h>
 #include <U2Lang/ExternalToolCfg.h>
 #include <U2Lang/SchemaActorsRegistry.h>
+
 #include "Descriptor.h"
 
 namespace U2 {
@@ -48,34 +50,54 @@ class WorkflowTasksRegistry;
  */
 class U2LANG_EXPORT WorkflowEnv {
 public:
-    static bool init(WorkflowEnv* instance);
-    static void shutdown() { delete instance; instance = NULL;}
+    static bool init(WorkflowEnv *instance);
+    static void shutdown() {
+        delete instance;
+        instance = NULL;
+    }
 
-    static DataTypeRegistry* getDataTypeRegistry() {return getInstance()->data;}
-    static ActorPrototypeRegistry* getProtoRegistry() {return getInstance()->proto;}
-    static DomainFactoryRegistry* getDomainRegistry() {return getInstance()->domain;}
-    static DataTypeValueFactoryRegistry* getDataTypeValueFactoryRegistry() { return getInstance()->dvfReg; }
-    static ExternalToolCfgRegistry* getExternalCfgRegistry() {return getInstance()->ecfgReg;}
-    static SchemaActorsRegistry *getSchemaActorsRegistry() {return getInstance()->schemaActorsReg;}
-    static WorkflowTasksRegistry *getWorkflowTasksRegistry() {return getInstance()->workflowTasksRegistry;}
-    static ActorValidatorRegistry *getActorValidatorRegistry() {return getInstance()->actorValidatorRegistry;}
+    static DataTypeRegistry *getDataTypeRegistry() {
+        return getInstance()->data;
+    }
+    static ActorPrototypeRegistry *getProtoRegistry() {
+        return getInstance()->proto;
+    }
+    static DomainFactoryRegistry *getDomainRegistry() {
+        return getInstance()->domain;
+    }
+    static DataTypeValueFactoryRegistry *getDataTypeValueFactoryRegistry() {
+        return getInstance()->dvfReg;
+    }
+    static ExternalToolCfgRegistry *getExternalCfgRegistry() {
+        return getInstance()->ecfgReg;
+    }
+    static SchemaActorsRegistry *getSchemaActorsRegistry() {
+        return getInstance()->schemaActorsReg;
+    }
+    static WorkflowTasksRegistry *getWorkflowTasksRegistry() {
+        return getInstance()->workflowTasksRegistry;
+    }
+    static ActorValidatorRegistry *getActorValidatorRegistry() {
+        return getInstance()->actorValidatorRegistry;
+    }
 
 protected:
-    static WorkflowEnv* instance;
-    static WorkflowEnv* getInstance();
+    static WorkflowEnv *instance;
+    static WorkflowEnv *getInstance();
 
 public:
-    virtual ~WorkflowEnv() {}
+    virtual ~WorkflowEnv() {
+    }
 
 protected:
-    virtual DataTypeRegistry * initDataRegistry() = 0;
-    virtual ActorPrototypeRegistry * initProtoRegistry() = 0;
-    virtual DomainFactoryRegistry * initDomainRegistry() = 0;
-    virtual DataTypeValueFactoryRegistry * initDataTypeValueFactoryRegistry() = 0;
-    virtual ExternalToolCfgRegistry * initExternalToolCfgRegistry() = 0;
-    virtual SchemaActorsRegistry * initSchemaActorsRegistry() = 0;
-    virtual WorkflowTasksRegistry * initWorkflowTasksRegistry() = 0;
-    virtual ActorValidatorRegistry * initActorValidatorRegistry() = 0;
+    virtual DataTypeRegistry *initDataRegistry() = 0;
+    virtual ActorPrototypeRegistry *initProtoRegistry() = 0;
+    virtual DomainFactoryRegistry *initDomainRegistry() = 0;
+    virtual DataTypeValueFactoryRegistry *initDataTypeValueFactoryRegistry() = 0;
+    virtual ExternalToolCfgRegistry *initExternalToolCfgRegistry() = 0;
+    virtual SchemaActorsRegistry *initSchemaActorsRegistry() = 0;
+    virtual WorkflowTasksRegistry *initWorkflowTasksRegistry() = 0;
+    virtual ActorValidatorRegistry *initActorValidatorRegistry() = 0;
 
 protected:
     DataTypeRegistry *data;
@@ -87,10 +109,10 @@ protected:
     WorkflowTasksRegistry *workflowTasksRegistry;
     ActorValidatorRegistry *actorValidatorRegistry;
 
-}; // WorkflowEnv
+};    // WorkflowEnv
 
-} //namespace Workflow
+}    //namespace Workflow
 
-} //namespace U2
+}    //namespace U2
 
-#endif // _U2_WORKFLOW_ENV_H_
+#endif    // _U2_WORKFLOW_ENV_H_

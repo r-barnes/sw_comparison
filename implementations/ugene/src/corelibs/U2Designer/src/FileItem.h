@@ -33,6 +33,6 @@ public:
     virtual void accept(UrlItemVisitor *visitor);
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_FILE_ITEM_H_
+#endif    // _U2_FILE_ITEM_H_

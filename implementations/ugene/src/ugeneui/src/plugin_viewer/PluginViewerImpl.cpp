@@ -20,49 +20,46 @@
  */
 
 #include "PluginViewerImpl.h"
-#include <U2Gui/MainWindow.h>
-
 #include <AppContextImpl.h>
-#include "PluginViewerController.h"
 
 #include <QAction>
 
+#include <U2Gui/MainWindow.h>
+
+#include "PluginViewerController.h"
+
 namespace U2 {
 
-Task* PluginViewerImpl::createServiceEnablingTask() {
-	return new EnablePluginViewerTask(this);
+Task *PluginViewerImpl::createServiceEnablingTask() {
+    return new EnablePluginViewerTask(this);
 }
 
-Task* PluginViewerImpl::createServiceDisablingTask() {
-	return new DisablePluginViewerTask(this);	
+Task *PluginViewerImpl::createServiceDisablingTask() {
+    return new DisablePluginViewerTask(this);
 }
 
 //////////////////////////////////////////////////////////////////////////
 // tasks
 
-EnablePluginViewerTask::EnablePluginViewerTask(PluginViewerImpl* _pv)
-: Task (tr("Enable PluginViewer"), TaskFlag_NoRun), pv(_pv)
-{
+EnablePluginViewerTask::EnablePluginViewerTask(PluginViewerImpl *_pv)
+    : Task(tr("Enable PluginViewer"), TaskFlag_NoRun), pv(_pv) {
 }
 
 Task::ReportResult EnablePluginViewerTask::report() {
-	AppContextImpl::getApplicationContext()->setPluginViewer(pv);
-	pv->viewer = new PluginViewerController();
-	return ReportResult_Finished;
+    AppContextImpl::getApplicationContext()->setPluginViewer(pv);
+    pv->viewer = new PluginViewerController();
+    return ReportResult_Finished;
 }
 
-
-DisablePluginViewerTask::DisablePluginViewerTask(PluginViewerImpl* _pv)
-: Task (tr("Disable PluginViewer"), TaskFlag_NoRun), pv(_pv)
-{
+DisablePluginViewerTask::DisablePluginViewerTask(PluginViewerImpl *_pv)
+    : Task(tr("Disable PluginViewer"), TaskFlag_NoRun), pv(_pv) {
 }
 
 Task::ReportResult DisablePluginViewerTask::report() {
     AppContextImpl::getApplicationContext()->setPluginViewer(NULL);
     delete pv->viewer;
     pv->viewer = NULL;
-	return ReportResult_Finished;
+    return ReportResult_Finished;
 }
 
-
-}//namespace
+}    // namespace U2

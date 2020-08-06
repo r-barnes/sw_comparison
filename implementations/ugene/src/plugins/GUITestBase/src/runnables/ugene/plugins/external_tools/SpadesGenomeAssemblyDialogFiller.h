@@ -27,22 +27,22 @@
 namespace U2 {
 using namespace HI;
 
-class SpadesGenomeAssemblyDialogFiller: public Filler
-{
+class SpadesGenomeAssemblyDialogFiller : public Filler {
 public:
-    SpadesGenomeAssemblyDialogFiller(HI::GUITestOpStatus &os, QString _library, QStringList _leftReads, QStringList _rightReads, QString _output, QString _datasetType = "", QString _runningMode = "",
-        QString _kmerSizes = "", int _numThreads = 0, int _memLimit = 0) :
-        Filler(os, "GenomeAssemblyDialog"),
-        library(_library),
-        leftReads(_leftReads),
-        rightReads(_rightReads),
-        output(_output),
-        datasetType(_datasetType),
-        runningMode(_runningMode),
-        kmerSizes(_kmerSizes),
-        numThreads(_numThreads),
-        memLimit(_memLimit) {}
+    SpadesGenomeAssemblyDialogFiller(HI::GUITestOpStatus &os, QString _library, QStringList _leftReads, QStringList _rightReads, QString _output, QString _datasetType = "", QString _runningMode = "", QString _kmerSizes = "", int _numThreads = 0, int _memLimit = 0)
+        : Filler(os, "GenomeAssemblyDialog"),
+          library(_library),
+          leftReads(_leftReads),
+          rightReads(_rightReads),
+          output(_output),
+          datasetType(_datasetType),
+          runningMode(_runningMode),
+          kmerSizes(_kmerSizes),
+          numThreads(_numThreads),
+          memLimit(_memLimit) {
+    }
     virtual void commonScenario();
+
 protected:
     QString library;
     QStringList leftReads;
@@ -55,6 +55,6 @@ protected:
     int memLimit;
 };
 
-}
+}    // namespace U2
 
-#endif // SPADESGENOMEASSEMBLYDIALOGFILLER_H
+#endif    // SPADESGENOMEASSEMBLYDIALOGFILLER_H

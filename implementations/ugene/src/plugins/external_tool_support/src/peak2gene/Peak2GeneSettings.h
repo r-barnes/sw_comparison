@@ -38,18 +38,18 @@ public:
 
     Peak2GeneSettings();
 
-    QString     outpos;
-    bool        symbol;
-    qint64      distance;
-    QString     genomePath;
+    QString outpos;
+    bool symbol;
+    qint64 distance;
+    QString genomePath;
 
 public:
-     QStringList getArguments(const QString& treatFilePath);
+    QStringList getArguments(const QString &treatFilePath);
 
 private:
     void initDefault();
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_PEAK2GENE_SETTINGS_
+#endif    // _U2_PEAK2GENE_SETTINGS_

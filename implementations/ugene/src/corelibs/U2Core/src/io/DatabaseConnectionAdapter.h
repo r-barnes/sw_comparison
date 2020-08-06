@@ -32,15 +32,15 @@ class U2CORE_EXPORT DatabaseConnectionAdapterFactory : public IOAdapterFactory {
 public:
     explicit DatabaseConnectionAdapterFactory(QObject *parent = NULL);
 
-    IOAdapter* createIOAdapter();
+    IOAdapter *createIOAdapter();
 
     IOAdapterId getAdapterId() const;
 
-    const QString& getAdapterName() const;
+    const QString &getAdapterName() const;
 
-    bool isIOModeSupported(IOAdapterMode m)  const;
+    bool isIOModeSupported(IOAdapterMode m) const;
 
-    TriState isResourceAvailable(const GUrl& ) const;
+    TriState isResourceAvailable(const GUrl &) const;
 
 protected:
     QString name;
@@ -49,9 +49,9 @@ protected:
 class U2CORE_EXPORT DatabaseConnectionAdapter : public IOAdapter {
     Q_OBJECT
 public:
-    DatabaseConnectionAdapter(DatabaseConnectionAdapterFactory* factory, QObject* parent = NULL);
+    DatabaseConnectionAdapter(DatabaseConnectionAdapterFactory *factory, QObject *parent = NULL);
 
-    bool open(const GUrl& url, IOAdapterMode m);
+    bool open(const GUrl &url, IOAdapterMode m);
     bool isOpen() const;
     void close();
 
@@ -60,9 +60,9 @@ public:
       * You can't read anything with adapter
       * Get objects via U2Dbi interface
       */
-    qint64 readUntil(char*, qint64, const QBitArray&, TerminatorHandling, bool* = 0);
-    qint64 readBlock(char*, qint64);
-    qint64 writeBlock(const char* buff, qint64 size);
+    qint64 readUntil(char *, qint64, const QBitArray &, TerminatorHandling, bool * = 0);
+    qint64 readBlock(char *, qint64);
+    qint64 writeBlock(const char *buff, qint64 size);
     bool skip(qint64);
     qint64 left() const;
 
@@ -79,6 +79,6 @@ private:
     DbiConnection connection;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_DATABASE_CONNECTION_ADAPTER_H_
+#endif    // _U2_DATABASE_CONNECTION_ADAPTER_H_

@@ -19,9 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
-
 #include "PhmmerSearchSettings.h"
+
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
@@ -50,9 +50,7 @@ PhmmerSearchSettings::PhmmerSearchSettings()
       popen(0.02),
       pextend(0.4),
       seed(42),
-      annotationTable(NULL)
-{
-
+      annotationTable(NULL) {
 }
 
 bool PhmmerSearchSettings::validate() const {
@@ -78,4 +76,4 @@ bool PhmmerSearchSettings::validate() const {
     return true;
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -19,25 +19,24 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/Timer.h>
+#include "ElapsedTimeUpdater.h"
+
 #include <U2Core/TaskSignalMapper.h>
+#include <U2Core/Timer.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Lang/WorkflowMonitor.h>
 
-#include "ElapsedTimeUpdater.h"
-
 namespace U2 {
 namespace LocalWorkflow {
 
-ElapsedTimeUpdater::ElapsedTimeUpdater(const ActorId& runningActorId, WorkflowMonitor* monitor, Task* executedTask)
-    : runningActorId(runningActorId), monitor(monitor), executedTask(executedTask), elapsedTime(0)
-{
+ElapsedTimeUpdater::ElapsedTimeUpdater(const ActorId &runningActorId, WorkflowMonitor *monitor, Task *executedTask)
+    : runningActorId(runningActorId), monitor(monitor), executedTask(executedTask), elapsedTime(0) {
     connect(this, SIGNAL(timeout()), SLOT(sl_updateTime()));
-    connect(new TaskSignalMapper(executedTask), SIGNAL(si_taskFinished(Task*)), SLOT(sl_taskFinished(Task*)));
+    connect(new TaskSignalMapper(executedTask), SIGNAL(si_taskFinished(Task *)), SLOT(sl_taskFinished(Task *)));
 }
 
-void ElapsedTimeUpdater::sl_taskFinished(Task*) {
+void ElapsedTimeUpdater::sl_taskFinished(Task *) {
     stop();
     qint64 newElapsedTime = GTimer::currentTimeMicros() - executedTask->getTimeInfo().startTime;
     monitor->addTick(newElapsedTime - elapsedTime, runningActorId);
@@ -45,9 +44,9 @@ void ElapsedTimeUpdater::sl_taskFinished(Task*) {
 }
 
 ElapsedTimeUpdater::~ElapsedTimeUpdater() {
-    CHECK(NULL != executedTask,);
+    CHECK(NULL != executedTask, );
     qint64 newElapsedTime = executedTask->getTimeInfo().finishTime - executedTask->getTimeInfo().startTime;
-    if(newElapsedTime > elapsedTime) {
+    if (newElapsedTime > elapsedTime) {
         monitor->addTick(newElapsedTime - elapsedTime, runningActorId);
     }
 }
@@ -58,5 +57,5 @@ void ElapsedTimeUpdater::sl_updateTime() {
     elapsedTime = newElapsedTime;
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

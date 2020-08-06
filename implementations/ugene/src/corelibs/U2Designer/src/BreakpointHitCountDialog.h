@@ -22,9 +22,9 @@
 #ifndef _BREAKPOINT_HIT_COUNT_DIALOG_H_
 #define _BREAKPOINT_HIT_COUNT_DIALOG_H_
 
-#include <U2Core/global.h>
-
 #include <QDialog>
+
+#include <U2Core/global.h>
 
 extern const int LOWER_BOUNDARY_FOR_HIT_COUNTER_PARAMETER;
 
@@ -38,10 +38,7 @@ class U2DESIGNER_EXPORT BreakpointHitCountDialog : public QDialog {
     Q_OBJECT
     Q_DISABLE_COPY(BreakpointHitCountDialog)
 public:
-    BreakpointHitCountDialog(const QStringList &hitCountConditions, const QString &conditionOnLaunch
-        = "", quint32 hitCountParameterOnLaunch = LOWER_BOUNDARY_FOR_HIT_COUNTER_PARAMETER,
-        quint32 hitCountOnLaunch = 0, const QStringList &hitCountersListWithoutParameter
-        = QStringList(), QWidget *parent = 0, Qt::WindowFlags f = 0);
+    BreakpointHitCountDialog(const QStringList &hitCountConditions, const QString &conditionOnLaunch = "", quint32 hitCountParameterOnLaunch = LOWER_BOUNDARY_FOR_HIT_COUNTER_PARAMETER, quint32 hitCountOnLaunch = 0, const QStringList &hitCountersListWithoutParameter = QStringList(), QWidget *parent = 0, Qt::WindowFlags f = 0);
     ~BreakpointHitCountDialog();
 
 signals:
@@ -63,6 +60,6 @@ private:
     Ui_BreakpointHitCountDialog *ui;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _BREAKPOINT_HIT_COUNT_DIALOG_H_
+#endif    // _BREAKPOINT_HIT_COUNT_DIALOG_H_

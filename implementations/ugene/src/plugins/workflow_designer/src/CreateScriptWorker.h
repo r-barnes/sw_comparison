@@ -29,6 +29,7 @@
 #include <U2Core/Settings.h>
 
 #include <U2Designer/DelegateEditors.h>
+
 #include <U2Lang/ActorModel.h>
 #include <U2Lang/BaseTypes.h>
 #include <U2Lang/WorkflowEnv.h>
@@ -38,14 +39,14 @@
 namespace U2 {
 using namespace Workflow;
 
-class CreateScriptElementDialog : public QDialog,  public Ui_CreateScriptBlockDialog {
+class CreateScriptElementDialog : public QDialog, public Ui_CreateScriptBlockDialog {
     Q_OBJECT
 public:
     //CreateScriptElementDialog(QWidget* p = NULL);
-    CreateScriptElementDialog(QWidget* p = NULL, ActorPrototype* proto = NULL);
-    QList<DataTypePtr > getInput() const;
-    QList<DataTypePtr > getOutput() const;
-    QList<Attribute*> getAttributes() const;
+    CreateScriptElementDialog(QWidget *p = NULL, ActorPrototype *proto = NULL);
+    QList<DataTypePtr> getInput() const;
+    QList<DataTypePtr> getOutput() const;
+    QList<Attribute *> getAttributes() const;
     const QString getName() const;
     const QString getDescription() const;
     const QString getActorFilePath() const;
@@ -67,15 +68,15 @@ private:
     void fillFields(ActorPrototype *proto);
     void changeDirectoryForActors();
 
-    QList<DataTypePtr > input;
-    QList<DataTypePtr > output;
-    QList<Attribute*> attrs;
+    QList<DataTypePtr> input;
+    QList<DataTypePtr> output;
+    QList<Attribute *> attrs;
     QString name;
     QString description;
     bool editing;
     QString actorFilePath;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

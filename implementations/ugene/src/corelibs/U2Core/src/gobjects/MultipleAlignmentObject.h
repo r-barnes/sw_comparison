@@ -54,7 +54,7 @@ public:
     /** Sets type of modifications tracking for the alignment */
     void setTrackMod(U2OpStatus &os, U2TrackModType trackMod);
 
-    const MultipleAlignment& getMultipleAlignment() const;
+    const MultipleAlignment &getMultipleAlignment() const;
     void setMultipleAlignment(const MultipleAlignment &ma, MaModificationInfo mi = MaModificationInfo(), const QVariantMap &hints = QVariantMap());
 
     const MultipleAlignment getMultipleAlignmentCopy() const;
@@ -63,30 +63,52 @@ public:
     void setGObjectName(const QString &newName);
 
     /** Const getters */
-    const DNAAlphabet * getAlphabet() const;
+    const DNAAlphabet *getAlphabet() const;
     qint64 getLength() const;
     qint64 getNumRows() const;
-    const QList<MultipleAlignmentRow>& getRows() const;
+    const QList<MultipleAlignmentRow> &getRows() const;
     const MultipleAlignmentRow getRow(int row) const;
     int getRowPosById(qint64 rowId) const;
     virtual char charAt(int seqNum, qint64 position) const = 0;
-    U2MsaMapGapModel getMapGapModel() const;
+
     U2MsaListGapModel getGapModel() const;
+
+    /**
+     * Converts MA indexes into ids.
+     * If index is out of range and 'excludeErrors' is false appends '-1' to the result list.
+     */
+    QList<qint64> convertMaRowIndexesToMaRowIds(const QList<int> &maRowIndexes, bool excludeErrors = true);
+
+    /**
+     * Converts MA ids into indexes.
+     * If id is invalid and 'excludeErrors' is false appends '-1' to the result list.
+     */
+    QList<int> convertMaRowIdsToMaRowIndexes(const QList<qint64> &maRowIds, bool excludeErrors = true);
 
     /** Removes single row from the alignment by row index. */
     void removeRow(int rowIdx);
 
     /** Removes all rows from the list from the alignment by row indexes. */
-    void removeRows(const QList<int>& rowIndexes);
+    void removeRows(const QList<int> &rowIndexes);
+
+    /** Removes columns region from all rows in the list. */
+    void removeRegion(const QList<int> &rowIndexes, int x, int width, bool removeEmptyRows);
+
+    /** Method that affect the whole alignment, including sequences */
+    void removeRegion(int startPos, int startRow, int nBases, int nRows, bool removeEmptyRows, bool track = true);
 
     /** Renames row with a given index. */
-    void renameRow(int rowIdx, const QString& newName);
+    void renameRow(int rowIdx, const QString &newName);
 
     void moveRowsBlock(int firstRow, int numRows, int delta);
 
     bool isRegionEmpty(int x, int y, int width, int height) const;
 
-    QList<qint64> getRowsOrder(U2OpStatus& os) const;
+    bool isRegionEmpty(const QList<int> &rowIndexes, int x, int width) const;
+
+    /** Returns list of ordered row ids. */
+    QList<qint64> getRowIds(U2OpStatus &os) const;
+
     /**
      * Updates the rows order.
      * There must be one-to-one correspondence between the specified rows IDs
@@ -100,12 +122,12 @@ public:
     void sortRowsByList(const QStringList &order);
 
     virtual void replaceCharacter(int startPos, int rowIndex, char newChar) = 0;
-    /** Methods that modify the gap model only */
+
+    /** Inserts gap into 'pos' for the given rows. */
     virtual void insertGap(const U2Region &rows, int pos, int nGaps) = 0;
 
-    /** Method that affect the whole alignment, including sequences
-     */
-    void removeRegion(int startPos, int startRow, int nBases, int nRows, bool removeEmptyRows, bool track = true);
+    /** Inserts gap into 'pos' for the given rows. */
+    virtual void insertGapByRowIndexList(const QList<int> &rowIndexes, int pos, int nGaps) = 0;
 
     /**
      * Removes gap region that extends from the @pos column and is no longer than @maxGaps.
@@ -115,6 +137,8 @@ public:
      * If the given region is a subset of a trailing gaps area then nothing happens.
      */
     int deleteGap(U2OpStatus &os, const U2Region &rows, int pos, int maxGaps);
+
+    int deleteGapByRowIndexList(U2OpStatus &os, const QList<int> &rowIndexes, int pos, int maxGaps);
 
     virtual void deleteColumnsWithGaps(U2OpStatus &os, int requiredGapsCount = -1) = 0;
 
@@ -153,9 +177,12 @@ protected:
     virtual void updateCachedRows(U2OpStatus &os, const QList<qint64> &rowIds) = 0;
     virtual void updateDatabase(U2OpStatus &os, const MultipleAlignment &ma) = 0;
     virtual void removeRowPrivate(U2OpStatus &os, const U2EntityRef &maRef, qint64 rowId) = 0;
-    virtual void removeRegionPrivate(U2OpStatus &os, const U2EntityRef &maRef, const QList<qint64> &rows,
-                                     int startPos, int nBases) = 0;
+    virtual void removeRegionPrivate(U2OpStatus &os, const U2EntityRef &maRef, const QList<qint64> &rows, int startPos, int nBases) = 0;
     void insertGap(const U2Region &rows, int pos, int nGaps, bool collapseTrailingGaps);
+
+    void insertGapByRowIndexList(const QList<int> &rowIndexes, int pos, int nGaps, bool collapseTrailingGaps);
+
+    void insertGapByRowIdList(const QList<qint64> &rowIds, int pos, int nGaps, bool collapseTrailingGaps);
 
     MultipleAlignment cachedMa;
 
@@ -169,11 +196,11 @@ private:
      * having @pos + @maxGaps number, otherwise 0 is returned. If the region is located
      * in the MSA trailing gaps area, then 0 is returned.
      */
-    int getMaxWidthOfGapRegion(U2OpStatus &os, const U2Region &rows, int pos, int maxGaps);
+    int getMaxWidthOfGapRegion(U2OpStatus &os, const QList<int> &rowIndexes, int pos, int maxGaps);
 
     MaSavedState savedState;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_MULTIPLE_ALIGNMENT_OBJECT_H_
+#endif    // _U2_MULTIPLE_ALIGNMENT_OBJECT_H_

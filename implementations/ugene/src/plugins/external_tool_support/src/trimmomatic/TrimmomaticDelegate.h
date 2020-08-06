@@ -40,16 +40,15 @@ public:
     TrimmomaticDelegate(QObject *parent = 0);
 
     QVariant getDisplayValue(const QVariant &value) const;
-    PropertyDelegate* clone();
+    PropertyDelegate *clone();
     QWidget *createEditor(QWidget *parent,
                           const QStyleOptionViewItem &option,
                           const QModelIndex &index) const;
     PropertyWidget *createWizardWidget(U2OpStatus &os,
-                                                  QWidget *parent) const;
+                                       QWidget *parent) const;
 
     void setEditorData(QWidget *editor, const QModelIndex &index) const;
-    void setModelData(QWidget *editor, QAbstractItemModel *model,
-                                       const QModelIndex &index) const;
+    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
 
 private slots:
     void sl_commit();
@@ -58,12 +57,12 @@ private slots:
 class TrimmomaticPropertyWidget : public PropertyWidget {
     Q_OBJECT
 public:
-    TrimmomaticPropertyWidget(QWidget* parent = NULL, DelegateTags* tags = NULL);
+    TrimmomaticPropertyWidget(QWidget *parent = NULL, DelegateTags *tags = NULL);
 
     QVariant value();
 
 public slots:
-    void setValue(const QVariant& value);
+    void setValue(const QVariant &value);
 
 private slots:
     void sl_textEdited();
@@ -83,7 +82,7 @@ public:
 
 private slots:
     void sl_currentRowChanged();
-    void sl_addStep(QAction* a);
+    void sl_addStep(QAction *a);
     void sl_moveStepUp();
     void sl_moveStepDown();
     void sl_removeStep();
@@ -98,7 +97,7 @@ private:
     void parseCommand(const QString &command);
 
     QList<TrimmomaticStep *> steps;
-    QWidget* currentWidget;
+    QWidget *currentWidget;
     QWidget *defaultSettingsWidget;
     QMenu *menu;
 
@@ -106,7 +105,7 @@ private:
     static const QString DEFAULT_SETTINGS_TEXT;
 };
 
-}// namespace LocalWorkflow
-}// namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _U2_TRIMMOMATIC_DELEGATE_H_
+#endif    // _U2_TRIMMOMATIC_DELEGATE_H_

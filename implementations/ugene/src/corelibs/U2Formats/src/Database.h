@@ -21,8 +21,8 @@
 #ifndef _U2_DATABASE_H_
 #define _U2_DATABASE_H_
 
-#include <U2Core/global.h>
 #include <U2Core/U2DbiUtils.h>
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -43,19 +43,23 @@ class U2OpStatus;
 class U2FORMATS_EXPORT Database : public QObject {
     Q_OBJECT
 protected:
-    Database(const DbiConnection& dbi) : databaseDbi(dbi) {}
+    Database(const DbiConnection &dbi)
+        : databaseDbi(dbi) {
+    }
 
 public:
-    const DbiConnection& getDbi() const {return databaseDbi;}
+    const DbiConnection &getDbi() const {
+        return databaseDbi;
+    }
 
-    static Database* loadDatabase(const QString& url, U2OpStatus& os);
+    static Database *loadDatabase(const QString &url, U2OpStatus &os);
 
-    static DbiConnection createEmptyDbi(const QString& url, U2OpStatus& os);
+    static DbiConnection createEmptyDbi(const QString &url, U2OpStatus &os);
 
 private:
     DbiConnection databaseDbi;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

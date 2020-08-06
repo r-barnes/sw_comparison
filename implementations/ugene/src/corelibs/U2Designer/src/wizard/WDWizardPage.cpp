@@ -19,28 +19,27 @@
  * MA 02110-1301, USA.
  */
 
+#include "WDWizardPage.h"
+
 #include <U2Core/U2SafePoints.h>
 
-#include "WDWizardPage.h"
 #include "WizardPageController.h"
 
 namespace U2 {
 
 WDWizardPage::WDWizardPage(WizardPageController *controller, QWidget *parent)
-: QWizardPage(parent), controller(controller)
-{
+    : QWizardPage(parent), controller(controller) {
     controller->setQtPage(this);
 }
 
 WDWizardPage::~WDWizardPage() {
-
 }
 
-void WDWizardPage::initializePage () {
+void WDWizardPage::initializePage() {
     controller->applyLayout();
 }
 
-static QAbstractButton * getRunButton(QWizard *w) {
+static QAbstractButton *getRunButton(QWizard *w) {
     QAbstractButton *runButton = w->button(QWizard::CustomButton1);
     CHECK(NULL != runButton, NULL);
     CHECK(!runButton->text().isEmpty(), NULL);
@@ -67,4 +66,4 @@ int WDWizardPage::nextId() const {
     return controller->nextId();
 }
 
-} // U2
+}    // namespace U2

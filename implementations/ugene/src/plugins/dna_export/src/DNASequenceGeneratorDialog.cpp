@@ -19,6 +19,8 @@
 * MA 02110-1301, USA.
 */
 
+#include "DNASequenceGeneratorDialog.h"
+
 #include <QMessageBox>
 #include <QPushButton>
 
@@ -35,7 +37,6 @@
 #include <U2Gui/U2FileDialog.h>
 
 #include "DNASequenceGenerator.h"
-#include "DNASequenceGeneratorDialog.h"
 
 namespace U2 {
 
@@ -57,30 +58,28 @@ static QMap<char, qreal> initContent() {
 
 QMap<char, qreal> DNASequenceGeneratorDialog::content = initContent();
 
-DNASequenceGeneratorDialog::DNASequenceGeneratorDialog(QWidget* p)
+DNASequenceGeneratorDialog::DNASequenceGeneratorDialog(QWidget *p)
     : QDialog(p),
       saveController(NULL),
       generateButton(NULL),
       cancelButton(NULL),
       percentMap(content),
-      gcSkew(0)
-{
+      gcSkew(0) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "24742627");
+    new HelpButton(this, buttonBox, "46501051");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Generate"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
     seedSpinBox->setEnabled(false);
     referenceButton->setChecked(true);
 
-    percentASpin->setValue(percentMap.value('A')*100.0);
-    percentCSpin->setValue(percentMap.value('C')*100.0);
-    percentGSpin->setValue(percentMap.value('G')*100.0);
-    percentTSpin->setValue(percentMap.value('T')*100.0);
-    gcSkew = ((float)((int)(percentMap.value('G')*100) - (int)(percentMap.value('C')*100)))
-        /((int)(percentMap.value('G')*100) + (int)(percentMap.value('C')*100));
+    percentASpin->setValue(percentMap.value('A') * 100.0);
+    percentCSpin->setValue(percentMap.value('C') * 100.0);
+    percentGSpin->setValue(percentMap.value('G') * 100.0);
+    percentTSpin->setValue(percentMap.value('T') * 100.0);
+    gcSkew = ((float)((int)(percentMap.value('G') * 100) - (int)(percentMap.value('C') * 100))) / ((int)(percentMap.value('G') * 100) + (int)(percentMap.value('C') * 100));
     int iGCSkew = (int)(gcSkew * 100);
-    gcSkew = (float(iGCSkew))/100.0;
+    gcSkew = (float(iGCSkew)) / 100.0;
     percentGCSpin->setValue(gcSkew);
 
     initSaveController();
@@ -90,7 +89,7 @@ DNASequenceGeneratorDialog::DNASequenceGeneratorDialog(QWidget* p)
     connect(inputButton, SIGNAL(clicked()), SLOT(sl_browseReference()));
     connect(generateButton, SIGNAL(clicked()), SLOT(sl_generate()));
     connect(cancelButton, SIGNAL(clicked()), SLOT(reject()));
-    connect(seedCheckBox, SIGNAL(stateChanged (int)), SLOT(sl_seedStateChanged(int)));
+    connect(seedCheckBox, SIGNAL(stateChanged(int)), SLOT(sl_seedStateChanged(int)));
     connect(referenceButton, SIGNAL(clicked()), SLOT(sl_enableRefMode()));
     connect(baseContentRadioButton, SIGNAL(clicked()), SLOT(sl_enableBaseMode()));
     connect(gcSkewRadioButton, SIGNAL(clicked()), SLOT(sl_enableGCSkewMode()));
@@ -109,7 +108,7 @@ void DNASequenceGeneratorDialog::sl_seedStateChanged(int state) {
     seedSpinBox->setEnabled(state == Qt::Checked);
 }
 
-void DNASequenceGeneratorDialog::initSaveController(){
+void DNASequenceGeneratorDialog::initSaveController() {
     SaveDocumentControllerConfig config;
     config.defaultFormatId = BaseDocumentFormats::FASTA;
     config.fileDialogButton = outputButton;
@@ -134,7 +133,6 @@ void DNASequenceGeneratorDialog::sl_browseReference() {
     lod.url = U2FileDialog::getOpenFileName(this, tr("Open file"), lod.dir, filter);
     inputEdit->setText(lod.url);
 }
-
 
 void DNASequenceGeneratorDialog::sl_generate() {
     DNASequenceGeneratorConfig cfg;
@@ -182,7 +180,7 @@ void DNASequenceGeneratorDialog::sl_generate() {
         percentMap['G'] = percentG / 100.0;
         percentMap['T'] = percentT / 100.0;
         cfg.content = percentMap;
-    } else if (gcSkewRadioButton->isChecked()){
+    } else if (gcSkewRadioButton->isChecked()) {
         s->setValue(ROOT_SETTING + SELECTED_OPTION, OPTION_SKEW);
         gcSkew = percentGCSpin->value();
         qreal percentA = qrand();
@@ -196,7 +194,7 @@ void DNASequenceGeneratorDialog::sl_generate() {
         percentT = percentT / sum * 100;
         qreal GC = percentG + percentC;
 
-        percentC = (1 - gcSkew)* GC / 2;
+        percentC = (1 - gcSkew) * GC / 2;
         percentG = percentC + gcSkew * GC;
         if (percentC < 0 || percentC > 100 || percentG < 0 || percentG > 100) {
             QMessageBox::critical(this, tr("Base content"), tr("Incorrect GC Skew value"));
@@ -221,7 +219,6 @@ void DNASequenceGeneratorDialog::sl_generate() {
 
     AppContext::getTaskScheduler()->registerTopLevelTask(new DNASequenceGeneratorTask(cfg));
     accept();
-
 }
 
 void DNASequenceGeneratorDialog::sl_enableRefMode() {
@@ -257,5 +254,4 @@ void DNASequenceGeneratorDialog::sl_enableGCSkewMode() {
     percentGCSpin->setEnabled(true);
 }
 
-
-} //namespace
+}    // namespace U2

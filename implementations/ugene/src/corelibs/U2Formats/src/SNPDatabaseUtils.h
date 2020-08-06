@@ -19,25 +19,23 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/global.h>
 #include <U2Core/U2ObjectDbi.h>
+#include <U2Core/global.h>
 
 #include <U2Formats/Database.h>
 
 #ifndef _U2_DATABASE_UTILS_
-#define _U2_DATABASE_UTILS_
+#    define _U2_DATABASE_UTILS_
 
 namespace U2 {
 
 class U2FORMATS_EXPORT SNPDatabaseUtils {
 public:
-    static Database* openDatabase(const QString& path);
+    static Database *openDatabase(const QString &path);
 
-    static U2DataId getSequenceId(const QString& sequenceName, U2ObjectDbi* objectDbi);
-
+    static U2DataId getSequenceId(const QString &sequenceName, U2ObjectDbi *objectDbi);
 };
 
+}    // namespace U2
 
-} // U2
-
-#endif // _U2_DATABASE_UTILS_
+#endif    // _U2_DATABASE_UTILS_

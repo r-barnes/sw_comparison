@@ -21,10 +21,11 @@
 
 #ifndef _U2_PLUGIN_VIEWER_CONTROLLER_H_
 
-#include "ui_PluginViewerWidget.h"
+#    include <U2Core/PluginModel.h>
 
-#include <U2Core/PluginModel.h>
-#include <U2Gui/MainWindow.h>
+#    include <U2Gui/MainWindow.h>
+
+#    include "ui_PluginViewerWidget.h"
 
 namespace U2 {
 
@@ -38,7 +39,7 @@ public:
     ~PluginViewerController();
 
 protected:
-	bool eventFilter(QObject *obj, QEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
 
@@ -46,14 +47,14 @@ private slots:
     void sl_enableService();
     void sl_disableService();
 
-    void sl_treeCurrentItemChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous);
+    void sl_treeCurrentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 
-    void sl_onServiceStateChanged(Service* s, ServiceState oldState);
-    void sl_onServiceUnregistered(Service* s);
+    void sl_onServiceStateChanged(Service *s, ServiceState oldState);
+    void sl_onServiceUnregistered(Service *s);
     void sl_showHideLicense();
     void sl_acceptLicense();
 
-private: 
+private:
     void connectStaticActions();
     void connectVisualActions();
     void disconnectVisualActions();
@@ -64,51 +65,59 @@ private:
     void showLicense();
     void hideLicense();
 
-	PlugViewPluginItem* findPluginItem(Plugin* p) const;
-	PlugViewServiceItem* findServiceItem(Service* s) const;
-	PlugViewServiceItem* getCurrentServiceItem() const;
-    PlugViewPluginItem* getCurrentPluginItem() const;
+    PlugViewPluginItem *findPluginItem(Plugin *p) const;
+    PlugViewServiceItem *findServiceItem(Service *s) const;
+    PlugViewServiceItem *getCurrentServiceItem() const;
+    PlugViewPluginItem *getCurrentPluginItem() const;
 
     Ui_PluginViewWidget ui;
-    
-    MWMDIWindow* mdiWindow;
-    QAction*    enableServiceAction;
-    QAction*    disableServiceAction;
-    
-    bool        showServices;
 
+    MWMDIWindow *mdiWindow;
+    QAction *enableServiceAction;
+    QAction *disableServiceAction;
+
+    bool showServices;
 };
-
 
 class PlugViewTreeItem : public QTreeWidgetItem {
 public:
-    PlugViewTreeItem(PlugViewTreeItem *parent) : QTreeWidgetItem(parent) {}
-    
-    bool isRootItem() {return parent() == NULL;}
-    virtual void updateVisual() = 0;
-    virtual bool isPluginItem() const {return false;}
-    virtual bool isServiceItem() const {return false;}
+    PlugViewTreeItem(PlugViewTreeItem *parent)
+        : QTreeWidgetItem(parent) {
+    }
 
+    bool isRootItem() {
+        return parent() == NULL;
+    }
+    virtual void updateVisual() = 0;
+    virtual bool isPluginItem() const {
+        return false;
+    }
+    virtual bool isServiceItem() const {
+        return false;
+    }
 };
 
-class PlugViewPluginItem: public PlugViewTreeItem {
+class PlugViewPluginItem : public PlugViewTreeItem {
 public:
-    PlugViewPluginItem(PlugViewTreeItem *parent, Plugin* p, bool showServices);
-    virtual bool isPluginItem() const {return true;}
+    PlugViewPluginItem(PlugViewTreeItem *parent, Plugin *p, bool showServices);
+    virtual bool isPluginItem() const {
+        return true;
+    }
     void updateVisual();
-    Plugin* plugin;
+    Plugin *plugin;
     bool showServices;
 };
 
 class PlugViewServiceItem : public PlugViewTreeItem {
 public:
-    PlugViewServiceItem(PlugViewPluginItem *parent, Service* s);
-    virtual bool isServiceItem() const {return true;}
+    PlugViewServiceItem(PlugViewPluginItem *parent, Service *s);
+    virtual bool isServiceItem() const {
+        return true;
+    }
     void updateVisual();
 
-    Service* service;
+    Service *service;
 };
-}//namespace
-
+}    // namespace U2
 
 #endif

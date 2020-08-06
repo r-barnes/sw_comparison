@@ -19,10 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "PhyTreeDisplayOptionsWidget.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/Settings.h>
 
-#include "PhyTreeDisplayOptionsWidget.h"
 #include "ui_PhyTreeDisplayOptionsWidget.h"
 
 namespace U2 {
@@ -30,10 +31,9 @@ namespace U2 {
 const QString PhyTreeDisplayOptionsWidget::displayWithMsaEditor = CreatePhyTreeWidget::settingsPath() + "/display_with_msa_editor";
 const QString PhyTreeDisplayOptionsWidget::synchronizeWithMsa = CreatePhyTreeWidget::settingsPath() + "/synchronize_with_msa";
 
-PhyTreeDisplayOptionsWidget::PhyTreeDisplayOptionsWidget(QWidget *parent) :
-    CreatePhyTreeWidget(parent),
-    ui(new Ui_PhyTreeDisplayOptionsWidget)
-{
+PhyTreeDisplayOptionsWidget::PhyTreeDisplayOptionsWidget(QWidget *parent)
+    : CreatePhyTreeWidget(parent),
+      ui(new Ui_PhyTreeDisplayOptionsWidget) {
     ui->setupUi(this);
 
     const bool displayWithMsa = AppContext::getSettings()->getValue(displayWithMsaEditor, true).toBool();
@@ -67,4 +67,4 @@ void PhyTreeDisplayOptionsWidget::restoreDefault() {
     ui->syncCheckBox->setChecked(true);
 }
 
-}   // namespace U2
+}    // namespace U2

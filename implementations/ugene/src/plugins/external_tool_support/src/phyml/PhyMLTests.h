@@ -22,15 +22,17 @@
 #ifndef _U2_PHYML_TESTS_H
 #define _U2_PHYML_TESTS_H
 
-#include <U2Test/XMLTestUtils.h>
-#include <U2Core/GObject.h>
-#include <U2Algorithm/PhyTreeGeneratorTask.h>
-
 #include <QDomElement>
 #include <QFileInfo>
 #include <QList>
 
-namespace U2{
+#include <U2Algorithm/PhyTreeGeneratorTask.h>
+
+#include <U2Core/GObject.h>
+
+#include <U2Test/XMLTestUtils.h>
+
+namespace U2 {
 
 class PhyTreeObject;
 class MultipleSequenceAlignmentObject;
@@ -48,19 +50,19 @@ private:
     QString resultCtxName;
     QString negative;
 
-    Document* maDoc;
-    Document* treeDoc;
-    PhyTreeGeneratorLauncherTask* task;
-    MultipleSequenceAlignmentObject* input;
-    PhyTreeObject* treeObjFromDoc;
+    Document *maDoc;
+    Document *treeDoc;
+    PhyTreeGeneratorLauncherTask *task;
+    MultipleSequenceAlignmentObject *input;
+    PhyTreeObject *treeObjFromDoc;
     CreatePhyTreeSettings settings;
 };
 
-class  PhyMLToolTests {
+class PhyMLToolTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-}//namespace
+}    // namespace U2
 
-#endif // _U2_PHYML_TESTS_H
+#endif    // _U2_PHYML_TESTS_H

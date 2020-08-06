@@ -30,22 +30,22 @@ namespace GUITest_common_scenarios_sequence_selection {
 #undef GUI_TEST_SUITE
 #define GUI_TEST_SUITE "GUITest_common_scenarios_sequence_selection"
 
-    GUI_TEST_CLASS_DECLARATION(double_click_test_0001)
-    GUI_TEST_CLASS_DECLARATION(double_click_test_0002)
-    GUI_TEST_CLASS_DECLARATION(double_click_test_0003)
-    GUI_TEST_CLASS_DECLARATION(double_click_test_0004)
-    GUI_TEST_CLASS_DECLARATION(mixed_test_0001)
-    GUI_TEST_CLASS_DECLARATION(mixed_test_0002)
-    GUI_TEST_CLASS_DECLARATION(mixed_test_0003)
-    GUI_TEST_CLASS_DECLARATION(one_click_test_0001)
-    GUI_TEST_CLASS_DECLARATION(one_click_test_0002)
-    GUI_TEST_CLASS_DECLARATION(one_click_test_0003)
-    GUI_TEST_CLASS_DECLARATION(one_click_test_0004)
-    GUI_TEST_CLASS_DECLARATION(one_click_test_0005)
+GUI_TEST_CLASS_DECLARATION(double_click_test_0001)
+GUI_TEST_CLASS_DECLARATION(double_click_test_0002)
+GUI_TEST_CLASS_DECLARATION(double_click_test_0003)
+GUI_TEST_CLASS_DECLARATION(double_click_test_0004)
+GUI_TEST_CLASS_DECLARATION(mixed_test_0001)
+GUI_TEST_CLASS_DECLARATION(mixed_test_0002)
+GUI_TEST_CLASS_DECLARATION(mixed_test_0003)
+GUI_TEST_CLASS_DECLARATION(one_click_test_0001)
+GUI_TEST_CLASS_DECLARATION(one_click_test_0002)
+GUI_TEST_CLASS_DECLARATION(one_click_test_0003)
+GUI_TEST_CLASS_DECLARATION(one_click_test_0004)
+GUI_TEST_CLASS_DECLARATION(one_click_test_0005)
 
 #undef GUI_TEST_SUITE
-    }
+}    // namespace GUITest_common_scenarios_sequence_selection
 
-} //namespace
+}    // namespace U2
 
 #endif

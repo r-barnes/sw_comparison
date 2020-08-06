@@ -34,21 +34,28 @@ class ExternalTool;
 class U2CORE_EXPORT ScriptingTool : public QObject {
     Q_OBJECT
 public:
-    ScriptingTool(const QString& id, const QString& name, const QString& path, const QStringList& runParams = QStringList());
+    ScriptingTool(const QString &id, const QString &name, const QString &path, const QStringList &runParams = QStringList());
 
-    const QString getId() const { return id; }
-    const QString getName() const {return name;}
-    const QString getPath() const {return path;}
-    const QStringList getRunParameters() const {return runParams;}
+    const QString getId() const {
+        return id;
+    }
+    const QString getName() const {
+        return name;
+    }
+    const QString getPath() const {
+        return path;
+    }
+    const QStringList getRunParameters() const {
+        return runParams;
+    }
 
-    static void onPathChanged(ExternalTool *tool, const QStringList& runParams = QStringList());
+    static void onPathChanged(ExternalTool *tool, const QStringList &runParams = QStringList());
 
 protected:
-    QString     id;
-    QString     name;
-    QString     path;
-    QStringList runParams; //used for every program run (e.g. -jar in Java)
-
+    QString id;
+    QString name;
+    QString path;
+    QStringList runParams;    //used for every program run (e.g. -jar in Java)
 };
 
 class U2CORE_EXPORT ScriptingToolRegistry : public QObject {
@@ -56,18 +63,17 @@ class U2CORE_EXPORT ScriptingToolRegistry : public QObject {
 public:
     ~ScriptingToolRegistry();
 
-    ScriptingTool* getById(const QString& id);
+    ScriptingTool *getById(const QString &id);
 
-    bool registerEntry(ScriptingTool* t);
-    void unregisterEntry(const QString& id);
+    bool registerEntry(ScriptingTool *t);
+    void unregisterEntry(const QString &id);
 
-    QList<ScriptingTool*> getAllEntries() const;
+    QList<ScriptingTool *> getAllEntries() const;
     QStringList getAllNames() const;
 
 protected:
-    QMap<QString, ScriptingTool*>    registry;
-
+    QMap<QString, ScriptingTool *> registry;
 };
 
-} //namespace
-#endif // _U2_SCRIPTING_TOOL_REGISTRY_H
+}    // namespace U2
+#endif    // _U2_SCRIPTING_TOOL_REGISTRY_H

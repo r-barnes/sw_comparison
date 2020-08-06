@@ -21,12 +21,11 @@
 
 #include "HighFlexSettings.h"
 
+#include <QVariant>
+
 #include <U2Core/AppContext.h>
 #include <U2Core/Log.h>
 #include <U2Core/Settings.h>
-
-#include <QVariant>
-
 
 namespace U2 {
 
@@ -38,24 +37,19 @@ const QString HighFlexSettings::SETTING_WINDOW_SIZE = "window_size";
 const QString HighFlexSettings::SETTING_WINDOW_STEP = "window_step";
 const QString HighFlexSettings::SETTING_THRESHOLD = "threshold";
 
-
 HighFlexSettings::HighFlexSettings()
     : windowSize(DEFAULT_WINDOW_SIZE),
       windowStep(DEFAULT_WINDOW_STEP),
-      threshold(DEFAULT_THRESHOLD)
-{
+      threshold(DEFAULT_THRESHOLD) {
     bool result = restoreRememberedSettings();
-    if (!result)
-    {
+    if (!result) {
         windowSize = DEFAULT_WINDOW_SIZE;
         windowStep = DEFAULT_WINDOW_STEP;
         threshold = DEFAULT_THRESHOLD;
     }
 }
 
-
-void HighFlexSettings::restoreDefaults()
-{
+void HighFlexSettings::restoreDefaults() {
     windowSize = DEFAULT_WINDOW_SIZE;
     windowStep = DEFAULT_WINDOW_STEP;
     threshold = DEFAULT_THRESHOLD;
@@ -65,27 +59,22 @@ void HighFlexSettings::restoreDefaults()
     AppContext::getSettings()->remove(SETTINGS_PATH + "/" + SETTING_THRESHOLD);
 }
 
-
-void HighFlexSettings::rememberSettings()
-{
+void HighFlexSettings::rememberSettings() {
     AppContext::getSettings()->setValue(SETTINGS_PATH + "/" + SETTING_WINDOW_SIZE, windowSize);
     AppContext::getSettings()->setValue(SETTINGS_PATH + "/" + SETTING_WINDOW_STEP, windowStep);
     AppContext::getSettings()->setValue(SETTINGS_PATH + "/" + SETTING_THRESHOLD, threshold);
 }
 
-
-bool HighFlexSettings::restoreRememberedSettings()
-{
+bool HighFlexSettings::restoreRememberedSettings() {
     bool convertionSuccessful = false;
 
     // Window size
     QVariant windowSizeVariant = AppContext::getSettings()->getValue(
         SETTINGS_PATH + "/" + SETTING_WINDOW_SIZE,
-        DEFAULT_WINDOW_SIZE); // The second parameter has no actual meaning in this case
+        DEFAULT_WINDOW_SIZE);    // The second parameter has no actual meaning in this case
 
     windowSize = windowSizeVariant.toInt(&convertionSuccessful);
-    if (!convertionSuccessful)
-    {
+    if (!convertionSuccessful) {
         ioLog.error(QObject::tr("Invalid high flex setting window size is stored in the application settings."));
         return false;
     }
@@ -96,8 +85,7 @@ bool HighFlexSettings::restoreRememberedSettings()
         DEFAULT_WINDOW_STEP);
 
     windowStep = windowStepVariant.toInt(&convertionSuccessful);
-    if (!convertionSuccessful)
-    {
+    if (!convertionSuccessful) {
         ioLog.error(QObject::tr("Invalid high flex setting window step is stored in the application settings."));
         return false;
     }
@@ -108,8 +96,7 @@ bool HighFlexSettings::restoreRememberedSettings()
         DEFAULT_THRESHOLD);
 
     threshold = thresholdVariant.toDouble(&convertionSuccessful);
-    if (!convertionSuccessful)
-    {
+    if (!convertionSuccessful) {
         ioLog.error(QObject::tr("Invalid high flex setting threshold is stored in the application settings."));
         return false;
     }
@@ -118,5 +105,4 @@ bool HighFlexSettings::restoreRememberedSettings()
     return true;
 }
 
-
-} // namespace
+}    // namespace U2

@@ -22,9 +22,9 @@
 #ifndef _U2_BUILT_IN_CONSENSUS_ALGORITHMS_H_
 #define _U2_BUILT_IN_CONSENSUS_ALGORITHMS_H_
 
-#include <U2Core/global.h>
-
 #include <QString>
+
+#include <U2Core/global.h>
 
 namespace U2 {
 
@@ -37,6 +37,6 @@ public:
     static const QString SIMPLE_EXTENDED_ALGO;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_BUILT_IN_CONSENSUS_ALGORITHMS_H_
+#endif    // _U2_BUILT_IN_CONSENSUS_ALGORITHMS_H_

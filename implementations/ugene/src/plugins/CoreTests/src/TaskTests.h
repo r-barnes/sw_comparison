@@ -22,9 +22,11 @@
 #ifndef _U2_TASK_TESTS_H_
 #define _U2_TASK_TESTS_H_
 
-#include <U2Test/XMLTestUtils.h>
-#include <U2Core/GObject.h>
 #include <QDomElement>
+
+#include <U2Core/GObject.h>
+
+#include <U2Test/XMLTestUtils.h>
 namespace U2 {
 
 class StateOrderTestTask;
@@ -32,7 +34,9 @@ class StateOrderTestTask;
 class InfiniteTestTask : public Task {
     Q_OBJECT
 public:
-    InfiniteTestTask(QString _taskName, TaskFlags _f) : Task(_taskName, _f) {}
+    InfiniteTestTask(QString _taskName, TaskFlags _f)
+        : Task(_taskName, _f) {
+    }
     void run() override;
 };
 
@@ -44,13 +48,17 @@ public:
 };
 
 enum StateOrderType {
-    StateOrder_Prepare, StateOrder_Run, StateOrder_Report, StateOrder_Done
+    StateOrder_Prepare,
+    StateOrder_Run,
+    StateOrder_Report,
+    StateOrder_Done
 };
 
 class StateOrderTestTaskCallback {
 public:
-    virtual void func(StateOrderTestTask *t,StateOrderType st) = 0;
-    virtual ~StateOrderTestTaskCallback() {}
+    virtual void func(StateOrderTestTask *t, StateOrderType st) = 0;
+    virtual ~StateOrderTestTaskCallback() {
+    }
 };
 
 class StateOrderTestTask : public Task {
@@ -62,6 +70,7 @@ public:
     void run();
     Task::ReportResult report();
     int step;
+
 private:
     StateOrderTestTaskCallback *callback;
 };
@@ -73,6 +82,7 @@ public:
 
     ReportResult report();
     void cleanup();
+
 private:
     Task *task;
     bool deleteTask;
@@ -85,6 +95,7 @@ public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_TaskAddSubtaskTest, "task-add-subtask");
 
     ReportResult report();
+
 private:
     QString taskContextName;
     QString subtaskContextName;
@@ -96,6 +107,7 @@ public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_TaskCancelTest, "task-cancel");
 
     ReportResult report();
+
 private:
     QString objContextName;
 };
@@ -106,6 +118,7 @@ public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_TaskCheckFlag, "task-check-flag");
 
     ReportResult report();
+
 private:
     TaskFlags flag;
     QString taskContextName;
@@ -117,6 +130,7 @@ public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_TaskCheckState, "task-check-state");
 
     ReportResult report();
+
 private:
     bool checkState;
     State taskState;
@@ -135,21 +149,23 @@ public:
 
     void prepare();
     ReportResult report();
+
 private:
     QString taskContextName;
 };
 
-class GTest_TaskStateOrder : public XmlTest, public StateOrderTestTaskCallback{
+class GTest_TaskStateOrder : public XmlTest, public StateOrderTestTaskCallback {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_TaskStateOrder, "task-state-order-test", TaskFlags_FOSCOE);
-    void func(StateOrderTestTask *t,StateOrderType st);
+    void func(StateOrderTestTask *t, StateOrderType st);
     Task::ReportResult report();
     void run();
+
 private:
     bool done_flag;
     StateOrderTestTask *task;
-    QList<StateOrderTestTask*> subs;
+    QList<StateOrderTestTask *> subs;
     int subtask_num;
     bool serial_flag;
     bool cancel_flag;
@@ -159,28 +175,29 @@ private:
 class GTest_Wait : public XmlTest {
     Q_OBJECT
 public:
-    SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_Wait, "wait",TaskFlags(TaskFlags_FOSCOE));
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_Wait, "wait", TaskFlags(TaskFlags_FOSCOE));
     Task::ReportResult report();
     void prepare();
     void run();
 public slots:
     void sl_WaitCond_StateChanged();
-private:
-    enum WaitCond {WaitCond_None,WaitCond_StateChanged};
-    WaitCond    condition;
-    State       waitForState;
-    QString     objContextName;
-    int         ms;
-    bool        waitOk;
-    QString     waitCondString;
-    QString     waitStateString;
 
+private:
+    enum WaitCond { WaitCond_None,
+                    WaitCond_StateChanged };
+    WaitCond condition;
+    State waitForState;
+    QString objContextName;
+    int ms;
+    bool waitOk;
+    QString waitCondString;
+    QString waitStateString;
 };
 
 class TaskTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-}//namespace
+}    // namespace U2
 #endif

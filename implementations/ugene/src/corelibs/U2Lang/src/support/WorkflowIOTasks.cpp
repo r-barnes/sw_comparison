@@ -19,17 +19,18 @@
  * MA 02110-1301, USA.
  */
 
+#include "WorkflowIOTasks.h"
+
+#include <QDomDocument>
 #include <QFile>
 #include <QTextStream>
-#include <QDomDocument>
 
-#include <U2Core/Log.h>
-#include <U2Core/L10n.h>
 #include <U2Core/AppContext.h>
+#include <U2Core/L10n.h>
+#include <U2Core/Log.h>
 #include <U2Core/Settings.h>
-#include <U2Lang/HRSchemaSerializer.h>
 
-#include "WorkflowIOTasks.h"
+#include <U2Lang/HRSchemaSerializer.h>
 
 namespace U2 {
 using namespace Workflow;
@@ -37,9 +38,9 @@ using namespace Workflow;
 /************************************
  * LoadWorkflowTask
  ************************************/
-LoadWorkflowTask::LoadWorkflowTask(Schema* s, Workflow::Metadata* m, const QString& u):
-Task(tr("Loading workflow"), TaskFlag_None),
-    url(u), schema(s), meta(m) {
+LoadWorkflowTask::LoadWorkflowTask(Schema *s, Workflow::Metadata *m, const QString &u)
+    : Task(tr("Loading workflow"), TaskFlag_None),
+      url(u), schema(s), meta(m) {
     assert(schema != NULL);
 }
 
@@ -55,21 +56,21 @@ void LoadWorkflowTask::run() {
     in.setCodec("UTF-8");
     rawData = in.readAll();
     format = detectFormat(rawData);
-    if(format == UNKNOWN) {
+    if (format == UNKNOWN) {
         setError(tr("Undefined format: plain text or xml expected"));
         return;
     }
 }
 
 Task::ReportResult LoadWorkflowTask::report() {
-    if(stateInfo.hasError()) {
+    if (stateInfo.hasError()) {
         return ReportResult_Finished;
     }
 
     QString err;
-    if(format == HR) {
+    if (format == HR) {
         err = HRSchemaSerializer::string2Schema(rawData, schema, meta, &remap);
-    } else if(format == XML) {
+    } else if (format == XML) {
         setError(tr("Sorry! XML workflow format is obsolete and not supported. You can create new workflow in GUI mode"
                     " or write it by yourself. Check our documentation for details!"));
         return ReportResult_Finished;
@@ -78,24 +79,24 @@ Task::ReportResult LoadWorkflowTask::report() {
         assert(false);
     }
 
-    if(!err.isEmpty()) {
+    if (!err.isEmpty()) {
         setError(err);
         schema->reset();
-        if(meta) {
+        if (meta) {
             meta->reset();
         }
         return ReportResult_Finished;
     }
-    if(meta) {
+    if (meta) {
         meta->url = url;
     }
     return ReportResult_Finished;
 }
 
-LoadWorkflowTask::FileFormat LoadWorkflowTask::detectFormat(const QString & rawData) {
-    if(HRSchemaSerializer::isHeaderLine(rawData.trimmed())) {
+LoadWorkflowTask::FileFormat LoadWorkflowTask::detectFormat(const QString &rawData) {
+    if (HRSchemaSerializer::isHeaderLine(rawData.trimmed())) {
         return HR;
-    } else if(rawData.trimmed().startsWith("<!DOCTYPE GB2WORKFLOW>")) {
+    } else if (rawData.trimmed().startsWith("<!DOCTYPE GB2WORKFLOW>")) {
         return XML;
     } else {
         return UNKNOWN;
@@ -105,19 +106,19 @@ LoadWorkflowTask::FileFormat LoadWorkflowTask::detectFormat(const QString & rawD
 /************************************
  * SaveWorkflowTask
  ************************************/
-SaveWorkflowTask::SaveWorkflowTask(Schema* schema, const Metadata& meta, bool copyMode) :
-Task(tr("Save workflow task"), TaskFlag_None), url(meta.url) {
+SaveWorkflowTask::SaveWorkflowTask(Schema *schema, const Metadata &meta, bool copyMode)
+    : Task(tr("Save workflow task"), TaskFlag_None), url(meta.url) {
     assert(schema != NULL);
     rawData = HRSchemaSerializer::schema2String(*schema, &meta, copyMode);
 }
 
 void SaveWorkflowTask::run() {
-    if(hasError() || isCanceled()) {
+    if (hasError() || isCanceled()) {
         return;
     }
 
     QFile file(url);
-    if(!file.open(QIODevice::WriteOnly)) {
+    if (!file.open(QIODevice::WriteOnly)) {
         setError(L10N::errorOpeningFileWrite(url));
         return;
     }
@@ -130,4 +131,4 @@ Task::ReportResult SaveWorkflowTask::report() {
     return ReportResult_Finished;
 }
 
-}//namespace
+}    // namespace U2

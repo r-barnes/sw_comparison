@@ -42,24 +42,30 @@ Q_DECLARE_FLAGS(ConsensusAlgorithmFlags, ConsensusAlgorithmFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(ConsensusAlgorithmFlags)
 
 #define ConsensusAlgorithmFlags_AllAlphabets (ConsensusAlgorithmFlags(ConsensusAlgorithmFlag_Nucleic) | ConsensusAlgorithmFlag_Amino | ConsensusAlgorithmFlag_Raw)
-#define ConsensusAlgorithmFlags_NuclAmino    (ConsensusAlgorithmFlags(ConsensusAlgorithmFlag_Nucleic) | ConsensusAlgorithmFlag_Amino)
+#define ConsensusAlgorithmFlags_NuclAmino (ConsensusAlgorithmFlags(ConsensusAlgorithmFlag_Nucleic) | ConsensusAlgorithmFlag_Amino)
 
 class U2ALGORITHM_EXPORT MSAConsensusAlgorithmFactory : public QObject {
     Q_OBJECT
 public:
-    MSAConsensusAlgorithmFactory(const QString& algoId, ConsensusAlgorithmFlags flags, QObject* p = NULL);
+    MSAConsensusAlgorithmFactory(const QString &algoId, ConsensusAlgorithmFlags flags, QObject *p = NULL);
 
-    virtual MSAConsensusAlgorithm* createAlgorithm(const MultipleAlignment& ma, bool ignoreTrailingLeadingGaps = false, QObject* parent = NULL) = 0;
+    virtual MSAConsensusAlgorithm *createAlgorithm(const MultipleAlignment &ma, bool ignoreTrailingLeadingGaps = false, QObject *parent = NULL) = 0;
 
-    QString getId() const {return algorithmId;}
+    QString getId() const {
+        return algorithmId;
+    }
 
-    ConsensusAlgorithmFlags getFlags() const {return flags;}
+    ConsensusAlgorithmFlags getFlags() const {
+        return flags;
+    }
 
     virtual QString getDescription() const = 0;
 
     virtual QString getName() const = 0;
 
-    virtual bool supportsThreshold() const {return flags.testFlag(ConsensusAlgorithmFlag_SupportThreshold);}
+    virtual bool supportsThreshold() const {
+        return flags.testFlag(ConsensusAlgorithmFlag_SupportThreshold);
+    }
 
     virtual int getMinThreshold() const = 0;
 
@@ -67,23 +73,24 @@ public:
 
     virtual int getDefaultThreshold() const = 0;
 
-    virtual QString getThresholdSuffix() const {return QString();}
+    virtual QString getThresholdSuffix() const {
+        return QString();
+    }
 
     virtual bool isSequenceLikeResult() const = 0;
 
     // utility method
-    static ConsensusAlgorithmFlags getAphabetFlags(const DNAAlphabet* al);
+    static ConsensusAlgorithmFlags getAphabetFlags(const DNAAlphabet *al);
 
 private:
-    QString                 algorithmId;
+    QString algorithmId;
     ConsensusAlgorithmFlags flags;
-
 };
 
 class U2ALGORITHM_EXPORT MSAConsensusAlgorithm : public QObject {
     Q_OBJECT
 public:
-    MSAConsensusAlgorithm(MSAConsensusAlgorithmFactory* factory, bool ignoreTrailingLeadingGaps, QObject* p = NULL);
+    MSAConsensusAlgorithm(MSAConsensusAlgorithmFactory *factory, bool ignoreTrailingLeadingGaps, QObject *p = NULL);
     MSAConsensusAlgorithm(const MSAConsensusAlgorithm &algorithm);
 
     /**
@@ -91,33 +98,53 @@ public:
         Score is a number: [0, num] sequences. Usually is means count of the char in the row
         Note that consensus character may be out of the to MSA alphabet symbols range
     */
-    virtual char getConsensusCharAndScore(const MultipleAlignment& ma, int column, int& score, QVector<int> seqIdx = QVector<int>()) const;
+    virtual char getConsensusCharAndScore(const MultipleAlignment &ma, int column, int &score, QVector<int> seqIdx = QVector<int>()) const;
 
-    virtual char getConsensusChar(const MultipleAlignment& ma, int column, QVector<int> seqIdx = QVector<int>()) const = 0;
+    virtual char getConsensusChar(const MultipleAlignment &ma, int column, QVector<int> seqIdx = QVector<int>()) const = 0;
 
-    virtual MSAConsensusAlgorithm* clone() const = 0;
+    virtual MSAConsensusAlgorithm *clone() const = 0;
 
-    virtual QString getDescription() const {return factory->getDescription();}
+    virtual QString getDescription() const {
+        return factory->getDescription();
+    }
 
-    virtual QString getName() const {return factory->getName();}
+    virtual QString getName() const {
+        return factory->getName();
+    }
 
     virtual void setThreshold(int val);
 
-    virtual int getThreshold() const {return threshold;}
+    virtual int getThreshold() const {
+        return threshold;
+    }
 
-    bool supportsThreshold() const {return factory->supportsThreshold();}
+    bool supportsThreshold() const {
+        return factory->supportsThreshold();
+    }
 
-    virtual int getMinThreshold() const {return factory->getMinThreshold();}
+    virtual int getMinThreshold() const {
+        return factory->getMinThreshold();
+    }
 
-    virtual int getMaxThreshold() const {return factory->getMaxThreshold();}
+    virtual int getMaxThreshold() const {
+        return factory->getMaxThreshold();
+    }
 
-    virtual int getDefaultThreshold() const {return factory->getDefaultThreshold();}
+    virtual int getDefaultThreshold() const {
+        return factory->getDefaultThreshold();
+    }
 
-    virtual QString getThresholdSuffix() const {return factory->getThresholdSuffix();}
+    virtual QString getThresholdSuffix() const {
+        return factory->getThresholdSuffix();
+    }
 
-    QString getId() const {return factory->getId();}
+    QString getId() const {
+        return factory->getId();
+    }
 
-    MSAConsensusAlgorithmFactory* getFactory() const {return factory;}
+    MSAConsensusAlgorithmFactory *getFactory() const {
+        return factory;
+    }
 
     static char INVALID_CONS_CHAR;
 
@@ -126,15 +153,14 @@ signals:
 
 protected:
     // returns true if there are meaningful symbols on @pos, depending on @ignoreTrailingleadingGaps flag
-    bool filterIdx(QVector<int> &seqIdx, const MultipleAlignment& ma, const int pos) const;
+    bool filterIdx(QVector<int> &seqIdx, const MultipleAlignment &ma, const int pos) const;
 
 private:
-    MSAConsensusAlgorithmFactory* factory;
-    int     threshold;
-    bool    ignoreTrailingAndLeadingGaps;
-
+    MSAConsensusAlgorithmFactory *factory;
+    int threshold;
+    bool ignoreTrailingAndLeadingGaps;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

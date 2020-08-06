@@ -23,10 +23,9 @@
 
 namespace U2 {
 
-MysqlUpgrader::MysqlUpgrader(const Version &versionFrom, const Version &versionTo, MysqlDbi *dbi) :
-    U2DbiUpgrader(versionFrom, versionTo),
-    dbi(dbi)
-{
+MysqlUpgrader::MysqlUpgrader(const Version &versionFrom, const Version &versionTo, MysqlDbi *dbi)
+    : U2DbiUpgrader(versionFrom, versionTo),
+      dbi(dbi) {
 }
 
-}   // namespace U2
+}    // namespace U2

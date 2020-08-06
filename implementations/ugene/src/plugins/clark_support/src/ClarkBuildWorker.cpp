@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ClarkBuildWorker.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/Counter.h>
@@ -48,17 +50,16 @@
 #include <U2Lang/BaseSlots.h>
 #include <U2Lang/BaseTypes.h>
 #include <U2Lang/Dataset.h>
+#include <U2Lang/IntegralBusModel.h>
 #include <U2Lang/URLAttribute.h>
 #include <U2Lang/URLContainer.h>
-#include <U2Lang/IntegralBusModel.h>
 #include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/WorkflowMonitor.h>
 
-#include "ClarkSupport.h"
-#include "ClarkBuildWorker.h"
-#include "ClarkClassifyWorker.h"
 #include "../../ngs_reads_classification/src/GenomicLibraryDelegate.h"
 #include "../../ngs_reads_classification/src/NgsReadsClassificationPlugin.h"
+#include "ClarkClassifyWorker.h"
+#include "ClarkSupport.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -83,7 +84,8 @@ bool ClarkBuildValidator::validate(const Actor *actor, NotificationsList &notifi
 bool ClarkBuildValidator::validateTaxonomy(const Actor *actor, NotificationsList &notificationList) const {
     U2DataPath *taxonomyDataPath = AppContext::getDataPathRegistry()->getDataPathByName(NgsReadsClassificationPlugin::TAXONOMY_DATA_ID);
     CHECK_EXT(NULL != taxonomyDataPath && taxonomyDataPath->isValid(),
-              notificationList << WorkflowNotification(tr("Taxonomy classification data from NCBI data are not available."), actor->getId()), false);
+              notificationList << WorkflowNotification(tr("Taxonomy classification data from NCBI data are not available."), actor->getId()),
+              false);
 
     bool isValid = true;
 
@@ -136,12 +138,10 @@ QString ClarkBuildPrompter::composeRichDoc() {
 /* ClarkBuildWorkerFactory */
 /************************************************************************/
 void ClarkBuildWorkerFactory::init() {
+    Descriptor desc(ACTOR_ID, ClarkBuildWorker::tr("Build CLARK Database"), ClarkBuildWorker::tr("Build a CLARK database from a set of reference sequences (\"targets\").\n"
+                                                                                                 "NCBI taxonomy data are used to map the accession number found in each reference sequence to its taxonomy ID."));
 
-    Descriptor desc( ACTOR_ID, ClarkBuildWorker::tr("Build CLARK Database"),
-        ClarkBuildWorker::tr("Build a CLARK database from a set of reference sequences (\"targets\").\n"
-                             "NCBI taxonomy data are used to map the accession number found in each reference sequence to its taxonomy ID.") );
-
-    QList<PortDescriptor*> p;
+    QList<PortDescriptor *> p;
     {
         Descriptor outD(OUTPUT_PORT, ClarkBuildWorker::tr("Output CLARK database"), ClarkBuildWorker::tr("URL to the folder with the CLARK database."));
 
@@ -152,28 +152,25 @@ void ClarkBuildWorkerFactory::init() {
         p << new PortDescriptor(outD, DataTypePtr(new MapDataType("clark.db-url", outM)), false, true);
     }
 
-    QList<Attribute*> a;
+    QList<Attribute *> a;
     {
-        Descriptor dbUrl(DB_URL, ClarkBuildWorker::tr("Database"),
-            ClarkBuildWorker::tr("A folder that should be used to store the database files."));
+        Descriptor dbUrl(DB_URL, ClarkBuildWorker::tr("Database"), ClarkBuildWorker::tr("A folder that should be used to store the database files."));
 
-        Descriptor taxonomy(GENOMIC_LIBRARY, ClarkBuildWorker::tr("Genomic library"),
-            ClarkBuildWorker::tr("Genomes that should be used to build the database (\"targets\").<br><br>"
-                                 "The genomes should be specified in FASTA format. There should be one FASTA file per reference sequence. A sequence header must contain an accession number (i.e., &gt;accession.number ... or &gt;gi|number|ref|accession.number| ...)."));
+        Descriptor taxonomy(GENOMIC_LIBRARY, ClarkBuildWorker::tr("Genomic library"), ClarkBuildWorker::tr("Genomes that should be used to build the database (\"targets\").<br><br>"
+                                                                                                           "The genomes should be specified in FASTA format. There should be one FASTA file per reference sequence. A sequence header must contain an accession number (i.e., &gt;accession.number ... or &gt;gi|number|ref|accession.number| ...)."));
 
-        Descriptor rank(TAXONOMY_RANK, ClarkBuildWorker::tr("Taxonomy rank"),
-            ClarkBuildWorker::tr("Set the taxonomy rank for the database.<br><br>"
-                                    "CLARK classifies metagenomic samples by using only one taxonomy rank. So as a general rule, "
-                                    "consider first the genus or species rank, then if a high proportion of reads "
-                                    "cannot be classified, reset your targets definition at a higher taxonomy rank (e.g., family or phylum)."));
+        Descriptor rank(TAXONOMY_RANK, ClarkBuildWorker::tr("Taxonomy rank"), ClarkBuildWorker::tr("Set the taxonomy rank for the database.<br><br>"
+                                                                                                   "CLARK classifies metagenomic samples by using only one taxonomy rank. So as a general rule, "
+                                                                                                   "consider first the genus or species rank, then if a high proportion of reads "
+                                                                                                   "cannot be classified, reset your targets definition at a higher taxonomy rank (e.g., family or phylum)."));
 
-        a << new Attribute( dbUrl, BaseTypes::STRING_TYPE(), true);
+        a << new Attribute(dbUrl, BaseTypes::STRING_TYPE(), true);
 
-        a << new Attribute( taxonomy, BaseTypes::URL_DATASETS_TYPE(), true);
-        a << new Attribute( rank, BaseTypes::NUM_TYPE(), false, ClarkClassifySettings::Species);
+        a << new Attribute(taxonomy, BaseTypes::URL_DATASETS_TYPE(), true);
+        a << new Attribute(rank, BaseTypes::NUM_TYPE(), false, ClarkClassifySettings::Species);
     }
 
-    QMap<QString, PropertyDelegate*> delegates;
+    QMap<QString, PropertyDelegate *> delegates;
     {
         QVariantMap rankMap;
         rankMap[ClarkBuildWorker::tr("Species")] = ClarkClassifySettings::Species;
@@ -194,7 +191,7 @@ void ClarkBuildWorkerFactory::init() {
         delegates[GENOMIC_LIBRARY] = new GenomicLibraryDelegate();
     }
 
-    ActorPrototype* proto = new IntegralBusActorPrototype(desc, p, a);
+    ActorPrototype *proto = new IntegralBusActorPrototype(desc, p, a);
     proto->setEditor(new DelegateEditor(delegates));
     proto->setPrompter(new ClarkBuildPrompter());
     proto->addExternalTool(ClarkSupport::ET_CLARK_GET_ACCSSN_TAX_ID_ID);
@@ -214,13 +211,11 @@ void ClarkBuildWorkerFactory::cleanup() {
     delete localDomain->unregisterEntry(ACTOR_ID);
 }
 
-
 /************************************************************************/
 /* ClarkBuildWorker */
 /************************************************************************/
 ClarkBuildWorker::ClarkBuildWorker(Actor *a)
-:BaseWorker(a), output(NULL)
-{
+    : BaseWorker(a), output(NULL) {
 }
 
 void ClarkBuildWorker::init() {
@@ -228,7 +223,7 @@ void ClarkBuildWorker::init() {
     SAFE_POINT(NULL != output, QString("Port with id '%1' is NULL").arg(OUTPUT_PORT), );
 }
 
-Task * ClarkBuildWorker::tick() {
+Task *ClarkBuildWorker::tick() {
     if (!isDone()) {
         QString databaseUrl = getValue<QString>(DB_URL);
         int rank = getValue<int>(TAXONOMY_RANK);
@@ -238,9 +233,9 @@ Task * ClarkBuildWorker::tick() {
         CHECK(NULL != taxonomyDataPath && taxonomyDataPath->isValid(), new FailTask(tr("Taxonomy classification data from NCBI are not available.")));
         QString taxdataUrl = taxonomyDataPath->getPath();
 
-        const QList<Dataset> datasets = getValue<QList<Dataset> >(GENOMIC_LIBRARY);
+        const QList<Dataset> datasets = getValue<QList<Dataset>>(GENOMIC_LIBRARY);
         DatasetFilesIterator it(datasets);
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             genUrls << it.getNextFile();
         }
 
@@ -253,7 +248,7 @@ Task * ClarkBuildWorker::tick() {
     return NULL;
 }
 
-void ClarkBuildWorker::sl_taskFinished(Task* t) {
+void ClarkBuildWorker::sl_taskFinished(Task *t) {
     ClarkBuildTask *task = qobject_cast<ClarkBuildTask *>(t);
     SAFE_POINT(NULL != task, "Invalid task is encountered", );
     if (!task->isFinished() || task->hasError() || task->isCanceled()) {
@@ -274,21 +269,20 @@ void ClarkBuildWorker::sl_taskFinished(Task* t) {
 
 ClarkBuildTask::ClarkBuildTask(const QString &dbUrl, const QStringList &genomeUrls, int rank, const QString &taxdataUrl)
     : ExternalToolSupportTask(tr("Build Clark database"), TaskFlags_NR_FOSE_COSC),
-    dbUrl(dbUrl), taxdataUrl(taxdataUrl), genomeUrls(genomeUrls), rank(rank)
-{
-  GCOUNTER(cvar, tvar, "ClarkBuildTask");
+      dbUrl(dbUrl), taxdataUrl(taxdataUrl), genomeUrls(genomeUrls), rank(rank) {
+    GCOUNTER(cvar, tvar, "ClarkBuildTask");
 
-  SAFE_POINT_EXT(!dbUrl.isEmpty(), setError(tr("CLARK database URL is undefined")), );
-  SAFE_POINT_EXT(!taxdataUrl.isEmpty(), setError(tr("Taxdata URL is undefined")), );
-  SAFE_POINT_EXT(!genomeUrls.isEmpty(), setError(tr("Genomic library set is empty")), );
-  SAFE_POINT_EXT(rank >= 0 && rank <= 5, setError(tr("Failed to recognize the rank. Please provide a number between 0 and 5, according to the following:\n"
-                                                     "0: species, 1: genus, 2: family, 3: order, 4:class, and 5: phylum.")), );
-
+    SAFE_POINT_EXT(!dbUrl.isEmpty(), setError(tr("CLARK database URL is undefined")), );
+    SAFE_POINT_EXT(!taxdataUrl.isEmpty(), setError(tr("Taxdata URL is undefined")), );
+    SAFE_POINT_EXT(!genomeUrls.isEmpty(), setError(tr("Genomic library set is empty")), );
+    SAFE_POINT_EXT(rank >= 0 && rank <= 5, setError(tr("Failed to recognize the rank. Please provide a number between 0 and 5, according to the following:\n"
+                                                       "0: species, 1: genus, 2: family, 3: order, 4:class, and 5: phylum.")), );
 }
 
 class ClarkBuildLogParser : public ExternalToolLogParser {
 public:
-    ClarkBuildLogParser() {}
+    ClarkBuildLogParser() {
+    }
 
 private:
     bool isError(const QString &line) const {
@@ -303,44 +297,41 @@ private:
     static const QStringList wellKnownErrors;
 };
 
-const QStringList ClarkBuildLogParser::wellKnownErrors = QStringList() << "abort" << "core dumped";
+const QStringList ClarkBuildLogParser::wellKnownErrors = QStringList() << "abort"
+                                                                       << "core dumped";
 
 void ClarkBuildTask::prepare() {
     const QString db("custom");
     const QString reflist = dbUrl + "/.custom";
     QDir dir(dbUrl);
-    if (!dir.mkpath(db)){
+    if (!dir.mkpath(db)) {
         setError(tr("Failed to create folder for CLARK database: %1/%2").arg(dbUrl).arg(db));
         return;
     }
 
     QFile refdata(reflist);
-    if (refdata.open(QIODevice::WriteOnly))
-    {
+    if (refdata.open(QIODevice::WriteOnly)) {
         refdata.write(genomeUrls.join("\n").toLocal8Bit());
         refdata.close();
-    }
-    else
-    {
+    } else {
         setError(refdata.errorString());
         CHECK_OP(stateInfo, );
     }
 
-  QString toolId = ClarkSupport::ET_CLARK_BUILD_SCRIPT_ID;
-  QScopedPointer<ExternalToolRunTask> task(new ExternalToolRunTask(toolId, getArguments(), new ClarkBuildLogParser()));
-  CHECK_OP(stateInfo, );
-  setListenerForTask(task.data());
-  addSubTask(task.take());
+    QString toolId = ClarkSupport::ET_CLARK_BUILD_SCRIPT_ID;
+    QScopedPointer<ExternalToolRunTask> task(new ExternalToolRunTask(toolId, getArguments(), new ClarkBuildLogParser()));
+    CHECK_OP(stateInfo, );
+    setListenerForTask(task.data());
+    addSubTask(task.take());
 }
 
 QStringList ClarkBuildTask::getArguments() {
+    QStringList arguments;
 
-  QStringList arguments;
+    arguments << dbUrl << taxdataUrl << "custom" << QString::number(rank);
 
-  arguments << dbUrl << taxdataUrl << "custom" << QString::number(rank);
-
-  return arguments;
+    return arguments;
 }
 
-} //LocalWorkflow
-} //U2
+}    // namespace LocalWorkflow
+}    // namespace U2

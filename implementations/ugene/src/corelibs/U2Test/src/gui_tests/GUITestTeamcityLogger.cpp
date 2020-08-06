@@ -23,7 +23,6 @@
 
 #include <U2Core/Log.h>
 
-
 #define ULOG_CAT_TEAMCITY "Teamcity Integration"
 
 namespace U2 {
@@ -31,16 +30,15 @@ static Logger teamcityLog(ULOG_CAT_TEAMCITY);
 
 const QString GUITestTeamcityLogger::successResult = "Success";
 
-void GUITestTeamcityLogger::testStarted(const QString& testName) {
+void GUITestTeamcityLogger::testStarted(const QString &testName) {
     teamcityLog.trace(QString("##teamcity[testStarted name='%1']").arg(escaped(testName)));
 }
 
-void GUITestTeamcityLogger::testIgnored(const QString& testName, const QString& ignoreReason) {
+void GUITestTeamcityLogger::testIgnored(const QString &testName, const QString &ignoreReason) {
     teamcityLog.trace(QString("##teamcity[testIgnored name='%1' message='%2']").arg(escaped(testName), escaped(ignoreReason)));
 }
 
 void GUITestTeamcityLogger::teamCityLogResult(const QString &testName, const QString &testResult, qint64 testTimeMicros) {
-
     if (testFailed(testResult)) {
         teamcityLog.trace(QString("##teamcity[testFailed name='%1' message='%2' details='%2' duration='%3']").arg(escaped(testName), escaped(testResult), QString::number(testTimeMicros)));
     }
@@ -49,7 +47,6 @@ void GUITestTeamcityLogger::teamCityLogResult(const QString &testName, const QSt
 }
 
 QString GUITestTeamcityLogger::escaped(const QString &s) {
-
     QString esc = s;
 
     esc = esc.replace("|", "||");
@@ -61,7 +58,6 @@ QString GUITestTeamcityLogger::escaped(const QString &s) {
 }
 
 bool GUITestTeamcityLogger::testFailed(const QString &testResult) {
-
     if (!testResult.contains(successResult)) {
         return true;
     }
@@ -69,4 +65,4 @@ bool GUITestTeamcityLogger::testFailed(const QString &testResult) {
     return false;
 }
 
-} // namespace
+}    // namespace U2

@@ -42,7 +42,7 @@ QVariantMap AnaglyphSettings::toMap(QVariantMap &map) const {
 AnaglyphSettings AnaglyphSettings::fromMap(const QVariantMap &map) {
     float eyesShift = map[EYES_SHIFT_NAME].value<float>();
     QColor leftEyeColor = map[LEFT_EYE_COLOR_NAME].value<QColor>();
-    QColor rightEyeColor= map[RIGHT_EYE_COLOR_NAME].value<QColor>();
+    QColor rightEyeColor = map[RIGHT_EYE_COLOR_NAME].value<QColor>();
 
     return AnaglyphSettings(eyesShift, leftEyeColor, rightEyeColor);
 }
@@ -56,7 +56,7 @@ void AnaglyphRenderer::resize(int _width, int _height) {
 
     width = _width, height = _height;
 
-    if ( !(width > 0 && height > 0) ) {
+    if (!(width > 0 && height > 0)) {
         return;
     }
 
@@ -75,36 +75,36 @@ void AnaglyphRenderer::draw() {
 
     // Prepare anaglyph textures
     glPushMatrix();
-        //glTranslatef(eyesShift, 0, 0);
-        glLoadIdentity();
-        gluLookAt(eyesShift, 0.0, glFrame->getCameraPosition().z, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    //glTranslatef(eyesShift, 0, 0);
+    glLoadIdentity();
+    gluLookAt(eyesShift, 0.0, glFrame->getCameraPosition().z, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
-        // at this moment buffer must be clean glClear omitted as a slow operation
-        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // at this moment buffer must be clean glClear omitted as a slow operation
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // isolate errors from main scene renderer
-        CHECK_GL_ERROR
-        renderer->draw();
-        glGetError();
+    // isolate errors from main scene renderer
+    CHECK_GL_ERROR
+    renderer->draw();
+    glGetError();
 
-        glBindTexture(GL_TEXTURE_2D, anaglyphRenderTextureRight);
-        glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, width, height, 0);
+    glBindTexture(GL_TEXTURE_2D, anaglyphRenderTextureRight);
+    glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, width, height, 0);
     glPopMatrix();
 
     glPushMatrix();
-        //glTranslatef(-eyesShift, 0, 0);
-        glLoadIdentity();
-        gluLookAt(-eyesShift, 0.0, glFrame->getCameraPosition().z, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    //glTranslatef(-eyesShift, 0, 0);
+    glLoadIdentity();
+    gluLookAt(-eyesShift, 0.0, glFrame->getCameraPosition().z, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // isolate errors from main scene renderer
-        CHECK_GL_ERROR
-        renderer->draw();
-        glGetError();
+    // isolate errors from main scene renderer
+    CHECK_GL_ERROR
+    renderer->draw();
+    glGetError();
 
-        glBindTexture(GL_TEXTURE_2D, anaglyphRenderTextureLeft);
-        glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, width, height, 0);
+    glBindTexture(GL_TEXTURE_2D, anaglyphRenderTextureLeft);
+    glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, width, height, 0);
     glPopMatrix();
 
     // Draw anaglyph textures in ortho projection
@@ -115,10 +115,10 @@ void AnaglyphRenderer::draw() {
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
 
-        setOrthoProjection();
+    setOrthoProjection();
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        drawTexturesAnaglyph();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    drawTexturesAnaglyph();
 
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
@@ -143,13 +143,13 @@ void AnaglyphRenderer::setOrthoProjection() {
 void AnaglyphRenderer::createEmptyTextures() {
     CHECK_GL_ERROR
 
-    if(anaglyphRenderTextureLeft != 0) {
+    if (anaglyphRenderTextureLeft != 0) {
         glDeleteTextures(1, &anaglyphRenderTextureLeft);
     }
-    if(anaglyphRenderTextureRight != 0) {
+    if (anaglyphRenderTextureRight != 0) {
         glDeleteTextures(1, &anaglyphRenderTextureRight);
     }
-    if(tempAnaglyphRenderTexture != 0) {
+    if (tempAnaglyphRenderTexture != 0) {
         glDeleteTextures(1, &tempAnaglyphRenderTexture);
     }
 
@@ -163,17 +163,17 @@ void AnaglyphRenderer::createEmptyTextures() {
 
     for (GLuint *txtnumber = txtnumbers; txtnumber < txtnumbers + 3; ++txtnumber) {
         glBindTexture(GL_TEXTURE_2D, *txtnumber);
-        glTexImage2D(GL_TEXTURE_2D, 0, 4, texwidth, texheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*) txtdata);
+        glTexImage2D(GL_TEXTURE_2D, 0, 4, texwidth, texheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)txtdata);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
 
     delete[] txtdata;
 
-    anaglyphRenderTextureLeft   = txtnumbers[0];
-    anaglyphRenderTextureRight  = txtnumbers[1];
-    tempAnaglyphRenderTexture   = txtnumbers[2];
+    anaglyphRenderTextureLeft = txtnumbers[0];
+    anaglyphRenderTextureRight = txtnumbers[1];
+    tempAnaglyphRenderTexture = txtnumbers[2];
 
     CHECK_GL_ERROR
 }
@@ -181,46 +181,44 @@ void AnaglyphRenderer::createEmptyTextures() {
 void AnaglyphRenderer::drawTexturesAnaglyph() {
     CHECK_GL_ERROR
 
-    drawTexture(anaglyphRenderTextureLeft, settings.rightEyeColor.red(), settings.rightEyeColor.green(), settings.rightEyeColor.blue(), 0.5f, false); // colored left image
+    drawTexture(anaglyphRenderTextureLeft, settings.rightEyeColor.red(), settings.rightEyeColor.green(), settings.rightEyeColor.blue(), 0.5f, false);    // colored left image
 
     glBindTexture(GL_TEXTURE_2D, tempAnaglyphRenderTexture);
     glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, width, height, 0);    // Copy Our ViewPort To The Blur Texture (From 0,0 To 128,128... No Border)
 
-    drawTexture(anaglyphRenderTextureRight, settings.leftEyeColor.red(), settings.leftEyeColor.green(), settings.leftEyeColor.blue(), 0.5f, false); // colored right image
+    drawTexture(anaglyphRenderTextureRight, settings.leftEyeColor.red(), settings.leftEyeColor.green(), settings.leftEyeColor.blue(), 0.5f, false);    // colored right image
     drawTexture(tempAnaglyphRenderTexture, 255, 255, 255, 1.0f, true);
 
     CHECK_GL_ERROR
 }
 
-void AnaglyphRenderer::drawTexture(GLuint anaglyphRenderTexture, int red, int green, int blue, float alpha, bool alphaOnly)
-{
+void AnaglyphRenderer::drawTexture(GLuint anaglyphRenderTexture, int red, int green, int blue, float alpha, bool alphaOnly) {
     CHECK_GL_ERROR
 
     glEnable(GL_TEXTURE_2D);
 
-    if (alphaOnly){
+    if (alphaOnly) {
         // the second image is this, it has needed alpha color
         glBlendFunc(GL_DST_ALPHA, GL_DST_ALPHA);
-    }
-    else {
+    } else {
         glBlendFunc(GL_ONE, GL_ONE);
     }
 
     glBindTexture(GL_TEXTURE_2D, anaglyphRenderTexture);
 
-    glColor4ub(red, green, blue, (GLubyte) (alpha * 255.0));
+    glColor4ub(red, green, blue, (GLubyte)(alpha * 255.0));
     glBegin(GL_QUADS);
-        glTexCoord2f(0, 1);
-        glVertex2f(0,0);
+    glTexCoord2f(0, 1);
+    glVertex2f(0, 0);
 
-        glTexCoord2f(0, 0);
-        glVertex2f(0, 1);
+    glTexCoord2f(0, 0);
+    glVertex2f(0, 1);
 
-        glTexCoord2f(1, 0);
-        glVertex2f(1, 1);
+    glTexCoord2f(1, 0);
+    glVertex2f(1, 1);
 
-        glTexCoord2f(1, 1);
-        glVertex2f(1, 0);
+    glTexCoord2f(1, 1);
+    glVertex2f(1, 0);
     glEnd();
 
     // Unbind the blur texture
@@ -230,21 +228,18 @@ void AnaglyphRenderer::drawTexture(GLuint anaglyphRenderTexture, int red, int gr
     CHECK_GL_ERROR
 }
 
-AnaglyphRenderer::AnaglyphRenderer(BioStruct3DGLWidget *_renderer, const AnaglyphSettings &_settings) :
-    renderer(_renderer),
-    settings(_settings),
-    width(1),
-    height(1),
-    anaglyphRenderTextureLeft(0),
-    anaglyphRenderTextureRight(0),
-    tempAnaglyphRenderTexture(0),
-    hasErrors(false)
-{
-
+AnaglyphRenderer::AnaglyphRenderer(BioStruct3DGLWidget *_renderer, const AnaglyphSettings &_settings)
+    : renderer(_renderer),
+      settings(_settings),
+      width(1),
+      height(1),
+      anaglyphRenderTextureLeft(0),
+      anaglyphRenderTextureRight(0),
+      tempAnaglyphRenderTexture(0),
+      hasErrors(false) {
 }
 
 AnaglyphRenderer::~AnaglyphRenderer() {
-
 }
 
 bool AnaglyphRenderer::isAvailable() {
@@ -252,5 +247,4 @@ bool AnaglyphRenderer::isAvailable() {
     return !hasErrors;
 }
 
-}   // namespace U2
-
+}    // namespace U2

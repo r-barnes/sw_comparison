@@ -31,7 +31,7 @@ class SaveDocumentController;
 class DNASequenceGeneratorDialog : public QDialog, public Ui_DNASequenceGeneratorDialog {
     Q_OBJECT
 public:
-    DNASequenceGeneratorDialog(QWidget* p=NULL);
+    DNASequenceGeneratorDialog(QWidget *p = NULL);
 
 private slots:
     void sl_browseReference();
@@ -44,14 +44,14 @@ private slots:
 private:
     void initSaveController();
 
-    SaveDocumentController* saveController;
+    SaveDocumentController *saveController;
     static QMap<char, qreal> content;
-    QPushButton* generateButton;
-    QPushButton* cancelButton;
-    QMap<char, qreal>& percentMap;
+    QPushButton *generateButton;
+    QPushButton *cancelButton;
+    QMap<char, qreal> &percentMap;
     float gcSkew;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

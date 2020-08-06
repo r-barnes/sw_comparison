@@ -22,36 +22,38 @@
 #ifndef __EXTRACT_ANNOTATED_REGION_TASK_H__
 #define __EXTRACT_ANNOTATED_REGION_TASK_H__
 
-#include <U2Core/Task.h>
-#include <U2Core/DNASequence.h>
 #include <U2Core/AnnotationData.h>
-
+#include <U2Core/DNASequence.h>
 #include <U2Core/DNATranslation.h>
+#include <U2Core/Task.h>
 
 namespace U2 {
 
 struct U2CORE_EXPORT ExtractAnnotatedRegionTaskSettings {
-    ExtractAnnotatedRegionTaskSettings() : gapSym('-'), gapLength(0), translate(true), complement(true), extLeft(0), extRight(0), splitJoined(false) {}
-    char    gapSym;
-    int     gapLength;
-    bool    translate;
-    bool    complement;
-    int     extLeft;
-    int     extRight;
-    bool    splitJoined;
+    ExtractAnnotatedRegionTaskSettings()
+        : gapSym('-'), gapLength(0), translate(true), complement(true), extLeft(0), extRight(0), splitJoined(false) {
+    }
+    char gapSym;
+    int gapLength;
+    bool translate;
+    bool complement;
+    int extLeft;
+    int extRight;
+    bool splitJoined;
 };
 
 class U2CORE_EXPORT ExtractAnnotatedRegionTask : public Task {
     Q_OBJECT
 public:
-    ExtractAnnotatedRegionTask(const DNASequence &sequence, const SharedAnnotationData &sd, const ExtractAnnotatedRegionTaskSettings & cfg);
+    ExtractAnnotatedRegionTask(const DNASequence &sequence, const SharedAnnotationData &sd, const ExtractAnnotatedRegionTaskSettings &cfg);
     void prepare();
     void run();
-    const QList<DNASequence>& getResultedSequences() const;
-    const SharedAnnotationData & getInputAnnotation() const;
+    const QList<DNASequence> &getResultedSequences() const;
+    const SharedAnnotationData &getInputAnnotation() const;
+
 private:
     void prepareTranslations();
-    void extractLocations(QList<QByteArray>& resParts, QVector<U2Region>& resLocation, const QVector<U2Region>& origLocation);
+    void extractLocations(QList<QByteArray> &resParts, QVector<U2Region> &resLocation, const QVector<U2Region> &origLocation);
 
     DNASequence inputSeq;
     const SharedAnnotationData inputAnn;
@@ -64,6 +66,6 @@ private:
     QList<DNASequence> resultedSeqList;
 };
 
-}// ns
+}    // namespace U2
 
 #endif

@@ -31,15 +31,15 @@ namespace U2 {
 
 //////////////////////////////////////////////////////////////////////////
 //Settings
-class GeneByGeneReportSettings{
+class GeneByGeneReportSettings {
 public:
     GeneByGeneReportSettings();
 
 public:
-    QString     outFile;
-    QString     existingFile;
-    float       identity;
-    QString     annName;
+    QString outFile;
+    QString existingFile;
+    float identity;
+    QString annName;
 
     static const QString MERGE_EXISTING;
     static const QString OVERWRITE_EXISTING;
@@ -51,76 +51,71 @@ private:
 
 //////////////////////////////////////////////////////////////////////////
 //Algorithm
-class GeneByGeneCompareResult{
+class GeneByGeneCompareResult {
 public:
     GeneByGeneCompareResult()
-        :identical(false)
-        ,identityString(IDENTICAL_NO)
-    {}
+        : identical(false), identityString(IDENTICAL_NO) {
+    }
 
-    bool        identical;
-    QString     identityString;
+    bool identical;
+    QString identityString;
 
     static const QString IDENTICAL_YES;
     static const QString IDENTICAL_NO;
 };
 
-class GeneByGeneComparator{
+class GeneByGeneComparator {
 public:
-    GeneByGeneComparator(){}
+    GeneByGeneComparator() {
+    }
 
-    static GeneByGeneCompareResult compareGeneAnnotation(const DNASequence &seq, const QList<SharedAnnotationData> &annData,
-        const QString &annName, float identity);
+    static GeneByGeneCompareResult compareGeneAnnotation(const DNASequence &seq, const QList<SharedAnnotationData> &annData, const QString &annName, float identity);
 
-    static float parseBlastQual (const QString& ident);
+    static float parseBlastQual(const QString &ident);
 };
-
 
 //////////////////////////////////////////////////////////////////////////
 //IO
-class GeneByGeneReportIO{
+class GeneByGeneReportIO {
 public:
-    GeneByGeneReportIO(const QString& _outFile, const QString& _existingMode);
+    GeneByGeneReportIO(const QString &_outFile, const QString &_existingMode);
     ~GeneByGeneReportIO();
 
-    void prepareOutputFile(U2OpStatus& os);
-    void writeTableItem(const QString& geneName, const QString& identicalString, U2OpStatus& os);
+    void prepareOutputFile(U2OpStatus &os);
+    void writeTableItem(const QString &geneName, const QString &identicalString, U2OpStatus &os);
 
 private:
-    QString                         outFile;
-    QString                         existingMode;
-    QMap<QString, QList<QString> >  mergedTable;
-    IOAdapter*                      io;
-    int                             mergedGenomesSize;
+    QString outFile;
+    QString existingMode;
+    QMap<QString, QList<QString>> mergedTable;
+    IOAdapter *io;
+    int mergedGenomesSize;
 
 private:
-    void readMergedTable(const QString& filePath, U2OpStatus& os);
-    void writeHeader(IOAdapter* io);
-    void writeRow(const QList<QString>& rowData);
+    void readMergedTable(const QString &filePath, U2OpStatus &os);
+    void writeHeader(IOAdapter *io);
+    void writeRow(const QList<QString> &rowData);
 };
-
 
 //////////////////////////////////////////////////////////////////////////
 //Task
 class GeneByGeneReportTask : public Task {
     Q_OBJECT
 public:
-    GeneByGeneReportTask(const GeneByGeneReportSettings &settings, const QMap<QString, QPair<DNASequence, QList<SharedAnnotationData> > > &geneData);
+    GeneByGeneReportTask(const GeneByGeneReportSettings &settings, const QMap<QString, QPair<DNASequence, QList<SharedAnnotationData>>> &geneData);
     virtual ~GeneByGeneReportTask();
 
     virtual void run();
 
-    const GeneByGeneReportSettings& getSettings(){return settings;}
+    const GeneByGeneReportSettings &getSettings() {
+        return settings;
+    }
 
 private:
     GeneByGeneReportSettings settings;
-    QMap<QString, QPair<DNASequence, QList<SharedAnnotationData> > > geneData;
-
+    QMap<QString, QPair<DNASequence, QList<SharedAnnotationData>>> geneData;
 };
 
+}    //namespace U2
 
-} //namespace U2
-
-#endif //_U2_GENE_BY_GENE_REPORT_TASK_H_
-
-
+#endif    //_U2_GENE_BY_GENE_REPORT_TASK_H_

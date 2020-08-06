@@ -36,10 +36,10 @@
 
 namespace U2 {
 
-#define DB_ID_OFFSET    0
-#define TYPE_OFFSET     8
+#define DB_ID_OFFSET 0
+#define TYPE_OFFSET 8
 #define DB_EXTRA_OFFSET 10
-#define DATAID_MIN_LEN  10
+#define DATAID_MIN_LEN 10
 
 static U2DataId emptyId;
 
@@ -48,7 +48,7 @@ const QString U2DbiUtils::PUBLIC_DATABASE_LOGIN = "public";
 const QString U2DbiUtils::PUBLIC_DATABASE_PASSWORD = "public";
 const QString U2DbiUtils::PUBLIC_DATABASE_URL = U2DbiUtils::createFullDbiUrl(PUBLIC_DATABASE_LOGIN, "5.9.139.103", 3306, "public_ugene_1_25");
 
-void U2DbiUtils::logNotSupported(U2DbiFeature f, U2Dbi* dbi, U2OpStatus& os) {
+void U2DbiUtils::logNotSupported(U2DbiFeature f, U2Dbi *dbi, U2OpStatus &os) {
     QString msg = tr("Feature is not supported: %1, dbi: %2").arg(int(f)).arg(dbi == NULL ? QString("<unknown>") : dbi->getDbiId());
     coreLog.error(msg);
     if (!os.hasError()) {
@@ -63,21 +63,21 @@ void U2DbiUtils::logNotSupported(U2DbiFeature f, U2Dbi* dbi, U2OpStatus& os) {
 #endif
 }
 
-U2DbiRef U2DbiUtils::toRef(U2Dbi* dbi) {
+U2DbiRef U2DbiUtils::toRef(U2Dbi *dbi) {
     if (dbi == NULL) {
         return U2DbiRef();
     }
     return U2DbiRef(dbi->getFactoryId(), dbi->getDbiId());
 }
 
-void U2DbiUtils::addLimit(QString& sql, qint64 offset, qint64 count) {
+void U2DbiUtils::addLimit(QString &sql, qint64 offset, qint64 count) {
     if (count == -1) {
         return;
     }
     sql = sql + QString(" LIMIT %1, %2").arg(offset).arg(count).toLatin1();
 }
 
-U2DataId U2DbiUtils::toU2DataId(qint64 id, U2DataType type, const QByteArray& dbExtra) {
+U2DataId U2DbiUtils::toU2DataId(qint64 id, U2DataType type, const QByteArray &dbExtra) {
     assert(sizeof(U2DataType) == 2);
 
     if (0 == id) {
@@ -87,9 +87,9 @@ U2DataId U2DbiUtils::toU2DataId(qint64 id, U2DataType type, const QByteArray& db
     int extraLen = dbExtra.size();
     int len = DATAID_MIN_LEN + extraLen;
     QByteArray res(len, Qt::Uninitialized);
-    char* data = res.data();
-    ((qint64*)(data + DB_ID_OFFSET))[0] = id;
-    ((U2DataType*)(data + TYPE_OFFSET))[0] = type;
+    char *data = res.data();
+    ((qint64 *)(data + DB_ID_OFFSET))[0] = id;
+    ((U2DataType *)(data + TYPE_OFFSET))[0] = type;
     if (extraLen > 0) {
         memcpy(data + DB_EXTRA_OFFSET, dbExtra.constData(), dbExtra.size());
     }
@@ -97,39 +97,39 @@ U2DataId U2DbiUtils::toU2DataId(qint64 id, U2DataType type, const QByteArray& db
     return res;
 }
 
-quint64 U2DbiUtils::toDbiId(const U2DataId& id) {
+quint64 U2DbiUtils::toDbiId(const U2DataId &id) {
     if (id.size() < DATAID_MIN_LEN) {
         return 0;
     }
-    return *(qint64*)(id.constData() + DB_ID_OFFSET);
+    return *(qint64 *)(id.constData() + DB_ID_OFFSET);
 }
 
-U2DataType U2DbiUtils::toType(const U2DataId& id) {
+U2DataType U2DbiUtils::toType(const U2DataId &id) {
     if (id.size() < DATAID_MIN_LEN) {
         return 0;
     }
-    return *(U2DataType*)(id.constData() + TYPE_OFFSET);
+    return *(U2DataType *)(id.constData() + TYPE_OFFSET);
 }
 
-QByteArray U2DbiUtils::toDbExtra(const U2DataId& id) {
+QByteArray U2DbiUtils::toDbExtra(const U2DataId &id) {
     if (id.size() < DATAID_MIN_LEN) {
         return emptyId;
     }
     return QByteArray(id.constData() + DB_EXTRA_OFFSET, id.length() - DB_EXTRA_OFFSET);
 }
 
-QString U2DbiUtils::text(const U2DataId& id) {
+QString U2DbiUtils::text(const U2DataId &id) {
     QString res = QString("[Id: %1, Type: %2, Extra: %3]").arg(toDbiId(id)).arg(int(toType(id))).arg(toDbExtra(id).constData());
     return res;
 }
 
-QString U2DbiUtils::ref2Url(const U2DbiRef& dbiRef) {
-    U2DbiFactory* dbiFactory = AppContext::getDbiRegistry()->getDbiFactoryById(dbiRef.dbiFactoryId);
+QString U2DbiUtils::ref2Url(const U2DbiRef &dbiRef) {
+    U2DbiFactory *dbiFactory = AppContext::getDbiRegistry()->getDbiFactoryById(dbiRef.dbiFactoryId);
     SAFE_POINT(NULL != dbiFactory, QString("Invalid database type: %1").arg(dbiRef.dbiFactoryId), "");
     return dbiFactory->id2Url(dbiRef.dbiId).getURLString();
 }
 
-QString U2DbiUtils::createDbiUrl(const QString &host, int port, const QString &dbName ) {
+QString U2DbiUtils::createDbiUrl(const QString &host, int port, const QString &dbName) {
     QString portString = (port >= 0 ? QString::number(port) : "");
     return host + ":" + portString + "/" + dbName;
 }
@@ -142,7 +142,7 @@ QString U2DbiUtils::createFullDbiUrl(const QString &userName, const QString &dbi
     return userName + "@" + dbiUrl;
 }
 
-bool U2DbiUtils::parseDbiUrl(const QString &dbiUrl, QString& host, int& port, QString& dbName) {
+bool U2DbiUtils::parseDbiUrl(const QString &dbiUrl, QString &host, int &port, QString &dbName) {
     int sepIndex = dbiUrl.indexOf(":");
     if (sepIndex < 0) {
         return false;
@@ -194,18 +194,18 @@ bool U2DbiUtils::isFullDbiUrl(const QString &dbiUrl) {
     return dbiUrl.contains('@');
 }
 
-QString U2DbiUtils::makeFolderCanonical(const QString& folder) {
+QString U2DbiUtils::makeFolderCanonical(const QString &folder) {
     if (U2ObjectDbi::ROOT_FOLDER == folder) {
         return folder;
     }
 
     QString result = folder.startsWith(U2ObjectDbi::ROOT_FOLDER + U2ObjectDbi::PATH_SEP) ?
-                folder :
-                U2ObjectDbi::ROOT_FOLDER + U2ObjectDbi::PATH_SEP + folder;
+                         folder :
+                         U2ObjectDbi::ROOT_FOLDER + U2ObjectDbi::PATH_SEP + folder;
     result.replace(QRegExp(U2ObjectDbi::PATH_SEP + "+"), U2ObjectDbi::PATH_SEP);
 
     if (U2ObjectDbi::ROOT_FOLDER != result &&
-            result.endsWith(U2ObjectDbi::ROOT_FOLDER)) {
+        result.endsWith(U2ObjectDbi::ROOT_FOLDER)) {
         result.chop(U2ObjectDbi::ROOT_FOLDER.size());
     }
 
@@ -245,13 +245,12 @@ bool U2DbiUtils::isDatabaseTooOld(const U2DbiRef &dbiRef, const Version &ugeneVe
 TmpDbiHandle::TmpDbiHandle() {
 }
 
-TmpDbiHandle::TmpDbiHandle(const QString& _alias, U2OpStatus& os, const U2DbiFactoryId &factoryId)
-    : alias(_alias)
-{
+TmpDbiHandle::TmpDbiHandle(const QString &_alias, U2OpStatus &os, const U2DbiFactoryId &factoryId)
+    : alias(_alias) {
     dbiRef = AppContext::getDbiRegistry()->attachTmpDbi(alias, os, factoryId);
 }
 
-TmpDbiHandle::TmpDbiHandle(const TmpDbiHandle& dbiHandle) {
+TmpDbiHandle::TmpDbiHandle(const TmpDbiHandle &dbiHandle) {
     if (dbiHandle.isValid()) {
         alias = dbiHandle.getAlias();
         dbiRef = dbiHandle.getDbiRef();
@@ -261,7 +260,7 @@ TmpDbiHandle::TmpDbiHandle(const TmpDbiHandle& dbiHandle) {
     }
 }
 
-TmpDbiHandle& TmpDbiHandle::operator=(const TmpDbiHandle& dbiHandle) {
+TmpDbiHandle &TmpDbiHandle::operator=(const TmpDbiHandle &dbiHandle) {
     if (this != &dbiHandle) {
         if (dbiHandle.isValid()) {
             alias = dbiHandle.getAlias();
@@ -275,9 +274,8 @@ TmpDbiHandle& TmpDbiHandle::operator=(const TmpDbiHandle& dbiHandle) {
     return *this;
 }
 
-TmpDbiHandle::~TmpDbiHandle () {
-    if (isValid())
-    {
+TmpDbiHandle::~TmpDbiHandle() {
+    if (isValid()) {
         U2OpStatus2Log os;
         AppContext::getDbiRegistry()->detachTmpDbi(alias, os);
     }
@@ -287,7 +285,7 @@ TmpDbiHandle::~TmpDbiHandle () {
 // TmpDbiObjects
 TmpDbiObjects::~TmpDbiObjects() {
     if (os.isCoR()) {
-        foreach(const U2DataId& id, objects) {
+        foreach (const U2DataId &id, objects) {
             if (!id.isEmpty()) {
                 U2OpStatus2Log os2log;
                 DbiConnection con(dbiRef, os2log);
@@ -297,10 +295,9 @@ TmpDbiObjects::~TmpDbiObjects() {
     }
 }
 
-DbiOperationsBlock::DbiOperationsBlock(const U2DbiRef &_dbiRef, U2OpStatus &os) :
-    dbiRef(_dbiRef),
-    os(os)
-{
+DbiOperationsBlock::DbiOperationsBlock(const U2DbiRef &_dbiRef, U2OpStatus &os)
+    : dbiRef(_dbiRef),
+      os(os) {
     connection = new DbiConnection(dbiRef, os);
     CHECK_OP(os, );
     connection->dbi->startOperationsBlock(os);
@@ -313,4 +310,4 @@ DbiOperationsBlock::~DbiOperationsBlock() {
     delete connection;
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -25,17 +25,16 @@ namespace U2 {
 namespace BAM {
 
 // Alignment::CigarOperation
-Alignment::CigarOperation::CigarOperation(int length, Operation operation):
-    length(length),
-    operation(operation)
-{
+Alignment::CigarOperation::CigarOperation(int length, Operation operation)
+    : length(length),
+      operation(operation) {
 }
 
-int Alignment::CigarOperation::getLength()const {
+int Alignment::CigarOperation::getLength() const {
     return length;
 }
 
-Alignment::CigarOperation::Operation Alignment::CigarOperation::getOperation()const {
+Alignment::CigarOperation::Operation Alignment::CigarOperation::getOperation() const {
     return operation;
 }
 
@@ -49,72 +48,71 @@ void Alignment::CigarOperation::setOperation(Operation operation) {
 
 // Alignment
 
-Alignment::Alignment():
-    referenceId(-1),
-    position(-1),
-    bin(0),
-    mapQuality(0xff),
-    flags(0),
-    nextReferenceId(-1),
-    nextReferenceName("*"),
-    nextPosition(-1),
-    templateLength(0)
-{
+Alignment::Alignment()
+    : referenceId(-1),
+      position(-1),
+      bin(0),
+      mapQuality(0xff),
+      flags(0),
+      nextReferenceId(-1),
+      nextReferenceName("*"),
+      nextPosition(-1),
+      templateLength(0) {
 }
 
-int Alignment::getReferenceId()const {
+int Alignment::getReferenceId() const {
     return referenceId;
 }
 
-int Alignment::getPosition()const {
+int Alignment::getPosition() const {
     return position;
 }
 
-int Alignment::getBin()const {
+int Alignment::getBin() const {
     return bin;
 }
 
-int Alignment::getMapQuality()const {
+int Alignment::getMapQuality() const {
     return mapQuality;
 }
 
-qint64 Alignment::getFlags()const {
+qint64 Alignment::getFlags() const {
     return flags;
 }
 
-int Alignment::getNextReferenceId()const {
+int Alignment::getNextReferenceId() const {
     return nextReferenceId;
 }
 
-QByteArray Alignment::getNextReferenceName()const {
+QByteArray Alignment::getNextReferenceName() const {
     return nextReferenceName;
 }
 
-int Alignment::getNextPosition()const {
+int Alignment::getNextPosition() const {
     return nextPosition;
 }
 
-int Alignment::getTemplateLength()const {
+int Alignment::getTemplateLength() const {
     return templateLength;
 }
 
-const QByteArray &Alignment::getName()const {
+const QByteArray &Alignment::getName() const {
     return name;
 }
 
-const QList<Alignment::CigarOperation> &Alignment::getCigar()const {
+const QList<Alignment::CigarOperation> &Alignment::getCigar() const {
     return cigar;
 }
 
-const QByteArray &Alignment::getSequence()const {
+const QByteArray &Alignment::getSequence() const {
     return sequence;
 }
 
-const QByteArray &Alignment::getQuality()const {
+const QByteArray &Alignment::getQuality() const {
     return quality;
 }
 
-const QList<U2AuxData> & Alignment::getAuxData()const {
+const QList<U2AuxData> &Alignment::getAuxData() const {
     return aux;
 }
 
@@ -179,8 +177,8 @@ void Alignment::setAuxData(const QList<U2AuxData> &aux) {
 
 int Alignment::computeLength(const QList<CigarOperation> &cigar) {
     int length = 0;
-    foreach(const Alignment::CigarOperation &operation, cigar) {
-        if((operation.getOperation() != Alignment::CigarOperation::Insertion)) {
+    foreach (const Alignment::CigarOperation &operation, cigar) {
+        if ((operation.getOperation() != Alignment::CigarOperation::Insertion)) {
             length += operation.getLength();
         }
     }
@@ -189,13 +187,13 @@ int Alignment::computeLength(const QList<CigarOperation> &cigar) {
 
 int Alignment::computeLength(const QList<U2CigarToken> &cigar) {
     int length = 0;
-    foreach(const U2CigarToken &operation, cigar) {
-        if((operation.op != U2CigarOp_I)) {
+    foreach (const U2CigarToken &operation, cigar) {
+        if ((operation.op != U2CigarOp_I)) {
             length += operation.count;
         }
     }
     return length;
 }
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2

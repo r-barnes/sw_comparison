@@ -31,12 +31,14 @@ namespace LocalWorkflow {
 class PassFilterPrompter : public PrompterBase<PassFilterPrompter> {
     Q_OBJECT
 public:
-    PassFilterPrompter(Actor *p = NULL) : PrompterBase<PassFilterPrompter>(p) {}
+    PassFilterPrompter(Actor *p = NULL)
+        : PrompterBase<PassFilterPrompter>(p) {
+    }
 
 protected:
     QString composeRichDoc();
 
-}; // PassFilterPrompter
+};    // PassFilterPrompter
 
 class PassFilterWorker : public BaseWorker {
     Q_OBJECT
@@ -53,19 +55,21 @@ private:
     DataTypePtr mtype;
     QStringList passedValues;
 
-}; // PassFilterWorker
+};    // PassFilterWorker
 
 class PassFilterWorkerFactory : public DomainFactory {
 public:
     static const QString ACTOR_ID;
 
-    PassFilterWorkerFactory() : DomainFactory(ACTOR_ID) {}
+    PassFilterWorkerFactory()
+        : DomainFactory(ACTOR_ID) {
+    }
     static void init();
     virtual Worker *createWorker(Actor *a);
 
-}; // PassFilterWorkerFactory
+};    // PassFilterWorkerFactory
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2
 
-#endif // _FILTER_SEQUENCE_WORKER_H_
+#endif    // _FILTER_SEQUENCE_WORKER_H_

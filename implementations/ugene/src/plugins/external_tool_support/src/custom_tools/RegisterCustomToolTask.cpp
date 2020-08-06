@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "RegisterCustomToolTask.h"
+
 #include <QScopedPointer>
 
 #include <U2Core/AppContext.h>
@@ -27,16 +29,13 @@
 #include <U2Core/U2SafePoints.h>
 
 #include "CustomToolConfigParser.h"
-#include "RegisterCustomToolTask.h"
 
 namespace U2 {
 
 RegisterCustomToolTask::RegisterCustomToolTask(const QString &_url)
     : Task(tr("Register custom external tool"), TaskFlag_None),
       url(_url),
-      registeredTool(nullptr)
-{
-
+      registeredTool(nullptr) {
 }
 
 CustomExternalTool *RegisterCustomToolTask::getTool() const {
@@ -57,4 +56,4 @@ void RegisterCustomToolTask::run() {
     }
 }
 
-}   // namespace U2
+}    // namespace U2

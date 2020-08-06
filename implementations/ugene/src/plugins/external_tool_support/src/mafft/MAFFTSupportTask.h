@@ -25,8 +25,8 @@
 #include <QFile>
 
 #include <U2Core/ExternalToolRunTask.h>
-#include <U2Core/IOAdapter.h>
 #include <U2Core/GObjectReference.h>
+#include <U2Core/IOAdapter.h>
 #include <U2Core/MultipleSequenceAlignment.h>
 #include <U2Core/SaveDocumentTask.h>
 #include <U2Core/Task.h>
@@ -49,49 +49,49 @@ namespace U2 {
 class LoadDocumentTask;
 class MAFFTLogParser;
 
-class MAFFTSupportTaskSettings  {
+class MAFFTSupportTaskSettings {
 public:
-    MAFFTSupportTaskSettings() {reset();}
+    MAFFTSupportTaskSettings() {
+        reset();
+    }
     void reset();
 
-    float   gapOpenPenalty;
-    float   gapExtenstionPenalty;
-    int     maxNumberIterRefinement;
+    float gapOpenPenalty;
+    float gapExtenstionPenalty;
+    int maxNumberIterRefinement;
     QString inputFilePath;
     QString outputFilePath;
-
 };
-
 
 class MAFFTSupportTask : public ExternalToolSupportTask {
     Q_OBJECT
     Q_DISABLE_COPY(MAFFTSupportTask)
 public:
-    MAFFTSupportTask(const MultipleSequenceAlignment& _inputMsa, const GObjectReference& _objRef, const MAFFTSupportTaskSettings& settings);
+    MAFFTSupportTask(const MultipleSequenceAlignment &_inputMsa, const GObjectReference &_objRef, const MAFFTSupportTaskSettings &settings);
     ~MAFFTSupportTask();
 
     void prepare();
     Task::ReportResult report();
 
-    QList<Task*> onSubTaskFinished(Task* subTask);
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
-    MultipleSequenceAlignment                  resultMA;
+    MultipleSequenceAlignment resultMA;
 
 private slots:
     void sl_progressUndefined();
 
 private:
-    MultipleSequenceAlignment                  inputMsa;
-    GObjectReference            objRef;
-    QPointer<Document>          tmpDoc;
-    QString                     url;
-    MAFFTLogParser*             logParser;
+    MultipleSequenceAlignment inputMsa;
+    GObjectReference objRef;
+    QPointer<Document> tmpDoc;
+    QString url;
+    MAFFTLogParser *logParser;
 
-    SaveMSA2SequencesTask*      saveTemporaryDocumentTask;
-    ExternalToolRunTask*        mAFFTTask;
-    LoadDocumentTask*           loadTmpDocumentTask;
-    MAFFTSupportTaskSettings    settings;
-    QPointer<StateLock>         lock;
+    SaveMSA2SequencesTask *saveTemporaryDocumentTask;
+    ExternalToolRunTask *mAFFTTask;
+    LoadDocumentTask *loadTmpDocumentTask;
+    MAFFTSupportTaskSettings settings;
+    QPointer<StateLock> lock;
 };
 
 class MultipleSequenceAlignmentObject;
@@ -100,58 +100,63 @@ class MAFFTWithExtFileSpecifySupportTask : public Task {
     Q_OBJECT
     Q_DISABLE_COPY(MAFFTWithExtFileSpecifySupportTask)
 public:
-    MAFFTWithExtFileSpecifySupportTask(const MAFFTSupportTaskSettings& settings);
+    MAFFTWithExtFileSpecifySupportTask(const MAFFTSupportTaskSettings &settings);
     ~MAFFTWithExtFileSpecifySupportTask();
     void prepare();
     Task::ReportResult report();
 
-    QList<Task*> onSubTaskFinished(Task* subTask);
-private:
-    MultipleSequenceAlignmentObject*           mAObject;
-    Document*                   currentDocument;
-    bool                        cleanDoc;
+    QList<Task *> onSubTaskFinished(Task *subTask);
 
-    SaveDocumentTask*           saveDocumentTask;
-    LoadDocumentTask*           loadDocumentTask;
-    MAFFTSupportTask*           mAFFTSupportTask;
-    MAFFTSupportTaskSettings    settings;
+private:
+    MultipleSequenceAlignmentObject *mAObject;
+    Document *currentDocument;
+    bool cleanDoc;
+
+    SaveDocumentTask *saveDocumentTask;
+    LoadDocumentTask *loadDocumentTask;
+    MAFFTSupportTask *mAFFTSupportTask;
+    MAFFTSupportTaskSettings settings;
 };
 
 class MAFFTLogParser : public ExternalToolLogParser {
     Q_OBJECT
     Q_DISABLE_COPY(MAFFTLogParser)
 public:
-    MAFFTLogParser(int countSequencesInMSA, int countRefinementIter, const QString& outputFileName);
-    ~MAFFTLogParser(){ cleanup(); }
+    MAFFTLogParser(int countSequencesInMSA, int countRefinementIter, const QString &outputFileName);
+    ~MAFFTLogParser() {
+        cleanup();
+    }
     int getProgress();
-    void parseOutput(const QString& partOfLog);
-    void parseErrOutput(const QString& partOfLog);
+    void parseOutput(const QString &partOfLog);
+    void parseErrOutput(const QString &partOfLog);
 
-    bool isOutFileCreated(){ return isOutputFileCreated; }
+    bool isOutFileCreated() {
+        return isOutputFileCreated;
+    }
     void cleanup();
 
 signals:
     void si_progressUndefined();
 
 private:
-    int     countSequencesInMSA;
-    int     countRefinementIter;
+    int countSequencesInMSA;
+    int countRefinementIter;
     QString outputFileName;
-    QFile   outFile;
-    bool    isOutputFileCreated;
+    QFile outFile;
+    bool isOutputFileCreated;
     QString lastErrLine;
 
-    bool    isMemSaveModeEnabled;   // there is no progress in the memsave mode
-    bool    firstDistanceMatrix;
-    bool    secondDistanceMatrix;
-    bool    firstUPGMATree;
-    bool    secondUPGMATree;
-    bool    firstProAlign;
-    bool    secondProAlign;
-    int     progress;
+    bool isMemSaveModeEnabled;    // there is no progress in the memsave mode
+    bool firstDistanceMatrix;
+    bool secondDistanceMatrix;
+    bool firstUPGMATree;
+    bool secondUPGMATree;
+    bool firstProAlign;
+    bool secondProAlign;
+    int progress;
 
     static const QString MEM_SAVE_MODE_MESSAGE;
 };
 
-}//namespace
-#endif // _U2_MAFFT_SUPPORT_TASK_H
+}    // namespace U2
+#endif    // _U2_MAFFT_SUPPORT_TASK_H

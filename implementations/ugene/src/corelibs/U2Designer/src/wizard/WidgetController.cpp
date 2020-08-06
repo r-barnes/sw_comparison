@@ -19,39 +19,35 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
+#include "WidgetController.h"
 
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QSpinBox>
 
-#include "WidgetController.h"
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
 WidgetController::WidgetController(WizardController *_wc)
-: wc(_wc)
-{
-
+    : wc(_wc) {
 }
 
 WidgetController::~WidgetController() {
-
 }
 
 /************************************************************************/
 /* LabeledPropertyWidget */
 /************************************************************************/
 LabeledPropertyWidget::LabeledPropertyWidget(const QString &labelText, PropertyWidget *widget, QWidget *parent)
-: QWidget(parent)
-{
+    : QWidget(parent) {
     QHBoxLayout *layout = new QHBoxLayout(this);
     setLayout(layout);
 
     label = new QLabel(labelText, this);
     label->setObjectName(labelText + " label");
-    QWidget* mainWidget = widget->findChild<QWidget*>("mainWidget");
-    if(mainWidget!=NULL){
+    QWidget *mainWidget = widget->findChild<QWidget *>("mainWidget");
+    if (mainWidget != NULL) {
         mainWidget->setObjectName(labelText + " widget");
     }
     layout->addWidget(label);
@@ -68,4 +64,4 @@ void LabeledPropertyWidget::setLabelWidth(int width) {
     label->setFixedWidth(width);
 }
 
-} // U2
+}    // namespace U2

@@ -19,12 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "ReadAssemblyWorker.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/AssemblyObject.h>
-#include <U2Core/FileStorageUtils.h>
 #include <U2Core/DocumentImport.h>
 #include <U2Core/DocumentProviderTask.h>
 #include <U2Core/DocumentUtils.h>
+#include <U2Core/FileStorageUtils.h>
 #include <U2Core/IOAdapter.h>
 #include <U2Core/IOAdapterUtils.h>
 #include <U2Core/U2DbiRegistry.h>
@@ -51,8 +53,6 @@
 
 #include "DocActors.h"
 
-#include "ReadAssemblyWorker.h"
-
 namespace U2 {
 namespace LocalWorkflow {
 
@@ -62,19 +62,17 @@ const QString ReadAssemblyWorkerFactory::ACTOR_ID("read-assembly");
 /* Worker */
 /************************************************************************/
 ReadAssemblyWorker::ReadAssemblyWorker(Actor *p)
-: GenericDocReader(p)
-{
-
+    : GenericDocReader(p) {
 }
 
 void ReadAssemblyWorker::init() {
     GenericDocReader::init();
-    IntegralBus *outBus = dynamic_cast<IntegralBus*>(ch);
+    IntegralBus *outBus = dynamic_cast<IntegralBus *>(ch);
     assert(outBus);
     mtype = outBus->getBusType();
 }
 
-Task * ReadAssemblyWorker::createReadTask(const QString &url, const QString &datasetName) {
+Task *ReadAssemblyWorker::createReadTask(const QString &url, const QString &datasetName) {
     WorkflowTasksRegistry *registry = WorkflowEnv::getWorkflowTasksRegistry();
     SAFE_POINT(NULL != registry, "NULL WorkflowTasksRegistry", NULL);
     ReadDocumentTaskFactory *factory = registry->getReadDocumentTaskFactory(ReadFactories::READ_ASSEMBLY);
@@ -86,12 +84,12 @@ Task * ReadAssemblyWorker::createReadTask(const QString &url, const QString &dat
 }
 
 void ReadAssemblyWorker::onTaskFinished(Task *task) {
-    ReadDocumentTask *t = qobject_cast<ReadDocumentTask*>(task);
+    ReadDocumentTask *t = qobject_cast<ReadDocumentTask *>(task);
     QList<SharedDbiDataHandler> result = t->takeResult();
     QString url = t->getUrl();
     MessageMetadata metadata(t->getUrl(), t->getDatasetName());
     context->getMetadataStorage().put(metadata);
-    foreach(const SharedDbiDataHandler &handler, result) {
+    foreach (const SharedDbiDataHandler &handler, result) {
         QVariantMap m;
         m[BaseSlots::URL_SLOT().getId()] = url;
         m[BaseSlots::DATASET_SLOT().getId()] = t->getDatasetName();
@@ -115,8 +113,7 @@ QString ReadAssemblyWorker::addReadDbObjectToData(const QString &objUrl, QVarian
 /* Factory */
 /************************************************************************/
 ReadAssemblyProto::ReadAssemblyProto()
-: GenericReadDocProto(ReadAssemblyWorkerFactory::ACTOR_ID)
-{
+    : GenericReadDocProto(ReadAssemblyWorkerFactory::ACTOR_ID) {
     setCompatibleDbObjectTypes(QSet<GObjectType>() << GObjectTypes::ASSEMBLY);
 
     setDisplayName(ReadAssemblyWorker::tr("Read NGS Reads Assembly"));
@@ -124,7 +121,7 @@ ReadAssemblyProto::ReadAssemblyProto()
                                             " The element outputs message(s) with the assembled reads data."
                                             "<br/><br/>Note that some tools require URL(s) of the files as input, not the assembled reads data."));
 
-    { // ports description
+    {    // ports description
         QMap<Descriptor, DataTypePtr> outTypeMap;
         outTypeMap[BaseSlots::ASSEMBLY_SLOT()] = BaseTypes::ASSEMBLY_TYPE();
         outTypeMap[BaseSlots::URL_SLOT()] = BaseTypes::STRING_TYPE();
@@ -132,8 +129,8 @@ ReadAssemblyProto::ReadAssemblyProto()
         DataTypePtr outTypeSet(new MapDataType(BasePorts::OUT_ASSEMBLY_PORT_ID(), outTypeMap));
 
         Descriptor outDesc(BasePorts::OUT_ASSEMBLY_PORT_ID(),
-            ReadAssemblyWorker::tr("Assembly"),
-            ReadAssemblyWorker::tr("Assembly"));
+                           ReadAssemblyWorker::tr("Assembly"),
+                           ReadAssemblyWorker::tr("Assembly"));
 
         ports << new PortDescriptor(outDesc, outTypeSet, false, true);
     }
@@ -154,5 +151,5 @@ Worker *ReadAssemblyWorkerFactory::createWorker(Actor *a) {
     return new ReadAssemblyWorker(a);
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

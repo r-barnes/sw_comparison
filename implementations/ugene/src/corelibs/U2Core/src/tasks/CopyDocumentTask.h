@@ -38,7 +38,7 @@ public:
     ~CopyDocumentTask();
 
     virtual void prepare();
-    virtual QList<Task*> onSubTaskFinished(Task *subTask);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
 
     Document *takeResult();
 
@@ -62,14 +62,14 @@ public:
 
     virtual void run();
 
-    QList<GObject*> takeResult();
+    QList<GObject *> takeResult();
 
 private:
     Document *srcDoc;
     Document *dstDoc;
-    QList<GObject*> cloned;
+    QList<GObject *> cloned;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_COPY_DOCUMENT_TASK_H_
+#endif    // _U2_COPY_DOCUMENT_TASK_H_

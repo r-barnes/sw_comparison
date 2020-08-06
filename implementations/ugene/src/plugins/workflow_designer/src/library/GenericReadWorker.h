@@ -22,11 +22,12 @@
 #ifndef _U2_WORKFLOW_READ_SEQ_WORKER_H_
 #define _U2_WORKFLOW_READ_SEQ_WORKER_H_
 
-#include <U2Lang/LocalDomain.h>
-#include <U2Core/DNASequenceObject.h>
 #include <U2Core/DNASequence.h>
+#include <U2Core/DNASequenceObject.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/MultipleSequenceAlignment.h>
+
+#include <U2Lang/LocalDomain.h>
 
 namespace U2 {
 
@@ -37,20 +38,23 @@ namespace LocalWorkflow {
 class GenericDocReader : public BaseWorker {
     Q_OBJECT
 public:
-    GenericDocReader(Actor *a) : BaseWorker(a), ch(NULL), files(NULL) {}
+    GenericDocReader(Actor *a)
+        : BaseWorker(a), ch(NULL), files(NULL) {
+    }
     virtual ~GenericDocReader();
 
     virtual void init();
     virtual Task *tick();
     virtual bool isDone() const;
-    virtual void cleanup() {}
+    virtual void cleanup() {
+    }
 
 protected slots:
     virtual void sl_datasetEnded();
 
 protected:
     virtual void onTaskFinished(Task *task) = 0;
-    virtual Task * createReadTask(const QString &url, const QString &datasetName);
+    virtual Task *createReadTask(const QString &url, const QString &datasetName);
     // The method is to be overridden in subclasses capable of reading from shared DBs.
     // Returns a name of data for metadata.
     virtual QString addReadDbObjectToData(const QString &objUrl, QVariantMap &data);
@@ -85,7 +89,8 @@ class LoadSeqTask : public Task {
 public:
     LoadSeqTask(QString url, const QVariantMap &cfg, DNASelector *sel, DbiDataStorage *storage)
         : Task(tr("Read sequences from %1").arg(url), TaskFlag_None),
-        url(url), selector(sel), cfg(cfg), storage(storage), format(NULL) {}
+          url(url), selector(sel), cfg(cfg), storage(storage), format(NULL) {
+    }
     virtual void prepare();
     virtual void run();
 
@@ -114,9 +119,12 @@ public:
 class GenericMSAReader : public GenericDocReader {
     Q_OBJECT
 public:
-    GenericMSAReader(Actor *a) : GenericDocReader(a) {}
-    virtual void init() ;
-    virtual void cleanup() {}
+    GenericMSAReader(Actor *a)
+        : GenericDocReader(a) {
+    }
+    virtual void init();
+    virtual void cleanup() {
+    }
 
 protected:
     virtual void onTaskFinished(Task *task);
@@ -131,21 +139,22 @@ protected:
 class GenericSeqReader : public GenericDocReader {
     Q_OBJECT
 public:
-    GenericSeqReader(Actor *a) : GenericDocReader(a){}
-    virtual void init() ;
+    GenericSeqReader(Actor *a)
+        : GenericDocReader(a) {
+    }
+    virtual void init();
 
 protected:
     virtual void onTaskFinished(Task *task);
     virtual QString addReadDbObjectToData(const QString &objUrl, QVariantMap &data);
 
 protected:
-    virtual Task * createReadTask(const QString &url, const QString &datasetName);
+    virtual Task *createReadTask(const QString &url, const QString &datasetName);
     QVariantMap cfg;
     DNASelector selector;
 };
 
-
-} // Workflow namespace
-} // U2 namespace
+}    // namespace LocalWorkflow
+}    // namespace U2
 
 #endif

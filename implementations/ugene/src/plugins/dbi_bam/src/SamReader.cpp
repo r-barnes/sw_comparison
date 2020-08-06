@@ -19,15 +19,15 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2AssemblyUtils.h>
+#include "SamReader.h"
+#include <SamtoolsAdapter.h>
+
 #include <U2Core/Log.h>
+#include <U2Core/U2AssemblyUtils.h>
 
 #include "BAMDbiPlugin.h"
-#include "InvalidFormatException.h"
-#include "SamReader.h"
 #include "CigarValidator.h"
-
-#include <SamtoolsAdapter.h>
+#include "InvalidFormatException.h"
 
 namespace U2 {
 namespace BAM {
@@ -37,7 +37,7 @@ const int SamReader::LOCAL_READ_BUFFER_SIZE = 100000;
 Alignment SamReader::parseAlignmentString(QByteArray line) {
     Alignment alignment;
 
-    if(line.isEmpty()) {
+    if (line.isEmpty()) {
         assert(0);
         throw InvalidFormatException(BAMDbiPlugin::tr("Unexpected empty string"));
     }
@@ -52,7 +52,7 @@ Alignment SamReader::parseAlignmentString(QByteArray line) {
     {
         QByteArray &qname = tokens[0];
         // workaround for malformed SAMs
-        if(!QRegExp("[ -~]{1,255}").exactMatch(qname)) {
+        if (!QRegExp("[ -~]{1,255}").exactMatch(qname)) {
             throw InvalidFormatException(BAMDbiPlugin::tr("Invalid query template name: %1").arg(QString(qname)));
         }
         alignment.setName(qname);
@@ -60,41 +60,41 @@ Alignment SamReader::parseAlignmentString(QByteArray line) {
     {
         bool ok = false;
         int flagsValue = tokens[1].toInt(&ok);
-        if(!ok) {
+        if (!ok) {
             throw InvalidFormatException(BAMDbiPlugin::tr("Invalid FLAG value: %1").arg(QString(tokens[1])));
         }
         qint64 flags = 0;
-        if(flagsValue & 0x1) {
+        if (flagsValue & 0x1) {
             flags |= Fragmented;
         }
-        if(flagsValue & 0x2) {
+        if (flagsValue & 0x2) {
             flags |= FragmentsAligned;
         }
-        if(flagsValue & 0x4) {
+        if (flagsValue & 0x4) {
             flags |= Unmapped;
         }
-        if(flagsValue & 0x8) {
+        if (flagsValue & 0x8) {
             flags |= NextUnmapped;
         }
-        if(flagsValue & 0x10) {
+        if (flagsValue & 0x10) {
             flags |= Reverse;
         }
-        if(flagsValue & 0x20) {
+        if (flagsValue & 0x20) {
             flags |= NextReverse;
         }
-        if(flagsValue & 0x40) {
+        if (flagsValue & 0x40) {
             flags |= FirstInTemplate;
         }
-        if(flagsValue & 0x80) {
+        if (flagsValue & 0x80) {
             flags |= LastInTemplate;
         }
-        if(flagsValue & 0x100) {
+        if (flagsValue & 0x100) {
             flags |= SecondaryAlignment;
         }
-        if(flagsValue & 0x200) {
+        if (flagsValue & 0x200) {
             flags |= FailsChecks;
         }
-        if(flagsValue & 0x400) {
+        if (flagsValue & 0x400) {
             flags |= Duplicate;
         }
         alignment.setFlags(flags);
@@ -102,7 +102,7 @@ Alignment SamReader::parseAlignmentString(QByteArray line) {
     {
         QByteArray &rname = tokens[2];
         // workaround for malformed SAMs
-        if(!QRegExp("[*]|[!-()+-<>-~][ -~]*").exactMatch(rname)) {
+        if (!QRegExp("[*]|[!-()+-<>-~][ -~]*").exactMatch(rname)) {
             throw InvalidFormatException(BAMDbiPlugin::tr("Invalid reference name: %1").arg(QString(rname)));
         }
         if ("*" == rname) {
@@ -117,28 +117,28 @@ Alignment SamReader::parseAlignmentString(QByteArray line) {
     {
         bool ok = false;
         int position = tokens[3].toInt(&ok);
-        if(!ok) {
+        if (!ok) {
             throw InvalidFormatException(BAMDbiPlugin::tr("Invalid read position value: %1").arg(QString(tokens[3])));
         }
-        if(position < 0) {
+        if (position < 0) {
             throw InvalidFormatException(BAMDbiPlugin::tr("Invalid read position: %1").arg(position));
         }
-        alignment.setPosition(position - 1); //to 0-based mapping
+        alignment.setPosition(position - 1);    //to 0-based mapping
     }
     {
         bool ok = false;
         int mapQuality = tokens[4].toInt(&ok);
-        if(!ok) {
+        if (!ok) {
             throw InvalidFormatException(BAMDbiPlugin::tr("Invalid mapping quality value: %1").arg(QString(tokens[4])));
         }
-        if(mapQuality < 0 || mapQuality > 255) {
+        if (mapQuality < 0 || mapQuality > 255) {
             throw InvalidFormatException(BAMDbiPlugin::tr("Invalid mapping quality: %1").arg(mapQuality));
         }
         alignment.setMapQuality(mapQuality);
     }
     {
         QByteArray &cigarString = tokens[5];
-        if(!QRegExp("[*]|([0-9]+[MIDNSHPX=])+").exactMatch(cigarString)) {
+        if (!QRegExp("[*]|([0-9]+[MIDNSHPX=])+").exactMatch(cigarString)) {
             throw InvalidFormatException(BAMDbiPlugin::tr("Invalid cigar value: %1").arg(QString(cigarString)));
         }
         if ("*" != cigarString) {
@@ -149,9 +149,9 @@ Alignment SamReader::parseAlignmentString(QByteArray line) {
             }
 
             QList<Alignment::CigarOperation> cigar;
-            for(int i = 0; i < res.length(); i++) {
+            for (int i = 0; i < res.length(); i++) {
                 Alignment::CigarOperation::Operation operation;
-                switch(res[i].op) {
+                switch (res[i].op) {
                 case U2CigarOp_M:
                     operation = Alignment::CigarOperation::AlignmentMatch;
                     break;
@@ -191,7 +191,7 @@ Alignment SamReader::parseAlignmentString(QByteArray line) {
     {
         QByteArray nextReference = tokens[6];
         // workaround for malformed SAMs
-        if(!QRegExp("[*]|[=]|[!-()+-<>-~][ -~]*").exactMatch(nextReference)) {
+        if (!QRegExp("[*]|[=]|[!-()+-<>-~][ -~]*").exactMatch(nextReference)) {
             throw InvalidFormatException(BAMDbiPlugin::tr("Invalid mate reference name: %1").arg(QString(nextReference)));
         }
         if ("*" == nextReference) {
@@ -209,22 +209,22 @@ Alignment SamReader::parseAlignmentString(QByteArray line) {
     {
         bool ok = false;
         int nextPosition = tokens[7].toInt(&ok);
-        if(!ok) {
+        if (!ok) {
             throw InvalidFormatException(BAMDbiPlugin::tr("Invalid mate position value: %1").arg(QString(tokens[7])));
         }
-        if(nextPosition < 0) {
+        if (nextPosition < 0) {
             throw InvalidFormatException(BAMDbiPlugin::tr("Invalid mate position: %1").arg(nextPosition));
         }
-        alignment.setNextPosition(nextPosition - 1); //to 0-based mapping
+        alignment.setNextPosition(nextPosition - 1);    //to 0-based mapping
     }
     {
         bool ok = false;
         int templateLength = tokens[8].toInt(&ok);
-        if(!ok) {
+        if (!ok) {
             throw InvalidFormatException(BAMDbiPlugin::tr("Invalid template length value: %1").arg(QString(tokens[8])));
         }
-        if(!(alignment.getFlags() & Fragmented)) {
-            if(0 != templateLength) {
+        if (!(alignment.getFlags() & Fragmented)) {
+            if (0 != templateLength) {
                 throw InvalidFormatException(BAMDbiPlugin::tr("Invalid template length of a single-fragment template: %1").arg(templateLength));
             }
         }
@@ -232,7 +232,7 @@ Alignment SamReader::parseAlignmentString(QByteArray line) {
     }
     {
         QByteArray sequence = tokens[9];
-        if(!QRegExp("[*]|[A-Za-z=.]+").exactMatch(sequence)) {
+        if (!QRegExp("[*]|[A-Za-z=.]+").exactMatch(sequence)) {
             throw InvalidFormatException(BAMDbiPlugin::tr("Invalid sequence: %1").arg(QString(sequence)));
         }
         alignment.setSequence(sequence);
@@ -240,7 +240,7 @@ Alignment SamReader::parseAlignmentString(QByteArray line) {
     {
         QByteArray quality = tokens[10];
         if ("*" != quality) {
-            if(QRegExp("[!-~]+").exactMatch(quality)) {
+            if (QRegExp("[!-~]+").exactMatch(quality)) {
                 alignment.setQuality(quality);
             }
         }
@@ -265,21 +265,20 @@ Alignment SamReader::parseAlignmentString(QByteArray line) {
         const QList<Alignment::CigarOperation> &cigar = alignment.getCigar();
         CigarValidator validator(cigar);
         validator.validate(&totalLength);
-        if(!cigar.isEmpty() && length != totalLength) {
-            const_cast<QList<Alignment::CigarOperation>&>(cigar).clear(); //Ignore invalid cigar
+        if (!cigar.isEmpty() && length != totalLength) {
+            const_cast<QList<Alignment::CigarOperation> &>(cigar).clear();    //Ignore invalid cigar
         }
     }
     return alignment;
 }
 
-SamReader::SamReader(IOAdapter &ioAdapter):
-        Reader(ioAdapter),
-        readBuffer(LOCAL_READ_BUFFER_SIZE, '\0')
-{
+SamReader::SamReader(IOAdapter &ioAdapter)
+    : Reader(ioAdapter),
+      readBuffer(LOCAL_READ_BUFFER_SIZE, '\0') {
     readHeader();
 }
 
-const Header &SamReader::getHeader()const {
+const Header &SamReader::getHeader() const {
     return header;
 }
 
@@ -289,16 +288,17 @@ Alignment SamReader::readAlignment(bool &eof) {
     return parseAlignmentString(alignmentString);
 }
 
-bool SamReader::isEof()const {
+bool SamReader::isEof() const {
     return ioAdapter.isEof();
 }
 
 QByteArray SamReader::readString(bool &eof) {
-    char* buff  = readBuffer.data();
+    char *buff = readBuffer.data();
     bool lineOk = false;
     int len = 0;
     QByteArray result;
-    while((len = ioAdapter.readLine(buff, LOCAL_READ_BUFFER_SIZE, &lineOk)) == 0) {}
+    while ((len = ioAdapter.readLine(buff, LOCAL_READ_BUFFER_SIZE, &lineOk)) == 0) {
+    }
     if (len == -1) {
         eof = true;
     } else {
@@ -309,7 +309,7 @@ QByteArray SamReader::readString(bool &eof) {
 }
 
 void SamReader::readHeader() {
-    char* buff  = readBuffer.data();
+    char *buff = readBuffer.data();
     bool lineOk = false;
     int len = 0;
     qint64 bRead = ioAdapter.bytesRead();
@@ -320,18 +320,18 @@ void SamReader::readHeader() {
         QList<Header::Program> programs;
         QList<QByteArray> previousProgramIds;
         while ((len = ioAdapter.readLine(buff, LOCAL_READ_BUFFER_SIZE, &lineOk)) >= 0) {
-            if(isEof()){
+            if (isEof()) {
                 break;
             }
 
             QByteArray line = QByteArray(buff, len);
-            if(line.isEmpty()) {
+            if (line.isEmpty()) {
                 continue;
             }
-            if(line.startsWith("@CO")) {
+            if (line.startsWith("@CO")) {
                 continue;
             }
-            if(!line.startsWith('@')) {
+            if (!line.startsWith('@')) {
                 ioAdapter.skip(bRead - ioAdapter.bytesRead());
                 break;
             }
@@ -341,41 +341,41 @@ void SamReader::readHeader() {
             {
                 QList<QByteArray> tokens = line.split('\t');
                 recordTag = tokens[0].mid(1);
-                if(!QRegExp("[A-Za-z][A-Za-z]").exactMatch(recordTag)) {
+                if (!QRegExp("[A-Za-z][A-Za-z]").exactMatch(recordTag)) {
                     throw InvalidFormatException(BAMDbiPlugin::tr("Invalid header record tag: %1").arg(QString(recordTag)));
                 }
-                for(int index = 1;index < tokens.size();index++) {
+                for (int index = 1; index < tokens.size(); index++) {
                     QByteArray fieldTag;
                     QByteArray fieldValue;
                     {
                         int colonIndex = tokens[index].indexOf(':');
-                        if(-1 != colonIndex) {
+                        if (-1 != colonIndex) {
                             fieldTag = tokens[index].mid(0, colonIndex);
                             fieldValue = tokens[index].mid(colonIndex + 1);
-                        } else if("PG" == recordTag) { // workaround for invalid headers produced by some programs
+                        } else if ("PG" == recordTag) {    // workaround for invalid headers produced by some programs
                             continue;
                         } else {
                             throw InvalidFormatException(BAMDbiPlugin::tr("Invalid header field: %1").arg(QString(tokens[index])));
                         }
                     }
-                    if(!QRegExp("[A-Za-z][A-Za-z]").exactMatch(fieldTag) && "M5" != fieldTag) { //workaround for bug in the spec
+                    if (!QRegExp("[A-Za-z][A-Za-z]").exactMatch(fieldTag) && "M5" != fieldTag) {    //workaround for bug in the spec
                         throw InvalidFormatException(BAMDbiPlugin::tr("Invalid header field tag: %1").arg(QString(fieldTag)));
                     }
                     // CL and PN tags of can contain any string
-                    if(fieldTag!="CL" && fieldTag!="PN" && !QRegExp("[ -~]+").exactMatch(fieldValue)) {
+                    if (fieldTag != "CL" && fieldTag != "PN" && !QRegExp("[ -~]+").exactMatch(fieldValue)) {
                         throw InvalidFormatException(BAMDbiPlugin::tr("Invalid %1-%2 value: %3").arg(QString(recordTag)).arg(QString(fieldTag)).arg(QString(fieldValue)));
                     }
-                    if(!fields.contains(fieldTag)) {
+                    if (!fields.contains(fieldTag)) {
                         fields.insert(fieldTag, fieldValue);
                     } else {
                         throw InvalidFormatException(BAMDbiPlugin::tr("Duplicate header field: %1").arg(QString(fieldTag)));
                     }
                 }
             }
-            if("HD" == recordTag) {
-                if(fields.contains("VN")) {
+            if ("HD" == recordTag) {
+                if (fields.contains("VN")) {
                     QByteArray value = fields["VN"];
-                    if(!QRegExp("[0-9]+\\.[0-9]+").exactMatch(value)) {
+                    if (!QRegExp("[0-9]+\\.[0-9]+").exactMatch(value)) {
                         //Do nothing to support malformed BAMs
                         //throw InvalidFormatException(BAMDbiPlugin::tr("Invalid HD-VN value: %1").arg(QString(value)));
                     }
@@ -383,17 +383,17 @@ void SamReader::readHeader() {
                 } else {
                     throw InvalidFormatException(BAMDbiPlugin::tr("HD record without VN field"));
                 }
-                if(fields.contains("SO")) {
+                if (fields.contains("SO")) {
                     QByteArray value = fields["SO"];
-                    if("unknown" == value) {
+                    if ("unknown" == value) {
                         header.setSortingOrder(Header::Unknown);
-                    } else if("unsorted" == value) {
+                    } else if ("unsorted" == value) {
                         header.setSortingOrder(Header::Unsorted);
-                    } else if("queryname" == value) {
+                    } else if ("queryname" == value) {
                         header.setSortingOrder(Header::QueryName);
-                    } else if("coordinate" == value) {
+                    } else if ("coordinate" == value) {
                         header.setSortingOrder(Header::Coordinate);
-                    } else if("sorted" == value) { // workaround for invalid headers produced by some programs
+                    } else if ("sorted" == value) {    // workaround for invalid headers produced by some programs
                         header.setSortingOrder(Header::Coordinate);
                     } else {
                         throw InvalidFormatException(BAMDbiPlugin::tr("Invalid HD-SO value: %1").arg(QString(value)));
@@ -401,19 +401,19 @@ void SamReader::readHeader() {
                 } else {
                     header.setSortingOrder(Header::Unknown);
                 }
-            } else if("SQ" == recordTag) {
+            } else if ("SQ" == recordTag) {
                 Header::Reference *reference = NULL;
                 QByteArray name;
-                if(fields.contains("SN")) {
+                if (fields.contains("SN")) {
                     name = fields["SN"];
                 } else {
                     throw InvalidFormatException(BAMDbiPlugin::tr("SQ record without SN field"));
                 }
-                if(fields.contains("LN")) {
+                if (fields.contains("LN")) {
                     QByteArray value = fields["LN"];
                     bool ok = false;
                     int length = value.toInt(&ok);
-                    if(ok) {
+                    if (ok) {
                         Header::Reference newRef(name, length);
                         referencesMap.insert(name, references.size());
                         references.append(newRef);
@@ -425,45 +425,45 @@ void SamReader::readHeader() {
                     throw InvalidFormatException(BAMDbiPlugin::tr("SQ record without LN field"));
                 }
                 assert(NULL != reference);
-                if(fields.contains("AS")) {
+                if (fields.contains("AS")) {
                     reference->setAssemblyId(fields["AS"]);
                 }
-                if(fields.contains("M5")) {
+                if (fields.contains("M5")) {
                     QByteArray value = fields["M5"];
                     //[a-f] is a workaround (not matching to SAM-1.3 spec) to open 1000 Genomes project BAMs
-                    if(!QRegExp("[0-9A-Fa-f]+").exactMatch(value)) {
+                    if (!QRegExp("[0-9A-Fa-f]+").exactMatch(value)) {
                         throw InvalidFormatException(BAMDbiPlugin::tr("Invalid SQ-M5 value: %1").arg(QString(value)));
                     }
                     reference->setMd5(fields["M5"]);
                 }
-                if(fields.contains("SP")) {
+                if (fields.contains("SP")) {
                     reference->setSpecies(fields["SP"]);
                 }
-                if(fields.contains("UR")) {
+                if (fields.contains("UR")) {
                     reference->setUri(fields["UR"]);
                 }
-            } else if("RG" == recordTag) {
+            } else if ("RG" == recordTag) {
                 Header::ReadGroup readGroup;
-                if(fields.contains("ID")) {
+                if (fields.contains("ID")) {
                     QByteArray value = fields["SN"];
                     readGroupsMap.insert(value, readGroups.size());
                 } else {
                     fields.insert("ID", "-1");
                 }
-                if(fields.contains("CN")) {
+                if (fields.contains("CN")) {
                     readGroup.setSequencingCenter(fields["CN"]);
                 }
-                if(fields.contains("DS")) {
+                if (fields.contains("DS")) {
                     readGroup.setDescription(fields["DS"]);
                 }
-                if(fields.contains("DT")) {
+                if (fields.contains("DT")) {
                     QByteArray value = fields["DT"];
                     QDateTime dateTime = QDateTime::fromString(value, Qt::ISODate);
-                    if(dateTime.isValid()) {
+                    if (dateTime.isValid()) {
                         readGroup.setDate(dateTime);
                     } else {
                         QDate date = QDate::fromString(value, Qt::ISODate);
-                        if(date.isValid()) {
+                        if (date.isValid()) {
                             readGroup.setDate(date);
                         } else {
                             //Allow anything.
@@ -471,59 +471,59 @@ void SamReader::readHeader() {
                         }
                     }
                 }
-                if(fields.contains("LB")) {
+                if (fields.contains("LB")) {
                     readGroup.setLibrary(fields["LB"]);
                 }
-                if(fields.contains("PG")) {
+                if (fields.contains("PG")) {
                     readGroup.setPrograms(fields["PG"]);
                 }
-                if(fields.contains("PI")) {
+                if (fields.contains("PI")) {
                     QByteArray value = fields["PI"];
                     bool ok = false;
                     int predictedInsertSize = value.toInt(&ok);
-                    if(ok) {
+                    if (ok) {
                         readGroup.setPredictedInsertSize(predictedInsertSize);
                     } else {
                         throw InvalidFormatException(BAMDbiPlugin::tr("Invalid RG-PI field value: %1").arg(QString(value)));
                     }
                 }
-                if(fields.contains("PL")) {
+                if (fields.contains("PL")) {
                     readGroup.setPlatform(fields["PL"]);
                 }
-                if(fields.contains("PU")) {
+                if (fields.contains("PU")) {
                     readGroup.setPlatformUnit(fields["PU"]);
                 }
-                if(fields.contains("SM")) {
+                if (fields.contains("SM")) {
                     readGroup.setSample(fields["SM"]);
                 }
                 readGroups.append(readGroup);
-            } else if("PG" == recordTag) {
+            } else if ("PG" == recordTag) {
                 Header::Program program;
-                if(!fields.contains("ID")) {
+                if (!fields.contains("ID")) {
                     fields.insert("ID", QByteArray::number(programs.size()));
                 }
                 programsMap.insert(fields["ID"], programs.size());
-                if(fields.contains("PN")) {
+                if (fields.contains("PN")) {
                     program.setName(fields["PN"]);
                 }
-                if(fields.contains("CL")) {
+                if (fields.contains("CL")) {
                     program.setCommandLine(fields["CL"]);
                 }
-                if(fields.contains("PP")) {
+                if (fields.contains("PP")) {
                     previousProgramIds.append(fields["PP"]);
                 } else {
                     previousProgramIds.append(QByteArray());
                 }
-                if(fields.contains("VN")) {
+                if (fields.contains("VN")) {
                     program.setVersion(fields["VN"]);
                 }
                 programs.append(program);
             }
         }
-        for(int index = 0;index < programs.size();index++) {
+        for (int index = 0; index < programs.size(); index++) {
             const QByteArray &previousProgramId = previousProgramIds[index];
-            if(!previousProgramId.isEmpty()) {
-                if(programsMap.contains(previousProgramId)) {
+            if (!previousProgramId.isEmpty()) {
+                if (programsMap.contains(previousProgramId)) {
                     programs[index].setPreviousId(programsMap[previousProgramId]);
                 } else {
                     throw InvalidFormatException(BAMDbiPlugin::tr("Invalid PG-PP field value: %1").arg(QString(previousProgramId)));
@@ -536,5 +536,5 @@ void SamReader::readHeader() {
     }
 }
 
-} // namespace BAM
-} // namespace U2
+}    // namespace BAM
+}    // namespace U2

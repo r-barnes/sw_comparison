@@ -35,18 +35,18 @@ AssemblyConsensusAlgorithmRegistry::~AssemblyConsensusAlgorithmRegistry() {
     qDeleteAll(getAlgorithmFactories());
 }
 
-AssemblyConsensusAlgorithmFactory* AssemblyConsensusAlgorithmRegistry::getAlgorithmFactory(const QString& algoId) {
+AssemblyConsensusAlgorithmFactory *AssemblyConsensusAlgorithmRegistry::getAlgorithmFactory(const QString &algoId) {
     return algorithms.value(algoId);
 }
 
-void AssemblyConsensusAlgorithmRegistry::addAlgorithmFactory(AssemblyConsensusAlgorithmFactory* algo) {
-    const QString& id = algo->getId();
-    AssemblyConsensusAlgorithmFactory* oldVersion = algorithms.value(id);
-    if (oldVersion!=NULL) {
+void AssemblyConsensusAlgorithmRegistry::addAlgorithmFactory(AssemblyConsensusAlgorithmFactory *algo) {
+    const QString &id = algo->getId();
+    AssemblyConsensusAlgorithmFactory *oldVersion = algorithms.value(id);
+    if (oldVersion != NULL) {
         delete oldVersion;
         oldVersion = NULL;
     }
     algorithms[id] = algo;
 }
 
-}//namespace
+}    // namespace U2

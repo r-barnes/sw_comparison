@@ -19,8 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-#include "MsaColorSchemePercentageIdententityColored.h"
 #include "MsaColorSchemePercentageIdententityColoredFactory.h"
+
+#include "MsaColorSchemePercentageIdententityColored.h"
 
 namespace U2 {
 
@@ -29,8 +30,8 @@ MsaColorSchemePercentageIdententityColoredFactory::MsaColorSchemePercentageIdent
     needThreshold = true;
 }
 
-MsaColorScheme * MsaColorSchemePercentageIdententityColoredFactory::create(QObject *parent, MultipleAlignmentObject *maObj) const {
+MsaColorScheme *MsaColorSchemePercentageIdententityColoredFactory::create(QObject *parent, MultipleAlignmentObject *maObj) const {
     return new MsaColorSchemePercentageIdententityColored(parent, this, maObj);
 }
 
-}   // namespace U2
+}    // namespace U2

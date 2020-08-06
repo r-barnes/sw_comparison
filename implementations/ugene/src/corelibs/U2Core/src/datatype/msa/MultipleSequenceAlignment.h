@@ -37,21 +37,22 @@ class U2Region;
 class U2CORE_EXPORT MultipleSequenceAlignment : public MultipleAlignment {
 public:
     MultipleSequenceAlignment(const QString &name = QString(),
-        const DNAAlphabet *alphabet = NULL,
-        const QList<MultipleSequenceAlignmentRow> &rows = QList<MultipleSequenceAlignmentRow>());
+                              const DNAAlphabet *alphabet = NULL,
+                              const QList<MultipleSequenceAlignmentRow> &rows = QList<MultipleSequenceAlignmentRow>());
     MultipleSequenceAlignment(const MultipleAlignment &ma);
     MultipleSequenceAlignment(MultipleSequenceAlignmentData *msaData);
 
-    MultipleSequenceAlignmentData * data() const;
+    MultipleSequenceAlignmentData *data() const;
 
-    MultipleSequenceAlignmentData & operator*();
-    const MultipleSequenceAlignmentData & operator*() const;
+    MultipleSequenceAlignmentData &operator*();
+    const MultipleSequenceAlignmentData &operator*() const;
 
-    MultipleSequenceAlignmentData * operator->();
-    const MultipleSequenceAlignmentData * operator->() const;
+    MultipleSequenceAlignmentData *operator->();
+    const MultipleSequenceAlignmentData *operator->() const;
 
     MultipleSequenceAlignment clone() const;
-    template <class Derived> inline Derived dynamicCast() const;
+    template<class Derived>
+    inline Derived dynamicCast() const;
 
 private:
     QSharedPointer<MultipleSequenceAlignmentData> getMsaData() const;
@@ -72,13 +73,13 @@ protected:
      * The name must be provided if this is not default alignment.
      */
     MultipleSequenceAlignmentData(const QString &name = QString(),
-        const DNAAlphabet *alphabet = NULL,
-        const QList<MultipleSequenceAlignmentRow> &rows = QList<MultipleSequenceAlignmentRow>());
+                                  const DNAAlphabet *alphabet = NULL,
+                                  const QList<MultipleSequenceAlignmentRow> &rows = QList<MultipleSequenceAlignmentRow>());
     MultipleSequenceAlignmentData(const MultipleSequenceAlignmentData &msaData);
 
 public:
-    MultipleSequenceAlignmentData & operator=(const MultipleSequenceAlignment &msa);
-    MultipleSequenceAlignmentData & operator=(const MultipleSequenceAlignmentData &msaData);
+    MultipleSequenceAlignmentData &operator=(const MultipleSequenceAlignment &msa);
+    MultipleSequenceAlignmentData &operator=(const MultipleSequenceAlignmentData &msaData);
 
     /** Returns the number of rows in the alignment */
     int getNumRows() const;
@@ -212,7 +213,7 @@ public:
      * Joins two alignments. Alignments must have the same size and alphabet.
      * Increases the alignment length.
      */
-    MultipleSequenceAlignmentData & operator+=(const MultipleSequenceAlignmentData &ma);
+    MultipleSequenceAlignmentData &operator+=(const MultipleSequenceAlignmentData &ma);
 
     /**
      * Compares two alignments: lengths, alphabets, rows and infos (that include names).
@@ -250,13 +251,25 @@ inline const MultipleSequenceAlignmentRow MultipleSequenceAlignmentData::getMsaR
     return getRow(rowIndex).dynamicCast<const MultipleSequenceAlignmentRow>();
 }
 
-inline bool	operator!=(const MultipleSequenceAlignment &ptr1, const MultipleSequenceAlignment &ptr2) { return *ptr1 != *ptr2; }
-inline bool	operator!=(const MultipleSequenceAlignment &ptr1, const MultipleSequenceAlignmentData *ptr2) { return *ptr1 != *ptr2; }
-inline bool	operator!=(const MultipleSequenceAlignmentData *ptr1, const MultipleSequenceAlignment &ptr2) { return *ptr1 != *ptr2; }
-inline bool	operator==(const MultipleSequenceAlignment &ptr1, const MultipleSequenceAlignment &ptr2) { return *ptr1 == *ptr2; }
-inline bool	operator==(const MultipleSequenceAlignment &ptr1, const MultipleSequenceAlignmentData *ptr2) { return *ptr1 == *ptr2; }
-inline bool	operator==(const MultipleSequenceAlignmentData *ptr1, const MultipleSequenceAlignment &ptr2) { return *ptr1 == *ptr2; }
+inline bool operator!=(const MultipleSequenceAlignment &ptr1, const MultipleSequenceAlignment &ptr2) {
+    return *ptr1 != *ptr2;
+}
+inline bool operator!=(const MultipleSequenceAlignment &ptr1, const MultipleSequenceAlignmentData *ptr2) {
+    return *ptr1 != *ptr2;
+}
+inline bool operator!=(const MultipleSequenceAlignmentData *ptr1, const MultipleSequenceAlignment &ptr2) {
+    return *ptr1 != *ptr2;
+}
+inline bool operator==(const MultipleSequenceAlignment &ptr1, const MultipleSequenceAlignment &ptr2) {
+    return *ptr1 == *ptr2;
+}
+inline bool operator==(const MultipleSequenceAlignment &ptr1, const MultipleSequenceAlignmentData *ptr2) {
+    return *ptr1 == *ptr2;
+}
+inline bool operator==(const MultipleSequenceAlignmentData *ptr1, const MultipleSequenceAlignment &ptr2) {
+    return *ptr1 == *ptr2;
+}
 
-}   // namespace U2
+}    // namespace U2
 
 #endif

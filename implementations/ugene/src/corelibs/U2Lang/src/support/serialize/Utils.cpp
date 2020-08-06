@@ -19,54 +19,55 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Lang/Actor.h>
-
 #include "Utils.h"
+
+#include <U2Lang/Actor.h>
 
 namespace U2 {
 namespace WorkflowSerialize {
 
-FlowGraph::FlowGraph(const QList<QPair<Port*, Port*> >& d) : dataflowLinks(d), findRecursion(0) {
+FlowGraph::FlowGraph(const QList<QPair<Port *, Port *>> &d)
+    : dataflowLinks(d), findRecursion(0) {
     removeDuplicates();
-    for(int i = 0; i < dataflowLinks.size(); ++i) {
-        const QPair<Port*, Port*> & pair = dataflowLinks.at(i);
-        if(!graph.contains(pair.first)) {
-            graph[pair.first] = QList<Port*>();
+    for (int i = 0; i < dataflowLinks.size(); ++i) {
+        const QPair<Port *, Port *> &pair = dataflowLinks.at(i);
+        if (!graph.contains(pair.first)) {
+            graph[pair.first] = QList<Port *>();
         }
         graph.find(pair.first)->append(pair.second);
     }
 }
 
 void FlowGraph::removeDuplicates() {
-    QList<QPair<Port*, Port*> > links;
-    for(int i = 0; i < dataflowLinks.size(); ++i) {
-        const QPair<Port*, Port*> & p = dataflowLinks.at(i);
+    QList<QPair<Port *, Port *>> links;
+    for (int i = 0; i < dataflowLinks.size(); ++i) {
+        const QPair<Port *, Port *> &p = dataflowLinks.at(i);
         bool found = false;
-        for(int j = 0; j < links.size(); ++j) {
-            const QPair<Port*, Port*> & pair = links.at(j);
-            if(pair.first == p.first && pair.second == p.second) {
+        for (int j = 0; j < links.size(); ++j) {
+            const QPair<Port *, Port *> &pair = links.at(j);
+            if (pair.first == p.first && pair.second == p.second) {
                 found = true;
                 break;
             }
         }
-        if(!found) {
+        if (!found) {
             links << p;
         }
     }
     dataflowLinks = links;
 }
 
-bool FlowGraph::findPath(Actor * from, Port * to) const {
+bool FlowGraph::findPath(Actor *from, Port *to) const {
     static const int RECURSION_MAX = 100;
-    if(findRecursion == RECURSION_MAX) {
+    if (findRecursion == RECURSION_MAX) {
         throw ReadFailed(QObject::tr("Cannot create flow graph"));
     }
-    foreach(Port * p, from->getOutputPorts()) {
-        if(graph[p].contains(to) ) {
+    foreach (Port *p, from->getOutputPorts()) {
+        if (graph[p].contains(to)) {
             return true;
         }
-        foreach(Port * connection, graph[p]) {
-            if(findPath(connection->owner(), to)) {
+        foreach (Port *connection, graph[p]) {
+            if (findPath(connection->owner(), to)) {
                 return true;
             }
         }
@@ -75,12 +76,12 @@ bool FlowGraph::findPath(Actor * from, Port * to) const {
 }
 
 void FlowGraph::minimize() {
-    for(int i = 0; i < dataflowLinks.size(); ++i) {
-        Port * src = dataflowLinks.at(i).first;
-        Port * dst = dataflowLinks.at(i).second;
-        foreach(Port * p, graph[src]) {
+    for (int i = 0; i < dataflowLinks.size(); ++i) {
+        Port *src = dataflowLinks.at(i).first;
+        Port *dst = dataflowLinks.at(i).second;
+        foreach (Port *p, graph[src]) {
             findRecursion = 0;
-            if(findPath(p->owner(), dst) ){
+            if (findPath(p->owner(), dst)) {
                 graph.find(src)->removeAll(dst);
                 break;
             }
@@ -88,5 +89,5 @@ void FlowGraph::minimize() {
     }
 }
 
-} // WorkflowSerialize
-} // U2
+}    // namespace WorkflowSerialize
+}    // namespace U2

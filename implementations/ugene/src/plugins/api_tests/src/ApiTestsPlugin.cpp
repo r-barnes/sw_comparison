@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ApiTestsPlugin.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/U2AssemblyDbi.h>
@@ -29,26 +31,24 @@
 
 #include <U2Test/GTestFrameworkComponents.h>
 
-#include "ApiTestsPlugin.h"
 #include "UnitTestSuite.h"
 
 namespace U2 {
 
-extern "C" Q_DECL_EXPORT U2::Plugin *U2_PLUGIN_INIT_FUNC()
-{
+extern "C" Q_DECL_EXPORT U2::Plugin *U2_PLUGIN_INIT_FUNC() {
     return new ApiTestsPlugin();
 }
 
-ApiTestsPlugin::ApiTestsPlugin() :
-Plugin("UGENE 2.0 API tests", "Tests for UGENE 2.0 public API") {
-    GTestFormatRegistry* tfr = AppContext::getTestFramework()->getTestFormatRegistry();
-    XMLTestFormat *xmlTestFormat = qobject_cast<XMLTestFormat*>(tfr->findFormat("XML"));
-    assert(xmlTestFormat!=NULL);
+ApiTestsPlugin::ApiTestsPlugin()
+    : Plugin("UGENE 2.0 API tests", "Tests for UGENE 2.0 public API") {
+    GTestFormatRegistry *tfr = AppContext::getTestFramework()->getTestFormatRegistry();
+    XMLTestFormat *xmlTestFormat = qobject_cast<XMLTestFormat *>(tfr->findFormat("XML"));
+    assert(xmlTestFormat != NULL);
 
-    XMLTestFactory* f = UnitTestSuite::createFactory();
+    XMLTestFactory *f = UnitTestSuite::createFactory();
     bool res = xmlTestFormat->registerTestFactory(f);
-    SAFE_POINT(res, "API tests is not registered",);
+    SAFE_POINT(res, "API tests is not registered", );
     Q_UNUSED(res);
 }
 
-} // namespace U2
+}    // namespace U2

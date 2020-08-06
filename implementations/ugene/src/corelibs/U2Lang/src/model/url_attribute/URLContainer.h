@@ -24,11 +24,10 @@
 
 #include <QStringList>
 
-#include <U2Core/global.h>
 #include <U2Core/FilesIterator.h>
+#include <U2Core/global.h>
 
 #include <U2Lang/SupportClass.h>
-
 
 namespace U2 {
 
@@ -39,10 +38,10 @@ public:
     URLContainer(const QString &url, bool convertUrlToAbsolute = true);
     virtual ~URLContainer();
 
-    const QString & getUrl() const;
+    const QString &getUrl() const;
 
-    virtual FilesIterator * getFileUrls() = 0;
-    virtual URLContainer * clone() = 0;
+    virtual FilesIterator *getFileUrls() = 0;
+    virtual URLContainer *clone() = 0;
     virtual void accept(URLContainerVisitor *visitor) = 0;
 
     /** Validate the URL is present and readable */
@@ -54,7 +53,7 @@ protected:
 
 class U2LANG_EXPORT URLContainerFactory {
 public:
-    static URLContainer * createUrlContainer(const QString &url);
+    static URLContainer *createUrlContainer(const QString &url);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -62,8 +61,8 @@ class U2LANG_EXPORT FileUrlContainer : public URLContainer {
 public:
     FileUrlContainer(const QString &url);
 
-    virtual FilesIterator * getFileUrls();
-    virtual URLContainer * clone();
+    virtual FilesIterator *getFileUrls();
+    virtual URLContainer *clone();
     virtual void accept(URLContainerVisitor *visitor);
 
     virtual bool validateUrl(NotificationsList &notificationList);
@@ -73,8 +72,8 @@ class U2LANG_EXPORT DbObjUrlContainer : public URLContainer {
 public:
     DbObjUrlContainer(const QString &url);
 
-    virtual FilesIterator * getFileUrls();
-    virtual URLContainer * clone();
+    virtual FilesIterator *getFileUrls();
+    virtual URLContainer *clone();
     virtual void accept(URLContainerVisitor *visitor);
 
     virtual bool validateUrl(NotificationsList &notificationList);
@@ -85,8 +84,8 @@ public:
     DirUrlContainer(const QString &url);
     DirUrlContainer(const QString &url, const QString &incFilter, const QString &excFilter, bool recursive);
 
-    virtual FilesIterator * getFileUrls();
-    virtual URLContainer * clone();
+    virtual FilesIterator *getFileUrls();
+    virtual URLContainer *clone();
     virtual void accept(URLContainerVisitor *visitor);
 
     /**
@@ -95,8 +94,8 @@ public:
     */
     virtual bool validateUrl(NotificationsList &notificationList);
 
-    const QString & getIncludeFilter() const;
-    const QString & getExcludeFilter() const;
+    const QString &getIncludeFilter() const;
+    const QString &getExcludeFilter() const;
     bool isRecursive() const;
 
     void setIncludeFilter(const QString &value);
@@ -114,8 +113,8 @@ public:
     DbFolderUrlContainer(const QString &url);
     DbFolderUrlContainer(const QString &url, const QString &accFilter, const QString &objNameFilter, bool recursive);
 
-    virtual FilesIterator * getFileUrls();
-    virtual URLContainer * clone();
+    virtual FilesIterator *getFileUrls();
+    virtual URLContainer *clone();
     virtual void accept(URLContainerVisitor *visitor);
 
     virtual bool validateUrl(NotificationsList &notificationList);
@@ -123,8 +122,8 @@ public:
     void setSequenceAccFilter(const QString &acc);
     void setObjNameFilter(const QString &name);
 
-    const QString & getSequenceAccFilter() const;
-    const QString & getObjNameFilter() const;
+    const QString &getSequenceAccFilter() const;
+    const QString &getObjNameFilter() const;
 
     bool isRecursive() const;
     void setRecursive(bool value);
@@ -146,6 +145,6 @@ public:
     virtual void visit(DbFolderUrlContainer *) = 0;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_URL_CONTAINER_H_
+#endif    // _U2_URL_CONTAINER_H_

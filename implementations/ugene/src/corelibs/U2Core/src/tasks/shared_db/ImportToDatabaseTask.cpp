@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ImportToDatabaseTask.h"
+
 #include <U2Core/DocumentModel.h>
 #include <U2Core/Timer.h>
 #include <U2Core/U2SafePoints.h>
@@ -27,13 +29,11 @@
 #include "ImportDocumentToDatabaseTask.h"
 #include "ImportFileToDatabaseTask.h"
 #include "ImportObjectToDatabaseTask.h"
-#include "ImportToDatabaseTask.h"
 
 namespace U2 {
 
-ImportToDatabaseTask::ImportToDatabaseTask(QList<U2::Task *> tasks, int maxParallelSubtasks) :
-    MultiTask(tr("Import to the database"), tasks, false, TaskFlags(TaskFlag_ReportingIsSupported) | TaskFlag_ReportingIsEnabled | TaskFlag_PropagateSubtaskDesc)
-{
+ImportToDatabaseTask::ImportToDatabaseTask(QList<U2::Task *> tasks, int maxParallelSubtasks)
+    : MultiTask(tr("Import to the database"), tasks, false, TaskFlags(TaskFlag_ReportingIsSupported) | TaskFlag_ReportingIsEnabled | TaskFlag_PropagateSubtaskDesc) {
     GCOUNTER(cvar, tvar, "ImportToDatabaseTask");
     setMaxParallelSubtasks(maxParallelSubtasks);
     startTime = GTimer::currentTimeMicros();
@@ -55,10 +55,10 @@ Task::ReportResult ImportToDatabaseTask::report() {
 
 void ImportToDatabaseTask::sortSubtasks() const {
     foreach (const QPointer<Task> &subtask, getSubtasks()) {
-        ImportDirToDatabaseTask* dirSubtask = qobject_cast<ImportDirToDatabaseTask*>(subtask.data());
-        ImportDocumentToDatabaseTask* documentSubtask = qobject_cast<ImportDocumentToDatabaseTask*>(subtask.data());
-        ImportFileToDatabaseTask* fileSubtask = qobject_cast<ImportFileToDatabaseTask*>(subtask.data());
-        ImportObjectToDatabaseTask* objectSubtask = qobject_cast<ImportObjectToDatabaseTask*>(subtask.data());
+        ImportDirToDatabaseTask *dirSubtask = qobject_cast<ImportDirToDatabaseTask *>(subtask.data());
+        ImportDocumentToDatabaseTask *documentSubtask = qobject_cast<ImportDocumentToDatabaseTask *>(subtask.data());
+        ImportFileToDatabaseTask *fileSubtask = qobject_cast<ImportFileToDatabaseTask *>(subtask.data());
+        ImportObjectToDatabaseTask *objectSubtask = qobject_cast<ImportObjectToDatabaseTask *>(subtask.data());
 
         if (NULL != dirSubtask) {
             dirSubtasks << dirSubtask;
@@ -127,9 +127,9 @@ QString ImportToDatabaseTask::sayAboutImportedFilesAndDirs() const {
 QString ImportToDatabaseTask::sayAboutImportedDirs() const {
     QString result;
 
-    foreach (ImportDirToDatabaseTask* dirSubtask, dirSubtasks) {
+    foreach (ImportDirToDatabaseTask *dirSubtask, dirSubtasks) {
         const QStringList importedFiles = dirSubtask->getImportedFiles();
-        foreach (const QString& importedFile, importedFiles) {
+        foreach (const QString &importedFile, importedFiles) {
             result += importedFile + "<br>";
         }
     }
@@ -140,7 +140,7 @@ QString ImportToDatabaseTask::sayAboutImportedDirs() const {
 QString ImportToDatabaseTask::sayAboutImportedFiles() const {
     QString result;
 
-    foreach (ImportFileToDatabaseTask* fileSubtask, fileSubtasks) {
+    foreach (ImportFileToDatabaseTask *fileSubtask, fileSubtasks) {
         if (fileSubtask->isCanceled() || fileSubtask->hasError()) {
             continue;
         }
@@ -164,8 +164,8 @@ QString ImportToDatabaseTask::sayAboutImportedProjectItems() const {
 QString ImportToDatabaseTask::sayAboutImportedDocuments() const {
     QString result;
 
-    foreach (ImportDocumentToDatabaseTask* documentSubtask, documentSubtasks) {
-        Document* document = documentSubtask->getSourceDocument();
+    foreach (ImportDocumentToDatabaseTask *documentSubtask, documentSubtasks) {
+        Document *document = documentSubtask->getSourceDocument();
         if (NULL == document) {
             continue;
         }
@@ -175,9 +175,9 @@ QString ImportToDatabaseTask::sayAboutImportedDocuments() const {
             continue;
         }
 
-        result += tr("Document " ) + document->getName() + ":<br>";
+        result += tr("Document ") + document->getName() + ":<br>";
 
-        foreach (const QString& importedObjectName, importedObjectNames) {
+        foreach (const QString &importedObjectName, importedObjectNames) {
             result += "    " + importedObjectName + "<br>";
         }
 
@@ -190,12 +190,12 @@ QString ImportToDatabaseTask::sayAboutImportedDocuments() const {
 QString ImportToDatabaseTask::sayAboutImportedObjects() const {
     QString result;
 
-    foreach (ImportObjectToDatabaseTask* objectSubtask, objectSubtasks) {
+    foreach (ImportObjectToDatabaseTask *objectSubtask, objectSubtasks) {
         if (objectSubtask->isCanceled() || objectSubtask->hasError()) {
             continue;
         }
 
-        GObject* object = objectSubtask->getSourceObject();
+        GObject *object = objectSubtask->getSourceObject();
         if (NULL != object) {
             result += object->getGObjectName() + "<br>";
         }
@@ -218,9 +218,9 @@ QString ImportToDatabaseTask::sayAboutSkippedFilesAndDirs() const {
 QString ImportToDatabaseTask::sayAboutSkippedDirs() const {
     QString result;
 
-    foreach (ImportDirToDatabaseTask* dirSubtask, dirSubtasks) {
+    foreach (ImportDirToDatabaseTask *dirSubtask, dirSubtasks) {
         const StrStrMap skippedFiles = dirSubtask->getSkippedFiles();
-        foreach (const QString& skippedFile, skippedFiles.keys()) {
+        foreach (const QString &skippedFile, skippedFiles.keys()) {
             result += skippedFile + ": " + skippedFiles[skippedFile] + "<br>";
         }
     }
@@ -231,7 +231,7 @@ QString ImportToDatabaseTask::sayAboutSkippedDirs() const {
 QString ImportToDatabaseTask::sayAboutSkippedFiles() const {
     QString result;
 
-    foreach (ImportFileToDatabaseTask* fileSubtask, fileSubtasks) {
+    foreach (ImportFileToDatabaseTask *fileSubtask, fileSubtasks) {
         if (fileSubtask->isCanceled()) {
             result += fileSubtask->getFilePath() + ": " + tr("Import was cancelled") + "<br>";
         } else if (fileSubtask->hasError()) {
@@ -255,8 +255,8 @@ QString ImportToDatabaseTask::sayAboutSkippedProjectItems() const {
 QString ImportToDatabaseTask::sayAboutSkippedDocuments() const {
     QString result;
 
-    foreach (ImportDocumentToDatabaseTask* documentSubtask, documentSubtasks) {
-        Document* document = documentSubtask->getSourceDocument();
+    foreach (ImportDocumentToDatabaseTask *documentSubtask, documentSubtasks) {
+        Document *document = documentSubtask->getSourceDocument();
         if (NULL == document) {
             continue;
         }
@@ -266,9 +266,9 @@ QString ImportToDatabaseTask::sayAboutSkippedDocuments() const {
             continue;
         }
 
-        result += tr("Document " ) + document->getName() + ":<br>";
+        result += tr("Document ") + document->getName() + ":<br>";
 
-        foreach (const QString& skippedObjectName, skippedObjectNames) {
+        foreach (const QString &skippedObjectName, skippedObjectNames) {
             result += "    " + skippedObjectName + "<br>";
         }
 
@@ -281,12 +281,12 @@ QString ImportToDatabaseTask::sayAboutSkippedDocuments() const {
 QString ImportToDatabaseTask::sayAboutSkippedObjects() const {
     QString result;
 
-    foreach (ImportObjectToDatabaseTask* objectSubtask, objectSubtasks) {
+    foreach (ImportObjectToDatabaseTask *objectSubtask, objectSubtasks) {
         if (!objectSubtask->isCanceled() && !objectSubtask->hasError()) {
             continue;
         }
 
-        GObject* object = objectSubtask->getSourceObject();
+        GObject *object = objectSubtask->getSourceObject();
         if (NULL != object) {
             result += object->getGObjectName() + "<br>";
         }
@@ -296,4 +296,4 @@ QString ImportToDatabaseTask::sayAboutSkippedObjects() const {
     return tr("Just objects without a document:") + "<br>" + result;
 }
 
-}   // namespace U2
+}    // namespace U2

@@ -20,6 +20,7 @@
  */
 
 #include "SmithWatermanResultFilters.h"
+
 #include <QtAlgorithms>
 
 namespace U2 {
@@ -30,17 +31,17 @@ namespace U2 {
 const QString SWRF_EmptyFilter::ID = "none";
 
 // Without any filtering
-bool SWRF_EmptyFilter::applyFilter(QList<SmithWatermanResult>* /*lst*/) {
+bool SWRF_EmptyFilter::applyFilter(QList<SmithWatermanResult> * /*lst*/) {
     return true;
 }
 
-SmithWatermanResultFilter* SWRF_EmptyFilter::clone() const {
+SmithWatermanResultFilter *SWRF_EmptyFilter::clone() const {
     return new SWRF_EmptyFilter(*this);
 }
 
 bool SWRF_EmptyFilter::needErase(
-                        const SmithWatermanResult& /*currItem*/,
-                        const SmithWatermanResult& /*someItem*/) const {
+    const SmithWatermanResult & /*currItem*/,
+    const SmithWatermanResult & /*someItem*/) const {
     return false;
 }
 
@@ -68,8 +69,8 @@ static bool revScoreComparator(const SmithWatermanResult &s0, const SmithWaterma
     return res;
 }
 // Filtering all intersects result
-bool SWRF_WithoutIntersect::applyFilter(QList<SmithWatermanResult>* lst) {
-    QList<SmithWatermanResult>& results = *lst;
+bool SWRF_WithoutIntersect::applyFilter(QList<SmithWatermanResult> *lst) {
+    QList<SmithWatermanResult> &results = *lst;
 
     qSort(results.begin(), results.end(), revScoreComparator);
 
@@ -78,8 +79,8 @@ bool SWRF_WithoutIntersect::applyFilter(QList<SmithWatermanResult>* lst) {
     while (i < size) {
         int j = i + 1;
         while (j < size) {
-            const SmithWatermanResult& currItem = results[i];
-            const SmithWatermanResult& someItem = results[j];
+            const SmithWatermanResult &currItem = results[i];
+            const SmithWatermanResult &someItem = results[j];
             if (needErase(currItem, someItem)) {
                 results.removeAt(j);
                 size--;
@@ -92,13 +93,13 @@ bool SWRF_WithoutIntersect::applyFilter(QList<SmithWatermanResult>* lst) {
     return true;
 }
 
-SmithWatermanResultFilter* SWRF_WithoutIntersect::clone() const {
+SmithWatermanResultFilter *SWRF_WithoutIntersect::clone() const {
     return new SWRF_WithoutIntersect(*this);
 }
 
 bool SWRF_WithoutIntersect::needErase(
-                        const SmithWatermanResult& currItem,
-                        const SmithWatermanResult& someItem) const {
+    const SmithWatermanResult &currItem,
+    const SmithWatermanResult &someItem) const {
     U2Region currRegion = currItem.refSubseq;
     U2Region someRegion = someItem.refSubseq;
     if (currRegion.intersects(someRegion) &&
@@ -112,4 +113,4 @@ QString SWRF_WithoutIntersect::getId() const {
     return ID;
 }
 
-} // namesapce U2
+}    // namespace U2

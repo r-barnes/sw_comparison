@@ -22,12 +22,11 @@
 #define _U2_HELP_BUTTON_H_
 
 #include <QAbstractButton>
+#include <QButtonGroup>
 #include <QDialogButtonBox>
 #include <QMap>
-#include <QString>
 #include <QPushButton>
-#include <QButtonGroup>
-
+#include <QString>
 #include <QWidget>
 
 #include <U2Core/global.h>
@@ -36,11 +35,11 @@ class QComboBox;
 
 namespace U2 {
 
-class U2GUI_EXPORT HelpButton: public QObject {
+class U2GUI_EXPORT HelpButton : public QObject {
     Q_OBJECT
 public:
-    HelpButton(QObject *parent, QDialogButtonBox *b, const QString& pageId);
-    HelpButton(QObject *parent, QAbstractButton *b, const QString& pageId);
+    HelpButton(QObject *parent, QDialogButtonBox *b, const QString &pageId);
+    HelpButton(QObject *parent, QAbstractButton *b, const QString &pageId);
 
     void updatePageId(const QString &pageId);
 
@@ -55,16 +54,17 @@ protected:
     QDialogButtonBox *dialogBox;
 };
 
-class U2GUI_EXPORT ComboboxDependentHelpButton: public HelpButton {
+class U2GUI_EXPORT ComboboxDependentHelpButton : public HelpButton {
     Q_OBJECT
 public:
     ComboboxDependentHelpButton(QObject *parent, QDialogButtonBox *b, QComboBox *cb, const QMap<QString, QString> &pageMap);
 protected slots:
     void sl_buttonClicked();
+
 private:
     const QMap<QString, QString> pageMap;
     const QComboBox *cb;
 };
 
-}
+}    // namespace U2
 #endif

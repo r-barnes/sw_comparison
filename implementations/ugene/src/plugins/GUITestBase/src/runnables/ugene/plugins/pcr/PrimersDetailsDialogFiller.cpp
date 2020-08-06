@@ -19,22 +19,18 @@
  * MA 02110-1301, USA.
  */
 
-#include <QApplication>
-
 #include "PrimersDetailsDialogFiller.h"
+
+#include <QApplication>
 
 namespace U2 {
 
 PrimersDetailsDialogFiller::PrimersDetailsDialogFiller(HI::GUITestOpStatus &os)
-: Filler(os, "PrimersDetailsDialog")
-{
-
+    : Filler(os, "PrimersDetailsDialog") {
 }
 
-PrimersDetailsDialogFiller::PrimersDetailsDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario) :
-    Filler(os, "PrimersDetailsDialog", scenario)
-{
-
+PrimersDetailsDialogFiller::PrimersDetailsDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario)
+    : Filler(os, "PrimersDetailsDialog", scenario) {
 }
 
 #define GT_CLASS_NAME "GTUtilsDialog::PrimersDetailsDialogFiller"
@@ -48,4 +44,4 @@ void PrimersDetailsDialogFiller::commonScenario() {
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
 
-} // U2
+}    // namespace U2

@@ -19,31 +19,30 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/U2SafePoints.h>
-
 #include "U2AssemblyReadIterator.h"
 
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
-U2AssemblyReadIterator::U2AssemblyReadIterator(const QByteArray & read_, QList<U2CigarToken> cigar_, int startPos /* = 0*/) :
-offsetInRead(0), read(read_), offsetInToken(0), offsetInCigar(0), cigar(cigar_)
-{
-    for(int i = 0; i < startPos && hasNext();) {
+U2AssemblyReadIterator::U2AssemblyReadIterator(const QByteArray &read_, QList<U2CigarToken> cigar_, int startPos /* = 0*/)
+    : offsetInRead(0), read(read_), offsetInToken(0), offsetInCigar(0), cigar(cigar_) {
+    for (int i = 0; i < startPos && hasNext();) {
         skip();
         U2CigarToken t = cigar.at(offsetInCigar);
-        if(i + t.count <= startPos) { //we are going to skip the current token
-            if(isMatch()) {
+        if (i + t.count <= startPos) {    //we are going to skip the current token
+            if (isMatch()) {
                 offsetInRead += t.count;
             }
             i += t.count;
             offsetInToken += t.count;
-            if(!hasNext()) break;
+            if (!hasNext())
+                break;
             advanceToNextToken();
         } else {
             //landing in the current token
             offsetInToken = startPos - i;
-            if(isMatch()) {
+            if (isMatch()) {
                 offsetInRead += offsetInToken;
             }
             break;
@@ -53,27 +52,26 @@ offsetInRead(0), read(read_), offsetInToken(0), offsetInCigar(0), cigar(cigar_)
 
 bool U2AssemblyReadIterator::hasNext() const {
     assert(offsetInCigar <= cigar.size());
-    if(offsetInCigar == cigar.size()) {
+    if (offsetInCigar == cigar.size()) {
         return false;
     }
     //check if staying on the last pos of current token
-    if(offsetInToken == cigar.at(offsetInCigar).count) {
-
+    if (offsetInToken == cigar.at(offsetInCigar).count) {
         //if staying on the last pos of current token of the last token -> hasn't next
-        if(offsetInCigar == cigar.size()-1) {
+        if (offsetInCigar == cigar.size() - 1) {
             return false;
         }
         //check if everything after current pos is insertion/padding/hard clip
-        int i = offsetInCigar+1;
-        for(; i < cigar.size(); ++i) {
+        int i = offsetInCigar + 1;
+        for (; i < cigar.size(); ++i) {
             U2CigarOp op = cigar.at(i).op;
-            if(U2CigarOp_I != op && U2CigarOp_S != op && U2CigarOp_P != op && U2CigarOp_H != op) {
+            if (U2CigarOp_I != op && U2CigarOp_S != op && U2CigarOp_P != op && U2CigarOp_H != op) {
                 break;
             }
         }
 
-        if(i == cigar.size()) {
-            return false; //no matches/deletions found
+        if (i == cigar.size()) {
+            return false;    //no matches/deletions found
         }
     }
     return true;
@@ -83,15 +81,15 @@ char U2AssemblyReadIterator::nextLetter() {
     assert(hasNext());
     skip();
     SAFE_POINT(offsetInCigar < cigar.size(), "CIGAR out of range", 0);
-    if(offsetInToken != cigar.at(offsetInCigar).count) { //staying in the current token
+    if (offsetInToken != cigar.at(offsetInCigar).count) {    //staying in the current token
         offsetInToken++;
-    } else { //current token is finished
+    } else {    //current token is finished
         advanceToNextToken();
         offsetInToken = 1;
     }
     bool del = isDeletion();
-    char c = del ? '-' : read.at(offsetInRead); //TODO: hardcoded '-'
-    offsetInRead += !del; //adjust offsetInRead only when going through match token
+    char c = del ? '-' : read.at(offsetInRead);    //TODO: hardcoded '-'
+    offsetInRead += !del;    //adjust offsetInRead only when going through match token
     return c;
 }
 
@@ -122,7 +120,7 @@ bool U2AssemblyReadIterator::isPaddingOrHardClip() const {
 }
 
 void U2AssemblyReadIterator::skip() {
-    while(hasNext() && !isMatch() && !isDeletion()) {
+    while (hasNext() && !isMatch() && !isDeletion()) {
         skipInsertion();
         skipPaddingAndHardClip();
     }
@@ -130,7 +128,7 @@ void U2AssemblyReadIterator::skip() {
 
 //skip tokens and corresponding letters
 void U2AssemblyReadIterator::skipInsertion() {
-    while(hasNext() && isInsertion()) {
+    while (hasNext() && isInsertion()) {
         offsetInRead += cigar.at(offsetInCigar).count;
         offsetInCigar++;
     }
@@ -138,19 +136,20 @@ void U2AssemblyReadIterator::skipInsertion() {
 
 //silently skip this tokens.
 void U2AssemblyReadIterator::skipPaddingAndHardClip() {
-    while(hasNext() && isPaddingOrHardClip()) {
+    while (hasNext() && isPaddingOrHardClip()) {
         offsetInCigar++;
     }
 }
 
 namespace {
-void check(const QByteArray & expectedSeq, U2AssemblyReadIterator & it) {
+void check(const QByteArray &expectedSeq, U2AssemblyReadIterator &it) {
     int i = 0;
-    while(it.hasNext()) {
+    while (it.hasNext()) {
         assert(i < expectedSeq.size());
         char expected = expectedSeq[i++];
         char actual = it.nextLetter();
-        Q_UNUSED(actual);Q_UNUSED(expected);
+        Q_UNUSED(actual);
+        Q_UNUSED(expected);
         assert(expected == actual);
     }
     assert(i == expectedSeq.size());
@@ -215,7 +214,7 @@ void t03() {
     check(expectedRead, it);
 }
 
-} //ns
+}    // namespace
 
 void shortReadIteratorSmokeTest() {
     t01();
@@ -223,4 +222,4 @@ void shortReadIteratorSmokeTest() {
     t03();
 }
 
-} //ns
+}    // namespace U2

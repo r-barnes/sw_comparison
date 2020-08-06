@@ -28,26 +28,24 @@
 
 namespace U2 {
 
-const qint64 U2ModType::objUpdatedName        = 1;
+const qint64 U2ModType::objUpdatedName = 1;
 
-const qint64 U2ModType::sequenceUpdatedData   = 1001;
+const qint64 U2ModType::sequenceUpdatedData = 1001;
 
-const qint64 U2ModType::msaUpdatedAlphabet    = 3001;
-const qint64 U2ModType::msaAddedRows          = 3002;
-const qint64 U2ModType::msaAddedRow           = 3003;
-const qint64 U2ModType::msaRemovedRows        = 3004;
-const qint64 U2ModType::msaRemovedRow         = 3005;
-const qint64 U2ModType::msaUpdatedRowInfo     = 3006;
-const qint64 U2ModType::msaUpdatedGapModel    = 3007;
-const qint64 U2ModType::msaSetNewRowsOrder    = 3008;
-const qint64 U2ModType::msaLengthChanged      = 3009;
+const qint64 U2ModType::msaUpdatedAlphabet = 3001;
+const qint64 U2ModType::msaAddedRows = 3002;
+const qint64 U2ModType::msaAddedRow = 3003;
+const qint64 U2ModType::msaRemovedRows = 3004;
+const qint64 U2ModType::msaRemovedRow = 3005;
+const qint64 U2ModType::msaUpdatedRowInfo = 3006;
+const qint64 U2ModType::msaUpdatedGapModel = 3007;
+const qint64 U2ModType::msaSetNewRowsOrder = 3008;
+const qint64 U2ModType::msaLengthChanged = 3009;
 
-const qint64 U2ModType::udrUpdated            = 4001;
-
+const qint64 U2ModType::udrUpdated = 4001;
 
 U2UseCommonUserModStep::U2UseCommonUserModStep(const U2EntityRef &entity, U2OpStatus &os)
-: dbi(NULL), valid(false), con(NULL), masterObjId(entity.entityId)
-{
+    : dbi(NULL), valid(false), con(NULL), masterObjId(entity.entityId) {
     // Open connection
     con.reset(new DbiConnection(entity.dbiRef, os));
     CHECK_OP(os, );
@@ -56,9 +54,8 @@ U2UseCommonUserModStep::U2UseCommonUserModStep(const U2EntityRef &entity, U2OpSt
     init(os);
 }
 
-U2UseCommonUserModStep::U2UseCommonUserModStep(U2Dbi* _dbi, const U2DataId& _masterObjId, U2OpStatus& os)
-: dbi(_dbi), valid(false), con(NULL), masterObjId(_masterObjId)
-{
+U2UseCommonUserModStep::U2UseCommonUserModStep(U2Dbi *_dbi, const U2DataId &_masterObjId, U2OpStatus &os)
+    : dbi(_dbi), valid(false), con(NULL), masterObjId(_masterObjId) {
     init(os);
 }
 
@@ -80,20 +77,18 @@ U2UseCommonUserModStep::~U2UseCommonUserModStep() {
     }
 }
 
-U2Dbi * U2UseCommonUserModStep::getDbi() const {
+U2Dbi *U2UseCommonUserModStep::getDbi() const {
     return dbi;
 }
 
-ModificationAction::ModificationAction(U2AbstractDbi* _dbi, const U2DataId& _masterObjId)
+ModificationAction::ModificationAction(U2AbstractDbi *_dbi, const U2DataId &_masterObjId)
     : dbi(_dbi),
       masterObjId(_masterObjId),
-      trackMod(NoTrack)
-{
+      trackMod(NoTrack) {
     objIds.insert(masterObjId);
 }
 
 ModificationAction::~ModificationAction() {
-
 }
 
-} // namespace
+}    // namespace U2

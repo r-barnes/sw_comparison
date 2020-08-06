@@ -22,13 +22,14 @@
 #ifndef _U2_GUI_TEST_SERVICE_H_
 #define _U2_GUI_TEST_SERVICE_H_
 
+#include <core/GUITest.h>
+
 #include <U2Core/MultiTask.h>
 #include <U2Core/Task.h>
 #include <U2Core/global.h>
 
 #include <U2Gui/MainWindow.h>
 
-#include <core/GUITest.h>
 #include "GUITestLauncher.h"
 //#include "MainThreadTimer.h"
 
@@ -42,27 +43,33 @@ class MainThreadRunnable;
 class U2TEST_EXPORT GUITestService : public Service {
     Q_OBJECT
 public:
-    enum LaunchOptions {NONE, RUN_ONE_TEST, RUN_ALL_TESTS, RUN_ALL_TESTS_BATCH, RUN_TEST_SUITE, RUN_CRAZY_USER_MODE, CREATE_GUI_TEST, RUN_ALL_TESTS_NO_IGNORED};
+    enum LaunchOptions { NONE,
+                         RUN_ONE_TEST,
+                         RUN_ALL_TESTS,
+                         RUN_ALL_TESTS_BATCH,
+                         RUN_TEST_SUITE,
+                         RUN_CRAZY_USER_MODE,
+                         CREATE_GUI_TEST,
+                         RUN_ALL_TESTS_NO_IGNORED };
 
     GUITestService(QObject *parent = NULL);
     ~GUITestService();
 
     void runTest(HI::GUITests testsToRun);
-//    qint64 getMainThreadTimerValue() const;
+    //    qint64 getMainThreadTimerValue() const;
 
-    static GUITestService * getGuiTestService();    // the service should be already created and registered
+    static GUITestService *getGuiTestService();    // the service should be already created and registered
 
     static void setEnvVariablesForGuiTesting();
-    static LaunchOptions getLaunchOptions(CMDLineRegistry* cmdLine);
+    static LaunchOptions getLaunchOptions(CMDLineRegistry *cmdLine);
     static bool isGuiTestServiceNeeded();
 
     static const QString GUITESTING_REPORT_PREFIX;
-    static const qint64 TIMER_INTERVAL;
 
 public slots:
-     void runGUICrazyUserTest();
-     void runGUITest();
-     void runGUITest(HI::GUITest* t);
+    void runGUICrazyUserTest();
+    void runGUITest();
+    void runGUITest(HI::GUITest *t);
 
     void runAllGUITests();
 
@@ -71,7 +78,7 @@ private slots:
     void sl_registerService();
     void sl_serviceRegistered();
     void sl_registerTestLauncherTask();
-    void sl_taskStateChanged(Task*);
+    void sl_taskStateChanged(Task *);
     void sl_testThreadFinish();
 
 private:
@@ -89,17 +96,17 @@ private:
     void registerTestSuiteTask();
     void registerServiceTask();
 
-    Task* createTestLauncherTask(int suiteNumber = 0, bool noIgnored = false) const;
-    Task* createTestSuiteLauncherTask() const;
+    Task *createTestLauncherTask(int suiteNumber = 0, bool noIgnored = false) const;
+    Task *createTestSuiteLauncherTask() const;
     static void writeTestResult(const QString &result);
 
     QAction *runTestsAction;
     Task *testLauncher;
     HI::GUITests testsToRun;
     bool needTeamcityLog;
-//    MainThreadTimer timer;
+    //    MainThreadTimer timer;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_GUI_TEST_SERVICE_H_
+#endif    // _U2_GUI_TEST_SERVICE_H_

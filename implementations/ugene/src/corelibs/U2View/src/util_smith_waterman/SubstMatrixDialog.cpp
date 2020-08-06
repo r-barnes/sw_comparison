@@ -21,17 +21,17 @@
 
 #include "SubstMatrixDialog.h"
 
-#include <U2Gui/HelpButton.h>
+#include <QHeaderView>
 #include <QPushButton>
 #include <QScrollBar>
-#include <QHeaderView>
 #include <QTableWidgetItem>
+
+#include <U2Gui/HelpButton.h>
 
 namespace U2 {
 
-SubstMatrixDialog::SubstMatrixDialog(const SMatrix& _m, QWidget* p)
-: QDialog(p), hlBorderColumn(-1), hlBorderRow(-1), hlInnerColumn(-1), hlInnerRow(-1), m(_m)
-{
+SubstMatrixDialog::SubstMatrixDialog(const SMatrix &_m, QWidget *p)
+    : QDialog(p), hlBorderColumn(-1), hlBorderRow(-1), hlInnerColumn(-1), hlInnerRow(-1), m(_m) {
     assert(!m.isEmpty());
     setupUi(this);
 
@@ -42,16 +42,14 @@ SubstMatrixDialog::SubstMatrixDialog(const SMatrix& _m, QWidget* p)
     setModal(true);
 
     QString info;
-    info+="<b>" + tr("min score:")+"</b> " + QString::number(m.getMinScore()) + ", ";
-    info+="<b>" + tr("max score:")+"</b> " + QString::number(m.getMaxScore()) + "<br>";
-    info+="<pre>" + m.getDescription() + "</pre>";
+    info += "<b>" + tr("min score:") + "</b> " + QString::number(m.getMinScore()) + ", ";
+    info += "<b>" + tr("max score:") + "</b> " + QString::number(m.getMaxScore()) + "<br>";
+    info += "<pre>" + m.getDescription() + "</pre>";
     infoEdit->setHtml(info);
 
     connectGUI();
     prepareTable();
-
 }
-
 
 void SubstMatrixDialog::sl_closeWindow() {
     close();
@@ -62,11 +60,11 @@ void SubstMatrixDialog::connectGUI() {
     connect(tableMatrix, SIGNAL(cellEntered(int, int)), SLOT(sl_mouseOnCell(int, int)));
 }
 
-#define  CELL_WIDTH 25
-#define  DEFAULT_BORDER_CELL_COLOR QColor(200, 200, 200)
-#define  HIGHLIGHT_BORDER_CELL_COLOR QColor(200, 230, 200)
-#define  DEFAULT_INNER_CELL_COLOR QColor(255, 255, 255)
-#define  HIGHLIGHT_INNER_CELL_COLOR QColor(200, 230, 200)
+#define CELL_WIDTH 25
+#define DEFAULT_BORDER_CELL_COLOR QColor(200, 200, 200)
+#define HIGHLIGHT_BORDER_CELL_COLOR QColor(200, 230, 200)
+#define DEFAULT_INNER_CELL_COLOR QColor(255, 255, 255)
+#define HIGHLIGHT_INNER_CELL_COLOR QColor(200, 230, 200)
 
 void SubstMatrixDialog::prepareTable() {
     tableMatrix->horizontalHeader()->setHidden(true);
@@ -77,7 +75,7 @@ void SubstMatrixDialog::prepareTable() {
     tableMatrix->setRowCount(n + 1);
     tableMatrix->setColumnCount(n + 1);
 
-    QTableWidgetItem* ptwi = new QTableWidgetItem("");
+    QTableWidgetItem *ptwi = new QTableWidgetItem("");
     Qt::ItemFlags flags = ptwi->flags();
     flags &= (~Qt::ItemIsEditable);
     ptwi->setFlags(flags);
@@ -103,28 +101,28 @@ void SubstMatrixDialog::prepareTable() {
         ptwi->setBackgroundColor(DEFAULT_BORDER_CELL_COLOR);
         ptwi->setFlags(flags);
         ptwi->setTextAlignment(Qt::AlignCenter);
-        tableMatrix->setItem(i+1, 0, ptwi);
+        tableMatrix->setItem(i + 1, 0, ptwi);
 
         ptwi = new QTableWidgetItem(title);
         ptwi->setFlags(flags);
         ptwi->setTextAlignment(Qt::AlignCenter);
         ptwi->setBackgroundColor(DEFAULT_BORDER_CELL_COLOR);
-        tableMatrix->setItem(0, i+1, ptwi);
+        tableMatrix->setItem(0, i + 1, ptwi);
     }
 
     tableMatrix->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     tableMatrix->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    tableMatrix->setMinimumSize(CELL_WIDTH * (n + 1) + 20, CELL_WIDTH * (n + 1) + 20); //+20 is for borders
+    tableMatrix->setMinimumSize(CELL_WIDTH * (n + 1) + 20, CELL_WIDTH * (n + 1) + 20);    //+20 is for borders
 }
 
 void SubstMatrixDialog::sl_mouseOnCell(int row, int column) {
     //update mid-cell
     if (row != 0 && column != 0 && !(column == hlInnerColumn && row == hlInnerRow)) {
-        QTableWidgetItem* prevItem = tableMatrix->item(hlInnerRow, hlInnerColumn);
+        QTableWidgetItem *prevItem = tableMatrix->item(hlInnerRow, hlInnerColumn);
         if (prevItem != NULL) {
             prevItem->setBackgroundColor(DEFAULT_INNER_CELL_COLOR);
         }
-        QTableWidgetItem* newItem = tableMatrix->item(row, column);
+        QTableWidgetItem *newItem = tableMatrix->item(row, column);
         if (newItem != NULL) {
             newItem->setBackgroundColor(HIGHLIGHT_INNER_CELL_COLOR);
         }
@@ -134,12 +132,12 @@ void SubstMatrixDialog::sl_mouseOnCell(int row, int column) {
 
     //update row header
     if (row != hlBorderRow && row != 0) {
-        QTableWidgetItem* pw = tableMatrix->item(row, 0);
-        if (pw!=NULL) {
+        QTableWidgetItem *pw = tableMatrix->item(row, 0);
+        if (pw != NULL) {
             pw->setBackgroundColor(HIGHLIGHT_BORDER_CELL_COLOR);
         }
         pw = tableMatrix->item(hlBorderRow, 0);
-        if (pw!=NULL) {
+        if (pw != NULL) {
             pw->setBackgroundColor(DEFAULT_BORDER_CELL_COLOR);
         }
 
@@ -148,8 +146,8 @@ void SubstMatrixDialog::sl_mouseOnCell(int row, int column) {
 
     //update column header
     if (column != hlBorderColumn && column != 0) {
-        QTableWidgetItem* pw = tableMatrix->item(0, column);
-        if (pw!=NULL) {
+        QTableWidgetItem *pw = tableMatrix->item(0, column);
+        if (pw != NULL) {
             pw->setBackgroundColor(HIGHLIGHT_BORDER_CELL_COLOR);
         }
         pw = tableMatrix->item(0, hlBorderColumn);
@@ -161,4 +159,4 @@ void SubstMatrixDialog::sl_mouseOnCell(int row, int column) {
     }
 }
 
-} // namespace
+}    // namespace U2

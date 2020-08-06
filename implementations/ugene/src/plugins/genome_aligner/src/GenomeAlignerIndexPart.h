@@ -22,8 +22,9 @@
 #ifndef _U2_GENOME_ALIGNER_INDEX_PART_H_
 #define _U2_GENOME_ALIGNER_INDEX_PART_H_
 
-#include <U2Core/global.h>
 #include <QFile>
+
+#include <U2Core/global.h>
 
 typedef quint64 BMType;
 typedef quint32 SAType;
@@ -35,34 +36,38 @@ class GenomeAlignerIndexTask;
 class IndexPart {
     friend class GenomeAlignerIndexTask;
     friend class GenomeAlignerIndex;
+
 public:
     IndexPart();
     ~IndexPart();
-    SAType          *sArray;
-    BMType          *bitMask;
-    char            *seq;
+    SAType *sArray;
+    BMType *bitMask;
+    char *seq;
 
     SAType getLoadedPartSize() const;
     SAType getMaxLength();
     SAType getLoadedSeqStart();
-    int getCurrentPart() {return currentPart;}
+    int getCurrentPart() {
+        return currentPart;
+    }
     bool load(int part);
     void writePart(int part, quint32 arrLen);
-private:
-    int             partCount;
-    int             currentPart;
-    SAType          *seqStarts;
-    SAType          *seqLengths;
-    SAType          *saLengths;
 
-    QFile           *refFile;
-    QFile           **partFiles;
+private:
+    int partCount;
+    int currentPart;
+    SAType *seqStarts;
+    SAType *seqLengths;
+    SAType *saLengths;
+
+    QFile *refFile;
+    QFile **partFiles;
 
     BMType getBitValue(uchar *seq, SAType idx);
 };
 
 bool isLittleEndian();
 
-} //U2
+}    // namespace U2
 
-#endif //_U2_GENOME_ALIGNER_INDEX_PART_H_
+#endif    //_U2_GENOME_ALIGNER_INDEX_PART_H_

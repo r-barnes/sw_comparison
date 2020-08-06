@@ -22,18 +22,19 @@
 #ifndef _U2_GT_RUNNABLES_FIND_REPEATS_DIALOG_FILLER_H_
 #define _U2_GT_RUNNABLES_FIND_REPEATS_DIALOG_FILLER_H_
 
-#include "utils/GTUtilsDialog.h"
-#include "api/GTRegionSelector.h"
 #include <U2Algorithm/SmithWatermanSettings.h>
+
+#include "api/GTRegionSelector.h"
+#include "utils/GTUtilsDialog.h"
 
 namespace U2 {
 using namespace HI;
 class FindRepeatsDialogFiller : public Filler {
 public:
-    enum Button {Start, Cancel};
+    enum Button { Start,
+                  Cancel };
 
-    FindRepeatsDialogFiller(HI::GUITestOpStatus &os, const QString & _resultFilesPath, bool _searchInverted = false,
-        int minRepeatLength = -1, int repeatsIdentity = -1, int minDistance = -1);
+    FindRepeatsDialogFiller(HI::GUITestOpStatus &os, const QString &_resultFilesPath, bool _searchInverted = false, int minRepeatLength = -1, int repeatsIdentity = -1, int minDistance = -1);
     FindRepeatsDialogFiller(HI::GUITestOpStatus &os, CustomScenario *scenario);
 
     virtual void commonScenario();
@@ -47,6 +48,6 @@ private:
     int minDistance;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_GT_RUNNABLES_FIND_REPEATS_DIALOG_FILLER_H_
+#endif    // _U2_GT_RUNNABLES_FIND_REPEATS_DIALOG_FILLER_H_

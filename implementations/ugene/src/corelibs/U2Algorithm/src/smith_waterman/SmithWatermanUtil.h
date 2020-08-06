@@ -24,15 +24,14 @@
 
 #include "SmithWatermanResult.h"
 
-
 namespace U2 {
 
 class SMatrix;
 
 class U2ALGORITHM_EXPORT SmithWatermanUtil {
 public:
-    static float calcScoreItSelf(const SMatrix& m,
-                                 const char* pattern,
+    static float calcScoreItSelf(const SMatrix &m,
+                                 const char *pattern,
                                  int patternLen);
 
     static int calcWindowLen(bool transl,
@@ -52,9 +51,9 @@ public:
                                float scoreGapOpen,
                                float scoreGapExtd);
 
-    static bool removeIdenticalResults(QList<SmithWatermanResult>* lst);
+    static bool removeIdenticalResults(QList<SmithWatermanResult> *lst);
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

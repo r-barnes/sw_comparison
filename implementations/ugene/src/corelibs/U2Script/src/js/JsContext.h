@@ -25,9 +25,9 @@
 #include <node.h>
 
 #ifdef _DEBUG
-#define U2SCRIPT_MODULE_NAME U2Scriptd
+#    define U2SCRIPT_MODULE_NAME U2Scriptd
 #else
-#define U2SCRIPT_MODULE_NAME U2Script
+#    define U2SCRIPT_MODULE_NAME U2Script
 #endif
 
 using namespace v8;
@@ -36,16 +36,16 @@ namespace U2 {
 
 namespace Js {
 
-void                 initModule( Handle<Object> target );
-Handle<Value>        launchSchemeWithScheduler( const Arguments &args );
-Handle<Value>        debugStatus( const Arguments &args );
-Handle<Value>        topologicalSortedGraph( const Arguments &args );
-Handle<Value>        tick( const Arguments &args );
+void initModule(Handle<Object> target);
+Handle<Value> launchSchemeWithScheduler(const Arguments &args);
+Handle<Value> debugStatus(const Arguments &args);
+Handle<Value> topologicalSortedGraph(const Arguments &args);
+Handle<Value> tick(const Arguments &args);
 
-} // namespace Js
+}    // namespace Js
 
-} // namespace U2
+}    // namespace U2
 
-NODE_MODULE( U2SCRIPT_MODULE_NAME, U2::Js::initModule )
+NODE_MODULE(U2SCRIPT_MODULE_NAME, U2::Js::initModule)
 
-#endif // _U2_JS_CONTEXT_H_
+#endif    // _U2_JS_CONTEXT_H_

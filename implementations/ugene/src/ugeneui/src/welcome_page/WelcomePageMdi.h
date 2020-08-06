@@ -35,16 +35,15 @@ public:
     WelcomePageMdi(const QString &title, WelcomePageMdiController *controller);
 
     void updateRecent(const QStringList &recentProjects, const QStringList &recentFiles);
-    bool isLoaded() const;
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
 
-private:
+public:
     WelcomePageMdiController *controller;
     WelcomePageWidget *widget;
 };
 
-} // U2
+}    // namespace U2
 
-#endif // _U2_WELCOME_PAGE_MDI_H_
+#endif    // _U2_WELCOME_PAGE_MDI_H_

@@ -22,10 +22,11 @@
 #ifndef _U2_GL_FRAME_MANAGER_H_
 #define _U2_GL_FRAME_MANAGER_H_
 
-#include <U2Core/Matrix44.h>
-
 #include <QGLWidget>
 #include <QVariantList>
+
+#include <U2Core/Matrix44.h>
+#include <U2Core/Vector3D.h>
 
 namespace U2 {
 
@@ -38,18 +39,28 @@ class GLFrame {
     static const GLfloat DEFAULT_ZOOM;
     //static const Vector3D DEFAULT_CAMERA;
 public:
-    GLFrame(QGLWidget* widget);
+    GLFrame(QGLWidget *widget);
 
-    void setState(const QVariantMap& state);
-    void writeStateToMap(QVariantMap& states);
-    QGLWidget* getGLWidget() { return glWidget; }
-    void makeCurrent() { glWidget->makeCurrent(); }
+    void setState(const QVariantMap &state);
+    void writeStateToMap(QVariantMap &states);
+    QGLWidget *getGLWidget() {
+        return glWidget;
+    }
+    void makeCurrent() {
+        glWidget->makeCurrent();
+    }
     void updateViewPort(int width, int height);
     void updateViewPort();
-    void updateGL() { glWidget->updateGL(); }
-    GLfloat getZoomFactor() const { return zoomFactor; }
-    float* getRotationMatrix() { return rotMatrix.data(); }
-    void rotateCamera(const Vector3D& rotAxis, float rotAngle);
+    void updateGL() {
+        glWidget->updateGL();
+    }
+    GLfloat getZoomFactor() const {
+        return zoomFactor;
+    }
+    float *getRotationMatrix() {
+        return rotMatrix.data();
+    }
+    void rotateCamera(const Vector3D &rotAxis, float rotAngle);
 
     void setCameraClip(float clipNear, float clipFar);
 
@@ -61,7 +72,7 @@ public:
     void performShift(float deltaX, float deltaY);
 
 private:
-    QGLWidget* glWidget;
+    QGLWidget *glWidget;
     Matrix44 rotMatrix;
     float cameraClipNear, cameraClipFar;
 
@@ -70,26 +81,26 @@ private:
 };
 
 class GLFrameManager {
-    QMap<QGLWidget*, GLFrame*> widgetFrameMap;
+    QMap<QGLWidget *, GLFrame *> widgetFrameMap;
     bool syncLock;
 
 public:
-    GLFrameManager() : syncLock(false) {}
+    GLFrameManager()
+        : syncLock(false) {
+    }
     ~GLFrameManager();
-    bool getSyncLock() const { return syncLock; }
-    void setSyncLock(bool lockOn, QGLWidget* syncWidget);
-    void addGLFrame(GLFrame* frame);
-    GLFrame* getGLWidgetFrame(QGLWidget* widget);
-    void removeGLWidgetFrame(QGLWidget* widget);
+    bool getSyncLock() const {
+        return syncLock;
+    }
+    void setSyncLock(bool lockOn, QGLWidget *syncWidget);
+    void addGLFrame(GLFrame *frame);
+    GLFrame *getGLWidgetFrame(QGLWidget *widget);
+    void removeGLWidgetFrame(QGLWidget *widget);
     void clear();
-    QList<GLFrame*> getGLFrames();
-    QList<GLFrame*> getActiveGLFrameList(GLFrame* currentFrame, bool syncModeOn);
-
+    QList<GLFrame *> getGLFrames();
+    QList<GLFrame *> getActiveGLFrameList(GLFrame *currentFrame, bool syncModeOn);
 };
 
-} // namespace
+}    // namespace U2
 
-
-#endif // _U2_GL_FRAME_MANAGER_H_
-
-
+#endif    // _U2_GL_FRAME_MANAGER_H_

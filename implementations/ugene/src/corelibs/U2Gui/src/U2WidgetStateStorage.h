@@ -36,7 +36,7 @@ class WidgetParamSnapshot {
 public:
     explicit WidgetParamSnapshot(const QString &widgetId = QString());
 
-    const QString & getWidgetId() const;
+    const QString &getWidgetId() const;
     void setParameter(const QString &name, const QVariant &value);
     QVariantMap getParameters() const;
     bool isValid() const;
@@ -59,6 +59,6 @@ private:
     static QMultiMap<MWMDIWindow *, WidgetParamSnapshot> window2widgetSnapshots;
 };
 
-} // namespace U2
+}    // namespace U2
 
-#endif // _U2_WIDGET_STATE_STORAGE_H_
+#endif    // _U2_WIDGET_STATE_STORAGE_H_

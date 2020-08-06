@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "GenomeAlignerSettingsController.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/Settings.h>
@@ -26,12 +28,10 @@
 
 #include <U2Gui/U2FileDialog.h>
 
-#include "GenomeAlignerSettingsController.h"
-
 namespace U2 {
 
-#define SETTINGS_ROOT   QString("/genome_aligner_settings/")
-#define INDEX_DIR       QString("index_dir")
+#define SETTINGS_ROOT QString("/genome_aligner_settings/")
+#define INDEX_DIR QString("index_dir")
 
 QString GenomeAlignerSettingsUtils::getIndexDir() {
     QString defaultDir = AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath("aligner");
@@ -47,5 +47,4 @@ void GenomeAlignerSettingsUtils::setIndexDir(const QString &indexDir) {
     }
 }
 
-
-} //namespace
+}    // namespace U2

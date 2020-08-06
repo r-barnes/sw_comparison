@@ -23,17 +23,18 @@
 #define GUITESTRUNNER_H
 
 #include <QWidget>
-#include "ui_GUITestRunner.h"
+
 #include <U2Test/UGUITestBase.h>
+
+#include "ui_GUITestRunner.h"
 
 namespace U2 {
 
-class GUITestRunner : public QWidget, public Ui_GUITestRunner
-{
+class GUITestRunner : public QWidget, public Ui_GUITestRunner {
     Q_OBJECT
 
 public:
-    explicit GUITestRunner(UGUITestBase* guiTestBase, QWidget *parent = 0);
+    explicit GUITestRunner(UGUITestBase *guiTestBase, QWidget *parent = 0);
     ~GUITestRunner();
 
 private slots:
@@ -46,10 +47,10 @@ private slots:
 private:
     void revisible(const QString &nameFilter);
 
-    UGUITestBase*    guiTestBase;
-    QAction*        delTextAction;
+    UGUITestBase *guiTestBase;
+    QAction *delTextAction;
 };
 
-}
+}    // namespace U2
 
-#endif // GUITESTRUNNER_H
+#endif    // GUITESTRUNNER_H

@@ -19,13 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "DiamondSupportPlugin.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/ExternalToolRegistry.h>
 
 #include "DiamondBuildWorkerFactory.h"
 #include "DiamondClassifyWorkerFactory.h"
 #include "DiamondSupport.h"
-#include "DiamondSupportPlugin.h"
 
 namespace U2 {
 
@@ -34,14 +35,13 @@ const QString DiamondSupportPlugin::PLUGIN_DESCRIPRION = QObject::tr("The plugin
                                                                      "and translated DNA searches, designed for high performance analysis "
                                                                      "of big sequence data (https://github.com/bbuchfink/diamond)");
 
-extern "C" Q_DECL_EXPORT Plugin* U2_PLUGIN_INIT_FUNC() {
+extern "C" Q_DECL_EXPORT Plugin *U2_PLUGIN_INIT_FUNC() {
     DiamondSupportPlugin *plugin = new DiamondSupportPlugin();
     return plugin;
 }
 
 DiamondSupportPlugin::DiamondSupportPlugin()
-    : Plugin(PLUGIN_NAME, PLUGIN_DESCRIPRION)
-{
+    : Plugin(PLUGIN_NAME, PLUGIN_DESCRIPRION) {
     ExternalToolRegistry *etRegistry = AppContext::getExternalToolRegistry();
     CHECK(NULL != etRegistry, );
 
@@ -57,4 +57,4 @@ DiamondSupportPlugin::~DiamondSupportPlugin() {
     etRegistry->unregisterEntry(DiamondSupport::TOOL_ID);
 }
 
-}   // namespace U2
+}    // namespace U2

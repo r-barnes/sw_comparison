@@ -27,23 +27,28 @@
 namespace U2 {
 using namespace HI;
 
-    class ExportSequenceAsAlignmentFiller : public Filler {
-    public:
-        enum FormatToUse {Clustalw, Fasta, Msf, Mega, Nexus, Sam, Stockholm};
+class ExportSequenceAsAlignmentFiller : public Filler {
+public:
+    enum FormatToUse { Clustalw,
+                       Fasta,
+                       Msf,
+                       Mega,
+                       Nexus,
+                       Sam,
+                       Stockholm };
 
-        ExportSequenceAsAlignmentFiller(HI::GUITestOpStatus &_os, const QString &_path, const QString &_name, ExportSequenceAsAlignmentFiller::FormatToUse _format,
-            bool addDocumentToProject = false, GTGlobals::UseMethod method = GTGlobals::UseMouse);
-        ExportSequenceAsAlignmentFiller(HI::GUITestOpStatus &_os, CustomScenario *scenario);
+    ExportSequenceAsAlignmentFiller(HI::GUITestOpStatus &_os, const QString &_path, const QString &_name, ExportSequenceAsAlignmentFiller::FormatToUse _format, bool addDocumentToProject = false, GTGlobals::UseMethod method = GTGlobals::UseMouse);
+    ExportSequenceAsAlignmentFiller(HI::GUITestOpStatus &_os, CustomScenario *scenario);
 
-        void commonScenario();
+    void commonScenario();
 
-    private:
-        QString path, name;
-        GTGlobals::UseMethod useMethod;
-        FormatToUse format;
-        bool addToProject;
-        QMap<FormatToUse, QString> comboBoxItems;
-    };
-}
+private:
+    QString path, name;
+    GTGlobals::UseMethod useMethod;
+    FormatToUse format;
+    bool addToProject;
+    QMap<FormatToUse, QString> comboBoxItems;
+};
+}    // namespace U2
 
 #endif

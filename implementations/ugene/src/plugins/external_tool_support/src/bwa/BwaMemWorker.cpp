@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "BwaMemWorker.h"
+
 #include <QScopedPointer>
 
 #include <U2Algorithm/DnaAssemblyTask.h>
@@ -31,7 +33,6 @@
 #include <U2Lang/WorkflowEnv.h>
 
 #include "BwaSupport.h"
-#include "BwaMemWorker.h"
 #include "BwaTask.h"
 
 namespace U2 {
@@ -68,8 +69,7 @@ const QString OUTPUT_SUBDIR("BWA-MEM");
 /* Worker */
 /************************************************************************/
 BwaMemWorker::BwaMemWorker(Actor *p)
-: BaseShortReadsAlignerWorker(p, BwaTask::ALGORITHM_BWA_MEM)
-{
+    : BaseShortReadsAlignerWorker(p, BwaTask::ALGORITHM_BWA_MEM) {
 }
 
 QVariantMap BwaMemWorker::getCustomParameters() const {
@@ -100,7 +100,7 @@ QVariantMap BwaMemWorker::getCustomParameters() const {
     customSettings.insert(BwaTask::OPTION_UNPAIRED_PENALTY, getValue<int>(UNPAIRED_PENALTY));
     customSettings.insert(BwaTask::OPTION_SCORE_THRESHOLD, getValue<int>(SCORE_THRESHOLD));
 
-    customSettings.insert(BwaTask::OPTION_MEM_ALIGNMENT,true);
+    customSettings.insert(BwaTask::OPTION_MEM_ALIGNMENT, true);
 
     return customSettings;
 }
@@ -113,7 +113,7 @@ QString BwaMemWorker::getBaseSubdir() const {
     return BASE_BWA_SUBDIR;
 }
 
-void BwaMemWorker::setGenomeIndex(DnaAssemblyToRefTaskSettings& settings) {
+void BwaMemWorker::setGenomeIndex(DnaAssemblyToRefTaskSettings &settings) {
     QString referenceInputType = getValue<QString>(REFERENCE_INPUT_TYPE);
     if (referenceInputType == DnaAssemblyToRefTaskSettings::INDEX) {
         settings.prebuiltIndex = true;
@@ -145,85 +145,82 @@ QString BwaMemWorker::getAlignerSubdir() const {
 /* Factory */
 /************************************************************************/
 void BwaMemWorkerFactory::init() {
-    QList<Attribute*> attrs;
-    QMap<QString, PropertyDelegate*> delegates;
+    QList<Attribute *> attrs;
+    QMap<QString, PropertyDelegate *> delegates;
 
-    addCommonAttributes(attrs, delegates,
-                        BwaMemWorker::tr("BWA index folder"),
-                        BwaMemWorker::tr("BWA index basename"));
+    addCommonAttributes(attrs, delegates, BwaMemWorker::tr("BWA index folder"), BwaMemWorker::tr("BWA index basename"));
     {
         Descriptor threads(THREADS,
-            BwaMemWorker::tr("Number of threads"),
-            BwaMemWorker::tr("Number of threads (-t)."));
+                           BwaMemWorker::tr("Number of threads"),
+                           BwaMemWorker::tr("Number of threads (-t)."));
 
         Descriptor minSeed(MIN_SEED,
-            BwaMemWorker::tr("Min seed length"),
-            BwaMemWorker::tr("Path to indexed reference genome (-k)."));
+                           BwaMemWorker::tr("Min seed length"),
+                           BwaMemWorker::tr("Path to indexed reference genome (-k)."));
 
         Descriptor indexAlg(INDEX_ALG,
-            BwaMemWorker::tr("Index algorithm"),
-            BwaMemWorker::tr("Index algorithm (-a)."));
+                            BwaMemWorker::tr("Index algorithm"),
+                            BwaMemWorker::tr("Index algorithm (-a)."));
 
         Descriptor bandWidth(BAND_WIDTH,
-            BwaMemWorker::tr("Band width"),
-            BwaMemWorker::tr("Band width for banded alignment (-w)."));
+                             BwaMemWorker::tr("Band width"),
+                             BwaMemWorker::tr("Band width for banded alignment (-w)."));
 
         Descriptor dropoff(DROPOFF,
-            BwaMemWorker::tr("Dropoff"),
-            BwaMemWorker::tr("Off-diagonal X-dropoff (-d)."));
+                           BwaMemWorker::tr("Dropoff"),
+                           BwaMemWorker::tr("Off-diagonal X-dropoff (-d)."));
 
         Descriptor internalSeed(INTERNAL_SEED_LOOKUP,
-            BwaMemWorker::tr("Internal seed length"),
-            BwaMemWorker::tr("Look for internal seeds inside a seed longer than {-k} (-r)."));
+                                BwaMemWorker::tr("Internal seed length"),
+                                BwaMemWorker::tr("Look for internal seeds inside a seed longer than {-k} (-r)."));
 
         Descriptor skipSeed(SKIP_SEED_THRESHOLD,
-            BwaMemWorker::tr("Skip seed threshold"),
-            BwaMemWorker::tr("Skip seeds with more than INT occurrences (-c)."));
+                            BwaMemWorker::tr("Skip seed threshold"),
+                            BwaMemWorker::tr("Skip seeds with more than INT occurrences (-c)."));
 
         Descriptor dropChains(DROP_CHAINS_THRESHOLD,
-            BwaMemWorker::tr("Drop chain threshold"),
-            BwaMemWorker::tr("Drop chains shorter than FLOAT fraction of the longest overlapping chain (-D)."));
+                              BwaMemWorker::tr("Drop chain threshold"),
+                              BwaMemWorker::tr("Drop chains shorter than FLOAT fraction of the longest overlapping chain (-D)."));
 
         Descriptor maxMate(MAX_MATE_RESCUES,
-            BwaMemWorker::tr("Rounds of mate rescues"),
-            BwaMemWorker::tr("Perform at most INT rounds of mate rescues for each read (-m)."));
+                           BwaMemWorker::tr("Rounds of mate rescues"),
+                           BwaMemWorker::tr("Perform at most INT rounds of mate rescues for each read (-m)."));
 
         Descriptor skipMate(SKIP_MATE_RESCUES,
-            BwaMemWorker::tr("Skip mate rescue"),
-            BwaMemWorker::tr("Skip mate rescue (-S)."));
+                            BwaMemWorker::tr("Skip mate rescue"),
+                            BwaMemWorker::tr("Skip mate rescue (-S)."));
 
         Descriptor skipPairing(SKIP_PAIRING,
-            BwaMemWorker::tr("Skip pairing"),
-            BwaMemWorker::tr("Skip pairing; mate rescue performed unless -S also in use (-P)."));
+                               BwaMemWorker::tr("Skip pairing"),
+                               BwaMemWorker::tr("Skip pairing; mate rescue performed unless -S also in use (-P)."));
 
         Descriptor matchScore(MATCH_SCORE,
-            BwaMemWorker::tr("Matching score"),
-            BwaMemWorker::tr("Score for a sequence match (-A)."));
+                              BwaMemWorker::tr("Matching score"),
+                              BwaMemWorker::tr("Score for a sequence match (-A)."));
 
         Descriptor mismatchPenalty(MISMATCH_PENALTY,
-            BwaMemWorker::tr("Mismatch penalty"),
-            BwaMemWorker::tr("Penalty for a mismatch (-B)."));
+                                   BwaMemWorker::tr("Mismatch penalty"),
+                                   BwaMemWorker::tr("Penalty for a mismatch (-B)."));
 
         Descriptor gapOpen(GAP_OPEN_PENALTY,
-            BwaMemWorker::tr("Gap open penalty"),
-            BwaMemWorker::tr("Gap open penalty (-O)."));
+                           BwaMemWorker::tr("Gap open penalty"),
+                           BwaMemWorker::tr("Gap open penalty (-O)."));
 
         Descriptor gapExt(GAP_EXTENSION_PENALTY,
-            BwaMemWorker::tr("Gap extension penalty"),
-            BwaMemWorker::tr("Gap extension penalty; a gap of size k cost {-O} (-E)."));
+                          BwaMemWorker::tr("Gap extension penalty"),
+                          BwaMemWorker::tr("Gap extension penalty; a gap of size k cost {-O} (-E)."));
 
         Descriptor clippingPen(CLIPPING_PENALTY,
-            BwaMemWorker::tr("Penalty for clipping"),
-            BwaMemWorker::tr("Penalty for clipping (-L)."));
+                               BwaMemWorker::tr("Penalty for clipping"),
+                               BwaMemWorker::tr("Penalty for clipping (-L)."));
 
         Descriptor unpairedPenalty(UNPAIRED_PENALTY,
-            BwaMemWorker::tr("Penalty unpaired"),
-            BwaMemWorker::tr("Penalty for an unpaired read pair (-U)."));
+                                   BwaMemWorker::tr("Penalty unpaired"),
+                                   BwaMemWorker::tr("Penalty for an unpaired read pair (-U)."));
 
         Descriptor scoreThreshold(SCORE_THRESHOLD,
-            BwaMemWorker::tr("Score threshold"),
-            BwaMemWorker::tr("Minimum score to output (-T)."));
-
+                                  BwaMemWorker::tr("Score threshold"),
+                                  BwaMemWorker::tr("Minimum score to output (-T)."));
 
         attrs << new Attribute(threads, BaseTypes::NUM_TYPE(), false, QVariant(getThreadsCount()));
         attrs << new Attribute(minSeed, BaseTypes::NUM_TYPE(), false, QVariant(19));
@@ -243,43 +240,45 @@ void BwaMemWorkerFactory::init() {
         attrs << new Attribute(clippingPen, BaseTypes::NUM_TYPE(), false, QVariant(5));
         attrs << new Attribute(unpairedPenalty, BaseTypes::NUM_TYPE(), false, QVariant(17));
         attrs << new Attribute(scoreThreshold, BaseTypes::NUM_TYPE(), false, QVariant(30));
-     }
+    }
 
-     {
-         QVariantMap spinMap; spinMap["minimum"] = QVariant(0); spinMap["maximum"] = QVariant(INT_MAX);
-         delegates[THREADS]  = new SpinBoxDelegate(spinMap);
-         delegates[MIN_SEED] = new SpinBoxDelegate(spinMap);
-         delegates[BAND_WIDTH] = new SpinBoxDelegate(spinMap);
-         delegates[DROPOFF] = new SpinBoxDelegate(spinMap);
-         delegates[INTERNAL_SEED_LOOKUP] = new DoubleSpinBoxDelegate(spinMap);
-         delegates[SKIP_MATE_RESCUES] = new SpinBoxDelegate(spinMap);
-         delegates[DROP_CHAINS_THRESHOLD] = new DoubleSpinBoxDelegate(spinMap);
-         delegates[MAX_MATE_RESCUES] = new SpinBoxDelegate(spinMap);
-         delegates[MATCH_SCORE] = new SpinBoxDelegate(spinMap);
-         delegates[MISMATCH_PENALTY] = new SpinBoxDelegate(spinMap);
-         delegates[GAP_OPEN_PENALTY] = new SpinBoxDelegate(spinMap);
-         delegates[GAP_EXTENSION_PENALTY] = new SpinBoxDelegate(spinMap);
-         delegates[CLIPPING_PENALTY] = new SpinBoxDelegate(spinMap);
-         delegates[UNPAIRED_PENALTY] = new SpinBoxDelegate(spinMap);
-         delegates[SCORE_THRESHOLD] = new SpinBoxDelegate(spinMap);
+    {
+        QVariantMap spinMap;
+        spinMap["minimum"] = QVariant(0);
+        spinMap["maximum"] = QVariant(INT_MAX);
+        delegates[THREADS] = new SpinBoxDelegate(spinMap);
+        delegates[MIN_SEED] = new SpinBoxDelegate(spinMap);
+        delegates[BAND_WIDTH] = new SpinBoxDelegate(spinMap);
+        delegates[DROPOFF] = new SpinBoxDelegate(spinMap);
+        delegates[INTERNAL_SEED_LOOKUP] = new DoubleSpinBoxDelegate(spinMap);
+        delegates[SKIP_MATE_RESCUES] = new SpinBoxDelegate(spinMap);
+        delegates[DROP_CHAINS_THRESHOLD] = new DoubleSpinBoxDelegate(spinMap);
+        delegates[MAX_MATE_RESCUES] = new SpinBoxDelegate(spinMap);
+        delegates[MATCH_SCORE] = new SpinBoxDelegate(spinMap);
+        delegates[MISMATCH_PENALTY] = new SpinBoxDelegate(spinMap);
+        delegates[GAP_OPEN_PENALTY] = new SpinBoxDelegate(spinMap);
+        delegates[GAP_EXTENSION_PENALTY] = new SpinBoxDelegate(spinMap);
+        delegates[CLIPPING_PENALTY] = new SpinBoxDelegate(spinMap);
+        delegates[UNPAIRED_PENALTY] = new SpinBoxDelegate(spinMap);
+        delegates[SCORE_THRESHOLD] = new SpinBoxDelegate(spinMap);
 
-         QVariantMap vm;
-         vm["autodetect"] = "autodetect";
-         vm["bwtsw"] = "bwtsw";
-         vm["div"] = "div";
-         vm["is"] = "is";
-         delegates[INDEX_ALG] = new ComboBoxDelegate(vm);
+        QVariantMap vm;
+        vm["autodetect"] = "autodetect";
+        vm["bwtsw"] = "bwtsw";
+        vm["div"] = "div";
+        vm["is"] = "is";
+        delegates[INDEX_ALG] = new ComboBoxDelegate(vm);
     }
 
     Descriptor protoDesc(BwaMemWorkerFactory::ACTOR_ID,
-        BwaMemWorker::tr("Map Reads with BWA-MEM"),
-        BwaMemWorker::tr("Burrows-Wheeler Alignment (BWA) is a program for mapping short DNA sequence reads"
-                         " to a long reference sequence. This element runs \"BWA-MEM\" algorithm"
-                         " of the program. The algorithm is designed for sequence reads from 70bp to 1Mbp."
-                         "<br/><br/>Provide URL(s) to FASTA or FASTQ file(s) with NGS reads to the input"
-                         " port of the element, set up the reference sequence in the parameters."
-                         " The result is saved to the specified SAM file, URL to the file is passed"
-                         " to the output port."));
+                         BwaMemWorker::tr("Map Reads with BWA-MEM"),
+                         BwaMemWorker::tr("Burrows-Wheeler Alignment (BWA) is a program for mapping short DNA sequence reads"
+                                          " to a long reference sequence. This element runs \"BWA-MEM\" algorithm"
+                                          " of the program. The algorithm is designed for sequence reads from 70bp to 1Mbp."
+                                          "<br/><br/>Provide URL(s) to FASTA or FASTQ file(s) with NGS reads to the input"
+                                          " port of the element, set up the reference sequence in the parameters."
+                                          " The result is saved to the specified SAM file, URL to the file is passed"
+                                          " to the output port."));
 
     ActorPrototype *proto = new IntegralBusActorPrototype(protoDesc, getPortDescriptors(), attrs);
     proto->setPrompter(new ShortReadsAlignerPrompter());
@@ -293,5 +292,5 @@ void BwaMemWorkerFactory::init() {
 Worker *BwaMemWorkerFactory::createWorker(Actor *a) {
     return new BwaMemWorker(a);
 }
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

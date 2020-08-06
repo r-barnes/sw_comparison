@@ -45,18 +45,18 @@ public:
 
 private:
     QString inputObjectName;
-    MultipleSequenceAlignmentObject* msaObj;
+    MultipleSequenceAlignmentObject *msaObj;
     QList<qint64> rowsIndexesToAlign;
-    Document* doc;
+    Document *doc;
     RealignSequencesInAlignmentTask *realignTask;
     bool forceUseUgeneAligner;
 };
 
 class RealignTests {
 public:
-    static QList<XMLTestFactory*> createTestFactories();
+    static QList<XMLTestFactory *> createTestFactories();
 };
 
-}
+}    // namespace U2
 
 #endif

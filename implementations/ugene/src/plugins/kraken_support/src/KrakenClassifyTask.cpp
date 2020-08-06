@@ -19,13 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "KrakenClassifyTask.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/Counter.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "KrakenSupport.h"
 #include "KrakenClassifyLogParser.h"
-#include "KrakenClassifyTask.h"
+#include "KrakenSupport.h"
 #include "KrakenTranslateLogParser.h"
 
 namespace U2 {
@@ -38,16 +39,13 @@ KrakenClassifyTaskSettings::KrakenClassifyTaskSettings()
       minNumberOfHits(1),
       numberOfThreads(1),
       preloadDatabase(true),
-      pairedReads(false)
-{
-
+      pairedReads(false) {
 }
 
 KrakenClassifyTask::KrakenClassifyTask(const KrakenClassifyTaskSettings &settings)
     : ExternalToolSupportTask(tr("Classify reads with Kraken"), TaskFlags_FOSE_COSC),
       settings(settings),
-      classifyTask(NULL)
-{
+      classifyTask(NULL) {
     GCOUNTER(cvar, tvar, "KrakenClassifyTask");
 
     SAFE_POINT_EXT(!settings.readsUrl.isEmpty(), setError("Reads URL is empty"), );
@@ -60,7 +58,7 @@ const QString &KrakenClassifyTask::getClassificationUrl() const {
     return settings.classificationUrl;
 }
 
-const LocalWorkflow::TaxonomyClassificationResult & KrakenClassifyTask::getParsedReport() const {
+const LocalWorkflow::TaxonomyClassificationResult &KrakenClassifyTask::getParsedReport() const {
     return parsedReport;
 }
 
@@ -133,4 +131,4 @@ void KrakenClassifyTask::run() {
     }
 }
 
-}   // namespace U2
+}    // namespace U2

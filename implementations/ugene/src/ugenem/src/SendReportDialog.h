@@ -22,27 +22,28 @@
 #ifndef _SEND_REPORT_DIALOG_H_
 #define _SEND_REPORT_DIALOG_H_
 
-
 #include <ui_SendReportDialog.h>
 
 class QEventLoop;
 class QNetworkReply;
 
-class ReportSender :public QObject {
+class ReportSender : public QObject {
     Q_OBJECT
 public:
     ReportSender(bool addGuiTestInfo = false);
     void parse(const QString &str, const QString &dumpUrl);
     bool send(const QString &additionalInfo, const QString &dumpUrl);
     QString getOSVersion();
-    QString getReport() const { return report; }
+    QString getReport() const {
+        return report;
+    }
     int getTotalPhysicalMemory();
     QString getCPUInfo();
     QString getUgeneBitCount() const;
     void setFailedTest(const QString &failedTestStr);
 
 private slots:
-    void sl_replyFinished(QNetworkReply*);
+    void sl_replyFinished(QNetworkReply *);
 
 private:
     QString report;
@@ -51,7 +52,7 @@ private:
     QString failedTest;
 };
 
-class SendReportDialog :public QDialog, public Ui_Dialog {
+class SendReportDialog : public QDialog, public Ui_Dialog {
     Q_OBJECT
 public:
     SendReportDialog(const QString &report, const QString &dumpUrl, QDialog *d = NULL);

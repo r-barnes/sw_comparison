@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "DbiDataStorage.h"
+
 #include <QFile>
 
 #include <U2Core/AnnotationTableObject.h>
@@ -44,16 +46,12 @@
 #include <U2Core/U2VariantDbi.h>
 #include <U2Core/UserApplicationsSettings.h>
 
-#include "DbiDataStorage.h"
-
 namespace U2 {
 
 namespace Workflow {
 
 DbiDataStorage::DbiDataStorage()
-: dbiHandle(NULL)
-{
-
+    : dbiHandle(NULL) {
 }
 
 DbiDataStorage::~DbiDataStorage() {
@@ -270,7 +268,8 @@ U2DbiRef DbiDataStorage::createTmpDbi(U2OpStatus &os) {
     SAFE_POINT_OP(os, U2DbiRef());
 
     SAFE_POINT(!dbiList.contains(dbiRef.dbiId),
-               QString("Temp dbi already exists: %1").arg(dbiRef.dbiId), dbiRef);
+               QString("Temp dbi already exists: %1").arg(dbiRef.dbiId),
+               dbiRef);
 
     QScopedPointer<DbiConnection> con(new DbiConnection(dbiRef, true, os));
     SAFE_POINT_OP(os, U2DbiRef());
@@ -283,7 +282,7 @@ U2DbiRef DbiDataStorage::createTmpDbi(U2OpStatus &os) {
 
 void DbiDataStorage::openDbi(const U2DbiRef &dbiRef, U2OpStatus &os) {
     QScopedPointer<DbiConnection> con(new DbiConnection(dbiRef, false, os));
-    CHECK_OP(os,);
+    CHECK_OP(os, );
 
     dbiList[dbiRef.dbiId] = false;
     connections[dbiRef.dbiId] = con.take();
@@ -295,7 +294,7 @@ void DbiDataStorage::openDbi(const U2DbiRef &dbiRef, U2OpStatus &os) {
 U2SequenceObject *StorageUtils::getSequenceObject(DbiDataStorage *storage, const SharedDbiDataHandler &handler) {
     CHECK(NULL != handler.constData(), NULL);
     //QScopedPointer<U2Sequence> seqDbi(dynamic_cast<U2Sequence*>(storage->getObject(handler, U2Type::Sequence)));
-    QScopedPointer<U2Sequence> seqDbi(dynamic_cast<U2Sequence*>(storage->getObject(handler, 1)));
+    QScopedPointer<U2Sequence> seqDbi(dynamic_cast<U2Sequence *>(storage->getObject(handler, 1)));
     CHECK(NULL != seqDbi.data(), NULL);
 
     U2EntityRef ent(handler->getDbiRef(), seqDbi->id);
@@ -305,7 +304,7 @@ U2SequenceObject *StorageUtils::getSequenceObject(DbiDataStorage *storage, const
 VariantTrackObject *StorageUtils::getVariantTrackObject(DbiDataStorage *storage, const SharedDbiDataHandler &handler) {
     CHECK(NULL != handler.constData(), NULL);
     //QScopedPointer<U2VariantTrack> track(dynamic_cast<U2VariantTrack*>(storage->getObject(handler, U2Type::VariantTrack)));
-    QScopedPointer<U2VariantTrack> track(dynamic_cast<U2VariantTrack*>(storage->getObject(handler, 5)));
+    QScopedPointer<U2VariantTrack> track(dynamic_cast<U2VariantTrack *>(storage->getObject(handler, 5)));
     CHECK(NULL != track.data(), NULL);
 
     U2EntityRef trackRef(handler->getDbiRef(), track->id);
@@ -317,7 +316,7 @@ VariantTrackObject *StorageUtils::getVariantTrackObject(DbiDataStorage *storage,
 AssemblyObject *StorageUtils::getAssemblyObject(DbiDataStorage *storage, const SharedDbiDataHandler &handler) {
     CHECK(NULL != handler.constData(), NULL);
     //QScopedPointer<U2Assembly> assembly(dynamic_cast<U2Assembly*>(storage->getObject(handler, U2Type::Assembly)));
-    QScopedPointer<U2Assembly> assembly(dynamic_cast<U2Assembly*>(storage->getObject(handler, 4)));
+    QScopedPointer<U2Assembly> assembly(dynamic_cast<U2Assembly *>(storage->getObject(handler, 4)));
     CHECK(NULL != assembly.data(), NULL);
 
     U2EntityRef assemblyRef(handler->getDbiRef(), assembly->id);
@@ -329,7 +328,7 @@ AssemblyObject *StorageUtils::getAssemblyObject(DbiDataStorage *storage, const S
 MultipleSequenceAlignmentObject *StorageUtils::getMsaObject(DbiDataStorage *storage, const SharedDbiDataHandler &handler) {
     CHECK(NULL != handler.constData(), NULL);
     //QScopedPointer<U2Ma> msa(dynamic_cast<U2Ma*>(storage->getObject(handler, U2Type::Msa)));
-    QScopedPointer<U2Msa> msa(dynamic_cast<U2Msa*>(storage->getObject(handler, 2)));
+    QScopedPointer<U2Msa> msa(dynamic_cast<U2Msa *>(storage->getObject(handler, 2)));
     CHECK(NULL != msa.data(), NULL);
 
     U2EntityRef msaRef(handler->getDbiRef(), msa->id);
@@ -420,7 +419,7 @@ QString StorageUtils::getText(DbiDataStorage *storage, const QVariant &data) {
     if (data.canConvert<SharedDbiDataHandler>()) {
         SharedDbiDataHandler handler = data.value<SharedDbiDataHandler>();
         //QScopedPointer<U2RawData> rawData(dynamic_cast<U2RawData*>(storage->getObject(handler, RawData)));
-        QScopedPointer<U2RawData> rawData(dynamic_cast<U2RawData*>(storage->getObject(handler, 102)));
+        QScopedPointer<U2RawData> rawData(dynamic_cast<U2RawData *>(storage->getObject(handler, 102)));
         CHECK(NULL != rawData.data(), "");
 
         U2EntityRef objRef(storage->getDbiRef(), rawData->id);
@@ -433,5 +432,5 @@ QString StorageUtils::getText(DbiDataStorage *storage, const QVariant &data) {
     return "";
 }
 
-} // Workflow
-} // U2
+}    // namespace Workflow
+}    // namespace U2

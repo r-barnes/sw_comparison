@@ -20,22 +20,21 @@
  */
 
 #include "WidgetWithLocalToolbar.h"
-#include "LocalToolbar.h"
-
-#include <U2Core/U2SafePoints.h>
 
 #include <QHBoxLayout>
 
+#include <U2Core/U2SafePoints.h>
+
+#include "LocalToolbar.h"
 
 namespace U2 {
 
 WidgetWithLocalToolbar::WidgetWithLocalToolbar(QWidget *p)
     : QWidget(p) {
-
     toolBar = new LocalToolbar(this);
     contentWidget = new QWidget(this);
 
-    QHBoxLayout* layout = new QHBoxLayout();
+    QHBoxLayout *layout = new QHBoxLayout();
     layout->setMargin(0);
     layout->setSpacing(0);
 
@@ -54,12 +53,12 @@ void WidgetWithLocalToolbar::setContentLayout(QLayout *l) {
     update();
 }
 
-QToolButton* WidgetWithLocalToolbar::addActionToLocalToolbar(QAction *action) {
+QToolButton *WidgetWithLocalToolbar::addActionToLocalToolbar(QAction *action) {
     SAFE_POINT(action != NULL, "Trying to add NULL action to toolbar", NULL);
     toolBar->addAction(action);
     update();
 
-    return qobject_cast<QToolButton*>(toolBar->widgetForAction(action));
+    return qobject_cast<QToolButton *>(toolBar->widgetForAction(action));
 }
 
 void WidgetWithLocalToolbar::setLocalToolBarObjectName(const QString &name) {
@@ -71,4 +70,4 @@ void WidgetWithLocalToolbar::setLocalToolbarVisible(bool visible) {
     update();
 }
 
-} // namespace
+}    // namespace U2

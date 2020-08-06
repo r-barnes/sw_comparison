@@ -23,10 +23,9 @@
 #define _U2_EXPORT_PLUGIN_TASKS_H_
 
 #include <U2Core/BaseDocumentFormats.h>
-
-#include <U2Core/Task.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/MultipleSequenceAlignment.h>
+#include <U2Core/Task.h>
 
 namespace U2 {
 
@@ -36,38 +35,39 @@ class CloneObjectTask;
 class SaveAlignmentTask : public Task {
     Q_OBJECT
 public:
-    SaveAlignmentTask(const MultipleSequenceAlignment& ma, const QString& fileName, DocumentFormatId f, const QVariantMap& hints = QVariantMap());
+    SaveAlignmentTask(const MultipleSequenceAlignment &ma, const QString &fileName, DocumentFormatId f, const QVariantMap &hints = QVariantMap());
 
     void run();
 
-    virtual Document* getDocument() const;
-    const QString & getUrl() const;
-    const MultipleSequenceAlignment & getMAlignment() const;
+    virtual Document *getDocument() const;
+    const QString &getUrl() const;
+    const MultipleSequenceAlignment &getMAlignment() const;
 
 private:
     MultipleSequenceAlignment ma;
-    QString                 fileName;
-    QVariantMap             hints;
-    DocumentFormatId        format;
+    QString fileName;
+    QVariantMap hints;
+    DocumentFormatId format;
     QScopedPointer<Document> doc;
 };
-
 
 /**Export Alignment to Sequence Format (FASTA, ...) */
 class SaveMSA2SequencesTask : public Task {
     Q_OBJECT
 public:
-    SaveMSA2SequencesTask(const MultipleSequenceAlignment& ma, const QString& url, bool trimAli, DocumentFormatId format);
+    SaveMSA2SequencesTask(const MultipleSequenceAlignment &ma, const QString &url, bool trimAli, DocumentFormatId format);
 
     void run();
 
-    virtual Document* getDocument() const {return doc.data();}
+    virtual Document *getDocument() const {
+        return doc.data();
+    }
 
 private:
-    MultipleSequenceAlignment              ma;
-    QString                 url;
-    bool                    trimAli;
-    QString                 format;
+    MultipleSequenceAlignment ma;
+    QString url;
+    bool trimAli;
+    QString format;
     QScopedPointer<Document> doc;
 };
 
@@ -88,6 +88,6 @@ private:
     CloneObjectTask *cloneTask;
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_EXPORT_PLUGIN_TASKS_H_
+#endif    // _U2_EXPORT_PLUGIN_TASKS_H_

@@ -22,22 +22,23 @@
 #ifndef _U2_FIND_PRIMER_GROUPS_WORKER_H_
 #define _U2_FIND_PRIMER_GROUPS_WORKER_H_
 
+#include <U2Core/DNASequence.h>
+#include <U2Core/MultipleSequenceAlignment.h>
+
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
-
-#include <U2Core/MultipleSequenceAlignment.h>
-#include <U2Core/DNASequence.h>
 
 #include "PrimerStatistics.h"
 
 namespace U2 {
 namespace LocalWorkflow {
 
-
 class PrimersGrouperPromter : public PrompterBase<PrimersGrouperPromter> {
     Q_OBJECT
 public:
-    PrimersGrouperPromter( Actor * p = 0 ) : PrompterBase<PrimersGrouperPromter>(p) {};
+    PrimersGrouperPromter(Actor *p = 0)
+        : PrompterBase<PrimersGrouperPromter>(p) {};
+
 protected:
     QString composeRichDoc();
 };
@@ -45,16 +46,19 @@ protected:
 class PrimersGrouperWorker : public BaseWorker {
     Q_OBJECT
 public:
-    PrimersGrouperWorker( Actor * p ) : BaseWorker(p), inPort(NULL), outPort(NULL) {};
+    PrimersGrouperWorker(Actor *p)
+        : BaseWorker(p), inPort(NULL), outPort(NULL) {};
 
     virtual void init();
-    virtual Task* tick();
+    virtual Task *tick();
     virtual void cleanup();
+
 private:
-    IntegralBus* inPort;
-    IntegralBus* outPort;
+    IntegralBus *inPort;
+    IntegralBus *outPort;
 private slots:
-    void sl_onTaskFinished(Task* t);
+    void sl_onTaskFinished(Task *t);
+
 private:
     QList<DNASequence> data;
 };
@@ -63,40 +67,47 @@ class PrimersGrouperWorkerFactory : public DomainFactory {
 public:
     const static QString ACTOR_ID;
     const static QString OUT_FILE;
-    PrimersGrouperWorkerFactory() : DomainFactory(ACTOR_ID) {};
+    PrimersGrouperWorkerFactory()
+        : DomainFactory(ACTOR_ID) {};
     static void init();
-    virtual Worker* createWorker( Actor * a ) { return new PrimersGrouperWorker(a); }
+    virtual Worker *createWorker(Actor *a) {
+        return new PrimersGrouperWorker(a);
+    }
 };
 
-} //LocalWorkflow namespace
+}    // namespace LocalWorkflow
 
 class PrimerGrouperTask : public Task {
     Q_OBJECT
 public:
-    PrimerGrouperTask(const QString& outputFileUrl, const QList<DNASequence>& sequences);
+    PrimerGrouperTask(const QString &outputFileUrl, const QList<DNASequence> &sequences);
 
     void run();
-    QString getReport() const { return report; }
+    QString getReport() const {
+        return report;
+    }
 
-    static QString createCell(const QString& value, bool center = false, const QString &attrs = "");
-    static QString createColumn(const QString& name, const QString &attrs = "");
+    static QString createCell(const QString &value, bool center = false, const QString &attrs = "");
+    static QString createColumn(const QString &name, const QString &attrs = "");
+
 private:
-    void createReport(const QList<QList<int> >& groups);
-    void fillReportTable(const QList<QList<int> >& groups);
+    void createReport(const QList<QList<int>> &groups);
+    void fillReportTable(const QList<QList<int>> &groups);
     void writeReportToFile();
 
-    QString createRow(const QString& groupName, const QString& forwardName, const QString& reverseName, const QString& forwardTm, const QString& reverseTm);
+    QString createRow(const QString &groupName, const QString &forwardName, const QString &reverseName, const QString &forwardTm, const QString &reverseTm);
 
     bool isCompatiblePairs(int firstPairIndex, int secondPairIndex);
     void findCompatibleGroups();
+
 private:
     typedef QPair<DNASequence, DNASequence> PrimersPair;
 
     QList<PrimersPair> primerPairs;
-    QString     report;
-    QString     outputUrl;
+    QString report;
+    QString outputUrl;
 };
 
-} //U2 namespace
+}    // namespace U2
 
 #endif

@@ -20,53 +20,50 @@
  */
 
 #include "TCoffeeDailogFiller.h"
+#include <primitives/GTCheckBox.h>
+#include <primitives/GTSpinBox.h>
+#include <primitives/GTWidget.h>
 
 #include <QApplication>
 #include <QDialogButtonBox>
 
-#include <primitives/GTWidget.h>
-#include <primitives/GTCheckBox.h>
-#include <primitives/GTSpinBox.h>
-
-namespace U2{
+namespace U2 {
 
 #define GT_CLASS_NAME "GTUtilsDialog::DotPlotFiller"
 #define GT_METHOD_NAME "commonScenario"
 
-TCoffeeDailogFiller::TCoffeeDailogFiller(HI::GUITestOpStatus &os, int gapOpen, int gapExt, int numOfIters) :
-    Filler(os, "TCoffeeSupportRunDialog"),
-    gapOpen(gapOpen),
-    gapExt(gapExt),
-    numOfIters(numOfIters)
-{
-
+TCoffeeDailogFiller::TCoffeeDailogFiller(HI::GUITestOpStatus &os, int gapOpen, int gapExt, int numOfIters)
+    : Filler(os, "TCoffeeSupportRunDialog"),
+      gapOpen(gapOpen),
+      gapExt(gapExt),
+      numOfIters(numOfIters) {
 }
 
-void TCoffeeDailogFiller::commonScenario(){
-    QWidget* dialog = QApplication::activeModalWidget();
+void TCoffeeDailogFiller::commonScenario() {
+    QWidget *dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
 
-    if (gapOpen!=INT_MAX){
-        QCheckBox* gapOpenCheckBox = qobject_cast<QCheckBox*>(GTWidget::findWidget(os, "gapOpenCheckBox", dialog));
-        GTCheckBox::setChecked(os,gapOpenCheckBox,true);
+    if (gapOpen != INT_MAX) {
+        QCheckBox *gapOpenCheckBox = qobject_cast<QCheckBox *>(GTWidget::findWidget(os, "gapOpenCheckBox", dialog));
+        GTCheckBox::setChecked(os, gapOpenCheckBox, true);
 
-        QSpinBox* gapOpenSpinBox = qobject_cast<QSpinBox*>(GTWidget::findWidget(os, "gapOpenSpinBox", dialog));
+        QSpinBox *gapOpenSpinBox = qobject_cast<QSpinBox *>(GTWidget::findWidget(os, "gapOpenSpinBox", dialog));
         GTSpinBox::setValue(os, gapOpenSpinBox, gapOpen);
     }
 
-    if (gapExt!=INT_MAX){
-        QCheckBox* gapExtCheckBox = qobject_cast<QCheckBox*>(GTWidget::findWidget(os, "gapExtCheckBox", dialog));
-        GTCheckBox::setChecked(os,gapExtCheckBox,true);
+    if (gapExt != INT_MAX) {
+        QCheckBox *gapExtCheckBox = qobject_cast<QCheckBox *>(GTWidget::findWidget(os, "gapExtCheckBox", dialog));
+        GTCheckBox::setChecked(os, gapExtCheckBox, true);
 
-        QSpinBox* gapExtSpinBox = qobject_cast<QSpinBox*>(GTWidget::findWidget(os, "gapExtSpinBox", dialog));
+        QSpinBox *gapExtSpinBox = qobject_cast<QSpinBox *>(GTWidget::findWidget(os, "gapExtSpinBox", dialog));
         GTSpinBox::setValue(os, gapExtSpinBox, gapExt);
     }
 
-    if (numOfIters!=INT_MAX){
-        QCheckBox* maxNumberIterRefinementCheckBox = qobject_cast<QCheckBox*>(GTWidget::findWidget(os, "maxNumberIterRefinementCheckBox", dialog));
-        GTCheckBox::setChecked(os,maxNumberIterRefinementCheckBox, true);
+    if (numOfIters != INT_MAX) {
+        QCheckBox *maxNumberIterRefinementCheckBox = qobject_cast<QCheckBox *>(GTWidget::findWidget(os, "maxNumberIterRefinementCheckBox", dialog));
+        GTCheckBox::setChecked(os, maxNumberIterRefinementCheckBox, true);
 
-        QSpinBox* maxNumberIterRefinementSpinBox = qobject_cast<QSpinBox*>(GTWidget::findWidget(os, "maxNumberIterRefinementSpinBox", dialog));
+        QSpinBox *maxNumberIterRefinementSpinBox = qobject_cast<QSpinBox *>(GTWidget::findWidget(os, "maxNumberIterRefinementSpinBox", dialog));
         GTSpinBox::setValue(os, maxNumberIterRefinementSpinBox, numOfIters);
     }
 
@@ -75,4 +72,4 @@ void TCoffeeDailogFiller::commonScenario(){
 
 #undef GT_METHOD_NAME
 #undef GT_CLASS_NAME
-}
+}    // namespace U2

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "CreateDocumentFromTextDialogController.h"
+
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QPushButton>
@@ -38,18 +40,17 @@
 #include <U2Gui/MainWindow.h>
 #include <U2Gui/SaveDocumentController.h>
 
-#include "CreateDocumentFromTextDialogController.h"
 #include "CreateSequenceFromTextAndOpenViewTask.h"
 #include "ui_CreateDocumentFromTextDialog.h"
 
-namespace U2{
+namespace U2 {
 
-CreateDocumentFromTextDialogController::CreateDocumentFromTextDialogController(QWidget* p)
+CreateDocumentFromTextDialogController::CreateDocumentFromTextDialogController(QWidget *p)
     : QDialog(p),
       saveController(NULL) {
     ui = new Ui_CreateDocumentFromTextDialog();
     ui->setupUi(this);
-    new HelpButton(this, ui->buttonBox, "24742325");
+    new HelpButton(this, ui->buttonBox, "46499629");
 
     initSaveController();
 
@@ -64,7 +65,7 @@ CreateDocumentFromTextDialogController::CreateDocumentFromTextDialogController(Q
 
 void CreateDocumentFromTextDialogController::accept() {
     QString validationError = w->validate();
-    if(!validationError.isEmpty()){
+    if (!validationError.isEmpty()) {
         QMessageBox::critical(this, this->windowTitle(), validationError);
         return;
     }
@@ -72,12 +73,12 @@ void CreateDocumentFromTextDialogController::accept() {
     const QString url = saveController->getSaveFileName();
     QFileInfo fi(url);
 
-    if(fi.baseName().isEmpty()){
+    if (fi.baseName().isEmpty()) {
         QMessageBox::critical(this, this->windowTitle(), tr("Filename is empty"));
         return;
     }
 
-    if(url.isEmpty()){
+    if (url.isEmpty()) {
         QMessageBox::critical(this, this->windowTitle(), tr("No path specified"));
         return;
     }
@@ -89,11 +90,11 @@ void CreateDocumentFromTextDialogController::accept() {
         QMessageBox::critical(this, L10N::errorTitle(), os.getError());
         return;
     }
-    
-    if(ui->nameEdit->text().isEmpty()) {
+
+    if (ui->nameEdit->text().isEmpty()) {
         QMessageBox::critical(this, this->windowTitle(), tr("Sequence name is empty"));
         return;
-    }    
+    }
 
     CHECK_OP(os, );
 
@@ -102,7 +103,7 @@ void CreateDocumentFromTextDialogController::accept() {
     QDialog::accept();
 }
 
-void CreateDocumentFromTextDialogController::addSeqPasterWidget(){
+void CreateDocumentFromTextDialogController::addSeqPasterWidget() {
     w = new SeqPasterWidgetController(this);
     w->allowFastaFormat(true);
     ui->verticalLayout->insertWidget(0, w);
@@ -144,4 +145,4 @@ void CreateDocumentFromTextDialogController::sl_filepathTextChanged() {
     }
 }
 
-}   // namespace U2
+}    // namespace U2

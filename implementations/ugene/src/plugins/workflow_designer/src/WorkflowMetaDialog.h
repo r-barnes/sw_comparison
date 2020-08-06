@@ -22,11 +22,10 @@
 #ifndef _U2_WMETADIALOG_H_
 #define _U2_WMETADIALOG_H_
 
-#include "ui_WorkflowMetaDialog.h"
-
 #include <U2Lang/ActorModel.h>
 #include <U2Lang/Schema.h>
 
+#include "ui_WorkflowMetaDialog.h"
 
 namespace U2 {
 
@@ -38,23 +37,23 @@ class WorkflowMetaDialog : public QDialog, public Ui_WorkflowMetaDialog {
     Q_OBJECT
 
 public:
-    WorkflowMetaDialog(QWidget * p, const Workflow::Metadata& meta);
+    WorkflowMetaDialog(QWidget *p, const Workflow::Metadata &meta);
 
 public:
     Workflow::Metadata meta;
 
 private slots:
     void sl_onSave();
-    void sl_onURLChanged(const QString & text);
+    void sl_onURLChanged(const QString &text);
 
 private:
     void initSaveController();
 
     SaveDocumentController *saveController;
-    QPushButton* cancelButton;
-    QPushButton* okButton;
+    QPushButton *cancelButton;
+    QPushButton *okButton;
 };
 
-}//namespace
+}    // namespace U2
 
 #endif

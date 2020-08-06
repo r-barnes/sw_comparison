@@ -19,39 +19,39 @@
  * MA 02110-1301, USA.
  */
 
+#include "FormatDetection.h"
+
 #include <QFileInfo>
 
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentUtils.h>
 
-#include "FormatDetection.h"
-
-static U2Format fromFormatId( const U2::DocumentFormatId &id ) {
-    if ( U2::BaseDocumentFormats::ABIF == id ) {
+static U2Format fromFormatId(const U2::DocumentFormatId &id) {
+    if (U2::BaseDocumentFormats::ABIF == id) {
         return U2_ABI;
-    } else if ( U2::BaseDocumentFormats::ACE == id ) {
+    } else if (U2::BaseDocumentFormats::ACE == id) {
         return U2_ACE;
-    } else if ( U2::BaseDocumentFormats::CLUSTAL_ALN == id ) {
+    } else if (U2::BaseDocumentFormats::CLUSTAL_ALN == id) {
         return U2_CLUSTAL;
-    } else if ( U2::BaseDocumentFormats::PLAIN_EMBL == id ) {
+    } else if (U2::BaseDocumentFormats::PLAIN_EMBL == id) {
         return U2_EMBL;
-    } else if ( U2::BaseDocumentFormats::FASTA == id ) {
+    } else if (U2::BaseDocumentFormats::FASTA == id) {
         return U2_FASTA;
-    } else if ( U2::BaseDocumentFormats::FASTQ == id ) {
+    } else if (U2::BaseDocumentFormats::FASTQ == id) {
         return U2_FASTQ;
-    } else if ( U2::BaseDocumentFormats::PLAIN_GENBANK == id ) {
+    } else if (U2::BaseDocumentFormats::PLAIN_GENBANK == id) {
         return U2_GENBANK;
-    } else if ( U2::BaseDocumentFormats::MEGA == id ) {
+    } else if (U2::BaseDocumentFormats::MEGA == id) {
         return U2_MEGA;
-    } else if ( U2::BaseDocumentFormats::MSF == id ) {
+    } else if (U2::BaseDocumentFormats::MSF == id) {
         return U2_MSF;
-    } else if ( U2::BaseDocumentFormats::NEXUS == id ) {
+    } else if (U2::BaseDocumentFormats::NEXUS == id) {
         return U2_NEXUS;
-    } else if ( U2::BaseDocumentFormats::PLAIN_TEXT == id ) {
+    } else if (U2::BaseDocumentFormats::PLAIN_TEXT == id) {
         return U2_PLAIN_TEXT;
-    } else if ( U2::BaseDocumentFormats::STOCKHOLM == id ) {
+    } else if (U2::BaseDocumentFormats::STOCKHOLM == id) {
         return U2_STOCKHOLM;
-    } else if ( U2::BaseDocumentFormats::PLAIN_SWISS_PROT == id ) {
+    } else if (U2::BaseDocumentFormats::PLAIN_SWISS_PROT == id) {
         return U2_SWISS;
     } else {
         return U2_UNSUPPORTED;
@@ -60,20 +60,19 @@ static U2Format fromFormatId( const U2::DocumentFormatId &id ) {
 
 extern "C" {
 
-U2SCRIPT_EXPORT U2ErrorType detectFileFormat( const wchar_t *_pathToFile, U2Format *format ) {
-    const QString pathToFile = QString::fromWCharArray( _pathToFile );
-    QFileInfo info( pathToFile );
-    if ( NULL == pathToFile || !info.isFile( ) || !info.exists( ) ) {
+U2SCRIPT_EXPORT U2ErrorType detectFileFormat(const wchar_t *_pathToFile, U2Format *format) {
+    const QString pathToFile = QString::fromWCharArray(_pathToFile);
+    QFileInfo info(pathToFile);
+    if (NULL == pathToFile || !info.isFile() || !info.exists()) {
         return U2_INVALID_PATH;
     }
     *format = U2_UNSUPPORTED;
     QList<U2::FormatDetectionResult> formatList = U2::DocumentUtils::detectFormat(
-        U2::GUrl( pathToFile ) );
-    if ( formatList.isEmpty( ) ) {
+        U2::GUrl(pathToFile));
+    if (formatList.isEmpty()) {
         return U2_OK;
     }
-    *format = fromFormatId( formatList.first( ).format->getFormatId( ) );
+    *format = fromFormatId(formatList.first().format->getFormatId());
     return U2_OK;
 }
-
 };

@@ -19,12 +19,13 @@
  * MA 02110-1301, USA.
  */
 
+#include "AnnotationsMessageTranslator.h"
+
 #include <QVariant>
 
 #include <U2Core/AnnotationTableObject.h>
-#include <U2Lang/WorkflowContext.h>
 
-#include "AnnotationsMessageTranslator.h"
+#include <U2Lang/WorkflowContext.h>
 
 const char *ANNOTATIONS_COUNT_LABEL = "Count of annotations: ";
 const char *ANNOTATION_NAME_LABEL = " Name: ";
@@ -36,8 +37,7 @@ namespace U2 {
 using namespace Workflow;
 
 AnnotationsMessageTranslator::AnnotationsMessageTranslator(const QVariant &atomicMessage, WorkflowContext *initContext)
-    : BaseMessageTranslator(atomicMessage, initContext)
-{
+    : BaseMessageTranslator(atomicMessage, initContext) {
     annTable = StorageUtils::getAnnotationTable(context->getDataStorage(), source);
 }
 
@@ -61,4 +61,4 @@ QString AnnotationsMessageTranslator::getTranslation() const {
     return result;
 }
 
-} // namespace U2
+}    // namespace U2

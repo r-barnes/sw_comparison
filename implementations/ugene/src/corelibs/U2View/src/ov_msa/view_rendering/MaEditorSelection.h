@@ -35,8 +35,8 @@ class U2VIEW_EXPORT MaEditorSelection {
 public:
     MaEditorSelection();
     MaEditorSelection(int left, int top, int width, int height);
-    MaEditorSelection(const QPoint& topLeft, const QPoint& bottomRight);
-    MaEditorSelection(const QPoint& topLeft, int width, int height);
+    MaEditorSelection(const QPoint &topLeft, const QPoint &bottomRight);
+    MaEditorSelection(const QPoint &topLeft, int width, int height);
 
     /* Returns true if the selection contains no bases or gaps: have width or height <= 0. */
     bool isEmpty() const;
@@ -58,16 +58,15 @@ public:
     U2Region getXRegion() const;
     U2Region getYRegion() const;
 
-    bool operator==(const MaEditorSelection& other) const;
+    bool operator==(const MaEditorSelection &other) const;
 
-    MaEditorSelection intersected(const MaEditorSelection& selection) const;
+    MaEditorSelection intersected(const MaEditorSelection &selection) const;
 
 private:
-    explicit MaEditorSelection(QRect& rect);
+    explicit MaEditorSelection(QRect &rect);
     QRect selArea;
 };
 
-} // namespace
+}    // namespace U2
 
-#endif // _U2_MA_EDITOR_SELECTION_
-
+#endif    // _U2_MA_EDITOR_SELECTION_

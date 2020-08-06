@@ -45,7 +45,7 @@ private:
 };
 
 //waits until each given task is finished and runs the next task after that
-class U2CORE_EXPORT SequentialMultiTask : public Task{
+class U2CORE_EXPORT SequentialMultiTask : public Task {
     Q_OBJECT
 public:
     SequentialMultiTask(const QString &name, const QList<Task *> &taskz, TaskFlags f = TaskFlags_NR_FOSCOE);
@@ -58,6 +58,6 @@ private:
     QList<Task *> tasks;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

@@ -20,33 +20,35 @@
  */
 
 #include "LocalFileAdapter.h"
-#include "ZlibAdapter.h"
 
 #include <U2Core/DocumentModel.h>
 #include <U2Core/TextUtils.h>
 
+#include "ZlibAdapter.h"
+
 namespace U2 {
 
-LocalFileAdapterFactory::LocalFileAdapterFactory(QObject* o) : IOAdapterFactory(o) {
+LocalFileAdapterFactory::LocalFileAdapterFactory(QObject *o)
+    : IOAdapterFactory(o) {
     name = tr("Local file");
 }
 
-IOAdapter* LocalFileAdapterFactory::createIOAdapter() {
+IOAdapter *LocalFileAdapterFactory::createIOAdapter() {
     return new LocalFileAdapter(this);
 }
 
-GzippedLocalFileAdapterFactory::GzippedLocalFileAdapterFactory(QObject* o)
+GzippedLocalFileAdapterFactory::GzippedLocalFileAdapterFactory(QObject *o)
     : LocalFileAdapterFactory(o) {
     name = tr("GZIP file");
 }
 
-IOAdapter* GzippedLocalFileAdapterFactory::createIOAdapter() {
+IOAdapter *GzippedLocalFileAdapterFactory::createIOAdapter() {
     return new ZlibAdapter(new LocalFileAdapter(this));
 }
 
 const quint64 LocalFileAdapter::BUF_SIZE = DocumentFormat::READ_BUFF_SIZE;
 
-LocalFileAdapter::LocalFileAdapter(LocalFileAdapterFactory* factory, QObject* o, bool b)
+LocalFileAdapter::LocalFileAdapter(LocalFileAdapterFactory *factory, QObject *o, bool b)
     : IOAdapter(factory, o), f(NULL), fileSize(0), bufferOptimization(b) {
     bufferOptimization = true;
     if (bufferOptimization) {
@@ -65,7 +67,7 @@ LocalFileAdapter::~LocalFileAdapter() {
     }
 }
 
-bool LocalFileAdapter::open(const GUrl& url, IOAdapterMode m) {
+bool LocalFileAdapter::open(const GUrl &url, IOAdapterMode m) {
     SAFE_POINT(!isOpen(), "Adapter is already opened!", false);
     SAFE_POINT(f == NULL, "QFile is not null!", false);
 
@@ -75,9 +77,15 @@ bool LocalFileAdapter::open(const GUrl& url, IOAdapterMode m) {
     f = new QFile(url.getURLString());
     QIODevice::OpenMode iomode;
     switch (m) {
-    case IOAdapterMode_Read: iomode = QIODevice::ReadOnly; break;
-    case IOAdapterMode_Write: iomode = QIODevice::WriteOnly | QIODevice::Truncate; break;
-    case IOAdapterMode_Append: iomode = QIODevice::WriteOnly | QIODevice::Append; break;
+    case IOAdapterMode_Read:
+        iomode = QIODevice::ReadOnly;
+        break;
+    case IOAdapterMode_Write:
+        iomode = QIODevice::WriteOnly | QIODevice::Truncate;
+        break;
+    case IOAdapterMode_Append:
+        iomode = QIODevice::WriteOnly | QIODevice::Append;
+        break;
     }
     bool res = f->open(iomode);
     if (!res) {
@@ -101,7 +109,7 @@ void LocalFileAdapter::close() {
     fileSize = 0;
 }
 
-qint64 LocalFileAdapter::readBlock(char* data, qint64 size) {
+qint64 LocalFileAdapter::readBlock(char *data, qint64 size) {
     SAFE_POINT(isOpen(), "Adapter is not opened!", -1);
     qint64 l = 0;
     if (bufferOptimization) {
@@ -136,7 +144,7 @@ qint64 LocalFileAdapter::readBlock(char* data, qint64 size) {
     return l;
 }
 
-qint64 LocalFileAdapter::writeBlock(const char* data, qint64 size) {
+qint64 LocalFileAdapter::writeBlock(const char *data, qint64 size) {
     SAFE_POINT(isOpen(), "Adapter is not opened!", -1);
     qint64 l = f->write(data, size);
     fileSize += size;
@@ -194,4 +202,4 @@ QString LocalFileAdapter::errorString() const {
     return (f->error() == QFile::NoError) ? errorMessage : f->errorString();
 }
 
-};//namespace
+};    // namespace U2

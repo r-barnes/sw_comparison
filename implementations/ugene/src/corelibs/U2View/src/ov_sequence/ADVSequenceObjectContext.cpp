@@ -20,38 +20,40 @@
  */
 
 #include "ADVSequenceObjectContext.h"
-#include "AnnotatedDNAView.h"
 
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/U2SafePoints.h>
+
 #include <U2View/CodonTable.h>
+
+#include "AnnotatedDNAView.h"
 
 namespace U2 {
 
-ADVSequenceObjectContext::ADVSequenceObjectContext(AnnotatedDNAView* v, U2SequenceObject* obj)
+ADVSequenceObjectContext::ADVSequenceObjectContext(AnnotatedDNAView *v, U2SequenceObject *obj)
     : SequenceObjectContext(obj, v),
       view(v) {
     if (v != NULL && translations != NULL) {
         const CodonTableView *ct = v->getCodonTableView();
-        foreach(QAction* a, translations->actions()) {
+        foreach (QAction *a, translations->actions()) {
             connect(a, SIGNAL(triggered()), ct, SLOT(sl_setAminoTranslation()));
         }
     }
 }
 
-AnnotationSelection* ADVSequenceObjectContext::getAnnotationsSelection() const {
+AnnotationSelection *ADVSequenceObjectContext::getAnnotationsSelection() const {
     return view->getAnnotationsSelection();
 }
 
 void ADVSequenceObjectContext::sl_onAnnotationRelationChange() {
-    AnnotationTableObject* obj = qobject_cast<AnnotationTableObject*>(sender());
+    AnnotationTableObject *obj = qobject_cast<AnnotationTableObject *>(sender());
     SAFE_POINT(obj != NULL, tr("Incorrect signal sender!"), );
 
     if (!obj->hasObjectRelation(seqObj, ObjectRole_Sequence)) {
-        disconnect(obj, SIGNAL(si_relationChanged()), this, SLOT(sl_onAnnotationRelationChange()));
+        disconnect(obj, SIGNAL(si_relationChanged(const QList<GObjectRelation> &)), this, SLOT(sl_onAnnotationRelationChange()));
         view->removeObject(obj);
     }
 }
 
-} // namespace U2
+}    // namespace U2

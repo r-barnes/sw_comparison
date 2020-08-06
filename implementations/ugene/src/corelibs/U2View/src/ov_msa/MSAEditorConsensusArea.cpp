@@ -19,14 +19,14 @@
  * MA 02110-1301, USA.
  */
 
+#include "MSAEditorConsensusArea.h"
+
 #include <U2Core/DNAAlphabet.h>
 
 #include <U2Gui/GUIUtils.h>
 
 #include "MSAEditor.h"
-#include "MSAEditorConsensusArea.h"
 #include "view_rendering/MaConsensusAreaRenderer.h"
-
 
 namespace U2 {
 
@@ -40,7 +40,7 @@ MSAEditorConsensusArea::MSAEditorConsensusArea(MsaEditorWgt *ui)
     setupFontAndHeight();
 
     connect(editor, SIGNAL(si_buildStaticMenu(GObjectView *, QMenu *)), SLOT(sl_buildStaticMenu(GObjectView *, QMenu *)));
-    connect(editor, SIGNAL(si_buildPopupMenu(GObjectView * , QMenu *)), SLOT(sl_buildContextMenu(GObjectView *, QMenu *)));
+    connect(editor, SIGNAL(si_buildPopupMenu(GObjectView *, QMenu *)), SLOT(sl_buildContextMenu(GObjectView *, QMenu *)));
 }
 
 void MSAEditorConsensusArea::sl_buildStaticMenu(GObjectView * /*view*/, QMenu *menu) {
@@ -56,14 +56,14 @@ void MSAEditorConsensusArea::initRenderer() {
 }
 
 QString MSAEditorConsensusArea::getLastUsedAlgoSettingsKey() const {
-    const DNAAlphabet* al = editor->getMaObject()->getAlphabet();
+    const DNAAlphabet *al = editor->getMaObject()->getAlphabet();
     SAFE_POINT(NULL != al, "Alphabet is NULL", "");
-    const char* suffix = al->isAmino() ? "_protein" : al->isNucleic() ? "_nucleic" : "_raw";
-    return editor->getSettingsRoot() + "_consensus_algorithm_"+ suffix;
+    const char *suffix = al->isAmino() ? "_protein" : al->isNucleic() ? "_nucleic" : "_raw";
+    return editor->getSettingsRoot() + "_consensus_algorithm_" + suffix;
 }
 
 void MSAEditorConsensusArea::buildMenu(QMenu *menu) {
-    QMenu* copyMenu = GUIUtils::findSubMenu(menu, MSAE_MENU_COPY);
+    QMenu *copyMenu = GUIUtils::findSubMenu(menu, MSAE_MENU_COPY);
     SAFE_POINT(copyMenu != NULL, "copyMenu", );
     copyMenu->addAction(copyConsensusAction);
     copyMenu->addAction(copyConsensusWithGapsAction);
@@ -71,4 +71,4 @@ void MSAEditorConsensusArea::buildMenu(QMenu *menu) {
     menu->addAction(configureConsensusAction);
 }
 
-} // namespace U2
+}    // namespace U2

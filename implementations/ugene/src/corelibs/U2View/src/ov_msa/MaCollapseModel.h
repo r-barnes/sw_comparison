@@ -22,11 +22,11 @@
 #ifndef _U2_MA_COLLAPSE_MODEL_H_
 #define _U2_MA_COLLAPSE_MODEL_H_
 
-#include <QObject>
-#include <QVector>
-#include <QSet>
-#include <QList>
 #include <QHash>
+#include <QList>
+#include <QObject>
+#include <QSet>
+#include <QVector>
 
 #include <U2Core/global.h>
 
@@ -38,13 +38,13 @@ public:
     MaCollapsibleGroup(int maRow, qint64 maRowId, bool isCollapsed = false);
 
     /* Creates new collapsible group item that starts with maRowIndex and has numRows inside. */
-    MaCollapsibleGroup(const QList<int>& maRows, const QList<qint64>& maRowIds, bool isCollapsed = false);
+    MaCollapsibleGroup(const QList<int> &maRows, const QList<qint64> &maRowIds, bool isCollapsed = false);
 
     /* Creates empty group. This method should not be used directly but is required by the Vector<MaCollapsibleGroup>. */
     MaCollapsibleGroup();
 
     /* Compares this group with another group. Returns true if groups are equal. */
-    bool operator== (const MaCollapsibleGroup &other) const;
+    bool operator==(const MaCollapsibleGroup &other) const;
 
     /* Returns number of rows in the group. */
     int size() const;
@@ -74,22 +74,22 @@ class U2Region;
 class U2VIEW_EXPORT MaCollapseModel : public QObject {
     Q_OBJECT
 public:
-    MaCollapseModel(QObject *p, const QList<qint64>& allOrderedMaRowIds);
+    MaCollapseModel(QObject *p, const QList<qint64> &allOrderedMaRowIds);
 
     /* Updates model to the given groups. */
-    void update(const QVector<MaCollapsibleGroup>& groups);
+    void update(const QVector<MaCollapsibleGroup> &groups);
 
     /**
      * Updates collapse model using united rows as input.
      * 'allOrderedMaRowIds' is a list of all ma row ids in the alignment.
      */
-    void updateFromUnitedRows(const QVector<U2Region>& unitedRows, const QList<qint64>& allOrderedMaRowIds);
+    void updateFromUnitedRows(const QVector<U2Region> &unitedRows, const QList<qint64> &allOrderedMaRowIds);
 
     /*
      * Flattens all collapsible groups: makes every group contain only 1 sequence.
      * 'allOrderedMaRowIds' is a list of all ma row ids in the alignment.
      */
-    void reset(const QList<qint64>& allOrderedMaRowIds, const QSet<int>& expandedGroupIndexes = QSet<int>());
+    void reset(const QList<qint64> &allOrderedMaRowIds, const QSet<int> &expandedGroupIndexes = QSet<int>());
 
     /* Toggle 'isCollapsed' state for the group at the given row. */
     void toggle(int viewRowIndex);
@@ -106,14 +106,12 @@ public:
     /* Converts view row index to MA row index. */
     int getMaRowIndexByViewRowIndex(int viewRowIndex) const;
 
-    /* Converts view rows region to MA rows region. */
-    U2Region getMaRowIndexRegionByViewRowIndexRegion(const U2Region &viewRowIndexRegion) const;
-
     /*
      * Returns list of MA row indexes for the given view row indexes.
-     * If 'includeGroupRows' is true adds all MA rows in the group for every viewRow that is a header of the group.
+     * If 'includeChildRowsForCollapsedGroups' is true adds all MA rows in the group
+     * for every viewRow that is a header of the collapsed group.
      */
-    QList<int> getMaRowIndexesByViewRowIndexes(const U2Region& viewRowIndexesRegion, bool includeGroupRows = false);
+    QList<int> getMaRowIndexesByViewRowIndexes(const U2Region &viewRowIndexesRegion, bool includeChildRowsForCollapsedGroups = false);
 
     /* Returns list of all MA row indexes that have valid view row index (not hidden by collapsing). */
     QList<int> getMaRowsIndexesWithViewRowIndexes() const;
@@ -125,6 +123,12 @@ public:
     */
     int getViewRowIndexByMaRowIndex(int maRowIndex, bool failIfNotVisible = false) const;
 
+    /*
+    * Converts MA row id to the view row index.
+    * If MA row has no viewRowIndex (is inside of collapsed group) returns -1.
+    */
+    int getViewRowIndexByMaRowId(qint64 maRowId) const;
+
     /* Returns 'true' if the MA row is inside of some collapsible group and the group is collapsed. */
     bool isGroupWithMaRowIndexCollapsed(int maRowIndex) const;
 
@@ -132,21 +136,25 @@ public:
     int getCollapsibleGroupIndexByViewRowIndex(int viewRowIndex) const;
 
     /* Returns collapsible group by index or NULL if there is no group for the index. */
-    const MaCollapsibleGroup* getCollapsibleGroup(int collapsibleGroupIndex) const;
+    const MaCollapsibleGroup *getCollapsibleGroup(int collapsibleGroupIndex) const;
 
     /* Returns collapsible group by view row index or NULL if there is no group for the index. */
-    const MaCollapsibleGroup* getCollapsibleGroupByViewRow(int viewRowIndex) const;
+    const MaCollapsibleGroup *getCollapsibleGroupByViewRow(int viewRowIndex) const;
 
     /* Returns collapsible group by MA row index or NULL if there is no group for the index. */
-    const MaCollapsibleGroup* getCollapsibleGroupByMaRow(int maRowIndex) const;
+    const MaCollapsibleGroup *getCollapsibleGroupByMaRow(int maRowIndex) const;
 
     /* Returns number of view rows. Every collapsible group has at least one (the first) row counted. */
     int getViewRowCount() const;
 
     /* Returns current set of collapsible groups. */
-    int getGroupCount() const {return groups.size();}
+    int getGroupCount() const {
+        return groups.size();
+    }
 
-    bool hasGroupsWithMultipleRows() const { return hasGroupsWithMultipleItems; }
+    bool hasGroupsWithMultipleRows() const {
+        return hasGroupsWithMultipleItems;
+    }
 
 signals:
     void si_aboutToBeToggled();
@@ -158,11 +166,12 @@ private:
     QVector<MaCollapsibleGroup> groups;
 
     QHash<int, int> viewRowByMaRow;
+    QHash<qint64, int> viewRowByMaRowId;
     QHash<int, int> maRowByViewRow;
     QHash<int, int> groupByMaRow;
     bool hasGroupsWithMultipleItems;
 };
 
-} //namespace
+}    // namespace U2
 
 #endif

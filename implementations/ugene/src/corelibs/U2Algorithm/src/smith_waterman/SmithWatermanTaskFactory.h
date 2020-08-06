@@ -22,21 +22,25 @@
 #ifndef _U2_SMITH_WATERMAN_TASK_FACTORY_H_
 #define _U2_SMITH_WATERMAN_TASK_FACTORY_H_
 
-#include "SmithWatermanSettings.h"
 #include <U2Core/Task.h>
 
+#include "SmithWatermanSettings.h"
 
 namespace U2 {
 
-class SmithWatermanTaskFactory {            //for ADV search only
+class SmithWatermanTaskFactory {    //for ADV search only
 public:
-    virtual Task* getTaskInstance(const SmithWatermanSettings& config,
-                                  const QString& taskName) const = 0;
-    virtual bool hasAdvancedSettings() const { return false; }
-    virtual void execAdvancedDialog() {}
-    virtual ~SmithWatermanTaskFactory() {}
+    virtual Task *getTaskInstance(const SmithWatermanSettings &config,
+                                  const QString &taskName) const = 0;
+    virtual bool hasAdvancedSettings() const {
+        return false;
+    }
+    virtual void execAdvancedDialog() {
+    }
+    virtual ~SmithWatermanTaskFactory() {
+    }
 };
 
-} // namespace
+}    // namespace U2
 
 #endif

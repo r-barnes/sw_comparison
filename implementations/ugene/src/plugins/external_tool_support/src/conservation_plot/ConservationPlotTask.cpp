@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "ConservationPlotTask.h"
+
 #include <QDir>
 
 #include <U2Core/AnnotationTableObject.h>
@@ -42,22 +44,12 @@
 #include "ConservationPlotSupport.h"
 #include "R/RSupport.h"
 
-#include "ConservationPlotTask.h"
-
 namespace U2 {
 
 const QString ConservationPlotTask::BASE_DIR_NAME("ConservationPlot_tmp");
 
-ConservationPlotTask::ConservationPlotTask(const ConservationPlotSettings& _settings, Workflow::DbiDataStorage *storage, const QList<Workflow::SharedDbiDataHandler> &_plotData)
-: ExternalToolSupportTask("ConservationPlot annotation", TaskFlag_CollectChildrenWarnings)
-, settings(_settings)
-, treatDoc(NULL)
-, treatTask(NULL)
-, storage(storage)
-, plotData(_plotData)
-, activeSubtasks(0)
-, etTask(NULL)
-{
+ConservationPlotTask::ConservationPlotTask(const ConservationPlotSettings &_settings, Workflow::DbiDataStorage *storage, const QList<Workflow::SharedDbiDataHandler> &_plotData)
+    : ExternalToolSupportTask("ConservationPlot annotation", TaskFlag_CollectChildrenWarnings), settings(_settings), treatDoc(NULL), treatTask(NULL), storage(storage), plotData(_plotData), activeSubtasks(0), etTask(NULL) {
     GCOUNTER(cvar, tvar, "NGS:ConservationPlotTask");
     SAFE_POINT_EXT(NULL != storage, setError(L10N::nullPointerError("workflow data storage")), );
 }
@@ -69,16 +61,17 @@ ConservationPlotTask::~ConservationPlotTask() {
 void ConservationPlotTask::cleanup() {
     plotData.clear();
 
-    delete treatDoc; treatDoc = NULL;
+    delete treatDoc;
+    treatDoc = NULL;
 
     //remove tmp files
     QString tmpDirPath = AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath(BASE_DIR_NAME);
     QDir tmpDir(tmpDirPath);
-    if(tmpDir.exists()){
-        foreach(QString file, tmpDir.entryList()){
+    if (tmpDir.exists()) {
+        foreach (QString file, tmpDir.entryList()) {
             tmpDir.remove(file);
         }
-        if(!tmpDir.rmdir(tmpDir.absolutePath())){
+        if (!tmpDir.rmdir(tmpDir.absolutePath())) {
             //stateInfo.setError(tr("Subdir for temporary files exists. Can not remove this folder."));
             //return;
         }
@@ -95,8 +88,8 @@ void ConservationPlotTask::prepare() {
         SaveDocumentTask *saveTask = NULL;
 
         QString name = getSettings().label;
-        name = name.replace(' ','_');
-        if (activeSubtasks != 0){
+        name = name.replace(' ', '_');
+        if (activeSubtasks != 0) {
             name += QString("_%1").arg(activeSubtasks);
         }
         bedDoc = createDoc(annTableHandler, name);
@@ -111,10 +104,10 @@ void ConservationPlotTask::prepare() {
     }
 }
 
-Document* ConservationPlotTask::createDoc(const Workflow::SharedDbiDataHandler &annTableHandler, const QString& name){
-    Document* doc = NULL;
+Document *ConservationPlotTask::createDoc(const Workflow::SharedDbiDataHandler &annTableHandler, const QString &name) {
+    Document *doc = NULL;
 
-    QString docUrl = workingDir + "/" + name +".bed";
+    QString docUrl = workingDir + "/" + name + ".bed";
 
     DocumentFormat *bedFormat = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::BED);
     CHECK_EXT(NULL != bedFormat, stateInfo.setError("NULL bed format"), doc);
@@ -131,14 +124,14 @@ Document* ConservationPlotTask::createDoc(const Workflow::SharedDbiDataHandler &
     return doc;
 }
 
-QList<Task*> ConservationPlotTask::onSubTaskFinished(Task* subTask) {
-    QList<Task*> result;
+QList<Task *> ConservationPlotTask::onSubTaskFinished(Task *subTask) {
+    QList<Task *> result;
     CHECK(!subTask->isCanceled(), result);
     CHECK(!subTask->hasError(), result);
 
     bool containsTask = false;
-    foreach(SaveDocumentTask* sdt, docTaskMap.values()){
-        if (sdt == subTask){
+    foreach (SaveDocumentTask *sdt, docTaskMap.values()) {
+        if (sdt == subTask) {
             containsTask = true;
             break;
         }
@@ -146,15 +139,15 @@ QList<Task*> ConservationPlotTask::onSubTaskFinished(Task* subTask) {
 
     if (containsTask) {
         activeSubtasks--;
-        if (activeSubtasks == 0){
+        if (activeSubtasks == 0) {
             QList<QString> docNames;
-            foreach(Document* bedDoc, docTaskMap.keys()){
+            foreach (Document *bedDoc, docTaskMap.keys()) {
                 docNames.append(bedDoc->getURLString());
             }
 
             QStringList args = settings.getArguments(docNames);
 
-            ExternalTool* rTool = AppContext::getExternalToolRegistry()->getById(RSupport::ET_R_ID);
+            ExternalTool *rTool = AppContext::getExternalToolRegistry()->getById(RSupport::ET_R_ID);
             SAFE_POINT(NULL != rTool, "R script tool wasn't found in the registry", result);
             const QString rDir = QFileInfo(rTool->getPath()).dir().absolutePath();
 
@@ -186,44 +179,42 @@ bool ConservationPlotTask::copyFile(const QString &src, const QString &dst) {
     return true;
 }
 
-
 void ConservationPlotTask::run() {
     QString tmpPdfFile = workingDir + "/tmp.bmp";
-    if(!copyFile(tmpPdfFile, getSettings().outFile)){
+    if (!copyFile(tmpPdfFile, getSettings().outFile)) {
         settings.outFile = "";
     }
     CHECK_OP(stateInfo, );
 }
 
-const ConservationPlotSettings& ConservationPlotTask::getSettings(){
+const ConservationPlotSettings &ConservationPlotTask::getSettings() {
     return settings;
 }
 
 //////////////////////////////////////////////////////////////////////////
 //ConservationPlotLogParser
 
-int ConservationPlotLogParser::getProgress(){
+int ConservationPlotLogParser::getProgress() {
     return 0;
 }
 
-void ConservationPlotLogParser::parseOutput( const QString& partOfLog ){
+void ConservationPlotLogParser::parseOutput(const QString &partOfLog) {
     ExternalToolLogParser::parseOutput(partOfLog);
 }
 
-void ConservationPlotLogParser::parseErrOutput( const QString& partOfLog ){
-    lastPartOfLog=partOfLog.split(QRegExp("(\n|\r)"));
-    lastPartOfLog.first()=lastErrLine+lastPartOfLog.first();
-    lastErrLine=lastPartOfLog.takeLast();
-    foreach(QString buf, lastPartOfLog){
-        if(buf.contains("ERROR", Qt::CaseInsensitive)
-            || buf.contains("CRITICAL", Qt::CaseInsensitive)){
-                coreLog.error("conservation plot: " + buf);
-        }else if (buf.contains("WARNING", Qt::CaseInsensitive)){
+void ConservationPlotLogParser::parseErrOutput(const QString &partOfLog) {
+    lastPartOfLog = partOfLog.split(QRegExp("(\n|\r)"));
+    lastPartOfLog.first() = lastErrLine + lastPartOfLog.first();
+    lastErrLine = lastPartOfLog.takeLast();
+    foreach (QString buf, lastPartOfLog) {
+        if (buf.contains("ERROR", Qt::CaseInsensitive) || buf.contains("CRITICAL", Qt::CaseInsensitive)) {
+            coreLog.error("conservation plot: " + buf);
+        } else if (buf.contains("WARNING", Qt::CaseInsensitive)) {
             algoLog.info(buf);
-        }else {
+        } else {
             algoLog.trace(buf);
         }
     }
 }
 
-} // U2
+}    // namespace U2

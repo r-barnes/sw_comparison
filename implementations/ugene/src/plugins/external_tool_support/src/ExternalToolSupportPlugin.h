@@ -30,7 +30,7 @@
 namespace U2 {
 class ETSProjectViewItemsContoller;
 
-class ExternalToolSupportPlugin : public Plugin  {
+class ExternalToolSupportPlugin : public Plugin {
     Q_OBJECT
 public:
     ExternalToolSupportPlugin();
@@ -43,7 +43,7 @@ private:
     ExternalToolManagerImpl validationManager;
 };
 
-class ExternalToolSupportService: public Service {
+class ExternalToolSupportService : public Service {
     Q_OBJECT
 public:
     ExternalToolSupportService();
@@ -51,10 +51,9 @@ public:
 protected:
     virtual void serviceStateChangedCallback(ServiceState oldState, bool enabledStateChanged);
 
-    ETSProjectViewItemsContoller*    projectViewController;
+    ETSProjectViewItemsContoller *projectViewController;
 };
 
-}
-
+}    // namespace U2
 
 #endif

@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "MysqlDbi.h"
+
 #include <QSqlError>
 
 #include <U2Core/U2OpStatusUtils.h>
@@ -28,7 +30,6 @@
 #include "MysqlAssemblyDbi.h"
 #include "MysqlAttributeDbi.h"
 #include "MysqlCrossDatabaseReferenceDbi.h"
-#include "MysqlDbi.h"
 #include "MysqlFeatureDbi.h"
 #include "MysqlModDbi.h"
 #include "MysqlMsaDbi.h"
@@ -50,21 +51,20 @@ namespace U2 {
 const int MysqlDbi::BIND_PARAMETERS_LIMIT = USHRT_MAX;
 
 MysqlDbi::MysqlDbi()
-    : U2AbstractDbi(MysqlDbiFactory::ID), tablesAreCreated(false)
-{
+    : U2AbstractDbi(MysqlDbiFactory::ID), tablesAreCreated(false) {
     db = new MysqlDbRef;
 
-    assemblyDbi =           new MysqlAssemblyDbi(this);
-    attributeDbi =          new MysqlAttributeDbi(this);
-    crossDbi =              new MysqlCrossDatabaseReferenceDbi(this);
-    featureDbi =            new MysqlFeatureDbi(this);
-    modDbi =                new MysqlModDbi(this);
-    msaDbi =                new MysqlMsaDbi(this);
-    objectDbi =             new MysqlObjectDbi(this);
-    objectRelationsDbi =    new MysqlObjectRelationsDbi(this);
-    sequenceDbi =           new MysqlSequenceDbi(this);
-    udrDbi =                new MysqlUdrDbi(this);
-    variantDbi =            new MysqlVariantDbi(this);
+    assemblyDbi = new MysqlAssemblyDbi(this);
+    attributeDbi = new MysqlAttributeDbi(this);
+    crossDbi = new MysqlCrossDatabaseReferenceDbi(this);
+    featureDbi = new MysqlFeatureDbi(this);
+    modDbi = new MysqlModDbi(this);
+    msaDbi = new MysqlMsaDbi(this);
+    objectDbi = new MysqlObjectDbi(this);
+    objectRelationsDbi = new MysqlObjectRelationsDbi(this);
+    sequenceDbi = new MysqlSequenceDbi(this);
+    udrDbi = new MysqlUdrDbi(this);
+    variantDbi = new MysqlVariantDbi(this);
 
     upgraders << new MysqlUpgraderFrom_1_14_To_1_15(this);
     upgraders << new MysqlUpgraderFrom_1_15_To_1_16(this);
@@ -90,91 +90,91 @@ MysqlDbi::~MysqlDbi() {
     QSqlDatabase::removeDatabase(QString::number((qint64)QThread::currentThread()));
 }
 
-U2AssemblyDbi* MysqlDbi::getAssemblyDbi() {
+U2AssemblyDbi *MysqlDbi::getAssemblyDbi() {
     return assemblyDbi;
 }
 
-U2AttributeDbi * MysqlDbi::getAttributeDbi() {
+U2AttributeDbi *MysqlDbi::getAttributeDbi() {
     return attributeDbi;
 }
 
-U2CrossDatabaseReferenceDbi* MysqlDbi::getCrossDatabaseReferenceDbi() {
+U2CrossDatabaseReferenceDbi *MysqlDbi::getCrossDatabaseReferenceDbi() {
     return crossDbi;
 }
 
-U2FeatureDbi* MysqlDbi::getFeatureDbi() {
+U2FeatureDbi *MysqlDbi::getFeatureDbi() {
     return featureDbi;
 }
 
-U2ModDbi* MysqlDbi::getModDbi() {
+U2ModDbi *MysqlDbi::getModDbi() {
     return modDbi;
 }
 
-U2MsaDbi* MysqlDbi::getMsaDbi() {
+U2MsaDbi *MysqlDbi::getMsaDbi() {
     return msaDbi;
 }
 
-U2ObjectDbi* MysqlDbi::getObjectDbi() {
+U2ObjectDbi *MysqlDbi::getObjectDbi() {
     return objectDbi;
 }
 
-U2ObjectRelationsDbi * MysqlDbi::getObjectRelationsDbi() {
+U2ObjectRelationsDbi *MysqlDbi::getObjectRelationsDbi() {
     return objectRelationsDbi;
 }
 
-U2SequenceDbi* MysqlDbi::getSequenceDbi() {
+U2SequenceDbi *MysqlDbi::getSequenceDbi() {
     return sequenceDbi;
 }
 
-UdrDbi* MysqlDbi::getUdrDbi() {
+UdrDbi *MysqlDbi::getUdrDbi() {
     return udrDbi;
 }
 
-U2VariantDbi* MysqlDbi::getVariantDbi() {
+U2VariantDbi *MysqlDbi::getVariantDbi() {
     return variantDbi;
 }
 
-MysqlAssemblyDbi* MysqlDbi::getMysqlAssemblyDbi() {
+MysqlAssemblyDbi *MysqlDbi::getMysqlAssemblyDbi() {
     return assemblyDbi;
 }
 
-MysqlAttributeDbi* MysqlDbi::getMysqlAttributeDbi() {
+MysqlAttributeDbi *MysqlDbi::getMysqlAttributeDbi() {
     return attributeDbi;
 }
 
-MysqlCrossDatabaseReferenceDbi* MysqlDbi::getMysqlCrossDatabaseReferenceDbi() {
+MysqlCrossDatabaseReferenceDbi *MysqlDbi::getMysqlCrossDatabaseReferenceDbi() {
     return crossDbi;
 }
 
-MysqlFeatureDbi* MysqlDbi::getMysqlFeatureDbi() {
+MysqlFeatureDbi *MysqlDbi::getMysqlFeatureDbi() {
     return featureDbi;
 }
 
-MysqlModDbi* MysqlDbi::getMysqlModDbi() {
+MysqlModDbi *MysqlDbi::getMysqlModDbi() {
     return modDbi;
 }
 
-MysqlMsaDbi* MysqlDbi::getMysqlMsaDbi() {
+MysqlMsaDbi *MysqlDbi::getMysqlMsaDbi() {
     return msaDbi;
 }
 
-MysqlObjectDbi* MysqlDbi::getMysqlObjectDbi() {
+MysqlObjectDbi *MysqlDbi::getMysqlObjectDbi() {
     return objectDbi;
 }
 
-MysqlSequenceDbi* MysqlDbi::getMysqlSequenceDbi() {
+MysqlSequenceDbi *MysqlDbi::getMysqlSequenceDbi() {
     return sequenceDbi;
 }
 
-MysqlUdrDbi* MysqlDbi::getMysqlUdrDbi() {
+MysqlUdrDbi *MysqlDbi::getMysqlUdrDbi() {
     return udrDbi;
 }
 
-MysqlVariantDbi * MysqlDbi::getMysqlVariantDbi() {
+MysqlVariantDbi *MysqlDbi::getMysqlVariantDbi() {
     return variantDbi;
 }
 
-MysqlDbRef* MysqlDbi::getDbRef() {
+MysqlDbRef *MysqlDbi::getDbRef() {
     return db;
 }
 
@@ -191,7 +191,7 @@ bool MysqlDbi::isInitialized(U2OpStatus &os) {
     return tablesAreCreated;
 }
 
-QString MysqlDbi::getProperty(const QString& name, const QString& defaultValue, U2OpStatus& os) {
+QString MysqlDbi::getProperty(const QString &name, const QString &defaultValue, U2OpStatus &os) {
     const bool appVersionRequested = U2DbiOptions::APP_MIN_COMPATIBLE_VERSION == name;
 
     if (appVersionRequested && !minCompatibleAppVersion.isEmpty()) {
@@ -214,7 +214,7 @@ QString MysqlDbi::getProperty(const QString& name, const QString& defaultValue, 
     return defaultValue;
 }
 
-void MysqlDbi::setProperty(const QString& name, const QString& value, U2OpStatus& os) {
+void MysqlDbi::setProperty(const QString &name, const QString &value, U2OpStatus &os) {
     MysqlTransaction t(db, os);
     Q_UNUSED(t);
 
@@ -233,11 +233,11 @@ void MysqlDbi::setProperty(const QString& name, const QString& value, U2OpStatus
     }
 }
 
-void MysqlDbi::startOperationsBlock(U2OpStatus& os) {
+void MysqlDbi::startOperationsBlock(U2OpStatus &os) {
     operationsBlockTransactions.push(new MysqlTransaction(db, os));
 }
 
-void MysqlDbi::stopOperationBlock(U2OpStatus& os) {
+void MysqlDbi::stopOperationBlock(U2OpStatus &os) {
     SAFE_POINT_EXT(!operationsBlockTransactions.isEmpty(), os.setError("There is no transaction to delete"), );
     delete operationsBlockTransactions.pop();
 }
@@ -302,7 +302,7 @@ void MysqlDbi::open(const QHash<QString, QString> &props, U2OpStatus &os) {
 
     db->handle.setConnectOptions("CLIENT_COMPRESS=1;MYSQL_OPT_RECONNECT=1;");
 
-    if (!db->handle.open() ) {
+    if (!db->handle.open()) {
         os.setError(U2DbiL10n::tr("Error opening MySQL database: %1").arg(db->handle.lastError().text()));
         setState(U2DbiState_Void);
         return;
@@ -320,7 +320,7 @@ void MysqlDbi::setState(U2DbiState s) {
         return; \
     }
 
-void MysqlDbi::populateDefaultSchema(U2OpStatus& os) {
+void MysqlDbi::populateDefaultSchema(U2OpStatus &os) {
     MysqlTransaction transaction(db, os);
     Q_UNUSED(transaction);
 
@@ -355,7 +355,7 @@ void MysqlDbi::populateDefaultSchema(U2OpStatus& os) {
     CHECK_DB_INIT(os);
 }
 
-void MysqlDbi::internalInit(const QHash<QString, QString>& props, U2OpStatus& os) {
+void MysqlDbi::internalInit(const QHash<QString, QString> &props, U2OpStatus &os) {
     if (isInitialized(os)) {
         checkVersion(os);
         CHECK_OP(os, );
@@ -370,7 +370,7 @@ void MysqlDbi::internalInit(const QHash<QString, QString>& props, U2OpStatus& os
 }
 
 void MysqlDbi::setupProperties(const QHash<QString, QString> &props, U2OpStatus &os) {
-    foreach (const QString& key, props.keys()) {
+    foreach (const QString &key, props.keys()) {
         if (key.startsWith("mysql-")) {
             setProperty(key, props.value(key), os);
             CHECK_OP(os, );
@@ -378,21 +378,25 @@ void MysqlDbi::setupProperties(const QHash<QString, QString> &props, U2OpStatus 
     }
 }
 
-void MysqlDbi::checkVersion(U2OpStatus& os) {
+void MysqlDbi::checkVersion(U2OpStatus &os) {
     const QString appVersionText = getProperty(U2DbiOptions::APP_MIN_COMPATIBLE_VERSION, "", os);
     CHECK_OP(os, );
 
     if (appVersionText.isEmpty()) {
         // Not an error since other databases might be opened with this interface
         coreLog.info(U2DbiL10n::tr("Not a %1 MySQL database: %2, %3")
-            .arg(U2_PRODUCT_NAME).arg(db->handle.hostName()).arg(db->handle.databaseName()));
+                         .arg(U2_PRODUCT_NAME)
+                         .arg(db->handle.hostName())
+                         .arg(db->handle.databaseName()));
     } else {
         Version dbAppVersion = Version::parseVersion(appVersionText);
         Version currentVersion = Version::appVersion();
         if (dbAppVersion > currentVersion) {
             coreLog.info(U2DbiL10n::tr("Warning! The database was created with a newer %1 version: "
-                "%2. Not all database features may be supported! Current %1 version: %3.")
-                .arg(U2_PRODUCT_NAME).arg(dbAppVersion.text).arg(currentVersion.text));
+                                       "%2. Not all database features may be supported! Current %1 version: %3.")
+                             .arg(U2_PRODUCT_NAME)
+                             .arg(dbAppVersion.text)
+                             .arg(currentVersion.text));
         }
     }
 }
@@ -427,7 +431,7 @@ void MysqlDbi::setupFeatures() {
     features.insert(U2DbiFeature_RemoveObjects);
 }
 
-void MysqlDbi::checkUserPermissions(U2OpStatus& os) {
+void MysqlDbi::checkUserPermissions(U2OpStatus &os) {
     const QString databaseName = db->handle.databaseName();
     const QString userName = db->handle.userName();
     CHECK_EXT(!databaseName.isEmpty() && !userName.isEmpty(), os.setError("Unable to check user permissions, database is not connected"), );
@@ -443,7 +447,7 @@ void MysqlDbi::checkUserPermissions(U2OpStatus& os) {
     bool insertEnabled = false;
 
     const QString schemaQueryString = "SELECT DISTINCT PRIVILEGE_TYPE FROM information_schema.schema_privileges "
-        "WHERE GRANTEE LIKE :userName AND TABLE_SCHEMA = :tableSchema";
+                                      "WHERE GRANTEE LIKE :userName AND TABLE_SCHEMA = :tableSchema";
     U2SqlQuery sq(schemaQueryString, db, os);
     sq.bindString(":userName", QString("'%1'%").arg(userName));
     sq.bindString(":tableSchema", databaseName);
@@ -459,7 +463,7 @@ void MysqlDbi::checkUserPermissions(U2OpStatus& os) {
     }
 
     const QString userQueryString = "SELECT DISTINCT PRIVILEGE_TYPE FROM information_schema.user_privileges "
-        "WHERE GRANTEE LIKE :userName";
+                                    "WHERE GRANTEE LIKE :userName";
     U2SqlQuery uq(userQueryString, db, os);
     uq.bindString(":userName", QString("'%1'%").arg(userName));
 
@@ -478,7 +482,7 @@ void MysqlDbi::checkUserPermissions(U2OpStatus& os) {
             features.insert(U2DbiFeature_GlobalReadOnly);
         } else {
             os.setError(QObject::tr("Invalid database user permissions set, so UGENE unable to use this database. "
-                "Connect to your system administrator to fix the issue."));
+                                    "Connect to your system administrator to fix the issue."));
         }
     }
 }
@@ -489,7 +493,7 @@ void MysqlDbi::setupTransactions(U2OpStatus &os) {
     U2SqlQuery("SET autocommit = 0", db, os).execute();
 }
 
-void MysqlDbi::init(const QHash<QString, QString>& props, const QVariantMap&, U2OpStatus& os) {
+void MysqlDbi::init(const QHash<QString, QString> &props, const QVariantMap &, U2OpStatus &os) {
     createHandle(props);
     QMutexLocker(&db->mutex);
 
@@ -514,13 +518,12 @@ void MysqlDbi::init(const QHash<QString, QString>& props, const QVariantMap&, U2
     setState(U2DbiState_Ready);
 }
 
-QVariantMap MysqlDbi::shutdown(U2OpStatus& os) {
+QVariantMap MysqlDbi::shutdown(U2OpStatus &os) {
     CHECK(db->handle.isOpen(), QVariantMap());
 
     CHECK_EXT(state == U2DbiState_Ready,
-                db->handle.close();
+              db->handle.close();
               , QVariantMap());
-
 
     if (!flush(os)) {
         CHECK_OP(os, QVariantMap());
@@ -550,7 +553,7 @@ QVariantMap MysqlDbi::shutdown(U2OpStatus& os) {
     return QVariantMap();
 }
 
-bool MysqlDbi::flush(U2OpStatus& ) {
+bool MysqlDbi::flush(U2OpStatus &) {
     return true;
 }
 
@@ -558,13 +561,13 @@ QString MysqlDbi::getDbiId() const {
     return dbiId;
 }
 
-QHash<QString, QString> MysqlDbi::getDbiMetaInfo(U2OpStatus& ) {
+QHash<QString, QString> MysqlDbi::getDbiMetaInfo(U2OpStatus &) {
     QHash<QString, QString> res;
     res[U2DbiOptions::U2_DBI_OPTION_URL] = U2DbiUtils::ref2Url(getDbiRef());
     return res;
 }
 
-U2DataType MysqlDbi::getEntityTypeById(const U2DataId& id) const {
+U2DataType MysqlDbi::getEntityTypeById(const U2DataId &id) const {
     return U2DbiUtils::toType(id);
 }
 
@@ -572,7 +575,8 @@ U2DataType MysqlDbi::getEntityTypeById(const U2DataId& id) const {
 
 const U2DbiFactoryId MysqlDbiFactory::ID = MYSQL_DBI_ID;
 
-MysqlDbiFactory::MysqlDbiFactory() : U2DbiFactory() {
+MysqlDbiFactory::MysqlDbiFactory()
+    : U2DbiFactory() {
 }
 
 U2Dbi *MysqlDbiFactory::createDbi() {
@@ -583,32 +587,31 @@ U2DbiFactoryId MysqlDbiFactory::getId() const {
     return ID;
 }
 
-FormatCheckResult MysqlDbiFactory::isValidDbi(const QHash<QString, QString>& properties, const QByteArray& rawData, U2OpStatus& ) const {
+FormatCheckResult MysqlDbiFactory::isValidDbi(const QHash<QString, QString> &properties, const QByteArray &rawData, U2OpStatus &) const {
     Q_UNUSED(properties);
     Q_UNUSED(rawData);
     // TODO: check the result
     return FormatDetection_Matched;
 }
 
-bool MysqlDbiFactory::isDbiExists(const U2DbiId& id) const {
+bool MysqlDbiFactory::isDbiExists(const U2DbiId &id) const {
     // TODO: check the connection
     Q_UNUSED(id);
-//    QString host;
-//    int port;
-//    QString dbName;
-//    MysqlDbiUtils::parseDbiId(id, host, port, dbName);
+    //    QString host;
+    //    int port;
+    //    QString dbName;
+    //    MysqlDbiUtils::parseDbiId(id, host, port, dbName);
 
-//    U2OpStatusImpl os;
-//    U2SqlQuery q("SELECT DATA LIKE :dbName", db, os);
-//    q.bindString(":dbName", dbName);
-//    return !q.selectStrings().isEmpty();
+    //    U2OpStatusImpl os;
+    //    U2SqlQuery q("SELECT DATA LIKE :dbName", db, os);
+    //    q.bindString(":dbName", dbName);
+    //    return !q.selectStrings().isEmpty();
     return false;
 }
 
-MysqlChildDbiCommon::MysqlChildDbiCommon(MysqlDbi* dbi) :
-    dbi(dbi),
-    db(NULL == dbi ? NULL : dbi->getDbRef())
-{
+MysqlChildDbiCommon::MysqlChildDbiCommon(MysqlDbi *dbi)
+    : dbi(dbi),
+      db(NULL == dbi ? NULL : dbi->getDbRef()) {
 }
 
-} // namespace U2
+}    // namespace U2

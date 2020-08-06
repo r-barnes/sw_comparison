@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "AssemblyToSequenceWorker.h"
+
 #include <U2Core/AppContext.h>
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/U2AssemblyDbi.h>
@@ -34,8 +36,6 @@
 #include <U2Lang/BaseTypes.h>
 #include <U2Lang/WorkflowEnv.h>
 
-#include "AssemblyToSequenceWorker.h"
-
 namespace U2 {
 namespace LocalWorkflow {
 
@@ -45,9 +45,7 @@ const QString AssemblyToSequencesWorkerFactory::ACTOR_ID("assembly-to-sequences"
 /* Worker */
 /************************************************************************/
 AssemblyToSequencesWorker::AssemblyToSequencesWorker(Actor *p)
-: BaseWorker(p), converter(NULL), inChannel(NULL), outChannel(NULL)
-{
-
+    : BaseWorker(p), converter(NULL), inChannel(NULL), outChannel(NULL) {
 }
 
 void AssemblyToSequencesWorker::init() {
@@ -82,12 +80,9 @@ void AssemblyToSequencesWorker::sl_taskFinished() {
 /************************************************************************/
 /* Task */
 /************************************************************************/
-AssemblyToSequencesTask::AssemblyToSequencesTask(const Message &_message, const QVariantMap &_ctx,
-                                                 IntegralBus *_channel, DbiDataStorage *_storage)
-: Task(tr("Split Assembly into Sequences"), TaskFlag_None),
-message(_message), ctx(_ctx), channel(_channel), storage(_storage)
-{
-
+AssemblyToSequencesTask::AssemblyToSequencesTask(const Message &_message, const QVariantMap &_ctx, IntegralBus *_channel, DbiDataStorage *_storage)
+    : Task(tr("Split Assembly into Sequences"), TaskFlag_None),
+      message(_message), ctx(_ctx), channel(_channel), storage(_storage) {
 }
 
 void AssemblyToSequencesTask::run() {
@@ -112,7 +107,7 @@ void AssemblyToSequencesTask::run() {
     qint64 length = dbi->getMaxEndPos(assemblyId, os) + 1;
     SAFE_POINT_OP(os, );
     U2Region wholeAssembly(0, length);
-    QScopedPointer< U2DbiIterator<U2AssemblyRead> > iter(dbi->getReads(assemblyId, wholeAssembly, os));
+    QScopedPointer<U2DbiIterator<U2AssemblyRead>> iter(dbi->getReads(assemblyId, wholeAssembly, os));
     SAFE_POINT_OP(os, );
     CHECK(NULL != iter.data(), );
 
@@ -138,14 +133,13 @@ void AssemblyToSequencesTask::run() {
 }
 
 void AssemblyToSequencesTask::cleanup() {
-
 }
 
 /************************************************************************/
 /* Factory */
 /************************************************************************/
 void AssemblyToSequencesWorkerFactory::init() {
-    QList<PortDescriptor*> portDescs;
+    QList<PortDescriptor *> portDescs;
     {
         QMap<Descriptor, DataTypePtr> inTypeMap;
         inTypeMap[BaseSlots::ASSEMBLY_SLOT()] = BaseTypes::ASSEMBLY_TYPE();
@@ -159,14 +153,14 @@ void AssemblyToSequencesWorkerFactory::init() {
         portDescs << new PortDescriptor(BasePorts::OUT_SEQ_PORT_ID(), outTypeSet, false);
     }
 
-    QList<Attribute*> attrs;
+    QList<Attribute *> attrs;
 
     Descriptor protoDesc(AssemblyToSequencesWorkerFactory::ACTOR_ID,
-        AssemblyToSequencesWorker::tr("Split Assembly into Sequences"),
-        AssemblyToSequencesWorker::tr("Splits assembly into sequences(reads)."));
+                         AssemblyToSequencesWorker::tr("Split Assembly into Sequences"),
+                         AssemblyToSequencesWorker::tr("Splits assembly into sequences(reads)."));
 
     ActorPrototype *proto = new IntegralBusActorPrototype(protoDesc, portDescs, attrs);
-    proto->setEditor(new DelegateEditor(QMap<QString, PropertyDelegate*>()));
+    proto->setEditor(new DelegateEditor(QMap<QString, PropertyDelegate *>()));
     proto->setPrompter(new AssemblyToSequencesPrompter());
     proto->setInfluenceOnPathFlag(true);
 
@@ -182,15 +176,15 @@ Worker *AssemblyToSequencesWorkerFactory::createWorker(Actor *a) {
 /* Prompter */
 /************************************************************************/
 QString AssemblyToSequencesPrompter::composeRichDoc() {
-    QString unsetStr = "<font color='red'>"+tr("unset")+"</font>";
+    QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
 
-    IntegralBusPort* input = qobject_cast<IntegralBusPort*>(target->getPort(BasePorts::IN_ASSEMBLY_PORT_ID()));
-    Actor* producer = input->getProducer(BaseSlots::ASSEMBLY_SLOT().getId());
+    IntegralBusPort *input = qobject_cast<IntegralBusPort *>(target->getPort(BasePorts::IN_ASSEMBLY_PORT_ID()));
+    Actor *producer = input->getProducer(BaseSlots::ASSEMBLY_SLOT().getId());
     QString producerName = tr("<u>%1</u>").arg(producer ? producer->getLabel() : unsetStr);
 
     QString res = tr("Split %1 assemblies into sequences(reads) and puts them to the output.").arg(producerName).arg(producerName);
     return res;
 }
 
-} // LocalWorkflow
-} // U2
+}    // namespace LocalWorkflow
+}    // namespace U2

@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-
 #include "ConductGOSettings.h"
 
 #include <U2Core/GUrlUtils.h>
@@ -42,7 +41,7 @@ ConductGOSettings::ConductGOSettings() {
     initDefault();
 }
 
-void ConductGOSettings::initDefault(){
+void ConductGOSettings::initDefault() {
     outDir = "";
     title = "Default";
     geneUniverse = "hgu133a";
@@ -51,7 +50,7 @@ void ConductGOSettings::initDefault(){
 QStringList ConductGOSettings::getArguments() const {
     QStringList result;
 
-//    go_analysis.py  '$title' '$diff_expr_file' '$logmeta' '$diff_expr_file.dbkey', '$annotation'
+    //    go_analysis.py  '$title' '$diff_expr_file' '$logmeta' '$diff_expr_file.dbkey', '$annotation'
 
     result << title;
 
@@ -66,4 +65,4 @@ QStringList ConductGOSettings::getArguments() const {
     return result;
 }
 
-} // U2
+}    // namespace U2

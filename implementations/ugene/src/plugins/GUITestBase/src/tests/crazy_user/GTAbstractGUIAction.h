@@ -23,6 +23,7 @@
 #define _U2_GT_ABSTRACT_GUI_ACTION_H_
 
 #include <U2Core/U2OpStatusUtils.h>
+
 #include "utils/GTUtilsDialog.h"
 
 namespace U2 {
@@ -32,39 +33,47 @@ using namespace HI;
 
 class GTAbstractGUIAction : public Runnable {
 public:
-    enum Priority {Priority_Normal, Priority_High};
+    enum Priority { Priority_Normal,
+                    Priority_High };
 
-    GTAbstractGUIAction(Priority priority) : priority(priority), obj(NULL){}
-    virtual ~GTAbstractGUIAction(){}
+    GTAbstractGUIAction(Priority priority)
+        : priority(priority), obj(NULL) {
+    }
+    virtual ~GTAbstractGUIAction() {
+    }
 
-    GTAbstractGUIAction(const GTAbstractGUIAction& a) : Runnable(a), priority(a.priority), obj(a.obj), os() {}
+    GTAbstractGUIAction(const GTAbstractGUIAction &a)
+        : Runnable(a), priority(a.priority), obj(a.obj), os() {
+    }
 
-    virtual void init(QObject* obj) {
+    virtual void init(QObject *obj) {
         this->obj = obj;
     }
-    virtual GTAbstractGUIAction* clone() const = 0;
+    virtual GTAbstractGUIAction *clone() const = 0;
 
     const QString objectClassName() const {
         return NULL == obj ? "" : obj->metaObject()->className();
     }
-    static bool lessThan(const GTAbstractGUIAction* lv, const GTAbstractGUIAction* rv) {
+    static bool lessThan(const GTAbstractGUIAction *lv, const GTAbstractGUIAction *rv) {
         return lv->priority > rv->priority;
     }
     Priority getPriority() const {
         return priority;
     }
+
 protected:
     Priority priority;
     QObject *obj;
     HI::GUITestOpStatus os;
+
 private:
-    GTAbstractGUIAction& operator=(GTAbstractGUIAction&);
+    GTAbstractGUIAction &operator=(GTAbstractGUIAction &);
 };
 
-typedef QMap<QString, const GTAbstractGUIAction*> GTAbstractGUIActionMap;
+typedef QMap<QString, const GTAbstractGUIAction *> GTAbstractGUIActionMap;
 
-}
+}    // namespace GUITest_crazy_user
 
-} //namespace
+}    // namespace U2
 
 #endif

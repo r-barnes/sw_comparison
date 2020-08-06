@@ -19,11 +19,11 @@
  * MA 02110-1301, USA.
  */
 
+#include "TrimmomaticStep.h"
+
 #include <QDir>
 
 #include <U2Core/U2SafePoints.h>
-
-#include "TrimmomaticStep.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -31,13 +31,10 @@ namespace LocalWorkflow {
 QScopedPointer<TrimmomaticStepsRegistry> TrimmomaticStepsRegistry::instance;
 
 TrimmomaticStepFactory::TrimmomaticStepFactory(const QString &_id)
-    : id(_id)
-{
-
+    : id(_id) {
 }
 
 TrimmomaticStepFactory::~TrimmomaticStepFactory() {
-
 }
 
 const QString &TrimmomaticStepFactory::getId() const {
@@ -57,9 +54,7 @@ void TrimmomaticStepsRegistry::releaseInstance() {
 
 TrimmomaticStep::TrimmomaticStep(const QString &_id)
     : id(_id),
-      settingsWidget(NULL)
-{
-
+      settingsWidget(NULL) {
 }
 
 TrimmomaticStep::~TrimmomaticStep() {
@@ -113,10 +108,8 @@ void TrimmomaticStep::sl_widgetIsAboutToBeDestroyed(const QVariantMap &state) {
 }
 
 TrimmomaticStepSettingsWidget::TrimmomaticStepSettingsWidget()
-    : QWidget(NULL)
-{
-
+    : QWidget(NULL) {
 }
 
-}   // namespace LocalWorkflow
-}   // namespace U2
+}    // namespace LocalWorkflow
+}    // namespace U2

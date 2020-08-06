@@ -25,9 +25,9 @@
 #include <U2Core/MultiTask.h>
 #include <U2Core/Task.h>
 
-class ExternalTool;
-
 namespace U2 {
+
+class ExternalTool;
 
 /**
   * Search the possible paths to the external tool.
@@ -39,11 +39,15 @@ namespace U2 {
 class ExternalToolSearchTask : public Task {
     Q_OBJECT
 public:
-    ExternalToolSearchTask(const QString& toolId);
+    ExternalToolSearchTask(const QString &toolId);
 
     virtual void run();
-    QString getToolId() const { return toolId; }
-    QStringList getPaths() const { return toolPaths; }
+    QString getToolId() const {
+        return toolId;
+    }
+    QStringList getPaths() const {
+        return toolPaths;
+    }
 
 private:
     QString getExeName(ExternalTool *tool);
@@ -57,11 +61,11 @@ private:
 class ExternalToolsSearchTask : public SequentialMultiTask {
     Q_OBJECT
 public:
-    ExternalToolsSearchTask(const QList<Task*> &_tasks);
+    ExternalToolsSearchTask(const QList<Task *> &_tasks);
 
-    virtual QList<Task*> onSubTaskFinished(Task* subTask);
+    virtual QList<Task *> onSubTaskFinished(Task *subTask);
 };
 
-}   // namespace U2
+}    // namespace U2
 
-#endif // _U2_EXTERNAL_TOOL_SEARCH_TASK_H_
+#endif    // _U2_EXTERNAL_TOOL_SEARCH_TASK_H_

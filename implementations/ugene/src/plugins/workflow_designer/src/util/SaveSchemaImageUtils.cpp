@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "SaveSchemaImageUtils.h"
+
 #include <QFile>
 #include <QPainter>
 
@@ -31,7 +33,6 @@
 #include <U2Lang/WorkflowSettings.h>
 #include <U2Lang/WorkflowUtils.h>
 
-#include "SaveSchemaImageUtils.h"
 #include "WorkflowViewController.h"
 #include "WorkflowViewItems.h"
 
@@ -42,12 +43,11 @@ static Logger log("Save workflow image task");
 /********************************
  * ProduceSchemaImageLinkTask
  ********************************/
-ProduceSchemaImageLinkTask::ProduceSchemaImageLinkTask(const QString & schemaName)
-: Task(tr("Save workflow image"), TaskFlags_NR_FOSCOE), schema(NULL) {
-
-    schemaPath = WorkflowUtils::findPathToSchemaFile( schemaName );
-    if( schemaPath.isEmpty() ) {
-        setError( tr( "Cannot find workflow: %1" ).arg( schemaName ) );
+ProduceSchemaImageLinkTask::ProduceSchemaImageLinkTask(const QString &schemaName)
+    : Task(tr("Save workflow image"), TaskFlags_NR_FOSCOE), schema(NULL) {
+    schemaPath = WorkflowUtils::findPathToSchemaFile(schemaName);
+    if (schemaPath.isEmpty()) {
+        setError(tr("Cannot find workflow: %1").arg(schemaName));
         return;
     }
 }
@@ -57,21 +57,21 @@ ProduceSchemaImageLinkTask::~ProduceSchemaImageLinkTask() {
 }
 
 void ProduceSchemaImageLinkTask::prepare() {
-    if(hasError() || isCanceled()) {
+    if (hasError() || isCanceled()) {
         return;
     }
 
     schema = new Schema();
     schema->setDeepCopyFlag(true);
-    addSubTask(new LoadWorkflowTask( schema, &meta, schemaPath ));
+    addSubTask(new LoadWorkflowTask(schema, &meta, schemaPath));
 }
 
-QList<Task*> ProduceSchemaImageLinkTask::onSubTaskFinished(Task* subTask) {
-    LoadWorkflowTask * loadTask = qobject_cast<LoadWorkflowTask*>(subTask);
+QList<Task *> ProduceSchemaImageLinkTask::onSubTaskFinished(Task *subTask) {
+    LoadWorkflowTask *loadTask = qobject_cast<LoadWorkflowTask *>(subTask);
     assert(loadTask != NULL);
 
-    QList<Task*> res;
-    if( loadTask->hasError() || loadTask->isCanceled() ) {
+    QList<Task *> res;
+    if (loadTask->hasError() || loadTask->isCanceled()) {
         return res;
     }
 
@@ -97,10 +97,11 @@ const QString GoogleChartImage::CHART_TYPE_OPTION = "cht";
 const QString GoogleChartImage::GRAPH_OPTION = "chl";
 const QString GoogleChartImage::CHART_SIZE_OPTION = "chs";
 const QString GoogleChartImage::GRAPH_VIZ_CHART_TYPE = "gv:dot";
-const QSize   GoogleChartImage::CHART_SIZE_DEFAULT(500, 500);
+const QSize GoogleChartImage::CHART_SIZE_DEFAULT(500, 500);
 const QString GoogleChartImage::GOOGLE_CHART_BASE_URL = "http://chart.apis.google.com/chart?";
 
-GoogleChartImage::GoogleChartImage(Schema * sc, const Metadata& m) : chartSize(CHART_SIZE_DEFAULT), schema(sc), meta(m) {
+GoogleChartImage::GoogleChartImage(Schema *sc, const Metadata &m)
+    : chartSize(CHART_SIZE_DEFAULT), schema(sc), meta(m) {
     assert(schema != NULL);
 }
 
@@ -108,7 +109,7 @@ QString GoogleChartImage::getImageUrl() const {
     return GOOGLE_CHART_BASE_URL + getUrlArguments();
 }
 
-static QString makeArgumentPair( const QString & argName, const QString & value ) {
+static QString makeArgumentPair(const QString &argName, const QString &value) {
     return argName + "=" + value + "&";
 }
 
@@ -127,7 +128,7 @@ static QString makeArgumentPair( const QString & argName, const QString & value 
 //    return graph + "}";
 //}
 
-static QString getSchemaGraphInExtendedDotNotation(Schema * schema, const Metadata & meta) {
+static QString getSchemaGraphInExtendedDotNotation(Schema *schema, const Metadata &meta) {
     assert(schema != NULL);
     QString graph = "digraph{";
     graph += QString("label=\"Workflow %1\";").arg(meta.name);
@@ -138,13 +139,13 @@ static QString getSchemaGraphInExtendedDotNotation(Schema * schema, const Metada
     graph += QString("node [shape=box,style=\"filled, rounded\",fillcolor=lightblue];");
 
     // Nodes definition
-    foreach(Actor * actor, schema->getProcesses()) {
+    foreach (Actor *actor, schema->getProcesses()) {
         graph += QString("%1 [label=\"%2\"];").arg(QString("node_%1").arg(actor->getId())).arg(actor->getLabel());
     }
     // relationships definition
-    foreach(Link * link, schema->getFlows()) {
-        Actor * source = link->source()->owner();
-        Actor * destination = link->destination()->owner();
+    foreach (Link *link, schema->getFlows()) {
+        Actor *source = link->source()->owner();
+        Actor *destination = link->destination()->owner();
         graph += QString("node_%1->node_%2;").arg(source->getId()).arg(destination->getId());
     }
 
@@ -167,7 +168,7 @@ QString GoogleChartImage::getUrlArguments() const {
 /********************************
  * SaveSchemaImageUtils
  ********************************/
-QPixmap SaveSchemaImageUtils::generateSchemaSnapshot(const QString & data) {
+QPixmap SaveSchemaImageUtils::generateSchemaSnapshot(const QString &data) {
     Schema schema;
     Metadata meta;
     QString msg = HRSchemaSerializer::string2Schema(data, &schema, &meta);
@@ -189,11 +190,11 @@ QPixmap SaveSchemaImageUtils::generateSchemaSnapshot(const QString & data) {
     return pixmap;
 }
 
-QString SaveSchemaImageUtils::saveSchemaImageToFile(const QString & schemaPath, const QString & imagePath) {
+QString SaveSchemaImageUtils::saveSchemaImageToFile(const QString &schemaPath, const QString &imagePath) {
     log.info(QString("Saving %1 snapshot to %2").arg(schemaPath).arg(imagePath));
 
     QFile file(schemaPath);
-    if(!file.open(QIODevice::ReadOnly)) {
+    if (!file.open(QIODevice::ReadOnly)) {
         return L10N::errorOpeningFileRead(schemaPath);
     }
 
@@ -203,4 +204,4 @@ QString SaveSchemaImageUtils::saveSchemaImageToFile(const QString & schemaPath, 
     return QString();
 }
 
-} // U2
+}    // namespace U2
