@@ -8,7 +8,7 @@
  * is strictly prohibited.
  *
  */
- 
+
 /* CUda UTility Library */
 
 /* Credit: Cuda team for the PGM file reader / writer code. */
@@ -23,9 +23,6 @@
 #include <iostream>
 #include <algorithm>
 #include <math.h>
-
-// includes, cuda
-#include <builtin_types.h>
 
 // includes, common
 #include <cmd_arg_reader.h>
@@ -46,11 +43,11 @@
 #define MIN_EPSILON_ERROR 1e-3f
 
 // namespace unnamed (internal)
-namespace 
-{  
+namespace
+{
     // variables
 
-    //! size of PGM file header 
+    //! size of PGM file header
     const unsigned int PGMHeaderSize = 0x40;
 
     // types
