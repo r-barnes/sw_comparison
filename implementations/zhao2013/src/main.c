@@ -4,17 +4,17 @@
  *  Last revision by Mengyao Zhao on 2017-05-30.
  */
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <emmintrin.h>
-#include <zlib.h>
-#include <stdio.h>
-#include <time.h>
-#include <string.h>
-#include <math.h>
-#include <unistd.h>
-#include "ssw.h"
 #include "kseq.h"
+#include "ssw.h"
+#include <emmintrin.h>
+#include <math.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
+#include <zlib.h>
 
 #ifdef __GNUC__
 #define LIKELY(x) __builtin_expect((x),1)
