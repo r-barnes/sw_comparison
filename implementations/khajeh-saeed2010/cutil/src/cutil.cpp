@@ -8,7 +8,7 @@
  * is strictly prohibited.
  *
  */
- 
+
 /* CUda UTility Library */
 
 /* Credit: Cuda team for the PGM file reader / writer code. */
@@ -23,9 +23,6 @@
 #include <iostream>
 #include <algorithm>
 #include <math.h>
-
-// includes, cuda
-#include <builtin_types.h>
 
 // includes, common
 #include <cmd_arg_reader.h>
@@ -46,11 +43,11 @@
 #define MIN_EPSILON_ERROR 1e-3f
 
 // namespace unnamed (internal)
-namespace 
-{  
+namespace
+{
     // variables
 
-    //! size of PGM file header 
+    //! size of PGM file header
     const unsigned int PGMHeaderSize = 0x40;
 
     // types
@@ -61,7 +58,7 @@ namespace
 
     //! Data converter from unsigned char / unsigned byte to unsigned int
     template<>
-    struct ConverterFromUByte<unsigned int> 
+    struct ConverterFromUByte<unsigned int>
     {
         //! Conversion operator
         //! @return converted value
@@ -73,12 +70,12 @@ namespace
 
     //! Data converter from unsigned char / unsigned byte to unsigned short
     template<>
-    struct ConverterFromUByte<unsigned short> 
+    struct ConverterFromUByte<unsigned short>
     {
         //! Conversion operator
         //! @return converted value
         //! @param  val  value to convert
-        unsigned short operator()( const unsigned char& val) 
+        unsigned short operator()( const unsigned char& val)
         {
             return static_cast<unsigned short>( val);
         }
@@ -86,12 +83,12 @@ namespace
 
     //! Data converter from unsigned char / unsigned byte to unsigned float
     template<>
-    struct ConverterFromUByte<float> 
+    struct ConverterFromUByte<float>
     {
         //! Conversion operator
         //! @return converted value
         //! @param  val  value to convert
-        float operator()( const unsigned char& val) 
+        float operator()( const unsigned char& val)
         {
             return static_cast<float>( val) / 255.0f;
         }
@@ -103,12 +100,12 @@ namespace
 
     //! Data converter from unsigned char / unsigned byte to unsigned int
     template<>
-    struct ConverterToUByte<unsigned int> 
+    struct ConverterToUByte<unsigned int>
     {
         //! Conversion operator
         //! @return converted value
         //! @param  val  value to convert
-        unsigned char operator()( const unsigned int& val) 
+        unsigned char operator()( const unsigned int& val)
         {
             return static_cast<unsigned char>( val);
         }
@@ -116,12 +113,12 @@ namespace
 
     //! Data converter from unsigned char / unsigned byte to unsigned short
     template<>
-    struct ConverterToUByte<unsigned short> 
+    struct ConverterToUByte<unsigned short>
     {
         //! Conversion operator
         //! @return converted value
         //! @param  val  value to convert
-        unsigned char operator()( const unsigned short& val) 
+        unsigned char operator()( const unsigned short& val)
         {
             return static_cast<unsigned char>( val);
         }
@@ -129,12 +126,12 @@ namespace
 
     //! Data converter from unsigned char / unsigned byte to unsigned float
     template<>
-    struct ConverterToUByte<float> 
+    struct ConverterToUByte<float>
     {
         //! Conversion operator
         //! @return converted value
         //! @param  val  value to convert
-        unsigned char operator()( const float& val) 
+        unsigned char operator()( const float& val)
         {
             return static_cast<unsigned char>( val * 255.0f);
         }
@@ -145,7 +142,7 @@ namespace
 
     //////////////////////////////////////////////////////////////////////////////
     //! Load PGM or PPM file
-    //! @note if data == NULL then the necessary memory is allocated in the 
+    //! @note if data == NULL then the necessary memory is allocated in the
     //!       function and w and h are initialized to the size of the image
     //! @return CUTTrue if the file loading succeeded, otherwise false
     //! @param file        name of the file to load
@@ -155,11 +152,11 @@ namespace
     //! @param channels number of channels in image
     //////////////////////////////////////////////////////////////////////////////
     CUTBoolean
-    loadPPM( const char* file, unsigned char** data, 
-             unsigned int *w, unsigned int *h, unsigned int *channels ) 
+    loadPPM( const char* file, unsigned char** data,
+             unsigned int *w, unsigned int *h, unsigned int *channels )
     {
         FILE *fp = NULL;
-        if(NULL == (fp = fopen(file, "rb"))) 
+        if(NULL == (fp = fopen(file, "rb")))
         {
             std::cerr << "cutLoadPPM() : Failed to open file: " << file << std::endl;
             return CUTFalse;
@@ -187,36 +184,36 @@ namespace
         unsigned int height = 0;
         unsigned int maxval = 0;
         unsigned int i = 0;
-        while(i < 3) 
+        while(i < 3)
         {
             string = fgets(header, PGMHeaderSize, fp);
-            if(header[0] == '#') 
+            if(header[0] == '#')
                 continue;
 
-            if(i == 0) 
+            if(i == 0)
             {
                 i += sscanf( header, "%u %u %u", &width, &height, &maxval);
             }
-            else if (i == 1) 
+            else if (i == 1)
             {
                 i += sscanf( header, "%u %u", &height, &maxval);
             }
-            else if (i == 2) 
+            else if (i == 2)
             {
                 i += sscanf(header, "%u", &maxval);
             }
         }
 
         // check if given handle for the data is initialized
-        if( NULL != *data) 
+        if( NULL != *data)
         {
-            if (*w != width || *h != height) 
+            if (*w != width || *h != height)
             {
                 std::cerr << "cutLoadPPM() : Invalid image dimensions." << std::endl;
                 return CUTFalse;
             }
-        } 
-        else 
+        }
+        else
         {
             *data = (unsigned char*) malloc( sizeof( unsigned char) * width * height * *channels);
             *w = width;
@@ -241,11 +238,11 @@ namespace
     //////////////////////////////////////////////////////////////////////////////
     template<class T>
     CUTBoolean
-    loadPGMt( const char* file, T** data, unsigned int *w, unsigned int *h) 
+    loadPGMt( const char* file, T** data, unsigned int *w, unsigned int *h)
     {
         unsigned char* idata = NULL;
         unsigned int channels;
-        if( CUTTrue != loadPPM(file, &idata, w, h, &channels)) 
+        if( CUTTrue != loadPPM(file, &idata, w, h, &channels))
         {
             return CUTFalse;
         }
@@ -254,7 +251,7 @@ namespace
 
         // initialize mem if necessary
         // the correct size is checked / set in loadPGMc()
-        if( NULL == *data) 
+        if( NULL == *data)
         {
             *data = (T*) malloc( sizeof(T) * size);
         }
@@ -274,17 +271,17 @@ namespace
     //! @param data  handle to the data read
     //! @param w     width of the image
     //! @param h     height of the image
-    //////////////////////////////////////////////////////////////////////////////  
+    //////////////////////////////////////////////////////////////////////////////
     CUTBoolean
-    savePPM( const char* file, unsigned char *data, 
-             unsigned int w, unsigned int h, unsigned int channels) 
+    savePPM( const char* file, unsigned char *data,
+             unsigned int w, unsigned int h, unsigned int channels)
     {
         CUT_CONDITION( NULL != data);
         CUT_CONDITION( w > 0);
         CUT_CONDITION( h > 0);
 
         std::fstream fh( file, std::fstream::out | std::fstream::binary );
-        if( fh.bad()) 
+        if( fh.bad())
         {
             std::cerr << "savePPM() : Opening file failed." << std::endl;
             return CUTFalse;
@@ -304,17 +301,17 @@ namespace
 
         fh << w << "\n" << h << "\n" << 0xff << std::endl;
 
-        for( unsigned int i = 0; (i < (w*h*channels)) && fh.good(); ++i) 
+        for( unsigned int i = 0; (i < (w*h*channels)) && fh.good(); ++i)
         {
             fh << data[i];
         }
         fh.flush();
 
-        if( fh.bad()) 
+        if( fh.bad())
         {
             std::cerr << "savePPM() : Writing data failed." << std::endl;
             return CUTFalse;
-        } 
+        }
         fh.close();
 
         return CUTTrue;
@@ -330,10 +327,10 @@ namespace
     //////////////////////////////////////////////////////////////////////////////
     template<class T>
     CUTBoolean
-    savePGMt( const char* file, T *data, unsigned int w, unsigned int h) 
+    savePGMt( const char* file, T *data, unsigned int w, unsigned int h)
     {
         unsigned int size = w * h;
-        unsigned char* idata = 
+        unsigned char* idata =
           (unsigned char*) malloc( sizeof(unsigned char) * size);
 
         std::transform( data, data + size, idata, ConverterToUByte<T>());
@@ -357,7 +354,7 @@ namespace
     //////////////////////////////////////////////////////////////////////////////
     template<class T>
     CUTBoolean
-    savePPMt( const char* file, T *data, unsigned int w, unsigned int h) 
+    savePPMt( const char* file, T *data, unsigned int w, unsigned int h)
     {
         unsigned int size = w * h * 3;
         unsigned char* idata = (unsigned char*) malloc( sizeof(unsigned char) * size);
@@ -373,8 +370,8 @@ namespace
         return result;
     }
 
-    ////////////////////////////////////////////////////////////////////////////// 
-    //! Compare two arrays of arbitrary type       
+    //////////////////////////////////////////////////////////////////////////////
+    //! Compare two arrays of arbitrary type
     //! @return  true if \a reference and \a data are identical, otherwise false
     //! @param reference  handle to the reference data / gold image
     //! @param data       handle to the computed data
@@ -382,9 +379,9 @@ namespace
     //! @param epsilon    epsilon to use for the comparison
     //////////////////////////////////////////////////////////////////////////////
     template<class T, class S>
-    CUTBoolean  
-    compareData( const T* reference, const T* data, const unsigned int len, 
-                 const S epsilon, const float threshold) 
+    CUTBoolean
+    compareData( const T* reference, const T* data, const unsigned int len,
+                 const S epsilon, const float threshold)
     {
         CUT_CONDITION( epsilon >= 0);
 
@@ -400,11 +397,11 @@ namespace
             error_count += !comp;
 
 #ifdef _DEBUG
-            if( ! comp) 
+            if( ! comp)
             {
-                std::cerr << "ERROR, i = " << i << ",\t " 
+                std::cerr << "ERROR, i = " << i << ",\t "
                     << reference[i] << " / "
-                    << data[i] 
+                    << data[i]
                     << " (reference / data)\n";
             }
 #endif
@@ -421,8 +418,8 @@ namespace
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////// 
-    //! Compare two arrays of arbitrary type       
+    //////////////////////////////////////////////////////////////////////////////
+    //! Compare two arrays of arbitrary type
     //! @return  true if \a reference and \a data are identical, otherwise false
     //! @param reference  handle to the reference data / gold image
     //! @param data       handle to the computed data
@@ -430,9 +427,9 @@ namespace
     //! @param epsilon    epsilon to use for the comparison
     //////////////////////////////////////////////////////////////////////////////
     template<class T, class S>
-    CUTBoolean  
-    compareDataAsFloat( const T* reference, const T* data, const unsigned int len, 
-                        const S epsilon) 
+    CUTBoolean
+    compareDataAsFloat( const T* reference, const T* data, const unsigned int len,
+                        const S epsilon)
     {
         CUT_CONDITION( epsilon >= 0);
 
@@ -446,7 +443,7 @@ namespace
             bool comp = (diff < max_error);
             result &= comp;
 
-            if( ! comp) 
+            if( ! comp)
             {
                 error_count++;
 #ifdef _DEBUG
@@ -462,8 +459,8 @@ namespace
         return (error_count == 0) ? CUTTrue : CUTFalse;
     }
 
-    ////////////////////////////////////////////////////////////////////////////// 
-    //! Compare two arrays of arbitrary type       
+    //////////////////////////////////////////////////////////////////////////////
+    //! Compare two arrays of arbitrary type
     //! @return  true if \a reference and \a data are identical, otherwise false
     //! @param reference  handle to the reference data / gold image
     //! @param data       handle to the computed data
@@ -472,9 +469,9 @@ namespace
     //! @param epsilon    threshold % of (# of bytes) for pass/fail
     //////////////////////////////////////////////////////////////////////////////
     template<class T, class S>
-    CUTBoolean  
-    compareDataAsFloatThreshold( const T* reference, const T* data, const unsigned int len, 
-                        const S epsilon, const float threshold) 
+    CUTBoolean
+    compareDataAsFloatThreshold( const T* reference, const T* data, const unsigned int len,
+                        const S epsilon, const float threshold)
     {
         CUT_CONDITION( epsilon >= 0);
 
@@ -488,7 +485,7 @@ namespace
             bool comp = (diff < max_error);
             result &= comp;
 
-            if( ! comp) 
+            if( ! comp)
             {
                 error_count++;
 #ifdef _DEBUG
@@ -524,7 +521,7 @@ namespace
     //////////////////////////////////////////////////////////////////////////////
     template<class T>
     CUTBoolean
-    cutReadFile( const char* filename, T** data, unsigned int* len, bool verbose) 
+    cutReadFile( const char* filename, T** data, unsigned int* len, bool verbose)
     {
         // check input arguments
         CUT_CONDITION( NULL != filename);
@@ -536,18 +533,18 @@ namespace
         // open file for reading
         std::fstream fh( filename, std::fstream::in);
         // check if filestream is valid
-        if( ! fh.good()) 
+        if( ! fh.good())
         {
             if (verbose)
                 std::cerr << "cutReadFile() : Opening file failed." << std::endl;
             return CUTFalse;
         }
 
-        // read all data elements 
+        // read all data elements
         T token;
-        while( fh.good()) 
+        while( fh.good())
         {
-            fh >> token;   
+            fh >> token;
             data_read.push_back( token);
         }
 
@@ -555,19 +552,19 @@ namespace
         data_read.pop_back();
 
         // check if reading result is consistent
-        if( ! fh.eof()) 
+        if( ! fh.eof())
         {
             if (verbose)
-                std::cerr << "WARNING : readData() : reading file might have failed." 
+                std::cerr << "WARNING : readData() : reading file might have failed."
                 << std::endl;
         }
 
         fh.close();
 
         // check if the given handle is already initialized
-        if( NULL != *data) 
+        if( NULL != *data)
         {
-            if( *len != data_read.size()) 
+            if( *len != data_read.size())
             {
                 std::cerr << "cutReadFile() : Initialized memory given but "
                           << "size  mismatch with signal read "
@@ -577,7 +574,7 @@ namespace
                 return CUTFalse;
             }
         }
-        else 
+        else
         {
             // allocate storage for the data read
 			*data = (T*) malloc( sizeof(T) * data_read.size());
@@ -592,7 +589,7 @@ namespace
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    //! Write a data file \filename 
+    //! Write a data file \filename
     //! @return CUTTrue if writing the file succeeded, otherwise CUTFalse
     //! @param filename name of the source file
     //! @param data  data to write
@@ -602,7 +599,7 @@ namespace
     template<class T>
     CUTBoolean
     cutWriteFile( const char* filename, const T* data, unsigned int len,
-                  const T epsilon, bool verbose) 
+                  const T epsilon, bool verbose)
     {
         CUT_CONDITION( NULL != filename);
         CUT_CONDITION( NULL != data);
@@ -610,7 +607,7 @@ namespace
         // open file for writing
         std::fstream fh( filename, std::fstream::out);
         // check if filestream is valid
-        if( ! fh.good()) 
+        if( ! fh.good())
         {
             if (verbose)
                 std::cerr << "cutWriteFile() : Opening file failed." << std::endl;
@@ -621,13 +618,13 @@ namespace
         fh << "# " << epsilon << "\n";
 
         // write data
-        for( unsigned int i = 0; (i < len) && (fh.good()); ++i) 
+        for( unsigned int i = 0; (i < len) && (fh.good()); ++i)
         {
             fh << data[i] << ' ';
         }
 
         // Check if writing succeeded
-        if( ! fh.good()) 
+        if( ! fh.good())
         {
             if (verbose)
                 std::cerr << "cutWriteFile() : Writing file failed." << std::endl;
@@ -645,7 +642,7 @@ namespace
 
 //////////////////////////////////////////////////////////////////////////////
 //! Deallocate memory allocated within Cutil
-//! @param  pointer to memory 
+//! @param  pointer to memory
 //////////////////////////////////////////////////////////////////////////////
 void CUTIL_API
 cutFree( void* ptr) {
@@ -661,7 +658,7 @@ cutFree( void* ptr) {
 //! @param executable_path  optional absolute path of the executable
 //////////////////////////////////////////////////////////////////////////////
 char* CUTIL_API
-cutFindFilePath(const char* filename, const char* executable_path) 
+cutFindFilePath(const char* filename, const char* executable_path)
 {
     // search in data/
     if (filename == 0)
@@ -669,7 +666,7 @@ cutFindFilePath(const char* filename, const char* executable_path)
     size_t filename_len = strlen(filename);
     const char data_folder[] = "data/";
     size_t data_folder_len = strlen(data_folder);
-    char* file_path = 
+    char* file_path =
       (char*) malloc( sizeof(char) * (data_folder_len + filename_len + 1));
     strcpy(file_path, data_folder);
     strcat(file_path, filename);
@@ -685,7 +682,7 @@ cutFindFilePath(const char* filename, const char* executable_path)
         return 0;
     size_t executable_path_len = strlen(executable_path);
     const char* exe;
-    for (exe = executable_path + executable_path_len - 1; 
+    for (exe = executable_path + executable_path_len - 1;
          exe >= executable_path; --exe)
         if (*exe == '/' || *exe == '\\')
             break;
@@ -697,7 +694,7 @@ cutFindFilePath(const char* filename, const char* executable_path)
     size_t executable_dir_len = executable_path_len - executable_len;
     const char projects_relative_path[] = "../../../src/";
     size_t projects_relative_path_len = strlen(projects_relative_path);
-    file_path = 
+    file_path =
       (char*) malloc( sizeof(char) * (executable_path_len +
          projects_relative_path_len + 1 + data_folder_len + filename_len + 1));
     strncpy(file_path, executable_path, executable_dir_len);
@@ -728,7 +725,7 @@ cutFindFilePath(const char* filename, const char* executable_path)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//! Read file \filename containg single precision floating point data 
+//! Read file \filename containg single precision floating point data
 //! @return CUTTrue if reading the file succeeded, otherwise false
 //! @param filename name of the source file
 //! @param data  uninitialized pointer, returned initialized and pointing to
@@ -736,13 +733,13 @@ cutFindFilePath(const char* filename, const char* executable_path)
 //! @param len  number of data elements in data, -1 on error
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutReadFilef( const char* filename, float** data, unsigned int* len, bool verbose) 
+cutReadFilef( const char* filename, float** data, unsigned int* len, bool verbose)
 {
     return cutReadFile( filename, data, len, verbose);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//! Read file \filename containg double precision floating point data 
+//! Read file \filename containg double precision floating point data
 //! @return CUTTrue if reading the file succeeded, otherwise false
 //! @param filename name of the source file
 //! @param data  uninitialized pointer, returned initialized and pointing to
@@ -750,13 +747,13 @@ cutReadFilef( const char* filename, float** data, unsigned int* len, bool verbos
 //! @param len  number of data elements in data, -1 on error
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutReadFiled( const char* filename, double** data, unsigned int* len, bool verbose) 
+cutReadFiled( const char* filename, double** data, unsigned int* len, bool verbose)
 {
     return cutReadFile( filename, data, len, verbose);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//! Read file \filename containg integer data 
+//! Read file \filename containg integer data
 //! @return CUTTrue if reading the file succeeded, otherwise false
 //! @param filename name of the source file
 //! @param data  uninitialized pointer, returned initialized and pointing to
@@ -764,13 +761,13 @@ cutReadFiled( const char* filename, double** data, unsigned int* len, bool verbo
 //! @param len  number of data elements in data, -1 on error
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutReadFilei( const char* filename, int** data, unsigned int* len, bool verbose) 
+cutReadFilei( const char* filename, int** data, unsigned int* len, bool verbose)
 {
     return cutReadFile( filename, data, len, verbose);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//! Read file \filename containg unsigned integer data 
+//! Read file \filename containg unsigned integer data
 //! @return CUTTrue if reading the file succeeded, otherwise false
 //! @param filename name of the source file
 //! @param data  uninitialized pointer, returned initialized and pointing to
@@ -778,14 +775,14 @@ cutReadFilei( const char* filename, int** data, unsigned int* len, bool verbose)
 //! @param len  number of data elements in data, -1 on error
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutReadFileui( const char* filename, unsigned int** data, unsigned int* len, bool verbose) 
+cutReadFileui( const char* filename, unsigned int** data, unsigned int* len, bool verbose)
 {
     return cutReadFile( filename, data, len, verbose);
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
-//! Read file \filename containg char / byte data 
+//! Read file \filename containg char / byte data
 //! @return CUTTrue if reading the file succeeded, otherwise false
 //! @param filename name of the source file
 //! @param data  uninitialized pointer, returned initialized and pointing to
@@ -793,13 +790,13 @@ cutReadFileui( const char* filename, unsigned int** data, unsigned int* len, boo
 //! @param len  number of data elements in data, -1 on error
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutReadFileb( const char* filename, char** data, unsigned int* len, bool verbose) 
+cutReadFileb( const char* filename, char** data, unsigned int* len, bool verbose)
 {
     return cutReadFile( filename, data, len, verbose);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//! Read file \filename containg unsigned char / byte data 
+//! Read file \filename containg unsigned char / byte data
 //! @return CUTTrue if reading the file succeeded, otherwise false
 //! @param filename name of the source file
 //! @param data  uninitialized pointer, returned initialized and pointing to
@@ -807,7 +804,7 @@ cutReadFileb( const char* filename, char** data, unsigned int* len, bool verbose
 //! @param len  number of data elements in data, -1 on error
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutReadFileub( const char* filename, unsigned char** data, unsigned int* len, bool verbose) 
+cutReadFileub( const char* filename, unsigned char** data, unsigned int* len, bool verbose)
 {
     return cutReadFile( filename, data, len, verbose);
 }
@@ -822,7 +819,7 @@ cutReadFileub( const char* filename, unsigned char** data, unsigned int* len, bo
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
 cutWriteFilef( const char* filename, const float* data, unsigned int len,
-               const float epsilon, bool verbose) 
+               const float epsilon, bool verbose)
 {
     return cutWriteFile( filename, data, len, epsilon, verbose);
 }
@@ -837,7 +834,7 @@ cutWriteFilef( const char* filename, const float* data, unsigned int len,
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
 cutWriteFiled( const char* filename, const double* data, unsigned int len,
-               const double epsilon, bool verbose) 
+               const double epsilon, bool verbose)
 {
     return cutWriteFile( filename, data, len, epsilon, verbose);
 }
@@ -851,7 +848,7 @@ cutWriteFiled( const char* filename, const double* data, unsigned int len,
 //! @param epsilon  epsilon for comparison
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutWriteFilei( const char* filename, const int* data, unsigned int len, bool verbose) 
+cutWriteFilei( const char* filename, const int* data, unsigned int len, bool verbose)
 {
     return cutWriteFile( filename, data, len, 0, verbose);
 }
@@ -879,8 +876,8 @@ cutWriteFileui( const char* filename,const unsigned int* data,unsigned int len, 
 //! @param epsilon  epsilon for comparison
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutWriteFileb( const char* filename, const char* data, unsigned int len, bool verbose) 
-{  
+cutWriteFileb( const char* filename, const char* data, unsigned int len, bool verbose)
+{
     return cutWriteFile( filename, data, len, static_cast<char>(0), verbose);
 }
 
@@ -893,9 +890,9 @@ cutWriteFileb( const char* filename, const char* data, unsigned int len, bool ve
 //! @param epsilon  epsilon for comparison
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutWriteFileub( const char* filename, const unsigned char* data, 
-                unsigned int len, bool verbose) 
-{  
+cutWriteFileub( const char* filename, const unsigned char* data,
+                unsigned int len, bool verbose)
+{
     return cutWriteFile( filename, data, len, static_cast<unsigned char>(0), verbose);
 }
 
@@ -922,7 +919,7 @@ cutWriteFileb( const char* filename,const unsigned char* data,unsigned int len, 
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutLoadPGMub( const char* file, unsigned char** data, 
+cutLoadPGMub( const char* file, unsigned char** data,
               unsigned int *w,unsigned int *h)
 {
     unsigned int channels;
@@ -938,7 +935,7 @@ cutLoadPGMub( const char* file, unsigned char** data,
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutLoadPPMub( const char* file, unsigned char** data, 
+cutLoadPPMub( const char* file, unsigned char** data,
               unsigned int *w,unsigned int *h)
 {
     unsigned int channels;
@@ -954,12 +951,12 @@ cutLoadPPMub( const char* file, unsigned char** data,
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutLoadPPM4ub( const char* file, unsigned char** data, 
+cutLoadPPM4ub( const char* file, unsigned char** data,
                unsigned int *w,unsigned int *h)
 {
     unsigned char *idata = 0;
     unsigned int channels;
-    
+
     if (loadPPM( file, &idata, w, h, &channels)) {
         // pad 4th component
         int size = *w * *h;
@@ -992,8 +989,8 @@ cutLoadPPM4ub( const char* file, unsigned char** data,
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutLoadPGMi( const char* file, unsigned int** data, 
-             unsigned int *w, unsigned int *h) 
+cutLoadPGMi( const char* file, unsigned int** data,
+             unsigned int *w, unsigned int *h)
 {
     return loadPGMt( file, data, w, h);
 }
@@ -1007,8 +1004,8 @@ cutLoadPGMi( const char* file, unsigned int** data,
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutLoadPGMs( const char* file, unsigned short** data, 
-             unsigned int *w, unsigned int *h) 
+cutLoadPGMs( const char* file, unsigned short** data,
+             unsigned int *w, unsigned int *h)
 {
     return loadPGMt( file, data, w, h);
 }
@@ -1021,8 +1018,8 @@ cutLoadPGMs( const char* file, unsigned short** data,
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutLoadPGMf( const char* file, float** data, 
-             unsigned int *w, unsigned int *h) 
+cutLoadPGMf( const char* file, float** data,
+             unsigned int *w, unsigned int *h)
 {
     return loadPGMt( file, data, w, h);
 }
@@ -1035,8 +1032,8 @@ cutLoadPGMf( const char* file, float** data,
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutSavePGMub( const char* file, unsigned char *data, 
-              unsigned int w, unsigned int h) 
+cutSavePGMub( const char* file, unsigned char *data,
+              unsigned int w, unsigned int h)
 {
     return savePPM( file, data, w, h, 1);
 }
@@ -1049,8 +1046,8 @@ cutSavePGMub( const char* file, unsigned char *data,
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutSavePPMub( const char* file, unsigned char *data, 
-              unsigned int w, unsigned int h) 
+cutSavePPMub( const char* file, unsigned char *data,
+              unsigned int w, unsigned int h)
 {
     return savePPM( file, data, w, h, 3);
 }
@@ -1063,8 +1060,8 @@ cutSavePPMub( const char* file, unsigned char *data,
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutSavePPM4ub( const char* file, unsigned char *data, 
-               unsigned int w, unsigned int h) 
+cutSavePPM4ub( const char* file, unsigned char *data,
+               unsigned int w, unsigned int h)
 {
     // strip 4th component
     int size = w * h;
@@ -1076,7 +1073,7 @@ cutSavePPM4ub( const char* file, unsigned char *data,
         *ptr++ = *data++;
         data++;
     }
-    
+
     CUTBoolean succ = savePPM(file, ndata, w, h, 3);
     free(ndata);
     return succ;
@@ -1090,8 +1087,8 @@ cutSavePPM4ub( const char* file, unsigned char *data,
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutSavePGMi( const char* file, unsigned int *data, 
-             unsigned int w, unsigned int h) 
+cutSavePGMi( const char* file, unsigned int *data,
+             unsigned int w, unsigned int h)
 {
     return savePGMt( file, data, w, h);
 }
@@ -1104,8 +1101,8 @@ cutSavePGMi( const char* file, unsigned int *data,
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutSavePGMs( const char* file, unsigned short *data, 
-             unsigned int w, unsigned int h) 
+cutSavePGMs( const char* file, unsigned short *data,
+             unsigned int w, unsigned int h)
 {
     return savePGMt( file, data, w, h);
 }
@@ -1118,8 +1115,8 @@ cutSavePGMs( const char* file, unsigned short *data,
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutSavePGMf( const char* file, float *data, 
-             unsigned int w, unsigned int h) 
+cutSavePGMf( const char* file, float *data,
+             unsigned int w, unsigned int h)
 {
     return savePGMt( file, data, w, h);
 }
@@ -1132,25 +1129,25 @@ cutSavePGMf( const char* file, float *data,
 //! @param flag_name  name of command line flag
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutCheckCmdLineFlag( const int argc, const char** argv, const char* flag_name) 
+cutCheckCmdLineFlag( const int argc, const char** argv, const char* flag_name)
 {
     CUTBoolean ret_val = CUTFalse;
 
-    try 
+    try
     {
-        // initalize 
+        // initalize
         CmdArgReader::init( argc, argv);
 
         // check if the command line argument exists
-        if( CmdArgReader::existArg( flag_name)) 
+        if( CmdArgReader::existArg( flag_name))
         {
             ret_val = CUTTrue;
         }
     }
-    catch( const std::exception& /*ex*/) 
-    {    
+    catch( const std::exception& /*ex*/)
+    {
         std::cerr << "Error when parsing command line argument string." << std::endl;
-    } 
+    }
 
     return ret_val;
 }
@@ -1165,33 +1162,33 @@ cutCheckCmdLineFlag( const int argc, const char** argv, const char* flag_name)
 //! @param val  value of the command line argument
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutGetCmdLineArgumenti( const int argc, const char** argv, 
-                        const char* arg_name, int* val) 
+cutGetCmdLineArgumenti( const int argc, const char** argv,
+                        const char* arg_name, int* val)
 {
     CUTBoolean ret_val = CUTFalse;
 
-    try 
+    try
     {
         // initialize
         CmdArgReader::init( argc, argv);
 
         // access argument
         const int* v = CmdArgReader::getArg<int>( arg_name);
-        if( NULL != v) 
+        if( NULL != v)
         {
             // assign value
             *val = *v;
             ret_val = CUTTrue;
-        }		
+        }
 		else {
 			// fail safe
 			val = NULL;
 		}
     }
-    catch( const std::exception& /*ex*/) 
-    {    
+    catch( const std::exception& /*ex*/)
+    {
         std::cerr << "Error when parsing command line argument string." << std::endl;
-    } 
+    }
 
     return ret_val;
 }
@@ -1206,19 +1203,19 @@ cutGetCmdLineArgumenti( const int argc, const char** argv,
 //! @param val  value of the command line argument
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutGetCmdLineArgumentf( const int argc, const char** argv, 
-                       const char* arg_name, float* val) 
+cutGetCmdLineArgumentf( const int argc, const char** argv,
+                       const char* arg_name, float* val)
 {
     CUTBoolean ret_val = CUTFalse;
 
-    try 
+    try
     {
         // initialize
         CmdArgReader::init( argc, argv);
 
         // access argument
         const float* v = CmdArgReader::getArg<float>( arg_name);
-        if( NULL != v) 
+        if( NULL != v)
         {
             // assign value
             *val = *v;
@@ -1229,10 +1226,10 @@ cutGetCmdLineArgumentf( const int argc, const char** argv,
 			val = NULL;
 		}
     }
-    catch( const std::exception& /*ex*/) 
-    {    
+    catch( const std::exception& /*ex*/)
+    {
         std::cerr << "Error when parsing command line argument string." << std::endl;
-    } 
+    }
 
     return ret_val;
 }
@@ -1247,19 +1244,19 @@ cutGetCmdLineArgumentf( const int argc, const char** argv,
 //! @param val  value of the command line argument
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutGetCmdLineArgumentstr( const int argc, const char** argv, 
-                         const char* arg_name, char** val) 
+cutGetCmdLineArgumentstr( const int argc, const char** argv,
+                         const char* arg_name, char** val)
 {
     CUTBoolean ret_val = CUTFalse;
 
-    try 
+    try
     {
         // initialize
         CmdArgReader::init( argc, argv);
 
         // access argument
         const std::string* v = CmdArgReader::getArg<std::string>( arg_name);
-        if( NULL != v) 
+        if( NULL != v)
         {
 
             // allocate memory for the string
@@ -1267,17 +1264,17 @@ cutGetCmdLineArgumentstr( const int argc, const char** argv,
             // copy from string to c_str
             strcpy( *val, v->c_str());
             ret_val = CUTTrue;
-        }		
+        }
 		else {
 			// fail safe
 			*val = NULL;
 		}
     }
-    catch( const std::exception& /*ex*/) 
-    {    
-        std::cerr << "Error when parsing command line argument string."<< 
+    catch( const std::exception& /*ex*/)
+    {
+        std::cerr << "Error when parsing command line argument string."<<
         std::endl;
-    } 
+    }
 
     return ret_val;
 
@@ -1291,16 +1288,16 @@ cutGetCmdLineArgumentstr( const int argc, const char** argv,
 //! @param line  __LINE__ macro
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutCheckCondition( int val, const char* file, const int line) 
+cutCheckCondition( int val, const char* file, const int line)
 {
     CUTBoolean ret_val = CUTTrue;
 
-    try 
+    try
     {
         // check for error
         ErrorChecker::condition( (0 == val) ? false : true, file, line);
     }
-    catch( const std::exception& ex) 
+    catch( const std::exception& ex)
     {
         // print where the exception occured
         std::cerr << ex.what() << std::endl;
@@ -1312,7 +1309,7 @@ cutCheckCondition( int val, const char* file, const int line)
 
 ////////////////////////////////////////////////////////////////////////////////
 //! Compare two float arrays
-//! @return  CUTTrue if \a reference and \a data are identical, 
+//! @return  CUTTrue if \a reference and \a data are identical,
 //!          otherwise CUTFalse
 //! @param reference  handle to the reference data / gold image
 //! @param data       handle to the computed data
@@ -1320,7 +1317,7 @@ cutCheckCondition( int val, const char* file, const int line)
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
 cutComparef( const float* reference, const float* data,
-            const unsigned int len ) 
+            const unsigned int len )
 {
     const float epsilon = 0.0;
     return compareData( reference, data, len, epsilon, 0.0f );
@@ -1328,7 +1325,7 @@ cutComparef( const float* reference, const float* data,
 
 ////////////////////////////////////////////////////////////////////////////////
 //! Compare two integer arrays
-//! @return  CUTTrue if \a reference and \a data are identical, 
+//! @return  CUTTrue if \a reference and \a data are identical,
 //!          otherwise CUTFalse
 //! @param reference  handle to the reference data / gold image
 //! @param data       handle to the computed data
@@ -1336,7 +1333,7 @@ cutComparef( const float* reference, const float* data,
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
 cutComparei( const int* reference, const int* data,
-            const unsigned int len ) 
+            const unsigned int len )
 {
     const int epsilon = 0;
     return compareData( reference, data, len, epsilon, 0.0f);
@@ -1344,7 +1341,7 @@ cutComparei( const int* reference, const int* data,
 
 ////////////////////////////////////////////////////////////////////////////////
 //! Compare two unsigned integer arrays, with epsilon and threshold
-//! @return  CUTTrue if \a reference and \a data are identical, 
+//! @return  CUTTrue if \a reference and \a data are identical,
 //!          otherwise CUTFalse
 //! @param reference  handle to the reference data / gold image
 //! @param data       handle to the computed data
@@ -1360,7 +1357,7 @@ cutCompareuit( const unsigned int* reference, const unsigned int* data,
 
 ////////////////////////////////////////////////////////////////////////////////
 //! Compare two integer arrays
-//! @return  CUTTrue if \a reference and \a data are identical, 
+//! @return  CUTTrue if \a reference and \a data are identical,
 //!          otherwise CUTFalse
 //! @param reference  handle to the reference data / gold image
 //! @param data       handle to the computed data
@@ -1368,7 +1365,7 @@ cutCompareuit( const unsigned int* reference, const unsigned int* data,
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
 cutCompareub( const unsigned char* reference, const unsigned char* data,
-             const unsigned int len ) 
+             const unsigned int len )
 {
     const int epsilon = 0;
     return compareData( reference, data, len, epsilon, 0.0f);
@@ -1376,7 +1373,7 @@ cutCompareub( const unsigned char* reference, const unsigned char* data,
 
 ////////////////////////////////////////////////////////////////////////////////
 //! Compare two integer arrays (inc Threshold for # of pixel we can have errors)
-//! @return  CUTTrue if \a reference and \a data are identical, 
+//! @return  CUTTrue if \a reference and \a data are identical,
 //!          otherwise CUTFalse
 //! @param reference  handle to the reference data / gold image
 //! @param data       handle to the computed data
@@ -1384,14 +1381,14 @@ cutCompareub( const unsigned char* reference, const unsigned char* data,
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
 cutCompareubt( const unsigned char* reference, const unsigned char* data,
-             const unsigned int len, const float epsilon, const float threshold ) 
+             const unsigned int len, const float epsilon, const float threshold )
 {
     return compareDataAsFloatThreshold( reference, data, len, epsilon, threshold );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 //! Compare two integer arrays
-//! @return  CUTTrue if \a reference and \a data are identical, 
+//! @return  CUTTrue if \a reference and \a data are identical,
 //!          otherwise CUTFalse
 //! @param reference  handle to the reference data / gold image
 //! @param data       handle to the computed data
@@ -1399,14 +1396,14 @@ cutCompareubt( const unsigned char* reference, const unsigned char* data,
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
 cutCompareube( const unsigned char* reference, const unsigned char* data,
-             const unsigned int len, const float epsilon ) 
+             const unsigned int len, const float epsilon )
 {
     return compareDataAsFloat( reference, data, len, epsilon );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 //! Compare two float arrays with an epsilon tolerance for equality
-//! @return  CUTTrue if \a reference and \a data are identical, 
+//! @return  CUTTrue if \a reference and \a data are identical,
 //!          otherwise CUTFalse
 //! @param reference  handle to the reference data / gold image
 //! @param data       handle to the computed data
@@ -1415,15 +1412,15 @@ cutCompareube( const unsigned char* reference, const unsigned char* data,
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
 cutComparefe( const float* reference, const float* data,
-             const unsigned int len, const float epsilon ) 
+             const unsigned int len, const float epsilon )
 {
     return compareData( reference, data, len, epsilon, 0.0f);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//! Compare two float arrays with an epsilon tolerance for equality and a 
+//! Compare two float arrays with an epsilon tolerance for equality and a
 //!     threshold for # pixel errors
-//! @return  CUTTrue if \a reference and \a data are identical, 
+//! @return  CUTTrue if \a reference and \a data are identical,
 //!          otherwise CUTFalse
 //! @param reference  handle to the reference data / gold image
 //! @param data       handle to the computed data
@@ -1432,7 +1429,7 @@ cutComparefe( const float* reference, const float* data,
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
 cutComparefet( const float* reference, const float* data,
-             const unsigned int len, const float epsilon, const float threshold ) 
+             const unsigned int len, const float epsilon, const float threshold )
 {
     return compareDataAsFloatThreshold( reference, data, len, epsilon, threshold );
 }
@@ -1440,7 +1437,7 @@ cutComparefet( const float* reference, const float* data,
 
 ////////////////////////////////////////////////////////////////////////////////
 //! Compare two float arrays using L2-norm with an epsilon tolerance for equality
-//! @return  CUTTrue if \a reference and \a data are identical, 
+//! @return  CUTTrue if \a reference and \a data are identical,
 //!          otherwise CUTFalse
 //! @param reference  handle to the reference data / gold image
 //! @param data       handle to the computed data
@@ -1449,7 +1446,7 @@ cutComparefet( const float* reference, const float* data,
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
 cutCompareL2fe( const float* reference, const float* data,
-                const unsigned int len, const float epsilon ) 
+                const unsigned int len, const float epsilon )
 {
     CUT_CONDITION( epsilon >= 0);
 
@@ -1474,9 +1471,9 @@ cutCompareL2fe( const float* reference, const float* data,
     error = normError / normRef;
     bool result = error < epsilon;
 #ifdef _DEBUG
-    if( ! result) 
+    if( ! result)
     {
-        std::cerr << "ERROR, l2-norm error " 
+        std::cerr << "ERROR, l2-norm error "
             << error << " is greater than epsilon " << epsilon << "\n";
     }
 #endif
@@ -1486,7 +1483,7 @@ cutCompareL2fe( const float* reference, const float* data,
 
 ////////////////////////////////////////////////////////////////////////////////
 //! Compare two PPM image files with an epsilon tolerance for equality
-//! @return  CUTTrue if \a reference and \a data are identical, 
+//! @return  CUTTrue if \a reference and \a data are identical,
 //!          otherwise CUTFalse
 //! @param src_file   filename for the image to be compared
 //! @param data       filename for the reference data / gold image
@@ -1497,7 +1494,7 @@ cutCompareL2fe( const float* reference, const float* data,
 
 DLL_MAPPING
 CUTBoolean CUTIL_API
-cutComparePPM( const char *src_file, const char *ref_file, 
+cutComparePPM( const char *src_file, const char *ref_file,
 			  const float epsilon, const float threshold, bool verboseErrors )
 {
 	unsigned char *src_data, *ref_data;
@@ -1515,13 +1512,13 @@ cutComparePPM( const char *src_file, const char *ref_file,
         std::cerr << ">         (b)reference: <" << ref_file << ">\n";
     }
 
-	if (cutLoadPPM4ub(ref_file, &ref_data, &ref_width, &ref_height) != CUTTrue) 
+	if (cutLoadPPM4ub(ref_file, &ref_data, &ref_width, &ref_height) != CUTTrue)
 	{
 		if(verboseErrors) std::cerr << "PPMvsPPM: unable to load ref image file: "<< ref_file << "\n";
 		return CUTFalse;
 	}
 
-	if (cutLoadPPM4ub(src_file, &src_data, &src_width, &src_height) != CUTTrue) 
+	if (cutLoadPPM4ub(src_file, &src_data, &src_width, &src_height) != CUTTrue)
 	{
 		std::cerr << "PPMvsPPM: unable to load src image file: " << src_file << "\n";
 		return CUTFalse;
@@ -1529,7 +1526,7 @@ cutComparePPM( const char *src_file, const char *ref_file,
 
 	if(src_height != ref_height || src_width != ref_width)
 	{
-		if(verboseErrors) std::cerr << "PPMvsPPM: source and ref size mismatch (" << src_width << 
+		if(verboseErrors) std::cerr << "PPMvsPPM: source and ref size mismatch (" << src_width <<
 			"," << src_height << ")vs(" << ref_width << "," << ref_height << ")\n";
 
 //        src_height = min(src_height, ref_height);
@@ -1537,18 +1534,18 @@ cutComparePPM( const char *src_file, const char *ref_file,
 //		return CUTFalse;
 	}
 
-	if(verboseErrors) std::cerr << "PPMvsPPM: comparing images size (" << src_width << 
+	if(verboseErrors) std::cerr << "PPMvsPPM: comparing images size (" << src_width <<
 		"," << src_height << ") epsilon(" << epsilon << "), threshold(" << threshold*100 << "%)\n";
-//	if (cutCompareube( ref_data, src_data, src_width*src_height*4, epsilon ) == CUTFalse) 
-	if (cutCompareubt( ref_data, src_data, src_width*src_height*4, epsilon, threshold ) == CUTFalse) 
+//	if (cutCompareube( ref_data, src_data, src_width*src_height*4, epsilon ) == CUTFalse)
+	if (cutCompareubt( ref_data, src_data, src_width*src_height*4, epsilon, threshold ) == CUTFalse)
 	{
 		error_count=1;
 	}
 
-	if (error_count == 0) 
-	{ 
-		if(verboseErrors) std::cerr << "    OK\n\n"; 
-	} else 
+	if (error_count == 0)
+	{
+		if(verboseErrors) std::cerr << "    OK\n\n";
+	} else
 	{
 		if(verboseErrors) std::cerr << "    FAILURE!  "<<error_count<<" errors...\n\n";
 	}
@@ -1564,7 +1561,7 @@ cutComparePPM( const char *src_file, const char *ref_file,
 //! @param  name of the new timer, 0 if the creation failed
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutCreateTimer( unsigned int* name) 
+cutCreateTimer( unsigned int* name)
 {
     *name = StopWatch::create();
 
@@ -1578,15 +1575,15 @@ cutCreateTimer( unsigned int* name)
 //! @param  name of the timer to delete
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutDeleteTimer( unsigned int name) 
+cutDeleteTimer( unsigned int name)
 {
     CUTBoolean retval = CUTTrue;
 
-    try 
+    try
     {
         StopWatch::destroy( name);
     }
-    catch( const std::exception& ex) 
+    catch( const std::exception& ex)
     {
         std::cerr << "WARNING: " << ex.what() << std::endl;
         retval = CUTFalse;
@@ -1600,16 +1597,16 @@ cutDeleteTimer( unsigned int name)
 //! @param name  name of the timer to start
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutStartTimer( const unsigned int name) 
+cutStartTimer( const unsigned int name)
 {
     CUTBoolean retval = CUTTrue;
 
 #ifdef _DEBUG
-    try 
+    try
     {
         StopWatch::get( name).start();
     }
-    catch( const std::exception& ex) 
+    catch( const std::exception& ex)
     {
         std::cerr << "WARNING: " << ex.what() << std::endl;
         retval = CUTFalse;
@@ -1626,16 +1623,16 @@ cutStartTimer( const unsigned int name)
 //! @param name  name of the timer to stop
 ////////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutStopTimer( const unsigned int name) 
+cutStopTimer( const unsigned int name)
 {
     CUTBoolean retval = CUTTrue;
 
 #ifdef _DEBUG
-    try 
+    try
     {
         StopWatch::get( name).stop();
     }
-    catch( const std::exception& ex) 
+    catch( const std::exception& ex)
     {
         std::cerr << "WARNING: " << ex.what() << std::endl;
         retval = CUTFalse;
@@ -1657,11 +1654,11 @@ cutResetTimer( const unsigned int name)
     CUTBoolean retval = CUTTrue;
 
 #ifdef _DEBUG
-    try 
+    try
     {
         StopWatch::get( name).reset();
     }
-    catch( const std::exception& ex) 
+    catch( const std::exception& ex)
     {
         std::cerr << "WARNING: " << ex.what() << std::endl;
         retval = CUTFalse;
@@ -1675,7 +1672,7 @@ cutResetTimer( const unsigned int name)
 
 ////////////////////////////////////////////////////////////////////////////////
 //! Return the average time for timer execution as the total time
-//! for the timer dividied by the number of completed (stopped) runs the timer 
+//! for the timer dividied by the number of completed (stopped) runs the timer
 //! has made.
 //! Excludes the current running time if the timer is currently running.
 //! @param name  name of the timer to return the time of
@@ -1686,11 +1683,11 @@ cutGetAverageTimerValue( const unsigned int name)
     float time = 0.0;
 
 #ifdef _DEBUG
-    try 
+    try
     {
         time = StopWatch::get( name).getAverageTime();
     }
-    catch( const std::exception& ex) 
+    catch( const std::exception& ex)
     {
         std::cerr << "WARNING: " << ex.what() << std::endl;
     }
@@ -1707,16 +1704,16 @@ cutGetAverageTimerValue( const unsigned int name)
 //! @param name  name of the timer to obtain the value of.
 ////////////////////////////////////////////////////////////////////////////////
 float CUTIL_API
-cutGetTimerValue( const unsigned int name) 
-{  
+cutGetTimerValue( const unsigned int name)
+{
     float time = 0.0;
 
 #ifdef _DEBUG
-    try 
+    try
     {
         time = StopWatch::get( name).getTime();
     }
-    catch( const std::exception& ex) 
+    catch( const std::exception& ex)
     {
         std::cerr << "WARNING: " << ex.what() << std::endl;
     }
@@ -1736,10 +1733,9 @@ void CUTIL_API
 cutCheckBankAccess( unsigned int tidx, unsigned int tidy, unsigned int tidz,
                    unsigned int bdimx, unsigned int bdimy, unsigned int bdimz,
                    const char* file, const int line, const char* aname,
-                   const int index) 
+                   const int index)
 {
-    BankChecker::getHandle()->access( tidx, tidy, tidz, 
+    BankChecker::getHandle()->access( tidx, tidy, tidz,
                                       bdimx, bdimy, bdimz,
                                       file, line, aname, index );
 }
-
