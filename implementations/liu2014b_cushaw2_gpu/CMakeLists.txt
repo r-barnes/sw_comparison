@@ -25,32 +25,31 @@ target_link_libraries(bamreader PUBLIC ZLIB::ZLIB)
 
 
 add_executable(cushaw2-gpu
-  Aligner.cpp  
-  CigarAlign.cpp  
-  Genome.cpp  
-  MemEngine.cpp  
-  SAM.cpp  
-  Seed.cpp  
-  BWT.cpp  
-  SeqFileParser.cpp  
-  Sequence.cpp  
-  Utils.cpp  
-  Options.cu  
-  GPUMacros.cu  
-  GPUMemEngine.cu  
-  SingleEnd.cu  
-  GPUUtils.cu  
-  GPUSA.cu  
-  GPUSeeds.cu  
-  GPUSW.cu  
-  GPUBWT.cu  
-  GPUVariables.cu  
-  SuffixArray.cu  
-  main.cu  
+  Aligner.cpp
+  CigarAlign.cpp
+  Genome.cpp
+  MemEngine.cpp
+  SAM.cpp
+  Seed.cpp
+  BWT.cpp
+  SeqFileParser.cpp
+  Sequence.cpp
+  Utils.cpp
+  Options.cu
+  GPUMacros.cu
+  GPUMemEngine.cu
+  SingleEnd.cu
+  GPUUtils.cu
+  GPUSA.cu
+  GPUSeeds.cu
+  GPUSW.cu
+  GPUBWT.cu
+  SuffixArray.cu
+  main.cu
   PairedEnd.cu
 )
 target_include_directories(cushaw2-gpu PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(cushaw2-gpu PRIVATE bamreader Threads::Threads OpenMP::OpenMP_CXX)
+target_link_libraries(cushaw2-gpu PUBLIC bamreader Threads::Threads OpenMP::OpenMP_CXX)
 target_compile_definitions(cushaw2-gpu PRIVATE
   HAVE_SM_30
   COMPRESSED_INPUT
@@ -59,9 +58,8 @@ target_compile_definitions(cushaw2-gpu PRIVATE
   MAX_USER_READ_LENGTH=320
   HAVE_SSSE3
 )
-target_compile_options(cushaw2-gpu PUBLIC 
+target_compile_options(cushaw2-gpu PUBLIC
   $<$<COMPILE_LANGUAGE:CXX>:-msse4>
-  $<$<COMPILE_LANGUAGE:CUDA>:-rdc true>
 )
 set_target_properties(cushaw2-gpu PROPERTIES CXX_STANDARD 98)
 
@@ -69,6 +67,19 @@ if(DEFINED GPU_SM_ARCH)
   target_compile_options(cushaw2-gpu PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-arch ${GPU_SM_ARCH}>)
 endif()
 
+add_executable(cushaw2-index
+  cushaw2_index/bntseq.c
+  cushaw2_index/bwt.c
+  cushaw2_index/bwt_gen.c
+  cushaw2_index/bwtindex.c
+  cushaw2_index/bwtio.c
+  cushaw2_index/bwtmisc.c
+  cushaw2_index/is.c
+  cushaw2_index/main.c
+  cushaw2_index/QSufSort.c
+  cushaw2_index/utils.c
+)
+target_link_libraries(cushaw2-index PUBLIC ZLIB::ZLIB m)
 
 
 add_executable(cushaw2-gpu-wrapper
@@ -80,7 +91,7 @@ add_executable(cushaw2-gpu-wrapper
   MGPUwrapper.cu
 )
 target_include_directories(cushaw2-gpu-wrapper PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(cushaw2-gpu-wrapper PRIVATE bamreader Threads::Threads OpenMP::OpenMP_CXX)
+target_link_libraries(cushaw2-gpu-wrapper PUBLIC bamreader Threads::Threads OpenMP::OpenMP_CXX)
 target_compile_definitions(cushaw2-gpu-wrapper PRIVATE
   HAVE_SM_30
   COMPRESSED_INPUT
@@ -89,13 +100,11 @@ target_compile_definitions(cushaw2-gpu-wrapper PRIVATE
   MAX_USER_READ_LENGTH=320
   HAVE_SSSE3
 )
-target_compile_options(cushaw2-gpu-wrapper PUBLIC 
+target_compile_options(cushaw2-gpu-wrapper PUBLIC
   $<$<COMPILE_LANGUAGE:CXX>:-msse4>
-  $<$<COMPILE_LANGUAGE:CUDA>:-rdc true>
 )
 set_target_properties(cushaw2-gpu-wrapper PROPERTIES CXX_STANDARD 98)
 
 if(DEFINED GPU_SM_ARCH)
   target_compile_options(cushaw2-gpu-wrapper PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-arch ${GPU_SM_ARCH}>)
 endif()
-
