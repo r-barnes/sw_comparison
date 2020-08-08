@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.13)
 project(gasal2 LANGUAGES CUDA CXX)
 
 find_package(OpenMP REQUIRED)
+find_package(CUDA)
 
 add_library(gasal2
   src/args_parser.cpp
@@ -10,8 +11,10 @@ add_library(gasal2
   src/ctors.cpp
   src/interfaces.cpp
   src/res.cpp
-  src/gasal_align.cu 
+  src/gasal_align.cu
 )
+target_link_libraries(gasal2 PUBLIC ${CUDA_LIBRARIES})
+target_include_directories(gasal2 PUBLIC ${CUDA_INCLUDE_DIRS})
 
 set(MAX_QUERY_LEN "1024" CACHE STRING "Maximum query length")
 set(N_CODE "0x4E" CACHE STRING "Code for non-based value N")
@@ -45,7 +48,7 @@ target_include_directories(gasal2 PUBLIC src)
 
 add_executable(test_prog test_prog/test_prog.cpp)
 
-target_link_libraries(test_prog PRIVATE OpenMP::OpenMP_CXX gasal2)
+target_link_libraries(test_prog PRIVATE OpenMP::OpenMP_CXX gasal2 ${CUDA_LIBRARIES})
 
 file(COPY test_prog/run_tests.sh DESTINATION ${CMAKE_BINARY_DIR} FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE)
 
