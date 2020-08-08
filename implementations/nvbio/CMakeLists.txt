@@ -18,6 +18,8 @@ option(WERROR
   "Treat compiler warnings as errors"
   OFF)
 
+add_compile_definitions(THRUST_IGNORE_CUB_VERSION_CHECK)
+
 set(GPU_ARCHITECTURE "sm_35" CACHE STRING "Target GPU architecture")
 
 set(NVBIO_SOURCE_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
@@ -137,4 +139,3 @@ add_subdirectory(examples/mem)
 
 nvbio_module(nvbio-project)
 nvbio_doxygen()
-
