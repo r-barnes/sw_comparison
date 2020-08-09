@@ -17,9 +17,6 @@
 
 #define STREAM_BATCH_SIZE 5000//ceil((double)target_seqs.size() / (double)(2 * 2))
 
-
-#define DEBUG
-
 #define MAX(a,b) (a>b ? a : b)
 
 //#define GPU_SELECT 0

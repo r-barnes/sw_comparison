@@ -16,11 +16,16 @@ add_library(gasal2
 target_link_libraries(gasal2 PUBLIC ${CUDA_LIBRARIES})
 target_include_directories(gasal2 PUBLIC ${CUDA_INCLUDE_DIRS})
 
+option(DEBUG "Whether to print debugging messages")
 set(MAX_QUERY_LEN "1024" CACHE STRING "Maximum query length")
 set(N_CODE "0x4E" CACHE STRING "Code for non-based value N")
 
 message(STATUS "ahmed2019: MAX_QUERY_LEN=${MAX_QUERY_LEN}")
 message(STATUS "ahmed2019: N_CODE=${N_CODE}")
+
+if(DEBUG)
+  add_compile_definitions(DEBUG)
+endif()
 
 add_compile_definitions(MAX_QUERY_LEN=${MAX_QUERY_LEN})
 add_compile_definitions(N_CODE=${N_CODE})
