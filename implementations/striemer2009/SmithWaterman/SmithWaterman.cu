@@ -143,10 +143,10 @@ void runSW( int argc, char** argv){
   CUDA_SAFE_CALL(cudaMemcpy(device_DatabaseArray, host_1D_Array, (total_Characters[0] * sizeof(char)), cudaMemcpyHostToDevice));
 
   /*______________Allocate memory on host for database offset and protein lengths with no names__________________*/
-  
+
   //Allocate memory for protein offset
   int* protein_Offset = (int*) malloc(sizeof(int) * numSeq[0]);
-  
+
   //Allocate Host Memory for just protein lengths no names
   int* protein_length = (int*) malloc(sizeof(int) * numSeq[0]);
   //protein_Lengths contains lengths of protein names and corresponding sequences
@@ -175,7 +175,7 @@ void runSW( int argc, char** argv){
   /*____________________Allocate Device Memory to hold temporary calculation values______________________________*/
 
   //Allocate Device Memory to hold temporary calculation values **(The 64 is the current hard coded length for query sequence in the kernel)**
-  short int* device_temp_1;                                              
+  short int* device_temp_1;
   CUDA_SAFE_CALL(cudaMalloc((void**) &device_temp_1, (numSeq[0] * 64 * sizeof(short int)) ));
 
   //Create 1D Array of zero's to copy over to device_temp_1
@@ -196,10 +196,10 @@ void runSW( int argc, char** argv){
   /*
   //print the database from 1D array using offsets
   for(int i = 0; i < numSeq[0]; i++){
-    printf("\nDatabase Sequence #%d\n", i + 1);
+    printf("Database Sequence #%d\n", i + 1);
     for(int k = 0; k < protein_length[i]; k++)
       printf("%c", host_1D_Array[ protein_Offset[i] + k]);
-    printf("\n");
+    printf("");
   }
   */
 
@@ -211,7 +211,7 @@ void runSW( int argc, char** argv){
   //Allocate Memory on Host for Results
   int* host_scores = (int*) malloc(numSeq[0] * sizeof(int) );
 
-  printf( "\nAllocating memory on host for results... \n");
+  printf( "Allocating memory on host for results... \n");
 
 
 
@@ -231,8 +231,8 @@ void runSW( int argc, char** argv){
   dim3 threads(numThreads);
   dim3 grid(numBlocks);
 
-  printf("\nnum threads is %d\n", numThreads);
-  printf("\nnum blocks is %d\n", numBlocks);
+  printf("num threads is %d\n", numThreads);
+  printf("num blocks is %d\n", numBlocks);
 
   /*______________________________________________Start timer__________________________________________________*/
 
@@ -241,7 +241,7 @@ void runSW( int argc, char** argv){
   CUT_SAFE_CALL( cutCreateTimer( &timer));               //Creates a timer and sends result to variable timer
   CUT_SAFE_CALL( cutStartTimer( timer));                 //Starts the execution of the timer
 
-  printf( "\nLaunching Kernel... \n");
+  printf( "Launching Kernel... \n");
 
   /*_____________________________________________Execute Kernel__________________________________________________*/
 
@@ -253,7 +253,7 @@ void runSW( int argc, char** argv){
 
   /*_______________________________________Copy Results from GPU to Host_________________________________________*/
 
-  printf( "\nCopying Results from GPU to host... \n");
+  printf( "Copying Results from GPU to host... \n");
 
   //Copy Results from GPU
   CUDA_SAFE_CALL(cudaMemcpy(host_scores, device_SW_Results, (numSeq[0] * sizeof(int)), cudaMemcpyDeviceToHost));
@@ -263,13 +263,13 @@ void runSW( int argc, char** argv){
 
   //Stop Timer
   CUT_SAFE_CALL( cutStopTimer( timer));
-  printf( "\nGPU database scan time: %f (ms)\n", cutGetTimerValue( timer));
+  printf( "GPU database scan time: %f (ms)\n", cutGetTimerValue( timer));
   CUT_SAFE_CALL( cutDeleteTimer( timer));
 
   /*
   //Print some of the alignment scores to the screen
   for(int i = 0; i < 20; i++){
-    printf("\nthe score for protein #%d is %d\n", (i+1), host_scores[i]);
+    printf("the score for protein #%d is %d\n", (i+1), host_scores[i]);
     printf("It's length is %d\n", protein_length[i]);
   }
   */
