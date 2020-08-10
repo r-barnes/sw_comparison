@@ -548,18 +548,19 @@ int CSearchMGPUScalar::dbsearch(char* queryFile) {
 		gcups *= qlen;
 		gcups /= dif;
 
+#ifndef BENCHMARKING
 		fprintf(stderr, "query:%s\n", queryLib->getSeqName());
 		fprintf(stderr, "Length: %d --- time: %g (s) and GCUPS: %g\n",
 				qlen, dif, gcups);
 		fprintf(stdout, "STATOUT time: %g\n", dif);
 		fprintf(stdout, "STATOUT GCUPS: %g\n", gcups);
+#endif
 
 		//display results
 		int top =
 				numSeqs > params->getTopScoresNum() ?
 						params->getTopScoresNum() : numSeqs;
 		int scoreThreshold = params->getScoreThreshold();
-		fprintf(stderr, "----------Display the top %d ----------\n", top);
 		printResults(globalHostResult, dbSeqsName, numSeqs, top,
 				scoreThreshold);
 

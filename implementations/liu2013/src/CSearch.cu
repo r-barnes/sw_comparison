@@ -150,6 +150,12 @@ void CSearch::printResults(SeqEntry* hostResult, char** dbSeqsName, int numSeqs,
 		int top, int scoreThreshold) {
 	int i;
 
+#ifdef BENCHMARKING
+	return;
+#endif
+
+	fprintf(stderr, "----------Display the top %d ----------\n", top);
+
 	//sorting the scores
 	qsort(hostResult, numSeqs, sizeof(SeqEntry), compar_descent);
 
@@ -248,7 +254,7 @@ void CSearch::calcThreshold(double cfreq, double gfreq, int cnumCores,
 	}
 	fprintf(stderr, "[%s] %g %g %d %d\n", __FUNCTION__, cfreq, gfreq, cnumCores,
 			gnumSMX);
-	
+
 	/*calculate the ratio of GPUs*/
 	const double CGPU_COEFFICIENT = params->isQueryProfile() ? 3.2 : 5.0;
 	double ratio;
@@ -417,7 +423,11 @@ void CSearch::launchOverflowSSE(SeqEntry *hostResult, uint8_t* sseQuery,
 		}
 		++result;
 	}
+
+#ifndef BENCHMARKING
 	fprintf(stderr, "#alignments that overflowed: %ld\n", numOverflows);
+#endif
+
 	if (numOverflows == 0) {
 		return;
 	}

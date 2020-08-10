@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.13)
 
 project(cudasw2 LANGUAGES CUDA CXX)
 
+option(BENCHMARKING "Whether or not we are benchmarking")
+
 add_executable(cudasw3
   src/CFastaFile.cpp
   src/CParams.cpp
@@ -24,6 +26,10 @@ endif()
 #TODO: Add fast_math
 if(DEFINED GPU_SM_ARCH)
   target_compile_options(cudasw3 PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-arch ${GPU_SM_ARCH}>)
+endif()
+
+if(BENCHMARKING)
+  target_compile_definitions(cudasw3 PRIVATE BENCHMARKING)
 endif()
 
 if(DEFINED DISABLE_CPU_THREADS)

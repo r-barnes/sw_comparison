@@ -257,13 +257,13 @@ int CSearchScalar::dbsearch(char*queryFile) {
     gcups *= qlen;
     gcups /= globalRuntimes[0];
 		/*performanc of CPU*/
-		printf("%g\t%g\t", globalRuntimes[0], gcups); 
+		printf("%g\t%g\t", globalRuntimes[0], gcups);
 
     gcups = ((double)totalAminoAcidsThreshold) / 1000000000.0f;
     gcups *= qlen;
     gcups /= globalRuntimes[1];
 		/*performance of GPU*/
-		printf("%g\t%g\n", globalRuntimes[1], gcups); 
+		printf("%g\t%g\n", globalRuntimes[1], gcups);
 #endif
 
 		/*overall performance*/
@@ -272,18 +272,19 @@ int CSearchScalar::dbsearch(char*queryFile) {
 		gcups *= qlen;
 		gcups /= diff;
 
+#ifndef BENCHMARKING
 		fprintf(stderr, "query:%s\n", queryLib->getSeqName());
 		fprintf(stderr, "Length: %d --- time: %g (s) and GCUPS: %g\n",
 				qlen, diff, gcups);
 		fprintf(stdout, "STATOUT time: %g\n", diff);
 		fprintf(stdout, "STATOUT GCUPS: %g\n", gcups);
+#endif
 
 		//display results
 		int top =
 				numSeqs > params->getTopScoresNum() ?
 						params->getTopScoresNum() : numSeqs;
 		int scoreThreshold = params->getScoreThreshold();
-		fprintf(stderr, "----------Display the top %d ----------\n", top);
 		printResults(cudasw->hostResult, dbSeqsName, numSeqs, top,
 				scoreThreshold);
 
@@ -366,7 +367,7 @@ Database<uint4>* CSearchScalar::createInterDBQuad(CFastaSW* cudasw,
 			done = false;
 		}
 	} while (!done);
-	
+
 	if(heightQuad == 0)
 		heightQuad = 1;
 	/*fprintf(stderr,
@@ -600,4 +601,3 @@ void CSearchScalar::unloadInterDBQuad(CFastaSW* cudasw) {
 	/*release the sequence buffer on the device*/
 	pFreeArray(cudasw->cudaInterSeqsQuad);
 }
-
