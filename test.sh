@@ -6,6 +6,52 @@ if [ "$#" -ne 2 ]; then
   exit 1
 fi
 
+
+
+mkdir -p datasets/
+seq_generator=./build/submodules/alignment_boilerplate/random_sequence_generator
+#For M1:1
+[ ! -f datasets/seq_1M_100_a ]   && ${seq_generator} datasets/seq_1M_100_a   1000000   100
+[ ! -f datasets/seq_1M_100_b ]   && ${seq_generator} datasets/seq_1M_100_b   1000000   100
+[ ! -f datasets/seq_1M_200_a ]   && ${seq_generator} datasets/seq_1M_200_a   1000000   200
+[ ! -f datasets/seq_1M_200_b ]   && ${seq_generator} datasets/seq_1M_200_b   1000000   200
+[ ! -f datasets/seq_1M_300_a ]   && ${seq_generator} datasets/seq_1M_300_a   1000000   300
+[ ! -f datasets/seq_1M_300_b ]   && ${seq_generator} datasets/seq_1M_300_b   1000000   300
+[ ! -f datasets/seq_1M_500_a ]   && ${seq_generator} datasets/seq_1M_500_a   1000000   500
+[ ! -f datasets/seq_1M_500_b ]   && ${seq_generator} datasets/seq_1M_500_b   1000000   500
+[ ! -f datasets/seq_1M_1000_a ]  && ${seq_generator} datasets/seq_1M_1000_a  1000000  1000
+[ ! -f datasets/seq_1M_1000_b ]  && ${seq_generator} datasets/seq_1M_1000_b  1000000  1000
+[ ! -f datasets/seq_1M_2000_a ]  && ${seq_generator} datasets/seq_1M_2000_a  1000000  2000
+[ ! -f datasets/seq_1M_2000_b ]  && ${seq_generator} datasets/seq_1M_2000_b  1000000  2000
+[ ! -f datasets/seq_1M_3000_a ]  && ${seq_generator} datasets/seq_1M_3000_a  1000000  3000
+[ ! -f datasets/seq_1M_3000_b ]  && ${seq_generator} datasets/seq_1M_3000_b  1000000  3000
+[ ! -f datasets/seq_1M_5000_a ]  && ${seq_generator} datasets/seq_1M_5000_a  1000000  5000
+[ ! -f datasets/seq_1M_5000_b ]  && ${seq_generator} datasets/seq_1M_5000_b  1000000  5000
+[ ! -f datasets/seq_1M_10000_a ] && ${seq_generator} datasets/seq_1M_10000_a 1000000 10000
+[ ! -f datasets/seq_1M_10000_b ] && ${seq_generator} datasets/seq_1M_10000_b 1000000 10000
+
+#For A:1
+[ ! -f datasets/seq_1K_100_a ]   && ${seq_generator} datasets/seq_1K_100_a   1000   100
+[ ! -f datasets/seq_1K_100_b ]   && ${seq_generator} datasets/seq_1K_100_b   1000   100
+[ ! -f datasets/seq_1K_200_a ]   && ${seq_generator} datasets/seq_1K_200_a   1000   200
+[ ! -f datasets/seq_1K_200_b ]   && ${seq_generator} datasets/seq_1K_200_b   1000   200
+[ ! -f datasets/seq_1K_300_a ]   && ${seq_generator} datasets/seq_1K_300_a   1000   300
+[ ! -f datasets/seq_1K_300_b ]   && ${seq_generator} datasets/seq_1K_300_b   1000   300
+[ ! -f datasets/seq_1K_500_a ]   && ${seq_generator} datasets/seq_1K_500_a   1000   500
+[ ! -f datasets/seq_1K_500_b ]   && ${seq_generator} datasets/seq_1K_500_b   1000   500
+[ ! -f datasets/seq_1K_1000_a ]  && ${seq_generator} datasets/seq_1K_1000_a  1000  1000
+[ ! -f datasets/seq_1K_1000_b ]  && ${seq_generator} datasets/seq_1K_1000_b  1000  1000
+[ ! -f datasets/seq_1K_2000_a ]  && ${seq_generator} datasets/seq_1K_2000_a  1000  2000
+[ ! -f datasets/seq_1K_2000_b ]  && ${seq_generator} datasets/seq_1K_2000_b  1000  2000
+[ ! -f datasets/seq_1K_3000_a ]  && ${seq_generator} datasets/seq_1K_3000_a  1000  3000
+[ ! -f datasets/seq_1K_3000_b ]  && ${seq_generator} datasets/seq_1K_3000_b  1000  3000
+[ ! -f datasets/seq_1K_5000_a ]  && ${seq_generator} datasets/seq_1K_5000_a  1000  5000
+[ ! -f datasets/seq_1K_5000_b ]  && ${seq_generator} datasets/seq_1K_5000_b  1000  5000
+[ ! -f datasets/seq_1K_10000_a ] && ${seq_generator} datasets/seq_1K_10000_a 1000 10000
+[ ! -f datasets/seq_1K_10000_b ] && ${seq_generator} datasets/seq_1K_10000_b 1000 10000
+
+
+
 query=$1
 ref=$2
 
