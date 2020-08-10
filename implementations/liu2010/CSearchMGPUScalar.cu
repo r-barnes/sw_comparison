@@ -11,7 +11,7 @@
 #include "CFastaFile.h"
 #include "CFastaSWScalar.h"
 #include <pthread.h>
- 
+
 CSearchMGPUScalar::CSearchMGPUScalar(CParams* params) : CSearchScalar(params)
 {
 	globalHostResult = 0;
@@ -26,7 +26,7 @@ int CSearchMGPUScalar::dbsearch(char* queryFile)
 {
 	int i,j;
     CFastaFile* queryLib = new CFastaFile;
-	
+
 	//build coalesced sequence array for the sorted database sequence indexed less than numThreshold
 	int n;
 	int threads;
@@ -36,7 +36,7 @@ int CSearchMGPUScalar::dbsearch(char* queryFile)
 
 	//compute the width of the array
 	//must make sure threads = 256; if 256 threads in a thread block is not allowed due to
-	//the number of available registers, please modify the loading substitution matrix CUDA code 
+	//the number of available registers, please modify the loading substitution matrix CUDA code
 	threads = 256;
 	//malloc global host result buffer
 	globalHostResult = (SeqEntry*)pMallocHost(sizeof(SeqEntry) * numSeqs);
@@ -62,7 +62,7 @@ int CSearchMGPUScalar::dbsearch(char* queryFile)
 	/*****************************************************************
 	***************(Inter-Task Parallelization) Stage 1***************
  	*****************************************************************/
-	
+
 	bool done;
 	do{
 		n = 0;
@@ -99,8 +99,8 @@ int CSearchMGPUScalar::dbsearch(char* queryFile)
 			}
 		}
 	}while(!done);
-	
-	    
+
+
 	//fill the array with the sorted sequences
 	for(i = 0; i < info->n_device; i++){
 		plans[i].cx = 0;
@@ -116,7 +116,7 @@ int CSearchMGPUScalar::dbsearch(char* queryFile)
 		plans[i].hostResultPos = 0;
 		plans[i].globalHostResult = globalHostResult;
 	}
-	
+
 	n = 0;
 	while( n < numThreshold){
 
@@ -124,7 +124,7 @@ int CSearchMGPUScalar::dbsearch(char* queryFile)
 			width =  plans[i].cudaInterTexWidth;
 			height = plans[i].cudaInterTexHeight;
 			unsigned int* array = (unsigned int*)plans[i].interHostSeqArray;
-			
+
 			if( n >= numThreshold){
 				break;
 			}
@@ -134,7 +134,7 @@ int CSearchMGPUScalar::dbsearch(char* queryFile)
 				int idx = sortedSeqs[n + k].idx;
 				seq = dbSeqs[idx];
 				slen = dbSeqsAlignedLen[idx];
-		
+
 				//copy the sequence into the array,starting from index 1 instead of 0
  				unsigned int * ptr = array + plans[i].cy * width + plans[i].cx;
      		for(j = 0; j < slen; j += 4){
@@ -151,7 +151,7 @@ int CSearchMGPUScalar::dbsearch(char* queryFile)
 				plans[i].hostSeqHash[index].cy = plans[i].cy;
 				plans[i].hostSeqHash[index].alignedLen = slen;
 				plans[i].hostSeqHash[index].length = dbSeqsLen[idx];
-				
+
 				//save the corresponding sequence index and initialize the value
 				plans[i].hostResult[index].idx = idx;
 				plans[i].hostResult[index].value = 65536;
@@ -163,7 +163,7 @@ int CSearchMGPUScalar::dbsearch(char* queryFile)
 					plans[i].cx = 0;
 					plans[i].cy += slen / 4;
 				}
-		
+
 				if(plans[i].cy >= height){
 					printf("the array overflowed at the bottom (cy:%d heigth:%d)! press any key to continue\n",
 								plans[i].cy, height);
@@ -188,7 +188,7 @@ int CSearchMGPUScalar::dbsearch(char* queryFile)
     /*****************************************************************
  	***************Intra-Task Parallelization Stage 2*****************
  	******************************************************************/
-	
+
 	if(numThreshold == numSeqs){
 		//pseudo number to avoid binding errors
 		for(i = 0; i < info->n_device; i++){
@@ -215,14 +215,14 @@ int CSearchMGPUScalar::dbsearch(char* queryFile)
 		if(plans[i].cudaIntraTexHeight <= 0){
 			plans[i].cudaIntraTexHeight = 0;
 		}
-		plans[i].intraHostSeqArray = (unsigned char*) pMallocHost(plans[i].cudaIntraTexWidth * 
+		plans[i].intraHostSeqArray = (unsigned char*) pMallocHost(plans[i].cudaIntraTexWidth *
 				plans[i].cudaIntraTexHeight * sizeof(unsigned char));
 	}
 
 	n = numThreshold;
 	while ( n < numSeqs){
 		for(i = 0; i < info->n_device; i++){
-			
+
 			width = plans[i].cudaIntraTexWidth;
 			if(n >= numSeqs){
 				break;
@@ -231,7 +231,7 @@ int CSearchMGPUScalar::dbsearch(char* queryFile)
 			int idx = sortedSeqs[n].idx;
 			seq = dbSeqs[idx];
 			slen = dbSeqsLen[idx];
-		
+
 			if(slen + 1 + plans[i].cx > width){
 				//adjust the coordinates
 				plans[i].cx = 0;
@@ -261,7 +261,7 @@ int CSearchMGPUScalar::dbsearch(char* queryFile)
 			n++;
 		}
 	}
-	
+
 	for(i = 0; i < info->n_device; i++){
 		plans[i].cudaIntraTexHeight = plans[i].cy + 1;
 	}
@@ -307,7 +307,7 @@ stage3:
 		double start, end;
 		//get the systeme time
 		CParams::getSysTime(&start);
-		
+
 		for(i = 0; i < info->n_device; i++){
 			plans[i].qLen = qlen;
 			plans[i].qAlignedLen = qAlignedLen;
@@ -321,7 +321,7 @@ stage3:
 		for(i = 0; i < info->n_device; ++i){
 			pthread_join(threadID[i], NULL);
 		}
-		
+
 		//get the system time
 		CParams::getSysTime(&end);
 
@@ -330,14 +330,15 @@ stage3:
 		gcups /= 1000.0;
 		gcups *= qlen;
 		gcups /= dif;
-		
-		printf("query:%s \n", queryLib->getSeqName());
-		printf("Length: %d --- time: %g (s) GCUPS: %g\n", qlen, dif, gcups);
-		
+
+		#ifndef BENCHMARKING
+			printf("query:%s \n", queryLib->getSeqName());
+			printf("Length: %d --- time: %g (s) GCUPS: %g\n", qlen, dif, gcups);
+		#endif
+
 		//display results
 		int top = numSeqs > params->getTopScoresNum() ? params->getTopScoresNum(): numSeqs;
-        int scoreThreshold = params->getScoreThreshold();
-		printf("----------Display the top %d ----------\n", top);
+    int scoreThreshold = params->getScoreThreshold();
 		printResults(globalHostResult, dbSeqsName, numSeqs, top, scoreThreshold);
 		//load the next query sequence
 		query = queryLib->nextSeq(&qlen, &qAlignedLen, SEQ_LENGTH_ALIGNED);
@@ -345,7 +346,7 @@ stage3:
         	printf("Reaching the end of the query file!\n");
     	}
 	}
-	
+
 out:
 	for(i = 0; i < info->n_device; i++){
 		TaskPlan * plan = &plans[i];
@@ -357,7 +358,7 @@ out:
 	}
 	free(plans);
 	free(info);
-	
+
 	if(globalHostResult){
 		pFreeHost(globalHostResult);
 		globalHostResult = 0;
@@ -387,16 +388,16 @@ void* CSearchMGPUScalar::swthreads_func(void* arg)
 	//copy the inter-task database sequences from host to GPU
 	width = plan->cudaInterTexWidth;
 	height = plan->cudaInterTexHeight;
-	
+
 	cudasw->cudaInterSeqs = cudasw->swMallocArray(width, height, pChannelFormatKindUnsignedChar4);
 	pMemcpyToArray(cudasw->cudaInterSeqs, 0, 0, plan->interHostSeqArray,
                 width * height * sizeof(unsigned int), pMemcpyHostToDevice);
-	
-	//copy the intra-task sequences into cudaArray	
+
+	//copy the intra-task sequences into cudaArray
     width = plan->cudaIntraTexWidth;
  	height = plan->cudaIntraTexHeight;
 	cudasw->cudaIntraSeqs = cudasw->swMallocArray(width, height, pChannelFormatKindUnsignedChar);
-	pMemcpyToArray(cudasw->cudaIntraSeqs, 0, 0, plan->intraHostSeqArray, 
+	pMemcpyToArray(cudasw->cudaIntraSeqs, 0, 0, plan->intraHostSeqArray,
 					width * height * sizeof(unsigned char), pMemcpyHostToDevice);
 
   	//bind the CUDA Array to texture
@@ -404,7 +405,7 @@ void* CSearchMGPUScalar::swthreads_func(void* arg)
 
  	//copy the hash table from host to GPU
 	cudasw->cudaSeqHash = (DatabaseHash*)pMallocPitch(sizeof(DatabaseHash),
-                plan->numSeqs, 1, 0);	
+                plan->numSeqs, 1, 0);
 	pMemcpy(cudasw->cudaSeqHash, plan->hostSeqHash,
                 plan->numSeqs * sizeof(DatabaseHash), pMemcpyHostToDevice);
 
@@ -419,7 +420,7 @@ void* CSearchMGPUScalar::swthreads_func(void* arg)
 	blk = 0;
 	threads = plan->threads;
 	blocks = (plan->interSeqNo + threads - 1) / threads;
-	
+
 	//copy the query sequence
 	cudasw->swMemcpyQuery(plan->query, plan->qLen, plan->qAlignedLen, sizeof(unsigned char), CSearch::matrix);
 
@@ -445,25 +446,25 @@ void* CSearchMGPUScalar::swthreads_func(void* arg)
 	//releaset the memory slots for intermediate results
 	cudasw->swInterFreeThreadSlots();
 	cudasw->swUnbindQueryProfile();
-	
+
 	if(plan->intraSeqNo > 0){
 		//the index of the first sequence in the result buffer
 		blk = plan->interSeqNo;
 		blocks = plan->intraSeqNo;
-	
+
 		//set query sequence length
 		cudasw->swMemcpyQueryLength(plan->qLen, plan->qAlignedLen);
-		//please decrease the maxSeqsOnePass value 
+		//please decrease the maxSeqsOnePass value
 		//when there is no enough global memory on the device
 		int maxSeqsOnePass = 256;
 		cudasw->swIntraMallocThreadSlots(maxSeqsOnePass, plan->maxSeqLength + 2);
     	while(blocks>0){
-        
+
 			if(blocks > maxSeqsOnePass){
            		n =	maxSeqsOnePass;
         	}else{
            		n = blocks;
-       		}	
+       		}
         	cudasw->IntraRunGlobalDatabaseScanning(n, threads, plan->numSeqs, blk);
 
         	blk += n;
@@ -474,7 +475,7 @@ void* CSearchMGPUScalar::swthreads_func(void* arg)
 
 	//transfer result from GPU to host
 	cudasw->transferResult(plan->numSeqs);
-	
+
 	//free device resources
 	cudasw->swUnbindTexture();
 	pFree(cudasw->cudaSeqHash);
@@ -484,4 +485,3 @@ void* CSearchMGPUScalar::swthreads_func(void* arg)
 
 	return NULL;
 }
-

@@ -79,7 +79,7 @@ void CSearch::run ()
 	loaddb(db);
 
 	//generate the object
-    dbsearch(query);    
+    dbsearch(query);
 
 	printf("Finished!\n");
 }
@@ -107,6 +107,12 @@ int CSearch::compar_descent(const void* va, const void* vb)
 }
 void CSearch::printResults(SeqEntry* hostResult, char** dbSeqsName, int numSeqs, int top, int scoreThreshold)
 {
+	#ifdef BENCHMARKING
+		return;
+	#endif
+
+	printf("----------Display the top %d ----------\n", top);
+
 	int i;
 
  	//sorting the scores
@@ -122,7 +128,7 @@ void CSearch::printResults(SeqEntry* hostResult, char** dbSeqsName, int numSeqs,
 			printf("press 'y' to quit and another key to continue\n");
 			int c = getchar();
 			if(c == 'y' || c == 'Y') break;
-				
+
 		}
 		printf("score: %d -- %s\n",hostResult[i].value, dbSeqsName[hostResult[i].idx]);
 	}

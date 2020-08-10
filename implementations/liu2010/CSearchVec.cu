@@ -31,7 +31,7 @@ int CSearchVec::loaddb (char* dbFile)
 	unsigned char* seq;
 
 	printf("Loading database sequences from file into host memory...\n");
-    
+
 #define INIT_SIZE 		819200
 	numSeqs = 0;
 	numThreshold = 0;
@@ -74,7 +74,7 @@ int CSearchVec::loaddb (char* dbFile)
 		dbSeqsAlignedLen[numSeqs] = seqAlignedLen;
 		//save sequence symbols
 		memcpy(dbSeqs[numSeqs], seq, sizeof(unsigned char) * seqAlignedLen);
-			
+
 		//printf("No.:%d  %d %d\n", numSeqs, seqLen, seqAlignedLen);
 		if(seqLen <= SEQ_LENGTH_THRESHOLD){
 			numThreshold ++;
@@ -82,7 +82,7 @@ int CSearchVec::loaddb (char* dbFile)
 
 		numSeqs ++;
 		totalAminoAcids += seqLen;
-	
+
 		if(maxSeqLength < seqLen){
 			maxSeqLength = seqLen;
 		}
@@ -98,7 +98,7 @@ int CSearchVec::loaddb (char* dbFile)
 	}
 	//using quick sort to sort the vector
 	qsort(sortedSeqs, numSeqs, sizeof(SeqEntry), compar_ascent);
-	
+
 	//releaset database structure
 	dbLib->close();
 	delete dbLib;
@@ -111,7 +111,7 @@ int CSearchVec::dbsearch (char*queryFile)
     int i,j;
     unsigned char* seq;
     CFastaFile* queryLib = new CFastaFile;
-	
+
 	CFastaSW* cudasw = new CFastaSWVec;
 
 	//build coalesced sequence array for the sorted database sequence indexed less than numThreshold
@@ -121,7 +121,7 @@ int CSearchVec::dbsearch (char*queryFile)
 	int width, height;
 	int maxProcessors;
 	DatabaseHash * hash;
-	
+
 	//copy the subsitution matrix, gap opening penalty and gap extending penalty from host to GPU
 	cudasw->swMemcpyParameters(matrix, gapOpen,gapExtend);
 	//create the channel format descriptor
@@ -164,7 +164,7 @@ int CSearchVec::dbsearch (char*queryFile)
 	}while(!done);
 
 	printf("Loading Stage 1 ---- width:%d height:%d size:%d (MB)\n",width, height, width * height/1024/1024);
-	
+
 	//allocate space for inter-task sequence
 	unsigned char* interArray = (unsigned char*)pMallocHost(width * height * sizeof(unsigned char));
 	cx = cy = 0;
@@ -173,7 +173,7 @@ int CSearchVec::dbsearch (char*queryFile)
 		int idx = sortedSeqs[i].idx;
 		seq = dbSeqs[idx];
 		n = dbSeqsLen[idx];
-		
+
 		if(n + cx > width){
 			//adjust the coordinates
 			cx = 0;
@@ -189,9 +189,9 @@ int CSearchVec::dbsearch (char*queryFile)
 		hash[i].alignedLen = n;
 
 		//adjust the coordinates
-		cx += n;		
+		cx += n;
 	}
-	//copy the sequences into cudaArray	
+	//copy the sequences into cudaArray
 	cudasw->cudaInterSeqs = cudasw->swMallocArray(width, height, pChannelFormatKindUnsignedChar);
 	pMemcpyToArray(cudasw->cudaInterSeqs, 0, 0, interArray, width * height * sizeof(unsigned char), pMemcpyHostToDevice);
 	pFreeHost(interArray);
@@ -199,7 +199,7 @@ int CSearchVec::dbsearch (char*queryFile)
     /*****************************************************************
  	*********************************Stage 2***************************
  	******************************************************************/
-	
+
 	unsigned char* intraArray;
 
 	if(numThreshold == numSeqs){
@@ -210,11 +210,11 @@ int CSearchVec::dbsearch (char*queryFile)
 		//jump to stage3
 		goto stage3;
 	}
-	
+
 	cx = cy = 0;
 	width = maxSeqLength + 1;
 	height = numSeqs - numThreshold;	//set maximum height
-	
+
 	//for the intra-task parallelization, all the sequences start from 1 instead of 0
 	intraArray = (unsigned char*) pMallocHost( width * height * sizeof(unsigned char));
 	for(i = numThreshold; i < numSeqs; i++){
@@ -222,7 +222,7 @@ int CSearchVec::dbsearch (char*queryFile)
 		int idx = sortedSeqs[i].idx;
 		seq = dbSeqs[idx];
 		n = dbSeqsLen[idx];
-		
+
 		if(n + 1 + cx > width){
 			//adjust the coordinates
 			cx = 0;
@@ -240,20 +240,20 @@ int CSearchVec::dbsearch (char*queryFile)
 		hash[i].length = n;
 
 		//adjust the coordinates
-		cx += n + 1;		
+		cx += n + 1;
 	}
-	
+
 	//set the real height
 	height = cy + 1;
 	printf("Loading Stage 2 ---- width:%d height:%d size:%d (MB)\n",width, height, width * height/1024/1024);
-	//copy the sequences into cudaArray	
+	//copy the sequences into cudaArray
 	cudasw->cudaIntraSeqs = cudasw->swMallocArray(width, height, pChannelFormatKindUnsignedChar);
 	pMemcpyToArray(cudasw->cudaIntraSeqs, 0, 0, intraArray, width * height * sizeof(unsigned char), pMemcpyHostToDevice);
 	pFreeHost(intraArray);
    	/*****************************************************************
  	*********************************Stage 3***************************
  	******************************************************************/
-stage3:	
+stage3:
 	//bind the CUDA Array to texture
 	cudasw->swBindTextureToArray();
 	//copy the hash table from host to GPU
@@ -281,7 +281,7 @@ stage3:
 	//load queries
 	int qlen, qAlignedLen;
 	unsigned char* query;
-	
+
 	//printf("Loading the query sequences...\n");
 	//open the query file
     queryLib->open(queryFile);
@@ -297,20 +297,20 @@ stage3:
 		double start, end;
 		//get the system time
 		CParams::getSysTime(&start);
-		
+
 		//start computing the scores
 		int blocks;
 		int blk;
 		blk = 0;
-		
+
 		//copy the query sequence from host to GPU, indexing from 1
 		cudasw->swMemcpyQuery(query, qlen, qAlignedLen, sizeof(unsigned char), matrix);
-		
+
 		//compute the total number of thread blocks
 		threads = THREADS_PER_BLOCK;
 		int warpNum = threads / THREADS_PER_WARP;
 		blocks = (numThreshold + warpNum - 1) / warpNum;
-		
+
 		//allocate memory slots for intermediate results
 		int memSlotSize;
 		memSlotSize = (SEQ_LENGTH_THRESHOLD + SEQ_LENGTH_ALIGNED - 1) / SEQ_LENGTH_ALIGNED;
@@ -344,12 +344,12 @@ stage3:
 			int maxSeqsOnePass = 256;
 			cudasw->swIntraMallocThreadSlots(maxSeqsOnePass, maxSeqLength + 2);
     		while(blocks>0){
-        	
+
 				if(blocks > maxSeqsOnePass){
             		n =	maxSeqsOnePass;
         		}else{
             		n = blocks;
-       	 		}	
+       	 		}
         		cudasw->IntraRunGlobalDatabaseScanning (n, threads, numSeqs, blk);
 
         		blk += n;
@@ -366,14 +366,15 @@ stage3:
 		gcups /= 1000.0;
 		gcups *= qlen;
 		gcups /= dif;
-		
-		printf("query:%s \n", queryLib->getSeqName());
-		printf("Length: %d --- time: %g (s) GCUPS: %g\n", qlen, dif, gcups);
-		
+
+		#ifndef BENCHMARKING
+			printf("query:%s \n", queryLib->getSeqName());
+			printf("Length: %d --- time: %g (s) GCUPS: %g\n", qlen, dif, gcups);
+		#endif
+
 		//display results
 		int top = numSeqs > params->getTopScoresNum() ? params->getTopScoresNum(): numSeqs;
 		int scoreThreshold = params->getScoreThreshold();
-		printf("----------Display the top %d ----------\n", top);
 		printResults(cudasw->hostResult, dbSeqsName, numSeqs, top, scoreThreshold);
 		//load the next query sequence
 		query = queryLib->nextSeq(&qlen, &qAlignedLen, SEQ_LENGTH_ALIGNED);
