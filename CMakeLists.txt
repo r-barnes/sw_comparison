@@ -2,9 +2,20 @@ cmake_minimum_required(VERSION 3.13)
 
 project(gpu_sequencing LANGUAGES C CXX CUDA)
 
-add_subdirectory(implementations/awan2020)
+find_program(CCACHE_FOUND ccache)
+if(CCACHE_FOUND)
+  message(STATUS "Using ccache")
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache) # Less useful to do it for linking, see edit2
+endif(CCACHE_FOUND)
+
+option(BENCHMARKING "Whether or not we are benchmarking")
+
+add_subdirectory(submodules/alignment_boilerplate)
+
+# add_subdirectory(implementations/awan2020)
 add_subdirectory(implementations/ahmed2019)
-add_subdirectory(implementations/bowtie2)
+# add_subdirectory(implementations/bowtie2)
 add_subdirectory(implementations/david2011)
 add_subdirectory(implementations/khajeh-saeed2010)
 add_subdirectory(implementations/klus2012)
