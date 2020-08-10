@@ -21,7 +21,7 @@
 
 #include <stdio.h>
 #include "libmasa/libmasa.hpp"
-#include "config.h"
+// #include "config.h"
 #include "CUDAligner.hpp"
 
 /**

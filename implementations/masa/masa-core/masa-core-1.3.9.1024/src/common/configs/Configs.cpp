@@ -24,7 +24,7 @@
 #include "../exceptions/IllegalArgumentException.hpp"
 
 const char* DEFAULT_CONFIGS[] = {
-	#include "default.h"
+	// #include "default.h"
 	NULL,
 };
 

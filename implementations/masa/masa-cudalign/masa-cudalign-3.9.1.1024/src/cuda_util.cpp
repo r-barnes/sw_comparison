@@ -32,7 +32,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#include "config.h"
+// #include "config.h"
 
 static cudaDeviceProp getDeviceProperties(int dev=-1);
 static int cutGetMaxGflopsDeviceId();

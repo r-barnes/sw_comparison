@@ -39,7 +39,7 @@
 //#include "testing/AlignerTester.hpp"
 #include "../masanet/MasaNet.hpp"
 //#include "../masanet/MasaNetCLI.hpp"
-#include "../config.h"
+// #include "../config.h"
 
 #include <sstream>
 using namespace std;

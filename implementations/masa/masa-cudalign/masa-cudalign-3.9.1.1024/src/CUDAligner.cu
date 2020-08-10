@@ -21,7 +21,7 @@
 
 #include "CUDAligner.hpp"
 #include "cuda_util.h"
-#include "config.h"
+// #include "config.h"
 
 #include <stdio.h>
 #include <getopt.h>
