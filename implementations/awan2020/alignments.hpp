@@ -15,5 +15,4 @@ class gpu_alignments{
     ~gpu_alignments();
 };
 
-
 #endif
