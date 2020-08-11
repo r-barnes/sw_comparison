@@ -94,8 +94,13 @@ SET(SPU_SOURCES DynProgr_PPU.c DynProgr_SPE.o)
 SET(ALTIVEC_SOURCES DynProgr_altivec.cc)
 SET(SSE_SOURCES DynProgr_sse_byte.c DynProgr_sse_short)
 
+option(BENCHMARKING "Set to enable benchmarking mode")
+
 ADD_EXECUTABLE(swps3 swps3.c)
 TARGET_LINK_LIBRARIES(swps3 libswps3)
+if(BENCHMARKING)
+   target_compile_definitions(swps3 PRIVATE BENCHMARKING)
+endif()
 
 IF(WITH_SSE)
    SET(LIBRARY_SOURCES ${LIBRARY_SOURCES} ${SSE_SOURCES})

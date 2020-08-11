@@ -460,11 +460,13 @@ int main( int argc, char * argv[] ){
 					exit(1);
 				}
 			} else {
+#ifndef BENCHMARKING
 				if(score >= options.threshold) {
 					printf(">threshold\t%s x %s\n",dbName,queryName);
 				} else {
 					printf("%g\t%s x %s\n",score,dbName,queryName);
 				}
+#endif
 				fflush(stdout);
 			}
 		} while(1);
@@ -490,7 +492,9 @@ int main( int argc, char * argv[] ){
 #endif
 		swps3_closeLib( dbLib );
 	}
+#ifndef BENCHMARKING
 	fprintf(stderr,"%d[%d] x %d[%d]\n", qCount, qResidues, dCount, dResidues );
+#endif
 
 	swps3_closeLib( queryLib );
 	return 0;
