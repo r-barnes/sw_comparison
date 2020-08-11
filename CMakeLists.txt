@@ -13,7 +13,7 @@ option(BENCHMARKING "Whether or not we are benchmarking")
 
 add_subdirectory(submodules/alignment_boilerplate)
 
-# add_subdirectory(implementations/awan2020)
+add_subdirectory(implementations/awan2020)
 add_subdirectory(implementations/ahmed2019)
 # add_subdirectory(implementations/bowtie2)
 add_subdirectory(implementations/david2011)
