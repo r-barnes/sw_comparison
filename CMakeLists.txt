@@ -6,7 +6,7 @@ find_program(CCACHE_FOUND ccache)
 if(CCACHE_FOUND)
   message(STATUS "Using ccache")
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache) # Less useful to do it for linking, see edit2
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE_FOUND)
 
 option(BENCHMARKING "Whether or not we are benchmarking")

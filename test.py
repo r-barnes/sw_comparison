@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+#Run performance tests on everything
+
 from inspect import getcallargs
 from pathlib import Path
 import itertools
