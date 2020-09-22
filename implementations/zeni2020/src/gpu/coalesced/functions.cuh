@@ -18,7 +18,7 @@
 #define GAP_EXT  -1
 #define GAP_OPEN -1
 #define UNDEF -32767
-#define WARP_DIM 32 
+#define WARP_DIM 32
 #define NOW std::chrono::high_resolution_clock::now()
 
 using namespace std;
@@ -43,16 +43,16 @@ enum ExtensionDirectionL
 
 __inline__ __device__ void warpReduce(volatile short *input,
 										  int myTId){
-		input[myTId] = (input[myTId] > input[myTId + 32]) ? input[myTId] : input[myTId + 32]; 
+		input[myTId] = (input[myTId] > input[myTId + 32]) ? input[myTId] : input[myTId + 32];
 		input[myTId] = (input[myTId] > input[myTId + 16]) ? input[myTId] : input[myTId + 16];
-		input[myTId] = (input[myTId] > input[myTId + 8]) ? input[myTId] : input[myTId + 8]; 
+		input[myTId] = (input[myTId] > input[myTId + 8]) ? input[myTId] : input[myTId + 8];
 		input[myTId] = (input[myTId] > input[myTId + 4]) ? input[myTId] : input[myTId + 4];
 		input[myTId] = (input[myTId] > input[myTId + 2]) ? input[myTId] : input[myTId + 2];
 		input[myTId] = (input[myTId] > input[myTId + 1]) ? input[myTId] : input[myTId + 1];
 }
 
 __inline__ __device__ short reduce_max(short *input, int dim, int n_threads){
-	unsigned int myTId = threadIdx.x;   
+	unsigned int myTId = threadIdx.x;
 	if(dim>32){
 		for(int i = n_threads/2; i >32; i>>=1){
 			if(myTId < i){
@@ -77,7 +77,7 @@ __inline__ __device__ void updateExtendedSeedL(SeedL &seed,
 	{
 		int beginDiag = seed.beginDiagonal;
 		// Set lower and upper diagonals.
-		
+
 		if (getLowerDiagonal(seed) > beginDiag + lowerDiag)
 			setLowerDiagonal(seed, beginDiag + lowerDiag);
 		if (getUpperDiagonal(seed) < beginDiag + upperDiag)
@@ -97,7 +97,7 @@ __inline__ __device__ void updateExtendedSeedL(SeedL &seed,
 		// Set new end position of seed.
 		seed.endPositionH += rows;
 		seed.endPositionV += cols;
-		
+
 	}
 }
 
@@ -119,15 +119,15 @@ __inline__ __device__ void computeAntidiag(short *antiDiag1,
 									int n_threads
 									){
 	int tid = threadIdx.x;
-	
+
 	for(int i = 0; i < maxCol; i+=n_threads){
 
 		int col = tid + minCol + i;
 		int queryPos, dbPos;
-		
+
 		queryPos = col - 1;
 		dbPos = col + rows - antiDiagNo - 1;
-		
+
 		/*if(direction == EXTEND_LEFTL){
 			queryPos = cols - 1 - col;
 			dbPos = rows - 1 + col - antiDiagNo;
@@ -137,15 +137,15 @@ __inline__ __device__ void computeAntidiag(short *antiDiag1,
 		}*/
 
 		if(col < maxCol){
-		
+
 			int tmp = max_logan(antiDiag2[col-offset2],antiDiag2[col-offset2-1]) + GAP_EXT;
-		
+
 			int score = (querySeg[queryPos] == databaseSeg[dbPos]) ? MATCH : MISMATCH;
-			
+
 			tmp = max_logan(antiDiag1[col-offset1-1]+score,tmp);
-			
+
 			antiDiag3[tid+1+i] = (tmp < best - scoreDropOff) ? UNDEF : tmp;
-		
+
 		}
 	}
 }
@@ -251,12 +251,12 @@ __global__ void extendSeedLGappedXDropOneDirectionGlobal(
 		databaseSeg = databaseSegArray + offsetTarget[myId-1];
 	}
 
-	short *antiDiag1 = &antidiag[myId*offAntidiag*3]; 
+	short *antiDiag1 = &antidiag[myId*offAntidiag*3];
 	short* antiDiag2 = &antiDiag1[offAntidiag];
 		short* antiDiag3 = &antiDiag2[offAntidiag];
 
 
-	SeedL mySeed(seed[myId]);	
+	SeedL mySeed(seed[myId]);
 	//dimension of the antidiagonals
 	int a1size = 0, a2size = 0, a3size = 0;
 	int cols, rows;
@@ -294,9 +294,9 @@ __global__ void extendSeedLGappedXDropOneDirectionGlobal(
 	short *temp= &temp_alloc[0];
 
 	while (minCol < maxCol)
-	{	
+	{
 
-		
+
 		++antiDiagNo;
 
 		//antidiagswap
@@ -314,28 +314,28 @@ __global__ void extendSeedLGappedXDropOneDirectionGlobal(
 		offset1 = offset2;
 		offset2 = offset3;
 		offset3 = minCol-1;
-		
+
 		initAntiDiag3(antiDiag3, a3size, offset3, maxCol, antiDiagNo, best - scoreDropOff, GAP_EXT, UNDEF);
-		
-		computeAntidiag(antiDiag1, antiDiag2, antiDiag3, querySeg, databaseSeg, best, scoreDropOff, cols, rows, minCol, maxCol, antiDiagNo, offset1, offset2, direction, n_threads);	 	
+
+		computeAntidiag(antiDiag1, antiDiag2, antiDiag3, querySeg, databaseSeg, best, scoreDropOff, cols, rows, minCol, maxCol, antiDiagNo, offset1, offset2, direction, n_threads);
 		//roofline analysis
-		__syncthreads();	
-	
-		int tmp, antiDiagBest = UNDEF;	
+		__syncthreads();
+
+		int tmp, antiDiagBest = UNDEF;
 		for(int i=0; i<a3size; i+=n_threads){
 			int size = a3size-i;
-			
+
 			if(myTId<n_threads){
-				temp[myTId] = (myTId<size) ? antiDiag3[myTId+i]:UNDEF;				
+				temp[myTId] = (myTId<size) ? antiDiag3[myTId+i]:UNDEF;
 			}
 			__syncthreads();
-			
+
 			tmp = reduce_max(temp,size, n_threads);
 			antiDiagBest = (tmp>antiDiagBest) ? tmp:antiDiagBest;
 
 		}
 		best = (best > antiDiagBest) ? best : antiDiagBest;
-		//int prova = simple_max(antiDiag3, a3size);	
+		//int prova = simple_max(antiDiag3, a3size);
 		//if(prova!=antiDiagBest){
 		//	if(myTId==0)
 		//		printf("errore %d/%d\n", prova,antiDiagBest);
@@ -357,7 +357,7 @@ __global__ void extendSeedLGappedXDropOneDirectionGlobal(
 		// Calculate new lowerDiag and upperDiag of extended seed
 		calcExtendedLowerDiag(lowerDiag, minCol, antiDiagNo);
 		calcExtendedUpperDiag(upperDiag, maxCol - 1, antiDiagNo);
-		
+
 		// end of databaseSeg reached?
 		minCol = (minCol > (antiDiagNo + 2 - rows)) ? minCol : (antiDiagNo + 2 - rows);
 		// end of querySeg reached?
@@ -368,7 +368,7 @@ __global__ void extendSeedLGappedXDropOneDirectionGlobal(
 	int longestExtensionCol = a3size + offset3 - 2;
 	int longestExtensionRow = antiDiagNo - longestExtensionCol;
 	int longestExtensionScore = antiDiag3[longestExtensionCol - offset3];
-	
+
 	if (longestExtensionScore == UNDEF)
 	{
 		if (antiDiag2[a2size -2] != UNDEF)
@@ -377,7 +377,7 @@ __global__ void extendSeedLGappedXDropOneDirectionGlobal(
 			longestExtensionCol = a2size + offset2 - 2;
 			longestExtensionRow = antiDiagNo - 1 - longestExtensionCol;
 			longestExtensionScore = antiDiag2[longestExtensionCol - offset2];
-			
+
 		}
 		else if (a2size > 2 && antiDiag2[a2size-3] != UNDEF)
 		{
@@ -385,7 +385,7 @@ __global__ void extendSeedLGappedXDropOneDirectionGlobal(
 			longestExtensionCol = a2size + offset2 - 3;
 			longestExtensionRow = antiDiagNo - 1 - longestExtensionCol;
 			longestExtensionScore = antiDiag2[longestExtensionCol - offset2];
-			
+
 		}
 	}
 
@@ -401,11 +401,11 @@ __global__ void extendSeedLGappedXDropOneDirectionGlobal(
 				longestExtensionScore = antiDiag1[i];
 				longestExtensionCol = i + offset1;
 				longestExtensionRow = antiDiagNo - 2 - longestExtensionCol;
-			
+
 			}
 		}
 	}
-	
+
 	if (longestExtensionScore != UNDEF)
 		updateExtendedSeedL(mySeed, direction, longestExtensionCol, longestExtensionRow, lowerDiag, upperDiag);
 	seed[myId] = mySeed;
@@ -455,11 +455,11 @@ inline void extendSeedL(vector<SeedL> &seeds,
 	cudaStream_t stream_r[MAX_GPUS], stream_l[MAX_GPUS];
 
 	// NB nSequences is correlated to the number of GPUs that we have
-	
+
 	int nSequences = numAlignments/ngpus;
 	//int nSeqInt = nSequences*sizeof(int);
 	int nSequencesLast = nSequences+numAlignments%ngpus;
-	//int nSeqIntLast = nSequencesLast*sizeof(int);	
+	//int nSeqIntLast = nSequencesLast*sizeof(int);
 
 	//final result of the alignment
 	int *scoreLeft = (int *)malloc(numAlignments * sizeof(int));
@@ -471,15 +471,15 @@ inline void extendSeedL(vector<SeedL> &seeds,
 	vector<SeedL> seeds_l;
 	seeds_r.reserve(numAlignments);
 	//seeds_l.reserve(numAlignments);
-	for (int i=0; i<seeds.size(); i++){
+	for (size_t i=0; i<seeds.size(); i++){
 			seeds_r.push_back(seeds[i]);
 			//seeds_l.push_back(seeds[i]);
 	}
 
-	//sequences offsets	 		
+	//sequences offsets
 	vector<int> offsetLeftQ[MAX_GPUS];
-	vector<int> offsetLeftT[MAX_GPUS];	
-	vector<int> offsetRightQ[MAX_GPUS];	
+	vector<int> offsetLeftT[MAX_GPUS];
+	vector<int> offsetRightQ[MAX_GPUS];
 	vector<int> offsetRightT[MAX_GPUS];
 
 	//shared_mem_size per block per GPU
@@ -502,14 +502,14 @@ inline void extendSeedL(vector<SeedL> &seeds,
 	//declare GPU offsets
 	int *offsetLeftQ_d[MAX_GPUS], *offsetLeftT_d[MAX_GPUS];
 	int *offsetRightQ_d[MAX_GPUS], *offsetRightT_d[MAX_GPUS];
-	
+
 	//declare GPU results
 	int *scoreLeft_d[MAX_GPUS], *scoreRight_d[MAX_GPUS];
 
 	//declare GPU seeds
 	SeedL *seed_d_l[MAX_GPUS], *seed_d_r[MAX_GPUS];
 
-	//declare prefixes and suffixes on the GPU  
+	//declare prefixes and suffixes on the GPU
 	char *prefQ_d[MAX_GPUS], *prefT_d[MAX_GPUS];
 	char *suffQ_d[MAX_GPUS], *suffT_d[MAX_GPUS];
 
@@ -530,14 +530,14 @@ inline void extendSeedL(vector<SeedL> &seeds,
 			offsetLeftQ[i].push_back(getBeginPositionV(seeds[j+i*nSequences]));
 			offsetLeftT[i].push_back(getBeginPositionH(seeds[j+i*nSequences]));
 			ant_len_left[i] = std::max(std::min(offsetLeftQ[i][j],offsetLeftT[i][j]), ant_len_left[i]);
-			
+
 			offsetRightQ[i].push_back(query[j+i*nSequences].size()-getEndPositionV(seeds[j+i*nSequences]));
 			offsetRightT[i].push_back(target[j+i*nSequences].size()-getEndPositionH(seeds[j+i*nSequences]));
 			ant_len_right[i] = std::max(std::min(offsetRightQ[i][j], offsetRightT[i][j]), ant_len_right[i]);
 		}
-		
+
 		//compute antidiagonal offsets
-		partial_sum(offsetLeftQ[i].begin(),offsetLeftQ[i].end(),offsetLeftQ[i].begin());	
+		partial_sum(offsetLeftQ[i].begin(),offsetLeftQ[i].end(),offsetLeftQ[i].begin());
 		partial_sum(offsetLeftT[i].begin(),offsetLeftT[i].end(),offsetLeftT[i].begin());
 		partial_sum(offsetRightQ[i].begin(),offsetRightQ[i].end(),offsetRightQ[i].begin());
 		partial_sum(offsetRightT[i].begin(),offsetRightT[i].end(),offsetRightT[i].begin());
@@ -636,16 +636,16 @@ inline void extendSeedL(vector<SeedL> &seeds,
 		duration<double> transfer_ithread = end_transfer_ithread - start_transfer_ithread;
 		pergputtime[MYTHREAD] = transfer_ithread.count();
 	}
-	
-	
+
+
 	auto end_t1 = NOW;
 	duration<double> setup_transfer=end_t1-start_t1;
 	duration<double> transfer=end_t1-start_transfer;
 	std::cout << "Input setup time: " << setup_transfer.count() << std::endl;
 	std::cout << "Input transfer and malloc time: " << transfer.count() << std::endl;
-	
+
 	auto start_c = NOW;
-	
+
 	//execute kernels
 	#pragma omp parallel for
 	for(int i = 0; i<ngpus;i++)
@@ -653,11 +653,11 @@ inline void extendSeedL(vector<SeedL> &seeds,
 		int MYTHREAD = omp_get_thread_num();
 		auto start_c_ithread_1 = NOW;
 		cudaSetDevice(i);
-		
+
 		int dim = nSequences;
 		if(i==ngpus-1)
 			dim = nSequencesLast;
-		
+
 		extendSeedLGappedXDropOneDirectionGlobal <<<dim, n_threads, n_threads*sizeof(short), stream_l[i]>>> (seed_d_l[i], prefQ_d[i], prefT_d[i], EXTEND_LEFTL, XDrop, scoreLeft_d[i], offsetLeftQ_d[i], offsetLeftT_d[i], ant_len_left[i], ant_l[i], n_threads);
 		extendSeedLGappedXDropOneDirectionGlobal <<<dim, n_threads, n_threads*sizeof(short), stream_r[i]>>> (seed_d_r[i], suffQ_d[i], suffT_d[i], EXTEND_RIGHTL, XDrop, scoreRight_d[i], offsetRightQ_d[i], offsetRightT_d[i], ant_len_right[i], ant_r[i], n_threads);
 		auto end_c_ithread_1 = NOW;
@@ -709,7 +709,6 @@ inline void extendSeedL(vector<SeedL> &seeds,
 
 	//cudaStreamDestroy(stream_l);
 	//cudaStreamDestroy(stream_r);
-	auto start_f = NOW;
 
 	#pragma omp parallel for
 	for(int i = 0; i < ngpus; i++){
@@ -733,21 +732,19 @@ inline void extendSeedL(vector<SeedL> &seeds,
 		cudaErrchk(cudaFree(seed_d_r[i]));
 		cudaErrchk(cudaFree(scoreLeft_d[i]));
 		cudaErrchk(cudaFree(scoreRight_d[i]));
-		cudaErrchk(cudaFree(ant_l[i])); 
+		cudaErrchk(cudaFree(ant_l[i]));
 		cudaErrchk(cudaFree(ant_r[i]));
 
 	}
-	auto end_f = NOW;
-	
+
 	for(int i = 0; i < numAlignments; i++){
 		res[i] = scoreLeft[i]+scoreRight[i]+kmer_length;
-		setEndPositionH(seeds[i], getEndPositionH(seeds_r[i]));    
-		setEndPositionV(seeds[i], getEndPositionV(seeds_r[i])); 
+		setEndPositionH(seeds[i], getEndPositionH(seeds_r[i]));
+		setEndPositionV(seeds[i], getEndPositionV(seeds_r[i]));
 		//cout << res[i] <<endl;
 	}
-	
+
 	free(scoreLeft);
 	free(scoreRight);
-		
-}
 
+}
