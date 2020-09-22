@@ -32,6 +32,7 @@ add_subdirectory(implementations/sjolund2016)
 add_subdirectory(implementations/striemer2009)
 add_subdirectory(implementations/szalkowski2008)
 add_subdirectory(implementations/warris2015/PaSWAS)
+add_subdirectory(implementations/zeni2020)
 
 
 #add_subdirectory(implementations/manavski2008)
