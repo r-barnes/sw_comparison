@@ -43,7 +43,7 @@ void CFastaSWScalar::swMemcpyParameters(int matrix[32][32], int gapOpen, int gap
 
 	cudaMemcpyToSymbol(cudaSubMatrix,matrix,32 * 32 *sizeof(int));
 	CUERR
-	
+
 	cudaMemcpyToSymbol(cudaGapOpen, &gapOpen, sizeof(int));
 	CUERR
 
@@ -103,14 +103,14 @@ void CFastaSWScalar::swBindTextureToArray()
     InterSeqs.addressMode[1] = cudaAddressModeClamp;
     InterSeqs.filterMode = cudaFilterModePoint;
     InterSeqs.normalized = false;
-	
+
 	cudaBindTextureToArray(IntraSeqs,(cudaArray*)cudaIntraSeqs, uchar_channelDesc);
 	CUERR
 
 	IntraSeqs.addressMode[0] = cudaAddressModeClamp;
     IntraSeqs.addressMode[1] = cudaAddressModeClamp;
     IntraSeqs.filterMode = cudaFilterModePoint;
-    IntraSeqs.normalized = false;  
+    IntraSeqs.normalized = false;
 
 }
 void CFastaSWScalar::swBindQueryProfile()
@@ -121,7 +121,7 @@ void CFastaSWScalar::swBindQueryProfile()
 	InterQueryPrf.addressMode[0] = cudaAddressModeClamp;
     InterQueryPrf.addressMode[1] = cudaAddressModeClamp;
     InterQueryPrf.filterMode = cudaFilterModePoint;
-    InterQueryPrf.normalized = false;  
+    InterQueryPrf.normalized = false;
 
 }
 void CFastaSWScalar::swUnbindTexture()
@@ -136,10 +136,10 @@ void CFastaSWScalar::swUnbindQueryProfile()
 {
 	cudaUnbindTexture(InterQueryPrf);
 	CUERR
-	
+
 	//release the CUDA array
 	pFreeArray(cudaInterQueryPrf);
-	cudaInterQueryPrf = 0; 
+	cudaInterQueryPrf = 0;
 }
 void CFastaSWScalar::swInterMallocThreadSlots(int threads, int multiProcessors, int slotSize)
 {
@@ -156,7 +156,7 @@ void CFastaSWScalar::swInterFreeThreadSlots()
 /*************************************************************
 		Smith-Waterman for inter-task parallelization
 **************************************************************/
-__device__ int InterGlobalSmithWaterman_DB(ushort2* global, size_t gpitch, 
+__device__ int InterGlobalSmithWaterman_DB(ushort2* global, size_t gpitch,
 							int qlen, int db_cx, int db_cy, int dblen)
 {
 	int i, j, k;
@@ -167,10 +167,10 @@ __device__ int InterGlobalSmithWaterman_DB(ushort2* global, size_t gpitch,
     int4 f, h, p;	//the first 4 rows
 	int4 f0, h0, p0; //the second 4 rows
 
-	ushort2	HD; 
+	ushort2	HD;
 	ushort2 initHD = {0, 0};
 	int4 zero = {0, 0, 0, 0};
-	
+
     for (i = 0; i <= dblen; i++)
     {
 		*((ushort2*)(((char*)global) + i * gpitch))= initHD;
@@ -203,7 +203,7 @@ __device__ int InterGlobalSmithWaterman_DB(ushort2* global, size_t gpitch,
 				sb = i >> 2;	//no need to use (i - 1) >> 2;
 				//load substitution matrix
 				sub = tex2D(InterQueryPrf, sb++, sa);
-			
+
 				//compute the cell (0, 0);
 				f.x = max(h.x - cudaGapOE, f.x - cudaGapExtend);
 				e = max(HD.x - cudaGapOE, HD.y - cudaGapExtend);
@@ -213,103 +213,103 @@ __device__ int InterGlobalSmithWaterman_DB(ushort2* global, size_t gpitch,
 				h.x = max(h.x, e);
 				h.x = max(h.x, 0);
 				maxHH = max(maxHH, h.x);
-			
+
 				p.x = HD.x;
 
 				//compute cell (0, 1)
 				f.y = max(h.y - cudaGapOE, f.y - cudaGapExtend);
     	        e = max(h.x - cudaGapOE, e - cudaGapExtend);
-	
+
 				h.y = p.y + sub.y;
 				h.y = max(h.y, f.y);
 				h.y = max(h.y, e);
 				h.y = max(h.y, 0);
 				maxHH = max(maxHH, h.y);
-		
+
 				p.y = h.x;
-				
+
 				//compute cell (0, 2);
 				f.w = max(h.w - cudaGapOE, f.w - cudaGapExtend);
 				e = max(h.y - cudaGapOE, e - cudaGapExtend);
-				
+
 				h.w = p.w + sub.w;
 				h.w = max(h.w, f.w);
 				h.w = max(h.w, e);
 				h.w = max(h.w, 0);
 				maxHH = max(maxHH, h.w);
-		
+
 				p.w = h.y;
-					
+
 				//compute cell (0, 3)
  				f.z = max(h.z - cudaGapOE, f.z - cudaGapExtend);
 				e = max(h.w - cudaGapOE, e - cudaGapExtend);
-		
+
 				h.z = p.z + sub.z;
 				h.z = max(h.z, f.z);
 				h.z = max(h.z, e);
 				h.z = max(h.z, 0);
 				maxHH = max(maxHH, h.z);
-	
+
 				p.z = h.w;
-				
+
 				//load substitution matrix
 				sub = tex2D(InterQueryPrf, sb, sa);
 
 				//compute cell(0, 4)
 				f0.x = max(h0.x - cudaGapOE, f0.x - cudaGapExtend);
 				e = max(h.z - cudaGapOE, e - cudaGapExtend);
-	
+
 				h0.x = p0.x + sub.x;
 				h0.x = max(h0.x, f0.x);
 				h0.x = max(h0.x, e);
 				h0.x = max(h0.x, 0);
 				maxHH = max(maxHH, h0.x);
-	
+
 				p0.x = h.z;
-					
+
 				//compute cell(0, 5)
 				f0.y = max(h0.y - cudaGapOE, f0.y - cudaGapExtend);
 				e = max(h0.x - cudaGapOE, e - cudaGapExtend);
-	
+
 				h0.y = p0.y + sub.y;
 				h0.y = max(h0.y, f0.y);
 				h0.y = max(h0.y, e);
 				h0.y = max(h0.y, 0);
 				maxHH = max(maxHH, h0.y);
-	
+
 				p0.y = h0.x;
-					
+
 				//compute cell (0, 6)
 				f0.w = max(h0.w - cudaGapOE, f0.w - cudaGapExtend);
 				e = max(h0.y - cudaGapOE, e - cudaGapExtend);
-	
+
 				h0.w = p0.w + sub.w;
 				h0.w = max(h0.w, f0.w);
 				h0.w = max(h0.w, e);
 				h0.w = max(h0.w, 0);
 				maxHH = max(maxHH, h0.w);
-	
+
 				p0.w = h0.y;
-					
+
 				//compute cell(0, 7)
 				f0.z = max(h0.z - cudaGapOE, f0.z - cudaGapExtend);
 				e = max(h0.w - cudaGapOE, e - cudaGapExtend);
-	
+
 				h0.z = p0.z + sub.z;
 				h0.z = max(h0.z, f0.z);
 				h0.z = max(h0.z, e);
 				h0.z = max(h0.z, 0);
 				maxHH = max(maxHH, h0.z);
-	
+
 				p0.z = h0.w;
-	
+
 				HD.x = min(h0.z, 0x0FFFF);
 				e = max(e, 0);
 				HD.y = min(e, 0x0FFFF);
-	
+
 				//save data cell(0, 7)
 				*((ushort2*)(((char*)global) + (j + k) * gpitch)) = HD;
-			}	
+			}
     	}
 	}
     return maxHH;
@@ -337,7 +337,7 @@ __global__ void interSWUsingSIMT(ushort2* cudaGlobal, size_t cudaGlobalPitch, Da
 	}
 	//get the hash item
 	DatabaseHash dbhash = hash[seqidx];
-	
+
 	score = InterGlobalSmithWaterman_DB(cudaGlobal + tidx, cudaGlobalPitch,
                	cudaQueryAlignedLen, dbhash.cx, dbhash.cy, dbhash.alignedLen);
 
@@ -350,19 +350,19 @@ void CFastaSWScalar::InterRunGlobalDatabaseScanning(int blknum, int threads, int
 	dim3 blocks (threads, 1, 1);
 
 	interSWUsingSIMT<<<grid, blocks, 0>>>((ushort2*)cudaGlobal, cudaGlobalPitch,
-				cudaSeqHash, cudaResult, numSeqs, firstBlk);	
-	
+				cudaSeqHash, cudaResult, numSeqs, firstBlk);
+
 	CUERR
 	//kernel-level synchronization
-	cudaThreadSynchronize();
+	cudaDeviceSynchronize();
 }
 /*******************************************************************
 		Smith-Waterman for intra-task parallelization
 ********************************************************************/
-__device__ int IntraGlobalSmithWatermanScalar(int matrix[32][32], ushort*D_A, ushort*D_B, ushort*D_C, 
+__device__ int IntraGlobalSmithWatermanScalar(int matrix[32][32], ushort*D_A, ushort*D_B, ushort*D_C,
 		ushort*H, ushort*V_O, ushort*V_C, int db_cx, int db_cy, int n, unsigned char* query, int m)
 {
-    
+
 	int i,j;
 	unsigned char a,b;
 	int dd,h,v;
@@ -381,13 +381,13 @@ __device__ int IntraGlobalSmithWatermanScalar(int matrix[32][32], ushort*D_A, us
 		D_A[i] = 0;
 		D_B[i] = 0;
 		D_C[i] = 0;
-		
+
 		H[i] = 0;
 		V_O[i] = 0;
 		V_C[i] = 0;
 	}
 	__syncthreads();
-	
+
 	/*the horizontal sequence in the edit graph is the database sequence;
 		the vertical sequence in the edit graph is the query sequence*/
 
@@ -403,10 +403,10 @@ __device__ int IntraGlobalSmithWatermanScalar(int matrix[32][32], ushort*D_A, us
 		}
 		ej += sj;
 		sj ++;
-	
+
 		lx -= tid;
 		__syncthreads();
-			
+
 		for( j = sj + tid; j <= ej ; j += step, lx -= step){
 
 			//calculate the vetical value
@@ -428,10 +428,10 @@ __device__ int IntraGlobalSmithWatermanScalar(int matrix[32][32], ushort*D_A, us
 			D_C[j] = dd;
 			H[j] = min(h, 0x0FFFF);
 			V_C[j] = min(v, 0x0FFFF);
-		
+
 			score = max(score, dd);
 		}
-		
+
 		//swap the buffers A <- B; B <- C;
 		ushort* tmp = D_A;
 		D_A = D_B;
@@ -441,11 +441,11 @@ __device__ int IntraGlobalSmithWatermanScalar(int matrix[32][32], ushort*D_A, us
 		tmp = V_C;
 		V_C = V_O;
 		V_O = tmp;
-	
+
 	}
 	maxHH[tid] = score;
 	__syncthreads();
-	
+
 	if(tid == 0){
 		score = maxHH[0];
 		for( i = 1; i < step; i++){
@@ -456,8 +456,8 @@ __device__ int IntraGlobalSmithWatermanScalar(int matrix[32][32], ushort*D_A, us
 }
 
 #define MAX_SM_QUERY_LENGTH				11264	//11KB by default, actually up to 12192
-__global__ void intraSWUsingSIMT(ushort* D_A, size_t daPitch, ushort* D_B, size_t dbPitch, 
-				ushort* D_C, size_t dcPitch, ushort* H, size_t hPitch, ushort* V_O, size_t voPitch, ushort* V_C, size_t vcPitch, DatabaseHash* hash, 
+__global__ void intraSWUsingSIMT(ushort* D_A, size_t daPitch, ushort* D_B, size_t dbPitch,
+				ushort* D_C, size_t dcPitch, ushort* H, size_t hPitch, ushort* V_O, size_t voPitch, ushort* V_C, size_t vcPitch, DatabaseHash* hash,
 				SeqEntry* cudaResult, int numSeqs, int firstSeq)
 {
 	int score;
@@ -481,7 +481,7 @@ __global__ void intraSWUsingSIMT(ushort* D_A, size_t daPitch, ushort* D_B, size_
 		matrix[i + y][x] = cudaSubMatrix[i + y][x];
 	}
 	__syncthreads();
-	
+
 	//compute the index of the database sequence corresponding to the current thread block
 	seqidx = blkid + firstSeq;
 
@@ -492,7 +492,7 @@ __global__ void intraSWUsingSIMT(ushort* D_A, size_t daPitch, ushort* D_B, size_
 	DatabaseHash dbhash = hash[seqidx];
 
 	if(cudaQueryLen >= MAX_SM_QUERY_LENGTH){
-	
+
 		score = IntraGlobalSmithWatermanScalar(matrix,
 				(ushort*)(((char*)D_A) + blkid * daPitch), (ushort*)(((char*)D_B) + blkid * dbPitch),
 				(ushort*)(((char*)D_C) + blkid * dcPitch), (ushort*)(((char*)H) + blkid * hPitch),
@@ -529,6 +529,5 @@ void CFastaSWScalar::IntraRunGlobalDatabaseScanning(int blknum, int threads, int
 
     CUERR
     //kernel-level synchronization
-    cudaThreadSynchronize();
+    cudaDeviceSynchronize();
 }
-
